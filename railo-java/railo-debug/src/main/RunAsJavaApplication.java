@@ -46,7 +46,7 @@ public class RunAsJavaApplication {
         		"CFMLServlet",
         		"*.cfc/*,*.cfm/*,*.cfml/*,*.cfc,*.cfm,*.cfml",
         		//"*.cfc*,*.cfm,*.cfml*",
-        		"railo.loader.servlet.CFMLServlet");
+        		"railo.debug.loader.servlet.CFMLServlet");
         
         servlet.setInitOrder(0);
         

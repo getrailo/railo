@@ -32,19 +32,15 @@ import railo.runtime.type.util.StructUtil;
 public class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	
 
-	public static final Key APPLICATION = KeyImpl.getInstance("application");
-	public static final Key ARGUMENTS = KeyImpl.getInstance("arguments");
-	public static final Key CGI = KeyImpl.getInstance("cgi");
-	public static final Key COOKIE = KeyImpl.getInstance("cookie");
-	public static final Key CLIENT = KeyImpl.getInstance("client");
-	public static final Key CLUSTER = KeyImpl.getInstance("cluster");
-	public static final Key FORM = KeyImpl.getInstance("form");
-	public static final Key REQUEST = KeyImpl.getInstance("request");
-	public static final Key SESSION = KeyImpl.getInstance("session");
-	public static final Key SERVER = KeyImpl.getInstance("server");
-	public static final Key URL = KeyImpl.getInstance("url");
-	public static final Key VARIABLES = KeyImpl.getInstance("variables");
-	public static final Key LOCAL = KeyImpl.getInstance("local");
+	public static final Key APPLICATION = KeyImpl.intern("application");
+	public static final Key CGI = KeyImpl.intern("cgi");
+	public static final Key COOKIE = KeyImpl.intern("cookie");
+	public static final Key CLIENT = KeyImpl.intern("client");
+	public static final Key CLUSTER = KeyImpl.intern("cluster");
+	public static final Key FORM = KeyImpl.intern("form");
+	public static final Key REQUEST = KeyImpl.intern("request");
+	public static final Key SESSION = KeyImpl.intern("session");
+	public static final Key URL = KeyImpl.intern("url");
 	
 	private String name;
     private String dspName;
@@ -198,7 +194,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
     private Struct _fill(Struct parent, String name, Object value, boolean isLast, boolean scriptProteced) {
         Object curr;
         boolean isArrayDef=false;
-        Collection.Key key=KeyImpl.init(name);
+        Collection.Key key=KeyImpl.getInstance(name);
         
         // script protect
         if(scriptProteced && value instanceof String) {
@@ -208,7 +204,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         if(name.length() >2 && name.endsWith("[]")) {
             isArrayDef=true;
             name=name.substring(0,name.length()-2);
-            key=KeyImpl.init(name);
+            key=KeyImpl.getInstance(name);
             curr=parent.get(key,null);                
         }
         else {
@@ -223,15 +219,15 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
         	}
             else parent.setEL(key,value); 
         }
-        else if(curr instanceof ArrayImpl){
-            ((ArrayImpl) curr).appendEL(value);
+        else if(curr instanceof Array){
+            ((Array) curr).appendEL(value);
         }
         else if(curr instanceof CastableStruct){
         	if(isLast) ((CastableStruct)curr).setValue(value);
             else return (Struct) curr;
         	
         }
-        else if(curr instanceof StructImpl){
+        else if(curr instanceof Struct){
             if(isLast) parent.setEL(key,value);
             else return (Struct) curr;
         }
@@ -242,7 +238,7 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
             	arr.appendEL(value);
                 parent.setEL(key,arr);
             }
-            else if(value instanceof StructImpl) {
+            else if(value instanceof Struct) {
                 parent.setEL(key,value);
             }
             else {

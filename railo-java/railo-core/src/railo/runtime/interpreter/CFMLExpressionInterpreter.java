@@ -1072,7 +1072,7 @@ public class CFMLExpressionInterpreter {
         // check first character is a number literal representation
         //if(!cfml.isCurrentDigit()) return null;
         
-        StringBuffer rtn=new StringBuffer(6);
+        StringBuilder rtn=new StringBuilder(6);
         
         // get digit on the left site of the dot
         if(cfml.isCurrent('.')) rtn.append('0');
@@ -1084,12 +1084,20 @@ public class CFMLExpressionInterpreter {
             digit(rtn);
 
             if(before<cfml.getPos() && cfml.forwardIfCurrent('e')) {
-                if(cfml.isCurrentDigit()) {
-                    rtn.append('e');
+            	Boolean expOp=null;
+				if(cfml.forwardIfCurrent('+')) expOp=Boolean.TRUE;
+				else if(cfml.forwardIfCurrent('-')) expOp=Boolean.FALSE;
+				
+            	
+            	if(cfml.isCurrentDigit()) {
+            		if(expOp==Boolean.FALSE) rtn.append("e-");
+					else if(expOp==Boolean.TRUE) rtn.append("e+");
+					else rtn.append('e');
                     digit(rtn);
                 }
                 else {
-                    cfml.previous();
+                	if(expOp!=null) cfml.previous();
+			        cfml.previous();
                 }
             }
             
@@ -1112,7 +1120,7 @@ public class CFMLExpressionInterpreter {
     * <code>"0"|..|"9";</code>
      * @param rtn
     */
-    private void digit(StringBuffer rtn) {
+    private void digit(StringBuilder rtn) {
         
         while (cfml.isValidIndex()) {
             if(!cfml.isCurrentDigit())break;

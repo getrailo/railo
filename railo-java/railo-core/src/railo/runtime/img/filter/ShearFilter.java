@@ -14,11 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
-import java.awt.Rectangle;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class ShearFilter extends TransformFilter {
+public class ShearFilter extends TransformFilter  implements DynFiltering {
 
 	private float xangle = 0.0f;
 	private float yangle = 0.0f;
@@ -134,4 +141,19 @@ catch (Exception e) {
 		return "Distort/Shear...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Resize")))!=null)setResize(ImageFilterUtil.toBooleanValue(o,"Resize"));
+		if((o=parameters.removeEL(KeyImpl.init("XAngle")))!=null)setXAngle(ImageFilterUtil.toFloatValue(o,"XAngle"));
+		if((o=parameters.removeEL(KeyImpl.init("YAngle")))!=null)setYAngle(ImageFilterUtil.toFloatValue(o,"YAngle"));
+		if((o=parameters.removeEL(KeyImpl.init("EdgeAction")))!=null)setEdgeAction(ImageFilterUtil.toString(o,"EdgeAction"));
+		if((o=parameters.removeEL(KeyImpl.init("Interpolation")))!=null)setInterpolation(ImageFilterUtil.toString(o,"Interpolation"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Resize, XAngle, YAngle, EdgeAction, Interpolation]");
+		}
+
+		return filter(src, dst);
+	}
 }

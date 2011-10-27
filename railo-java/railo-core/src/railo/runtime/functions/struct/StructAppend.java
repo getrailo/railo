@@ -21,7 +21,8 @@ public final class StructAppend implements Function {
         Key key;
         while(it.hasNext()) {
             key=KeyImpl.toKey(it.next());
-            if(overwrite || struct1.get(key,null)==null)struct1.set(key,struct2.get(key));
+            if(overwrite || struct1.get(key,null)==null)
+            	struct1.setEL(key,struct2.get(key,null));
         }
         return true;
     }

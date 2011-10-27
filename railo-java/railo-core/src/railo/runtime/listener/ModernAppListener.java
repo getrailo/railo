@@ -11,16 +11,17 @@ import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPage;
+import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
@@ -29,7 +30,6 @@ import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -37,53 +37,27 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructUtil;
-import railo.runtime.util.ApplicationContextImpl;
 
 public class ModernAppListener extends AppListenerSupport {
 
 
 
-	private static final Collection.Key NAME = KeyImpl.getInstance("name");
-	private static final Collection.Key APPLICATION_TIMEOUT = KeyImpl.getInstance("applicationTimeout");
-	private static final Collection.Key CLIENT_MANAGEMENT = KeyImpl.getInstance("clientManagement");
-	private static final Collection.Key CLIENT_STORAGE = KeyImpl.getInstance("clientStorage");
-	private static final Collection.Key LOGIN_STORAGE = KeyImpl.getInstance("loginStorage");
-	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.getInstance("sessionManagement");
-	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.getInstance("sessionTimeout");
-	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.getInstance("setClientCookies");
-	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.getInstance("setDomainCookies");
-	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.getInstance("scriptProtect");
-	private static final Collection.Key MAPPINGS = KeyImpl.getInstance("mappings");
-	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.getInstance("customtagpaths");
-	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.getInstance("secureJsonPrefix");
-	private static final Collection.Key SECURE_JSON = KeyImpl.getInstance("secureJson");
 	
 
-	private static final Collection.Key ON_REQUEST_START = KeyImpl.getInstance("onRequestStart");
-	private static final Collection.Key ON_CFCREQUEST = KeyImpl.getInstance("onCFCRequest");
-	private static final Collection.Key ON_REQUEST = KeyImpl.getInstance("onRequest");
-	private static final Collection.Key ON_REQUEST_END = KeyImpl.getInstance("onRequestEnd");
-	private static final Collection.Key ON_APPLICATION_START = KeyImpl.getInstance("onApplicationStart");
-	private static final Collection.Key ON_APPLICATION_END = KeyImpl.getInstance("onApplicationEnd");
-	private static final Collection.Key ON_SESSION_START = KeyImpl.getInstance("onSessionStart");
-	private static final Collection.Key ON_SESSION_END = KeyImpl.getInstance("onSessionEnd");
-	private static final Collection.Key ON_DEBUG = KeyImpl.getInstance("onDebug");
-	private static final Collection.Key ON_ERROR = KeyImpl.getInstance("onError");
-	private static final Collection.Key ON_MISSING_TEMPLATE = KeyImpl.getInstance("onMissingTemplate");
-	private static final Collection.Key DEFAULT_DATA_SOURCE = KeyImpl.getInstance("defaultdatasource");
-	private static final Collection.Key DATA_SOURCE = KeyImpl.getInstance("datasource");
-	private static final Collection.Key ORM_ENABLED = KeyImpl.getInstance("ormenabled");
-	private static final Collection.Key ORM_SETTINGS = KeyImpl.getInstance("ormsettings");
-
-	private static final Collection.Key S3 = KeyImpl.getInstance("s3");
-	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.getInstance("accessKeyId");
-	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.getInstance("awsSecretKey");
-	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.getInstance("defaultLocation");
-	private static final Collection.Key HOST = KeyImpl.getInstance("host");
-	private static final Collection.Key SERVER = KeyImpl.getInstance("server");
+	private static final Collection.Key ON_REQUEST_START = KeyImpl.intern("onRequestStart");
+	private static final Collection.Key ON_CFCREQUEST = KeyImpl.intern("onCFCRequest");
+	private static final Collection.Key ON_REQUEST = KeyImpl.intern("onRequest");
+	private static final Collection.Key ON_REQUEST_END = KeyImpl.intern("onRequestEnd");
+	private static final Collection.Key ON_APPLICATION_START = KeyImpl.intern("onApplicationStart");
+	private static final Collection.Key ON_APPLICATION_END = KeyImpl.intern("onApplicationEnd");
+	private static final Collection.Key ON_SESSION_START = KeyImpl.intern("onSessionStart");
+	private static final Collection.Key ON_SESSION_END = KeyImpl.intern("onSessionEnd");
+	private static final Collection.Key ON_DEBUG = KeyImpl.intern("onDebug");
+	private static final Collection.Key ON_ERROR = KeyImpl.intern("onError");
+	private static final Collection.Key ON_MISSING_TEMPLATE = KeyImpl.intern("onMissingTemplate");
 	
 	
 	//private ComponentImpl app;
@@ -115,7 +89,7 @@ public class ModernAppListener extends AppListenerSupport {
 			String callPath=appPS.getComponentName();
 			
 			
-			ComponentImpl app = ComponentLoader.loadComponentImpl(pci,null,appPS, callPath, false,true);
+			ComponentAccess app = ComponentLoader.loadComponent(pci,null,appPS, callPath, false,true);
 			
 			String targetPage=requestedPage.getFullRealpath();
 			// init
@@ -141,10 +115,10 @@ public class ModernAppListener extends AppListenerSupport {
 				
 				Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
 		        
-		        url.removeEL(ComponentPage.FIELDNAMES);
+		        url.removeEL(KeyImpl.FIELD_NAMES);
 		        url.removeEL(ComponentPage.METHOD);
-		        Object args=url.get(ComponentPage.ARGUMENT_COLLECTION,null);
-		        Object returnFormat=url.removeEL(ComponentPage.RETURN_FORMAT);
+		        Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
+		        Object returnFormat=url.removeEL(KeyImpl.RETURN_FORMAT);
 		        Object queryFormat=url.removeEL(ComponentPage.QUERY_FORMAT);
 		        
 		        if(args==null){
@@ -237,20 +211,16 @@ public class ModernAppListener extends AppListenerSupport {
 	 * @see railo.runtime.listener.ApplicationListener#onApplicationStart(railo.runtime.PageContext)
 	 */
 	public boolean onApplicationStart(PageContext pc) throws PageException {
-		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
+		ComponentAccess app = (ComponentAccess) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_APPLICATION_START)) {
 			Object rtn = call(app,pc, ON_APPLICATION_START, ArrayUtil.OBJECT_EMPTY);
-			
-			
-			//print.o("has:"+hasOnSessionStart(pc));
-			//((PageContextImpl)pc).resetSession();
 			return Caster.toBooleanValue(rtn,true);
 		}
 		return true;
 	}
 
 	public void onApplicationEnd(CFMLFactory factory, String applicationName) throws PageException {
-		ComponentImpl app = (ComponentImpl) apps.get(applicationName);
+		ComponentAccess app = (ComponentAccess) apps.get(applicationName);
 		if(app==null || !app.containsKey(ON_APPLICATION_END)) return;
 		
 		PageContextImpl pc=null;
@@ -270,7 +240,7 @@ public class ModernAppListener extends AppListenerSupport {
 	 * @see railo.runtime.listener.ApplicationListener#onSessionStart(railo.runtime.PageContext)
 	 */
 	public void onSessionStart(PageContext pc) throws PageException {
-		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
+		ComponentAccess app = (ComponentAccess) apps.get(pc.getApplicationContext().getName());
 		if(hasOnSessionStart(pc,app)) {
 			call(app,pc, ON_SESSION_START, ArrayUtil.OBJECT_EMPTY);
 		}
@@ -281,13 +251,13 @@ public class ModernAppListener extends AppListenerSupport {
 	 * @see railo.runtime.listener.ApplicationListener#onSessionEnd(railo.runtime.CFMLFactory, java.lang.String, java.lang.String)
 	 */
 	public void onSessionEnd(CFMLFactory factory, String applicationName, String cfid) throws PageException {
-		ComponentImpl app = (ComponentImpl) apps.get(applicationName);
+		ComponentAccess app = (ComponentAccess) apps.get(applicationName);
 		if(app==null || !app.containsKey(ON_SESSION_END)) return;
 		
-		PageContext pc=null;
+		PageContextImpl pc=null;
 		try {
 			pc = createPageContext(factory,app,applicationName,cfid,ON_SESSION_END);
-			call(app,pc, ON_SESSION_END, new Object[]{pc.sessionScope(),pc.applicationScope()});
+			call(app,pc, ON_SESSION_END, new Object[]{pc.sessionScope(false),pc.applicationScope()});
 		}
 		finally {
 			if(pc!=null){
@@ -296,7 +266,7 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 
-	private PageContext createPageContext(CFMLFactory factory, ComponentImpl app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
+	private PageContextImpl createPageContext(CFMLFactory factory, ComponentAccess app, String applicationName, String cfid,Collection.Key methodName) throws PageException {
 		Resource root = factory.getConfig().getRootDirectory();
 		String path = app.getPageSource().getFullRealpath();
 		
@@ -320,7 +290,7 @@ public class ModernAppListener extends AppListenerSupport {
 		// PageContext
 		PageContextImpl pc = (PageContextImpl) factory.getRailoPageContext(factory.getServlet(), req, rsp, null, false, -1, false);
 		// ApplicationContext
-		ApplicationContextImpl ap = new ApplicationContextImpl(factory.getConfig(),false);
+		ClassicApplicationContext ap = new ClassicApplicationContext(factory.getConfig(),applicationName,false);
 		initApplicationContext(pc, app);
 		ap.setName(applicationName);
 		ap.setSetSessionManagement(true);
@@ -336,7 +306,7 @@ public class ModernAppListener extends AppListenerSupport {
 	 * @see railo.runtime.listener.ApplicationListener#onDebug(railo.runtime.PageContext)
 	 */
 	public void onDebug(PageContext pc) throws PageException {
-		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
+		ComponentAccess app = (ComponentAccess) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_DEBUG)) {
 			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData()});
 			return;
@@ -354,7 +324,7 @@ public class ModernAppListener extends AppListenerSupport {
 	 * @see railo.runtime.listener.ApplicationListener#onError(railo.runtime.PageContext, railo.runtime.exp.PageException)
 	 */
 	public void onError(PageContext pc, PageException pe) {
-		ComponentImpl app = (ComponentImpl) apps.get(pc.getApplicationContext().getName());
+		ComponentAccess app = (ComponentAccess) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.containsKey(ON_ERROR) && !(pe instanceof Abort)) {
 			try {
 				String eventName="";
@@ -372,7 +342,7 @@ public class ModernAppListener extends AppListenerSupport {
 	}
 
 
-	private Object call(ComponentImpl app, PageContext pc, Collection.Key eventName, Object[] args) throws ModernAppListenerException {
+	private Object call(ComponentPro app, PageContext pc, Collection.Key eventName, Object[] args) throws ModernAppListenerException {
 		try {
 			return app.call(pc, eventName, args);
 		} 
@@ -384,151 +354,19 @@ public class ModernAppListener extends AppListenerSupport {
 		}
 	}
 
-	private void initApplicationContext(PageContextImpl pc, ComponentImpl app) throws PageException {
+	private void initApplicationContext(PageContextImpl pc, ComponentAccess app) throws PageException {
 		
 		// use existing app context
-		ApplicationContextImpl appContext = new ApplicationContextImpl(pc.getConfig(),app,false);
+		RefBoolean throwsErrorWhileInit=new RefBooleanImpl(false);
+		ModernApplicationContext appContext = new ModernApplicationContext(pc,app,throwsErrorWhileInit);
 
-		
-		Object o;
-		boolean initORM=false;
-		pc.addPageSource(app.getPageSource(), true);
-		boolean hasError=false;
-		try {
-			
-			// name
-			o=get(app,NAME,"");
-			if(o!=null) appContext.setName(Caster.toString(o));
-			
-			// applicationTimeout
-			o=get(app,APPLICATION_TIMEOUT,null);
-			if(o!=null) appContext.setApplicationTimeout(Caster.toTimespan(o));
-				
-			// clientManagement
-			o=get(app,CLIENT_MANAGEMENT,null);
-			if(o!=null) appContext.setSetClientManagement(Caster.toBooleanValue(o));
-			
-			// clientStorage
-			o=get(app,CLIENT_STORAGE,null);
-			if(o!=null) appContext.setClientstorage(Caster.toString(o));
-
-			// loginStorage
-			o=get(app,LOGIN_STORAGE,null);
-			if(o!=null) appContext.setLoginStorage(Caster.toString(o));
-
-			// datasource
-			o = get(app,DATA_SOURCE,null);
-			if(o!=null) {
-				String ds = Caster.toString(o);
-				appContext.setORMDataSource(ds);
-				appContext.setDefaultDataSource(ds);
-			}
-
-			// default datasource
-			o=get(app,DEFAULT_DATA_SOURCE,null);
-			if(o!=null) appContext.setDefaultDataSource(Caster.toString(o));
-			
-
-			// sessionManagement
-			o=get(app,SESSION_MANAGEMENT,null);
-			if(o!=null) appContext.setSetSessionManagement(Caster.toBooleanValue(o));
-			
-			// sessionTimeout
-			o=get(app,SESSION_TIMEOUT,null);
-			if(o!=null) appContext.setSessionTimeout(Caster.toTimespan(o));
-			
-			// setClientCookies
-			o=get(app,SET_CLIENT_COOKIES,null);
-			if(o!=null) appContext.setSetClientCookies(Caster.toBooleanValue(o));
-			
-			// setDomainCookies
-			o=get(app,SET_DOMAIN_COOKIES,null);
-			if(o!=null) appContext.setSetDomainCookies(Caster.toBooleanValue(o));
-			
-			// scriptProtect
-			o=get(app,SCRIPT_PROTECT,null);
-			if(o!=null) appContext.setScriptProtect(Caster.toString(o));
-			
-			// mappings
-			o=get(app,MAPPINGS,null);
-			if(o!=null) appContext.setMappings(AppListenerUtil.toMappings(pc,o));
-			
-			// customtagpaths
-			o=get(app,CUSTOM_TAG_PATHS,null);
-			if(o!=null) appContext.setCustomTagMappings(AppListenerUtil.toCustomTagMappings(pc,o));
-			
-			// secureJsonPrefix
-			o=get(app,SECURE_JSON_PREFIX,null);
-			if(o!=null) appContext.setSecureJsonPrefix(Caster.toString(o));
-			
-			// secureJson
-			o=get(app,SECURE_JSON,null);
-			if(o!=null) appContext.setSecureJson(Caster.toBooleanValue(o));
-			
-			// S3
-			o=get(app,S3,null);
-			if(o!=null && Decision.isStruct(o)){
-				Struct sct=Caster.toStruct(o);
-				
-				String host=Caster.toString(sct.get(HOST,null));
-				if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(SERVER,null));
-				
-				appContext.setS3(
-						Caster.toString(sct.get(ACCESS_KEY_ID,null)),
-						Caster.toString(sct.get(AWS_SECRET_KEY,null)),
-						Caster.toString(sct.get(DEFAULT_LOCATION,null)),
-						host
-					);
-			}
-			
-			
-			
-	///////////////////////////////// ORM /////////////////////////////////
-			// ormenabled
-			o=get(app,ORM_ENABLED,null);
-			if(o!=null && Caster.toBooleanValue(o,false)){
-				initORM=true;
-				appContext.setORMEnabled(Caster.toBooleanValue(o));
-				
-				// settings
-				o=get(app,ORM_SETTINGS,null);
-				Struct settings;
-				if(!(o instanceof Struct))
-					settings=new StructImpl();
-				else
-					settings=(Struct) o;
-				//if(o instanceof Struct){
-					//Struct settings=(Struct) o;
-					
-					// default cfc location (parent of the application.cfc)
-					Resource res=null;
-					
-						res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
-					/*try {} catch (ExpressionException e) {
-						e.printStackTrace();
-					}*/
-					ConfigImpl config=(ConfigImpl) pc.getConfig();
-					ORMConfiguration ormConfig=ORMConfiguration.load(config,settings,res,config.getORMConfig());
-					appContext.setORMConfiguration(ormConfig);
-					
-					// datasource
-					o=settings.get(DATA_SOURCE,null);
-					if(o!=null) appContext.setORMDataSource(Caster.toString(o));
-				//}
-			}
-			
-			
-		}
-		catch(Throwable t) {
-			hasError=true;
-			pc.removeLastPageSource(true);
-		}
 		
 		pc.setApplicationContext(appContext);
-		if(initORM) {
+		if(appContext.isORMEnabled()) {
+			boolean hasError=throwsErrorWhileInit.toBooleanValue();
 			if(hasError)pc.addPageSource(app.getPageSource(), true);
 			try{
-				ORMUtil.resetEngine(pc);
+				ORMUtil.resetEngine(pc,false);
 			}
 			finally {
 				if(hasError)pc.removeLastPageSource(true);
@@ -537,7 +375,7 @@ public class ModernAppListener extends AppListenerSupport {
 	}
 
 
-	private static Object get(ComponentImpl app, Key name,String defaultValue) {
+	private static Object get(ComponentAccess app, Key name,String defaultValue) {
 		Member mem = app.getMember(Component.ACCESS_PRIVATE, name, true, false);
 		if(mem==null) return defaultValue;
 		return mem.getValue();
@@ -578,9 +416,9 @@ public class ModernAppListener extends AppListenerSupport {
 	 * @see railo.runtime.listener.AppListenerSupport#hasOnSessionStart(railo.runtime.PageContext)
 	 */
 	public boolean hasOnSessionStart(PageContext pc) {
-		return hasOnSessionStart(pc,(ComponentImpl) apps.get(pc.getApplicationContext().getName()));
+		return hasOnSessionStart(pc,(ComponentAccess) apps.get(pc.getApplicationContext().getName()));
 	}
-	private boolean hasOnSessionStart(PageContext pc,ComponentImpl app) {
+	private boolean hasOnSessionStart(PageContext pc,ComponentAccess app) {
 		return app!=null && app.contains(pc,ON_SESSION_START);
 	}
 }

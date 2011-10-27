@@ -16,11 +16,11 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
+import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -111,7 +111,7 @@ public final class ResourceUtil {
     	EXT_MT.put("pgm","image/x-portable-graymap");
     	EXT_MT.put("pict","image/x-pict");
     	EXT_MT.put("pl","application/x-perl");
-    	EXT_MT.put("png","image/x-png");
+    	EXT_MT.put("png","image/png");
     	EXT_MT.put("pnm","image/x-portable-anymap");
     	EXT_MT.put("ppm","image/x-portable-pixmap");
     	EXT_MT.put("ppt","application/vnd.ms-powerpoint");
@@ -697,19 +697,12 @@ public final class ResourceUtil {
      * @throws IOException
      */
     public static void touch(Resource res) throws IOException {
-    	ResourceProvider provider = res.getResourceProvider();
-    	try{
-    		provider.lock(res);
-	        if(res.exists()) {
-	            res.setLastModified(System.currentTimeMillis());
-	        }
-	        else {
-	            res.createFile(true);
-	        }
-    	}
-    	finally {
-    		provider.unlock(res);
-    	}
+    	if(res.exists()) {
+    		res.setLastModified(System.currentTimeMillis());
+	    }
+	    else {
+	        res.createFile(true);
+	    }
     }
     	
     
@@ -887,7 +880,11 @@ public final class ResourceUtil {
         	Resource[] files=filter==null?src.listResources():src.listResources(filter);
             for(int i=0;i<files.length;i++) {
             	_deleteContent(files[i],filter,true);
-            	if(deleteDirectories)src.delete();
+            	if(deleteDirectories){
+            		try {
+						src.remove(false);
+					} catch (IOException e) {}
+            	}
             }
             
         }
@@ -1015,6 +1012,12 @@ public final class ResourceUtil {
 	}
 
 	public static ContentType getContentType(Resource resource) {
+		// TODO make this part of a interface
+		if(resource instanceof HTTPResource) {
+			try {
+				return ((HTTPResource)resource).getContentType();
+			} catch (IOException e) {}
+		}
 		InputStream is=null;
 		try {
 			is = resource.getInputStream();

@@ -434,14 +434,19 @@ public final class SMTPClient implements Serializable  {
 	// Contacts
 		SMTPMessage msg = new SMTPMessage(sat.session);
 		if(from==null)throw new MessagingException("you have do define the from for the mail"); 
-		if(tos==null)throw new MessagingException("you have do define the to for the mail"); 
+		//if(tos==null)throw new MessagingException("you have do define the to for the mail"); 
 		
 		checkAddress(from,charset);
-		checkAddress(tos,charset);
+		//checkAddress(tos,charset);
 		
 		msg.setFrom(from);
-		msg.setRecipients(Message.RecipientType.TO, tos);
-	    if(ccs!=null){
+		//msg.setRecipients(Message.RecipientType.TO, tos);
+	    
+		if(tos!=null){
+			checkAddress(tos,charset);
+			msg.setRecipients(Message.RecipientType.TO, tos);
+	    }
+		if(ccs!=null){
 			checkAddress(ccs,charset);
 	    	msg.setRecipients(Message.RecipientType.CC, ccs);
 	    }
@@ -722,7 +727,9 @@ public final class SMTPClient implements Serializable  {
 					msgSess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
 				} catch (MessagingException e) {
 					log.error("mail",LogUtil.toMessage(e));
-					throw new MailException(e.getMessage());
+					MailException me = new MailException(e.getMessage());
+					me.setStackTrace(e.getStackTrace());
+					throw me;
 				}
 				try {
 	            	SerializableObject lock = new SerializableObject();

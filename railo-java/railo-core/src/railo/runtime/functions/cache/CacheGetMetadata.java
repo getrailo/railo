@@ -21,17 +21,16 @@ public final class CacheGetMetadata implements Function {
 	
 	private static final long serialVersionUID = -470089623854482521L;
 	
-	private static final Collection.Key CACHE_HITCOUNT = KeyImpl.getInstance("cache_hitcount");
-	private static final Collection.Key CACHE_MISSCOUNT = KeyImpl.getInstance("cache_misscount");
-	private static final Collection.Key CACHE_CUSTOM = KeyImpl.getInstance("cache_custom");
-	private static final Collection.Key CUSTOM = KeyImpl.getInstance("custom");
-	private static final Collection.Key CREATED_TIME = KeyImpl.getInstance("createdtime");
-	private static final Collection.Key HIT_COUNT = KeyImpl.getInstance("hitcount");
-	private static final Collection.Key IDLE_TIME = KeyImpl.getInstance("idletime");
-	private static final Collection.Key LAST_HIT = KeyImpl.getInstance("lasthit");
-	private static final Collection.Key LAST_UPDATED = KeyImpl.getInstance("lastupdated");
-	private static final Collection.Key SIZE = KeyImpl.getInstance("size");
-	private static final Collection.Key TIME_SPAN = KeyImpl.getInstance("timespan");
+	private static final Collection.Key CACHE_HITCOUNT = KeyImpl.intern("cache_hitcount");
+	private static final Collection.Key CACHE_MISSCOUNT = KeyImpl.intern("cache_misscount");
+	private static final Collection.Key CACHE_CUSTOM = KeyImpl.intern("cache_custom");
+	private static final Collection.Key CUSTOM = KeyImpl.intern("custom");
+	private static final Collection.Key CREATED_TIME = KeyImpl.intern("createdtime");
+	private static final Collection.Key HIT_COUNT = KeyImpl.intern("hitcount");
+	private static final Collection.Key IDLE_TIME = KeyImpl.intern("idletime");
+	private static final Collection.Key LAST_HIT = KeyImpl.intern("lasthit");
+	private static final Collection.Key LAST_UPDATED = KeyImpl.intern("lastupdated");
+	private static final Collection.Key TIME_SPAN = KeyImpl.intern("timespan");
 
 	public static Struct call(PageContext pc, String id) throws PageException {
 		return call(pc, id,null);
@@ -39,7 +38,7 @@ public final class CacheGetMetadata implements Function {
 	
 	public static Struct call(PageContext pc, String id, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			CacheEntry entry = cache.getCacheEntry(Util.key(id));
 			
 			Struct info=new StructImpl();
@@ -53,7 +52,7 @@ public final class CacheGetMetadata implements Function {
 			info.set(IDLE_TIME, new Double(entry.idleTimeSpan()));
 			info.set(LAST_HIT, entry.lastHit());
 			info.set(LAST_UPDATED, entry.lastModified());
-			info.set(SIZE, new Double(entry.size()));
+			info.set(KeyImpl.SIZE, new Double(entry.size()));
 			info.set(TIME_SPAN, new Double(entry.liveTimeSpan()));
 			return info;
 		} catch (IOException e) {

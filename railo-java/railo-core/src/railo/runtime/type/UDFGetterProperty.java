@@ -17,7 +17,7 @@ public class UDFGetterProperty extends UDFGSProperty {
 	public UDFGetterProperty(ComponentImpl component,Property prop)  {
 		super(component,"get"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[0],CFTypes.TYPE_STRING,"wddx");
 		this.prop=prop;
-		this.propName=KeyImpl.init(prop.getName());
+		this.propName=KeyImpl.getInstance(prop.getName());
 	} 
 
 	/**

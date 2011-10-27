@@ -18,6 +18,7 @@ import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.loader.util.Util;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
@@ -106,7 +107,7 @@ public final class S3Resource extends ResourceSupport {
 		finally {
 			provider.unlock(this);
 		}
-		s3.releaseInfo(getInnerPath());
+		s3.releaseCache(getInnerPath());
 	}
 
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
@@ -122,7 +123,7 @@ public final class S3Resource extends ResourceSupport {
 		finally {
 			provider.unlock(this);
 		}
-		s3.releaseInfo(getInnerPath());
+		s3.releaseCache(getInnerPath());
 	}
 
 	public boolean exists() {
@@ -254,8 +255,8 @@ public final class S3Resource extends ResourceSupport {
 					Util.copy(is=getInputStream(), baos);
 					barr=baos.toByteArray();
 				}
-				catch(Throwable t){
-					
+				catch (Exception e) {
+					throw new PageRuntimeException(Caster.toPageException(e));
 				}
 				finally{
 					Util.closeEL(is);
@@ -267,13 +268,14 @@ public final class S3Resource extends ResourceSupport {
 				Util.copy(new ByteArrayInputStream(barr),os);
 			return os;
 		}
-		catch(Exception e) {
-			//provider.unlock(this);
-			if(e instanceof IOException)throw (IOException)e;
-			throw new IOException(e.getMessage());
+		catch(IOException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new PageRuntimeException(Caster.toPageException(e));
 		}
 		finally {
-			s3.releaseInfo(getInnerPath());
+			s3.releaseCache(getInnerPath());
 		}
 	}
 
@@ -517,7 +519,7 @@ public final class S3Resource extends ResourceSupport {
 			throw new IOException(e.getMessage());
 		}
 		finally {
-			s3.releaseInfo(getInnerPath());
+			s3.releaseCache(getInnerPath());
 			provider.unlock(this);
 		}
 		
@@ -525,27 +527,65 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 	public boolean setLastModified(long time) {
-		s3.releaseInfo(getInnerPath());
+		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public void setMode(int mode) throws IOException {
-		s3.releaseInfo(getInnerPath());
+		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub
 		
 	}
 
 	public boolean setReadable(boolean readable) {
-		s3.releaseInfo(getInnerPath());
+		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean setWritable(boolean writable) {
-		s3.releaseInfo(getInnerPath());
+		s3.releaseCache(getInnerPath());
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+
+	public AccessControlPolicy getAccessControlPolicy() throws IOException {
+		String p = getInnerPath();
+		try {
+			AccessControlPolicy acp = s3.getACP(p);
+			if(acp==null){
+				acp=s3.getAccessControlPolicy(bucketName,  getObjectName());
+				s3.setACP(p, acp);
+			}
+				
+			
+			return acp;
+		} 
+		catch (Exception e) {
+			throw new PageRuntimeException(Caster.toPageException(e));
+		}
+	}
+	
+	public void setAccessControlPolicy(AccessControlPolicy acp) throws IOException {
+		
+		try {
+			s3.setAccessControlPolicy(bucketName, getObjectName(),acp);
+		} 
+		catch (Exception e) {
+			throw new PageRuntimeException(Caster.toPageException(e));
+		}
+		finally {
+			s3.releaseCache(getInnerPath());
+		}
+	}
+	
+	private String getObjectName() {
+		if(!StringUtil.isEmpty(objectName) && isDirectory()) {
+			return objectName+"/";
+		}
+		return objectName;
 	}
 
 

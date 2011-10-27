@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import railo.commons.img.AbstractCaptcha;
 import railo.commons.img.CaptchaException;
 import railo.commons.lang.font.FontUtil;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.img.filter.MarbleFilter;
 
 public class MarpleCaptcha extends AbstractCaptcha {
@@ -17,7 +18,9 @@ public class MarpleCaptcha extends AbstractCaptcha {
 
 	public BufferedImage generate(String text,int width, int height, String[] fonts, boolean useAntiAlias, Color fontColor,int fontSize, int difficulty) throws CaptchaException {
 		MarbleFilter mf = new MarbleFilter();
-		mf.setEdgeAction(MarbleFilter.WRAP);
+		try {
+			mf.setEdgeAction("WRAP");
+		} catch (ExpressionException e1) {}
 		mf.setAmount(0.1F);
 		BufferedImage src=super.generate(text, width, height, fonts, useAntiAlias, fontColor, fontSize, difficulty);
 		
@@ -25,7 +28,9 @@ public class MarpleCaptcha extends AbstractCaptcha {
 		else if(difficulty==DIFFICULTY_MEDIUM) mf.setTurbulence(0.10f);
 		else mf.setTurbulence(0.2f);
 		
-		mf.setInterpolation(MarbleFilter.NEAREST_NEIGHBOUR);
+		try {
+			mf.setInterpolation("NEAREST_NEIGHBOUR");
+		} catch (ExpressionException e) {}
 		
 		BufferedImage dst = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		mf.filter(src, dst);

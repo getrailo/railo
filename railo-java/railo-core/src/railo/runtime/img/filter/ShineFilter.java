@@ -14,16 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.AlphaComposite;
+package railo.runtime.img.filter;import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.composite.AddComposite;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class ShineFilter extends AbstractBufferedImageOp {
+public class ShineFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private float radius = 5;
 	private float angle = (float)Math.PI*7/4;
@@ -121,7 +126,7 @@ public class ShineFilter extends AbstractBufferedImageOp {
 
         BufferedImage matte = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         ErodeAlphaFilter s = new ErodeAlphaFilter( bevel * 10, 0.75f, 0.1f );
-        matte = s.filter( src, null );
+        matte = s.filter( src, (BufferedImage)null );
 
         BufferedImage shineLayer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = shineLayer.createGraphics();
@@ -133,7 +138,7 @@ public class ShineFilter extends AbstractBufferedImageOp {
         g.translate( xOffset, yOffset );
         g.drawRenderedImage( matte, null );
 		g.dispose();
-        shineLayer = new GaussianFilter( radius ).filter( shineLayer, null );
+        shineLayer = new GaussianFilter( radius ).filter( shineLayer, (BufferedImage)null );
         shineLayer = new RescaleFilter( 3*brightness ).filter( shineLayer, shineLayer );
 
 		g = dst.createGraphics();
@@ -147,5 +152,23 @@ public class ShineFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Stylize/Shine...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Brightness")))!=null)setBrightness(ImageFilterUtil.toFloatValue(o,"Brightness"));
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Softness")))!=null)setSoftness(ImageFilterUtil.toFloatValue(o,"Softness"));
+		if((o=parameters.removeEL(KeyImpl.init("Distance")))!=null)setDistance(ImageFilterUtil.toFloatValue(o,"Distance"));
+		if((o=parameters.removeEL(KeyImpl.init("ShadowOnly")))!=null)setShadowOnly(ImageFilterUtil.toBooleanValue(o,"ShadowOnly"));
+		if((o=parameters.removeEL(KeyImpl.init("Bevel")))!=null)setBevel(ImageFilterUtil.toFloatValue(o,"Bevel"));
+		if((o=parameters.removeEL(KeyImpl.init("ShineColor")))!=null)setShineColor(ImageFilterUtil.toColorRGB(o,"ShineColor"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Brightness, Angle, Softness, Distance, ShadowOnly, Bevel, ShineColor]");
+		}
+
+		return filter(src, dst);
 	}
 }

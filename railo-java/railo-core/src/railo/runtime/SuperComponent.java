@@ -641,7 +641,7 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	/**
 	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
 	 */
-	public void setProperty(Property property) {
+	public void setProperty(Property property) throws PageException {
 		comp.setProperty(property);
 	}
 
@@ -656,6 +656,13 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 
 	public boolean equalTo(String type) {
 		return comp.top.equalTo(type);
+	}
+
+	/**
+	 * @see railo.runtime.ComponentPro#getWSDLFile()
+	 */
+	public String getWSDLFile() {
+		return comp.getWSDLFile();
 	}
 	
 }

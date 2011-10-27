@@ -24,19 +24,10 @@ import railo.runtime.type.dt.Date;
 import railo.runtime.type.dt.DateImpl;
 import railo.runtime.type.dt.Time;
 /**
-* Provides a programmatic interface to the ColdFusion scheduling engine. You can run a specified 
+* Provides a programmatic interface to the Railo scheduling engine. You can run a specified 
 *   page at scheduled intervals with the option to write out static HTML pages. This lets you offer users 
 *   access to pages that publish data, such as reports, without forcing users to wait while a database transaction 
 *   is performed in order to populate the data on the page. 
-*   ColdFusion scheduled events are registered using the ColdFusion Administrator. Execution of cfschedule 
-*   can be disabled in the Administrator. 
-*   Information supplied by the user includes the scheduled ColdFusion page to execute, the time and frequency 
-*   for executing the page, and whether the output from the task is published. If the output is published, 
-*   a path and file are specified. 
-*   The event submission and its success or failure status is written to the cfusion-log-schedule.log file.
-*
-*
-*
 **/
 public final class Schedule extends TagImpl {
 

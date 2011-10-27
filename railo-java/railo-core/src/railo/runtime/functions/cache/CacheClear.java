@@ -28,7 +28,7 @@ public final class CacheClear implements Function,CacheKeyFilter {
 			CacheKeyFilter f=filter;
 			if(CacheGetAllIds.isFilter(strFilter))
 				f=new WildCardFilter(strFilter,true);
-			return Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT).remove(f);
+			return Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT).remove(f);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}

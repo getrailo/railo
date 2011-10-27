@@ -14,17 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Rectangle;
+package railo.runtime.img.filter;import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.Noise;
-
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 /**
  * A filter which simulates underwater caustics. This can be animated to get a bottom-of-the-swimming-pool effect.
  */
-public class CausticsFilter extends WholeImageFilter {
+public class CausticsFilter extends WholeImageFilter  implements DynFiltering {
 
 	private float scale = 32;
 	//private float angle = 0.0f;
@@ -361,4 +366,22 @@ public class CausticsFilter extends WholeImageFilter {
 		return "Texture/Caustics...";
 	}
 	
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toFloatValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Brightness")))!=null)setBrightness(ImageFilterUtil.toIntValue(o,"Brightness"));
+		if((o=parameters.removeEL(KeyImpl.init("Turbulence")))!=null)setTurbulence(ImageFilterUtil.toFloatValue(o,"Turbulence"));
+		if((o=parameters.removeEL(KeyImpl.init("Dispersion")))!=null)setDispersion(ImageFilterUtil.toFloatValue(o,"Dispersion"));
+		if((o=parameters.removeEL(KeyImpl.init("BgColor")))!=null)setBgColor(ImageFilterUtil.toColorRGB(o,"BgColor"));
+		if((o=parameters.removeEL(KeyImpl.init("Time")))!=null)setTime(ImageFilterUtil.toFloatValue(o,"Time"));
+		if((o=parameters.removeEL(KeyImpl.init("Scale")))!=null)setScale(ImageFilterUtil.toFloatValue(o,"Scale"));
+		if((o=parameters.removeEL(KeyImpl.init("Samples")))!=null)setSamples(ImageFilterUtil.toIntValue(o,"Samples"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Brightness, Turbulence, Dispersion, BgColor, Time, Scale, Samples]");
+		}
+
+		return filter(src, dst);
+	}
 }

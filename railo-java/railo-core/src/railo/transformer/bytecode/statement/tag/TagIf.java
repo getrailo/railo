@@ -33,8 +33,6 @@ public final class TagIf extends TagBase {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		Label end = new Label();
-		//Contition cont=new Contition(tag.getLine());
-		//ExprBoolean ifContition = CastBoolean.toExprBoolean(tag.getAttribute("contition").getValue());
 		Body ifBody=getBody();
 		
 		List stats = ifBody.getStatements();
@@ -69,7 +67,7 @@ public final class TagIf extends TagBase {
 	private static Label writeOutElseIfStart(BytecodeContext bc, Tag tag) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 
-		ExprBoolean cont = CastBoolean.toExprBoolean(tag.getAttribute("contition").getValue());
+		ExprBoolean cont = CastBoolean.toExprBoolean(tag.getAttribute("condition").getValue());
 		
 		Label endIf = new Label();
         

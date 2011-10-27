@@ -71,7 +71,7 @@ public final class MailParam extends TagImpl {
 	 * @param content the content to set
 	 * @throws ExpressionException 
 	 */
-	public void setContent(Object content) throws ExpressionException {
+	public void setContent(Object content) throws PageException {
 		if(content instanceof String)this.content = ((String)content).getBytes();
 		else this.content = Caster.toBinary(content);
 	}

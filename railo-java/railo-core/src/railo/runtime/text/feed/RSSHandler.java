@@ -29,51 +29,51 @@ public final class RSSHandler extends DefaultHandler {
 	
 	public final static String DEFAULT_SAX_PARSER="org.apache.xerces.parsers.SAXParser";
 
-	private static final Key RSSLINK = KeyImpl.getInstance("RSSLINK");
-	private static final Key CONTENT = KeyImpl.getInstance("CONTENT");
+	private static final Key RSSLINK = KeyImpl.intern("RSSLINK");
+	private static final Key CONTENT = KeyImpl.intern("CONTENT");
 
-	private static final Key LINK = KeyImpl.getInstance("LINK");
-	private static final Key DESCRIPTION = KeyImpl.getInstance("DESCRIPTION");
+	private static final Key LINK = KeyImpl.intern("LINK");
+	private static final Key DESCRIPTION = KeyImpl.intern("DESCRIPTION");
 	
 	private static Collection.Key[] COLUMNS=new Collection.Key[]{
-		KeyImpl.getInstance("AUTHOREMAIL"),
-		KeyImpl.getInstance("AUTHORNAME"),
-		KeyImpl.getInstance("AUTHORURI"),
-		KeyImpl.getInstance("CATEGORYLABEL"),
-		KeyImpl.getInstance("CATEGORYSCHEME"),
-		KeyImpl.getInstance("CATEGORYTERM"),
-		KeyImpl.getInstance("COMMENTS"),
+		KeyImpl.intern("AUTHOREMAIL"),
+		KeyImpl.intern("AUTHORNAME"),
+		KeyImpl.intern("AUTHORURI"),
+		KeyImpl.intern("CATEGORYLABEL"),
+		KeyImpl.intern("CATEGORYSCHEME"),
+		KeyImpl.intern("CATEGORYTERM"),
+		KeyImpl.intern("COMMENTS"),
 		CONTENT,
-		KeyImpl.getInstance("CONTENTMODE"),
-		KeyImpl.getInstance("CONTENTSRC"),
-		KeyImpl.getInstance("CONTENTTYPE"),
-		KeyImpl.getInstance("CONTRIBUTOREMAIL"),
-		KeyImpl.getInstance("CONTRIBUTORNAME"),
-		KeyImpl.getInstance("CONTRIBUTORURI"),
-		KeyImpl.getInstance("CREATEDDATE"),
-		KeyImpl.getInstance("EXPIRATIONDATE"),
-		KeyImpl.getInstance("ID"),
-		KeyImpl.getInstance("IDPERMALINK"),
-		KeyImpl.getInstance("LINKHREF"),
-		KeyImpl.getInstance("LINKHREFLANG"),
-		KeyImpl.getInstance("LINKLENGTH"),
-		KeyImpl.getInstance("LINKREL"),
-		KeyImpl.getInstance("LINKTITLE"),
-		KeyImpl.getInstance("LINKTYPE"),
-		KeyImpl.getInstance("PUBLISHEDDATE"),
-		KeyImpl.getInstance("RIGHTS"),
+		KeyImpl.intern("CONTENTMODE"),
+		KeyImpl.intern("CONTENTSRC"),
+		KeyImpl.intern("CONTENTTYPE"),
+		KeyImpl.intern("CONTRIBUTOREMAIL"),
+		KeyImpl.intern("CONTRIBUTORNAME"),
+		KeyImpl.intern("CONTRIBUTORURI"),
+		KeyImpl.intern("CREATEDDATE"),
+		KeyImpl.intern("EXPIRATIONDATE"),
+		KeyImpl.intern("ID"),
+		KeyImpl.intern("IDPERMALINK"),
+		KeyImpl.intern("LINKHREF"),
+		KeyImpl.intern("LINKHREFLANG"),
+		KeyImpl.intern("LINKLENGTH"),
+		KeyImpl.intern("LINKREL"),
+		KeyImpl.intern("LINKTITLE"),
+		KeyImpl.intern("LINKTYPE"),
+		KeyImpl.intern("PUBLISHEDDATE"),
+		KeyImpl.intern("RIGHTS"),
 		RSSLINK,
-		KeyImpl.getInstance("SOURCE"),
-		KeyImpl.getInstance("SOURCEURL"),
-		KeyImpl.getInstance("SUMMARY"),
-		KeyImpl.getInstance("SUMMARYMODE"),
-		KeyImpl.getInstance("SUMMARYSRC"),
-		KeyImpl.getInstance("SUMMARYTYPE"),
-		KeyImpl.getInstance("TITLE"),
-		KeyImpl.getInstance("TITLETYPE"),
-		KeyImpl.getInstance("UPDATEDDATE"),
-		KeyImpl.getInstance("URI"),
-		KeyImpl.getInstance("XMLBASE")
+		KeyImpl.intern("SOURCE"),
+		KeyImpl.intern("SOURCEURL"),
+		KeyImpl.intern("SUMMARY"),
+		KeyImpl.intern("SUMMARYMODE"),
+		KeyImpl.intern("SUMMARYSRC"),
+		KeyImpl.intern("SUMMARYTYPE"),
+		KeyImpl.intern("TITLE"),
+		KeyImpl.intern("TITLETYPE"),
+		KeyImpl.intern("UPDATEDDATE"),
+		KeyImpl.intern("URI"),
+		KeyImpl.intern("XMLBASE")
 	};
 	
 	
@@ -145,7 +145,7 @@ public final class RSSHandler extends DefaultHandler {
 	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
 	public void startElement(String uri, String name, String qName, Attributes atts) {
-		inside = KeyImpl.init(qName);
+		inside = KeyImpl.getInstance(qName);
 		lcInside=qName.toLowerCase();
 		if(lcInside.equals("image")) 		insideImage=true;
 		else if(qName.equals("item")) 	{

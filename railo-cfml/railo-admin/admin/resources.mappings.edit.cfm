@@ -50,10 +50,28 @@
 	</select></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.TrustedHead#</td>
-	<td class="tblContent" nowrap><cfif mapping.readOnly>#iif(mapping.Trusted,de("Yes"),de("No"))#<cfelse><input 
-	type="checkbox" class="checkbox" name="trusted_#mapping.id#" 
-	value="yes" <cfif mapping.Trusted>checked</cfif>></cfif></td>
+	<td class="tblHead" width="150">#stText.setting.inspecttemplate#</td>
+	<td class="tblContent"><cfif mapping.readOnly>
+    	<cfif mapping.Trusted>
+        	#stText.setting.inspecttemplatenever#
+            <br /><span class="comment">#stText.setting.inspecttemplateneverdesc#</span>
+            
+        <cfelse>
+        	#stText.setting.inspecttemplatealways#
+            <br /><span class="comment">#stText.setting.inspecttemplatealwaysdesc#</span>
+        </cfif>
+    	
+	
+	<cfelse>
+    	<!--- never --->
+    	<input class="radio" type="radio" name="trusted_#mapping.id#" value="true"<cfif mapping.Trusted> checked="checked"</cfif>>
+    	<b>#stText.setting.inspectTemplateNever#</b><br />
+		<span class="comment">#stText.setting.inspectTemplateNeverDesc#</span><br>
+    	<!--- always --->
+    	<input class="radio" type="radio" name="trusted_#mapping.id#" value="false"<cfif not mapping.Trusted> checked="checked"</cfif>>
+    	<b>#stText.setting.inspectTemplateAlways#</b><br />
+		<span class="comment">#stText.setting.inspectTemplateAlwaysDesc#</span>
+    </cfif></td>
 </tr>
 
 <tr>

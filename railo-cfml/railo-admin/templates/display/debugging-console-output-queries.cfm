@@ -39,29 +39,31 @@
 						<cfelse>
 							<cfset sAction = cgi.script_name & "?_debug_action=query"> 
 						</cfif>
-						<form name="sqlForm#iDebug#" action="#sAction#" method="post" target="_blank">
+                        <form>
+						<!---<form name="sqlForm#iDebug#" action="#sAction#" method="post" target="_blank">
 						<input type="Hidden" name="datasource" value="#queries.datasource#">
 						<input type="Hidden" name="queryName" value="#queries.name#">
 						<input type="Hidden" name="executionTime" value="#queries.time#">
 						<input type="Hidden" name="Records" value="#queries.count#">
-						<input type="Hidden" name="src" value="#queries.src#">
+						<input type="Hidden" name="src" value="#queries.src#">--->
 					</cfif>
 					<tr>
 						<td width="20">
 							<div class="rdebug_switch" onclick="toggleObject(this,document.getElementById('sql#iDebug#'))" id="sqlImage#iDebug#" title="#Left(stDisplaySQL.sSql, 50)#...">#sImgPlus#</div>
-						</td><td width="20">
+						</td>
+                        <!---<td width="20">
 							<cfif stDisplaySQL.Executeable>
 								<input type="Image" width="9" height="9" border="0" src="#cgi.context_path#/railo-context/admin/resources/img/debug_execute.gif.cfm" alt="Execute Query">
 							<cfelse>
 								<img src="#minus#" width="9" height="9" border="0" alt="Execution not possible, DML-Query">
 							</cfif>
-						</td>
-						<td align="left" class="cfdebug">
+						</td>--->
+						<td align="left" class="cfdebug" colspan="2">
 							<b>#queries.name#</b> (Datasource=<cftry>#queries.datasource#<cfcatch></cfcatch></cftry>, Time=#queries.time#ms, Records=#queries.count#) in #queries.src#
 						</td>
 					</tr><tr id="sql#iDebug#" style="display:none">
 						<td colspan="3">
-							<textarea name="sql" style="width:100%;height:100px;background-color:##DDDDDD;">#stDisplaySQL.sSql#</textarea>
+                        	<textarea name="sql" readonly="readonly" style="width:100%;height:100px;background-color:##DDDDDD;">#stDisplaySQL.sSql#</textarea>
 						</td>
 					</tr>
 					<cfif stDisplaySQL.Executeable>

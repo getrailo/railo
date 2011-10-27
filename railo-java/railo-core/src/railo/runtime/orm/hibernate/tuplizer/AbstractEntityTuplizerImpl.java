@@ -1,9 +1,13 @@
 package railo.runtime.orm.hibernate.tuplizer;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 import org.hibernate.EntityMode;
 import org.hibernate.EntityNameResolver;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.SessionImplementor;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
 import org.hibernate.property.Getter;
@@ -14,11 +18,14 @@ import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityMetamodel;
 
-import railo.runtime.ComponentImpl;
+import railo.runtime.ComponentPro;
+import railo.runtime.ComponentScope;
 import railo.runtime.op.Caster;
-import railo.runtime.orm.hibernate.HibernateRuntimeException;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCProxyFactory;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.type.util.ComponentUtil;
 
 public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 
@@ -27,8 +34,38 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	public AbstractEntityTuplizerImpl(EntityMetamodel entityMetamodel, PersistentClass persistentClass) {
 		super(entityMetamodel, persistentClass);
 	}
+
+	/**
+	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#getIdentifier(java.lang.Object, org.hibernate.engine.SessionImplementor)
+	 */
+	public Serializable getIdentifier(Object entity, SessionImplementor arg1) {
+		return toIdentifier(super.getIdentifier(entity, arg1));
+	}
 	
-	
+	/**
+	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#getIdentifier(java.lang.Object)
+	 */
+	public Serializable getIdentifier(Object entity) throws HibernateException {
+		return toIdentifier(super.getIdentifier(entity));
+	}
+
+	private Serializable toIdentifier(Serializable id) {
+		if(id instanceof ComponentPro) {
+			HashMap<String, String> map = new HashMap<String, String>();
+			ComponentPro cfc=(ComponentPro) id;
+			ComponentScope scope = cfc.getComponentScope();
+			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true);
+			String name,value;
+			for(int i=0;i<props.length;i++){
+				name=props[i].getName();
+				value=Caster.toString(scope.get(KeyImpl.init(name),null),null);
+				map.put(name, value);
+			}
+			return map;
+		}
+		return id;
+	}
+
 
 	/**
 	 * @see org.hibernate.tuple.entity.AbstractEntityTuplizer#buildInstantiator(org.hibernate.mapping.PersistentClass)
@@ -71,22 +108,8 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	 */
 	protected ProxyFactory buildProxyFactory(PersistentClass pc, Getter arg1,Setter arg2) {
 		CFCProxyFactory pf = new CFCProxyFactory();
-		//print.out("persis:"+pc.getNodeName());
-		try {
-			
-			//TODO: design new lifecycle for ProxyFactory
-			pf.postInstantiate(
-					pc.getNodeName(),//getEntityName(),
-					null,
-					null,
-					null,
-					null,
-					null
-			);
-		}
-		catch ( HibernateException he ) {
-			throw new HibernateRuntimeException(Caster.toPageException(he));
-		}
+		pf.postInstantiate(pc);
+		
 		return pf;
 	}
 
@@ -108,14 +131,14 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	 * @see org.hibernate.tuple.entity.EntityTuplizer#getConcreteProxyClass()
 	 */
 	public Class getConcreteProxyClass() {
-		return ComponentImpl.class;
+		return ComponentAccess.class;// ????
 	}
 
 	/**
 	 * @see org.hibernate.tuple.Tuplizer#getMappedClass()
 	 */
 	public Class getMappedClass() {
-		return ComponentImpl.class;
+		return ComponentAccess.class; // ????
 	}
 
 	public EntityMode getEntityMode() {

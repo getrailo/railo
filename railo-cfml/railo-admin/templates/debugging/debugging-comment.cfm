@@ -54,5 +54,5 @@
  print("Pages",array('src','count','load','query','app','total'),debugging.pages);
  print("Queries",array('src','datasource','name','sql','time','count'),debugging.queries);
  print("Timers",array('template','label','time'),debugging.timers);
- print("Traces",array('template','type','category','text','line','varname','varvalue','time'),debugging.traces);
+ print("Traces",array('template','type','category','text','line','action','varname','varvalue','time'),debugging.traces);
  </cfscript>-->

@@ -731,6 +731,11 @@ public final class ArrayUtil {
 		if(arr==null) return new Object[0];
 		return arr;
 	}
+	
+	public static Object[] values(Map map) {
+		if(map==null) return new Object[0];
+		return map.values().toArray();
+	}
 
 
 	public static long sizeOf(List list) {

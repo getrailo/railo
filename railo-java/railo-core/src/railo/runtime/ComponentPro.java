@@ -1,6 +1,7 @@
 package railo.runtime;
 
 import railo.runtime.component.Property;
+import railo.runtime.exp.PageException;
 // FUTURE add to interface
 public interface ComponentPro extends Component {
 	/**
@@ -8,9 +9,14 @@ public interface ComponentPro extends Component {
 	 */
 	//public Property[] getProperties();
 	
+	/**
+	 * return all properties from component
+	 * @param onlyPeristent if true return only columns where attribute persistent is not set to false
+	 * @return
+	 */
 	public Property[] getProperties(boolean onlyPeristent);
 	
-	public void setProperty(Property property);
+	public void setProperty(Property property) throws PageException;
 	
 	public ComponentScope getComponentScope();
 	
@@ -24,4 +30,6 @@ public interface ComponentPro extends Component {
 	public boolean isBasePeristent();
 	
 	public boolean equalTo(String type);
+	
+	public String getWSDLFile();
 }

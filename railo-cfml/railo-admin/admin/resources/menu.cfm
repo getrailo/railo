@@ -19,7 +19,7 @@
 		struct(
 			action:"services",label:stMenu.services.label,
 			children:array(
-				struct(action:"gateway",label:stMenu.services.gateway),
+				struct(action:"gateway",label:stMenu.services.gateway,hidden: adminType NEQ "web"),
 				struct(action:"cache",label:stMenu.services.cache),
 				struct(action:"datasource",label:stMenu.services.datasource),
 				struct(action:"orm",label:stMenu.services.orm),

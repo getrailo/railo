@@ -9,19 +9,12 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.customtag.CustomTagUtil;
 import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 
 /**
-* Invokes a custom tag for use in ColdFusion application pages. The cfmodule tag can help deal with 
-*   custom tag name conflicts. Use the template attribute to name a ColdFusion page that contains the custom 
-*   tag definition, including its path. Use the name attribute to refer to the custom tag using a dot 
-*   notation scheme to indicate the location of the custom tag in the ColdFusion installation directory.
+* Invokes a custom tag for use in CFML application pages.
 **/
 public final class Module extends CFTag {
-
-	private static final Key TEMPLATE = KeyImpl.getInstance("template");
-	private static final Key NAME = KeyImpl.getInstance("name");
 
 	/**
 	 * @see railo.runtime.tag.CFTag#initFile()
@@ -31,8 +24,8 @@ public final class Module extends CFTag {
         // MUSTMUST cache like ct
 		//String[] filenames=getFileNames(config,getAppendix());// = appendix+'.'+config.getCFMLExtension();
         
-	    Object objTemplate =attributesScope.get(TEMPLATE,null);
-	    Object objName =attributesScope.get(NAME,null);
+	    Object objTemplate =attributesScope.get(KeyImpl.TEMPLATE,null);
+	    Object objName =attributesScope.get(KeyImpl.NAME,null);
 	    source=null;
 	    if(objTemplate!=null) {
 		    String template=objTemplate.toString();

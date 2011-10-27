@@ -22,20 +22,18 @@ public final class GetBaseTagData implements Function {
 	
     public static Struct call(PageContext pc , String tagName, double minLevel) throws PageException {
     	//print.out("tagname:"+tagName);
-        CFTag tag=getParentCFTag(pc.getCurrentTag(), tagName, minLevel);
+    	CFTag tag=getParentCFTag(pc.getCurrentTag(), tagName, (int)minLevel);
         if(tag==null) throw new ExpressionException("can't find base tag with name ["+tagName+"]");
         return tag.getVariablesScope();
 	}
     
-    public synchronized static CFTag getParentCFTag(Tag srcTag,String trgTagName, double minLevel) {
-        
+    public synchronized static CFTag getParentCFTag(Tag srcTag,String trgTagName, int minLevel) {
         String pureName=trgTagName;
         int level=0;
         CFTag cfTag;
-        
         while(srcTag!=null) {
         	// cftag
-        	if(srcTag instanceof CFTag && minLevel<++level) {
+        	if(srcTag instanceof CFTag && minLevel<=++level) {
                 cfTag=(CFTag)srcTag;
                 if(cfTag instanceof CFTagCore){
                 	CFTagCore tc=(CFTagCore) cfTag;

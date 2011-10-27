@@ -150,12 +150,14 @@ All elements in the array must contain values that can be automatically converte
 		<description>Returns true if specified object is present is given array</description>
 		<argument>
 			<name>haystack</name>
+			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
 			<description>The array that we are looking for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
+			<alias>object,obj,o</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
@@ -171,12 +173,14 @@ All elements in the array must contain values that can be automatically converte
 		<description>Search an array to find a case insensitive item</description>
 		<argument>
 			<name>haystack</name>
+			<alias>array,arr</alias>
 			<type>array</type>
 			<required>Yes</required>
 			<description>The array that we are looking for the item</description>
 		</argument>
 		<argument>
 			<name>needle</name>
+			<alias>object,obj,o</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
@@ -709,8 +713,10 @@ sort direction:
     </argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description>Character or multicharacter string to separate list elements. The default value is comma.</description>
     </argument>
 		<return>
@@ -1599,6 +1605,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 			<name>includeBaseFolder</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 			<description>
 			take the folder or only content of folder
 			</description>
@@ -1607,6 +1614,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 			<name>mode</name>
 			<type>string</type>
 			<required>no</required>
+			<default>777</default>
 			<description>
 			mode of the values
 			</description>
@@ -1957,6 +1965,16 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	<!-- CreateUniqueId -->
+	<function>
+		<name>CreateUniqueId</name>
+		<class>railo.runtime.functions.other.CreateUniqueId</class>
+		<description>Creates a Unique Identifier. Only unique for this instance, but shorter than a UUId.</description>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- createGUID -->
 	<function>
 		<name>createGUID</name>
@@ -2136,6 +2154,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>dd-mmm-yy</default>
 		<description>
 Characters that show how Railo displays a date:
 - d: Day of the month as digits; no leading zero for single-digit days.
@@ -2514,6 +2533,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -2526,6 +2546,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
+			<default>uu</default>
 		<description>
 The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045
@@ -2560,6 +2581,7 @@ Key or seed used to encrypt the string.
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -2602,6 +2624,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<name>doParent</name>
 			<type>boolean</type>
 			<required>no</required>
+			<default>true</default>
 			<description>create parent directory when not exist</description>
 		</argument>
 		<return>
@@ -2642,9 +2665,9 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
     </argument>
 		<argument>
 			<name>allowRealPath</name>
-			<type>boolean</type>
+			<type>object</type>
 			<required>no</required>
-			<description>defines if relative paths are interpreted or not</description>
+			<description>boolean that defines if relative paths are interpreted or not</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -2866,6 +2889,14 @@ dec: descending (z to a) sort order.
 			<name>expand</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
+		<description></description>
+    </argument>
+		<argument>
+			<name>top</name>
+			<type>number</type>
+			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
@@ -2896,18 +2927,21 @@ dec: descending (z to a) sort order.
 			<name>keys</name>
 			<type>number</type>
 			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>metainfo</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>showUDFs</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<return>
@@ -2931,6 +2965,7 @@ dec: descending (z to a) sort order.
 			<name>top</name>
 			<type>number</type>
 			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
@@ -2949,18 +2984,21 @@ dec: descending (z to a) sort order.
 			<name>keys</name>
 			<type>number</type>
 			<required>No</required>
+			<default>9999</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>metainfo</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>showUDFs</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<argument>
@@ -2989,6 +3027,7 @@ dec: descending (z to a) sort order.
 			<name>deepcopy</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description>if set to true (default) also the child elements are cloned, otherwise the child elements are still the same as in the original object</description>
     </argument>
 		<return>
@@ -3068,6 +3107,7 @@ Key or seed used to encrypt the string.
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -3080,6 +3120,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
+			<default>uu</default>
 		<description>
 The binary encoding used to represent the data as a string. Must be the same as the algorithm used to encrypt the string.
 - Base64: the Base64 algorithm, as specified by IETF RFC 2045.
@@ -3114,6 +3155,7 @@ Key or seed used to encrypt the string.
 			<name>algorithm</name>
 			<type>string</type>
 			<required>No</required>
+			<default>cfmx_compat</default>
 		<description>
 The algorithm to use to decrypt the string. Must be the same as the algorithm used to encrypt the string.
 - CFMX_COMPAT(default): the CFML specific algorithm. This algorithm is the least secure option
@@ -3279,8 +3321,14 @@ If you set unique=true and multiple records are returned, then an exception occu
 			<name>entityName</name>
 			<type>string</type>
 			<required>yes</required>
-		<description>Name of the instance being created.</description>
-    </argument>
+			<description>Name of the instance being created.</description>
+    	</argument>
+		<argument>
+			<name>properties</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>a struct containing data to populate the entity properties.</description>
+    	</argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -3560,6 +3608,7 @@ EntitySave(entity, [forceinsert])</description>
 			<name>mode</name>
 			<type>string</type>
 			<required>No</required>
+			<default>read</default>
 		<description>
 Action to perform on the file, including the following:
 - read
@@ -3664,6 +3713,112 @@ If you do not specify the mode, Railo opens the file in read mode.</description>
 		</return>
 	</function>
 	
+	
+	<!-- FileUpload -->
+	<function>
+		<name>FileUpload</name>
+		<class>railo.runtime.functions.file.FileUpload</class>
+		<description>Uploads file to a directory on the server.</description>
+		<argument>
+			<name>destination</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Absolute pathname of directory or file on web server.</description>
+    	</argument>
+		<argument>
+			<name>fileField</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Name of form field used to select the file.</description>
+   		</argument>
+		<argument>
+			<name>accept</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
+accept = "image/jpg, application/msword"
+The browser uses file extension to determine file type. </description>
+    	</argument>
+		<argument>
+			<name>nameConflict</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Action to take if filename is the same as that of a file in the directory.</description>
+    	</argument>
+		<argument>
+			<name>mode</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Applies only to Solaris and HP-UX. Permissions. Octal values of UNIX chmod command. Assigned to owner, group, and other, respectively.</description>
+    	</argument>
+		<argument>
+			<name>attributes</name>
+			<type>string</type>
+			<required>no</required>
+			<description>One attribute (Windows) or a comma-delimited list of attributes (other platforms) to set on the file. 
+If omitted, the file's attributes are maintained.</description>
+    	</argument>
+		<argument>
+			<name>acl</name>
+			<type>string</type>
+			<required>no</required>
+			<description>only used for S3 Resources</description>
+    	</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	
+	
+	<!-- FileUploadAll -->
+	<function>
+		<name>FileUploadAll</name>
+		<class>railo.runtime.functions.file.FileUploadAll</class>
+		<description>Uploads file to a directory on the server.</description>
+		<argument>
+			<name>destination</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Absolute pathname of directory or file on web server.</description>
+    	</argument>
+		<argument>
+			<name>accept</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
+accept = "image/jpg, application/msword"
+The browser uses file extension to determine file type. </description>
+    	</argument>
+		<argument>
+			<name>nameConflict</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Action to take if filename is the same as that of a file in the directory.</description>
+    	</argument>
+		<argument>
+			<name>mode</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Applies only to Solaris and HP-UX. Permissions. Octal values of UNIX chmod command. Assigned to owner, group, and other, respectively.</description>
+    	</argument>
+		<argument>
+			<name>attributes</name>
+			<type>string</type>
+			<required>no</required>
+			<description>One attribute (Windows) or a comma-delimited list of attributes (other platforms) to set on the file. 
+If omitted, the file's attributes are maintained.</description>
+    	</argument>
+		<argument>
+			<name>acl</name>
+			<type>string</type>
+			<required>no</required>
+			<description>only used for S3 Resources</description>
+    	</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	
 	<!-- fileClose -->
 	<function>
 		<name>fileClose</name>
@@ -3750,9 +3905,9 @@ If you do not specify the mode, Railo opens the file in read mode.</description>
     </argument>
 		<argument>
 			<name>allowRealPath</name>
-			<type>boolean</type>
+			<type>object</type>
 			<required>no</required>
-			<description>defines if relative paths are interpreted or not</description>
+			<description>boolean that defines if relative paths are interpreted or not</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -3946,6 +4101,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Start position of search.</description>
     </argument>
 		<return>
@@ -3975,6 +4131,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Start position of search.</description>
     </argument>
 		<return>
@@ -4004,6 +4161,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Start position of search.</description>
     </argument>
 		<return>
@@ -4138,6 +4296,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>instancenumber</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Number of ancestor levels to jump before returning data. The default value is 1 (closest ancestor).</description>
     </argument>
 		<return>
@@ -4153,6 +4312,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>delimeter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description>delimeter used for the list</description>
     </argument>
 		<return>
@@ -4542,6 +4702,25 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	<!-- GetMemoryUsage -->
+	<function>
+		<name>GetMemoryUsage</name>
+		<class>railo.runtime.functions.system.GetMemoryUsage</class>
+		<description>Returns detailed information to the memory usage of the container.</description>
+		<argument>
+			<name>type</name>
+			<type>string</type>
+			<required>No</required>
+			<description>type of the memory informtion, valid values are:
+- heap
+- non_heap
+
+if this attribute is not provided all types are returned.</description>
+		</argument>
+		<return>
+			<type>query</type>
+		</return>
+	</function>
 	<!-- getMetadata -->
 	<function>
 		<name>getMetadata</name>
@@ -4594,6 +4773,58 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	<!-- createPageContext
+	<function>
+		<name>createPageContext</name>
+		<class>railo.runtime.functions.other.CreatePageContext</class>
+		<description>Creates a PageContext (http://www.getrailo.org/javadoc/railo/runtime/PageContext.html) object that provides access to page attributes and configuration, request and response objects.</description>
+		<argument>
+			<name>serverName</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>name of the server, for example "localhost" or "www.getrailo.com"</description>
+    	</argument>
+		<argument>
+			<name>scriptName</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>script name, for example "/test/test.cfm"</description>
+    	</argument>
+		<argument>
+			<name>queryString</name>
+			<type>string</type>
+			<required>no</required>
+			<description>query string, for example "?test=1"</description>
+    	</argument>
+		<argument>
+			<name>cookies</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>cookies values for the context</description>
+    	</argument>
+		<argument>
+			<name>headers</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>header values for the context</description>
+    	</argument>
+		<argument>
+			<name>parameters</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>parameters values for the context</description>
+    	</argument>
+		<argument>
+			<name>attributes</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>attributes values for the context</description>
+    	</argument>	
+		<return>
+			<type>any</type>
+		</return>
+	</function> -->
+	
 	<!-- getPageContext -->
 	<function>
 		<name>getPageContext</name>
@@ -4818,6 +5049,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>getTickCount</name>
 		<class>railo.runtime.functions.other.GetTickCount</class>
 		<description>Returns the number of milliseconds since the start of the application server</description>
+		<argument>
+			<name>unit</name>
+			<type>string</type>
+			<required>No</required>
+			<description>base unit for the function, valid values are:
+- nano: nano seconds
+- milli (default): milli seconds
+- second: seconds</description>
+    	</argument>
 		<return>
 			<type>number</type>
 		</return>
@@ -4878,6 +5118,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
 		<description>A string or a variable that contains one. A delimited list of delimiters. Elements may consist of multiple characters.
@@ -5011,7 +5252,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
             HTML version to use. currently ignored.
             -1: The latest implementation of HTML
             2.0: HTML 2.0 (Default)
-            3.2: HTML 3.2</description>
+            3.2: HTML 3.2
+            4.0: HTML 4.0</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -5076,12 +5318,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>thickness</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>Thickness of the border in pixels. The default value is 1. The border is added to the outside edge of the image; the image area is increased accordingly.</description>
     </argument>
 		<argument>
 			<name>color</name>
 			<type>string</type>
 			<required>No</required>
+			<default>black</default>
 		<description>Optional. Border color. The default border color is black. See Usage.
 Only valid if the borderType is not specified or if borderType = "constant".</description>
     </argument>
@@ -5089,6 +5333,7 @@ Only valid if the borderType is not specified or if borderType = "constant".</de
 			<name>borderType</name>
 			<type>string</type>
 			<required>No</required>
+			<default>constant</default>
 		<description>The type of border:
 - zero: Sets the border color to black.
 - constant: Sets the border to the specified color (default).
@@ -5115,6 +5360,7 @@ Only valid if the borderType is not specified or if borderType = "constant".</de
 			<name>blurRadius</name>
 			<type>number</type>
 			<required>No</required>
+			<default>3</default>
 		<description>The size of the blur radius.
 Value must be greater than or equal to 3 and less than or equal to 10. The default value is 3.</description>
     </argument>
@@ -5161,6 +5407,111 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<type>void</type>
 		</return>
 	</function>
+	<!-- ImageFilterColorMap -->
+	<function>
+		<name>ImageFilterColorMap</name>
+		<class>railo.runtime.functions.image.ImageFilterColorMap</class>
+		<description>These are passed to the function ImageFilters (see ImageFilter documentation) which convert gray values to colors.</description>
+		<argument>
+			<name>type</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>type of the color map, possible values are:
+		- spectrum: A colormap with the colors of the spectrum
+		- linear: A colormap which interpolates linearly between two colors
+		- grayscale: A grayscale colormap. Black is 0, white is 1</description>
+    </argument>
+		<argument>
+			<name>lineColor1</name>
+			<type>string</type>
+			<required>no</required>
+		<description>used only for type "linear", the color corresponding to value 0 in the colormap.</description>
+    </argument>
+		<argument>
+			<name>lineColor2</name>
+			<type>string</type>
+			<required>no</required>
+		<description>used only for type "linear", the color corresponding to value 1 in the colormap.</description>
+    </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	
+	<!-- ImageFilterKernel -->
+	<function>
+		<name>ImageFilterKernel</name>
+		<class>railo.runtime.functions.image.ImageFilterKernel</class>
+		<description>These are passed to the function ImageFilters (see ImageFilter documentation).
+		The ImageFilterKernel function defines a matrix that describes how a specified pixel and its surrounding pixels affect the value computed for the pixel's position in the output image of a filtering operation. 
+		The X origin and Y origin indicate the kernel matrix element that corresponds to the pixel position for which an output value is being computed.
+		
+		</description>
+		<argument>
+			<name>width</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>width of the kernel</description>
+    	</argument>
+		<argument>
+			<name>height</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>height of the kernel</description>
+    	</argument>
+		<argument>
+			<name>data</name>
+			<type>any</type>
+			<required>Yes</required>
+		<description>kernel data in row major order</description>
+    </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- ImageFilterWarpGrid -->
+	<function>
+		<name>ImageFilterWarpGrid</name>
+		<class>railo.runtime.functions.image.ImageFilterWarpGrid</class>
+		<description>A warp grid. These are passed to the function ImageFilters (see ImageFilter documentation).</description>
+		<argument>
+			<name>rows</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>rows of the warp grid</description>
+    	</argument>
+		<argument>
+			<name>cols</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>cols of the warp grid</description>
+    	</argument>
+		<argument>
+			<name>width</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>width of the warp grid</description>
+    	</argument>
+		<argument>
+			<name>height</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>height of the warp grid</description>
+    	</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- ImageFilterCurves -->
+	<function>
+		<name>ImageFilterCurves</name>
+		<class>railo.runtime.functions.image.ImageFilterCurves</class>
+		<description>the curves for the wrap grid</description>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
 	<!-- ImageCopy -->
 	<function>
 		<name>ImageCopy</name>
@@ -5200,12 +5551,14 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>dx</name>
 			<type>number</type>
 			<required>no</required>
+			<default>-999</default>
 		<description>The x coordinate of the destination rectangle.</description>
     </argument>
 		<argument>
 			<name>dy</name>
 			<type>number</type>
 			<required>no</required>
+			<default>-999</default>
 		<description>The y coordinate of the destination rectangle.</description>
     </argument>
 		<return>
@@ -5828,6 +6181,1525 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<type>void</type>
 		</return>
 	</function>
+	
+	
+	<!-- ImageFilter -->
+	<function>
+		<name>ImageFilter</name>
+		<class>railo.runtime.functions.image.ImageFilter</class>
+<description>
+the function ImageFilter allows to execute a filter against a image. Below you find a list of filter names supported by the function.
+every filter need other parameters for the configuration, listed as well below.
+
+average
+	A filter which averages the 3x3 neighbourhood of each pixel, providing a simple blur.
+
+	Parameters:
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- useAlpha (boolean)
+		Set whether to convolve the alpha channel.
+	- premultiplyAlpha (boolean)
+		Set whether to premultiply the alpha channel.
+block
+	A Filter to pixellate images.
+
+	Parameters:
+	- blockSize (integer)
+		The pixel block size.
+		- min-value: 1
+		- max-value: 100+
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+blur
+	A simple blur filter. You should probably use BoxBlurFilter instead.
+
+	Parameters:
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- useAlpha (boolean)
+		Set whether to convolve the alpha channel.
+	- premultiplyAlpha (boolean)
+		Set whether to premultiply the alpha channel.
+border
+	A filter to add a border around an image using the supplied Paint, which may be null for no painting.
+
+	Parameters:
+	- left (integer)
+		The border size on the left edge.
+		- min-value: 0
+	- right (integer)
+		The border size on the right edge.
+		- min-value: 0
+	- top (integer)
+		The border size on the top edge.
+		- min-value: 0
+	- bottom (integer)
+		The border size on the bottom edge.
+		- min-value: 0
+	- color (String)
+		The border color.
+bump
+	A simple embossing filter.
+
+	Parameters:
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- useAlpha (boolean)
+		Set whether to convolve the alpha channel.
+	- premultiplyAlpha (boolean)
+		Set whether to premultiply the alpha channel.
+caustics
+	A filter which simulates underwater caustics. This can be animated to get a bottom-of-the-swimming-pool effect.
+
+	Parameters:
+	- amount (numeric)
+		The amount of effect.
+		- min-value: 0
+		- max-value: 1
+	- brightness (integer)
+		The brightness.
+		- min-value: 0
+		- max-value: 1
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 1
+	- dispersion (numeric)
+		The dispersion.
+		- min-value: 0
+		- max-value: 1
+	- bgColor (String)
+		The background color.
+	- time (numeric)
+		The time. Use this to animate the effect.
+	- scale (numeric)
+		Specifies the scale of the texture.
+		- min-value: 1
+		- max-value: 300+
+	- samples (integer)
+		The number of samples per pixel. More samples means better quality, but slower rendering.
+cellular
+	A filter which produces an image with a cellular texture.
+
+	Parameters:
+	- amount (numeric)
+		The amount of effect.
+		- min-value: 0
+		- max-value: 1
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 1
+	- stretch (numeric)
+		Specifies the stretch factor of the texture.
+		- min-value: 1
+		- max-value: 50+
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- angleCoefficient (numeric)
+	- gradientCoefficient (numeric)
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- randomness (numeric)
+	- gridType (String)
+		the grid type to set, one of the following:
+		-  RANDOM
+		-  SQUARE
+		-  HEXAGONAL
+		-  OCTAGONAL
+		-  TRIANGULAR
+	- distancePower (numeric)
+	- scale (numeric)
+		Specifies the scale of the texture.
+		- min-value: 1
+		- max-value: 300+
+check
+	A Filter to draw grids and check patterns.
+
+	Parameters:
+	- angle (numeric)
+		The angle of the texture.
+	- xScale (integer)
+		The X scale of the texture.
+	- yScale (integer)
+		The Y scale of the texture.
+	- fuzziness (integer)
+		The fuzziness of the texture.
+	- foreground (String)
+		The foreground color.
+	- background (String)
+		The background color.
+	- dimensions (Array)
+chrome
+	A filter which simulates chrome.
+
+	Parameters:
+	- amount (numeric)
+		The amount of effect.
+		- min-value: 0
+		- max-value: 1
+	- exposure (numeric)
+		The exppsure of the effect.
+		- min-value: 0
+		- max-value: 1
+	- colorSource (String)
+	- material (String)
+		 Use the following format [color,opacity]; Example: "red,0.5"
+	- bumpHeight (numeric)
+	- bumpSoftness (numeric)
+	- bumpShape (integer)
+	- viewDistance (numeric)
+	- bumpSource (integer)
+	- diffuseColor (String)
+circle
+	A filter which wraps an image around a circular arc.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- angle (numeric)
+		The angle of the arc.
+	- spreadAngle (numeric)
+		The spread angle of the arc.
+	- centreX (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- centreY (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- height (numeric)
+		The height of the arc.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+contour
+	A filter which draws contours on an image at given brightness levels.
+
+	Parameters:
+	- levels (numeric)
+	- contourColor (String)
+	- offset (numeric)
+	- scale (numeric)
+		Specifies the scale of the contours.
+		- min-value: 0
+		- max-value: 1
+contrast
+	A filter to change the brightness and contrast of an image.
+
+	Parameters:
+	- brightness (numeric)
+		The filter brightness.
+		- min-value: 0
+		- max-value: 0
+	- contrast (numeric)
+		The filter contrast.
+		- min-value: 0
+		- max-value: 0
+	- dimensions (Array)
+crop
+	A filter which crops an image to a given rectangle.
+
+	Parameters:
+	- x (integer)
+		The left edge of the crop rectangle.
+	- y (integer)
+		The top edge of the crop rectangle.
+	- width (integer)
+		The width of the crop rectangle.
+	- height (integer)
+		The height of the crop rectangle.
+crystallize
+	A filter which applies a crystallizing effect to an image, by producing Voronoi cells filled with colours from the image.
+
+	Parameters:
+	- edgeThickness (numeric)
+	- fadeEdges (boolean)
+	- edgeColor (String)
+	- amount (numeric)
+		The amount of effect.
+		- min-value: 0
+		- max-value: 1
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 1
+	- stretch (numeric)
+		Specifies the stretch factor of the texture.
+		- min-value: 1
+		- max-value: 50+
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- angleCoefficient (numeric)
+	- gradientCoefficient (numeric)
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- randomness (numeric)
+	- gridType (String)
+		the grid type to set, one of the following:
+		-  RANDOM
+		-  SQUARE
+		-  HEXAGONAL
+		-  OCTAGONAL
+		-  TRIANGULAR
+	- distancePower (numeric)
+	- scale (numeric)
+		Specifies the scale of the texture.
+		- min-value: 1
+		- max-value: 300+
+curl
+	A page curl effect.
+
+	Parameters:
+	- radius (numeric)
+	- angle (numeric)
+	- transition (numeric)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+despeckle
+	A filter which removes noise from an image using a "pepper and salt" algorithm.
+
+	Parameters:
+diffuse
+	This filter diffuses an image by moving its pixels in random directions.
+
+	Parameters:
+	- scale (numeric)
+		Specifies the scale of the texture.
+		- min-value: 1
+		- max-value: 100+
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+diffusion
+	A filter which uses Floyd-Steinberg error diffusion dithering to halftone an image.
+
+	Parameters:
+	- levels (integer)
+		The number of dither levels.
+	- serpentine (boolean)
+		Set whether to use a serpentine pattern for return or not. This can reduce 'avalanche' artifacts in the output.
+	- colorDither (boolean)
+		Set whether to use a color dither.
+dilate
+	Given a binary image, this filter performs binary dilation, setting all added pixels to the given 'new' color.
+
+	Parameters:
+	- threshold (integer)
+		The threshold - the number of neighbouring pixels for dilation to occur.
+	- iterations (integer)
+		The number of iterations the effect is performed.
+		- min-value: 0
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- newColor (String)
+displace
+	A filter which simulates the appearance of looking through glass. A separate grayscale displacement image is provided and
+	pixels in the source image are displaced according to the gradient of the displacement map.
+
+	Parameters:
+	- amount (numeric)
+		The amount of distortion.
+		- min-value: 0
+		- max-value: 1
+	- displacementMap (Image)
+		The displacement map.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+dissolve
+	A filter which "dissolves" an image by thresholding the alpha channel with random numbers.
+
+	Parameters:
+	- density (numeric)
+		The density of the image in the range 0..1.
+		- min-value: 0
+		- max-value: 1
+	- softness (numeric)
+		The softness of the dissolve in the range 0..1.
+		- min-value: 0
+		- max-value: 1
+	- dimensions (Array)
+dither
+	A filter which performs ordered dithering on an image.
+
+	Parameters:
+	- levels (integer)
+		The number of dither levels.
+	- colorDither (boolean)
+		Set whether to use a color dither.
+	- dimensions (Array)
+edge
+	An edge-detection filter.
+
+	Parameters:
+emboss
+	A class to emboss an image.
+
+	Parameters:
+	- bumpHeight (numeric)
+	- azimuth (numeric)
+	- elevation (numeric)
+	- emboss (boolean)
+equalize
+	A filter to perform auto-equalization on an image.
+
+	Parameters:
+erode
+	Given a binary image, this filter performs binary erosion, setting all removed pixels to the given 'new' color.
+
+	Parameters:
+	- threshold (integer)
+		The threshold - the number of neighbouring pixels for dilation to occur.
+	- iterations (integer)
+		The number of iterations the effect is performed.
+		- min-value: 0
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- newColor (String)
+exposure
+	A filter which changes the exposure of an image.
+
+	Parameters:
+	- exposure (numeric)
+		The exposure level.
+		- min-value: 0
+		- max-value: 5+
+	- dimensions (Array)
+fade
+	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
+
+	Parameters:
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- sides (integer)
+	- fadeStart (numeric)
+	- fadeWidth (numeric)
+	- invert (boolean)
+	- dimensions (Array)
+feedback
+	A filter which priduces a video feedback effect by repeated transformations.
+
+	Parameters:
+	- iterations (integer)
+		The number of iterations.
+		- min-value: 0
+	- angle (numeric)
+		Specifies the angle of each iteration.
+	- centreX (numeric)
+		The centre of the effect in the X direction as a proportion of the image size.
+	- centreY (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- distance (numeric)
+		Specifies the distance to move on each iteration.
+	- rotation (numeric)
+		Specifies the amount of rotation on each iteration.
+	- zoom (numeric)
+		Specifies the amount to scale on each iteration.
+	- startAlpha (numeric)
+		The alpha value at the first iteration.
+		- min-value: 0
+		- max-value: 1
+	- endAlpha (numeric)
+		The alpha value at the last iteration.
+		- min-value: 0
+		- max-value: 1
+fill
+	A filter which fills an image with a given color. Normally you would just call Graphics.fillRect but it can sometimes be useful
+	to go via a filter to fit in with an existing API.
+
+	Parameters:
+	- fillColor (String)
+		The fill color.
+	- dimensions (Array)
+flare
+	An experimental filter for rendering lens flares.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- centreX (numeric)
+	- centreY (numeric)
+	- ringWidth (numeric)
+	- baseAmount (numeric)
+	- ringAmount (numeric)
+	- rayAmount (numeric)
+	- color (String)
+	- dimensions (Array)
+flip
+	A filter which flips images or rotates by multiples of 90 degrees.
+
+	Parameters:
+	- operation (integer)
+		The filter operation.
+gain
+	A filter which changes the gain and bias of an image - similar to ContrastFilter.
+
+	Parameters:
+	- gain (numeric)
+		The gain.
+		- min-value:: 0
+		- max-value:: 1
+	- bias (numeric)
+		The bias.
+		- min-value:: 0
+		- max-value:: 1
+	- dimensions (Array)
+gamma
+	A filter for changing the gamma of an image.
+
+	Parameters:
+	- gamma (numeric)
+		The gamma levels.
+	- dimensions (Array)
+gaussian
+	A filter which applies Gaussian blur to an image. This is a subclass of ConvolveFilter
+	which simply creates a kernel with a Gaussian distribution for blurring.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
+		- min-value: 0
+		- max-value: 100+
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- useAlpha (boolean)
+		Set whether to convolve the alpha channel.
+	- premultiplyAlpha (boolean)
+		Set whether to premultiply the alpha channel.
+glint
+	A filter which renders "glints" on bright parts of the image.
+
+	Parameters:
+	- amount (numeric)
+		The amount of glint.
+		- min-value: 0
+		- max-value: 1
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- blur (numeric)
+		The blur that is applied before thresholding.
+	- glintOnly (boolean)
+		Set whether to render the stars and the image or only the stars.
+	- length (integer)
+		The length of the stars.
+	- threshold (numeric)
+		The threshold value.
+glow
+	A filter which adds Gaussian blur to an image, producing a glowing effect.
+
+	Parameters:
+	- amount (numeric)
+		The amount of glow.
+		- min-value: 0
+		- max-value: 1
+	- radius (numeric)
+		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
+		- min-value: 0
+		- max-value: 100+
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- useAlpha (boolean)
+		Set whether to convolve the alpha channel.
+	- premultiplyAlpha (boolean)
+		Set whether to premultiply the alpha channel.
+gradient
+	A filter which draws a coloured gradient. This is largely superceded by GradientPaint in Java1.2, but does provide a few
+	more gradient options.
+
+	Parameters:
+	- interpolation (integer)
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- point1 (String)
+		 Use the following format [X-coordinate,Y-coordinate]; Example: "13,20"
+	- point2 (String)
+		 Use the following format [X-coordinate,Y-coordinate]; Example: "13,20"
+	- paintMode (integer)
+	- type (integer)
+gray
+	A filter which 'grays out' an image by averaging each pixel with white.
+
+	Parameters:
+	- dimensions (Array)
+grayscale
+	A filter which converts an image to grayscale using the NTSC brightness calculation.
+
+	Parameters:
+	- dimensions (Array)
+halftone
+	A filter which can be used to produce wipes by transferring the luma of a mask image into the alpha channel of the source.
+
+	Parameters:
+	- density (numeric)
+		The density of the image in the range 0..1.
+		*arg density The density
+	- softness (numeric)
+		The softness of the effect in the range 0..1.
+		- min-value: 0
+		- max-value: 1
+	- invert (boolean)
+	- mask (Image)
+interpolate
+	A filter which interpolates between two images. You can set the interpolation factor outside the range 0 to 1
+	to extrapolate images.
+
+	Parameters:
+	- destination (Image)
+		The destination image.
+	- interpolation (numeric)
+		The interpolation factor.
+invert
+	A filter which inverts the RGB channels of an image.
+
+	Parameters:
+	- dimensions (Array)
+kaleidoscope
+	A Filter which produces the effect of looking into a kaleidoscope.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- angle (numeric)
+		The angle of the kaleidoscope.
+	- centreX (numeric)
+		The centre of the effect in the X direction as a proportion of the image size.
+	- centreY (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- sides (integer)
+		The number of sides of the kaleidoscope.
+		- min-value: 2
+	- angle2 (numeric)
+		The secondary angle of the kaleidoscope.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+levels
+	A filter which allows levels adjustment on an image.
+
+	Parameters:
+	- lowLevel (numeric)
+	- highLevel (numeric)
+	- lowOutputLevel (numeric)
+	- highOutputLevel (numeric)
+life
+	A filter which performs one round of the game of Life on an image.
+
+	Parameters:
+	- iterations (integer)
+		The number of iterations the effect is performed.
+		- min-value: 0
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- newColor (String)
+light
+	A filter which produces lighting and embossing effects.
+
+	Parameters:
+	- colorSource (String)
+	- material (String)
+		 Use the following format [color,opacity]; Example: "red,0.5"
+	- bumpHeight (numeric)
+	- bumpSoftness (numeric)
+	- bumpShape (integer)
+	- viewDistance (numeric)
+	- bumpSource (integer)
+	- diffuseColor (String)
+lookup
+	A filter which uses the brightness of each pixel to lookup a color from a colormap.
+
+	Parameters:
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- dimensions (Array)
+map
+	An abstract superclass for filters which distort images in some way. The subclass only needs to override
+	two methods to provide the mapping between source and destination pixels.
+
+	Parameters:
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+marble
+	This filter applies a marbling effect to an image, displacing pixels by random amounts.
+
+	Parameters:
+	- amount (numeric)
+		The amount of effect.
+		- min-value: 0
+		- max-value: 1
+	- turbulence (numeric)
+		Specifies the turbulence of the effect.
+		- min-value: 0
+		- max-value: 1
+	- xScale (numeric)
+		The X scale of the effect.
+	- yScale (numeric)
+		The Y scale of the effect.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+mask
+	Applies a bit mask to each ARGB pixel of an image. You can use this for, say, masking out the red channel.
+
+	Parameters:
+	- mask (integer)
+	- dimensions (Array)
+maximum
+	A filter which replcaes each pixel by the maximum of itself and its eight neightbours.
+
+	Parameters:
+median
+	A filter which performs a 3x3 median operation. Useful for removing dust and noise.
+
+	Parameters:
+minimum
+	A filter which replcaes each pixel by the mimimum of itself and its eight neightbours.
+
+	Parameters:
+mirror
+
+
+	Parameters:
+	- angle (numeric)
+		Specifies the angle of the mirror.
+	- centreY (numeric)
+	- distance (numeric)
+	- rotation (numeric)
+	- gap (numeric)
+	- opacity (numeric)
+		The opacity of the reflection.
+noise
+	A filter which adds random noise into an image.
+
+	Parameters:
+	- amount (integer)
+		The amount of effect.
+		- min-value: 0
+		- max-value: 1
+	- monochrome (boolean)
+		Set whether to use monochrome noise.
+	- density (numeric)
+		The density of the noise.
+	- distribution (integer)
+		The distribution of the noise.
+	- dimensions (Array)
+offset
+	An abstract superclass for filters which distort images in some way. The subclass only needs to override
+	two methods to provide the mapping between source and destination pixels.
+
+	Parameters:
+	- xOffset (integer)
+	- yOffset (integer)
+	- wrap (boolean)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+oil
+	A filter which produces a "oil-painting" effect.
+
+	Parameters:
+	- levels (integer)
+		The number of levels for the effect.
+	- range (integer)
+		The range of the effect in pixels.
+opacity
+	Sets the opacity (alpha) of every pixel in an image to a constant value.
+
+	Parameters:
+	- opacity (integer)
+		The opacity.
+	- dimensions (Array)
+outline
+	Given a binary image, this filter converts it to its outline, replacing all interior pixels with the 'new' color.
+
+	Parameters:
+	- iterations (integer)
+		The number of iterations the effect is performed.
+		- min-value: 0
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- newColor (String)
+perspective
+	A filter which performs a perspective distortion on an image.
+
+	Parameters:
+	- xLT (numeric)
+		the new horizontal position of the top left corner, negative values are translated to image-width - x.
+	- yLT (numeric)
+		the new vertical position of the top left corner, negative values are translated to image-height - y.
+	- xRT (numeric)
+		the new horizontal position of the top right corner, negative values are translated to image-width - x.
+	- yRT (numeric)
+		the new vertical position of the top right corner, negative values are translated to image-height - y.
+	- xRB (numeric)
+		the new horizontal position of the bottom right corner, negative values are translated to image-width - x.
+	- yRB (numeric)
+		the new vertical position of the bottom right corner, negative values are translated to image-height - y.
+	- xLB (numeric)
+		the new horizontal position of the bottom left corner, negative values are translated to image-width - x.
+	- yLB (numeric)
+		the new vertical position of the bottom left corner, negative values are translated to image-height - y.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+pinch
+	A filter which performs the popular whirl-and-pinch distortion effect.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- amount (numeric)
+		The amount of pinch.
+		- min-value: -1
+		- max-value: 1
+	- angle (numeric)
+		The angle of twirl in radians. 0 means no distortion.
+	- centreX (numeric)
+		The centre of the effect in the X direction as a proportion of the image size.
+	- centreY (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+plasma
+	A filter which acts as a superclass for filters which need to have the whole image in memory
+	to do their stuff.
+
+	Parameters:
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 10
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- scaling (numeric)
+	- useColormap (boolean)
+	- useImageColors (boolean)
+	- seed (integer)
+pointillize
+	A filter which produces an image with a cellular texture.
+
+	Parameters:
+	- fuzziness (numeric)
+	- edgeThickness (numeric)
+	- fadeEdges (boolean)
+	- edgeColor (String)
+	- amount (numeric)
+		The amount of effect.
+		- min-value: 0
+		- max-value: 1
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 1
+	- stretch (numeric)
+		Specifies the stretch factor of the texture.
+		- min-value: 1
+		- max-value: 50+
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- angleCoefficient (numeric)
+	- gradientCoefficient (numeric)
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- randomness (numeric)
+	- gridType (String)
+		the grid type to set, one of the following:
+		-  RANDOM
+		-  SQUARE
+		-  HEXAGONAL
+		-  OCTAGONAL
+		-  TRIANGULAR
+	- distancePower (numeric)
+	- scale (numeric)
+		Specifies the scale of the texture.
+		- min-value: 1
+		- max-value: 300+
+polar
+	A filter which distorts and image by performing coordinate conversions between rectangular and polar coordinates.
+
+	Parameters:
+	- type (String)
+		The distortion type, valid values are
+		- RECT_TO_POLAR = Convert from rectangular to polar coordinates
+		- POLAR_TO_RECT = Convert from polar to rectangular coordinates
+		- INVERT_IN_CIRCLE = Invert the image in a circle
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+posterize
+	A filter to posterize an image.
+
+	Parameters:
+	- numLevels (integer)
+		The number of levels in the output image.
+	- dimensions (Array)
+quantize
+	A filter which quantizes an image to a set number of colors - useful for producing
+	images which are to be encoded using an index color model. The filter can perform
+	Floyd-Steinberg error-diffusion dithering if required. At present, the quantization
+	is done using an octtree algorithm but I eventually hope to add more quantization
+	methods such as median cut. Note: at present, the filter produces an image which
+	uses the RGB color model (because the application it was written for required it).
+	I hope to extend it to produce an IndexColorModel by request.
+
+	Parameters:
+	- serpentine (boolean)
+		Set whether to use a serpentine pattern for return or not. This can reduce 'avalanche' artifacts in the output.
+	- numColors (String)
+		The number of colors to quantize to.
+	- dither (boolean)
+		Set whether to use dithering or not. If not, the image is posterized.
+quilt
+	A filter which acts as a superclass for filters which need to have the whole image in memory
+	to do their stuff.
+
+	Parameters:
+	- iterations (integer)
+		The number of iterations the effect is performed.
+		- min-value: 0
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- a (numeric)
+	- b (numeric)
+	- c (numeric)
+	- d (numeric)
+	- k (integer)
+rays
+	A filter which produces the effect of light rays shining out of an image.
+
+	Parameters:
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- strength (numeric)
+		The strength of the rays.
+	- opacity (numeric)
+		The opacity of the rays.
+	- raysOnly (boolean)
+		Set whether to render only the rays.
+	- threshold (numeric)
+		The threshold value.
+	- angle (numeric)
+	- centreX (numeric)
+	- centreY (numeric)
+	- distance (numeric)
+	- rotation (numeric)
+	- zoom (numeric)
+rescale
+	A filter which simply multiplies pixel values by a given scale factor.
+
+	Parameters:
+	- scale (numeric)
+		Specifies the scale factor.
+		- min-value: 1
+		- max-value: 5+
+	- dimensions (Array)
+ripple
+	A filter which distorts an image by rippling it in the X or Y directions.
+	The amplitude and wavelength of rippling can be specified as well as whether
+	pixels going off the edges are wrapped or not.
+
+	Parameters:
+	- xAmplitude (numeric)
+		The amplitude of ripple in the X direction.
+	- xWavelength (numeric)
+		The wavelength of ripple in the X direction.
+	- yAmplitude (numeric)
+		The amplitude of ripple in the Y direction.
+	- yWavelength (numeric)
+		The wavelength of ripple in the Y direction.
+	- waveType (String)
+		The wave type.
+		valid values are:
+		- sine (default):  Sine wave ripples.
+		- sawtooth: Sawtooth wave ripples.
+		- triangle: Triangle wave ripples.
+		- noise: Noise ripples.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+rotate
+	A filter which rotates an image. These days this is easier done with Java2D, but this filter remains.
+
+	Parameters:
+	- angle (numeric)
+		Specifies the angle of rotation.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+saturation
+	A filter to change the saturation of an image. This works by calculating a grayscale version of the image
+	and then extrapolating away from it.
+
+	Parameters:
+	- amount (numeric)
+		The amount of saturation change. 1 leaves the image unchanged, values between 0 and 1 desaturate, 0 completely
+		desaturates it and values above 1 increase the saturation.
+	- dimensions (Array)
+scale
+	Scales an image using the area-averaging algorithm, which can't be done with AffineTransformOp.
+
+	Parameters:
+	- width (integer)
+	- height (integer)
+scratch
+
+
+	Parameters:
+	- angle (numeric)
+	- density (numeric)
+	- angleVariation (numeric)
+	- length (numeric)
+	- seed (integer)
+	- color (String)
+	- width (numeric)
+shade
+	A filter which acts as a superclass for filters which need to have the whole image in memory
+	to do their stuff.
+
+	Parameters:
+	- bumpHeight (numeric)
+	- bumpSoftness (numeric)
+	- bumpSource (integer)
+shadow
+	A filter which draws a drop shadow based on the alpha channel of the image.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
+	- angle (numeric)
+		Specifies the angle of the shadow.
+	- distance (numeric)
+		The distance of the shadow.
+	- opacity (numeric)
+		The opacity of the shadow.
+	- shadowColor (String)
+		The color of the shadow.
+	- addMargins (boolean)
+		Set whether to increase the size of the output image to accomodate the shadow.
+	- shadowOnly (boolean)
+		Set whether to only draw the shadow without the original image.
+shape
+	A filter which acts as a superclass for filters which need to have the whole image in memory
+	to do their stuff.
+
+	Parameters:
+	- useAlpha (boolean)
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- invert (boolean)
+	- factor (numeric)
+	- merge (boolean)
+	- type (integer)
+sharpen
+	A filter which performs a simple 3x3 sharpening operation.
+
+	Parameters:
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- useAlpha (boolean)
+		Set whether to convolve the alpha channel.
+	- premultiplyAlpha (boolean)
+		Set whether to premultiply the alpha channel.
+shatter
+
+
+	Parameters:
+	- iterations (integer)
+	- centreX (numeric)
+	- centreY (numeric)
+	- transition (numeric)
+	- distance (numeric)
+	- rotation (numeric)
+	- zoom (numeric)
+	- startAlpha (numeric)
+	- endAlpha (numeric)
+	- tile (integer)
+shear
+	An abstract superclass for filters which distort images in some way. The subclass only needs to override
+	two methods to provide the mapping between source and destination pixels.
+
+	Parameters:
+	- resize (boolean)
+	- xAngle (numeric)
+	- yAngle (numeric)
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+shine
+	A filter which simply multiplies pixel values by a given scale factor.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
+	- brightness (numeric)
+	- angle (numeric)
+	- softness (numeric)
+	- distance (numeric)
+	- shadowOnly (boolean)
+	- bevel (numeric)
+	- shineColor (String)
+skeleton
+	A filter which reduces a binary image to a skeleton.
+	Based on an algorithm by Zhang and Suen (CACM, March 1984, 236-239).
+
+	Parameters:
+	- iterations (integer)
+		The number of iterations the effect is performed.
+		- min-value: 0
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- newColor (String)
+smear
+	A filter which acts as a superclass for filters which need to have the whole image in memory
+	to do their stuff.
+
+	Parameters:
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- density (numeric)
+	- distance (integer)
+	- shape (integer)
+	- scatter (numeric)
+	- mix (numeric)
+	- fadeout (integer)
+	- background (boolean)
+solarize
+	A filter which solarizes an image.
+
+	Parameters:
+	- dimensions (Array)
+sparkle
+	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
+
+	Parameters:
+	- radius (integer)
+		The radius of the effect.
+		- min-value: 0
+	- amount (integer)
+		The amount of sparkle.
+		- min-value: 0
+		- max-value: 1
+	- randomness (integer)
+	- rays (integer)
+	- color (String)
+	- dimensions (Array)
+sphere
+	A filter which simulates a lens placed over an image.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- centreX (numeric)
+		The centre of the effect in the X direction as a proportion of the image size.
+	- centreY (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- refractionIndex (numeric)
+		The index of refaction.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+stamp
+	A filter which produces a rubber-stamp type of effect by performing a thresholded blur.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- softness (numeric)
+		The softness of the effect in the range 0..1.
+		- min-value: 0
+		- max-value: 1
+	- white (String)
+		The color to be used for pixels above the upper threshold.
+	- black (String)
+		The color to be used for pixels below the lower threshold.
+	- threshold (numeric)
+		The threshold value.
+	- dimensions (Array)
+swim
+	A filter which distorts an image as if it were underwater.
+
+	Parameters:
+	- amount (numeric)
+		The amount of swim.
+		- min-value: 0
+		- max-value: 100+
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 1
+	- stretch (numeric)
+		Specifies the stretch factor of the distortion.
+		- min-value: 1
+		- max-value: 50+
+	- angle (numeric)
+		Specifies the angle of the effect.
+	- time (numeric)
+		Specifies the time. Use this to animate the effect.
+	- scale (numeric)
+		Specifies the scale of the distortion.
+		- min-value: 1
+		- max-value: 300+
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+texture
+	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
+
+	Parameters:
+	- amount (numeric)
+		The amount of texture.
+		- min-value: 0
+		- max-value: 1
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 1
+	- stretch (numeric)
+		Specifies the stretch factor of the texture.
+		- min-value: 1
+		- max-value: 50+
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- operation (integer)
+	- scale (numeric)
+		Specifies the scale of the texture.
+		- min-value: 1
+		- max-value: 300+
+	- dimensions (Array)
+threshold
+	A filter which performs a threshold operation on an image.
+
+	Parameters:
+	- white (integer)
+		The color to be used for pixels above the upper threshold.
+	- black (integer)
+		The color to be used for pixels below the lower threshold.
+	- lowerThreshold (integer)
+		The lower threshold value.
+	- upperThreshold (integer)
+		The upper threshold value.
+	- dimensions (Array)
+twirl
+	A Filter which distorts an image by twisting it from the centre out.
+	The twisting is centred at the centre of the image and extends out to the smallest of
+	the width and height. Pixels outside this radius are unaffected.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- angle (numeric)
+		The angle of twirl in radians. 0 means no distortion.
+	- centreX (numeric)
+		The centre of the effect in the X direction as a proportion of the image size.
+	- centreY (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+unsharp
+	A filter which subtracts Gaussian blur from an image, sharpening it.
+
+	Parameters:
+	- amount (numeric)
+		The amount of sharpening.
+		- min-value: 0
+		- max-value: 1
+	- threshold (integer)
+		The threshold value.
+	- radius (numeric)
+		The radius of the kernel, and hence the amount of blur. The bigger the radius, the longer this filter will take.
+		- min-value: 0
+		- max-value: 100+
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- useAlpha (boolean)
+		Set whether to convolve the alpha channel.
+	- premultiplyAlpha (boolean)
+		Set whether to premultiply the alpha channel.
+water
+	A filter which produces a water ripple distortion.
+
+	Parameters:
+	- radius (numeric)
+		The radius of the effect.
+		- min-value: 0
+	- centreX (numeric)
+		The centre of the effect in the X direction as a proportion of the image size.
+	- centreY (numeric)
+		The centre of the effect in the Y direction as a proportion of the image size.
+	- wavelength (numeric)
+		The wavelength of the ripples.
+	- amplitude (numeric)
+		The amplitude of the ripples.
+	- phase (numeric)
+		The phase of the ripples.
+	- edgeAction (String)
+		The action to perfomr for pixels off the image edges.
+		valid values are:
+		- clamp (default): Clamp pixels off the edge to the nearest edge.
+		- wrap: Wrap pixels off the edge to the opposite edge.
+		- zero: Treat pixels off the edge as zero
+	- interpolation (String)
+		The type of interpolation to perform.
+		valid values are:
+		- bilinear (default): Use bilinear interpolation.
+		- nearest_neighbour: Use nearest-neighbour interpolation.
+weave
+	An abstract superclass for point filters. The interface is the same as the old RGBImageFilter.
+
+	Parameters:
+	- useImageColors (boolean)
+	- xGap (numeric)
+	- xWidth (numeric)
+	- yWidth (numeric)
+	- yGap (numeric)
+	- crossings ([[I)
+	- roundThreads (boolean)
+	- shadeCrossings (boolean)
+	- dimensions (Array)
+wood
+	A filter which produces a simulated wood texture. This is a bit of a hack, but might be usefult to some people.
+
+	Parameters:
+	- turbulence (numeric)
+		Specifies the turbulence of the texture.
+		- min-value: 0
+		- max-value: 1
+	- stretch (numeric)
+		Specifies the stretch factor of the texture.
+		- min-value: 1
+		- max-value: 50+
+	- angle (numeric)
+		Specifies the angle of the texture.
+	- colormap (Colormap)
+		The colormap to be used for the filter. Use function ImageFilterColorMap to create.
+	- gain (numeric)
+		Specifies the gain of the texture.
+		- min-value: 0
+		- max-value: 1
+	- rings (numeric)
+		Specifies the rings value.
+		- min-value: 0
+		- max-value: 1
+	- fibres (numeric)
+		Specifies the amount of fibres in the texture.
+		- min-value: 0
+		- max-value: 1
+	- scale (numeric)
+		Specifies the scale of the texture.
+		- min-value: 1
+		- max-value: 300+
+	- dimensions (Array)
+</description>
+		<argument>
+			<name>name</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>The image on which this operation is performed.</description>
+    	</argument>
+		<argument>
+			<name>filtername</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>the name of the filter executed (average,block,blur ...)</description>
+    	</argument>
+		<argument>
+			<name>parameters</name>
+			<type>struct</type>
+			<required>no</required>
+			<description>parameters for the filter defined with argument filtername</description>
+    	</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	
 	<!-- ImageFlip -->
 	<function>
 		<name>ImageFlip</name>
@@ -5843,6 +7715,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>transpose</name>
 			<type>string</type>
 			<required>no</required>
+			<default>vertical</default>
 		<description>Transpose the image:
 - vertical (default): Flip an image across an imaginary horizontal line that runs through the center of the image.
 - horizontal: Flip an image across an imaginary vertical line that runs through the center of the image.
@@ -6190,6 +8063,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>highestQuality</default>
 		<description>the interpolation method for resampling. You can specify a specific interpolation algorithm by name (for example, hamming), by image quality (for example, mediumQuality), or by performance (for example, highestPerformance). Valid values are:
 - highestQuality (default)
 - highQuality
@@ -6214,6 +8088,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>The blur factor used for resampling. The higher the blur factor, the more blurred the image (also, the longer it takes to resize the image). Valid values are 1-10.</description>
     </argument>
 		<return>
@@ -6234,25 +8109,29 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 		<argument>
 			<name>x</name>
 			<type>string</type>
-			<required>no</required>
-		<description>The x coordinate for the point of rotation. The default value is 2.</description>
+			<required>yes</required>
+			<default>2</default>
+			<description>The x coordinate for the point of rotation. The default value is 2.</description>
     </argument>
 		<argument>
 			<name>y</name>
 			<type>string</type>
 			<required>no</required>
-		<description>The y coordinate for the point of rotation. The default value is 2.</description>
+			<default>2</default>
+			<description>The y coordinate for the point of rotation. The default value is 2.</description>
     </argument>
 		<argument>
 			<name>angle</name>
 			<type>string</type>
 			<required>no</required>
-		<description>The rotation angle in degrees.</description>
+			<default>0</default>
+			<description>The rotation angle in degrees.</description>
     </argument>
 		<argument>
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>nearest</default>
 		<description>Type of interpolation:
 - nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
 - bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
@@ -6322,6 +8201,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>highestQuality</default>
 		<description>The interpolation method for resampling. You can specify a specific interpolation algorithm by name (for example, hamming), by image quality (for example, mediumQuality), or by performance (for example, highestPerformance). Valid values are:
 - highestQuality (default)
 - highQuality
@@ -6345,6 +8225,7 @@ Value must be greater than or equal to 3 and less than or equal to 10. The defau
 			<name>blurFactor</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>The blur factor used for resampling. The higher the blur factor, the more blurred the image (also, the longer it takes to resize the image). Valid values are 1-10.</description>
     </argument>
 		<return>
@@ -6375,12 +8256,14 @@ The file format is derived from the extension of the filename. The default value
 			<name>quality</name>
 			<type>number</type>
 			<required>no</required>
+			<default>0.75</default>
 		<description>Defines the JPEG quality used to encode the image. This parameter applies only to destination files with an extension of JPG or JPEG. Valid values are fractions that range from 0 through 1 (the lower the number, the lower the quality). The default value is 0.75.</description>
     </argument>
 		<argument>
 			<name>overwrite</name>
 			<type>boolean</type>
 			<required>no</required>
+			<default>true</default>
 		<description>If set to true (default), overwrites the destination file.</description>
     </argument>
 		<return>
@@ -6437,6 +8320,7 @@ The file format is derived from the extension of the filename. The default value
 			<name>antialias</name>
 			<type>string</type>
 			<required>no</required>
+			<default>on</default>
 		<description>Antialiasing switch:
 - on,true: (default)
 - off,false:</description>
@@ -6556,6 +8440,7 @@ The file format is derived from the extension of the filename. The default value
 			<name>percent</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>Percent of transparency, a floating point number in range 0-100</description>
     </argument>
 		<return>
@@ -6577,6 +8462,7 @@ The file format is derived from the extension of the filename. The default value
 			<name>gain</name>
 			<type>number</type>
 			<required>no</required>
+			<default>1</default>
 		<description>Gain values can be integers or real numbers. The default value is 1.0.
 The value determines whether the image is blurred or sharpened:
 - if &gt; 0, the image is sharpened
@@ -6608,6 +8494,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>direction</name>
 			<type>string</type>
 			<required>no</required>
+			<default>horizontal</default>
 		<description>Shear direction:
 - horizontal (default)
 - vertical</description>
@@ -6616,6 +8503,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>nearest</default>
 		<description>Type of interpolation:
 - nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
 - bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
@@ -6679,6 +8567,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>interpolation</name>
 			<type>string</type>
 			<required>no</required>
+			<default>nearest</default>
 		<description>Type of interpolation:
 - nearest (default): Applies the nearest neighbor method of interpolation. Image quality is lower than the other interpolation methods, but processing is fastest.
 - bilinear: Applies the bilinear method of interpolation. The quality of the image is less pixelated than the default, but processing is slower.
@@ -6966,6 +8855,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>dimension</name>
 			<type>number</type>
 			<required>No</required>
+			<default>-999</default>
 		<description>function tests whether the array has exactly this dimension.</description>
     </argument>
 		<return>
@@ -7302,23 +9192,33 @@ The value determines whether the image is blurred or sharpened:
         specified Role.</description>
 		<argument>
 			<name>role_name</name>
+			<alias>rolename,role,name</alias>
 			<type>any</type>
 			<required>Yes</required>
-		<description>Name of a security role</description>
-    </argument>
+			<description>Name of a security role</description>
+	    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
 	</function>
+
 	<!-- isUserInAnyRole -->
 	<function>
 		<name>isUserInAnyRole</name>
-		<class>railo.runtime.functions.decision.isUserInAnyRole</class>
+		<class>railo.runtime.functions.decision.IsUserInAnyRole</class>
 		<description>Determines whether an authenticated user belongs to any role in a list of roles.</description>
+		<argument>
+			<name>role_list</name>
+			<alias>rolelist,role,list</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>A comma-delimited list of one or more roles to be tested.</description>
+	    </argument>
 		<return>
 			<type>boolean</type>
 		</return>
 	</function>
+
 	<!-- IsUserLoggedIn -->
 	<function>
 		<name>IsUserLoggedIn</name>
@@ -7374,6 +9274,7 @@ The value determines whether the image is blurred or sharpened:
     </argument>
 		<argument>
 			<name>min_or_pattern</name>
+			<alias>min,pattern</alias>
 			<type>any</type>
 			<required>No</required>
 		<description>
@@ -7641,8 +9542,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -7662,8 +9565,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -7691,14 +9596,17 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>existing delimeter to replace. a delimeter is a characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>false</default>
 			<description>if set to true, empty values are included as well</description>
 		</argument>
 		<return>
@@ -7718,8 +9626,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -7748,8 +9658,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7782,8 +9694,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7816,8 +9730,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7850,8 +9766,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7884,8 +9802,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7911,8 +9831,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7944,8 +9866,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -7983,8 +9907,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8018,6 +9944,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>delimeter</name>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8043,8 +9970,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8070,8 +9999,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8097,8 +10028,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8130,8 +10063,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -8157,18 +10092,21 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>no</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
 			<name>elements</name>
 			<type>string</type>
 			<required>no</required>
+			<default>all</default>
 			<description>
 			which type of element are qualified
-			 - all (all elements)
-			 - char (elements that are composed of alphabetic characters)
+			 - all (default): all elements
+			 - char: elements that are composed of alphabetic characters
 			 </description>
 		</argument>
 		<argument>
@@ -8194,8 +10132,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8233,8 +10173,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8273,14 +10215,17 @@ The value determines whether the image is blurred or sharpened:
 			<name>sort_order</name>
 			<type>string</type>
 			<required>No</required>
+			<default>asc</default>
 			<description>sort direction:
-			- asc (ascending sort order; default value)
-			- desc (descending sort order) </description>
+			- asc(default): ascending sort order
+			- desc: descending sort order </description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8306,8 +10251,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8341,8 +10288,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiters</name>
+			<alias>delimiter</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
@@ -8369,8 +10318,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8403,8 +10354,10 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
@@ -8485,6 +10438,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>type</name>
 			<type>string</type>
 			<required>No</required>
+			<default>local</default>
 		<description></description>
     </argument>
 		<argument>
@@ -8512,6 +10466,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>medium</default>
 		<description></description>
     </argument>
 		<argument>
@@ -8797,6 +10752,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>short</default>
 		<description></description>
     </argument>
 		<argument>
@@ -8894,8 +10850,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>count</name>
 			<type>number</type>
-			<required>Yes</required>
-		<description>The number of characters to retrieve.</description>
+			<required>no</required>
+			<default>-1</default>
+		<description>The number of characters to retrieve. If not set, all characters until the end of the string will be returned.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -9109,6 +11066,44 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>nullValue</name>
 		<class>railo.runtime.functions.other.NullValue</class>
 		<description>returns null</description>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- ObjectLoad -->
+	<function>
+		<name>ObjectLoad</name>
+		<class>railo.runtime.functions.other.ObjectLoad</class>
+		<description>loads a object serialized in a binary form from a file or as binary input</description>
+		<argument>
+			<name>input</name>
+			<type>any</type>
+			<required>no</required>
+			<description>a binary represenation of a object or a path to a file that contains this</description>
+   		</argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- ObjectSave -->
+	<function>
+		<name>ObjectSave</name>
+		<class>railo.runtime.functions.other.ObjectSave</class>
+		<description>serialize a (Serialiable) object to a binary repersentation of th object</description>
+		<argument>
+			<name>input</name>
+			<type>any</type>
+			<required>yes</required>
+			<description>object to serialize</description>
+   		</argument>
+		<argument>
+			<name>filepath</name>
+			<type>string</type>
+			<required>no</required>
+			<description>path where railo should save the object</description>
+   		</argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -9392,7 +11387,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>PrecisionEvaluate</name>
 		<class>railo.runtime.functions.dynamicEvaluation.PrecisionEvaluate</class>
-		<status>unimplemeted</status>
 		<description>Evaluates one or more string expressions.</description>
 		<argument-type>dynamic</argument-type>
 		<argument-min>1</argument-min>
@@ -9400,6 +11394,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>any</type>
 		</return>
 	</function>
+	
 	<!-- pi -->
 	<function>
 		<name>pi</name>
@@ -9480,19 +11475,16 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>column</name>
+			<alias>columnname</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
-		<!-- argument>
-			<name>array</name>
-			<type>array</type>
-			<required>Yes</required>
-		</argument -->
 		<argument>
 			<name>datatype_or_array</name>
+			<alias>datatype</alias>
 			<type>any</type>
-			<required>Yes</required>
+			<required>no</required>
 		<description></description>
     </argument>
 		<argument>
@@ -9520,7 +11512,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>number</name>
 			<type>number</type>
 			<required>No</required>
-		<description></description>
+			<default>1</default>
+		<description>number of rows to add, default is 1</description>
     </argument>		
 		<return>
 			<type>number</type>
@@ -9539,6 +11532,28 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>	
 		<return>
 			<type>number</type>
+		</return>
+	</function>
+	
+	<!-- queryColumnExists -->
+	<function>
+		<name>queryColumnExists</name>
+		<class>railo.runtime.functions.query.QueryColumnExists</class>
+		<description>Determines whether a specific column is present in a query.</description>
+		<argument>
+			<name>query</name>
+			<type>query</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>	
+		<argument>
+			<name>column</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>	
+		<return>
+			<type>boolean</type>
 		</return>
 	</function>
 	
@@ -9601,7 +11616,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>delimeter</name>
 			<type>string</type>
 			<required>no</required>
-		<description></description>
+			<default>,</default>
+		<description>delimiter used to separate elements in list</description>
     </argument>	
 		<return>
 			<type>string</type>
@@ -9645,6 +11661,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>row</name>
 			<type>number</type>
 			<required>no</required>
+			<default>-9999</default>
 		<description></description>
     </argument>	
 		<return>
@@ -9672,6 +11689,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>row_number</name>
 			<type>number</type>
 			<required>No</required>
+			<default>-9999</default>
 			<description>row number (1-n)</description>
 		</argument>
 		<return>
@@ -9742,6 +11760,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>row_number</name>
 			<type>number</type>
 			<required>No</required>
+			<default>-9999</default>
 		<description></description>
     </argument>
 		<return>
@@ -9784,19 +11803,22 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>query</name>
 			<type>query</type>
 			<required>Yes</required>
-		<description></description>
+		<description>the query to sort</description>
     </argument>
 		<argument>
 			<name>column_name</name>
+			<alias>columnnames,columnname,name,names,column_names</alias>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>a list of names or a single column name</description>
     </argument>
 		<argument>
 			<name>direction</name>
+			<alias>directions,dir</alias>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+			<default></default>
+		<description>a list of directions or a single direction defintion (asc,desc), the list must have the same length as the columnName list</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -9815,8 +11837,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description></description>
     </argument>
 		<return>
@@ -9931,10 +11955,11 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description>A positive integer. Position in the string at which to start search. The default value is 1.</description>
     </argument>
 		<argument>
-			<name>arg4</name>
+			<name>returnsubexpressions</name>
 			<type>boolean</type>
 			<required>No</required>
 		<description></description>
@@ -9967,6 +11992,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>start</name>
 			<type>number</type>
 			<required>No</required>
+			<default>1</default>
 		<description></description>
     </argument>
 		<argument>
@@ -10108,6 +12134,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 			<description>scope for the execution:
 - one (default): replaces only the first occurrence	
 - all: replaces all occurrences</description>
@@ -10176,6 +12203,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>scope for the execution:
 - one (default): Replace the first occurrence
 - all: Replace all occurrences</description>
@@ -10213,6 +12241,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): Replace the first occurrence of the regular expression.
 - all: Replace all occurrences of the regular expression.</description>
@@ -10250,6 +12279,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): Replace the first occurrence of the regular expression.
 - all: Replace all occurrences of the regular expression.</description>
@@ -10686,6 +12716,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>port</name>
 			<type>number</type>
 			<required>no</required>
+			<default>443</default>
 			<description>port of the host, default is 443</description>
 		</argument>
 		<return>
@@ -10707,6 +12738,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>port</name>
 			<type>number</type>
 			<required>no</required>
+			<default>443</default>
 			<description>port of the host, default is 443</description>
 		</argument>
 		<return>
@@ -10742,6 +12774,64 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<return>
 			<type>number</type>
+		</return>
+	</function>
+	
+	<!-- StoreAddACL -->
+	<function>
+		<name>StoreAddACL</name>
+		<class>railo.runtime.functions.s3.StoreAddACL</class>
+		<description>Adds ACL to existing ACL for object or bucket.</description>
+		<argument>
+			<name>url</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Amazon S3 URL</description>
+	    </argument>
+		<argument>
+			<name>aclObject</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>an array of struct where each struct represents an ACL grant</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- StoreGetACL -->
+	<function>
+		<name>StoreGetACL</name>
+		<class>railo.runtime.functions.s3.StoreGetACL</class>
+		<description>returns an array of struct where each struct represents an ACL grant</description>
+		<argument>
+			<name>url</name>
+			<type>string</type>
+				<required>Yes</required>
+			<description>Amazon S3 URL</description>
+	    </argument>
+		<return>
+			<type>Object</type>
+		</return>
+	</function>
+	<!-- StoreSetACL -->
+	<function>
+		<name>StoreSetACL</name>
+		<class>railo.runtime.functions.s3.StoreSetACL</class>
+		<description>Sets the ACL for object or bucket.</description>
+		<argument>
+			<name>url</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Amazon S3 URL</description>
+	    </argument>
+		<argument>
+			<name>aclObject</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>an array of struct where each struct represents an ACL grant</description>
+	    </argument>
+		<return>
+			<type>void</type>
 		</return>
 	</function>
 	
@@ -10787,6 +12877,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>OverwriteFlag</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description>
 - true (default): values in struct2 overwrite corresponding values in struct1. </description>
     </argument>
@@ -10900,7 +12991,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>Top</name>
 			<type>struct</type>
 			<required>Yes</required>
-		<description>object (structure or array) from which to start search. This parameter requires an object, not a name of an object.</description>
+		<description>object from which to start search. This parameter requires an object, not a name of an object.</description>
     </argument>
 		<argument>
 			<name>Key</name>
@@ -10912,6 +13003,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): returns one matching key.
 - all: returns all matching keys</description>
@@ -10943,6 +13035,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>Scope</name>
 			<type>string</type>
 			<required>No</required>
+			<default>one</default>
 		<description>
 - one (default): function returns one matching key
 - all: function returns all matching keys</description>
@@ -11064,11 +13157,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>Yes</required>
 		<description>Structure from which to extract a list of keys.</description>
     </argument>
-		<argument>
+	<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
-		<description>Character that separates keys in list. Default: comma.</description>
+			<default>,</default>
+			<description>Character that separates keys in list. Default: comma.</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -11116,6 +13211,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>type</name>
 			<type>string</type>
 			<required>No</required>
+			<default>normal</default>
 			<description>
 			the type the new struct (normal,weak,linked)
 			</description>
@@ -11138,24 +13234,25 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>A structure with one field (an associative array).</description>
     </argument>
 		<argument>
-			<name>sortOrder</name>
-			<type>string</type>
-			<required>No</required>
-		<description>sort direction:
-_- asc (default): ascending (a to z) sort order
-- desc: descending (z to a) sort order</description>
-    </argument>
-		<argument>
 			<name>sortType</name>
 			<type>string</type>
 			<required>No</required>
+			<default>text</default>
 		<description>
-
 		define one of the following:
 - numeric: sorts numbers
 - text: sorts text alphabetically, taking case into account (case sensitive)
 - textnocase: sorts text alphabetically, without regard to case (case insensitive)
 </description>
+    </argument>
+		<argument>
+			<name>sortOrder</name>
+			<type>string</type>
+			<required>No</required>
+			<default>asc</default>
+		<description>sort direction:
+_- asc (default): ascending (a to z) sort order
+- desc: descending (z to a) sort order</description>
     </argument>
 		<argument>
 			<name>pathToSubElement</name>
@@ -11194,6 +13291,33 @@ _- asc (default): ascending (a to z) sort order
 			<type>boolean</type>
 		</return>
 	</function>
+	
+	<!-- SystemCacheClear -->
+	<function>
+		<name>SystemCacheClear</name>
+		<class>railo.runtime.functions.system.SystemCacheClear</class>
+		<description>clears all caches or the specified cache</description>
+		<argument>
+			<name>cacheName</name>
+			<type>string</type>
+			<required>No</required>
+		<description>Name of the cache to clear, if not defined all caches will be cleared:
+      the following cache Names are supported:
+      - all: clear all caches
+      - template: clears the template cache
+      - component: clears the component path cache
+      - customtag: clears the custom tag path cache
+      - query: clears the query cache
+      - tag: clears the cfml/cfc based built in tag cache
+      - function: clears the cfml based built in function cache
+		</description>
+    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	
 	<!-- SystemOutput -->
 	<function>
 		<name>SystemOutput</name>
@@ -11251,6 +13375,7 @@ _- asc (default): ascending (a to z) sort order
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
+			<default>"hh:mm tt</default>
 		<description>Masking characters that determine the format</description>
     </argument>
 		<argument>
@@ -11309,6 +13434,27 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<return>
 			<type>binary</type>
+		</return>
+	</function>
+	<!-- ToNumeric -->
+	<function>
+		<name>ToNumeric</name>
+		<class>railo.runtime.functions.other.ToNumeric</class>
+		<description>Converts given value to a number</description>
+		<argument>
+			<name>value</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>value that should be translated to a numeric value</description>
+		</argument>
+		<argument>
+			<name>radix</name>
+			<type>any</type>
+			<required>no</required>
+			<description>the base for tranlation of the given value, default is 10, possible values are [2-36,bin,oct,dec,hex]</description>
+		</argument>
+		<return>
+			<type>number</type>
 		</return>
 	</function>
 	<!-- ToScript -->
@@ -11371,34 +13517,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<return>
 			<type>string</type>
-		</return>
-	</function>
-	<!-- traceObject -->
-	<function>
-		<name>traceObject</name>
-		<class>railo.runtime.functions.other.TraceObject</class>
-		<status>unimplemeted</status>
-		<description>wrapper to trace the usage of a soecific object</description>
-		<argument>
-			<name>object</name>
-			<type>any</type>
-			<required>Yes</required>
-			<description>Object to trace</description>
-		</argument>
-		<argument>
-			<name>label</name>
-			<type>string</type>
-			<required>Yes</required>
-			<description>label for the entry in log</description>
-		</argument>
-		<argument>
-			<name>logFile</name>
-			<type>string</type>
-			<required>Yes</required>
-			<description>path to the log file</description>
-		</argument>
-		<return>
-			<type>object</type>
 		</return>
 	</function>
 	
@@ -11480,6 +13598,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
+			<default>utf-8</default>
 		<description>The character encoding in which the string is encoded.</description>
     </argument>
 		<return>
@@ -11501,12 +13620,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
+			<default>utf-8</default>
 		<description></description>
     </argument>
 		<argument>
 			<name>force</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<return>
@@ -11531,12 +13652,14 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>charset</name>
 			<type>string</type>
 			<required>No</required>
+			<default>utf-8</default>
 		<description>The character encoding in which the string is encoded.</description>
     </argument>
 		<argument>
 			<name>force</name>
 			<type>boolean</type>
 			<required>No</required>
+			<default>true</default>
 		<description></description>
     </argument>
 		<return>
@@ -11605,8 +13728,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>delimiter</name>
+			<alias>delimiters</alias>
 			<type>string</type>
 			<required>No</required>
+			<default>,</default>
 		<description>A delimiter character to separate column data items.
             Default: comma (,).</description>
     </argument>
@@ -11786,18 +13911,21 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Creates an XML document object element</description>
 		<argument>
 			<name>xmlObj</name>
+			<alias>node,element</alias>
 			<type>node</type>
 			<required>Yes</required>
 		<description>Name of the XML document object in which you are creating the element</description>
     	</argument>
 		<argument>
 			<name>namespace_or_childName</name>
+			<alias>namespace</alias>
 			<type>string</type>
-			<required>Yes</required>
-			<description>URI of the namespace to which this element belongs.</description>
+			<required>No</required>
+			<description>URI of the namespace to which this element belongs or the name of the element to create.</description>
     	</argument>
 		<argument>
 			<name>childName</name>
+			<alias>name</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>The name of the element to create. This element becomes a child element of xmlObj in the tree.</description>
@@ -11951,6 +14079,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>parameters</name>
 			<type>array</type>
 			<required>false</required>
+			<status>unimplemeted</status>
 		<description>A structure containing XSL template parameter name-value
             pairs to use in transforming the document. The XSL transform
             defined in the xslString parameter uses these parameter values

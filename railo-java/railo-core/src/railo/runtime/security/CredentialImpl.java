@@ -133,11 +133,15 @@ public final class CredentialImpl implements Credential {
 	    		if(!rolesDir.exists())rolesDir.mkdirs();
 	    		String md5 = MD5.getDigestAsString(raw);
 				IOUtil.write(rolesDir.getRealResource(md5), raw, "utf-8", false);
-				return Caster.toBase64(username+ONE+password+ONE+"md5:"+md5);
+				return Caster.toB64(username+ONE+password+ONE+"md5:"+md5,"UTF-8");
 			} 
 	    	catch (IOException e) {}
 		}
-    	return Caster.toBase64(username+ONE+password+ONE+raw);
+    	try {
+			return Caster.toB64(username+ONE+password+ONE+raw,"UTF-8");
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
     } 
     
     /**
@@ -147,7 +151,14 @@ public final class CredentialImpl implements Credential {
      * @throws PageException
      */
     public static Credential decode(Object encoded,Resource rolesDir) throws PageException {
-    	Array arr=List.listToArray(Base64Coder.decodeBase64(encoded),""+ONE);
+    	String dec;
+    	try {
+			dec=Base64Coder.decodeToString(Caster.toString(encoded),"UTF-8");
+		} catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
+    	
+    	Array arr=List.listToArray(dec,""+ONE);
         int len=arr.size();
         if(len==3) {
         	String str=Caster.toString(arr.get(3,""));

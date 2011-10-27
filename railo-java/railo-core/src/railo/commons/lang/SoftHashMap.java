@@ -8,7 +8,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-public class SoftHashMap extends AbstractMap {
+import railo.runtime.type.Sizeable;
+
+public class SoftHashMap extends AbstractMap implements Sizeable {
   /** The internal HashMap that will hold the SoftReference. */
   private final Map hash = new HashMap();
   /** The number of "hard" references to hold internally. */
@@ -85,5 +87,9 @@ public class SoftHashMap extends AbstractMap {
       this.key = key;
     }
   }
+
+	public long sizeOf() {
+		return SizeOf.size(hash);
+	}
 
 }

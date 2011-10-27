@@ -124,4 +124,17 @@ public final class ReqRspUtil {
 		}
 		
 	}
+
+	public static String getHeader(HttpServletRequest request, String name,String defaultValue) {
+		try {
+			return request.getHeader(name);
+		}
+		catch(Throwable t){
+			return defaultValue;
+		}
+	}
+
+	public static String getScriptName(HttpServletRequest req) {
+		return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
+	}
 }

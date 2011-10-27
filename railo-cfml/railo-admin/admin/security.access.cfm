@@ -63,6 +63,7 @@ function checkTheBox(field) {
 				tag_registry="#fb('defaultTagRegistry')#"
 				cache="#fb('defaultCache')#"
 				gateway="#fb('defaultGateway')#"
+				orm="#fb('defaultOrm')#"
 				access_read="#form.defaultaccess_read#"
 				access_write="#form.defaultaccess_write#"
 			remoteClients="#request.getRemoteClients()#">
@@ -95,6 +96,7 @@ function checkTheBox(field) {
 				tag_registry="#fb('defaultTagRegistry')#"
 				cache="#fb('defaultCache')#"
 				gateway="#fb('defaultGateway')#"
+				orm="#fb('defaultOrm')#"
 				access_read="#form.defaultaccess_read#"
 				access_write="#form.defaultaccess_write#">
 			

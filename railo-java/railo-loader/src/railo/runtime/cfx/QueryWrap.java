@@ -20,6 +20,13 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
 
+
+//JDK6: uncomment this for compiling with JDK6 
+import java.sql.NClob;
+import java.sql.RowId;
+import java.sql.SQLXML;
+
+
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -1080,5 +1087,189 @@ public class QueryWrap implements Query {
 	public railo.runtime.type.Query getQuery() {
 		return rst;
 	}
+	public int getHoldability() throws SQLException {
+		throw notSupported();
+	}
+	public Reader getNCharacterStream(int arg0) throws SQLException {
+		throw notSupported();
+	}
+	public Reader getNCharacterStream(String arg0) throws SQLException {
+		throw notSupported();
+	}
+	public String getNString(int arg0) throws SQLException {
+		throw notSupported();
+	}
+	public String getNString(String arg0) throws SQLException {
+		throw notSupported();
+	}
+	public boolean isClosed() throws SQLException {
+		throw notSupported();
+	}
+	public void updateAsciiStream(int arg0, InputStream arg1)throws SQLException {
+		throw notSupported();
+	}
+	public void updateAsciiStream(String arg0, InputStream arg1)throws SQLException {
+		throw notSupported();
+	}
+	public void updateAsciiStream(int arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateAsciiStream(String arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateBinaryStream(int arg0, InputStream arg1)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateBinaryStream(String arg0, InputStream arg1)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateBinaryStream(int arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateBinaryStream(String arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateBlob(int arg0, InputStream arg1) throws SQLException {
+		throw notSupported();
+	}
+	public void updateBlob(String arg0, InputStream arg1) throws SQLException {
+		throw notSupported();
+	}
+	public void updateBlob(int arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateBlob(String arg0, InputStream arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateCharacterStream(int arg0, Reader arg1)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateCharacterStream(String arg0, Reader arg1)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateCharacterStream(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateCharacterStream(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateClob(int arg0, Reader arg1) throws SQLException {
+		throw notSupported();
+	}
+	public void updateClob(String arg0, Reader arg1) throws SQLException {
+		throw notSupported();
+	}
+	public void updateClob(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateClob(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateNCharacterStream(int arg0, Reader arg1)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateNCharacterStream(String arg0, Reader arg1)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateNCharacterStream(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateNCharacterStream(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateNClob(int arg0, Reader arg1) throws SQLException {
+		throw notSupported();
+	}
+	public void updateNClob(String arg0, Reader arg1) throws SQLException {
+		throw notSupported();
+	}
+	public void updateNClob(int arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateNClob(String arg0, Reader arg1, long arg2)
+			throws SQLException {
+		throw notSupported();
+	}
+	public void updateNString(int arg0, String arg1) throws SQLException {
+		throw notSupported();
+	}
+	public void updateNString(String arg0, String arg1) throws SQLException {
+		throw notSupported();
+	}
+	public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+		throw notSupported();
+	}
+	public <T> T unwrap(Class<T> arg0) throws SQLException {
+		throw notSupported();
+	}
 
+	//JDK6: uncomment this for compiling with JDK6 
+	public NClob getNClob(int arg0) throws SQLException {
+		return rst.getNClob(arg0);
+	}
+	public NClob getNClob(String arg0) throws SQLException {
+		return rst.getNClob(arg0);
+	}
+	public RowId getRowId(int arg0) throws SQLException {
+		return rst.getRowId(arg0);
+	}
+	public RowId getRowId(String arg0) throws SQLException {
+		return rst.getRowId(arg0);
+	}
+	public SQLXML getSQLXML(int arg0) throws SQLException {
+		return rst.getSQLXML(arg0);
+	}
+	public SQLXML getSQLXML(String arg0) throws SQLException {
+		return rst.getSQLXML(arg0);
+	}
+	public void updateNClob(int arg0, NClob arg1) throws SQLException {
+		rst.updateNClob(arg0, arg1);
+	}
+	public void updateNClob(String arg0, NClob arg1) throws SQLException {
+		rst.updateNClob(arg0, arg1);
+	}
+	public void updateRowId(int arg0, RowId arg1) throws SQLException {
+		rst.updateRowId(arg0, arg1);
+	}
+	public void updateRowId(String arg0, RowId arg1) throws SQLException {
+		rst.updateRowId(arg0, arg1);
+	}
+	public void updateSQLXML(int arg0, SQLXML arg1) throws SQLException {
+		rst.updateSQLXML(arg0, arg1);
+	}
+	public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
+		rst.updateSQLXML(arg0, arg1);
+	}
+	
+	
+	
+	
+	
+	
+
+	private SQLException notSupported() {
+		return new SQLException("this feature is not supported");
+	}
+	private RuntimeException notSupportedEL() {
+		return new RuntimeException(new SQLException("this feature is not supported"));
+	}
 }

@@ -14,16 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 
-import java.awt.geom.Point2D;
-
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
 import railo.runtime.img.math.Noise;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * An experimental filter for rendering lens flares.
  */
-public class FlareFilter extends PointFilter {
+public class FlareFilter extends PointFilter  implements DynFiltering {
 
 	private int rays = 50;
 	private float radius;
@@ -87,10 +93,18 @@ public class FlareFilter extends PointFilter {
 		return rayAmount;
 	}
 
-	public void setCentre( Point2D centre ) {
+	public void setCentreY( float centreY ) {
+		this.centreY = centreY;
+	}
+
+	public void setCentreX( float centreX ) {
+		this.centreX = centreX;
+	}
+
+	/*public void setCentre( Point2D centre ) {
 		this.centreX = (float)centre.getX();
 		this.centreY = (float)centre.getY();
-	}
+	}*/
 
 	public Point2D getCentre() {
 		return new Point2D.Float( centreX, centreY );
@@ -160,5 +174,26 @@ public class FlareFilter extends PointFilter {
 
 	public String toString() {
 		return "Stylize/Flare...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		//if((o=parameters.removeEL(KeyImpl.init("Centre")))!=null)setCentre(ImageFilterUtil.toPoint2D(o,"Centre"));
+		if((o=parameters.removeEL(KeyImpl.init("RingWidth")))!=null)setRingWidth(ImageFilterUtil.toFloatValue(o,"RingWidth"));
+		if((o=parameters.removeEL(KeyImpl.init("BaseAmount")))!=null)setBaseAmount(ImageFilterUtil.toFloatValue(o,"BaseAmount"));
+		if((o=parameters.removeEL(KeyImpl.init("RingAmount")))!=null)setRingAmount(ImageFilterUtil.toFloatValue(o,"RingAmount"));
+		if((o=parameters.removeEL(KeyImpl.init("RayAmount")))!=null)setRayAmount(ImageFilterUtil.toFloatValue(o,"RayAmount"));
+		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toColorRGB(o,"Color"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Centre, RingWidth, BaseAmount, RingAmount, RayAmount, Color, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }

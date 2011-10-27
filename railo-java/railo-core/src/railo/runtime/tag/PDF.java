@@ -1133,7 +1133,7 @@ public class PDF extends BodyTagImpl  {
 	}
 	
 
-	private PDFDocument toPDFDocument(Object source,String password, Resource directory) throws ExpressionException, IOException {
+	private PDFDocument toPDFDocument(Object source,String password, Resource directory) throws PageException, IOException {
 		
 		if(source instanceof PDFDocument) 
 			return (PDFDocument)source;

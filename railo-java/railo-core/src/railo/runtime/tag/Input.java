@@ -179,6 +179,15 @@ public class Input extends TagImpl {
         attributes.setEL("alt",alt);
     }
 
+
+    public void setAutocomplete(String autocomplete) {
+    	attributes.setEL("autocomplete",autocomplete);
+    }
+    public void setAutofocus(String autofocus) {
+        attributes.setEL("autofocus",autofocus);
+    }
+    
+
 	public void setBorder(String border) {
         attributes.setEL("border",border);
     }
@@ -190,9 +199,32 @@ public class Input extends TagImpl {
     public void setDatasrc(String datasrc) {
         attributes.setEL("datasrc",datasrc);
     }
+
+    public void setForm(String form) {
+        attributes.setEL("form",form);
+    }
+    public void setFormaction(String formAction) {
+        attributes.setEL("formaction",formAction);
+    }
+    public void setFormenctype(String formenctype) {
+        attributes.setEL("formenctype",formenctype);
+    }
+    public void setFormmethod(String formmethod) {
+        attributes.setEL("formmethod",formmethod);
+    }
+    public void setFormnovalidate(String formnovalidate) {
+        attributes.setEL("formnovalidate",formnovalidate);
+    }
+    public void setFormtarget(String formtarget) {
+        attributes.setEL("formtarget",formtarget);
+    }
     
+
     public void setLang(String lang) {
         attributes.setEL("lang",lang);
+    }
+    public void setList(String list) {
+        attributes.setEL("list",list);
     }
     
     public void setDir(String dir) {
@@ -408,6 +440,22 @@ public class Input extends TagImpl {
     public void setMask(String mask) {
     	this.mask=mask;
     }
+
+    public void setMax(String max) {
+		attributes.setEL("max",max);
+	}
+    public void setMin(String min) {
+		attributes.setEL("min",min);
+	}
+    public void setMultiple(String multiple) {
+		attributes.setEL("multiple",multiple);
+	}
+    public void setPlaceholder(String placeholder) {
+		attributes.setEL("placeholder",placeholder);
+	}
+    
+    
+    
     /**
      * @param daynames The daynames to set.
      */
@@ -730,9 +778,12 @@ public class Input extends TagImpl {
     	throw notSupported("sourceForTooltip");
     	//attributes.setEL("bind",bind);
     }
-    public void setSrc(String src) throws ExpressionException {
-    	throw notSupported("src");
-    	//attributes.setEL("src",src);
+    
+    public void setSrc(String src) {
+    	attributes.setEL("src",src);
+    }
+    public void setStep(String step) {
+    	attributes.setEL("step",step);
     }
     public void setTypeahead(boolean typeahead) throws ExpressionException {
     	throw notSupported("typeahead");

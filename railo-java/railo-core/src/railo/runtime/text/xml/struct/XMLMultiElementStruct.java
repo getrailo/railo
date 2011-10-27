@@ -16,7 +16,8 @@ import railo.runtime.type.KeyImpl;
  */
 public final class XMLMultiElementStruct extends XMLElementStruct {
 
-    private Array array;
+	private static final long serialVersionUID = -4921231279765525776L;
+	private Array array;
     
     /**
      * Constructor of the class

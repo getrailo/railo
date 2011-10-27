@@ -16,25 +16,6 @@ public class SQLPrettyfier {
 	public static final String PLACEHOLDER_QUESTION="QUESTION_MARK_SIGN";
 	
 	
-
-	/*
-	 public static final String reseved_words[] = {
-	        "all", "and", "any", "asc", 
-	        "avg", "between", "binary_integer", "boolean", 
-	        "char", "comment", "commit", "connect", "count", 
-	        "date", "delete", "desc", "distinct", "exclusive", 
-	        "exists", "exit", "float", "for", "from", 
-	        "group", "having", "in", "insert", "integer", 
-	        "intersect", "into", "is", "like", "lock", 
-	        "max", "min", "minus", "mode", "natural", 
-	        "not", "nowait", "null", "number", "of", 
-	        "only", "or", "order", "prior", "quit", 
-	        "read", "real", "rollback", "row", "select", 
-	        "set", "share", "smallint", "start", "sum", 
-	        "table", "transaction", "union", "update", "values", 
-	        "varchar2", "varchar", "where", "with", "work", "write" 
-	    };*/
-	
 	
 	public static String prettyfie(String sql){
 		return prettyfie(sql,false);

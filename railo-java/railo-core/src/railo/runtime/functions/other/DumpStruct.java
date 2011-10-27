@@ -95,15 +95,15 @@ public final class DumpStruct implements Function {
 	}
 	
 	private static Struct toCFML(DumpTable dt, Object object, RefBoolean hasReference) {
-		StructImpl sct=new StructImpl();
-		StructUtil.setELIgnoreWhenNull(sct,"borderColor",dt.getBorderColor());
-		StructUtil.setELIgnoreWhenNull(sct,"comment",dt.getComment());
-		StructUtil.setELIgnoreWhenNull(sct,"fontColor",dt.getFontColor());
-		StructUtil.setELIgnoreWhenNull(sct,"height",dt.getHeight());
-		StructUtil.setELIgnoreWhenNull(sct,"highLightColor",dt.getHighLightColor());
-		StructUtil.setELIgnoreWhenNull(sct,"normalColor",dt.getNormalColor());
-		StructUtil.setELIgnoreWhenNull(sct,"title",dt.getTitle());
-		StructUtil.setELIgnoreWhenNull(sct,"width",dt.getWidth());
+		Struct sct=new StructImpl();
+		StructUtil.setELIgnoreWhenNull(sct,"borderColor", toShortColor(dt.getBorderColor()));
+		StructUtil.setELIgnoreWhenNull(sct,"comment", dt.getComment());
+		StructUtil.setELIgnoreWhenNull(sct,"fontColor", toShortColor(dt.getFontColor()));
+		StructUtil.setELIgnoreWhenNull(sct,"height", dt.getHeight());
+		StructUtil.setELIgnoreWhenNull(sct,"width", dt.getWidth());
+		StructUtil.setELIgnoreWhenNull(sct,"highLightColor", toShortColor(dt.getHighLightColor()));
+		StructUtil.setELIgnoreWhenNull(sct,"normalColor", toShortColor(dt.getNormalColor()));
+		StructUtil.setELIgnoreWhenNull(sct,"title", dt.getTitle());
 		
 		if(dt instanceof DumpTablePro){
 			DumpTablePro dtp = (DumpTablePro)dt;
@@ -114,7 +114,6 @@ public final class DumpStruct implements Function {
 				hasReference.setValue(true);
 				sct.setEL("ref", dtp.getRef());
 			}
-			
 		}
 		
 		DumpRow[] drs = dt.getRows();
@@ -134,7 +133,7 @@ public final class DumpStruct implements Function {
 		sct.setEL("data", qry);
 		return sct;
 	}
-		
+
 	private static String[] toColumns(DumpData[] items) {
 		String[] columns=new String[items.length+1];
 		columns[0]="highlight";
@@ -158,5 +157,17 @@ public final class DumpStruct implements Function {
 			return template+":"+line;
 		}
 		return null;
+	}
+		
+	private static Object toShortColor(String color) {
+		if(color!=null && color.length()==7 && color.startsWith("#")) {
+			if(color.charAt(1)==color.charAt(2) && color.charAt(3)==color.charAt(4) && color.charAt(5)==color.charAt(6))
+				return "#"+color.charAt(1)+color.charAt(3)+color.charAt(5);
+			
+			
+		} 
+		
+		
+		return color;
 	}
 }

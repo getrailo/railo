@@ -6,21 +6,18 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.config.CacheConfiguration;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ResourceNameFilter;
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Struct;
 
 public class EHCache extends EHCacheSupport {
@@ -483,8 +480,7 @@ public class EHCache extends EHCacheSupport {
 	 * @see railo.commons.io.cache.Cache#init(railo.runtime.type.Struct)
 	 */
 	public void init(String cacheName, Struct arguments) throws IOException {
-		CFMLEngine engine = CFMLEngineFactory.getInstance();
-		init(engine.getThreadPageContext().getConfig(),cacheName, arguments);
+		init(ThreadLocalPageContext.getConfig(),cacheName, arguments);
 		
 	}
 	public void init(Config config,String cacheName, Struct arguments) {
@@ -495,6 +491,8 @@ public class EHCache extends EHCacheSupport {
 		setClassLoader();
 		Resource hashDir = config.getConfigDir().getRealResource("ehcache").getRealResource(createHash(arguments));
 		manager =((CacheManagerAndHash) managers.get(hashDir.getAbsolutePath())).manager;
+		
+		
 	} 
 
 	private void setClassLoader() {
@@ -502,27 +500,9 @@ public class EHCache extends EHCacheSupport {
 			Thread.currentThread().setContextClassLoader(classLoader);
 	}
 
-	private net.sf.ehcache.Cache getCache() {
+	protected net.sf.ehcache.Cache getCache() {
 		setClassLoader();
 		return manager.getCache(cacheName);
-	}
-	
-
-	/**
-	 * @see railo.commons.io.cache.Cache#contains(String)
-	 */
-	public boolean contains(String key) {
-		if(!getCache().isKeyInCache(key))return false;
-		return getCache().get(key)!=null;
-		
-	}
-
-	/**
-	 * @see railo.commons.io.cache.Cache#keys()
-	 */
-	public List keys() {
-		//return ((net.sf.ehcache.Cache)managers.get(cacheName)).getKeysWithExpiryCheck();
-		return getCache().getKeysWithExpiryCheck();
 	}
 
 	/**
@@ -535,19 +515,6 @@ public class EHCache extends EHCacheSupport {
 		catch(Throwable t){
 			return false;
 		}
-	}
-
-
-	
-
-	/**
-	 * @see railo.commons.io.cache.Cache#put(String, java.lang.Object, java.lang.Long, java.lang.Long)
-	 */
-	public void put(String key, Object value, Long idleTime, Long liveTime) {
-		Boolean eternal = idleTime==null && liveTime==null?Boolean.TRUE:Boolean.FALSE;
-		Integer idle = idleTime==null?null:new Integer((int)idleTime.longValue()/1000);
-		Integer live = liveTime==null?null:new Integer((int)liveTime.longValue()/1000);
-		getCache().put(new Element(key, value ,eternal, idle, live));
 	}
 
 	public CacheEntry getCacheEntry(String key) throws CacheException {
@@ -632,35 +599,12 @@ public class EHCache extends EHCacheSupport {
 		return misses;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getCustomInfo()
-	 */
-	public Struct getCustomInfo() {
-		Struct info=super.getCustomInfo();
-		// custom
-		CacheConfiguration conf = getCache().getCacheConfiguration();
-		info.setEL("disk_expiry_thread_interval", new Double(conf.getDiskExpiryThreadIntervalSeconds()));
-		info.setEL("disk_spool_buffer_size", new Double(conf.getDiskSpoolBufferSizeMB()*1024*1024));
-		info.setEL("max_elements_in_memory", new Double(conf.getMaxElementsInMemory()));
-		info.setEL("max_elements_on_disk", new Double(conf.getMaxElementsOnDisk()));
-		info.setEL("time_to_idle", new Double(conf.getTimeToIdleSeconds()));
-		info.setEL("time_to_live", new Double(conf.getTimeToLiveSeconds()));
-		info.setEL("name", conf.getName());
-		
-		
-		return info;
-	}
-
 	public void remove() {
 		setClassLoader();
 		CacheManager singletonManager = CacheManager.getInstance();
 		if(singletonManager.cacheExists(cacheName))
 			singletonManager.removeCache(cacheName);
 		
-	}
-
-	public CacheEntry getQuiet(String key) {
-		return new EHCacheEntry(getCache().getQuiet(key));
 	}
 
 	

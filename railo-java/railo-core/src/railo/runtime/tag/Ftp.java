@@ -40,11 +40,11 @@ public final class Ftp extends TagImpl {
     
     private static final String ASCCI_EXT_LIST="txt;htm;html;cfm;cfml;shtm;shtml;css;asp;asa";
 
-	private static final Key SUCCEEDED = KeyImpl.getInstance("succeeded");
-	private static final Key ERROR_CODE = KeyImpl.getInstance("errorCode");
-	private static final Key ERROR_TEXT = KeyImpl.getInstance("errorText");
-	private static final Key RETURN_VALUE = KeyImpl.getInstance("returnValue");
-	private static final Key CFFTP = KeyImpl.getInstance("cfftp");
+	private static final Key SUCCEEDED = KeyImpl.intern("succeeded");
+	private static final Key ERROR_CODE = KeyImpl.intern("errorCode");
+	private static final Key ERROR_TEXT = KeyImpl.intern("errorText");
+	private static final Key RETURN_VALUE = KeyImpl.intern("returnValue");
+	private static final Key CFFTP = KeyImpl.intern("cfftp");
 	/*private static final Key  = KeyImpl.getInstance();
 	private static final Key  = KeyImpl.getInstance();
 	private static final Key  = KeyImpl.getInstance();

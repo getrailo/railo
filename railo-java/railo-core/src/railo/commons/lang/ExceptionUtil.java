@@ -1,9 +1,12 @@
 package railo.commons.lang;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
+import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.type.List;
@@ -45,5 +48,15 @@ public final class ExceptionUtil {
 				return keyLabel+" ["+keySearched+"] does not exist, but there is a similar "+keyLabel+" ["+keys[i]+"] available, complete list of all available "+keyLabels+" ["+list+"]";
 		}
 		return keyLabel+" ["+keySearched+"] does not exist, only the followings are available "+keyLabels+" ["+list+"]";
+	}
+
+	public static IOException toIOException(Throwable t) {
+		if(t instanceof IOException) return (IOException) t;
+		if(t instanceof InvocationTargetException) return toIOException(((InvocationTargetException) t).getCause());
+		if(t instanceof NativeException) return toIOException(((NativeException)t).getCause());
+		
+		IOException ioe = new IOException(t.getClass().getName()+":"+t.getMessage());
+		ioe.setStackTrace(t.getStackTrace());
+		return ioe;
 	}
 }

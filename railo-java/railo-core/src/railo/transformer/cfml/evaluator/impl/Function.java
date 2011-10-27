@@ -92,7 +92,7 @@ public final class Function extends EvaluatorSupport {
 		for (int i = 0; i < flibs.length; i++) {
 			flf = flibs[i].getFunction(name);
 			if(flf!=null && flf.getCazz()!=CFFunction.class) {
-				throw new EvaluatorException("The name ["+name+"] is already used by a Build in Function");
+				throw new EvaluatorException("The name ["+name+"] is already used by a built in Function");
 			}
 		}
 	}

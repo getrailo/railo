@@ -60,7 +60,35 @@
         <cfreturn config>
     </cffunction>
 
-	<cffunction name="createAppFolder" output="no"
+	<cffunction name="createUIDFolder" output="no"
+    	hint="create a new step cfc">
+    	<cfargument name="uid" type="string">
+        
+        <cfset var info="">
+        <cfset var data.directory="">
+        <cfadmin 
+            action="getExtensionInfo"
+            type="#request.adminType#"
+            password="#session["password"&request.adminType]#"
+            returnVariable="info">
+        <cfset data.directory=info.directory>
+        
+        <!--- create directory --->
+		<cfset var dest=data.directory>
+        <cfif not DirectoryExists(dest)>
+            <cfdirectory directory="#dest#" action="create" mode="777">
+        </cfif>
+        
+        <!--- uid --->
+        <cfset dest=dest&"/"&arguments.uid>
+        <cfif not DirectoryExists(dest)>
+            <cfdirectory directory="#dest#" action="create" mode="777">
+        </cfif>
+        
+        <cfreturn dest>
+    </cffunction>
+    
+	<!---<cffunction name="createAppFolder" output="no"
     	hint="create a new step cfc">
     	<cfargument name="provider" type="string">
     	<cfargument name="app" type="string">
@@ -92,7 +120,7 @@
             <cfdirectory directory="#dest#" action="create" mode="777">
         </cfif>
         <cfreturn dest>
-    </cffunction>
+    </cffunction>--->
 	
 	<cffunction name="copyAppFile" output="no"
     	hint="create a new step cfc">
@@ -122,11 +150,8 @@
             <cfif isDefined('app.download') and len(trim(app.download))>
                 <cffile action="copy" source="#app.download#" destination="#destFile#" mode="777">
             <cfelse>
-            	
-            	<cfset var rtn=request.getDownloadDetails(url.provider,request.admintype,getRailoId()['server'].id,getRailoId()['web'].id,app.id,serialNumber)>
-                
+            	<cfset var rtn=request.getDownloadDetails(hash(app.provider),request.admintype,getRailoId()['server'].id,getRailoId()['web'].id,app.id,serialNumber)>
                 <cfif isDefined('rtn.url') and len(rtn.url)>
-                
                 	<cffile action="copy" source="#rtn.url#" destination="#destFile#" mode="777">
                     <cfset rtn.message="">
 				</cfif>

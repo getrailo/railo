@@ -5,6 +5,7 @@ import railo.commons.io.res.type.file.FileResourceProvider;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
@@ -23,9 +24,10 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 // FUTURE move to interface
 	public static final int TYPE_CACHE = 19;
 	public static final int TYPE_GATEWAY = 20;
+	public static final int TYPE_ORM = 21;
 
 
-	private short[] accesses=new short[21];
+	private short[] accesses=new short[22];
     
 
     //private ConfigWeb config;
@@ -66,7 +68,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	       short mail, short datasource, short mapping, short remote, short customTag,
 	       short cfxSetting, short cfxUsage, short debugging,
            short search, short scheduledTasks,
-	       short tagExecute, short tagImport, short tagObject, short tagRegistry, short cache, short gateway, short accessRead, short accessWrite) {
+	       short tagExecute, short tagImport, short tagObject, short tagRegistry, short cache, short gateway, short orm, short accessRead, short accessWrite) {
         accesses[TYPE_SETTING]=setting;
         accesses[TYPE_FILE]=file;
         accesses[TYPE_DIRECT_JAVA_ACCESS]=directJavaAccess;
@@ -86,6 +88,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         accesses[TYPE_TAG_REGISTRY]=tagRegistry;
         accesses[TYPE_CACHE]=cache;
         accesses[TYPE_GATEWAY]=gateway;
+        accesses[TYPE_ORM]=orm;
         accesses[TYPE_ACCESS_READ]=accessRead;
         accesses[TYPE_ACCESS_WRITE]=accessWrite;
         accesses[TYPE_REMOTE]=remote;
@@ -117,6 +120,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
                 VALUE_YES,  // Tag Registry
                 VALUE_YES,  // Cache
                 VALUE_YES,  // Gateway
+                VALUE_YES,  // ORM
               	ACCESS_OPEN,
               	ACCESS_PROTECTED);
         
@@ -167,6 +171,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         else if(accessType.equals("search")) return TYPE_SEARCH;
         else if(accessType.equals("cache")) return TYPE_CACHE;
         else if(accessType.equals("gateway")) return TYPE_GATEWAY;
+        else if(accessType.equals("orm")) return TYPE_ORM;
         else if(accessType.startsWith("scheduled_task")) return TYPE_SCHEDULED_TASK;
         else throw new SecurityException(
                 "invalid access type ["+accessType+"]", 
@@ -368,7 +373,16 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	}
 
 	private boolean isValid(Config config, String serverPassword) {
-    	if(config==null || StringUtil.isEmpty(serverPassword)) return false;
+		if(StringUtil.isEmpty(serverPassword,true)) {
+			try {
+				PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
+				serverPassword=pc.getServerPassword();
+			} 
+			catch (Throwable t) {}
+		}
+		config=ThreadLocalPageContext.getConfig(config);
+		
+		if(config==null || StringUtil.isEmpty(serverPassword,true)) return false;
 		try {
 			config.getConfigServer(serverPassword);
 			return true;

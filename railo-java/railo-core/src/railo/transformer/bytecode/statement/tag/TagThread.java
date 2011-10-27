@@ -62,7 +62,7 @@ public final class TagThread extends TagBase {
 		Page page = ASMUtil.getAncestorPage(this);
 		
 		int index=page.addThread(this);
-		super._writeOut(bc);
+		super._writeOut(bc,false);
 		
 		adapter.loadLocal(bc.getCurrentTag());
 		adapter.loadThis();

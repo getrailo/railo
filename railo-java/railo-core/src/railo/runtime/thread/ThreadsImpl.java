@@ -1,24 +1,23 @@
 package railo.runtime.thread;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.Thread.State;
 import java.util.Iterator;
 
-import railo.commons.io.IOUtil;
 import railo.runtime.PageContext;
-import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
+import railo.runtime.tag.Http;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -28,21 +27,22 @@ import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
 
-	private static final Key KEY_ERROR = KeyImpl.getInstance("ERROR");
-	private static final Key KEY_ELAPSEDTIME = KeyImpl.getInstance("ELAPSEDTIME");
-	private static final Key KEY_NAME = KeyImpl.getInstance("NAME");
-	private static final Key KEY_OUTPUT = KeyImpl.getInstance("OUTPUT");
-	private static final Key KEY_PRIORITY = KeyImpl.getInstance("PRIORITY");
-	private static final Key KEY_STARTTIME = KeyImpl.getInstance("STARTTIME");
-	private static final Key KEY_STATUS = KeyImpl.getInstance("STATUS");
+	private static final Key KEY_ERROR = KeyImpl.intern("ERROR");
+	private static final Key KEY_ELAPSEDTIME = KeyImpl.intern("ELAPSEDTIME");
+	private static final Key KEY_OUTPUT = KeyImpl.intern("OUTPUT");
+	private static final Key KEY_PRIORITY = KeyImpl.intern("PRIORITY");
+	private static final Key KEY_STARTTIME = KeyImpl.intern("STARTTIME");
+	private static final Key KEY_STATUS = KeyImpl.intern("STATUS");
+	private static final Key KEY_STACKTRACE = KeyImpl.intern("STACKTRACE");
 	
 	private static final Key[] DEFAULT_KEYS=new Key[]{
 		KEY_ELAPSEDTIME,
-		KEY_NAME,
+		KeyImpl.NAME_UC,
 		KEY_OUTPUT,
 		KEY_PRIORITY,
 		KEY_STARTTIME,
-		KEY_STATUS
+		KEY_STATUS,
+		KEY_STACKTRACE
 	};
 	
 	private ChildThreadImpl ct;
@@ -117,26 +117,37 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 
 	private Object getMeta(Key key) {
 		if(KEY_ELAPSEDTIME.equalsIgnoreCase(key)) return new Double(System.currentTimeMillis()-ct.getStartTime());
-		if(KEY_NAME.equalsIgnoreCase(key)) return ct.getTagName();
+		if(KeyImpl.NAME_UC.equalsIgnoreCase(key)) return ct.getTagName();
 		if(KEY_OUTPUT.equalsIgnoreCase(key)) return getOutput();
 		if(KEY_PRIORITY.equalsIgnoreCase(key)) return ThreadUtil.toStringPriority(ct.getPriority());
 		if(KEY_STARTTIME.equalsIgnoreCase(key)) return new DateTimeImpl(ct.getStartTime(),true);
 		if(KEY_STATUS.equalsIgnoreCase(key)) return getState();
 		if(KEY_ERROR.equalsIgnoreCase(key)) return ct.catchBlock;
+		if(KEY_STACKTRACE.equalsIgnoreCase(key)) return getStackTrace();
 		return null;
 	}
 
+	private String getStackTrace() {
+		StringBuilder sb=new StringBuilder();
+		try{
+			StackTraceElement[] trace = ct.getStackTrace();
+			if(trace!=null)for (int i=0; i < trace.length; i++) {
+	            sb.append("\tat ");
+	            sb.append(trace[i]);
+	            sb.append("\n");
+			}
+		}
+		catch(Throwable t){}
+		return sb.toString();
+	}
+
+
 	private Object getOutput() {
 		if(ct.output==null)return "";
+
+		InputStream is = new ByteArrayInputStream(ct.output.toByteArray());
+		return Http.getOutput(is, ct.contentType, ct.contentEncoding,true);
 		
-		Config config = ThreadLocalConfig.get();
-		String charset=null;
-		if(config!=null)charset=config.getWebCharset();
-		try {
-			return IOUtil.toString(ct.output.toByteArray(), charset);
-		} catch (IOException e) {
-			return "";
-		}
 	}
 
 

@@ -81,19 +81,19 @@ public interface Scope extends Struct {
 	 * return if the scope is Initialiesd
 	 * @return scope is init
 	 */
-	public boolean isInitalized(); // FUTURE dies sollte nicht bei scope sein sonder interface RequestScope
+	public boolean isInitalized(); 
 	
 	/**
 	 * Initalize Scope
 	 * @param pc Page Context
 	 */
-	public void initialize(PageContext pc); // FUTURE dies sollte nicht bei scope sein sonder interface RequestScope
+	public void initialize(PageContext pc);
 	
 	/**
 	 * release scope for reuse
 	 */
-	public void release();// FUTURE dies sollte nicht bei scope sein sonder interface RequestScope
-    
+	public void release();// FUTURE add PageContext
+	
     /** 
      * @return return the scope type (SCOPE_SERVER, SCOPE_SESSION usw.) 
      */ 

@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.BasicStroke;
+package railo.runtime.img.filter;import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -25,7 +23,14 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ScratchFilter extends AbstractBufferedImageOp {
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
+
+public class ScratchFilter extends AbstractBufferedImageOp  implements DynFiltering {
     private float density = 0.1f;
     private float angle;
     private float angleVariation = 1.0f;
@@ -157,5 +162,22 @@ if ( false ) {
     
 	public String toString() {
 		return "Render/Scratches...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=src;//ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Angle")))!=null)setAngle(ImageFilterUtil.toFloatValue(o,"Angle"));
+		if((o=parameters.removeEL(KeyImpl.init("Density")))!=null)setDensity(ImageFilterUtil.toFloatValue(o,"Density"));
+		if((o=parameters.removeEL(KeyImpl.init("AngleVariation")))!=null)setAngleVariation(ImageFilterUtil.toFloatValue(o,"AngleVariation"));
+		if((o=parameters.removeEL(KeyImpl.init("Length")))!=null)setLength(ImageFilterUtil.toFloatValue(o,"Length"));
+		if((o=parameters.removeEL(KeyImpl.init("Seed")))!=null)setSeed(ImageFilterUtil.toIntValue(o,"Seed"));
+		if((o=parameters.removeEL(KeyImpl.init("Color")))!=null)setColor(ImageFilterUtil.toColorRGB(o,"Color"));
+		if((o=parameters.removeEL(KeyImpl.init("Width")))!=null)setWidth(ImageFilterUtil.toFloatValue(o,"Width"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Angle, Density, AngleVariation, Length, Seed, Color, Width]");
+		}
+
+		return filter(src, dst);
 	}
 }

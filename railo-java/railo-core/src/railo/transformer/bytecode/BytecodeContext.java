@@ -117,11 +117,11 @@ public class BytecodeContext {
 
 	public String registerKey(LitString lit)  {
 		int index = keys.indexOf(lit);
-		if(index!=-1)return "key"+(index+1);// calls the toString method of litString
+		if(index!=-1)return "k"+(index+1);// calls the toString method of litString
 		
 		keys.add(lit);
 		
-		return "key"+(keys.size());
+		return "k"+(keys.size());
 	}
 
 	public List getKeys() {

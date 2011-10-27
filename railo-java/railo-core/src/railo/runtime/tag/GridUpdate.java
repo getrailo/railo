@@ -80,14 +80,6 @@ public final class GridUpdate extends TagImpl {
 		this.tablename=tablename;
 	}
 
-	/** set the value connectstring
-	*  The contents of a connection string to send to the ODBC server. When connecting to a data 
-	* 	source defined in the ColdFusion Administrator, you can use this attribute to specify additional 
-	* 	connection details or to override connection information specified in the Administrator. If you are 
-	* 	dynamically connecting to a datasource by specifying dbType = "dynamic", the connection string must 
-	* 	specify all required ODBC connection attributes.
-	* @param connectstring value to set
-	**/
 	public void setConnectstring(String connectstring)	{
 		this.connectstring=connectstring;
 	}

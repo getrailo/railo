@@ -24,12 +24,12 @@ public class CFFunction {
 	
 	
 	private static final Variables VAR = new VariablesImpl();
-	private static final Collection.Key CALLER = KeyImpl.init("caller");
+	private static final Collection.Key CALLER = KeyImpl.intern("caller");
 	//private static Map udfs=new ReferenceMap();
 	
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
 		if(objArr.length<3)
-			throw new ExpressionException("invalid call of a CFML Based Build in Function");
+			throw new ExpressionException("invalid call of a CFML Based built in function");
 		
 		// translate arguments
 		String filename=Caster.toString((((FunctionValue) objArr[0]).getValue()));

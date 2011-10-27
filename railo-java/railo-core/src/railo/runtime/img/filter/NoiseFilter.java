@@ -14,14 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 import java.util.Random;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * A filter which adds random noise into an image.
  */
-public class NoiseFilter extends PointFilter {
+public class NoiseFilter extends PointFilter  implements DynFiltering {
 	
     /**
      * Gaussian distribution for the noise.
@@ -148,5 +155,23 @@ public class NoiseFilter extends PointFilter {
 
 	public String toString() {
 		return "Stylize/Add Noise...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Amount")))!=null)setAmount(ImageFilterUtil.toIntValue(o,"Amount"));
+		if((o=parameters.removeEL(KeyImpl.init("Monochrome")))!=null)setMonochrome(ImageFilterUtil.toBooleanValue(o,"Monochrome"));
+		if((o=parameters.removeEL(KeyImpl.init("Density")))!=null)setDensity(ImageFilterUtil.toFloatValue(o,"Density"));
+		if((o=parameters.removeEL(KeyImpl.init("Distribution")))!=null)setDistribution(ImageFilterUtil.toIntValue(o,"Distribution"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Monochrome, Density, Distribution, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }

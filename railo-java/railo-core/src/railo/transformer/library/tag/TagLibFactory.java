@@ -56,12 +56,14 @@ public final class TagLibFactory extends DefaultHandler {
 	
 	private TagLibTag tag;
 	private boolean insideTag=false;
+	private boolean insideScript=false;
 	
 	private TagLibTagAttr att;
 	private boolean insideAtt=false;
 
 	private String inside;
 	private StringBuffer content=new StringBuffer();
+	private TagLibTagScript script;
 	// System default tld
 	private final static String TLD_1_0=	"/resource/tld/web-cfmtaglibrary_1_0";
 		
@@ -156,7 +158,8 @@ public final class TagLibFactory extends DefaultHandler {
 		
 		
 		if(qName.equals("tag")) startTag();
-		if(qName.equals("attribute")) startAtt();
+		else if(qName.equals("attribute")) startAtt();
+		else if(qName.equals("script")) startScript();
 		
 	}
     
@@ -177,7 +180,8 @@ public final class TagLibFactory extends DefaultHandler {
 		}
 		*/
 		if(qName.equals("tag")) endTag();
-		if(qName.equals("attribute")) endAtt();
+		else if(qName.equals("attribute")) endAtt();
+		else if(qName.equals("script")) endScript();
 	}
 	
 	
@@ -214,6 +218,14 @@ public final class TagLibFactory extends DefaultHandler {
 				else if(inside.equals("description")) att.setDescription(value);
 				// default
 				else if(inside.equals("default")) att.isDefault(Caster.toBooleanValue(value,false));
+				else if(inside.equals("script-support")) att.setScriptSupport(value);
+    		}
+    		else if(insideScript)	{
+    			// type
+    			if(inside.equals("type")) script.setType(value);
+    			if(inside.equals("rtexprvalue")) script.setRtexpr(Caster.toBooleanValue(value,false));
+    			if(inside.equals("context")) script.setContext(value);
+				
     		}
     		// Tag Args
     		else	{
@@ -330,6 +342,21 @@ public final class TagLibFactory extends DefaultHandler {
 		lib.setTag(tag);
     	insideTag=false;
     }
+	
+	private void startScript()	{
+    	script=new TagLibTagScript(tag);
+    	insideScript=true;
+    }
+	
+	/**
+	 * Wird jedesmal wenn das Tag tag endet aufgerufen, um intern in einen anderen Zustand zu gelangen.
+	 */
+	private void endScript()	{
+		tag.setScript(script);
+    	insideScript=false;
+    }
+	
+	
 	
 	/**
 	 * Wird jedesmal wenn das Tag attribute beginnt aufgerufen, um intern in einen anderen Zustand zu gelangen.

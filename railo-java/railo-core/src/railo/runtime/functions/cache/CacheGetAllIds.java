@@ -32,7 +32,7 @@ public final class CacheGetAllIds implements Function {
 	
 	public static Array call(PageContext pc, String filter, String cacheName) throws PageException {
 		try {
-			Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			List keys = isFilter(filter)?cache.keys(new WildCardFilter(filter,true)):cache.keys();
 			Iterator it = keys.iterator();
 			Array arr = new ArrayImpl();

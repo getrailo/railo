@@ -1,6 +1,5 @@
 package railo.runtime.tag;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.compress.ZipUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.FileResourceFilter;
@@ -37,14 +37,6 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 
-/**
-* Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
-*   the page. To accomplish this, cfcache creates temporary files that contain the static HTML returned from
-*   a ColdFusion page. You can use cfcache for simple URLs and URLs that contain URL parameters.
-*
-*
-*
-**/
 public final class Zip extends BodyTagImpl {
 
 	private String action="zip";
@@ -449,6 +441,13 @@ public final class Zip extends BodyTagImpl {
 
 	private void actionZip() throws PageException, IOException {
 		required("file",file,false);
+		Resource dir = file.getParentResource();
+		
+		if(!dir.exists()) {
+			throw new ApplicationException("directory ["+dir.toString()+"] doesn't exist"); 
+		}
+		
+		
 		
 		if((params==null || params.isEmpty()) && source!=null) {
 			setParam(new ZipParamSource(source,entryPath,filter,prefix,recurse));
@@ -471,7 +470,7 @@ public final class Zip extends BodyTagImpl {
 				IOUtil.copy(file, existing);
 			}
 			
-			zos = new ZipOutputStream(IOUtil.toBufferedOutputStream(file.getOutputStream()));
+				zos = new ZipOutputStream(IOUtil.toBufferedOutputStream(file.getOutputStream()));
 
 			Object[] arr = params.toArray();
 			for(int i=arr.length-1;i>=0;i--) {
@@ -496,7 +495,7 @@ public final class Zip extends BodyTagImpl {
 			}
 		}
 		finally {
-			zos.close();
+			ZipUtil.cloeseEL(zos);
 			if(existing!=null)existing.delete();
 			
 		}
@@ -511,7 +510,7 @@ public final class Zip extends BodyTagImpl {
 
 
 
-	private void actionZip(ZipOutputStream zos, ZipParamContent zpc) throws ExpressionException, IOException {
+	private void actionZip(ZipOutputStream zos, ZipParamContent zpc) throws PageException, IOException {
 		Object content = zpc.getContent();
 		if(Decision.isBinary(content)) {
 			add(zos, new ByteArrayInputStream(Caster.toBinary(content)), zpc.getEntryPath(), System.currentTimeMillis(), true);

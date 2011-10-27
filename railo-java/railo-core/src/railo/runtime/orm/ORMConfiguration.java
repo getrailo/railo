@@ -31,24 +31,27 @@ public class ORMConfiguration {
 	public static final int DBCREATE_UPDATE=1;
 	public static final int DBCREATE_DROP_CREATE=2;
 	
-	public static final Collection.Key AUTO_GEN_MAP = KeyImpl.getInstance("autogenmap");
-	public static final Collection.Key CATALOG = KeyImpl.getInstance("catalog");
-	public static final Collection.Key CFC_LOCATION = KeyImpl.getInstance("cfcLocation");
-	public static final Collection.Key IS_DEFAULT_CFC_LOCATION = KeyImpl.getInstance("isDefaultCfclocation");
-	public static final Collection.Key DB_CREATE = KeyImpl.getInstance("dbCreate");
-	public static final Collection.Key DIALECT = KeyImpl.getInstance("dialect");
-	public static final Collection.Key FLUSH_AT_REQUEST_END = KeyImpl.getInstance("flushAtRequestEnd");
-	public static final Collection.Key LOG_SQL = KeyImpl.getInstance("logSql");
-	public static final Collection.Key SAVE_MAPPING = KeyImpl.getInstance("savemapping");
-	public static final Collection.Key SCHEMA = KeyImpl.getInstance("schema");
-	public static final Collection.Key SECONDARY_CACHE_ENABLED = KeyImpl.getInstance("secondarycacheenabled");
-	public static final Collection.Key SQL_SCRIPT = KeyImpl.getInstance("sqlscript");
-	public static final Collection.Key USE_DB_FOR_MAPPING = KeyImpl.getInstance("useDBForMapping");
-	public static final Collection.Key CACHE_CONFIG = KeyImpl.getInstance("cacheconfig");
-	public static final Collection.Key CACHE_PROVIDER = KeyImpl.getInstance("cacheProvider");
-	public static final Collection.Key ORM_CONFIG = KeyImpl.getInstance("ormConfig");
-	public static final Collection.Key EVENT_HANDLING = KeyImpl.getInstance("eventHandling");
-	public static final Collection.Key EVENT_HANDLER = KeyImpl.getInstance("eventHandler");
+	public static final Collection.Key AUTO_GEN_MAP = KeyImpl.intern("autogenmap");
+	public static final Collection.Key CATALOG = KeyImpl.intern("catalog");
+	public static final Collection.Key CFC_LOCATION = KeyImpl.intern("cfcLocation");
+	public static final Collection.Key IS_DEFAULT_CFC_LOCATION = KeyImpl.intern("isDefaultCfclocation");
+	public static final Collection.Key DB_CREATE = KeyImpl.intern("dbCreate");
+	public static final Collection.Key DIALECT = KeyImpl.intern("dialect");
+	public static final Collection.Key FLUSH_AT_REQUEST_END = KeyImpl.intern("flushAtRequestEnd");
+	public static final Collection.Key LOG_SQL = KeyImpl.intern("logSql");
+	public static final Collection.Key SAVE_MAPPING = KeyImpl.intern("savemapping");
+	public static final Collection.Key SCHEMA = KeyImpl.intern("schema");
+	public static final Collection.Key SECONDARY_CACHE_ENABLED = KeyImpl.intern("secondarycacheenabled");
+	public static final Collection.Key SQL_SCRIPT = KeyImpl.intern("sqlscript");
+	public static final Collection.Key USE_DB_FOR_MAPPING = KeyImpl.intern("useDBForMapping");
+	public static final Collection.Key CACHE_CONFIG = KeyImpl.intern("cacheconfig");
+	public static final Collection.Key CACHE_PROVIDER = KeyImpl.intern("cacheProvider");
+	public static final Collection.Key ORM_CONFIG = KeyImpl.intern("ormConfig");
+	public static final Collection.Key EVENT_HANDLING = KeyImpl.intern("eventHandling");
+	public static final Collection.Key EVENT_HANDLER = KeyImpl.intern("eventHandler");
+	public static final Collection.Key AUTO_MANAGE_SESSION = KeyImpl.intern("autoManageSession");
+	public static final Collection.Key SKIP_WITH_ERROR = KeyImpl.intern("skipCFCWithError");
+	public static final Collection.Key NAMING_STRATEGY = KeyImpl.intern("namingstrategy");
 	
 	
 	private boolean autogenmap=true;
@@ -68,7 +71,10 @@ public class ORMConfiguration {
 	private String cacheProvider;
 	private Resource ormConfig;
 	private String eventHandler;
+	private String namingStrategy;
 	private boolean isDefaultCfcLocation=true;
+	private boolean skipCFCWithError=true;
+	private boolean autoManageSession=true;
 
 	private ORMConfiguration(){
 		autogenmap=true;
@@ -156,12 +162,13 @@ public class ORMConfiguration {
 		// dialect
 		c.dialect = StringUtil.trim(Caster.toString(settings.get(DIALECT,dc.getDialect()),dc.getDialect()),dc.getDialect());
 		
+		// namingstrategy
+		c.namingStrategy=Caster.toString(settings.get(NAMING_STRATEGY,dc.namingStrategy()),dc.namingStrategy());
 		
 		// eventHandler
 		c.eventHandler=Caster.toString(settings.get(EVENT_HANDLER,dc.eventHandler()),dc.eventHandler());
 		
 		// eventHandling
-		
 		Boolean b=Caster.toBoolean(settings.get(EVENT_HANDLING,null),null);
 		if(b==null) {
 			if(dc.eventHandling!=null && dc.eventHandling) 
@@ -177,6 +184,13 @@ public class ORMConfiguration {
 		// logSQL
 		c.logSQL=Caster.toBooleanValue(settings.get(LOG_SQL,dc.logSQL()),dc.logSQL());
 		
+
+		// autoManageSession
+		c.autoManageSession=Caster.toBooleanValue(settings.get(AUTO_MANAGE_SESSION,dc.autoManageSession()),dc.autoManageSession());
+		
+		// skipCFCWithError
+		c.skipCFCWithError=Caster.toBooleanValue(settings.get(SKIP_WITH_ERROR,dc.skipCFCWithError()),dc.skipCFCWithError());
+		
 		// savemapping
 		c.saveMapping=Caster.toBooleanValue(settings.get(SAVE_MAPPING,dc.saveMapping()),dc.saveMapping());
 		
@@ -188,11 +202,11 @@ public class ORMConfiguration {
 		
 		// sqlscript
 		obj = settings.get(SQL_SCRIPT,null);
-		if(obj!=null){
+		if(!StringUtil.isEmpty(obj)){
 			try {
-				c.sqlScript=Caster.toResource(config, obj, true);
+				c.sqlScript=toRes(config, obj, true);
 			} catch (ExpressionException e) {
-				//print.printST(e);
+				//print.e(e);
 			}
 		}
 		
@@ -201,9 +215,9 @@ public class ORMConfiguration {
 		
 		// cacheconfig
 		obj = settings.get(CACHE_CONFIG,null);
-		if(obj!=null){
+		if(!StringUtil.isEmpty(obj)){
 			try {
-				c.cacheConfig=Caster.toResource(config, obj, true);
+				c.cacheConfig=toRes(config, obj, true);
 			} catch (ExpressionException e) {
 				//print.printST(e);
 			}
@@ -214,9 +228,9 @@ public class ORMConfiguration {
 		
 		// ormconfig
 		obj = settings.get(ORM_CONFIG,null);
-		if(obj!=null){
+		if(!StringUtil.isEmpty(obj)){
 			try {
-				c.ormConfig=Caster.toResource(config, obj, true);
+				c.ormConfig=toRes(config, obj, true);
 			} catch (ExpressionException e) {
 				//print.printST(e);
 			}
@@ -225,21 +239,40 @@ public class ORMConfiguration {
 		return c;
 	}	
 
+	private static Resource toRes(Config config, Object obj, boolean existing) throws ExpressionException {
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc!=null)return Caster.toResource(pc, obj, existing);
+		return Caster.toResource(config, obj, existing);
+	}
+
+
+
+
+
+
 	private static Resource toResourceExisting(Config config, Object obj) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(path,true)) return null;
 		path=path.trim();
-		Resource res = ResourceUtil.toResourceNotExisting(config, path);
-		if(res.isDirectory()) return res;
-		res=config.getRootDirectory().getRealResource(path);
-		if(res.isDirectory()) return res;
+		Resource res;
 		
+		// first check local
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
 			res=ResourceUtil.toResourceNotExisting(pc, path);
 			if(res.isDirectory()) return res;
 		}
+		
+		// then in the webroot
+		res=config.getRootDirectory().getRealResource(path);
+		if(res.isDirectory()) return res;
+		
+		// then absolute
+		res = ResourceUtil.toResourceNotExisting(config, path);
+		if(res.isDirectory()) return res;
+		
+		
 		
 		return null;
 	}
@@ -262,6 +295,7 @@ public class ORMConfiguration {
 		other.dbCreate=dbCreate;
 		other.dialect=dialect;
 		other.eventHandler=eventHandler;
+		other.namingStrategy=namingStrategy;
 		other.eventHandling=eventHandling;
 		other.flushAtRequestEnd=flushAtRequestEnd;
 		other.logSQL=logSQL;
@@ -273,14 +307,15 @@ public class ORMConfiguration {
 		other.cacheConfig=cacheConfig;
 		other.cacheProvider=cacheProvider;
 		other.ormConfig=ormConfig;
-		
+		other.autoManageSession=autoManageSession;
+		other.skipCFCWithError=skipCFCWithError;
 		return other;
 	}
 
 	public String hash() {
 		
 		String data=autogenmap+":"+catalog+":"+isDefaultCfcLocation
-		+":"+dbCreate+":"+dialect+":"+eventHandling+":"+eventHandler+":"+flushAtRequestEnd+":"+logSQL+":"+saveMapping+":"+schema+":"+secondaryCacheEnabled+":"+
+		+":"+dbCreate+":"+dialect+":"+eventHandling+":"+namingStrategy+":"+eventHandler+":"+flushAtRequestEnd+":"+logSQL+":"+autoManageSession+":"+skipCFCWithError+":"+saveMapping+":"+schema+":"+secondaryCacheEnabled+":"+
 		useDBForMapping+":"+cacheProvider
 		
 		+":"+toStr(cfcLocations)+":"+toStr(sqlScript)+":"+toStr(cacheConfig)+":"+toStr(ormConfig)
@@ -364,6 +399,12 @@ public class ORMConfiguration {
 		return eventHandler;
 	}
 
+	public String namingStrategy() {
+		return namingStrategy;
+	}
+	
+	
+
 	/**
 	 * @return the flushAtRequestEnd
 	 */
@@ -434,7 +475,12 @@ public class ORMConfiguration {
 		return ormConfig;
 	}
 
-
+	public boolean skipCFCWithError() {
+		return skipCFCWithError;
+	}
+	public boolean autoManageSession() {
+		return autoManageSession;
+	}
 
 
 
@@ -455,6 +501,7 @@ public class ORMConfiguration {
 		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));
 		sct.setEL(EVENT_HANDLING,eventHandling());
 		sct.setEL(EVENT_HANDLER,eventHandler());
+		sct.setEL(NAMING_STRATEGY,namingStrategy());
 		sct.setEL(FLUSH_AT_REQUEST_END,flushAtRequestEnd());
 		sct.setEL(LOG_SQL,logSQL());
 		sct.setEL(SAVE_MAPPING,saveMapping());
@@ -506,6 +553,13 @@ public class ORMConfiguration {
 	}
 
 
+
+
+
+
+	
+
+	
 
 
 

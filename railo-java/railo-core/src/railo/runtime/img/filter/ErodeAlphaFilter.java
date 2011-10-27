@@ -14,11 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.image.BufferedImage;
 
-import java.awt.image.BufferedImage;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class ErodeAlphaFilter extends PointFilter {
+public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 
 	private float threshold;
 	private float softness = 0;
@@ -61,7 +67,7 @@ public class ErodeAlphaFilter extends PointFilter {
 	}
 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-        dst = new GaussianFilter( (int)radius ).filter( src, null );
+        dst = new GaussianFilter( (int)radius ).filter( src, (BufferedImage)null );
         lowerThreshold = 255*(threshold - softness*0.5f);
         upperThreshold = 255*(threshold + softness*0.5f);
 		return super.filter(dst, dst);
@@ -85,5 +91,22 @@ public class ErodeAlphaFilter extends PointFilter {
 
 	public String toString() {
 		return "Alpha/Erode...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("Radius")))!=null)setRadius(ImageFilterUtil.toFloatValue(o,"Radius"));
+		if((o=parameters.removeEL(KeyImpl.init("Softness")))!=null)setSoftness(ImageFilterUtil.toFloatValue(o,"Softness"));
+		if((o=parameters.removeEL(KeyImpl.init("Threshold")))!=null)setThreshold(ImageFilterUtil.toFloatValue(o,"Threshold"));
+		if((o=parameters.removeEL(KeyImpl.init("Dimensions")))!=null){
+			int[] dim=ImageFilterUtil.toDimensions(o,"Dimensions");
+			setDimensions(dim[0],dim[1]);
+		}
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Softness, Threshold, Dimensions]");
+		}
+
+		return filter(src, dst);
 	}
 }

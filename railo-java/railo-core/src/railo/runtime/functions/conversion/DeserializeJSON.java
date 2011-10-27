@@ -22,11 +22,11 @@ import railo.runtime.type.Struct;
  */
 public final class DeserializeJSON implements Function {
 
-	private static final Key COLUMNS = KeyImpl.getInstance("COLUMNS");
-	private static final Key COLUMNLIST = KeyImpl.getInstance("COLUMNLIST");
-	private static final Key DATA = KeyImpl.getInstance("DATA");
-	private static final Key ROWCOUNT = KeyImpl.getInstance("ROWCOUNT");
-	private static final Key RECORDCOUNT = KeyImpl.getInstance("RECORDCOUNT");
+	private static final Key COLUMNS = KeyImpl.intern("COLUMNS");
+	private static final Key COLUMNLIST = KeyImpl.intern("COLUMNLIST");
+	private static final Key DATA = KeyImpl.intern("DATA");
+	private static final Key ROWCOUNT = KeyImpl.intern("ROWCOUNT");
+	private static final Key RECORDCOUNT = KeyImpl.intern("RECORDCOUNT");
 
 	public static Object call(PageContext pc, String JSONVar) throws PageException {
 	    return call(pc,JSONVar,true);
@@ -139,7 +139,7 @@ public final class DeserializeJSON implements Function {
 		
 		Array arr = Caster.toArray(obj,null);
 		if(arr!=null) {
-			ArrayImpl[] datas=new ArrayImpl[columns.length];
+			Array[] datas=new Array[columns.length];
 			for(int i=0;i<datas.length;i++) {
 				datas[i]=new ArrayImpl();
 			}
@@ -169,7 +169,7 @@ public final class DeserializeJSON implements Function {
 			while(it.hasNext()) {
 				column=Caster.toString(it.next(),null);
 				if(StringUtil.isEmpty(column)) return null;
-				columns[index++]=KeyImpl.init(column);
+				columns[index++]=KeyImpl.getInstance(column);
 			}
 			return columns;
 		}

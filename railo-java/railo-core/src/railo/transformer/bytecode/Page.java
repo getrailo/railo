@@ -17,6 +17,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.exp.TemplateException;
@@ -56,8 +57,13 @@ public final class Page extends BodyBase {
 	}
 
 	private static final Type KEY_IMPL = Type.getType(KeyImpl.class);
-	private static final Method GET_INSTANCE = new Method(
-			"getInstance",
+	private static final Method KEY_INIT = new Method(
+			"init",
+			Types.COLLECTION_KEY,
+			new Type[]{Types.STRING}
+    		);
+	private static final Method KEY_INTERN = new Method(
+			"intern",
 			Types.COLLECTION_KEY,
 			new Type[]{Types.STRING}
     		);
@@ -322,6 +328,9 @@ public final class Page extends BodyBase {
 			Types.VOID,
 			new Type[]{Types.PAGE_CONTEXT,Types.BODY_CONTENT}
     		);
+	public static final byte CF = (byte)207;
+	public static final byte _33 = (byte)51;
+	private static final boolean ADD_C33 = false;
 
 	
     private int version;
@@ -474,10 +483,10 @@ public final class Page extends BodyBase {
     // less/equal than 10 functions
         if(functions.length==0 || isInterface()){}
         else if(functions.length<=10) {
-        	
-            adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_CALL, null, new Type[]{Types.THROWABLE}, cw);
+        	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_CALL, null, new Type[]{Types.THROWABLE}, cw);
             BytecodeContext bc = new BytecodeContext(statConstr,constr,keys,cw,name,adapter,UDF_CALL,writeLog());
-        	if(functions.length==1){
+            if(functions.length==0){}
+            else if(functions.length==1){
         		ExpressionUtil.visitLine(bc,functions[0].getStartLine());
         		functions[0].getBody().writeOut(bc);
         		ExpressionUtil.visitLine(bc,functions[0].getEndLine());
@@ -616,11 +625,28 @@ public final class Page extends BodyBase {
         adapter.returnValue();
         adapter.endMethod();
     	
+        
+        if(ADD_C33) {
+        	byte[] tmp = cw.toByteArray();
+	        byte[] bLastMod=NumberUtil.longToByteArray(lastModifed);
+	        byte[] barr = new byte[tmp.length+10];
+	        // Magic Number
+	        barr[0]=CF; // CF
+	        barr[1]=_33; // 33
+	        
+	        // Last Modified
+	        for(int i=0;i<8;i++){
+	        	barr[i+2]=bLastMod[i];
+	        }
+	        for(int i=0;i<tmp.length;i++){
+	        	barr[i+10]=tmp[i];
+	        }
+	        return barr;
+        }
         return cw.toByteArray();
  	
     }
     
-
 
 
 
@@ -643,16 +669,19 @@ public final class Page extends BodyBase {
 		
 		
 		while(it.hasNext()) {
-			name="key"+(++count);
+			name="k"+(++count);
 			value=(LitString) it.next();
 			
 
 			FieldVisitor fv = staticBC.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, 
 					name, "Lrailo/runtime/type/Collection$Key;", null, null);
 			fv.visitEnd();
-			
 			ExpressionUtil.writeOutSilent(value,staticBC, Expression.MODE_REF);
-			statcConst.invokeStatic(KEY_IMPL, GET_INSTANCE);
+			if(value instanceof Literal)
+				statcConst.invokeStatic(KEY_IMPL, KEY_INTERN);
+			else 
+				statcConst.invokeStatic(KEY_IMPL, KEY_INIT);
+			
 			statcConst.visitFieldInsn(Opcodes.PUTSTATIC, staticBC.getClassName(), name, "Lrailo/runtime/type/Collection$Key;");
 			
 			
@@ -1310,6 +1339,13 @@ public final class Page extends BodyBase {
 	public void setIsInterface(boolean isInterface) {
 		this.isInterface = isInterface;
 	}
+	/**
+	 * @return the lastModifed
+	 */
+	public long getLastModifed() {
+		return lastModifed;
+	}
+
 
 	public int addFunction(IFunction function) {
 		functions.add(function);

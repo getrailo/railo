@@ -6,9 +6,11 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
@@ -21,7 +23,6 @@ import railo.runtime.exp.PageException;
 public class ORMConnection implements Connection {
 
 	private ORMSession session;
-	private PageContext pc;
 	private boolean autoCommit=false;
 	private int isolation=Connection.TRANSACTION_SERIALIZABLE;
 	private ORMTransaction trans;
@@ -32,9 +33,8 @@ public class ORMConnection implements Connection {
 	 * @throws PageException 
 	 */
 	public ORMConnection(PageContext pc,ORMSession session) {
-		this.pc=pc;
 		this.session=session;
-		trans = session.getTransaction();
+		trans = session.getTransaction(session.getEngine().getConfiguration(pc).autoManageSession());
 		trans.begin();
 	}
 	
@@ -281,11 +281,11 @@ public class ORMConnection implements Connection {
 		throw notSupported();
 	}
 
-	private SQLException toSQLException(PageException pe) {
+	/*private SQLException toSQLException(PageException pe) {
 		SQLException e = new SQLException(pe.getMessage());
 		e.initCause(pe);
 		return e;
-	}
+	}*/
 
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		throw notSupported();
@@ -341,11 +341,16 @@ public class ORMConnection implements Connection {
 		return new RuntimeException(new SQLException("this feature is not supported"));
 	}
 
-	/*public NClob createNClob() throws SQLException {
+	
+	//JDK6: uncomment this for compiling with JDK6 
+	 
+	public NClob createNClob() throws SQLException {
 		throw notSupported();
 	}
 
 	public SQLXML createSQLXML() throws SQLException {
 		throw notSupported();
-	}*/
+	}
+	
+	
 }

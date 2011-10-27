@@ -14,18 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Graphics2D;
+package railo.runtime.img.filter;import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
 
 
 /**
  * Scales an image using the area-averaging algorithm, which can't be done with AffineTransformOp.
  */
-public class ScaleFilter extends AbstractBufferedImageOp {
+public class ScaleFilter extends AbstractBufferedImageOp  implements DynFiltering {
 
 	private int width;
 	private int height;
@@ -38,6 +42,20 @@ public class ScaleFilter extends AbstractBufferedImageOp {
 	}
 
     /**
+	 * @param width the width to set
+	 */
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	/**
+	 * @param height the height to set
+	 */
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	/**
      * Construct a ScaleFilter.
      * @param width the width to scale to
      * @param height the height to scale to
@@ -68,4 +86,15 @@ public class ScaleFilter extends AbstractBufferedImageOp {
 		return "Distort/Scale";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		int width=Caster.toIntValue(parameters.get(KeyImpl.init("Width")));
+		int height=Caster.toIntValue(parameters.get(KeyImpl.init("Height")));
+		setHeight(height);
+		setWidth(width);
+		
+		dst=ImageUtil.createBufferedImage(dst,width,height);
+		
+		
+		return filter(src, dst);
+	}
 }

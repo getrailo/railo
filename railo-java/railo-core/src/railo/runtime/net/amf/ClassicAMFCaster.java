@@ -13,7 +13,6 @@ import org.w3c.dom.Node;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
@@ -38,6 +37,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
@@ -54,6 +54,8 @@ public class ClassicAMFCaster implements AMFCaster {
 
 	
 	
+	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
+
 	private static ClassicAMFCaster singelton;
 	
 	protected boolean forceCFCLower;
@@ -86,7 +88,7 @@ public class ClassicAMFCaster implements AMFCaster {
 		if(cf instanceof Node) return toAMFObject((Node)cf);
 		if(cf instanceof List) return toAMFObject((List)cf);
 		if(cf instanceof Array) return toAMFObject(ArrayAsList.toList((Array)cf));
-		if(cf instanceof Component)	return toAMFObject((ComponentImpl)cf);
+		if(cf instanceof Component)	return toAMFObject((Component)cf);
 		if(cf instanceof Query) return toAMFObject((Query)cf);
 		if(cf instanceof Image) return toAMFObject((Image)cf);
 		if(cf instanceof Map) return toAMFObject((Map)cf);
@@ -127,12 +129,15 @@ public class ClassicAMFCaster implements AMFCaster {
 		
 		
 		Component c=cfc;
-		if(cfc instanceof ComponentImpl)c=new ComponentWrap(methodAccessLevel,(ComponentImpl)cfc);
+		if(cfc instanceof ComponentAccess)c=ComponentWrap.toComponentWrap(methodAccessLevel,cfc);
 		
 
 		Property[] prop = ComponentUtil.getProperties(cfc,false);
 		Object v; UDF udf;
     	if(prop!=null)for(int i=0;i<prop.length;i++) {
+    		boolean remotingFetch = Caster.toBooleanValue(prop[i].getMeta().get(REMOTING_FETCH,Boolean.TRUE),true);
+    		if(!remotingFetch) continue;
+    		
     		v=cfc.get(prop[i].getName(),null);
     		if(v==null){
     			v=c.get("get"+prop[i].getName(),null);
@@ -257,8 +262,8 @@ public class ClassicAMFCaster implements AMFCaster {
 				Page p=ps.loadPage(pc,config,null);
 				if(p==null)throw new ApplicationException("Could not find a Component with name ["+aso.getType()+"]");
 				
-				ComponentImpl cfc = ComponentLoader.loadComponentImpl(pc, p, ps, aso.getType(), false);
-				ComponentWrap cw=new ComponentWrap(config.getComponentDataMemberDefaultAccess(),cfc);
+				Component cfc = ComponentLoader.loadComponent(pc, p, ps, aso.getType(), false);
+				ComponentWrap cw=ComponentWrap.toComponentWrap(config.getComponentDataMemberDefaultAccess(),cfc);
 				
 				Iterator it = aso.entrySet().iterator();
 				Map.Entry entry;

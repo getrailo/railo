@@ -104,6 +104,8 @@ Create Datasource --->
 
 
 
+<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+
 
 <table class="tbl" width="740">
 <colgroup>
@@ -124,7 +126,8 @@ Create Datasource --->
 <tr>
 	<td class="tblHead" width="150">#stText.setting.inspectTemplate#</td>
 	<td class="tblContent">
-    	<!--- never --->
+    	<cfif hasAccess>
+		<!--- never --->
     	<input class="radio" type="radio" name="inspectTemplate" value="never"<cfif settings.inspectTemplate EQ "never"> checked="checked"</cfif>>
     	<b>#stText.setting.inspectTemplateNever#</b><br />
 		<span class="comment">#stText.setting.inspectTemplateNeverDesc#</span><br>
@@ -137,6 +140,13 @@ Create Datasource --->
     	<b>#stText.setting.inspectTemplateAlways#</b><br />
 		<span class="comment">#stText.setting.inspectTemplateAlwaysDesc#</span>
         
+		<cfelse>
+        <cfif ListFindNoCase("never,once,always",settings.inspectTemplate)>
+    	<input type="hidden" name="inspectTemplate" value="#settings.inspectTemplate#">
+    	<b>#stText.setting["inspectTemplate"& settings.inspectTemplate]#</b><br />
+		<span class="comment">#stText.setting["inspectTemplate#settings.inspectTemplate#Desc"]#</span><br>
+		</cfif>
+		</cfif>
 	</td>
 </tr>
 <!--- PagePool --->

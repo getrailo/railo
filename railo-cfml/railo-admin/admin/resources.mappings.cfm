@@ -140,7 +140,6 @@ Defaults --->
 					<cfif isDefined("data.rows[#idx#]") and data.virtuals[idx] NEQ "">
 						<cfset data.trusteds[idx]=isDefined("data.trusteds[#idx#]") and data.trusteds[idx]>
 						<cfset data.toplevels[idx]=isDefined("data.toplevels[#idx#]") and data.toplevels[idx]>
-					
 					<cfadmin 
 						action="updateMapping"
 						type="#request.adminType#"

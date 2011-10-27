@@ -80,21 +80,35 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private AMFEngine amfEngine=new AMFEngine();
     private final RefBoolean controlerState=new RefBooleanImpl(true);
 	private boolean allowRequestTimeout=true;
+	private Monitor monitor;
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
 
     private CFMLEngineImpl(CFMLEngineFactory factory) {
     	this.factory=factory; 
     	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
-        
+        ConfigServerImpl cs = getConfigServerImpl();
+    	
         SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"Start CFML Controller");
-        Controler controler = new Controler(getConfigServerImpl(),initContextes,5*1000,controlerState);
+        Controler controler = new Controler(cs,initContextes,5*1000,controlerState);
         controler.setDaemon(true);
         controler.setPriority(Thread.MIN_PRIORITY);
         controler.start();  
         
+
+        touchMonitor(cs);  
+        
         //this.config=config; 
     }
+
+
+	public void touchMonitor(ConfigServerImpl cs) {
+		if(monitor!=null && monitor.isAlive()) return; 
+		monitor = new Monitor(cs,controlerState); 
+        monitor.setDaemon(true);
+        monitor.setPriority(Thread.MIN_PRIORITY);
+        monitor.start(); 
+	}
 
     /**
      * get singelton instance of the CFML Engine
@@ -180,6 +194,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         String strConfig=sg.getInitParameter("configuration");
         if(strConfig==null)strConfig=sg.getInitParameter("railo-web-directory");
         if(strConfig==null)strConfig="{web-root-directory}/WEB-INF/railo/";
+        else if("/WEB-INF/railo/".equals(strConfig))strConfig="{web-root-directory}/WEB-INF/railo/";
         
         // static path is not allowed
         if(countExistingContextes>1 && strConfig!=null && strConfig.indexOf('{')==-1){

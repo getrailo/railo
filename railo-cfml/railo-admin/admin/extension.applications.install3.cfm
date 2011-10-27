@@ -1,7 +1,7 @@
 <!---- load ExtensionManager ---->
 <cfset manager=createObject('component','extension.ExtensionManager')>
 
-<cfset detail=getDetail(url.provider,url.app)>
+<cfset detail=getDetailByUid(url.uid)>
 <cfset isUpdate=StructKeyExists(detail,'installed')>
 
 <!--- create config struct --->
@@ -37,25 +37,25 @@
         password="#session["password"&request.adminType]#"
         
         config="#config#"
-        provider="#detail.url#"
+        provider="#detail.data.provider#"
         
-        id="#detail.app.id#"
-        version="#detail.app.version#"
-        name="#detail.app.name#"
-        label="#detail.app.label#"
-        description="#detail.app.description#"	
-        category="#detail.app.category#"	
-        image="#detail.app.image#"	
+        id="#detail.data.id#"
+        version="#detail.data.version#"
+        name="#detail.data.name#"
+        label="#detail.data.label#"
+        description="#detail.data.description#"	
+        category="#detail.data.category#"	
+        image="#detail.data.image#"	
         
-        author="#detail.app.author#"	
-        codename ="#detail.app.codename#"	
-        video="#detail.app.video#"	
-        support="#detail.app.support#"	
-        documentation="#detail.app.documentation#"	
-        forum="#detail.app.forum#"	
-        mailinglist="#detail.app.mailinglist#"	
-        network="#detail.app.network#"	
-        created="#detail.app.created#"
+        author="#detail.data.author#"	
+        codename ="#detail.data.codename#"	
+        video="#detail.data.video#"	
+        support="#detail.data.support#"	
+        documentation="#detail.data.documentation#"	
+        forum="#detail.data.forum#"	
+        mailinglist="#detail.data.mailinglist#"	
+        network="#detail.data.network#"	
+        created="#detail.data.created#"
         >
     <cfif len(message) EQ 0><cfset message=stText.ext.installDone></cfif>
     <cfset session.confirm.text=message>    

@@ -24,8 +24,8 @@ public class HSQLUtil2 {
 		return selects.getSelects().length>1;
 	}
 
-	public Set getInvokedTables() {
-		HashSet set=new HashSet();
+	public Set<String> getInvokedTables() {
+		HashSet<String> set=new HashSet<String>();
 		Column[] tables = selects.getTables();
 		for(int i=0;i<tables.length;i++) {
 			set.add(tables[i].getFullName());

@@ -1,11 +1,13 @@
 package railo.runtime;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.commons.collections.HashTable;
 import railo.commons.collections.LongKeyList;
+import railo.commons.lang.SizeOf;
 import railo.commons.lang.SystemOut;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.dump.DumpData;
@@ -14,15 +16,16 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.type.Sizeable;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
  * pool to handle pages
  */
-public final class PageSourcePool implements Dumpable {
+public final class PageSourcePool implements Dumpable,Sizeable {
 	
-	private Map pageSources=new HashTable();
+	private Map<Object,PageSource> pageSources=Collections.synchronizedMap(new HashMap<Object, PageSource>());
 	//timeout timeout for files
 	private long timeout;
 	//max size of the pool cache
@@ -132,7 +135,7 @@ public final class PageSourcePool implements Dumpable {
 	 */
 	public DumpData toDumpData(PageContext pageContext,int maxlevel, DumpProperties dp) {
 		maxlevel--;
-		Iterator it=pageSources.keySet().iterator();
+		Iterator<Object> it = pageSources.keySet().iterator();
 		
 		
 		DumpTable table = new DumpTable("#FFCC00","#FFFF00","#000000");
@@ -152,10 +155,10 @@ public final class PageSourcePool implements Dumpable {
 	         
 	public void clearPages() {
 		synchronized(pageSources){
-			Iterator it = this.pageSources.entrySet().iterator();
+			Iterator<Entry<Object, PageSource>> it = this.pageSources.entrySet().iterator();
 			PageSourceImpl entry;
 			while(it.hasNext()) {
-				entry = ((PageSourceImpl) ((Entry) it.next()).getValue());
+				entry = (PageSourceImpl) it.next().getValue();
 				entry.clear();
 			}
 		}
@@ -163,5 +166,12 @@ public final class PageSourcePool implements Dumpable {
 	
 	public void clear() {
 		pageSources.clear();
+	}
+
+	@Override
+	public long sizeOf() {
+		return SizeOf.size(this.timeout)
+		+SizeOf.size(this.maxSize)
+		+SizeOf.size(this.pageSources);
 	}
 }

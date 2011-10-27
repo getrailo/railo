@@ -167,6 +167,14 @@
 		<span class="comment">#stText.Security.GatewayDescription#</span>
 	</td>
 </tr>
+<!--- ORM --->
+<tr>
+	<td class="tblHead" width="150">#stText.Security.orm#</td>
+	<td class="tblContent#def('orm')#">
+		<input type="checkbox" class="checkbox" name="#prefix#Orm" value="yes" <cfif access.orm>checked</cfif>>
+		<span class="comment">#stText.Security.ormDescription#</span>
+	</td>
+</tr>
 <!--- Debugging --->
 <tr>
 	<td class="tblHead" width="150">#stText.Security.Debugging#</td>

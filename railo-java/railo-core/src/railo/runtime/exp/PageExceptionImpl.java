@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -41,14 +40,9 @@ import railo.runtime.writer.CFMLWriter;
  */
 public abstract class PageExceptionImpl extends PageException {
 
-	private static final Collection.Key RAW_TRACE = KeyImpl.getInstance("raw_trace");
-	private static final Collection.Key TEMPLATE = KeyImpl.getInstance("template");
-	private static final Collection.Key ID = KeyImpl.getInstance("id");
-	private static final Collection.Key LINE = KeyImpl.getInstance("line");
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	private static final Collection.Key COLUMN = KeyImpl.getInstance("column");
-	private static final Collection.Key CODE_PRINT_HTML = KeyImpl.getInstance("codePrintHTML");
-	private static final Collection.Key CODE_PRINT_PLAIN = KeyImpl.getInstance("codePrintPlain");
+	private static final Collection.Key RAW_TRACE = KeyImpl.intern("raw_trace");
+	private static final Collection.Key CODE_PRINT_HTML = KeyImpl.intern("codePrintHTML");
+	private static final Collection.Key CODE_PRINT_PLAIN = KeyImpl.intern("codePrintPlain");
 	
 	
 	
@@ -178,7 +172,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock()
 	 */
 	public Struct getCatchBlock() {
-		return new CatchBlock(ThreadLocalPageContext.getConfig(),this);
+		return new CatchBlock(this);
 	}
 	
 	/**
@@ -186,7 +180,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
 	public Struct getCatchBlock(PageContext pc) {
-		return new CatchBlock(pc.getConfig(),this);
+		return new CatchBlock(this);
 	}
 	
 	/**
@@ -194,7 +188,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
 	public CatchBlock getCatchBlock(Config config) {
-		return new CatchBlock(config,this);
+		return new CatchBlock(this);
 	}
 	
 	public Array getTagContext(Config config) {
@@ -273,12 +267,12 @@ public abstract class PageExceptionImpl extends PageException {
 			
 			item=new StructImpl();
 			line=trace.getLineNumber();
-			item.setEL(TEMPLATE,template);
-			item.setEL(LINE,new Double(line));
-			item.setEL(ID,"??");
+			item.setEL(KeyImpl.TEMPLATE,template);
+			item.setEL(KeyImpl.LINE,new Double(line));
+			item.setEL(KeyImpl.ID,"??");
 			item.setEL(RAW_TRACE,trace.toString());
-			item.setEL(TYPE,"cfml");
-			item.setEL(COLUMN,new Double(0));
+			item.setEL(KeyImpl.TYPE,"cfml");
+			item.setEL(KeyImpl.COLUMN,new Double(0));
 			if(content!=null) {
 				item.setEL(CODE_PRINT_HTML,getCodePrint(content,line,true));
 				item.setEL(CODE_PRINT_PLAIN,getCodePrint(content,line,false));
@@ -545,18 +539,37 @@ public abstract class PageExceptionImpl extends PageException {
         }
     }
     
-    private static StackTraceElement[] getStackTraceElements(Throwable t) {
-    	Throwable cause=t.getCause();
-    	if(cause==null) return t.getStackTrace();
 
-    	ArrayList causes=new ArrayList();
-    	fillStackTraceElements(causes,t);
+    private static StackTraceElement[] getStackTraceElements(Throwable t) {
+    	StackTraceElement[] st=getStackTraceElements(t,true);
+    	if(st==null) st= getStackTraceElements(t,false);
+    	return st;
+    }
+    
+    private static StackTraceElement[] getStackTraceElements(Throwable t, boolean onlyWithCML) {
+    	StackTraceElement[] st;
+    	Throwable cause=t.getCause();
+    	if(cause!=null){
+    		st = getStackTraceElements(cause,onlyWithCML);
+        	if(st!=null) return st;
+    	}
     	
-		return (StackTraceElement[]) causes.toArray(new StackTraceElement[causes.size()]);
+    	st=t.getStackTrace();
+    	if(!onlyWithCML || hasCFMLinStacktrace(st)){
+    		return st;
+    	}
+    	return null;
 	}
     
 
-    private static void fillStackTraceElements(ArrayList causes, Throwable t) {
+    private static boolean hasCFMLinStacktrace(StackTraceElement[] traces) {
+		for(int i=0;i<traces.length;i++) {
+			if(traces[i].getFileName()!=null && !traces[i].getFileName().endsWith(".java")) return true;
+		}
+		return false;
+	}
+    /*ths code has produced duplettes
+     * private static void fillStackTraceElements(ArrayList<StackTraceElement> causes, Throwable t) {
 		if(t==null) return;
 		fillStackTraceElements(causes, t.getCause());
 		StackTraceElement[] traces = t.getStackTrace();
@@ -564,26 +577,7 @@ public abstract class PageExceptionImpl extends PageException {
 			//if(causes.contains(traces[i]))
 			causes.add(traces[i]);
 		}
-	}
-    
-    
-    
-	/*public static void printStackTraceX(PrintWriter s,Throwable t) {
-        
-        StackTraceElement[] traces = getStackTraceElements(t);
-        StackTraceElement trace;
-        
-        for(int i=0;i<traces.length;i++){
-            trace=traces[i];
-            s.println("\tat "+trace+":"+trace.getLineNumber());
-        }
-        t=t.getCause();
-        if(t!=null) {
-            s.println();
-            printStackTraceX(s,t);
-        }
-    }*/
-    
+	}*/
     
 	/**
 	 * set a additional key value
@@ -591,7 +585,7 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @param value
 	 */
 	public void setAdditional(String key, Object value) {
-		additional.setEL(KeyImpl.init(key),StringUtil.toStringEmptyIfNull(value));
+		additional.setEL(KeyImpl.getInstance(key),StringUtil.toStringEmptyIfNull(value));
 	}
 	
 	

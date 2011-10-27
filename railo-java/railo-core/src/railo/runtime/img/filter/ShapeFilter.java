@@ -14,11 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
+package railo.runtime.img.filter;import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 
-import java.awt.Rectangle;
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
-public class ShapeFilter extends WholeImageFilter {
+public class ShapeFilter extends WholeImageFilter  implements DynFiltering {
 
 	public final static int LINEAR = 0;
 	public final static int CIRCLE_UP = 1;
@@ -389,4 +396,20 @@ public class ShapeFilter extends WholeImageFilter {
 		return "Stylize/Shapeburst...";
 	}
 
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("UseAlpha")))!=null)setUseAlpha(ImageFilterUtil.toBooleanValue(o,"UseAlpha"));
+		if((o=parameters.removeEL(KeyImpl.init("Colormap")))!=null)setColormap(ImageFilterUtil.toColormap(o,"Colormap"));
+		if((o=parameters.removeEL(KeyImpl.init("Invert")))!=null)setInvert(ImageFilterUtil.toBooleanValue(o,"Invert"));
+		if((o=parameters.removeEL(KeyImpl.init("Factor")))!=null)setFactor(ImageFilterUtil.toFloatValue(o,"Factor"));
+		if((o=parameters.removeEL(KeyImpl.init("Merge")))!=null)setMerge(ImageFilterUtil.toBooleanValue(o,"Merge"));
+		if((o=parameters.removeEL(KeyImpl.init("Type")))!=null)setType(ImageFilterUtil.toIntValue(o,"Type"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [UseAlpha, Colormap, Invert, Factor, Merge, Type]");
+		}
+
+		return filter(src, dst);
+	}
 }

@@ -12,12 +12,15 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -43,6 +46,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
+import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
@@ -54,9 +58,11 @@ import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
@@ -86,6 +92,9 @@ import railo.runtime.type.util.CollectionUtil;
  */
 public class QueryImpl implements QueryPro,Objects,Sizeable {
 
+	private static final long serialVersionUID = 1035795427320192551L;
+
+
 	/**
 	 * @return the template
 	 */
@@ -93,15 +102,15 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		return template;
 	}
 
-	public static final Collection.Key NAME = KeyImpl.getInstance("NAME");
-	public static final Collection.Key COLUMNS = KeyImpl.getInstance("COLUMNS");
-	public static final Collection.Key SQL = KeyImpl.getInstance("SQL");
-	public static final Collection.Key EXECUTION_TIME = KeyImpl.getInstance("executionTime");
-	public static final Collection.Key RECORDCOUNT = KeyImpl.getInstance("RECORDCOUNT");
-	public static final Collection.Key CACHED = KeyImpl.getInstance("cached");
-	public static final Collection.Key COLUMNLIST = KeyImpl.getInstance("COLUMNLIST");
-	public static final Collection.Key CURRENTROW = KeyImpl.getInstance("CURRENTROW");
-	public static final Collection.Key IDENTITYCOL =  KeyImpl.getInstance("IDENTITYCOL");
+	public static final Collection.Key COLUMNS = KeyImpl.intern("COLUMNS");
+	public static final Collection.Key SQL = KeyImpl.intern("SQL");
+	public static final Collection.Key EXECUTION_TIME = KeyImpl.intern("executionTime");
+	public static final Collection.Key RECORDCOUNT = KeyImpl.intern("RECORDCOUNT");
+	public static final Collection.Key CACHED = KeyImpl.intern("cached");
+	public static final Collection.Key COLUMNLIST = KeyImpl.intern("COLUMNLIST");
+	public static final Collection.Key CURRENTROW = KeyImpl.intern("CURRENTROW");
+	public static final Collection.Key IDENTITYCOL =  KeyImpl.intern("IDENTITYCOL");
+	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
 	
 	
 	
@@ -139,7 +148,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		try {
-            fillResult(result,maxrow,false);
+            fillResult(null,result,maxrow,false,false);
         } catch (SQLException e) {
             throw new DatabaseException(e,null);
         } catch (IOException e) {
@@ -160,7 +169,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		this.name=name;
         
 		try {	
-		    fillResult(result,-1,true);
+		    fillResult(null,result,-1,true,false);
 		} 
 		catch (SQLException e) {
 			throw new DatabaseException(e,null);
@@ -209,6 +218,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		boolean hasResult=false;
+		boolean closeStatement=true;
 		try {	
 			SQLItem[] items=sql.getItems();
 			if(items.length==0) {
@@ -219,57 +229,33 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = DBUtil.getPreparedStatement(dc,sql,createGeneratedKeys);
-	        	//if(p==null)p = DBUtil.getPreparedStatement(dc,sql,createGeneratedKeys);
-	        	//PreparedStatement preStat = p;
-	        	
-	        	//PreparedStatement preStat = createGeneratedKeys?
-	        	//		dc.getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):
-	        	//			dc.getConnection().prepareStatement(sql.getSQLString());
-		    	stat=preStat;
+	        	PreparedStatement preStat = ((DatasourceConnectionPro)dc).getPreparedStatement(sql, createGeneratedKeys);
+	        	closeStatement=false;
+	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
 		        hasResult=preStat.execute();    
 	        }
+			int uc;
+			ResultSet res;
 			
-			
-			
-			if(hasResult){
-				fillResult(stat.getResultSet(), maxrow, true);
+			do {
+				if(hasResult) {
+					res=stat.getResultSet();
+					if(fillResult(dc,res, maxrow, true,createGeneratedKeys))break;
+				}
+				else if((uc=setUpdateCount(stat))!=-1){
+					if(uc>0 && createGeneratedKeys)setGeneratedKeys(dc, stat);
+				}
+				else break;
+				try{
+					hasResult=stat.getMoreResults(Statement.CLOSE_CURRENT_RESULT);
+				}
+				catch(Throwable t){
+					break;
+				}
 			}
-			else {
-				setUpdateCount(stat);
-				if(createGeneratedKeys)setGeneratedKeys(dc, stat);
-			}
-				
-			if(!hasResult && (hasResult=stat.getMoreResults() || setUpdateCount(stat))){
-				if(hasResult)fillResult(stat.getResultSet(), maxrow, true);
-			}
-			
-			/*
-				for (setUpdateCount(stat); hasResult || updateCount != -1;setUpdateCount(stat)) {
-				    if (hasResult) {
-				    	print.err("haResult:"+hasResult);
-						fillResult(stat.getResultSet(), maxrow, true);
-						break;
-				    }
-					if (updateCount > -1) {
-						print.err("updatecount:"+updateCount);
-						if (createGeneratedKeys) {
-							//hasResult=stat.getMoreResults();
-							//if(hasResult)continue;
-							print.err("setGeneratedKeys:");
-							setGeneratedKeys(dc, stat);
-							break;
-						}
-					    
-					}
-					//if (!supportsMultipleResults)
-					//break;
-				    hasResult = stat.getMoreResults();
-				}*/
-			
-			
+			while(true);
 		} 
 		catch (SQLException e) {
 			throw new DatabaseException(e,sql,dc);
@@ -278,37 +264,37 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			throw Caster.toPageException(e);
 		}
         finally {
-        	DBUtil.closeEL(stat);
+        	if(closeStatement)DBUtil.closeEL(stat);
         }  
 		exeTime=stopwatch.time();
 	}
-    
-	private boolean setUpdateCount(Statement stat)  {
-		
+	
+	private int setUpdateCount(Statement stat)  {
 		try{
 			int uc=stat.getUpdateCount();
 			if(uc>-1){
 				updateCount+=uc;
-				return true;
+				return uc;
 			}
 		}
 		catch(Throwable t){}
-		return false;
+		return -1;
 	}
 	
 	private boolean setGeneratedKeys(DatasourceConnection dc,Statement stat)  {
 		try{
 			ResultSet rs = stat.getGeneratedKeys();
-			generatedKeys=new QueryImpl(rs,"");
-			if(DataSourceUtil.isMSSQL(dc))
-				generatedKeys.renameEL(KeyImpl.init("GENERATED_KEYS"),IDENTITYCOL);
-			
+			setGeneratedKeys(dc, rs);
 			return true;
 		}
-		catch(Throwable t){
-			//MUST t.printStackTrace();
+		catch(Throwable t) {
 			return false;
 		}
+	}
+	
+	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
+		generatedKeys=new QueryImpl(rs,"");
+		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,IDENTITYCOL);
 	}
 	
 	/*private void setUpdateData(Statement stat, boolean createGeneratedKeys, boolean createUpdateCount)  {
@@ -397,9 +383,9 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         }
     }
 
-    private void fillResult(ResultSet result, int maxrow, boolean closeResult) throws SQLException, IOException {
-    	if(result==null) return;
-    	
+    private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys) throws SQLException, IOException, PageException {
+    	if(result==null) return false;
+    	recordcount=0;
 		ResultSetMetaData meta = result.getMetaData();
 		columncount=meta.getColumnCount();
 		
@@ -418,6 +404,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 				count++;
 			}
 		}
+		
 
 		columncount=count;
 		columnNames=new Collection.Key[columncount];
@@ -457,9 +444,17 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
             }
             else casts[i]=Cast.OTHER;
 		}
-			
-	// fill data
 		
+		if(createGeneratedKeys && columncount==1 && columnNames[0].equals(GENERATED_KEYS) && dc!=null && DataSourceUtil.isMSSQLDriver(dc)) {
+			columncount=0;
+			columnNames=null;
+			columns=null;
+			setGeneratedKeys(dc, result);
+			return false;
+		}
+		
+
+	// fill data
 		//Object o;
 		while(result.next()) {
 			if(maxrow>-1 && recordcount>=maxrow) {
@@ -471,6 +466,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			++recordcount;
 		}
 		if(closeResult)result.close();
+		return true;
 	}
 
     private Object toBytes(Blob blob) throws IOException, SQLException {
@@ -541,6 +537,26 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
+			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
+		}
+	}
+	
+	/**
+	 * constructor of the class, to generate a empty resultset (no database execution)
+	 * @param strColumns columns for the resultset
+	 * @param strTypes array of the types
+	 * @param rowNumber count of rows to generate (empty fields)
+	 * @param name 
+	 * @throws DatabaseException 
+	 */
+	public QueryImpl(Collection.Key[] columnNames, String[] strTypes, int rowNumber, String name) throws DatabaseException {
+        this.name=name;
+        this.columnNames=columnNames;
+        columncount=columnNames.length;
+		if(strTypes.length!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
+		recordcount=rowNumber;
+		columns=new QueryColumnImpl[columncount];
+		for(int i=0;i<columnNames.length;i++) {
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
 		}
 	}
@@ -849,14 +865,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row,defaultValue);
 		}
-        char c=key.charAt(0);
-        if(c=='r' || c=='R') {
-            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
-        }
-        if(c=='c' || c=='C') {
-            if(key.equalsIgnoreCase("currentrow")) return new Double(row);
-            else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
-        }
+		if(key.length()>0) {
+	        char c=key.charAt(0);
+	        if(c=='r' || c=='R') {
+	            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
+	        }
+	        if(c=='c' || c=='C') {
+	            if(key.equalsIgnoreCase("currentrow")) return new Double(row);
+	            else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
+	        }
+		}
         return null;
 	}
 
@@ -865,14 +883,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row,defaultValue);
 		}
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
-        }
-        else if(c=='c') {
-            if(key.equals(CURRENTROW)) return new Double(row);
-            else if(key.equals(COLUMNLIST)) return getColumnlist(true);
-        }
+		if(key.getString().length()>0) {
+	        char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+	        }
+	        else if(c=='c') {
+	            if(key.equals(CURRENTROW)) return new Double(row);
+	            else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+	        }
+		}
         return null;
 	}
 	
@@ -885,13 +905,15 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row);
 		}
-        char c=key.charAt(0);
-        if(c=='r' || c=='R') {
-            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
-		}
-        else if(c=='c' || c=='C') {
-		    if(key.equalsIgnoreCase("currentrow")) return new Double(row);
-		    else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
+		if(key.length()>0){
+	        char c=key.charAt(0);
+	        if(c=='r' || c=='R') {
+	            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
+			}
+	        else if(c=='c' || c=='C') {
+			    if(key.equalsIgnoreCase("currentrow")) return new Double(row);
+			    else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
+			}
 		}
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
@@ -904,14 +926,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(index!=-1) {
 			return columns[index].get(row);
 		}
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
-		}
-        else if(c=='c') {
-		    if(key.equals(CURRENTROW)) return new Double(row);
-		    else if(key.equals(COLUMNLIST)) return getColumnlist(true);
-		}
+        if(key.getString().length()>0) {
+        	char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+			}
+	        else if(c=='c') {
+			    if(key.equals(CURRENTROW)) return new Double(row);
+			    else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+			}
+        }
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
 
@@ -1489,14 +1513,16 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
         
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
-        }
-        if(c=='c') {
-            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
-        }
+		if(key.getString().length()>0) {
+        	char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
+	        if(c=='c') {
+	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
+		}
         throw new DatabaseException("key ["+key.getString()+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
 	
@@ -1531,14 +1557,15 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public QueryColumn getColumn(Collection.Key key, QueryColumn defaultValue) {
         int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
-        
-        char c=key.lowerCharAt(0);
-        if(c=='r') {
-            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
-        }
-        if(c=='c') {
-            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+        if(key.getString().length()>0) {//FUTURE add length method to Key Interface
+        	char c=key.lowerCharAt(0);
+	        if(c=='r') {
+	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
+	        if(c=='c') {
+	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	        }
         }
         return defaultValue;
 	}
@@ -1625,7 +1652,9 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			case Types.BLOB: return "OBJECT";
 			case Types.BOOLEAN: return "BOOLEAN";
 			case Types.CHAR: return "CHAR";
+			case Types.NCHAR: return "NCHAR";
 			case Types.CLOB: return "OBJECT";
+			case Types.NCLOB: return "OBJECT";
 			case Types.DATALINK: return "OBJECT";
 			case Types.DATE: return "DATE";
 			case Types.DECIMAL: return "DECIMAL";
@@ -1647,6 +1676,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			case Types.TIMESTAMP: return "TIMESTAMP";
 			case Types.TINYINT: return "TINYINT";
 			case Types.VARBINARY: return "VARBINARY";
+			case Types.NVARCHAR: return "NVARCHAR";
 			case Types.VARCHAR: return "VARCHAR";
 			default : return "VARCHAR";
 		}
@@ -1661,6 +1691,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	
 	private int getIndexFromKey(Collection.Key key) {
+		
 		for(int i=0;i<columnNames.length;i++) {
 			if(columnNames[i].equalsIgnoreCase(key)) return i;
 		}
@@ -1977,7 +2008,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         }
         
         Struct sct=new StructImpl();
-        sct.setEL(NAME,getName());
+        sct.setEL(KeyImpl.NAME_UC,getName());
         sct.setEL(COLUMNS,cols);
         sct.setEL(SQL,sql==null?"":sql.toString());
         sct.setEL(EXECUTION_TIME,new Double(exeTime));
@@ -2008,11 +2039,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public Object getObject(String columnName) throws SQLException {
 		int currentrow;
 		if((currentrow=arrCurrentRow.get(getPid(),0))==0) return null;
-		try {
-			return getAt(columnName,currentrow);
-		} catch (PageException e) {
-			throw new SQLException(e.getMessage());
-		}
+		return getAt(columnName,currentrow,null);
 	}
 	
 	/**
@@ -2165,7 +2192,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @see java.sql.ResultSet#wasNull()
 	 */
 	public boolean wasNull() {
-		return false;
+		throw new PageRuntimeException(new ApplicationException("method [wasNull] is not supported"));
 	}
 
 	/**
@@ -2334,7 +2361,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		try {
 			return BlobImpl.toBlob(bytes);
 		} 
-		catch (ExpressionException e) {
+		catch (PageException e) {
 			throw new SQLException(e.getMessage());
 		}
 	}
@@ -2347,7 +2374,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		if(bytes==null) return null;
 		try {
 			return BlobImpl.toBlob(bytes);
-		} catch (ExpressionException e) {
+		} catch (PageException e) {
 			throw new SQLException(e.getMessage());
 		}
 	}
@@ -3510,7 +3537,10 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		throw notSupported();
 	}
 	
-	/*
+
+	
+	//JDK6: uncomment this for compiling with JDK6 
+	 
 	public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
 		throw notSupported();
 	}
@@ -3558,7 +3588,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	public void updateRowId(String columnLabel, RowId x) throws SQLException {
 		throw notSupported();
 	}
-	 */
+	
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");

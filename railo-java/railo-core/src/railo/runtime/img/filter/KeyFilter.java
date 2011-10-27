@@ -14,17 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package railo.runtime.img.filter;
-
-import java.awt.Color;
+package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+
+import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.FunctionException;
+import railo.runtime.exp.PageException;
+import railo.runtime.img.ImageUtil;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 /**
  * An experimental filter which can be used for keying against a clean shot. Given a source image, a clean image and a destination image, 
  * the filter replaces all pixels in the source which nearly equal the equivalent clean pixel by destination pixels.
  */
-public class KeyFilter extends AbstractBufferedImageOp {
+public class KeyFilter extends AbstractBufferedImageOp  implements DynFiltering {
 	
 	private float hTolerance = 0;
 	private float sTolerance = 0;
@@ -176,5 +182,20 @@ public class KeyFilter extends AbstractBufferedImageOp {
 
 	public String toString() {
 		return "Keying/Key...";
+	}
+	public BufferedImage filter(BufferedImage src, Struct parameters) throws PageException {BufferedImage dst=ImageUtil.createBufferedImage(src);
+		Object o;
+		if((o=parameters.removeEL(KeyImpl.init("HTolerance")))!=null)setHTolerance(ImageFilterUtil.toFloatValue(o,"HTolerance"));
+		if((o=parameters.removeEL(KeyImpl.init("STolerance")))!=null)setSTolerance(ImageFilterUtil.toFloatValue(o,"STolerance"));
+		if((o=parameters.removeEL(KeyImpl.init("BTolerance")))!=null)setBTolerance(ImageFilterUtil.toFloatValue(o,"BTolerance"));
+		if((o=parameters.removeEL(KeyImpl.init("CleanImage")))!=null)setCleanImage(ImageFilterUtil.toBufferedImage(o,"CleanImage"));
+		if((o=parameters.removeEL(KeyImpl.init("destination")))!=null)setDestination(ImageFilterUtil.toBufferedImage(o,"destination"));
+
+		// check for arguments not supported
+		if(parameters.size()>0) {
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [HTolerance, STolerance, BTolerance, CleanImage]");
+		}
+
+		return filter(src, dst);
 	}
 }

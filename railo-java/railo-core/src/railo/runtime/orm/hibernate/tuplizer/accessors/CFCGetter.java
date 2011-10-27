@@ -34,7 +34,7 @@ public class CFCGetter implements Getter {
 	 * @param key
 	 */
 	public CFCGetter(String key){
-		this(KeyImpl.init(key));
+		this(KeyImpl.getInstance(key));
 	}
 	
 	/**
@@ -51,11 +51,11 @@ public class CFCGetter implements Getter {
 	 */
 	public Object get(Object trg) throws HibernateException {
 		try {
-			// MUST cache this, pherhaps when building xml
+			// MUST cache this, perhaps when building xml
 			HibernateORMEngine engine = getHibernateORMEngine();
 			PageContext pc = ThreadLocalPageContext.get();
 			Component cfc = Caster.toComponent(trg);
-			String name = HibernateCaster.getEntityName(pc, cfc);
+			String name = HibernateCaster.getEntityName(cfc);
 			ClassMetadata metaData = engine.getSessionFactory(pc).getClassMetadata(name);
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 			

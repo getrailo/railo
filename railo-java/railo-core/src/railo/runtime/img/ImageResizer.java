@@ -2,7 +2,6 @@
 package railo.runtime.img;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
 
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.img.interpolation.Bessel;
@@ -190,7 +189,7 @@ public class ImageResizer	{
     	if (columns == 0 || rows == 0)
     		throw new ExpressionException("invalid size for image");
 		
-    	BufferedImage resizeImage = createBufferedImage(image, columns, rows);
+    	BufferedImage resizeImage = ImageUtil.createBufferedImage(image, columns, rows);
 		
 		Interpolation inter = getInterpolation(interpolation);
 		double xFactor = (double) columns / (double) image.getWidth();
@@ -209,12 +208,12 @@ public class ImageResizer	{
 		
 		int status;
 		if (columns * (image.getHeight() + rows) < rows * (image.getWidth() + columns)) {
-		    BufferedImage sourceImage = createBufferedImage(image, columns, image.getHeight());
+		    BufferedImage sourceImage = ImageUtil.createBufferedImage(image, columns, image.getHeight());
 		    status = horizontal(image, sourceImage, xFactor, inter, blur, contribution);
 		    status |= vertical(sourceImage, resizeImage, yFactor,inter, blur, contribution);
 		} 
 		else {
-		    BufferedImage sourceImage = createBufferedImage(image, image.getWidth(), rows);
+		    BufferedImage sourceImage = ImageUtil.createBufferedImage(image, image.getWidth(), rows);
 		    status = vertical(image, sourceImage, yFactor, inter, blur, contribution);
 		    status |= horizontal(sourceImage, resizeImage, xFactor, inter, blur, contribution);
 		}
@@ -223,21 +222,7 @@ public class ImageResizer	{
 		return resizeImage;
     }
     
-    private static BufferedImage createBufferedImage(BufferedImage image, int columns, int rows) {
-        ColorModel colormodel = image.getColorModel();
-        BufferedImage newImage;
-        if(colormodel instanceof IndexColorModel) {
-            if(colormodel.getTransparency() != 1)
-                newImage = new BufferedImage(columns, rows, 2);
-            else
-                newImage = new BufferedImage(columns, rows, 1);
-        } 
-        else {
-            newImage = new BufferedImage(colormodel, image.getRaster().createCompatibleWritableRaster(columns, rows), colormodel.isAlphaPremultiplied(), null);
-        }
-        return newImage;
-    }
-    
+   
     
    
     

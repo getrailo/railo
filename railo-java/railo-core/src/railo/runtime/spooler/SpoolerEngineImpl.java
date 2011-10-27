@@ -35,18 +35,12 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	
 	private static final TaskFileFilter FILTER=new TaskFileFilter();
 
-	private static final Collection.Key TYPE = KeyImpl.getInstance("type");
-	private static final Collection.Key NAME = KeyImpl.getInstance("name");
-	private static final Collection.Key DETAIL = KeyImpl.getInstance("detail");
-	private static final Collection.Key ID = KeyImpl.getInstance("id");
-	private static final Collection.Key LAST_EXECUTION = KeyImpl.getInstance("lastExecution");
-	private static final Collection.Key NEXT_EXECUTION = KeyImpl.getInstance("nextExecution");
+	private static final Collection.Key LAST_EXECUTION = KeyImpl.intern("lastExecution");
+	private static final Collection.Key NEXT_EXECUTION = KeyImpl.intern("nextExecution");
 	
-	private static final Collection.Key CLOSED = KeyImpl.getInstance("closed");
-	private static final Collection.Key TRIES = KeyImpl.getInstance("tries");
-	private static final Collection.Key TRIES_MAX = KeyImpl.getInstance("triesmax");
-	private static final Collection.Key EXECUTIONS = KeyImpl.getInstance("exceptions");
-	private static final Collection.Key TIME = KeyImpl.getInstance("time");
+	private static final Collection.Key CLOSED = KeyImpl.intern("closed");
+	private static final Collection.Key TRIES = KeyImpl.intern("tries");
+	private static final Collection.Key TRIES_MAX = KeyImpl.intern("triesmax");
 
 	
 	private String label;
@@ -65,8 +59,10 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	private Resource closedDirectory;
 	private Resource openDirectory;
+
+	private int maxThreads;
 	
-	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log) throws IOException {
+	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log, int maxThreads) throws IOException {
 		this.config=config;
 		this.persisDirectory=persisDirectory;
 
@@ -74,7 +70,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		openDirectory = persisDirectory.getRealResource("open");
 		//calculateSize();
 		
-		
+
+		this.maxThreads=maxThreads;
 		this.label=label;
 		this.log=log;
 		//print.ds(persisDirectory.getAbsolutePath());
@@ -86,6 +83,13 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		closedCount=calculateSize(closedDirectory);
 		openCount=calculateSize(openDirectory);
 	}*/
+
+	/**
+	 * @return the maxThreads
+	 */
+	public int getMaxThreads() {
+		return maxThreads;
+	}
 
 	private int calculateSize(Resource res) {
 		return ResourceUtil.directrySize(res,FILTER);
@@ -291,10 +295,10 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	private void addQueryRow(railo.runtime.type.Query qry, SpoolerTask task) throws PageException {
     	int row = qry.addRow();
 		try{
-			qry.setAt(TYPE, row, task.getType());
-			qry.setAt(NAME, row, task.subject());
-			qry.setAt(DETAIL, row, task.detail());
-			qry.setAt(ID, row, task.getId());
+			qry.setAt(KeyImpl.TYPE, row, task.getType());
+			qry.setAt(KeyImpl.NAME, row, task.subject());
+			qry.setAt(KeyImpl.DETAIL, row, task.detail());
+			qry.setAt(KeyImpl.ID, row, task.getId());
 
 			
 			qry.setAt(LAST_EXECUTION, row,new DateTimeImpl(task.lastExecution(),true));
@@ -302,7 +306,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			qry.setAt(CLOSED, row,Caster.toBoolean(task.closed()));
 			qry.setAt(TRIES, row,Caster.toDouble(task.tries()));
 			qry.setAt(TRIES_MAX, row,Caster.toDouble(task.tries()));
-			qry.setAt(EXECUTIONS, row,translateTime(task.getExceptions()));
+			qry.setAt(KeyImpl.EXCEPTIONS, row,translateTime(task.getExceptions()));
 			
 			int triesMax=0;
 			ExecutionPlan[] plans = task.getPlans();
@@ -320,7 +324,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		Struct sct;
 		while(it.hasNext()) {
 			sct=(Struct) it.next();
-			sct.setEL(TIME,new DateTimeImpl(Caster.toLongValue(sct.get(TIME,null),0),true));
+			sct.setEL(KeyImpl.TIME,new DateTimeImpl(Caster.toLongValue(sct.get(KeyImpl.TIME,null),0),true));
 		}
 		return exp;
 	}
@@ -355,9 +359,10 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 		private SpoolerEngineImpl engine;
 		private boolean sleeping;
-		private int maxThreads=20;
+		private final int maxThreads;
 
 		public SpoolerThread(SpoolerEngineImpl engine) {
+			this.maxThreads=engine.getMaxThreads();
 			this.engine=engine;
 			try{
 				this.setPriority(MIN_PRIORITY);

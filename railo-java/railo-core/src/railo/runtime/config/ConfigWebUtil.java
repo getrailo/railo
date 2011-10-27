@@ -274,9 +274,9 @@ public final class ConfigWebUtil {
     public static boolean hasAccess(Config config, int type) {
         
     	boolean has=true;
-        if(config instanceof ConfigWeb)
-            has=((ConfigWeb)config).getSecurityManager().getAccess(type)==SecurityManager.VALUE_YES;
-        
+        if(config instanceof ConfigWeb) {
+            has=((ConfigWeb)config).getSecurityManager().getAccess(type)!=SecurityManager.VALUE_NO;
+        }
         return has;
     }
 
@@ -293,8 +293,8 @@ public final class ConfigWebUtil {
     public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String strLogger, boolean hasAccess, int logLevel) throws IOException {
         if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
     	boolean isCS=config instanceof ConfigServer;
-        if(!StringUtil.isEmpty(strLogger) && hasAccess) {
-            return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
+        if(!StringUtil.isEmpty(strLogger) && hasAccess && !"console".equalsIgnoreCase(strLogger)) {
+        	return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
         }
         return new LogAndSourceImpl(LogConsole.getInstance(config,logLevel),strLogger);
     }

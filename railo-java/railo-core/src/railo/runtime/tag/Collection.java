@@ -65,6 +65,11 @@ public final class Collection extends TagImpl {
 		if(action==null) return;
 		this.action=action.toLowerCase().trim();
 	}
+	
+
+	public void setEngine(String engine)	{
+		// This setter only exists for compatibility reasions to other CFML engines, the attribute is completely ignored by Railo.
+	}
 
 	/** set the value path
 	*  

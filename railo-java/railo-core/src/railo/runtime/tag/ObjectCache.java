@@ -2,13 +2,16 @@ package railo.runtime.tag;
 
 import org.apache.oro.text.regex.MalformedPatternException;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.query.QueryCacheFilter;
 import railo.runtime.query.QueryCacheFilterImpl;
+import railo.runtime.query.QueryCacheFilterUDF;
 import railo.runtime.query.QueryCacheSupport;
+import railo.runtime.type.UDF;
 
 /**
 * Flushes the query cache
@@ -34,19 +37,46 @@ public final class ObjectCache extends TagImpl {
 		this.result=result;
 	}
 
-	private void setFilter(String filter,boolean ignoreCase) throws PageException	{
-		try {
-			this.filter=new QueryCacheFilterImpl(filter,ignoreCase);
-		} catch (MalformedPatternException e) {
-			throw Caster.toPageException(e);
-		}
+	public void setFilter(Object filter) throws PageException	{
+		this.filter=createFilter(filter, false);
 	}
+
 	public void setFilter(String filter) throws PageException	{
-		setFilter(filter, false);
+		this.filter=createFilter(filter, false);
 	}
+	
 	public void setFilterignorecase(String filter) throws PageException	{
-		setFilter(filter, true);
+		this.filter=createFilter(filter, true);
 	}
+	
+	
+	
+	public static QueryCacheFilter createFilter(Object filter,boolean ignoreCase) throws PageException	{
+	   if(filter instanceof UDF)
+		   return createFilter((UDF)filter);
+	   return createFilter(Caster.toString(filter),ignoreCase);
+	}
+
+	
+	public static QueryCacheFilter createFilter(UDF filter) throws PageException	{
+		return new QueryCacheFilterUDF(filter);
+	}
+	
+	public static QueryCacheFilter createFilter(String pattern,boolean ignoreCase) throws PageException	{
+	    if(!StringUtil.isEmpty(pattern,true)) {
+            try {
+            	return new QueryCacheFilterImpl(pattern,ignoreCase);
+            } catch (MalformedPatternException e) {
+                throw Caster.toPageException(e);
+            }
+        }
+	    return null;
+	}
+	
+	
+	
+	
+	
 
 
 	/**

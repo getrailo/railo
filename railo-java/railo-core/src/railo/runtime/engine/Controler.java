@@ -2,8 +2,11 @@ package railo.runtime.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.management.MemoryUsage;
 import java.util.Map;
 
+import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
@@ -19,10 +22,11 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
-import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.scope.ClientFile;
+import railo.runtime.op.Caster;
 import railo.runtime.type.scope.ScopeContext;
+import railo.runtime.type.scope.client.ClientFile;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -117,10 +121,18 @@ public final class Controler extends Thread {
 					}
 					config.reloadTimeServerOffset();
 					checkOldClientFile(config);
-					try{checkClientFileSize(config);}catch(Throwable t){}
+					
+					//try{checkStorageScopeFile(config,Session.SCOPE_CLIENT);}catch(Throwable t){}
+					//try{checkStorageScopeFile(config,Session.SCOPE_SESSION);}catch(Throwable t){}
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
 					try{checkTempDirectorySize(config);}catch(Throwable t){}
 					try{checkCacheFileSize(config);}catch(Throwable t){}
+					try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
+				}
+				
+				if(config==null) {
+					config = cfmlFactory.getConfig();
+					ThreadLocalConfig.register(config);
 				}
 				
 				//every Minute
@@ -129,18 +141,21 @@ public final class Controler extends Thread {
 						config = cfmlFactory.getConfig();
 						ThreadLocalConfig.register(config);
 					}
-					
 					// clear unused DB Connections
 					try{((ConfigImpl)config).getDatasourceConnectionPool().clear();}catch(Throwable t){}
 					// clear all unused scopes
-					try{cfmlFactory.getScopeContext().clearUnused(cfmlFactory);}catch(Throwable t){}
+					try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
 					// Memory usage
 					// clear Query Cache
 					try{cfmlFactory.getQueryCache().clearUnused();}catch(Throwable t){}
 					// contract Page Pool
 					try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
+					try{doClearClassLoaders((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
 					try{doClearMailConnections();}catch(Throwable t){}
+					// clean LockManager
+					if(cfmlFactory.getUsedPageContextLength()==0)try{((LockManagerImpl)config.getLockManager()).clean();}catch(Throwable t){}
+					
 				}
 				// every hour
 				if(doHour) {
@@ -150,8 +165,9 @@ public final class Controler extends Thread {
 					}
 					// time server offset
 					try{config.reloadTimeServerOffset();}catch(Throwable t){}
-					// check file based client scope
-					try{checkClientFileSize(config);}catch(Throwable t){}
+					// check file based client/session scope
+					//try{checkStorageScopeFile(config,Session.SCOPE_CLIENT);}catch(Throwable t){}
+					//try{checkStorageScopeFile(config,Session.SCOPE_SESSION);}catch(Throwable t){}
 					// check temp directory
 					try{checkTempDirectorySize(config);}catch(Throwable t){}
 					// check cache directory
@@ -170,21 +186,6 @@ public final class Controler extends Thread {
 		SMTPConnectionPool.closeSessions();
 	}
 
-	private void checkClientFileSize(ConfigWeb config) {
-		ExtensionResourceFilter filter = new ExtensionResourceFilter(".script",true);
-		
-		try {
-			long date = new DateTimeImpl(config).getTime()-((ConfigWebImpl)config).getClientTimeout().getMillis();
-			
-			//long date = DateAdd.invoke("d", -((ConfigWebImpl)config).getClientScopeMaxAge(), new DateTimeImpl(config)).getTime();
-			ResourceUtil.deleteFileOlderThan(config.getClientScopeDir(),date,filter);
-			ResourceUtil.deleteEmptyFolders(config.getClientScopeDir());
-		
-		} catch (Exception e) {}
-
-		checkSize(config,config.getClientScopeDir(),config.getClientScopeDirSize(),new ExtensionResourceFilter(".script",true));
-	}
-	
 	private void checkOldClientFile(ConfigWeb config) {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(".script",false);
 		
@@ -273,12 +274,50 @@ public final class Controler extends Thread {
         }
         if(startsize>poolSize)
         	SystemOut.printDate(config.getOutWriter(),"contract pagepools from "+startsize+" to "+poolSize +" in "+(System.currentTimeMillis()-start)+" millis");
-        
-        
     }
 
-    private PageSourcePool[] getPageSourcePools(ConfigWeb config) {
-        Mapping[] mappings = config.getMappings();
+    private void doClearClassLoaders(ConfigWebImpl config) {
+    	MemoryUsage pg = SystemUtil.getPermGenSpaceSize();
+		if((pg.getMax()-pg.getUsed())<1024*1024) {
+			SystemOut.printDate(config.getOutWriter(),"Free Perm Gen Space is less than 1mb (used:"+(pg.getUsed()/1024)+"kb;free:"+((pg.getMax()-pg.getUsed())/1024)+"kb), reset all template classloaders");
+			
+			clearClassLoaders(config.getMappings());
+			clear(getPageSourcePools(config.getMappings()));
+			
+			clearClassLoaders(config.getComponentMappings());
+			clear(getPageSourcePools(config.getComponentMappings()));
+			
+			clearClassLoaders(config.getCustomTagMappings());
+			clear(getPageSourcePools(config.getCustomTagMappings()));
+			
+			clearClassLoaders(config.getFunctionMapping());
+			clear(getPageSourcePools(config.getFunctionMapping()));
+			
+			clearClassLoaders(config.getServerFunctionMapping());
+			clear(getPageSourcePools(config.getServerFunctionMapping()));
+			
+			clearClassLoaders(config.getServerTagMapping());
+			clear(getPageSourcePools(config.getServerTagMapping()));
+			
+			clearClassLoaders(config.getTagMapping());
+			clear(getPageSourcePools(config.getTagMapping()));
+		}
+		
+    }
+
+    private void clearClassLoaders(Mapping... mappings) {
+		for(int i=0;i<mappings.length;i++){
+			try {
+				mappings[i].getClassLoaderForPhysical(true);
+			} catch (IOException e) {}
+		}
+	}
+
+	private PageSourcePool[] getPageSourcePools(ConfigWeb config) {
+		return getPageSourcePools(config.getMappings());
+	}
+
+	private PageSourcePool[] getPageSourcePools(Mapping... mappings) {
         PageSourcePool[] pools=new PageSourcePool[mappings.length];
         int size=0;
         
@@ -318,10 +357,63 @@ public final class Controler extends Thread {
         }
         if(pool!=null)pool.remove(key);
     }
+    private void clear(PageSourcePool[] pools) {
+        for(int i=0;i<pools.length;i++) {
+        	pools[i].clear();
+        }
+    }
 
     /*private void doLogMemoryUsage(ConfigWeb config) {
 		if(config.logMemoryUsage()&& config.getMemoryLogger()!=null)
 			config.getMemoryLogger().write();
 	}*/
+    
+    
+    static class ExpiresFilter implements ResourceFilter {
+
+		private long time;
+		private boolean allowDir;
+
+		public ExpiresFilter(long time, boolean allowDir) {
+			this.allowDir=allowDir;
+			this.time=time;
+		}
+
+		public boolean accept(Resource res) {
+
+			if(res.isDirectory()) return allowDir;
+			
+			// load content
+			String str=null;
+			try {
+				str = IOUtil.toString(res,"UTF-8");
+			} 
+			catch (IOException e) {
+				return false;
+			}
+			
+			int index=str.indexOf(':');
+			if(index!=-1){
+				long expires=Caster.toLongValue(str.substring(0,index),-1L);
+				// check is for backward compatibility, old files have no expires date inside. they do ot expire
+				if(expires!=-1) {
+					if(expires<System.currentTimeMillis()){
+						return true;
+					}
+					else {
+						str=str.substring(index+1);
+						return false;
+					}
+				}
+			}
+			// old files not having a timestamp inside
+			else if(res.lastModified()<=time) {
+				return true;
+				
+			}
+			return false;
+		}
+    	
+    }
 
 }
