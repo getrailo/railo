@@ -8,6 +8,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -905,6 +907,36 @@ public final class HTTPUtil {
 		}
 		return null;
 	}
+	
+	
+
+	public static Map<String, String> parseParameterList(String _str, boolean decode,String charset) {
+		//return railo.commons.net.HTTPUtil.toURI(strUrl,port);
+		Map<String,String> data=new HashMap<String, String>();
+		StringList list = List.toList(_str, '&');
+    	String str;
+    	int index;
+    	while(list.hasNext()){
+    		str=list.next();
+    		index=str.indexOf('=');
+    		if(index==-1){
+    			data.put(decode(str,decode), "");
+    		}
+    		else {
+    			data.put(
+    					decode(str.substring(0,index),decode), 
+    					decode(str.substring(index+1),decode));
+    		}
+    	}	
+		return data;
+	}
+
+	private static String decode(String str, boolean encode) {
+		// TODO Auto-generated method stub
+		return str;
+	}
+	
+	
 	
 	public static String[] splitMimeTypeAndCharset(String mimetype) {
 		String[] types=mimetype.split(";");
