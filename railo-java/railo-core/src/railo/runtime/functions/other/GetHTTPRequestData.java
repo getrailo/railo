@@ -29,7 +29,7 @@ public final class GetHTTPRequestData implements Function {
 		Enumeration e = req.getHeaderNames();
 		while(e.hasMoreElements()) {
 			String key=e.nextElement().toString();
-			headers.set(KeyImpl.init(ReqRspUtil.decode(key, charset)),ReqRspUtil.decode(req.getHeader(key),charset));
+			headers.set(KeyImpl.init(ReqRspUtil.decode(key, charset,false)),ReqRspUtil.decode(req.getHeader(key),charset,false));
 		}
 		sct.set("headers", headers);
 		sct.set("protocol",req.getProtocol());

@@ -2111,8 +2111,8 @@ public final class ConfigWebFactory {
             String[] item;
             for(int i=0;i<arr.length;i++) {
                 item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
-                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),URLDecoder.decode(item[1]));
-                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),"");
+                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
+                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),"");
             }   
         }
         catch(PageException ee) {}

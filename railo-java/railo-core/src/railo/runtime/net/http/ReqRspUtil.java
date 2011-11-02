@@ -81,7 +81,7 @@ public final class ReqRspUtil {
 				// value (is decoded by the servlet engine with iso-8859-1)
 				if(!StringUtil.isAscci(cookie.getValue())) {
 					tmp=encode(cookie.getValue(), "iso-8859-1");
-					cookie.setValue(decode(tmp, charset));
+					cookie.setValue(decode(tmp, charset,false));
 				}
 				
 			}
@@ -96,7 +96,7 @@ public final class ReqRspUtil {
 					for(int i=0;i<arr.length;i++){
 						tmp=List.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
-							list.add(new Cookie(dec(tmp[0],charset), tmp.length>1?dec(tmp[1],charset):""));
+							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
 						}
 					}
 					cookies=list.toArray(new Cookie[list.size()]);
@@ -149,7 +149,9 @@ public final class ReqRspUtil {
 	
 	public static boolean isURLEncoded(String str) {
 		if(StringUtil.isEmpty(str,true)) return false;
-		if(str.indexOf('+')!=-1) return true;
+		/*if(str.indexOf('+')!=-1) {print.ds(str);
+			return true;
+		}*/
 		if(!StringUtil.isAscci(str)) return false;
 		int index,last=0;
 		boolean rtn=false;
@@ -167,18 +169,18 @@ public final class ReqRspUtil {
 	}
 	
 
-	private static String dec(String str, String charset) throws UnsupportedEncodingException {
+	private static String dec(String str, String charset, boolean force) throws UnsupportedEncodingException {
 		str=str.trim();
 		if(StringUtil.startsWith(str, '"') && StringUtil.endsWith(str, '"'))
 			str=str.substring(1,str.length()-1);
 			
-		return decode(str,charset);//java.net.URLDecoder.decode(str.trim(), charset);
+		return decode(str,charset,force);//java.net.URLDecoder.decode(str.trim(), charset);
 	}
 
 
-    public static String decode(String str,String charset) {
+    public static String decode(String str,String charset, boolean force) {
     	try {
-			return URLDecoder.decode(str, charset);
+			return URLDecoder.decode(str, charset,force);
 		} 
 		catch (UnsupportedEncodingException e) {
 			return str;
