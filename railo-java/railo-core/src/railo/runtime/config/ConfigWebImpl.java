@@ -380,4 +380,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return tagHandlerPool;
 		}
 
+		@Override
+		public int getLoginDelay() {
+			return configServer.getLoginDelay();
+		}
+
+		@Override
+		public boolean getLoginCaptcha() {
+			return configServer.getLoginCaptcha();
+		}
+
 }

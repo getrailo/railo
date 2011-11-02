@@ -373,6 +373,7 @@ public final class ConfigWebFactory {
     	loadGatewayEL(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
     	loadMonitors(configServer,config,doc);
+    	loadLogin(configServer, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -3206,7 +3207,7 @@ public final class ConfigWebFactory {
         
         
     }
-        
+
     private static void loadConstants(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
         
         boolean hasCS=configServer!=null;
@@ -3227,6 +3228,18 @@ public final class ConfigWebFactory {
         	sct.setEL(KeyImpl.getInstance(name.trim()), elConstants[i].getAttribute("value"));
         }
         config.setConstants(sct);
+    }
+    
+    private static void loadLogin(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
+        // server context
+    	if(config instanceof ConfigServer) {
+        	Element login=getChildByName(doc.getDocumentElement(),"login");
+        	boolean captcha=Caster.toBooleanValue(login.getAttribute("captcha"),false);
+        	int delay=Caster.toIntValue(login.getAttribute("delay"),0);
+        	ConfigServerImpl cs=(ConfigServerImpl) config;
+        	cs.setLoginDelay(delay);
+        	cs.setLoginCaptcha(captcha);
+        }
     }
 	
 

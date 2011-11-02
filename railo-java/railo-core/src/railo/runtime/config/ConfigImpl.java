@@ -3374,4 +3374,12 @@ public abstract class ConfigImpl implements Config {
 		
 	}
 	
+	
+
+
+	public abstract int getLoginDelay();
+	
+	public abstract boolean getLoginCaptcha();
+
+	
 }

@@ -38,6 +38,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private RequestMonitor[] requestMonitors;
 	private IntervallMonitor[] intervallMonitors;
 	private boolean monitoringEnabled=false;
+	private int delay=0;
+	private boolean captcha=false;
 	private static ConfigServerImpl instance;
 	
 	/**
@@ -339,6 +341,25 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	protected void setMonitoringEnabled(boolean monitoringEnabled) {
 		this.monitoringEnabled=monitoringEnabled;;
+	}
+
+
+	protected void setLoginDelay(int delay) {
+		this.delay=delay;
+	}
+
+	protected void setLoginCaptcha(boolean captcha) {
+		this.captcha=captcha;
+	}
+
+	@Override
+	public int getLoginDelay() {
+		return delay;
+	}
+
+	@Override
+	public boolean getLoginCaptcha() {
+		return captcha;
 	}
 	
 

@@ -16,27 +16,52 @@
 <cfif structKeyExists(url,'alwaysNew')>
 	<cfset session.alwaysNew=url.alwaysNew EQ true>
 </cfif>
-    
+
 <cfset cookieKey="sdfsdf789sdfsd">
 <cfparam name="request.adminType" default="web">
 <cfparam name="form.rememberMe" default="s">
 <cfset ad=request.adminType>
+
+<cfset login_error="">
+
 <!--- Form --->
 <cfif StructKeyExists(form,"login_password"&request.adminType)>
-	<cfset session["password"&request.adminType]=form["login_password"&request.adminType]>
-	<cfset session.railo_admin_lang=form.lang>
-	<cfcookie expires="NEVER" name="railo_admin_lang" value="#session.railo_admin_lang#">
-	<cfif form.rememberMe NEQ "s">
-		<cfcookie expires="#DateAdd(form.rememberMe,1,now())#" name="railo_admin_pw_#ad#" value="#Encrypt(form["login_password"&ad],cookieKey)#">
-        
+	<cfadmin 
+        action="getLoginSettings"
+        type="#request.adminType#"
+   		returnVariable="loginSettings">
+
+	<cfset loginPause=loginSettings.delay>
+    	
+    
+    
+	<cfif loginPause and StructKeyExists(application,'lastTryToLogin') and IsDate(application.lastTryToLogin) and DateDiff("s",application.lastTryToLogin,now()) LT loginPause>
+    	<cfset login_error="Login disabled until #lsDateFormat(DateAdd("s",loginPause,application.lastTryToLogin))# #lsTimeFormat(DateAdd("s",loginPause,application.lastTryToLogin),'hh:mm:ss')#">
     <cfelse>
-		<cfcookie expires="Now" name="railo_admin_pw_#ad#" value="">
-	</cfif>
-	<cfif isDefined("cookie.railoa_dmin_lastpage") and cookie.railo_admin_lastpage neq "logout">
-		<cfset url.action = cookie.railo_admin_lastpage>
-	</cfif>
+        <cfset application.lastTryToLogin=now()>
+        <cfparam name="form.captcha" default="">
+            
+        <cfif loginSettings.captcha and structKeyExists(session,"cap") and form.captcha NEQ session.cap>
+    		<cfset login_error="Invalid security code (captcha) definition">
+        	
+        <cfelse>        
+			<cfset session["password"&request.adminType]=form["login_password"&request.adminType]>
+            <cfset session.railo_admin_lang=form.lang>
+            <cfcookie expires="NEVER" name="railo_admin_lang" value="#session.railo_admin_lang#">
+            <cfif form.rememberMe NEQ "s">
+                <cfcookie expires="#DateAdd(form.rememberMe,1,now())#" name="railo_admin_pw_#ad#" value="#Encrypt(form["login_password"&ad],cookieKey,"CFMX_COMPAT","hex")#">
+            <cfelse>
+                <cfcookie expires="Now" name="railo_admin_pw_#ad#" value="">
+            </cfif>
+            <cfif isDefined("cookie.railoa_dmin_lastpage") and cookie.railo_admin_lastpage neq "logout">
+                <cfset url.action = cookie.railo_admin_lastpage>
+            </cfif>
+        </cfif>
+		
+		
+        
+    </cfif>
 </cfif>
-<cfset login_error="">
 <!--- new pw Form --->
 <cfif StructKeyExists(form,"new_password") and StructKeyExists(form,"new_password_re")>
 	<cfif len(form.new_password) LT 6>
@@ -57,7 +82,7 @@
 <cfif not StructKeyExists(session,"password"&request.adminType) and StructKeyExists(cookie,'railo_admin_pw_#ad#')>
 	<cfset fromCookie=true>
     <cftry>
-		<cfset session["password"&ad]=Decrypt(cookie['railo_admin_pw_#ad#'],cookieKey)>
+		<cfset session["password"&ad]=Decrypt(cookie['railo_admin_pw_#ad#'],cookieKey,"CFMX_COMPAT","hex")>
     	<cfcatch></cfcatch>
     </cftry>
 </cfif>

@@ -3510,4 +3510,13 @@ public final class ConfigWebAdmin {
   		
       	return true;
 	}
+
+
+	public void updateLoginSettings(boolean captcha, int delay) {
+
+        Element login=_getRootElement("login");
+        login.setAttribute("captcha",Caster.toString(captcha));
+        login.setAttribute("delay",Caster.toString(delay));
+		
+	}
 }
