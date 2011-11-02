@@ -363,7 +363,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public Struct getAllSessionScopes(PageContext pc) {
-		return getAllSessionScopes(pc, pc.getApplicationContext().getName());
+		return getAllSessionScopes(pc.getApplicationContext().getName());
 	}
 	
 	public Struct getAllApplicationScopes() {
@@ -398,9 +398,20 @@ public final class ScopeContext {
 	 * @param pc
 	 * @param appName
 	 * @return
+	 * @deprecated use instead getAllSessionScopes(String appName)
 	 */
 	public Struct getAllSessionScopes(PageContext pc, String appName) {
-        if(((PageContextImpl)pc).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
+        return getAllSessionScopes(appName);
+	}
+	
+	/**
+	 * get all session contexts of given applicaton name
+	 * @param pc
+	 * @param appName
+	 * @return
+	 */
+	public Struct getAllSessionScopes(String appName) {
+        //if(((PageContextImpl)pc).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
 		return getAllSessionScopes(getSubMap(cfSessionContextes,appName),appName);
 	}
 	
