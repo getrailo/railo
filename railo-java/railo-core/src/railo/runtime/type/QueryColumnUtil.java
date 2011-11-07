@@ -6,7 +6,6 @@ import java.util.Date;
 
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.type.dt.DateTime;
 
 
 /**
@@ -341,52 +340,5 @@ public final class QueryColumnUtil implements Serializable {
         // OTHER
         column.type=Types.OTHER;
         return;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    private DateTime toDate(Object value) {
-        // NULL
-        if(value==null) return null;
-        // DateTime
-        return Caster.toDate(value,true,null,null);
-    }
-
-    private Boolean toBoolean(Object value) {
-        // NULL
-        if(value==null) return null;
-        // Boolean
-        return Caster.toBoolean(value,null);
-    }
-    private Double toDouble(Object value) {
-        // NULL
-        if(value==null) return null;
-        // Double
-        return Caster.toDouble(value,null);
-    }
-    
-    private String toString(Object value) {
-        // NULL
-        if(value==null) return null;
-        // String
-        return Caster.toString(value,null);
     }
 }
