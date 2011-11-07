@@ -31,7 +31,7 @@ import railo.runtime.util.ArrayIterator;
 /**
  * implementation of the query column
  */
-public final class QueryColumnImpl implements QueryColumn,Sizeable,Objects {
+public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	protected int type;
 	private int size;
@@ -674,7 +674,7 @@ public final class QueryColumnImpl implements QueryColumn,Sizeable,Objects {
         return cloneColumn(query,deepCopy);
     }
     
-    public synchronized QueryColumnImpl cloneColumn(QueryImpl query, boolean deepCopy) {
+    public synchronized QueryColumnPro cloneColumn(QueryImpl query, boolean deepCopy) {
         QueryColumnImpl clone=new QueryColumnImpl();
         
         ThreadLocalDuplication.set(this, clone);

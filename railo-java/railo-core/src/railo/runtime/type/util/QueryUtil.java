@@ -6,14 +6,14 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryColumnImpl;
+import railo.runtime.type.QueryColumnPro;
 import railo.runtime.type.QueryPro;
 
 public class QueryUtil {
 
 	public static long sizeOf(QueryColumn column) {
-		if(column instanceof QueryColumnImpl){
-			return ((QueryColumnImpl)column).sizeOf();
+		if(column instanceof QueryColumnPro){
+			return ((QueryColumnPro)column).sizeOf();
 		}
 		int len = column.size();
 		long size=0;
