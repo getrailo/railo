@@ -3457,7 +3457,7 @@ public final class ConfigWebFactory {
      * @param config
      * @param doc
      */
-    private static void loadDebug(ConfigServer configServer, ConfigImpl config, Document doc) {
+    private static void loadDebug(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
         boolean hasCS=configServer!=null;
         
       	Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
@@ -3481,6 +3481,15 @@ public final class ConfigWebFactory {
       	else {
       	    config.setDebugTemplate("/railo-context/templates/debugging/debugging.cfm");
         }	
+      	
+      	// show-usage
+      	Boolean showUsage = Caster.toBoolean(debugging.getAttribute("show-query-usage"),null);
+      	if(showUsage!=null && hasAccess) {
+      	    config.setDebugShowQueryUsage(showUsage.booleanValue());
+      	}
+      	else if(hasCS) {
+      	    config.setDebugShowQueryUsage(configServer.getDebugShowQueryUsage());
+      	}
     }
 
     /**
