@@ -12834,7 +12834,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>follow</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>If true, Railo follows the variable defined in the [var] attribute and will log any changes to it. Ignored when attribute [var] is not defined.</description>
+			<description>If true, Railo follows the object defined in the [var] attribute and will log any changes to it. Ignored when attribute [var] is not defined.</description>
 		</attribute>
 		<attribute>
 			<type>struct</type>
