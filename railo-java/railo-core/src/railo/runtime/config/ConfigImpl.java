@@ -214,6 +214,7 @@ public abstract class ConfigImpl implements Config {
     private boolean psq=false;
 
     private String debugTemplate;
+    private boolean debugShowUsage;
     private Map errorTemplates=new HashMap();
 
     private String password;
@@ -1829,6 +1830,15 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setDebugTemplate(String debugTemplate) {
         this.debugTemplate = debugTemplate;
+    }
+    public boolean getDebugShowQueryUsage() {
+        return debugShowUsage;
+    }
+    /**
+     * @param debugTemplate The debugTemplate to set.
+     */
+    protected void setDebugShowQueryUsage(boolean debugShowUsage) {
+        this.debugShowUsage = debugShowUsage;
     }
 
 	/**

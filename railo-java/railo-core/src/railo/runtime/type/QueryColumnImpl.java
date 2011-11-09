@@ -7,6 +7,7 @@ import java.util.List;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
@@ -33,15 +34,16 @@ import railo.runtime.util.ArrayIterator;
  */
 public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
-	protected int type;
-	private int size;
-	protected Object[] data;
     private static final int CAPACITY=32;
-    private QueryColumnUtil queryColumnUtil;
+    
+	protected int type;
+	protected int size;
+	protected Object[] data;
+    protected QueryColumnUtil queryColumnUtil;
     
     protected boolean typeChecked=false;
-    private QueryImpl query;
-    private Collection.Key key;
+    protected QueryImpl query;
+    protected Collection.Key key;
 
 	/**
 	 * constructor with type
@@ -49,31 +51,11 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	 * @param key 
 	 * @param type
 	 */
-	public QueryColumnImpl(QueryImpl query, Collection.Key key, int type) {
+    public QueryColumnImpl(QueryImpl query, Collection.Key key, int type) {
 		this.data=new Object[CAPACITY];
 		this.type=type;
         this.key=key;
         this.query=query;
-	}
-
-	/**
-	 * @param query
-	 * @param type type as (java.sql.Types.XYZ) int
-	 * @param size 
-	 */
-	public QueryColumnImpl(QueryImpl query, Collection.Key key, int type, int size) {
-		this.data=new Object[size];
-		this.type=type;
-		this.size=size;
-		this.query=query;
-		this.key=key;
-	}
-
-	/**
-	 * Constructor of the class
-	 * for internal usage only
-	 */
-	public QueryColumnImpl() {
 	}
 
 	/**
@@ -82,12 +64,33 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	 * @param array
 	 * @param type
 	 */
-	public QueryColumnImpl(QueryImpl query, Collection.Key key, Array array,int type) {
-	    data=array.toArray();
+    public QueryColumnImpl(QueryImpl query, Collection.Key key, Array array,int type) {
+		data=array.toArray();
 	    size=array.size();
 		this.type=type;
 		this.query=query;
 		this.key=key;
+	}
+
+	/**
+	 * @param query
+	 * @param type type as (java.sql.Types.XYZ) int
+	 * @param size 
+	 */
+    public QueryColumnImpl(QueryImpl query, Collection.Key key, int type, int size) {
+		this.data=new Object[size];
+		this.type=type;
+		this.size=size;
+		this.query=query;
+		this.key=key;
+	}
+	
+
+	/**
+	 * Constructor of the class
+	 * for internal usage only
+	 */
+	public QueryColumnImpl() {
 	}
 
 	/**
@@ -676,24 +679,28 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     public synchronized QueryColumnPro cloneColumn(QueryImpl query, boolean deepCopy) {
         QueryColumnImpl clone=new QueryColumnImpl();
+        populate(this, clone, deepCopy);
+        return clone;
+    }
+    
+    protected static void populate(QueryColumnImpl src,QueryColumnImpl trg, boolean deepCopy) {
         
-        ThreadLocalDuplication.set(this, clone);
+        ThreadLocalDuplication.set(src, trg);
         try{
-	        clone.key=key;
-	        clone.query=query;
-	        clone.queryColumnUtil=queryColumnUtil;
-	        clone.size=size;
-	        clone.type=type;
-	        clone.key=key;
+	        trg.key=src.key;
+	        trg.query=src.query;
+	        trg.queryColumnUtil=src.queryColumnUtil;
+	        trg.size=src.size;
+	        trg.type=src.type;
+	        trg.key=src.key;
 	        
-	        clone.data=new Object[data.length];
-	        for(int i=0;i<data.length;i++) {
-	            clone.data[i]=deepCopy?Duplicator.duplicate(data[i],true):data[i];
+	        trg.data=new Object[src.data.length];
+	        for(int i=0;i<src.data.length;i++) {
+	            trg.data[i]=deepCopy?Duplicator.duplicate(src.data[i],true):src.data[i];
 	        }
-	        return clone;   
         }
         finally {
-        	ThreadLocalDuplication.remove(this);
+        	ThreadLocalDuplication.remove(src);
         }
     }
 	
@@ -1010,5 +1017,10 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public boolean equals(Object obj){
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);
+	}
+
+	@Override
+	public QueryColumnPro toDebugColumn() {
+		return new DebugQueryColumn(data,key,query,queryColumnUtil,size,type,typeChecked);
 	}
 }

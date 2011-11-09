@@ -50,6 +50,7 @@ import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
+import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
@@ -746,39 +747,13 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 */
 	public Object removeEL(Collection.Key key) {
 		return setEL(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) return _removeEL(index);
-		return null;*/
 	}
-
-	/*private QueryColumn _removeEL(int index) {
-		QueryColumnImpl[] qc=new QueryColumnImpl[--columncount];
-		Collection.Key[] names=new Collection.Key[columncount];
-		int count=0;
-		QueryColumn removed=null;
-		for(int i=0;i<columns.length;i++) {
-			if(index!=i){
-
-				names[count]=columnNames[i];
-				qc[count++]=columns[i];
-			}
-			else {
-				removed=columns[i];
-			}
-		}
-		columnNames=names;
-		columns=qc;
-		return removed;
-	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
 	 */
 	public synchronized Object remove(String key) throws PageException {
 		return set(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) return _removeEL(index);
-		throw new ExpressionException("can't remove column with name ["+key+"], column doesn't exist");*/
 	}
 
 	
@@ -789,9 +764,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 */
 	public Object remove(Collection.Key key) throws PageException {
 		return set(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) return _removeEL(index);
-		throw new ExpressionException("can't remove column with name ["+key+"], column doesn't exist");*/
 	}
 
 	/**
@@ -802,9 +774,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
             columns[i].clear();
         }
         recordcount=0;
-        //columns=new QueryColumnImpl[0];
-        //columnNames=new Collection.Key[0];
-		//columncount=0;
 	}
 
 	/**
@@ -1407,16 +1376,21 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 	}
 	 	QueryColumnPro[] newColumns=new QueryColumnPro[columns.length+1];
 	 	Collection.Key[] newColumnNames=new Collection.Key[columns.length+1];
+	 	boolean logUsage=false;
 	 	for(int i=0;i<columns.length;i++) {
 	 		newColumns[i]=columns[i];
 	 		newColumnNames[i]=columnNames[i];
+	 		if(!logUsage && columns[i] instanceof DebugQueryColumn) logUsage=true;
 	 	}
-	 	newColumns[columns.length]=new QueryColumnImpl(this,columnName,content,type );
+	 	newColumns[columns.length]=new QueryColumnImpl(this,columnName,content,type);
 	 	newColumnNames[columns.length]=columnName;
 	 	columns=newColumns;
 	 	columnNames=newColumnNames;
 	 	
 	 	columncount++;
+	 	
+	 	if(logUsage)enableShowQueryUsage();
+	 	
 		return true;
 	}
 	
@@ -1454,7 +1428,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
         try{
 	        if(columnNames!=null){
 		        newResult.columnNames=new Collection.Key[columnNames.length];
-		        newResult.columns=new QueryColumnImpl[columnNames.length];
+		        newResult.columns=new QueryColumnPro[columnNames.length];
 		        for(int i=0;i<columnNames.length;i++) {
 		        	newResult.columnNames[i]=columnNames[i];
 		        	newResult.columns[i]=columns[i].cloneColumn(newResult,deepCopy);
@@ -3595,5 +3569,11 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 	private RuntimeException notSupportedEL() {
 		return new RuntimeException(new SQLException("this feature is not supported"));
+	}
+
+	public synchronized void enableShowQueryUsage() {
+		for(int i=0;i<columns.length;i++){
+			columns[i]=columns[i].toDebugColumn();
+		}
 	}
 }
