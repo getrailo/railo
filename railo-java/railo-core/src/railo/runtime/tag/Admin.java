@@ -150,6 +150,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
 	private static final Collection.Key DEBUG_SRC = KeyImpl.intern("debugSrc");
 	private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.intern("debugTemplate");
+	private static final Collection.Key DEBUG_SHOW_QUERY_USAGE = KeyImpl.intern("debugShowQueryUsage");
 	private static final Collection.Key STR_DEBUG_TEMPLATE = KeyImpl.intern("strdebugTemplate");
 	private static final Collection.Key TEMPLATES = KeyImpl.intern("templates");
 	private static final Collection.Key STR = KeyImpl.intern("str");
@@ -1149,6 +1150,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set(DEBUG,Caster.toBoolean(config.debug()));
         sct.set(DEBUG_SRC,src);
         sct.set(DEBUG_TEMPLATE,config.getDebugTemplate());
+        sct.set(DEBUG_SHOW_QUERY_USAGE,Caster.toBoolean(config.getDebugShowQueryUsage()));
         
         
         try {
@@ -1428,6 +1430,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateDebug() throws PageException {
     	admin.updateDebug(Caster.toBoolean(getString("debug",""),null));
         admin.updateDebugTemplate(getString("admin",action,"debugTemplate"));
+        admin.updateDebugShowQueryUsage(Caster.toBoolean(getString("debugShowQueryUsage",""),null));
         store();
         adminSync.broadcast(attributes, config);
     }

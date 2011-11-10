@@ -524,6 +524,8 @@
 	<data key="debug.timezone">Please enter a value for the timezone</data>
 	<data key="debug.enabledebugging">Enable debugging</data>
 	<data key="debug.memorylogger">Memory logger</data>
+	<data key="debug.showQueryUsage">Show Query Usage</data>
+	<data key="debug.showQueryUsageDesc">Show the query usage information in debug output.</data>
 	<data key="scopes.sessiontimeoutdescription">Sets the amount of time Railo will keep the session scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client cookies</data>
