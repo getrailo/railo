@@ -105,6 +105,7 @@ Error Output --->
 
 <!--- 
 settings --->
+<cfif request.adminType EQ "server">
 <cfoutput>
 <table class="tbl" width="740">
 <tr>
@@ -138,7 +139,7 @@ settings --->
 </cfform></cfoutput>
 </table>
 <br><br>
-
+</cfif>
 <!--- 
 change password --->
 <cfoutput>
