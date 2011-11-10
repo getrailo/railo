@@ -833,7 +833,7 @@ public abstract class ConfigImpl implements Config {
         	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
-	        	for(int i=0;i<cmappings.length-1;i++) {
+	        	for(int i=0;i<cmappings.length;i++) {
 	                PageSource ps = cmappings[i].getPageSource(realPath);
 	            	if(ps.exists()) return ps;
 	            }
