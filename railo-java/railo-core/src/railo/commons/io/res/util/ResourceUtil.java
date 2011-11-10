@@ -409,10 +409,10 @@ public final class ResourceUtil {
 	}
 
 	//private static final int NORMAL=0;
-	private static final int READ_ONLY=1;
-	private static final int HIDDEN=2;
-	private static final int ARCHIVE=3;
-	private static final int SYSTEM=4;
+	private static final int READ_ONLY=0;
+	private static final int HIDDEN=1;
+	private static final int ARCHIVE=2;
+	private static final int SYSTEM=3;
 
 	//private static final int IGNORE=0;
 	private static final int NO=1;
@@ -446,20 +446,20 @@ public final class ResourceUtil {
            else throw new IOException("invalid attribute definition ["+str+"]");
         }
         
-        short[] flags=new short[5];
+        short[] flags=new short[4];
         
         if(hasReadOnly)flags[READ_ONLY]=YES;
         else if(hasNormal)flags[READ_ONLY]=NO;
         
         if(hasHidden)flags[HIDDEN]=YES;
-        else if(hasNormal)flags[READ_ONLY]=NO;
+        else if(hasNormal)flags[HIDDEN]=NO;
         
         if(hasSystem)flags[SYSTEM]=YES;
         else if(hasNormal)flags[SYSTEM]=NO;
         
         if(hasArchive)flags[ARCHIVE]=YES;
         else if(hasNormal)flags[ARCHIVE]=NO;
-
+        
         return flags;
     }
 	
