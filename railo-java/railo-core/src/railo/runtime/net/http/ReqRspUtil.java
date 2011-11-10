@@ -85,7 +85,6 @@ public final class ReqRspUtil {
 				}
 				
 			}
-			
 		}
 		else {
 			String str = req.getHeader("Cookie");
@@ -147,12 +146,9 @@ public final class ReqRspUtil {
 		return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
 	}
 	
-	public static boolean isURLEncoded(String str) {
+	/*public static boolean isURLEncoded(String str) {
 		if(StringUtil.isEmpty(str,true)) return false;
-		/*if(str.indexOf('+')!=-1) {print.ds(str);
-			return true;
-		}*/
-		if(!StringUtil.isAscci(str)) return false;
+		if(!ReqRspUtil.isSubAscci(str,false)) return false;
 		int index,last=0;
 		boolean rtn=false;
 		while((index=str.indexOf('%',last))!=-1){
@@ -162,7 +158,7 @@ public final class ReqRspUtil {
 			rtn=true;
 		}
 		return rtn;
-	}
+	}*/
 
 	private static boolean isHex(char c) {
 		return (c>='0' && c<='9') || (c>='a' && c<='f') || (c>='A' && c<='F');
@@ -194,4 +190,79 @@ public final class ReqRspUtil {
 			return str;
 		}
 	}
+    
+    
+    
+    public static boolean needEncoding(String str, boolean allowPlus){
+    	if(StringUtil.isEmpty(str,false)) return false;
+    	
+    	int len=str.length();
+    	char c;
+    	for(int i=0;i<len;i++){
+    		c=str.charAt(i);
+    		if(c >='0' && c <= '9') continue;
+    		if(c >='a' && c <= 'z') continue;
+    		if(c >='A' && c <= 'Z') continue;
+    		
+    		// _-.*
+    		if(c =='-') continue;
+    		if(c =='_') continue;
+    		if(c =='.') continue;
+    		if(c =='*') continue;
+    		if(allowPlus && c =='+') continue;
+    		
+    		if(c =='%') {
+    			if(i+2>=len) return true;
+    			try{
+    				Integer.parseInt(str.substring(i+1,i+3),16);
+    			}
+    			catch(NumberFormatException nfe){
+    				return true;
+    			}
+    			i+=3;
+    			continue;
+    		}
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public static boolean needDecoding(String str){
+    	if(StringUtil.isEmpty(str,false)) return false;
+    	
+    	boolean need=false;
+    	int len=str.length();
+    	char c;
+    	for(int i=0;i<len;i++){
+    		c=str.charAt(i);
+    		if(c >='0' && c <= '9') continue;
+    		if(c >='a' && c <= 'z') continue;
+    		if(c >='A' && c <= 'Z') continue;
+    		
+    		// _-.*
+    		if(c =='-') continue;
+    		if(c =='_') continue;
+    		if(c =='.') continue;
+    		if(c =='*') continue;
+    		if(c =='+') {
+    			need=true;
+    			continue;
+    		}
+    		
+    		if(c =='%') {
+    			if(i+2>=len) return false;
+    			try{
+    				Integer.parseInt(str.substring(i+1,i+3),16);
+    			}
+    			catch(NumberFormatException nfe){
+    				return false;
+    			}
+    			i+=3;
+    			need=true;
+    			continue;
+    		}
+    		return false;
+    	}
+    	return need;
+    }
 }

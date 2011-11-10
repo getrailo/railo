@@ -45,7 +45,7 @@ public class URLDecoder {
      * @see URLEncoder#encode(java.lang.String, java.lang.String)
      */
     public static String decode(String s, String enc, boolean force) throws UnsupportedEncodingException {
-    	if(!force && !ReqRspUtil.isURLEncoded(s)) return s;
+    	if(!force && !ReqRspUtil.needDecoding(s)) return s;
     	//if(true) return java.net.URLDecoder.decode(s, enc);
     	
 	boolean needToChange = false;

@@ -50,6 +50,7 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.net.http.HttpServletResponseWrap;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
@@ -538,7 +539,7 @@ public final class HTTPUtil {
 
     
     public static String escapeQSValue(String str) {
-    	if(!URLEncoder.needEncoding(str)) return str;
+    	if(!ReqRspUtil.needEncoding(str,false)) return str;
     	
     	Config config = ThreadLocalPageContext.getConfig();
     	if(config!=null){

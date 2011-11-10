@@ -2,7 +2,10 @@ package railo.commons.net;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.codec.net.URLCodec;
+
 import railo.commons.lang.StringUtil;
+import railo.runtime.net.http.ReqRspUtil;
 
 /**
  * Utility class for HTML form encoding. This class contains static methods
@@ -64,7 +67,9 @@ public class URLEncoder {
      * @return  the translated <code>String</code>.
      */
     public static String encode(String s) {
-    	return java.net.URLEncoder.encode(s);
+    	s= java.net.URLEncoder.encode(s);
+    	if(s.indexOf('+')!=-1)s=StringUtil.replace(s, "+", "%20",false);
+    	return s;
     }
 
     /**
@@ -89,60 +94,8 @@ public class URLEncoder {
      * @see URLDecoder#decode(java.lang.String, java.lang.String)
      */
     public static String encode(String s, String enc) throws UnsupportedEncodingException {
-    	if(StringUtil.isAscci(s)) return s;
-    	return java.net.URLEncoder.encode(s, enc);
+    	s= java.net.URLEncoder.encode(s, enc);
+    	if(s.indexOf('+')!=-1)s=StringUtil.replace(s, "+", "%20",false);
+    	return s;
     }
-    
-    
-    // Only alphanumerics [0-9a-zA-Z], the special characters ""
-    public static boolean needEncoding(String str){
-    	if(StringUtil.isEmpty(str,false)) return false;
-    	
-    	int len=str.length();
-    	char c;
-    	for(int i=0;i<len;i++){
-    		c=str.charAt(i);
-    		if(c >='0' && c <= '9') continue;
-    		if(c >='a' && c <= 'z') continue;
-    		if(c >='A' && c <= 'Z') continue;
-    		
-    		// _-.*
-    		if(c =='-') continue;
-    		if(c =='_') continue;
-    		if(c =='.') continue;
-    		if(c =='*') continue;
-    		if(c =='+') continue;
-    		/*
-    		if(c =='$') continue;
-    		if(c =='+') continue;
-    		if(c =='!') continue;
-    		if(c =='\'') continue;
-    		if(c =='(') continue;
-    		if(c ==')') continue;
-    		if(c ==',') continue;
-    		*/
-    		//  # % &  / : ; = ? @ [ ]
-    		
-    		// [A-Z, a-z], Ziffern [0-9] und
-    		// - _ . ~
-
-    		if(c =='%') {
-    			if(i+2>=len) return true;
-    			try{
-    				Integer.parseInt(str.substring(i+1,i+3),16);
-    			}
-    			catch(NumberFormatException nfe){
-    				return true;
-    			}
-    			i+=3;
-    			continue;
-    		}
-    		return true;
-    	}
-    	
-    	
-    	
-    	return false;
-    }
-    
 }

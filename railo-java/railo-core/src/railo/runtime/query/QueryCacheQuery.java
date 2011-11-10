@@ -644,7 +644,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeColumn(railo.runtime.type.Collection.Key)
 	 */
-	public QueryColumn removeColumn(Key key) throws PageException {
+	public QueryColumn removeColumn(Key key) throws DatabaseException {
 		disconnectCache();
 		return query.removeColumn(key);
 	}

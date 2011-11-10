@@ -10,6 +10,7 @@ import railo.commons.lang.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 
 public final class URLEncodedFormat implements Function {
@@ -26,11 +27,11 @@ public final class URLEncodedFormat implements Function {
 	}
 	
 	public static String call(PageContext pc , String str, String encoding,boolean force) throws PageException {
-		if(!force && !railo.commons.net.URLEncoder.needEncoding(str))
+		if(!force && !ReqRspUtil.needEncoding(str,false))
 			return str;
 		
 		try {
-			String enc=java.net.URLEncoder.encode(str, encoding);
+			String enc=railo.commons.net.URLEncoder.encode(str, encoding);
 			return StringUtil.replace(StringUtil.replace(StringUtil.replace(StringUtil.replace(StringUtil.replace(enc, "+", "%20", false), "*", "%2A", false), "-", "%2D", false), ".", "%2E", false), "_", "%5F", false);// TODO do better
 			//return enc;
 		} 
