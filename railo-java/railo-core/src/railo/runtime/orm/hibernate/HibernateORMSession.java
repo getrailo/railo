@@ -274,7 +274,12 @@ public class HibernateORMSession implements ORMSession{
 	private Object _executeQuery(PageContext pc,String hql, Object params, boolean unique,Struct options) throws PageException {
 		//Session session = getSession(pc,null);
 		hql=hql.trim();
-		org.hibernate.Query query = session().createQuery(hql); 
+		org.hibernate.Query query = null;
+		try{
+			query = session().createQuery(hql); 
+		} catch (java.lang.NullPointerException e) {
+			throw new ORMException(engine,"railo.runtime.orm.ORMException","HQL query [" + hql + "] is incorrect.");
+		}
 		
 		// options
 		if(options!=null){
