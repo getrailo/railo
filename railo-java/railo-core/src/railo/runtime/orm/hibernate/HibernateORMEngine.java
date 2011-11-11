@@ -412,7 +412,6 @@ public class HibernateORMEngine implements ORMEngine {
 				try {
 					doc=XMLUtil.newDocument();
 				}catch(Throwable t){t.printStackTrace();}
-				
 				root=doc.createElement("hibernate-mapping");
 				doc.appendChild(root);
 				pc.addPageSource(cfcp.getPageSource(), true);
@@ -448,7 +447,11 @@ public class HibernateORMEngine implements ORMEngine {
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
-				IOUtil.write(res, XMLCaster.toString(hm), "UTF-8", false);
+					StringBuffer mappings=new StringBuffer();
+					mappings.append("<?xml version=\"1.0\"?>\n");
+					mappings.append("<!DOCTYPE hibernate-mapping PUBLIC \"-//Hibernate/Hibernate Mapping DTD 3.0//EN\" \"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd\">\n");
+					mappings.append(XMLCaster.toString(hm,true));
+					IOUtil.write(res, mappings.toString(), "UTF-8", false);
 				}
 				catch(Exception e){} 
 			}
