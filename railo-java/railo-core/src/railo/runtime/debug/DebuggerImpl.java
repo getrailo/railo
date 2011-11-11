@@ -15,8 +15,8 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
-
 import railo.runtime.db.SQL;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -150,7 +150,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         int tApp=0;
         int tCount=0;
         for(int i=0;i<len;i++) {
-            DebugEntry de=(DebugEntry) arrPages.get(i);
+            DebugEntry de=arrPages.get(i);
             tLoad+=de.getFileLoadTime();
             tQuery+=de.getQueryTime();
             tApp+=de.getExeTime();
@@ -217,7 +217,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	Iterator<DebugTimerImpl> it = timers.iterator();
 	        	DebugTimer timer;
 	        	while(it.hasNext()) {
-	        		timer=(DebugTimer) it.next();
+	        		timer= it.next();
 	        		tableTimer.appendRow(0, new SimpleDumpData(timer.getLabel()),new SimpleDumpData(timer.getTime()),new SimpleDumpData(timer.getTemplate())) ;
 	        	}
 		}
@@ -246,7 +246,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	DebugTraceImpl trace;
 	        	int total=0;
 	        	while(it.hasNext()) {
-	        		trace=(DebugTraceImpl) it.next();
+	        		trace=it.next();
 	        		total+=trace.getTime();
 	        		DumpTable tableVar=new DumpTable("#cccccc","#ffffff","#000000");
 	        		SimpleDumpData varValue = new SimpleDumpData(toString(trace.getVarValue()));
@@ -473,7 +473,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		try {
 		    while(qryIt.hasNext()) {
 		        row++;
-		        QueryEntry qe=(QueryEntry) qryIt.next();
+		        QueryEntry qe=qryIt.next();
 				qryQueries.setAt(KeyImpl.NAME,row,qe.getName()==null?"":qe.getName());
 		        qryQueries.setAt(KeyImpl.TIME,row,Integer.valueOf(qe.getExe()));
 		        qryQueries.setAt(SQL,row,qe.getSQL().toString());
@@ -509,7 +509,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
             //PageSource ps;
 		    for(int i=0;i<len;i++) {
 		        row++;
-		        de=(DebugEntry) arrPages.get(i);
+		        de=arrPages.get(i);
                 //ps = de.getPageSource();
                 
 		        qryPage.setAt("id",row,de.getId());
@@ -550,7 +550,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	DebugTimer timer;
 	        	row=0;
 	        	while(it.hasNext()) {
-	        		timer=(DebugTimer) it.next();
+	        		timer=it.next();
 	        		row++;
 	        		qryTimers.setAt(KeyImpl.LABEL,row,timer.getLabel()); 
 	        		qryTimers.setAt(KeyImpl.TEMPLATE,row,timer.getTemplate()); 

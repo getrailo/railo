@@ -2,10 +2,7 @@ package railo.commons.net;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.codec.net.URLCodec;
-
 import railo.commons.lang.StringUtil;
-import railo.runtime.net.http.ReqRspUtil;
 
 /**
  * Utility class for HTML form encoding. This class contains static methods

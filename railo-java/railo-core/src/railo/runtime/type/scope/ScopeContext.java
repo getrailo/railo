@@ -18,7 +18,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -440,7 +439,7 @@ public final class ScopeContext {
 	}
 	
 	public boolean hasExistingSessionScope(PageContext pc) {
-        if((pc.getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
+        if(pc.getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
 		return hasExistingJSessionScope(pc);
 	}
 	

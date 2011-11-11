@@ -170,7 +170,7 @@ public final class ReqRspUtil {
 	}
 	
 
-	private static String dec(String str, String charset, boolean force) throws UnsupportedEncodingException {
+	private static String dec(String str, String charset, boolean force) {
 		str=str.trim();
 		if(StringUtil.startsWith(str, '"') && StringUtil.endsWith(str, '"'))
 			str=str.substring(1,str.length()-1);

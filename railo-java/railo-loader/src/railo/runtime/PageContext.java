@@ -1051,5 +1051,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 
 	public abstract void setTimeZone(TimeZone timeZone);
 
+	public abstract short getSessionType();
+
 
 }

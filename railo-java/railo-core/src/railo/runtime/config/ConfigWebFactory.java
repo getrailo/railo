@@ -3543,11 +3543,12 @@ public final class ConfigWebFactory {
       	if(hasAccess && !StringUtil.isEmpty(strMax)) {
       	    config.setDebugMaxRecordsLogged(toInt(strMax,10));
       	}
-      	else if(hasCS)config.setDebugMaxRecordsLogged(((ConfigServerImpl)configServer).getDebugMaxRecordsLogged());
+      	else if(hasCS)config.setDebugMaxRecordsLogged(configServer.getDebugMaxRecordsLogged());
       	
       	
      // show-usage
       	Boolean showUsage = Caster.toBoolean(debugging.getAttribute("show-query-usage"),null);
+      	showUsage=Boolean.TRUE;
       	if(showUsage!=null && hasAccess) {
       	    config.setDebugShowQueryUsage(showUsage.booleanValue());
       	}

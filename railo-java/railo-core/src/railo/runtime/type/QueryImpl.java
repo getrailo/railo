@@ -49,7 +49,6 @@ import railo.runtime.db.DatasourceConnectionImpl;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;

@@ -82,7 +82,7 @@ import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.AppListenerSupport;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
