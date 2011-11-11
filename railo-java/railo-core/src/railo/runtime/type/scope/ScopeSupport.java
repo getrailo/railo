@@ -171,8 +171,8 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
             name=raw[i].getName();
             value=raw[i].getValue();
             if(raw[i].isUrlEncoded()) {
-            	name=URLDecoder.decode(name,encoding);
-            	value=URLDecoder.decode(value,encoding);
+            	name=URLDecoder.decode(name,encoding,true);
+            	value=URLDecoder.decode(value,encoding,true);
             }
             // MUST valueStruct
             if(name.indexOf('.')!=-1) {

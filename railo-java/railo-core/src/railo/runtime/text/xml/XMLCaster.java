@@ -24,6 +24,7 @@ import org.w3c.dom.Text;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.HTMLEntities;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -484,7 +485,7 @@ public final class XMLCaster {
         OutputStream os=null;
 		try {
 			os=IOUtil.toBufferedOutputStream(file.getOutputStream());
-			writeTo(node, new StreamResult(os),false);
+			writeTo(node, new StreamResult(os),false,null,null,null);
 		}
 		catch(IOException ioe){
 			throw Caster.toPageException(ioe);
@@ -498,7 +499,7 @@ public final class XMLCaster {
 	public static String toString(Node node) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),false);
+			writeTo(node, new StreamResult(sw),false,null,null,null);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
@@ -509,19 +510,32 @@ public final class XMLCaster {
 	public static String toString(Node node,boolean omitXMLDecl) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),omitXMLDecl);
+			writeTo(node, new StreamResult(sw),omitXMLDecl,null,null,null);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
 		}
 		return sw.getBuffer().toString();
 	}
+	
+	
+	public static String toString(Node node,boolean omitXMLDecl,String publicId,String systemId,String encoding) throws PageException {
+		StringWriter sw=new StringWriter();
+		try {
+			writeTo(node, new StreamResult(sw),omitXMLDecl,publicId,systemId,encoding);
+		} 
+		finally {
+			IOUtil.closeEL(sw);
+		}
+		return sw.getBuffer().toString();
+	}
+	
 	public static String toString(NodeList nodes,boolean omitXMLDecl) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
 			int len = nodes.getLength();
 			for(int i=0;i<len;i++){
-				writeTo(nodes.item(i), new StreamResult(sw),omitXMLDecl);
+				writeTo(nodes.item(i), new StreamResult(sw),omitXMLDecl,null,null,null);
 			}
 		} 
 		finally {
@@ -533,7 +547,7 @@ public final class XMLCaster {
 	public static String toString(Node node,String defaultValue) {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),false);
+			writeTo(node, new StreamResult(sw),false,null,null,null);
 		} 
 		catch(Throwable t){
 			return defaultValue;
@@ -545,13 +559,18 @@ public final class XMLCaster {
 	}
 	
 	
-	public static void writeTo(Node node,Result res,boolean omitXMLDecl) throws PageException {
+	public static void writeTo(Node node,Result res,boolean omitXMLDecl, String publicId,String systemId,String encoding) throws PageException {
 		try {
 			Transformer t = XMLUtil.getTransformerFactory().newTransformer();
 			t.setOutputProperty(OutputKeys.INDENT,"yes");
 			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,omitXMLDecl?"yes":"no");
-			 
 			t.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2"); 
+			
+			// optional properties
+			if(!StringUtil.isEmpty(publicId,true))t.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,publicId);
+			if(!StringUtil.isEmpty(systemId,true))t.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,systemId);
+			if(!StringUtil.isEmpty(encoding,true))t.setOutputProperty(OutputKeys.ENCODING,encoding);
+			
 			t.transform(new DOMSource(node), res);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);

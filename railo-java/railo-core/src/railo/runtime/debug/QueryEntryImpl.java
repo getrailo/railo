@@ -1,6 +1,7 @@
 package railo.runtime.debug;
 
 import railo.runtime.db.SQL;
+import railo.runtime.type.Query;
 
 /**
  * 
@@ -15,6 +16,7 @@ public final class QueryEntryImpl implements QueryEntry {
     private String name;
     private int recordcount;
     private String datasource;
+	private Query qry;
 	
 	/**
 	 * constructor of the class
@@ -23,13 +25,20 @@ public final class QueryEntryImpl implements QueryEntry {
 	 * @param src
 	 * @param exe
 	 */
-	public QueryEntryImpl(String datasource, String name,SQL sql,int recordcount, String src, int exe) {
+	public QueryEntryImpl(Query qry,String datasource, String name,SQL sql,int recordcount, String src, int exe) {
         this.datasource=datasource;
         this.recordcount=recordcount;
         this.name=name;
 	    this.src=src;
 		this.sql=sql;
 		this.exe=exe;
+		this.qry=qry;
+	}
+	/** FUTURE add to interface
+	 * @return the qry
+	 */
+	public Query getQry() {
+		return qry;
 	}
 	/**
      * @see railo.runtime.debug.QueryEntry#getExe()

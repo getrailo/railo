@@ -27,12 +27,17 @@ public final class ListToArray implements Function {
 	
 
 	public static Array call(PageContext pc , String list, String delimeter,boolean includeEmptyFields,boolean multiCharacterDelimiter) {
+		if(includeEmptyFields){
+			if(list.length()==0) {
+				Array a=new ArrayImpl();
+				a.appendEL("");
+				return a;
+			}
+			return List.listToArray(list,delimeter,multiCharacterDelimiter);
+		}
 		if(list.length()==0) 
 			return new ArrayImpl();
-		if(includeEmptyFields)return List.listToArray(list,delimeter,multiCharacterDelimiter);
+		
 		return List.listToArrayRemoveEmpty(list,delimeter,multiCharacterDelimiter);
 	}
-	
-	
-	
 }

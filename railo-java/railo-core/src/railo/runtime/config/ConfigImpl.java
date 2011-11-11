@@ -211,8 +211,8 @@ public abstract class ConfigImpl implements Config {
     private Locale locale;
 
     private boolean psq=false;
+    private boolean debugShowUsage;
 
-   // private String debugTemplate;
     private Map errorTemplates=new HashMap();
 
     private String password;
@@ -833,7 +833,7 @@ public abstract class ConfigImpl implements Config {
         	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
-	        	for(int i=0;i<cmappings.length-1;i++) {
+	        	for(int i=0;i<cmappings.length;i++) {
 	                PageSource ps = cmappings[i].getPageSource(realPath);
 	            	if(ps.exists()) return ps;
 	            }
@@ -1824,6 +1824,15 @@ public abstract class ConfigImpl implements Config {
      */
     public String getDebugTemplate() {
     	throw new PageRuntimeException(new DeprecatedException("no longer supported, use instead getDebugEntry(ip, defaultValue)"));
+    }
+    public boolean getDebugShowQueryUsage() {
+        return debugShowUsage;
+    }
+    /**
+     * @param debugTemplate The debugTemplate to set.
+     */
+    protected void setDebugShowQueryUsage(boolean debugShowUsage) {
+        this.debugShowUsage = debugShowUsage;
     }
 
 	/**
@@ -3371,7 +3380,7 @@ public abstract class ConfigImpl implements Config {
 		}
 		
 	}
-
+ 
 	private DebugEntry[] debugEntries;
 	protected void setDebugEntries(DebugEntry[] debugEntries) {
 		this.debugEntries=debugEntries;
@@ -3405,6 +3414,14 @@ public abstract class ConfigImpl implements Config {
 	public int getDebugMaxRecordsLogged() {
 		return debugMaxRecordsLogged;
 	}
+
+	
+	
+
+
+	public abstract int getLoginDelay();
+	
+	public abstract boolean getLoginCaptcha();
 
 	
 }

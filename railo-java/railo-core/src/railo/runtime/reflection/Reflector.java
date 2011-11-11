@@ -217,7 +217,7 @@ public final class Reflector {
 	 * @param trg Target Class
 	 * @return is similar
 	 */
-	private static boolean like(Class src, Class trg) {
+	public static boolean like(Class src, Class trg) {
 		if(src==trg) return true;
 		return isInstaneOf(src,trg);
 	}
@@ -230,7 +230,7 @@ public final class Reflector {
 	 * @return converted Object
 	 * @throws PageException 
 	 */
-	private static Object convert(Object src, Class trgClass) throws PageException {
+	public static Object convert(Object src, Class trgClass) throws PageException {
 		if(src==null) {
 			if(trgClass.isPrimitive())
 				throw new ApplicationException("can't convert [null] to ["+trgClass.getName()+"]");

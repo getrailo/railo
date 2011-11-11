@@ -66,6 +66,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.DumpWriter;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -151,6 +152,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
 	private static final Collection.Key DEBUG_SRC = KeyImpl.intern("debugSrc");
 	private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.intern("debugTemplate");
+	private static final Collection.Key DEBUG_SHOW_QUERY_USAGE = KeyImpl.intern("debugShowQueryUsage");
 	private static final Collection.Key STR_DEBUG_TEMPLATE = KeyImpl.intern("strdebugTemplate");
 	private static final Collection.Key TEMPLATES = KeyImpl.intern("templates");
 	private static final Collection.Key STR = KeyImpl.intern("str");
@@ -250,9 +252,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             doGetInfo();
             return SKIP_BODY;
         }
-        
-        
-        
+        if(action.equals("getloginsettings")) {
+        	doGetLoginSettings();
+            return SKIP_BODY;
+        }
         
         // Type
         type=toType(getString("admin",action,"type"),true);
@@ -568,8 +571,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("verifyExtensionProvider",ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyExtensionProvider();
         else if(check("verifyJavaCFX",			ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyJavaCFX();
         else if(check("verifyCFX",			ACCESS_FREE) && check2(ACCESS_READ  )) doVerifyCFX();
-
+    	
         else if(check("resetId",				ACCESS_FREE) && check2(ACCESS_WRITE  )) doResetId();
+        else if(check("updateLoginSettings", ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateLoginSettings();
         else if(check("updateJar",         		ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateJar();
         else if(check("updateSSLCertificate",ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateSSLCertificate();
         else if(check("updateMonitorEnabled",   ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitorEnabled();
@@ -697,9 +701,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else throw new ApplicationException("invalid action ["+action+"] for tag admin");
             
     }
-
-	
-
 
 	private boolean check2(short accessRW) throws SecurityException {
     	if(accessRW==ACCESS_READ) ConfigWebUtil.checkGeneralReadAccess(config,password);
@@ -1160,6 +1161,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         sct.set(DEBUG,Caster.toBoolean(config.debug()));
         sct.set(DEBUG_SRC,src);
+        sct.set(DEBUG_SHOW_QUERY_USAGE,Caster.toBoolean(config.getDebugShowQueryUsage()));
         
         /*sct.set(DEBUG_TEMPLATE,config.getDebugTemplate());
         try {
@@ -1451,6 +1453,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private void doUpdateDebug() throws PageException {
     	admin.updateDebug(Caster.toBoolean(getString("debug",""),null));
         admin.updateDebugTemplate(getString("admin",action,"debugTemplate"));
+        admin.updateDebugShowQueryUsage(Caster.toBoolean(getString("debugShowQueryUsage",""),null));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3802,6 +3805,19 @@ private void doGetMappings() throws PageException {
         store();
     }
     
+
+	
+
+
+	private void doUpdateLoginSettings() throws PageException {
+		boolean captcha = getBool("admin", "UpdateLoginSettings", "captcha");
+		int delay = getInt("admin", "UpdateLoginSettings", "delay");
+		admin.updateLoginSettings(captcha,delay);
+		store();
+	}
+    
+    
+    
     private void doUpdateSSLCertificate() throws PageException {
     	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
     	int port = getInt("port", 443);
@@ -4154,6 +4170,17 @@ private void doGetMappings() throws PageException {
         sct.set("username",emptyIfNull(config.getProxyUsername()));
         sct.set("password",emptyIfNull(config.getProxyPassword()));
     }
+    
+
+
+	private void doGetLoginSettings() throws ApplicationException, PageException {
+		Struct sct=new StructImpl();
+		config=(ConfigImpl) ThreadLocalPageContext.getConfig(config);
+        pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        sct.set("captcha",Caster.toBoolean(config.getLoginCaptcha()));
+        sct.set("delay",Caster.toDouble(config.getLoginDelay()));
+        
+	}
 
 
 	private void doGetCharset() throws PageException {

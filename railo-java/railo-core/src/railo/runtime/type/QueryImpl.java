@@ -49,6 +49,7 @@ import railo.runtime.db.DatasourceConnectionImpl;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
+import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
@@ -113,7 +114,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	
 	
 	//private static int count=0;
-	private QueryColumnImpl[] columns;
+	private QueryColumnPro[] columns;
 	private Collection.Key[] columnNames;
 	private SQL sql;
 	private ArrayInt arrCurrentRow=new ArrayInt();
@@ -406,7 +407,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 		columncount=count;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnImpl[columncount];
+		columns=new QueryColumnPro[columncount];
 		Cast[] casts = new Cast[columncount];
 		
 	// get all used ints
@@ -493,7 +494,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         columncount=strColumns.length;
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnImpl[columncount];
+		columns=new QueryColumnPro[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
@@ -511,7 +512,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         columncount=columnKeys.length;
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnImpl[columncount];
+		columns=new QueryColumnPro[columncount];
 		for(int i=0;i<columnKeys.length;i++) {
 			columnNames[i]=columnKeys[i];
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
@@ -532,7 +533,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(strTypes.length!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnImpl[columncount];
+		columns=new QueryColumnPro[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
@@ -553,7 +554,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         columncount=columnNames.length;
 		if(strTypes.length!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
-		columns=new QueryColumnImpl[columncount];
+		columns=new QueryColumnPro[columncount];
 		for(int i=0;i<columnNames.length;i++) {
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
 		}
@@ -570,7 +571,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         columncount=arrColumns.size();
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnImpl[columncount];
+		columns=new QueryColumnPro[columncount];
 		for(int i=0;i<columncount;i++) {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
@@ -591,7 +592,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(arrTypes.size()!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnImpl[columncount];
+		columns=new QueryColumnPro[columncount];
 		for(int i=0;i<columncount;i++) {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
@@ -645,7 +646,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         if(columnNames.length!=arrColumns.length)
 			throw new DatabaseException("invalid parameter for query, not the same count from names and columns","names:"+columnNames.length+";columns:"+arrColumns.length,null,null,null);
 		int len=0;
-		columns=new QueryColumnImpl[arrColumns.length];
+		columns=new QueryColumnPro[arrColumns.length];
 		if(arrColumns.length>0) {
 		// test columns
 			len=arrColumns[0].size();
@@ -744,39 +745,13 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 */
 	public Object removeEL(Collection.Key key) {
 		return setEL(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) return _removeEL(index);
-		return null;*/
 	}
-
-	/*private QueryColumn _removeEL(int index) {
-		QueryColumnImpl[] qc=new QueryColumnImpl[--columncount];
-		Collection.Key[] names=new Collection.Key[columncount];
-		int count=0;
-		QueryColumn removed=null;
-		for(int i=0;i<columns.length;i++) {
-			if(index!=i){
-
-				names[count]=columnNames[i];
-				qc[count++]=columns[i];
-			}
-			else {
-				removed=columns[i];
-			}
-		}
-		columnNames=names;
-		columns=qc;
-		return removed;
-	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
 	 */
 	public synchronized Object remove(String key) throws PageException {
 		return set(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) return _removeEL(index);
-		throw new ExpressionException("can't remove column with name ["+key+"], column doesn't exist");*/
 	}
 
 	
@@ -787,9 +762,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 */
 	public Object remove(Collection.Key key) throws PageException {
 		return set(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) return _removeEL(index);
-		throw new ExpressionException("can't remove column with name ["+key+"], column doesn't exist");*/
 	}
 
 	/**
@@ -800,9 +772,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
             columns[i].clear();
         }
         recordcount=0;
-        //columns=new QueryColumnImpl[0];
-        //columnNames=new Collection.Key[0];
-		//columncount=0;
 	}
 
 	/**
@@ -981,7 +950,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	/**
 	 * @see railo.runtime.type.Query#removeColumn(railo.runtime.type.Collection.Key)
 	 */
-	public QueryColumn removeColumn(Collection.Key key) throws PageException {
+	public QueryColumn removeColumn(Collection.Key key) throws DatabaseException {
 		//disconnectCache();
         
         QueryColumn removed = removeColumnEL(key);
@@ -1007,7 +976,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
             int current=0;
             QueryColumn removed=null;
             Collection.Key[] newColumnNames=new Collection.Key[columnNames.length-1];
-            QueryColumnImpl[] newColumns=new QueryColumnImpl[columns.length-1];
+            QueryColumnPro[] newColumns=new QueryColumnPro[columns.length-1];
             for(int i=0;i<columns.length;i++) {
                 if(i==index) {
                     removed=columns[i];
@@ -1033,7 +1002,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
             int current=0;
             QueryColumn removed=null;
             Collection.Key[] newColumnNames=new Collection.Key[columnNames.length-1];
-            QueryColumnImpl[] newColumns=new QueryColumnImpl[columns.length-1];
+            QueryColumnPro[] newColumns=new QueryColumnPro[columns.length-1];
             for(int i=0;i<columns.length;i++) {
                 if(i==index) {
                     removed=columns[i];
@@ -1346,7 +1315,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		for(int i=0;i<columns.length;i++) {
 			column=columns[i];
 			int len=column.size();
-			QueryColumnImpl newCol=new QueryColumnImpl(this,columnNames[i],columns[i].getType(),len);
+			QueryColumnPro newCol=new QueryColumnImpl(this,columnNames[i],columns[i].getType(),len);
 			for(int y=1;y<=len;y++) {
 				newCol.set(y,column.get(arr[y-1].getOldPosition()+1));
 			}
@@ -1361,7 +1330,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
          //disconnectCache();
             
          for(int i=0;i<columns.length;i++) {
-		 	QueryColumnImpl column = columns[i];
+        	 QueryColumnPro column = columns[i];
 		 	column.addRow(count);
 		 }
 		 recordcount+=count;
@@ -1402,18 +1371,23 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 		if(content.size()>getRecordcount()) addRow(content.size()-getRecordcount());
 	 		else content.setEL(getRecordcount(),"");
 	 	}
-	 	QueryColumnImpl[] newColumns=new QueryColumnImpl[columns.length+1];
+	 	QueryColumnPro[] newColumns=new QueryColumnPro[columns.length+1];
 	 	Collection.Key[] newColumnNames=new Collection.Key[columns.length+1];
+	 	boolean logUsage=false;
 	 	for(int i=0;i<columns.length;i++) {
 	 		newColumns[i]=columns[i];
 	 		newColumnNames[i]=columnNames[i];
+	 		if(!logUsage && columns[i] instanceof DebugQueryColumn) logUsage=true;
 	 	}
-	 	newColumns[columns.length]=new QueryColumnImpl(this,columnName,content,type );
+	 	newColumns[columns.length]=new QueryColumnImpl(this,columnName,content,type);
 	 	newColumnNames[columns.length]=columnName;
 	 	columns=newColumns;
 	 	columnNames=newColumnNames;
 	 	
 	 	columncount++;
+	 	
+	 	if(logUsage)enableShowQueryUsage();
+	 	
 		return true;
 	}
 	
@@ -1451,7 +1425,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         try{
 	        if(columnNames!=null){
 		        newResult.columnNames=new Collection.Key[columnNames.length];
-		        newResult.columns=new QueryColumnImpl[columnNames.length];
+		        newResult.columns=new QueryColumnPro[columnNames.length];
 		        for(int i=0;i<columnNames.length;i++) {
 		        	newResult.columnNames[i]=columnNames[i];
 		        	newResult.columns[i]=columns[i].cloneColumn(newResult,deepCopy);
@@ -1789,7 +1763,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
     	// target < source
     	if(trg.length<src.length){
     		this.columnNames=new Collection.Key[trg.length];
-    		QueryColumnImpl[] tmp=new QueryColumnImpl[trg.length];
+    		QueryColumnPro[] tmp=new QueryColumnPro[trg.length];
     		for(int i=0;i<trg.length;i++){
     			this.columnNames[i]=trg[i];
     			tmp[i]=this.columns[i];
@@ -3592,5 +3566,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 	private RuntimeException notSupportedEL() {
 		return new RuntimeException(new SQLException("this feature is not supported"));
+	}
+
+	public synchronized void enableShowQueryUsage() {
+		for(int i=0;i<columns.length;i++){
+			columns[i]=columns[i].toDebugColumn();
+		}
 	}
 }

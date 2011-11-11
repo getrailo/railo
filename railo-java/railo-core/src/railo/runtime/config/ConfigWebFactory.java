@@ -376,6 +376,7 @@ public final class ConfigWebFactory {
     	loadExeLog(configServer,config,doc);
     	loadThreadQueue(configServer, config, doc);
     	loadMonitors(configServer,config,doc);
+    	loadLogin(configServer, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -2130,8 +2131,8 @@ public final class ConfigWebFactory {
             String[] item;
             for(int i=0;i<arr.length;i++) {
                 item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
-                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),URLDecoder.decode(item[1]));
-                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),"");
+                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
+                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),"");
             }   
         }
         catch(PageException ee) {}
@@ -3241,7 +3242,7 @@ public final class ConfigWebFactory {
         
         
     }
-        
+
     private static void loadConstants(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
         
         boolean hasCS=configServer!=null;
@@ -3262,6 +3263,18 @@ public final class ConfigWebFactory {
         	sct.setEL(KeyImpl.getInstance(name.trim()), elConstants[i].getAttribute("value"));
         }
         config.setConstants(sct);
+    }
+    
+    private static void loadLogin(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
+        // server context
+    	if(config instanceof ConfigServer) {
+        	Element login=getChildByName(doc.getDocumentElement(),"login");
+        	boolean captcha=Caster.toBooleanValue(login.getAttribute("captcha"),false);
+        	int delay=Caster.toIntValue(login.getAttribute("delay"),0);
+        	ConfigServerImpl cs=(ConfigServerImpl) config;
+        	cs.setLoginDelay(delay);
+        	cs.setLoginCaptcha(captcha);
+        }
     }
 	
 
@@ -3478,7 +3491,7 @@ public final class ConfigWebFactory {
      * @param config
      * @param doc
      */
-    private static void loadDebug(ConfigServer configServer, ConfigImpl config, Document doc) {
+    private static void loadDebug(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
         boolean hasCS=configServer!=null;
         Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
       	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
@@ -3532,6 +3545,15 @@ public final class ConfigWebFactory {
       	}
       	else if(hasCS)config.setDebugMaxRecordsLogged(((ConfigServerImpl)configServer).getDebugMaxRecordsLogged());
       	
+      	
+     // show-usage
+      	Boolean showUsage = Caster.toBoolean(debugging.getAttribute("show-query-usage"),null);
+      	if(showUsage!=null && hasAccess) {
+      	    config.setDebugShowQueryUsage(showUsage.booleanValue());
+      	}
+      	else if(hasCS) {
+      	    config.setDebugShowQueryUsage(configServer.getDebugShowQueryUsage());
+      	}
     }
 
     /**

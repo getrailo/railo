@@ -297,7 +297,8 @@ Path placeholders:
 		log-memory-usage="no"
 		memory-log="{railo-config}/logs/memory.log"
 		template="/railo-context/templates/debugging/debugging.cfm"
-		debug="no"/>
+		debug="no"
+		show-query-usage="no"/>
 	
 		<!--
 	application:

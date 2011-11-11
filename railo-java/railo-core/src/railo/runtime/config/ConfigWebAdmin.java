@@ -2214,6 +2214,26 @@ public final class ConfigWebAdmin {
         //if(template.trim().length()>0)
         	debugging.setAttribute("template",template);
     }
+    
+
+
+
+	public void updateDebugShowQueryUsage(Boolean showQueryUsage) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
+        if(!hasAccess)
+            throw new SecurityException("no access to change debugging settings");
+
+        Element debugging=_getRootElement("debugging");
+        if(showQueryUsage!=null)
+        	debugging.setAttribute("show-query-usage",Caster.toString(showQueryUsage.booleanValue()));
+        else
+        	debugging.removeAttribute("show-query-usage");
+        	
+	}
+    
+    
+    
     /**
      * updates the ErrorTemplate
      * @param template
@@ -3592,5 +3612,14 @@ public final class ConfigWebAdmin {
 	  			}
 	      	}
         }
+	}
+
+
+	public void updateLoginSettings(boolean captcha, int delay) {
+
+        Element login=_getRootElement("login");
+        login.setAttribute("captcha",Caster.toString(captcha));
+        login.setAttribute("delay",Caster.toString(delay));
+		
 	}
 }

@@ -65,7 +65,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	
 	private void set(Config config,javax.servlet.http.Cookie cookie) throws PageException {
 		
-		String name=StringUtil.toLowerCase(ReqRspUtil.decode(cookie.getName(),charset));
+		String name=StringUtil.toLowerCase(ReqRspUtil.decode(cookie.getName(),charset,false));
 		raw.put(name,cookie.getValue());
     	if(isScriptProtected())	super.set (KeyImpl.init(name),ScriptProtect.translate(dec(cookie.getValue())));
         else super.set (KeyImpl.init(name),cookie.getValue());
@@ -291,7 +291,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 
 
     public String dec(String str) {
-    	return ReqRspUtil.decode(str,charset);
+    	return ReqRspUtil.decode(str,charset,false);
 	}
     public String enc(String str) {
     	return ReqRspUtil.encode(str,charset);

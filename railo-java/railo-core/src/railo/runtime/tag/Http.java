@@ -55,6 +55,7 @@ import railo.runtime.exp.HTTPException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.text.csv.CSVParser;
@@ -1201,7 +1202,7 @@ public final class Http extends BodyTagImpl {
     }
 
     private static String translateEncoding(String str, String charset) throws UnsupportedEncodingException {
-    	if(StringUtil.isAscci(str)) return str;
+    	if(!ReqRspUtil.needEncoding(str,false)) return str;
     	return URLEncoder.encode(str,charset);
     }
 

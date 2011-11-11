@@ -443,7 +443,11 @@ public class HibernateORMEngine implements ORMEngine {
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
-				IOUtil.write(res, XMLCaster.toString(hm), "UTF-8", false);
+				IOUtil.write(res, 
+						XMLCaster.toString(hm,false,
+								HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID,
+								HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
+								HibernateSessionFactory.HIBERNATE_3_ENCODING), HibernateSessionFactory.HIBERNATE_3_ENCODING, false);
 				}
 				catch(Exception e){} 
 			}

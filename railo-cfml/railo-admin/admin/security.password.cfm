@@ -17,6 +17,17 @@ Defaults --->
 
 <cftry>
 	<cfswitch expression="#form.mainAction#">
+	<!--- save settings --->
+		<cfcase value="#stText.Buttons.save#">
+			<cfadmin 
+					action="updateLoginSettings"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+                    
+					captcha="#structKeyExists(form,"captcha") and form.captcha#"
+					delay="#form.delay#">
+			
+		</cfcase>
 	<!--- CHANGE --->
 		<cfcase value="#stText.Buttons.Change#">
 			<cfif len(form._old_password) LT 6>
@@ -85,10 +96,54 @@ Error Output --->
 <cfset printError(error)>
 
 
+<cfadmin 
+        action="getLoginSettings"
+        type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+   		returnVariable="settings">
+
+
+<!--- 
+settings --->
+<cfif request.adminType EQ "server">
+<cfoutput>
+<table class="tbl" width="740">
+<tr>
+	<td colspan="3"><h2>#stText.Login.settings#</h2></td>
+</tr>
+</cfoutput>
+
+<cfoutput><cfform action="#request.self#?action=#url.action#" method="post">
+<tr>
+	<td class="tblHead" width="150">#stText.Login.useCaptcha#</td>
+	<td class="tblContent">
+		
+		<cfinput type="checkbox" name="captcha" checked="#settings.captcha#" value="true"><br /><span class="comment">#stText.Login.useCaptchaDesc#</span>
+	</td>
+</tr>
+<tr>
+	<td class="tblHead" width="150">#stText.Login.delay#</td>
+	<td class="tblContent">
+		<select name="delay"><cfset hasDelay=false>
+        	<cfloop list="0,1,5,10,30,60" index="i"><option <cfif settings.delay EQ i><cfset hasDelay=true>selected="selected"</cfif>>#i#</option></cfloop>
+            <cfif not hasDelay><option selected="selected">#settings.delay#</option></cfif>
+        </select> #stText.Login.seconds#<br /><span class="comment">#stText.Login.delayDesc#</span>
+	</td>
+</tr>
+<tr>
+	<td colspan="2">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.save#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+	</td>
+</tr>
+</cfform></cfoutput>
+</table>
+<br><br>
+</cfif>
 <!--- 
 change password --->
 <cfoutput>
-
+  
 <table class="tbl" width="740">
 <tr>
 	<td colspan="3"><h2>#stText.Login.ChangePassword#</h2>#stText.Login.ChangePasswordDescription#</td>

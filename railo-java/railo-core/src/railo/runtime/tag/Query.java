@@ -10,6 +10,7 @@ import railo.runtime.db.HSQLDBHandler;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
+import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -75,7 +76,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 
 	/** Used for debugging queries. Specifying this attribute causes the SQL statement submitted to the 
 	** 		data source and the number of records returned from the query to be returned. */
-	private boolean debug;
+	private boolean debug=true;
 
 	/* This is specific to JTags, and allows you to give the cache a specific name */
 	//private String cachename;
@@ -441,9 +442,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
         else query.setCached(hasCached);
 		
-		
 		if(pageContext.getConfig().debug() && debug) {
-			pageContext.getDebugger().addQueryExecutionTime(datasource,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
+			boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+			((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 		}
 		
 		if(!query.isEmpty() && !StringUtil.isEmpty(name)) {

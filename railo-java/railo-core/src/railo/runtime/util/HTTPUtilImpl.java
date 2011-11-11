@@ -31,7 +31,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	 * @see railo.runtime.util.HTTPUtil#decode(java.lang.String, java.lang.String)
 	 */
 	public String decode(String str, String charset)throws UnsupportedEncodingException {
-		return URLDecoder.decode(str, charset);
+		return URLDecoder.decode(str, charset,false);
 	}
 
 	/**

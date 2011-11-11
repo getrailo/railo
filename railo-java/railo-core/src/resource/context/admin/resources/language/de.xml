@@ -484,6 +484,16 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="login.m">einen Monat</data>
 	<data key="login.language">Sprache</data>
 	<data key="login.newpassword">Neues Passwort</data>
+	<data key="login.settings">Einstellungen</data>
+	<data key="login.captchaHelp">Sicherheitscode</data>
+	<data key="login.captchaHelpDesc">Bitte geben Sie das Wort ein, welches Sie im Bild oberhalb sehen.</data>
+	<data key="login.captchaHelpMiss">>Bitte geben Sie das Wort ein, wlches Sie im Sicherheitscode Bild sehen.</data>
+	<data key="login.seconds">Sekunden</data>
+	<data key="login.useCaptcha">Captcha</data>
+	<data key="login.useCaptchaDesc">Captcha verwenden um sicher zu stellen das die Eingabe durch einen Menschen stattfindet.</data>
+	<data key="login.delay">Verzögerung</data>
+	<data key="login.delayDesc">Die Verzögerungszeit zwischen Loginversuchen. Diese Einstellung gilt für alle Benutzer.</data>
+	
 	<data key="login.changepassword">Passwort ändern</data>
 	<data key="login.d">einen Tag</data>
 	<data key="login.changepassworddescription">Passwort für diesen Administrator ändern.</data>
