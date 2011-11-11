@@ -190,9 +190,6 @@
 	<data key="menu.debugging.label">Debugging</data>
 	<data key="menu.debugging.logs">Logs</data>
 	<data key="menu.debugging.templates">Templates</data>
-	
-	
-	
 	<data key="menu.security.label">Security</data>
 	<data key="menu.security.access">Access</data>
 	<data key="menu.security.password">Password</data>
@@ -528,6 +525,8 @@
 	<data key="debug.timezone">Please enter a value for the timezone</data>
 	<data key="debug.enabledebugging">Enable debugging</data>
 	<data key="debug.memorylogger">Memory logger</data>
+	<data key="debug.showQueryUsage">Show Query Usage</data>
+	<data key="debug.showQueryUsageDesc">Show the query usage information in debug output.</data>
 	<data key="scopes.sessiontimeoutdescription">Sets the amount of time Railo will keep the session scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client cookies</data>
@@ -633,6 +632,7 @@
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">agree</data>
 	<data key="buttons.submit">submit</data>
+	<data key="buttons.stop">stop</data>
 	<data key="buttons.purge">purge</data>
 	<data key="buttons.ok">OK</data>
 	<data key="buttons.install">install</data>
