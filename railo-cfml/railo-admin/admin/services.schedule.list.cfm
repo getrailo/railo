@@ -295,15 +295,15 @@ Create Task --->
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
-	<td class="tblHead" width="100">#stText.Schedule.Name#</td>
-	<td class="tblContent" width="500"><cfinput type="text" name="name" value="" style="width:200px" required="yes" 
+	<td class="tblHead" width="100"><label for="name">#stText.Schedule.Name#</label></td>
+	<td class="tblContent" width="500"><cfinput type="text" name="name" id="name" value="" style="width:200px" required="yes" 
 		message="#stText.Schedule.NameMissing#"></td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Schedule.URL#</td>
+	<td class="tblHead"><label for="url">#stText.Schedule.URL#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Schedule.URLDescription#</span><br>
-		<cfinput type="text" name="url" value="" style="width:350px" required="yes" 
+		<cfinput type="text" name="url" id="url" value="" style="width:350px" required="yes" 
 		message="#stText.Schedule.URLMissing#"></td>
 </tr>
 <tr>
@@ -321,14 +321,14 @@ Create Task --->
 	<td class="tblContent">
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td class="comment">#stText.General.Day#</td>
-			<td class="comment">#stText.General.Month#</td>
-			<td class="comment">#stText.General.Year#</td>
+			<td class="comment"><label for="start_day">#stText.General.Day#</label></td>
+			<td class="comment"><label for="start_month">#stText.General.Month#</label></td>
+			<td class="comment"><label for="start_year">#stText.General.Year#</label></td>
 		</tr>
 		<tr>
-			<td><cfinput type="text" name="start_day" value="#two(day(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_month" value="#two(month(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_year" value="#two(year(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_day" id="start_day" value="#two(day(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_month" id="start_month" value="#two(month(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_year" id="start_year" value="#two(year(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table></td>
 </tr>
@@ -337,21 +337,21 @@ Create Task --->
 	<td class="tblContent">
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td class="comment">#stText.General.Hour#</td>
-			<td class="comment">#stText.General.Minute#</td>
-			<td class="comment">#stText.General.second#</td>
+			<td class="comment"><label for="start_hour">#stText.General.Hour#</label></td>
+			<td class="comment"><label for="start_minute">#stText.General.Minute#</label></td>
+			<td class="comment"><label for="start_second">#stText.General.second#</label></td>
 		</tr>
-        <tr>
-			<td><cfinput type="text" name="start_hour" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_minute" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_second" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+		<tr>
+			<td><cfinput type="text" name="start_hour" id="start_hour" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_minute" id="start_minute" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
+			<td><cfinput type="text" name="start_second" id="start_second" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
-        
-		</table></td>
+		</table>
+	</td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Schedule.paused#</td>	
-	<td class="tblContent"><input type="checkbox" name="paused" value="true" /></td>
+	<td class="tblHead"><label for="paused">#stText.Schedule.paused#</label></td>	
+	<td class="tblContent"><input type="checkbox" name="paused" id="paused" value="true" /></td>
 </tr>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>

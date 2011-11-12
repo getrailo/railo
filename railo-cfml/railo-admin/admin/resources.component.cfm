@@ -199,13 +199,13 @@ Create Datasource --->
 
 <!--- Base Component ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.BaseComponent#</td>
+	<td class="tblHead" width="150"><label for="baseComponentTemplate">#stText.Components.BaseComponent#</label></td>
 	<cfset css=iif(len(component.baseComponentTemplate) EQ 0 and len(component.strBaseComponentTemplate) NEQ 0,de('Red'),de(''))>
 	<td class="tblContent#css#" title="#component.strBaseComponentTemplate#
 #component.BaseComponentTemplate#">
 		<span class="comment">#stText.Components.BaseComponentDescription#</span><br>
 		<cfif hasAccess>
-		<cfinput type="text" name="baseComponentTemplate" value="#component.strBaseComponentTemplate#" style="width:350px" 
+		<cfinput type="text" name="baseComponentTemplate" id="baseComponentTemplate" value="#component.strBaseComponentTemplate#" style="width:350px" 
 			required="no" 
 			message="#stText.Components.BaseComponentMissing#">
 		<cfelse>
@@ -216,11 +216,11 @@ Create Datasource --->
 
 <!--- Auto Import ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.AutoImport#</td>
+	<td class="tblHead" width="150"><label for="componentDefaultImport">#stText.Components.AutoImport#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Components.AutoImportDescription#</span><br>
 		<cfif hasAccess>
-		<cfinput type="text" name="componentDefaultImport" value="#component.componentDefaultImport#" style="width:350px" 
+		<cfinput type="text" name="componentDefaultImport" id="componentDefaultImport" value="#component.componentDefaultImport#" style="width:350px" 
 			required="no" 
 			message="#stText.Components.AutoImportMissing#">
 		<cfelse>
@@ -231,10 +231,10 @@ Create Datasource --->
 
 <!--- Search Local ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.componentLocalSearch#</td>
+	<td class="tblHead" width="150"><label for="componentLocalSearch">#stText.Components.componentLocalSearch#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
-			<input type="checkbox" class="checkbox" name="componentLocalSearch" value="yes" <cfif component.componentLocalSearch>checked</cfif>>
+			<input type="checkbox" class="checkbox" name="componentLocalSearch" id="componentLocalSearch" value="yes" <cfif component.componentLocalSearch>checked</cfif>>
 			
 		<cfelse>
 			<b>#YesNoFormat(component.componentLocalSearch)#</b><br />
@@ -254,10 +254,10 @@ Create Datasource --->
 
 <!--- component path cache ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.componentPathCache#</td>
+	<td class="tblHead" width="150"><label for="componentPathCache">#stText.Components.componentPathCache#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
-			<input type="checkbox" class="checkbox" name="componentPathCache" value="yes" <cfif component.componentPathCache>checked</cfif>>
+			<input type="checkbox" class="checkbox" name="componentPathCache" id="componentPathCache" value="yes" <cfif component.componentPathCache>checked</cfif>>
             <span class="comment">#stText.Components.componentPathCacheDesc#</span>
             <cfif component.componentPathCache><br />
             <input type="submit" class="submit" name="mainAction" value="#flushName#">
@@ -278,13 +278,13 @@ Create Datasource --->
 
 <!--- Component Dump Template ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.ComponentDumpTemplate#</td>
+	<td class="tblHead" width="150"><label for="componentDumpTemplate">#stText.Components.ComponentDumpTemplate#</label></td>
 	<cfset css=iif(len(component.componentDumpTemplate) EQ 0 and len(component.strComponentDumpTemplate) NEQ 0,de('Red'),de(''))>
 	<td class="tblContent#css#" title="#component.strcomponentDumpTemplate#
 #component.componentDumpTemplate#">
 		<span class="comment">#stText.Components.ComponentDumpTemplateDescription#</span><br>
 		<cfif hasAccess>
-			<cfinput type="text" name="componentDumpTemplate" value="#component.strcomponentDumpTemplate#" style="width:350px" 
+			<cfinput type="text" name="componentDumpTemplate" id="componentDumpTemplate" value="#component.strcomponentDumpTemplate#" style="width:350px" 
 				required="no" 
 				message="#stText.Components.ComponentDumpTemplateMissing#">
 		<cfelse>
@@ -312,10 +312,10 @@ Create Datasource --->
 <!---
 Trigger Data Member --->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.triggerDataMember#</td>
+	<td class="tblHead" width="150"><label for="triggerDataMember">#stText.Components.triggerDataMember#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
-		<input class="checkbox" type="checkbox" class="checkbox" name="triggerDataMember" 
+		<input class="checkbox" type="checkbox" class="checkbox" name="triggerDataMember" id="triggerDataMember" 
 			value="yes" <cfif component.triggerDataMember>checked</cfif>>
 		<cfelse>
 		<br><b>#iif(component.triggerDataMember,de('Yes'),de('No'))#</b>
@@ -327,10 +327,10 @@ Trigger Data Member --->
 <!---
 Use Shadow --->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.useShadow#</td>
+	<td class="tblHead" width="150"><label for="useShadow">#stText.Components.useShadow#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
-		<input class="checkbox" type="checkbox" class="checkbox" name="useShadow" 
+		<input class="checkbox" type="checkbox" class="checkbox" name="useShadow" id="useShadow" 
 			value="yes" <cfif component.useShadow>checked</cfif>>
 		<cfelse>
 		<br><b>#iif(component.useShadow,de('Yes'),de('No'))#</b>

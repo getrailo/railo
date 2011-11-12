@@ -152,26 +152,26 @@ change password --->
 
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.OldPassword#</td>
+	<td class="tblHead" width="150"><label for="_old_password">#stText.Login.OldPassword#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.OldPasswordDescription#</span><br>
-		<cfinput type="password" name="_old_password" value="" passthrough='autocomplete="off"'
+		<cfinput type="password" name="_old_password" id="_old_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.OldPasswordMissing#">
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Login.NewPassword#</td>
+	<td class="tblHead" width="150"><label for="_new_password">#stText.Login.NewPassword#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.NewPasswordDescription#</span><br>
-		<cfinput type="password" name="_new_password" value="" passthrough='autocomplete="off"'
+		<cfinput type="password" name="_new_password" id="_new_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.NewPasswordMissing#">
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Login.RetypePassword#</td>
+	<td class="tblHead" width="150"><label for="_new_password_re">#stText.Login.RetypePassword#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.RetypeNewPassword#</span><br>
-		<cfinput type="password" name="_new_password_re" value="" passthrough='autocomplete="off"' 
+		<cfinput type="password" name="_new_password_re" id="_new_password_re" value="" passthrough='autocomplete="off"' 
 		style="width:200px" required="yes" message="#stText.Login.RetypeNewPasswordMissing#">
 	</td>
 </tr>
@@ -213,10 +213,10 @@ Set default password --->
 </tr>
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.Password#</td>
+	<td class="tblHead" width="150"><label for="_new_password">#stText.Login.Password#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Login.NewPasswordDescription#</span><br>
-		<cfinput type="text" name="_new_password" value="#defaultPassword#" 
+		<cfinput type="text" name="_new_password" id="_new_password" value="#defaultPassword#" 
 		style="width:200px" required="no" message="#stText.Login.NewPasswordMissing#">
 	</td>
 </tr>

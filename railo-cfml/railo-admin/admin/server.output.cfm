@@ -96,11 +96,11 @@ Create Datasource --->
 
 <!--- Supress Whitespace --->
 <tr>
-	<td class="tblHead" width="150">#stText.setting.whitespace#</td>
+	<td class="tblHead" width="150"><label for="suppressWhitespace">#stText.setting.whitespace#</label></td>
 	<td class="tblContent">
 		
 		<cfif hasAccess>
-			<input type="checkbox" name="suppressWhitespace" value="true" <cfif setting.suppressWhitespace>checked="checked"</cfif>>
+			<input type="checkbox" name="suppressWhitespace" id="suppressWhitespace" value="true" <cfif setting.suppressWhitespace>checked="checked"</cfif>>
 		<cfelse>
 			<b>#yesNoFormat(setting.suppressWhitespace)#</b><input type="hidden" name="suppressWhitespace" value="#setting.suppressWhitespace#">
 		</cfif><span class="comment">#stText.setting.whitespaceDescription#</span>
@@ -109,11 +109,11 @@ Create Datasource --->
 
 <!--- Allow Compression --->
 <tr>
-	<td class="tblHead" width="150">#stText.setting.AllowCompression#</td>
+	<td class="tblHead" width="150"><label for="AllowCompression">#stText.setting.AllowCompression#</label></td>
 	<td class="tblContent">
 		
 		<cfif hasAccess>
-			<input type="checkbox" name="AllowCompression" value="true" <cfif setting.AllowCompression>checked="checked"</cfif>>
+			<input type="checkbox" name="AllowCompression" id="AllowCompression" value="true" <cfif setting.AllowCompression>checked="checked"</cfif>>
 		<cfelse>
 			<b>#iif(setting.AllowCompression,de('Yes'),de('No'))#</b>
 			<input type="hidden" name="AllowCompression" value="#setting.AllowCompression#">
@@ -125,11 +125,11 @@ Create Datasource --->
 <cfset stText.setting.suppressContentDescription="Suppress content written to response stream when a Component is invoked remotely. Only work when content not was flushed before.">
 <!--- Supress Content when CFC Remoting --->
 <tr>
-	<td class="tblHead" width="150">#stText.setting.suppressContent#</td>
+	<td class="tblHead" width="150"><label for="suppressContent">#stText.setting.suppressContent#</label></td>
 	<td class="tblContent">
 		
 		<cfif hasAccess>
-			<input type="checkbox" name="suppressContent" value="true" <cfif setting.suppressContent>checked="checked"</cfif>>
+			<input type="checkbox" name="suppressContent" id="suppressContent" value="true" <cfif setting.suppressContent>checked="checked"</cfif>>
 		<cfelse>
 			<b>#iif(setting.suppressContent,de('Yes'),de('No'))#</b>
 			<input type="hidden" name="suppressContent" value="#setting.suppressContent#">

@@ -61,10 +61,10 @@ Create Datasource --->
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Overview.SerialNumber#</td>
+	<td class="tblHead" width="150"><label for="serialNumber">#stText.Overview.SerialNumber#</label></td>
 	<td class="tblContent">
 		<!--- <span class="comment">The new Password for the Administrator</span><br> --->
-		<cfinput type="text" name="serialNumber" value="#serial#" 
+		<cfinput type="text" name="serialNumber" id="serialNumber" value="#serial#" 
 		style="width:400px;" required="no">
 	</td>
 </tr>

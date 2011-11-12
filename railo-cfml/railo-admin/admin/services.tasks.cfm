@@ -280,7 +280,7 @@ Error Output--->
 		<input type="hidden" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#">
 		<input type="hidden" name="id_#tasks.currentrow#" value="#tasks.id#">
 		
-		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
+		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
 		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
 		
@@ -343,9 +343,9 @@ function selectAll(field) {
 		</select>
 		
 		</td>
-		<td width="250" class="tblHead" nowrap><input type="text" name="nameFilter" style="width:250px" value="#session.filter.name#" /></td>
-		<td width="100" class="tblHead" nowrap><input type="text" name="nextFilter" style="width:90px" value="#session.filter.next#" /></td>
-		<td width="100" class="tblHead" nowrap><input type="text" name="triesFilter" style="width:90px" value="#session.filter.tries#" /></td>
+		<td width="250" class="tblHead" nowrap><input type="text" name="nameFilter" id="nameFilter" style="width:250px" value="#session.filter.name#" /></td>
+		<td width="100" class="tblHead" nowrap><input type="text" name="nextFilter" id="nextFilter" style="width:90px" value="#session.filter.next#" /></td>
+		<td width="100" class="tblHead" nowrap><input type="text" name="triesFilter" id="triesFilter" style="width:90px" value="#session.filter.tries#" /></td>
 		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="#stText.Buttons.filter#"></td>
 	</tr>
 	--->

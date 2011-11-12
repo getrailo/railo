@@ -144,8 +144,8 @@ Error Output --->
 <tr>
 	<td colspan="2">
 	<select name="web_access">
-	<option value="yes" <cfif access.web_access>selected</cfif>>Alle Webs dürfen Railo verwenden</option>
-	<option value="no" <cfif not access.web_access>selected</cfif>>Nur folgende Webs dürfen Railo verwenden</option>
+	<option value="yes" <cfif access.web_access>selected</cfif>>Alle Webs dï¿½rfen Railo verwenden</option>
+	<option value="no" <cfif not access.web_access>selected</cfif>>Nur folgende Webs dï¿½rfen Railo verwenden</option>
 </select>
 <input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
 	</td>
@@ -158,14 +158,14 @@ Error Output --->
 	
 <cfif access.web_access>
 <h2>Einzelne Webs freigeben</h2>
-Alle Webs können Railo verwenden.
+Alle Webs kï¿½nnen Railo verwenden.
 <cfelse>
 <cfoutput><form action="#cgi.script_name#" method="post"></cfoutput>
 <table class="tbl">
 <tr>
 	<td colspan="2">
 	<h2>Einzelne Webs freigeben</h2>
-	Nur die Webs, welche hier eine explizite Freigabe haben, können Railo auch verwenden.
+	Nur die Webs, welche hier eine explizite Freigabe haben, kï¿½nnen Railo auch verwenden.
 	</td>
 </tr>
 <tr>
@@ -173,12 +173,12 @@ Alle Webs können Railo verwenden.
 	<td class="tblHead">Web</td>
 </tr>
 <tr>
-	<td class="tblHead" align="center"><input type="Checkbox" class="checkbox" name="selection" value="#qry.id#" onclick="doOthers(this)"></td>
+	<td class="tblHead" align="center"><input type="Checkbox" class="checkbox" name="selection" id="selection" value="#qry.id#" onclick="doOthers(this)"></td>
 	<td class="tblHead">&nbsp;</td>
 </tr>
 <cfoutput><cfloop collection="#contextes#" item="key">
 <tr>
-	<td class="tblContent" align="center"><input type="Checkbox" class="checkbox" name="access" value="#qry.id#" <cfif qry.access>checked</cfif>></td>
+	<td class="tblContent" align="center"><input type="Checkbox" class="checkbox" name="access" id="access" value="#qry.id#" <cfif qry.access>checked</cfif>></td>
 	<td class="tblContent">#contextes[key].text#</td>
 </tr>
 </cfloop></cfoutput>

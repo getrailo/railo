@@ -167,10 +167,10 @@
 			---><table class="cfdebug" bgcolor="white" align="left" border="0" id="DEBUGOPTIONS" style="display:none"><!---
 				---><tr><td><b>Output:</b></td></tr><!---
 				---><tr><td><!---
-					---><input type="Checkbox" id="outputexecution" value="1" onclick="enableOption()" class="checkbox" checked>Execution times&nbsp;&nbsp;<!---
+					---><label><input type="Checkbox" id="outputexecution" value="1" onclick="enableOption()" class="checkbox" checked>Execution times</label>&nbsp;&nbsp;<!---
 				---></td><td colspan="3"><!---
-					---><input type="Checkbox" id="outputsql" value="2" onclick="enableOption()" class="checkbox" checked>SQL<!---
-					---><input type="Checkbox" id="hidestatements" value="4" onclick="enableOption()" class="checkbox" checked>Hide Statements<!---
+					---><label><input type="Checkbox" id="outputsql" value="2" onclick="enableOption()" class="checkbox" checked>SQL</label><!---
+					---><label><input type="Checkbox" id="hidestatements" value="4" onclick="enableOption()" class="checkbox" checked>Hide Statements</label><!---
 				---></td></tr><!---
 				---><tr><td><!---
 					--->Display&nbsp;<select name="outputMaxFiles" id="outputMaxFiles" onchange="enableOption()">
@@ -208,20 +208,20 @@
 				---></tr><!---
 				---><tr><td colspan="4"><b>Scopes:</b></td></tr><!---
 				---><tr><td><!---
-					---><input type="Checkbox" id="outputvariablesapplication" value="8" onclick="enableOption()" class="checkbox">Application&nbsp;<!---
+					---><label><input type="Checkbox" id="outputvariablesapplication" value="8" onclick="enableOption()" class="checkbox">Application</label>&nbsp;<!---
 				---></td><td><!---
-					---><input type="Checkbox" id="outputvariablessession" value="16" onclick="enableOption()" class="checkbox">Session&nbsp;<!---
+					---><label><input type="Checkbox" id="outputvariablessession" value="16" onclick="enableOption()" class="checkbox">Session</label>&nbsp;<!---
 				---></td><td colspan="2"><!---
-					---><input type="Checkbox" id="outputvariablesrequest" value="32" onclick="enableOption()" class="checkbox">Request<!---
+					---><label><input type="Checkbox" id="outputvariablesrequest" value="32" onclick="enableOption()" class="checkbox">Request</label><!---
 				---></td></tr><!---
 				---><tr><td><!---
-					---><input type="Checkbox" id="outputvariablescookie" value="64" onclick="enableOption()" class="checkbox">Cookie&nbsp;&nbsp;<!---
+					---><label><input type="Checkbox" id="outputvariablescookie" value="64" onclick="enableOption()" class="checkbox">Cookie</label>&nbsp;&nbsp;<!---
 				---></td><td><!---
-					---><input type="Checkbox" id="outputvariablesurl" value="128" onclick="enableOption()" class="checkbox">Url&nbsp;&nbsp;<!---
+					---><label><input type="Checkbox" id="outputvariablesurl" value="128" onclick="enableOption()" class="checkbox">Url</label>&nbsp;&nbsp;<!---
 				---></td><td><!---
-					---><input type="Checkbox" id="outputvariablesform" value="256" onclick="enableOption()" class="checkbox">Form&nbsp;&nbsp;<!---
+					---><label><input type="Checkbox" id="outputvariablesform" value="256" onclick="enableOption()" class="checkbox">Form</label>&nbsp;&nbsp;<!---
 				---></td><td><!---
-					---><input type="Checkbox" id="outputvariablescgi" value="512" onclick="enableOption()" class="checkbox">CGI&nbsp;&nbsp;<br><!---
+					---><label><input type="Checkbox" id="outputvariablescgi" value="512" onclick="enableOption()" class="checkbox">CGI</label>&nbsp;&nbsp;<br><!---
 				---></td></tr><!---
 			---></table><!---
 		---></td>

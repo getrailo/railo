@@ -98,20 +98,20 @@ Mail Settings
 		<table class="tbl" width="550">
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
-			<td class="tblContent" width="450"><cfinput type="text" name="logFile" value="#config.mailLogger.file#" required="yes"  style="width:450px" message="#stText.Mail.LogFileMissing#"></td>
+			<td class="tblHead" width="100" nowrap><label for="logFile">#stText.Mail.LogFile#</label></td>
+			<td class="tblContent" width="450"><cfinput type="text" name="logFile" id="logFile" value="#config.mailLogger.file#" required="yes"  style="width:450px" message="#stText.Mail.LogFileMissing#"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.SpoolEnabled#</td>
+			<td class="tblHead" width="100" nowrap><label for="spoolEnable">#stText.Mail.SpoolEnabled#</label></td>
 			<td class="tblContent" width="450"><input <cfif config.isMailSpoolEnable()>checked</cfif> type="checkbox" class="checkbox" name="spoolEnable" value="yes"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.SpoolInterval#</td>
-			<td class="tblContent" width="450"><cfinput type="text" name="spoolInterval" value="#config.mailSpoolInterval#" validate="integer" style="width:50px" required="yes"></td>
+			<td class="tblHead" width="100" nowrap><label for="spoolInterval">#stText.Mail.SpoolInterval#</label></td>
+			<td class="tblContent" width="450"><cfinput type="text" name="spoolInterval" id="spoolInterval" value="#config.mailSpoolInterval#" validate="integer" style="width:50px" required="yes"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.Timeout#</td>
-			<td class="tblContent" width="450"><cfinput type="text" name="timeout" value="#config.mailTimeout#" validate="integer" style="width:50px" required="yes"></td>
+			<td class="tblHead" width="100" nowrap><label for="timeout">#stText.Mail.Timeout#</label></td>
+			<td class="tblContent" width="450"><cfinput type="text" name="timeout" id="timeout" value="#config.mailTimeout#" validate="integer" style="width:50px" required="yes"></td>
 		</tr>
 		<tr>
 			<td colspan="2"><cfoutput>

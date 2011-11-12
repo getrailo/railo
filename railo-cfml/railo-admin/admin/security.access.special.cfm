@@ -83,7 +83,7 @@ Overview
 			<td>
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td><input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" value="#contextes.id#">
+				<td><input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" id="ids_#contextes.currentrow#" value="#contextes.id#">
 				</td>
 				<td><a href="#go(url.action,"edit",struct(id:contextes.id))#">
 			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>

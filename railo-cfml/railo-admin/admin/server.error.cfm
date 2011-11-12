@@ -139,7 +139,7 @@ Create Datasource --->
 				</cfloop>
 			<table cellpadding="0" cellspacing="0" border="0">
 			<tr>
-				<td><input type="radio" class="radio" name="errType#statusCode#" value="Select" onclick="disableField(this,#statusCode#)" <cfif isFromTemplate>checked</cfif>></td>
+				<td><input type="radio" class="radio" name="errType#statusCode#" id="errType#statusCode#" value="Select" onclick="disableField(this,#statusCode#)" <cfif isFromTemplate>checked</cfif>></td>
 				<td>
 					
 					<select name="errorTemplate_Select#statusCode#" id="errorTemplate_Select#statusCode#" <cfif not isFromTemplate>disabled</cfif>>
@@ -152,8 +152,8 @@ Create Datasource --->
 				</td>
 			</tr>
 			<tr>
-				<td><input type="radio" class="radio" name="errType#statusCode#" value="File" onclick="disableField(this,#statusCode#)" <cfif not isFromTemplate>checked</cfif>></td>
-				<td><input type="text" name="errorTemplate_File#statusCode#" value="#err.str[statusCode]#" id="errorTemplate_File[statusCode]" <cfif isFromTemplate>disabled</cfif>
+				<td><input type="radio" class="radio" name="errType#statusCode#" id="errType#statusCode#" value="File" onclick="disableField(this,#statusCode#)" <cfif not isFromTemplate>checked</cfif>></td>
+				<td><input type="text" name="errorTemplate_File#statusCode#" id="errorTemplate_File#statusCode#" value="#err.str[statusCode]#" id="errorTemplate_File[statusCode]" <cfif isFromTemplate>disabled</cfif>
 					style="width:450px"></td>
 			</tr>
 			</table>
@@ -167,10 +167,10 @@ Create Datasource --->
 
 
 <tr>
-	<td class="tblHead" width="150">#stText.err.errorStatusCode#</td>
+	<td class="tblHead" width="150"><label for="doStatusCode">#stText.err.errorStatusCode#</label></td>
 	<td class="tblContent">
 		<cfif hasAccess>
-		<input class="checkbox" type="checkbox" class="checkbox" name="doStatusCode" value="yes" <cfif err.doStatusCode>checked</cfif>>
+		<input class="checkbox" type="checkbox" class="checkbox" name="doStatusCode" id="doStatusCode" value="yes" <cfif err.doStatusCode>checked</cfif>>
 		<cfelse>
 		<b>#YesNoFormat(err.doStatusCode)#</b><br />
 		</cfif>

@@ -30,8 +30,8 @@ function doFocus() {<cfoutput>
 <cfform onerror="customError" name="login" action="#self#" method="post">
 
 <tr>
-	<td class="tblHead" width="120" align="right">#stText.Login.Password#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="login_password#request.adminType#" value=""   passthrough='autocomplete="off"'
+	<td class="tblHead" width="120" align="right"><label for="login_password#request.adminType#">#stText.Login.Password#</label></td>
+	<td class="tblContent" width="200"><cfinput type="password" name="login_password#request.adminType#" id="login_password#request.adminType#" value=""   passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.PasswordMissing#"></td>
 </tr>
 <cfoutput>

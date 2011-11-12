@@ -5,13 +5,13 @@
 <cfform onerror="customError" action="#request.self#" method="post">
 <cfoutput>
 <tr>
-	<td class="tblHead" width="200" align="right">#stText.Login.Password#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="new_password" value="" passthrough='autocomplete="off"'
+	<td class="tblHead" width="200" align="right"><label for="new_password">#stText.Login.Password#</label></td>
+	<td class="tblContent" width="200"><cfinput type="password" name="new_password" id="new_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.PasswordMissing#"></td>
 </tr>
 <tr>
-	<td class="tblHead" width="200" align="right">#stText.Login.RetypePassword#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="new_password_re" value="" passthrough='autocomplete="off"'
+	<td class="tblHead" width="200" align="right"><label for="new_password_re">#stText.Login.RetypePassword#</label></td>
+	<td class="tblContent" width="200"><cfinput type="password" name="new_password_re" id="new_password_re" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.RetypePasswordMissing#"></td>
 </tr>
 <cfset f="">

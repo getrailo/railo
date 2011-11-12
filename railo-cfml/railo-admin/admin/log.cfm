@@ -30,16 +30,16 @@
 	</select></td>
 </tr>
 <tr>
-	<td class="tblHead">#caller.stText.log.source#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_source" value="#logs.virtualpath#" style="width:300px" required="yes" message=""></td>
+	<td class="tblHead"><label for="#logs.name#_source">#caller.stText.log.source#</label></td>
+	<td class="tblContent"><cfinput type="text" name="#logs.name#_source" id="#logs.name#_source" value="#logs.virtualpath#" style="width:300px" required="yes" message=""></td>
 </tr>
 <tr>
-	<td class="tblHead">#caller.stText.log.maxFile#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFile" value="#logs.maxFile#" style="width:60px" required="yes" message=""></td>
+	<td class="tblHead"><label for="#logs.name#_maxFile">#caller.stText.log.maxFile#</label></td>
+	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFile" id="#logs.name#_maxFile" value="#logs.maxFile#" style="width:60px" required="yes" message=""></td>
 </tr>
 <tr>
-	<td class="tblHead">#caller.stText.log.maxFileSize#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFileSize" value="#logs.maxFileSize/1024#" style="width:60px" required="yes" message=""></td>
+	<td class="tblHead"><label for="#logs.name#_maxFileSize">#caller.stText.log.maxFileSize#</label></td>
+	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFileSize" id="#logs.name#_maxFileSize" value="#logs.maxFileSize/1024#" style="width:60px" required="yes" message=""></td>
 </tr>
 <tr>
 </tr>

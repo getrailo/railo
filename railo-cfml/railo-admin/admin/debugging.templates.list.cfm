@@ -97,13 +97,13 @@ function setDesc(id,key){
 <table class="tbl" width="740">
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
-	<td class="tblHead" width="150">#stText.Debug.EnableDebugging#</td>
+	<td class="tblHead" width="150"><label for="debug">#stText.Debug.EnableDebugging#</label></td>
 	<td class="tblContent" height="28">
 		<cfset lbl=iif(_debug.debug,de(stText.general.yes),de(stText.general.no))>
 	
 		<span class="comment">#stText.Debug.EnableDescription#</span><br />
 		<cfif hasAccess>
-			<select name="debug">
+			<select name="debug" id="debug">
 				<cfif request.admintype EQ "web">
 					<option #iif(_debug.debugsrc EQ "server",de('selected'),de(''))# value="">#stText.Regional.ServerProp[request.adminType]# <cfif _debug.debugsrc EQ "server">(#lbl#) </cfif></option>
 					<option #iif(_debug.debugsrc EQ "web" and _debug.debug,de('selected'),de(''))# value="true">#stText.general.yes#</option>
@@ -114,7 +114,7 @@ function setDesc(id,key){
 				</cfif>
 			</select>
 		
-			<!--- <input type="checkbox" class="checkbox" name="debug" value="yes" <cfif debug.debug>checked</cfif>>--->
+			<!--- <input type="checkbox" class="checkbox" name="debug" id="debug" value="yes" <cfif debug.debug>checked</cfif>>--->
 		<cfelse>
 			<b>#lbl#</b> <input type="hidden" name="debug" value="#_debug.debug#">
 		</cfif>
@@ -224,8 +224,8 @@ function setDesc(id,key){
 	<table class="tbl" width="420">
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.debug.label#</td>
-		<td class="tblContent" width="370"><cfinput type="text" name="label" value="" style="width:370px" required="yes" 
+		<td class="tblHead" width="50"><label for="label">#stText.debug.label#<label></td>
+		<td class="tblContent" width="370"><cfinput type="text" name="label" id="label" value="" style="width:370px" required="yes" 
 			message="#stText.debug.labelMissing#"></td>
 	</tr>
 	

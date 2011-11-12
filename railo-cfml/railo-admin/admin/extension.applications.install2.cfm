@@ -242,7 +242,7 @@
         <cfelse>
         <tr>
     		<td>&nbsp;</td>
-            <cfif len(trim(item.getLabel()))><td class="tblHead" width="100">#item.getLabel()#</td></cfif>
+            <cfif len(trim(item.getLabel()))><td class="tblHead" width="100"><label for="#formPrefix##item.getName()#">#item.getLabel()#</label></td></cfif>
             <td <cfif len(trim(item.getLabel())) EQ 0>colspan="2" width="500"<cfelse> width="400"</cfif> class="#iif(isError,de('tblContentRed'),de('tblContent'))#">
             <cfif isError><span class="CheckError">#err[item.getName()]#</span><br /></cfif>
                 
@@ -251,7 +251,7 @@
                     <cfset options=item.getOptions()>
                     
                     <cfif arrayLen(options)>
-                    <select name="#formPrefix##item.getName()#">
+                    <select name="#formPrefix##item.getName()#" id="#formPrefix##item.getName()#">
                     <cfloop array="#options#" index="option">
                         <cfif isDefined('fromForm')>
 							<cfset selected=fromForm EQ option.getValue()>
@@ -262,7 +262,7 @@
                     </cfloop>
                     </select>
                     <cfelse>
-                        <input type="text" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(item.getValue())#"  <cfif item.getSelected()> checked="checked"</cfif>/>
+                        <input type="text" name="#formPrefix##item.getName()#" id="#formPrefix##item.getName()#" value="#HTMLEditFormat(item.getValue())#"  <cfif item.getSelected()> checked="checked"</cfif>/>
                     </cfif>
             <!--- radio/checkbox --->
                 <cfelseif item.getType() EQ "radio" or item.getType() EQ "checkbox">
@@ -299,7 +299,7 @@
                     </cfif>
             <!--- text --->
                 <cfelse>
-                    <input type="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#" style="width:400px">
+                    <input type="#item.getType()#" name="#formPrefix##item.getName()#" id="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#" style="width:400px">
                 </cfif>
                 
                 <cfif len(trim(item.getDescription()))>

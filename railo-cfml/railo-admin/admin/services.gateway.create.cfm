@@ -110,8 +110,8 @@ Error Output--->
 	</tr>
 <cfif driver.getListenerCfcMode() NEQ "none">
     <tr>
-		<td width="150" class="tblHead" nowrap>#stText.Settings.gateway.ListenerCfcPath#</td>
-		<td width="450" class="tblContent" nowrap><cfinput type="text" name="listenerCfcPath" value="#entry.listenerCfcPath#" required="#driver.getListenerCfcMode() EQ "required"#"  style="width:500px;" message="Missing value for field listener CFC Path"></td>
+		<td width="150" class="tblHead" nowrap><label for="listenerCfcPath">#stText.Settings.gateway.ListenerCfcPath#</label></td>
+		<td width="450" class="tblContent" nowrap><cfinput type="text" name="listenerCfcPath" id="listenerCfcPath" value="#entry.listenerCfcPath#" required="#driver.getListenerCfcMode() EQ "required"#"  style="width:500px;" message="Missing value for field listener CFC Path"></td>
 	</tr>
 </cfif>
     <tr>
@@ -151,12 +151,12 @@ Error Output--->
         <cfset type=field.getType()>
 <cfif type NEQ "hidden">
         <tr>
-            <td class="tblHead" width="150">#field.getDisplayName()#</td>
+            <td class="tblHead" width="150"><label for="custom_#field.getName()#">#field.getDisplayName()#<label></td>
             <td class="tblContent" width="300">
 
 </cfif><cfif type EQ "text" or type EQ "password">
             <cfinput type="#type#" 
-                name="custom_#field.getName()#" 
+                name="custom_#field.getName()#" id="custom_#field.getName()#" 
                 value="#default#" style="width:300px" required="#field.getRequired()#" 
                 message="Missing value for field #field.getDisplayName()#">
             
@@ -192,27 +192,27 @@ Error Output--->
             
             <table class="tbl">
 		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
+			<td class="tblHead"><label for="custompart_d_#field.getName()#">#stText.General.Days#</label></td>
+			<td class="tblHead"><label for="custompart_h_#field.getName()#">#stText.General.Hours#</label></td>
+			<td class="tblHead"><label for="custompart_m_#field.getName()#">#stText.General.Minutes#</label></td>
+			<td class="tblHead"><label for="custompart_s_#field.getName()#">#stText.General.Seconds#</label></td>
 		</tr>
 		
 		<tr>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_d_#field.getName()#" 
+                name="custompart_d_#field.getName()#" id="custompart_d_#field.getName()#" 
                 value="#addZero(d)#" style="width:40px" required="#field.getRequired()#"   validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_h_#field.getName()#" 
+                name="custompart_h_#field.getName()#" id="custompart_h_#field.getName()#" 
                 value="#addZero(h)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_m_#field.getName()#" 
+                name="custompart_m_#field.getName()#" id="custompart_m_#field.getName()#" 
                 value="#addZero(m)#" style="width:40px" required="#field.getRequired()#"  maxlength="2" validate="integer" 
                 message="Missing value for field #field.getDisplayName()#"></td>
 			<td class="tblContent"><cfinput type="text" 
-                name="custompart_s_#field.getName()#" 
+                name="custompart_s_#field.getName()#" id="custompart_s_#field.getName()#" 
                 value="#addZero(s)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
 		</tr>
@@ -250,15 +250,15 @@ Error Output--->
                     <cfset doBR=false>
                     <table cellpadding="0" cellspacing="2">
                     <tr>
-                    	<td valign="top"><cfinput type="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">&nbsp;</td>
+                    	<td valign="top"><cfinput type="#type#" name="custom_#field.getName()#" id="custom_#field.getName()#" value="#item#" checked="#item EQ default#">&nbsp;</td>
                         <td>
-							#item#
+							<label for="custom_#field.getName()#">#item#</label>
                             <cfif isStruct(desc) and StructKeyExists(desc,item)><div class="comment" style="padding-bottom:4px">#desc[item]#</div></cfif>
                         </td>
                     </tr>
                     </table>
                     <cfelse>
-                    	<cfinput type="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
+                    	<cfinput type="#type#" name="custom_#field.getName()#" id="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
                     </cfif>
                 </cfloop>
                 <cfif isStruct(desc) and StructKeyExists(desc,'_bottom')><div class="comment" style="padding-top:4px">#desc._bottom#</div></cfif>

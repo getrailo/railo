@@ -330,8 +330,8 @@ function selectAll(field) {
 	</tr>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.Settings.cache.Name#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="_name" value="" style="width:300px" required="yes" 
+		<td class="tblHead" width="50"><label for="_name">#stText.Settings.cache.Name#</label></td>
+		<td class="tblContent" width="300"><cfinput type="text" name="_name" id="_name" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.cache.nameMissing#"></td>
 	</tr>
 	

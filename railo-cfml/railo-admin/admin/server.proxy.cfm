@@ -153,11 +153,11 @@ function doEnableProxy(enableProxy) {
 </tr>
 <!--- Server --->
 <tr>
-	<td class="tblHead" width="150">#stText.proxy.server#</td>
+	<td class="tblHead" width="150"><label for="server">#stText.proxy.server#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.serverDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="server" value="#proxy.server#" 
+		<cfinput type="text" name="server" id="server" value="#proxy.server#" 
 			style="width:200px" required="no">
 		
 		<cfelse>
@@ -170,11 +170,11 @@ function doEnableProxy(enableProxy) {
 
 <!--- Port --->
 <tr>
-	<td class="tblHead" width="150">#stText.proxy.port#</td>
+	<td class="tblHead" width="150"><label for="port">#stText.proxy.port#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.portDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="port" value="#proxy.port#" 
+		<cfinput type="text" name="port" id="port" value="#proxy.port#" 
 			style="width:50px" required="yes" message="#stText.proxy.missingPort#">
 		
 		<cfelse>
@@ -187,11 +187,11 @@ function doEnableProxy(enableProxy) {
 
 <!--- Username --->
 <tr>
-	<td class="tblHead" width="150">#stText.proxy.username#</td>
+	<td class="tblHead" width="150"><label for="username">#stText.proxy.username#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.usernameDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="username" value="#proxy.username#" 
+		<cfinput type="text" name="username" id="username" value="#proxy.username#" 
 			style="width:200px" required="no">
 		
 		<cfelse>
@@ -204,11 +204,11 @@ function doEnableProxy(enableProxy) {
 
 <!--- Password --->
 <tr>
-	<td class="tblHead" width="150">#stText.proxy.password#</td>
+	<td class="tblHead" width="150"><label for="password">#stText.proxy.password#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.proxy.passwordDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="password" name="password" value="#proxy.password#" 
+		<cfinput type="password" name="password" id="password" value="#proxy.password#" 
 			style="width:200px" required="no" passthrough='autocomplete="off"'>
 		
 		<cfelse>

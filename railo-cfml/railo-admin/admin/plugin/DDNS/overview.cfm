@@ -9,18 +9,18 @@
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150" style="background-color:#color#">#lang.id#</td>
+	<td class="tblHead" width="150" style="background-color:#color#"><label for="id">#lang.id#</label></td>
 	<td class="tblContent">
 		<span class="comment">#lang.commentId#</span><br>
-		<cfinput required="yes" type="text" name="id" value="#req.ddns.id#" message="#lang.messageId#" size="40"/>
+		<cfinput required="yes" type="text" name="id" id="id" value="#req.ddns.id#" message="#lang.messageId#" size="40"/>
 		
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150" style="background-color:#color#">#lang.onOff#</td>
+	<td class="tblHead" width="150" style="background-color:#color#"><label for="enabled">#lang.onOff#</label></td>
 	<td class="tblContent">
 		<span class="comment">#lang.commentOnOff#</span><br>
-		<input type="checkbox" name="enabled" value="yes" <cfif req.ddns.enabled>checked="checked"</cfif>  />
+		<input type="checkbox" name="enabled" id="enabled" value="yes" <cfif req.ddns.enabled>checked="checked"</cfif>  />
 		
 	</td>
 </tr>
@@ -30,27 +30,27 @@
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150" style="background-color:#color#">#lang.proxyserver#</td>
+	<td class="tblHead" width="150" style="background-color:#color#"><label for="proxyserver">#lang.proxyserver#</label></td>
 	<td class="tblContent">
-		<cfinput required="no" type="text" name="proxyserver" value="#req.ddns.proxyserver#" size="40"/>
+		<cfinput required="no" type="text" name="proxyserver" id="proxyserver" value="#req.ddns.proxyserver#" size="40"/>
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150" style="background-color:#color#">#lang.proxyport#</td>
+	<td class="tblHead" width="150" style="background-color:#color#"><label for="proxyport">#lang.proxyport#</label></td>
 	<td class="tblContent">
-		<cfinput required="no" type="text" name="proxyport" value="#req.ddns.proxyport#" size="4"/>
+		<cfinput required="no" type="text" name="proxyport" id="proxyport" value="#req.ddns.proxyport#" size="4"/>
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150" style="background-color:#color#">#lang.proxyuser#</td>
+	<td class="tblHead" width="150" style="background-color:#color#"><label for="proxyuser">#lang.proxyuser#</label></td>
 	<td class="tblContent">
-		<cfinput required="no" type="text" name="proxyuser" value="#req.ddns.proxyuser#" size="20"/>
+		<cfinput required="no" type="text" name="proxyuser" id="proxyuser" value="#req.ddns.proxyuser#" size="20"/>
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150" style="background-color:#color#">#lang.proxypassword#</td>
+	<td class="tblHead" width="150" style="background-color:#color#"><label for="proxypassword">#lang.proxypassword#</label></td>
 	<td class="tblContent">
-		<cfinput required="no" type="text" name="proxypassword" value="#req.ddns.proxypassword#" size="20"/>
+		<cfinput required="no" type="text" name="proxypassword" id="proxypassword" value="#req.ddns.proxypassword#" size="20"/>
 	</td>
 </tr>
 <tr>

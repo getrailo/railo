@@ -431,7 +431,7 @@ Error Output --->
 		<tr>
 			<td class="tblHead">#stText.Overview.AddNewLanguage#</td>
 			<form action="#cgi.script_name#?#cgi.query_string#" method="post" enctype="multipart/form-data">
-			<td class="tblContent"><input type="File" name="newLangFile"><br>
+			<td class="tblContent"><input type="File" name="newLangFile" id="newLangFile"><br>
 			<input type="submit" value="#stText.Overview.Submit#"></td>
 			</form>
 		</tr>

@@ -128,16 +128,16 @@ Create Datasource --->
 	<td class="tblContent">
     	<cfif hasAccess>
 		<!--- never --->
-    	<input class="radio" type="radio" name="inspectTemplate" value="never"<cfif settings.inspectTemplate EQ "never"> checked="checked"</cfif>>
-    	<b>#stText.setting.inspectTemplateNever#</b><br />
+    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate_never" value="never"<cfif settings.inspectTemplate EQ "never"> checked="checked"</cfif>>
+    	<b><label for="inspectTemplate_never">#stText.setting.inspectTemplateNever#</label></b><br />
 		<span class="comment">#stText.setting.inspectTemplateNeverDesc#</span><br>
     	<!--- once --->
-    	<input class="radio" type="radio" name="inspectTemplate" value="once"<cfif settings.inspectTemplate EQ "once"> checked="checked"</cfif>>
-    	<b>#stText.setting.inspectTemplateOnce#</b><br />
+    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate_once" value="once"<cfif settings.inspectTemplate EQ "once"> checked="checked"</cfif>>
+    	<b><label for="inspectTemplate_once">#stText.setting.inspectTemplateOnce#</label></b><br />
 		<span class="comment">#stText.setting.inspectTemplateOnceDesc#</span><br>
     	<!--- always --->
-    	<input class="radio" type="radio" name="inspectTemplate" value="always"<cfif settings.inspectTemplate EQ "always"> checked="checked"</cfif>>
-    	<b>#stText.setting.inspectTemplateAlways#</b><br />
+    	<input class="radio" type="radio" name="inspectTemplate" id="inspectTemplate_always" value="always"<cfif settings.inspectTemplate EQ "always"> checked="checked"</cfif>>
+    	<b><label for="inspectTemplate_always">#stText.setting.inspectTemplateAlways#</label></b><br />
 		<span class="comment">#stText.setting.inspectTemplateAlwaysDesc#</span>
         
 		<cfelse>

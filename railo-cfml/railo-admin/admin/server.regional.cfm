@@ -127,11 +127,11 @@ Create Datasource --->
 <!---
 replaced with encoding output
 <tr>
-	<td class="tblHead" width="150">#stText.Regional.DefaultEncoding#</td>
+	<td class="tblHead" width="150"><label for="defaultencoding">#stText.Regional.DefaultEncoding#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Regional.DefaultEncodingDescription#</span>
 		<cfif hasAccess>
-		<cfinput type="text" name="defaultencoding" value="#regional.defaultEncoding#" 
+		<cfinput type="text" name="defaultencoding" id="defaultencoding" value="#regional.defaultEncoding#" 
 			style="width:200px" required="yes" message="#stText.regional.missingEncoding#">
 		
 		<cfelse>
@@ -144,22 +144,20 @@ replaced with encoding output
 --->
 
 <tr>
-	<td class="tblHead" width="150">#stText.Regional.Locale#</td>
+	<td class="tblHead" width="150"><label for="locale">#stText.Regional.Locale#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Regional.LocaleDescription#</span><br>
 		<cfif hasAccess>
 		<cfset hasFound=false>
 		<cfset keys=structSort(locales,'textnocase')>
 		
-        
-        
-        <select name="locale">
+		<select name="locale" id="locale">
 			<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
 			 ---><cfloop collection="#keys#" item="i"><cfset key=keys[i]><option value="#key#" <cfif key EQ regional.locale>selected<cfset hasFound=true></cfif>>#locales[key]#</option><!--- 
 			 ---></cfloop>
 		</select>
-        
-		<!--- <input type="text" name="locale_other" value="<cfif not hasFound>#regional.locale#</cfif>" style="width:200px"> --->
+		
+		<!--- <input type="text" name="locale_other" id="locale_other" value="<cfif not hasFound>#regional.locale#</cfif>" style="width:200px"> --->
 		<cfelse>
 			<b>#regional.locale#</b>
 		</cfif>
@@ -169,11 +167,11 @@ replaced with encoding output
 	select * from timezones order by id,display
 </cfquery>
 <tr>
-	<td class="tblHead" width="150">#stText.Regional.TimeZone#</td>
+	<td class="tblHead" width="150"><label for="timezone">#stText.Regional.TimeZone#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.Regional.TimeZoneDescription#</span>
 		<cfif hasAccess>
-		<select name="timezone">
+		<select name="timezone" id="timezone">
 			<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
 			<cfoutput query="timezones">
 				<option value="#timezones.id#"
@@ -184,16 +182,16 @@ replaced with encoding output
 		<cfelse>
 			<b>#regional.timezone#</b>
 		</cfif>
-		<!--- <cfinput type="text" name="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
+		<!--- <cfinput type="text" name="timezone" id="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Regional.TimeServer#</td>
+	<td class="tblHead" width="150"><label for="timeserver">#stText.Regional.TimeServer#</label></td>
 	<td class="tblContent"><span class="comment">#stText.Regional.TimeServerDescription#</span>
 	<cfif hasAccess>
-		<br /><cfinput type="text" name="timeserver" value="#regional.timeserver#" 
+		<br /><cfinput type="text" name="timeserver" id="timeserver" value="#regional.timeserver#" 
 			style="width:200px" required="no" message="#stText.Regional.TimeServerMissing#">
-		<br /><input type="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
+		<br /><label><input type="checkbox" name="usetimeserver" id="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#</label>
 	<cfelse>
 		<b>#regional.timeserver#</b><input type="hidden" name="usetimeserver" value="#regional.usetimeserver#" />
 	</cfif>

@@ -314,8 +314,8 @@ Error Output--->
 	<table class="tbl" width="350">
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.Settings.gateway.id#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="_id" value="" style="width:300px" required="yes" 
+		<td class="tblHead" width="50"><label for="_id">#stText.Settings.gateway.id#<label></td>
+		<td class="tblContent" width="300"><cfinput type="text" name="_id" id="_id" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.gateway.nameMissing#"></td>
 	</tr>
 	

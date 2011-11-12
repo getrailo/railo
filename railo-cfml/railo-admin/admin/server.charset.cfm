@@ -94,11 +94,11 @@ Create Datasource --->
 
 <!--- Template --->
 <tr>
-	<td class="tblHead" width="150">#stText.charset.templateCharset#</td>
+	<td class="tblHead" width="150"><label for="templateCharset">#stText.charset.templateCharset#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.charset.templateCharsetDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="templateCharset" value="#charset.templateCharset#" 
+		<cfinput type="text" name="templateCharset" id="templateCharset" value="#charset.templateCharset#" 
 			style="width:200px" required="no" message="#stText.charset.missingTemplateCharset#">
 		
 		<cfelse>
@@ -111,11 +111,11 @@ Create Datasource --->
 
 <!--- Web --->
 <tr>
-	<td class="tblHead" width="150">#stText.charset.webCharset#</td>
+	<td class="tblHead" width="150"><label for="webCharset">#stText.charset.webCharset#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.charset.webCharsetDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="webCharset" value="#charset.webCharset#" 
+		<cfinput type="text" name="webCharset" id="webCharset" value="#charset.webCharset#" 
 			style="width:200px" required="no" message="#stText.charset.missingWebCharset#">
 		
 		<cfelse>
@@ -128,11 +128,11 @@ Create Datasource --->
 
 <!--- Resource --->
 <tr>
-	<td class="tblHead" width="150">#stText.charset.resourceCharset#</td>
+	<td class="tblHead" width="150"><label for="resourceCharset">#stText.charset.resourceCharset#</label></td>
 	<td class="tblContent">
 		<span class="comment">#stText.charset.resourceCharsetDescription#</span><br />
 		<cfif hasAccess>
-		<cfinput type="text" name="resourceCharset" value="#charset.resourceCharset#" 
+		<cfinput type="text" name="resourceCharset" id="resourceCharset" value="#charset.resourceCharset#" 
 			style="width:200px" required="no" message="#stText.charset.missingResourceCharset#">
 		
 		<cfelse>

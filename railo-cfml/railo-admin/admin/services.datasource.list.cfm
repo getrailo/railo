@@ -111,9 +111,9 @@ Create Datasource --->
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.PreserveSingleQuotes#</td>
+	<td class="tblHead" width="150"><label for="psq">#stText.Settings.PreserveSingleQuotes#</label></td>
 	<td class="tblContent">
-	<cfif access NEQ 0><input type="checkbox" class="checkbox" name="psq" value="yes" <cfif dbSetting.psq>checked</cfif>><cfelse><b>#yesNoFormat(dbSetting.psq)#</b></cfif>
+	<cfif access NEQ 0><input type="checkbox" class="checkbox" name="psq" id="psq" value="yes" <cfif dbSetting.psq>checked</cfif>><cfelse><b>#yesNoFormat(dbSetting.psq)#</b></cfif>
 	<span class="comment">#stText.Settings.PreserveSingleQuotesDescription#</span></td>
 	
 </tr>
@@ -365,8 +365,8 @@ function selectAll(field) {
 	</tr>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.Settings.Name#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="name" value="" style="width:300px" required="yes" 
+		<td class="tblHead" width="50"><label for="name">#stText.Settings.Name#</label></td>
+		<td class="tblContent" width="300"><cfinput type="text" name="name" id="name" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.NameMissing#"></td>
 	</tr>
 	<cfset keys=StructKeyArray(drivers)>

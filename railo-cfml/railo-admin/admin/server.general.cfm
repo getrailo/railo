@@ -273,18 +273,18 @@ Create Datasource --->
 <!---- data member default access --->
 
         <tr>
-        	<td class="tblContent" style="border-color:#colorCompatibility#;" width="10"><cfinput type="radio" name="mode" value="compatibility"></td>
-            <td class="tblContent" style="border-color:#colorCompatibility#;#style#"><b>#stText.setting.general.compatibility#</b><br />
+        	<td class="tblContent" style="border-color:#colorCompatibility#;" width="10"><cfinput type="radio" name="mode" id="mode_compatibility" value="compatibility"></td>
+            <td class="tblContent" style="border-color:#colorCompatibility#;#style#"><b><label for="mode_compatibility">#stText.setting.general.compatibility#</label></b><br />
             <span class="comment">#stText.setting.general.compatibilityDesc#</span></td>
         </tr>
         <tr>
-        	<td class="tblContent" style="border-color:#colorStrict#;" width="10"><cfinput type="radio" name="mode" value="strict"></td>
-            <td class="tblContent" style="border-color:#colorStrict#;#style#"><b>#stText.setting.general.strict#</b><br />
+        	<td class="tblContent" style="border-color:#colorStrict#;" width="10"><cfinput type="radio" name="mode" id="mode_strict" value="strict"></td>
+            <td class="tblContent" style="border-color:#colorStrict#;#style#"><b><label for="mode_strict">#stText.setting.general.strict#</label></b><br />
             <span class="comment">#stText.setting.general.strictDesc#</span></td>
         </tr>
         <tr>
-        	<td class="tblContent" style="border-color:#colorSpeed#;" width="10"><cfinput type="radio" name="mode" value="speed"></td>
-            <td class="tblContent" style="border-color:#colorSpeed#;#style#"><b>#stText.setting.general.speed#</b>
+        	<td class="tblContent" style="border-color:#colorSpeed#;" width="10"><cfinput type="radio" name="mode" id="mode_speed" value="speed"></td>
+            <td class="tblContent" style="border-color:#colorSpeed#;#style#"><b><label for="mode_speed">#stText.setting.general.speed#</label></b>
             <br /><span class="comment">#stText.setting.general.speedDesc#</span></td>
         </tr>
         
