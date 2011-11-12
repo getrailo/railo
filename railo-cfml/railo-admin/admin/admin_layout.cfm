@@ -131,9 +131,9 @@ margin-top:0px;margin-bottom:0px;font-weight:bold;
 <table align="center" cellpadding="0" cellspacing="0" border="0">
 <colgroup>
     <col width="4">
-    <col width="158">
+    <col width="170">
 	<cfif hasNavigation><col width="1"></cfif>
-	<col width="815">
+	<col width="825">
 	<col width="1">
 	<col width="9">
 </colgroup>
@@ -147,9 +147,9 @@ margin-top:0px;margin-bottom:0px;font-weight:bold;
 </tr>
 <tr>
 	<td rowspan="2" width="4" valign="top"><cfmodule template="img.cfm" vspace="77" src="shadow-left.gif" /></td>
-	<td valign="top"  width="158" style="background-image:url(<cfmodule type="css" template="img.cfm" src="back-left.png" />);"><cfmodule template="img.cfm" src="left.png" />
+	<td valign="top"  width="170" style="background-image:url(<cfmodule type="css" template="img.cfm" src="back-left.png" />);"><cfmodule template="img.cfm" src="left.png" />
 		<cfif hasNavigation><div style="margin:10px 0px 0px 20px;">
-			<cfoutput>#attributes.navigation#<!---<div style="padding-top:30px;padding-bottom:30px;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout"><cfmodule template="img.cfm" src="arrow.gif" border="0" width="4" height="7" /> Logout</a></div>---></cfoutput>
+			<cfoutput>#attributes.navigation#</cfoutput>
 		</div></cfif><br><br>
 	</td>
 	<cfif hasNavigation><td rowspan="1" width="1" style="background-color:##d2d2d2;"></td></cfif>
@@ -176,9 +176,6 @@ margin-top:0px;margin-bottom:0px;font-weight:bold;
             </tr>
             </table><br><br>
             </div>
-		<!---<div id="title" style="text-align:left;margin:0px 10px 10px 20px;">
-			<cfif len(attributes.title) GT 0><h1>#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></h1></cfif><!------>
-		</div>--->
          <div id="content" style="text-align:left;margin:0px 10px 10px 30px;">         
            #thistag.generatedContent#</cfoutput>
 		

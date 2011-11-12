@@ -94,9 +94,7 @@
 			action="connect"
 			type="#request.adminType#"
 			password="#session["password"&request.adminType]#">
-		<!--- <cfset admin=createObject("java","railo.runtime.config.ConfigWebAdmin").
-		newInstance(config,session["password"&request.adminType])>
-		 --->
+		
 		 <cfcatch>
 		 	<cfset login_error=cfcatch.message>
 			<cfset StructDelete(session,"password"&request.adminType)>
