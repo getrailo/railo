@@ -173,7 +173,10 @@ function selectAll(field) {
 
 
 <!------------------------------ JAVA ------------------------------->
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
+ 	<colgroup>
+        <col width="10">
+    </colgroup>
 <tr>
 	<td colspan="4"><cfoutput><h2>#stText.CFX.CFXTags#</h2></cfoutput></td>
 </tr>
@@ -204,7 +207,7 @@ function selectAll(field) {
 		
 		<td class="tblContent<cfoutput>#css#</cfoutput>" nowrap><cfif not has.cfx_setting or jtags.readOnly>#jtags.class#<cfelse><cfinput 
 		onKeyDown="checkTheBox(this)" type="text" name="class_#jtags.currentrow#" value="#jtags.class#" 
-		required="yes"  style="width:350px" message="#stText.CFX.MissingClassValue##jtags.currentrow#)"></cfif></td>
+		required="yes"  style="width:100%" message="#stText.CFX.MissingClassValue##jtags.currentrow#)"></cfif></td>
         
         
 		<!--- check --->
@@ -238,9 +241,9 @@ function selectAll(field) {
 		</table>
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="name_#idx#" value="" required="no" style="width:150px"></td>
+			name="name_#idx#" value="" required="no" style="width:100%"></td>
 		<td class="tblContent" nowrap colspan="2"><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="class_#idx#" value="" required="no" style="width:350px"></td>
+			name="class_#idx#" value="" required="no" style="width:100%"></td>
 	</tr>
 </cfif>
 </cfoutput>
@@ -278,7 +281,12 @@ function selectAll(field) {
 <cfif structKeyExists(session,'enable') and session.enable EQ "cfxcpp">
 <!------------------------------ C++ ------------------------------->
 <br />
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
+<colgroup>
+        <col width="10">
+        <col>
+        <col width="50%">
+    </colgroup>
 <tr>
 	<td colspan="4"><cfoutput><h2>#stText.CFX.cpp.CFXTags#</h2>
 	
@@ -324,12 +332,12 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
         <!--- serverlibrary --->
 		<td class="tblContent<cfoutput>#css#</cfoutput>" nowrap><cfif not has.cfx_setting or ctags.readOnly>#ctags.serverlibrary#<cfelse><cfinput 
 		onKeyDown="checkTheBox(this)" type="text" name="serverlibrary_#ctags.currentrow#" value="#ctags.serverlibrary#" 
-		required="yes"  style="width:250px" message="#stText.CFX.MissingClassValue##ctags.currentrow#)"></cfif></td>
+		required="yes"  style="width:100%" message="#stText.CFX.MissingClassValue##ctags.currentrow#)"></cfif></td>
         
         <!--- procedure --->
 		<td class="tblContent<cfoutput>#css#</cfoutput>" nowrap><cfif not has.cfx_setting or ctags.readOnly>#ctags.procedure#<cfelse><cfinput 
 		onKeyDown="checkTheBox(this)" type="text" name="procedure_#ctags.currentrow#" value="#ctags.procedure#" 
-		required="yes"  style="width:120px" message="#stText.CFX.MissingClassValue##ctags.currentrow#)"></cfif></td>
+		required="yes"  style="width:100%" message="#stText.CFX.MissingClassValue##ctags.currentrow#)"></cfif></td>
         
         <!--- keepAlive --->
 		<td class="tblContent<cfoutput>#css#</cfoutput>" nowrap>
@@ -372,11 +380,11 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 		</table>
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="name_#idx#" value="" required="no" style="width:150px"></td>
+			name="name_#idx#" value="" required="no" style="width:100%"></td>
 		<td class="tblContent" nowrap ><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="serverlibrary_#idx#" value="" required="no" style="width:250px"></td>
+			name="serverlibrary_#idx#" value="" required="no" style="width:100%"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="procedure_#idx#" value="ProcessTagRequest" required="no" style="width:120px"></td>
+			name="procedure_#idx#" value="ProcessTagRequest" required="no" style="width:100%"></td>
 		<td class="tblContent" nowrap colspan="2">
         	<input type="checkbox" class="checkbox" onclick="checkTheBox(this)" name="keepalive_#idx#" value="true"></td>
 	</tr>

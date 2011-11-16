@@ -182,7 +182,7 @@ Error Output --->
 <cfset printError(error)>
 <!--- 
 Create Datasource --->
-<cfoutput><table class="tbl" width="740">
+<cfoutput><table class="tbl" width="100%">
 <tr>
 	<td colspan="2">
 <cfif request.adminType EQ "server">

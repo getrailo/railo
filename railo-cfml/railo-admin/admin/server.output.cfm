@@ -81,10 +81,10 @@ Redirtect to entry --->
 
 <!--- 
 Create Datasource --->
-<cfoutput><table class="tbl" width="740">
+<cfoutput><table class="tbl" width="100%">
 <colgroup>
-    <col width="250">
-    <col width="490">
+    <col width="230">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">#stText.setting[request.adminType]#</td>

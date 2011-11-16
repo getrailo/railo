@@ -142,12 +142,15 @@ function selectAll(field) {
 		<!--- 
 		Existing Collection --->
 		
-		<table class="tbl" width="740">
+		<table class="tbl" width="100%">
+        <colgroup>
+        	<col width="10"/>
+        </colgroup>
 		<tr>
-			<td colspan="8"><h2><cfoutput>#stText.Search.Collections#</cfoutput></h2></td>
+			<td colspan="7"><h2><cfoutput>#stText.Search.Collections#</cfoutput></h2></td>
 		</tr>
 		<tr>
-			<td colspan="8"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+			<td colspan="7"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 		</tr>
 		<cfoutput><form action="#request.self#?action=#url.action#" method="post" enctype="multipart/form-data"></cfoutput>
 		<tr>
@@ -157,9 +160,7 @@ function selectAll(field) {
 			<td class="tblHead" nowrap><cfoutput>#stText.Search.Online#</cfoutput></td>
 			<td class="tblHead" nowrap><cfoutput>#stText.Search.External#</cfoutput></td>
 			<td class="tblHead" nowrap><cfoutput>#stText.Search.Language#</cfoutput></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.Last_Update#</cfoutput></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.Path#</cfoutput></td>
-		</tr>
+			<td class="tblHead" nowrap><cfoutput>#stText.Search.Last_Update#</cfoutput></td>		</tr>
 		<cfoutput query="collections">
 			<tr>
 				<td>
@@ -177,12 +178,14 @@ function selectAll(field) {
 				<td class="tblContent" nowrap>#collections.external#</td>
 				<td class="tblContent" nowrap>#collections.language#</td>
 				<td class="tblContent" nowrap>#DateFormat(collections.LastModified,"yyyy-mm-dd")# #TimeFormat(collections.LastModified,"HH:mm")#</td>
-				<td class="tblContent" nowrap<cfif len(collections.path) GT 40> title="#collections.path#"</cfif>>#cut(collections.path,40)#</td>
+				<!---<td class="tblContent" width="400" style=" white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;" nowrap<cfif len(collections.path) GT 40> title="#collections.path#"</cfif>>#collections.path##collections.path#</td>--->
 			</tr>
 		</cfoutput>
 <cfmodule template="remoteclients.cfm" colspan="8" line=true>
 			<tr>
-				<td colspan="8">
+				<td colspan="7">
 				<cfoutput> <table border="0" cellpadding="0" cellspacing="0">
 				 <tr>
 					<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
@@ -266,7 +269,11 @@ function selectAll(field) {
 		
 	 	<cfif not StructIsEmpty(collection)>
 			<cfoutput><h2>#stText.Search.Collection# #url.collection#</h2>
-			<table class="tbl">
+			<table class="tbl" width="100%">
+            <colgroup>
+                <col width="150">
+                <col>
+            </colgroup>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.Name#</cfoutput></td>
 				<td class="tblContent" nowrap>#collection.name#</td>
@@ -304,15 +311,15 @@ function selectAll(field) {
 			---><!--- 
 			Create Index --->
 			<h2><cfoutput>#stText.Search.PathAction#</cfoutput></h2>
-			<table class="tbl" width="450">
+			<table class="tbl" width="570">
 			<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#" method="post">
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.FileExtensions#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="extensions" value=".html, .htm, .cfm, .cfml" style="width:300px" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
+				<td class="tblContent" width="300"><cfinput type="text" name="extensions" value=".html, .htm, .cfm, .cfml" style="width:450px" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
 			</tr>
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.DirectoryPath#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="path" value="" style="width:300px" required="yes" message="#stText.Search.DirectoryPathMissing#"></td>
+				<td class="tblContent" width="300"><cfinput type="text" name="path" value="" style="width:450px" required="yes" message="#stText.Search.DirectoryPathMissing#"></td>
 			</tr>
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.IndexSubdirs#</cfoutput></td>
@@ -320,7 +327,7 @@ function selectAll(field) {
 			</tr>
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.URL#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="url" value="" style="width:300px" required="no"></td>
+				<td class="tblContent" width="300"><cfinput type="text" name="url" value="" style="width:450px" required="no"></td>
 			</tr>
 			<tr>
 				<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>

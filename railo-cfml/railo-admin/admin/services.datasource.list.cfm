@@ -100,10 +100,10 @@ Error Output --->
 <!--- 
 Create Datasource --->
 
-<table class="tbl" width="740">
+<table class="tbl" width="540">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col width="390">
 </colgroup>
 <tr>
 	<td colspan="2"><h2>#stText.Settings.DatasourceSettings#</h2></td>
@@ -196,8 +196,14 @@ function selectAll(field) {
 <cfif request.adminType EQ "web" and srcGlobal.recordcount>
 	<cfoutput>
 	
-	<table class="tbl" width="740">
- 
+	<table class="tbl" border="0">
+ 	<colgroup>
+        <col width="20">
+        <col width="35%">
+        <col width="35%">
+        <col width="15%">
+        <col width="15%">
+    </colgroup>
 	<tr>
 		<td colspan="5"><h2>#stText.Settings.ReadOnlyDatasources#</h2>#stText.Settings.ReadOnlyDatasourcesDescription#</td>
 	</tr>
@@ -206,12 +212,11 @@ function selectAll(field) {
 	</tr>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
-			<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
-				</td>
-			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
-			<td width="355" class="tblHead" nowrap>#stText.Settings.Type#</td>
-			<td width="50" class="tblHead" nowrap>#stText.Settings.dbStorage#</td>
-			<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+			<td><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
+			<td class="tblHead" nowrap>#stText.Settings.Name#</td>
+			<td class="tblHead" nowrap>#stText.Settings.Type#</td>
+			<td class="tblHead" nowrap>#stText.Settings.dbStorage#</td>
+			<td class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 		</tr>
 		<cfloop query="srcGlobal">
 			<!--- and now display --->
@@ -289,6 +294,7 @@ function selectAll(field) {
 			<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 		</tr>
 		<cfloop query="srcLocal">
+        	<cfset link="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#">
 			<!--- and now display --->
 		<tr>
 			<td>
@@ -299,8 +305,7 @@ function selectAll(field) {
 				<input type="hidden" name="username_#srcLocal.currentrow#" value="#srcLocal.Username#">
 				<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
 				</td>
-				<td><a href="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#">
-			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
+				<td><a href="#link#"><cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
 			</tr>
 			</table>
 			</td>

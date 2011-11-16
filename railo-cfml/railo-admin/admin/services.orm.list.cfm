@@ -71,10 +71,11 @@ Error Output--->
 
 
 
-<table class="tbl" width="740">
+
+<table class="tbl" width="100%">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2"><h2>#stText.Settings.orm.title#</h2>#stText.Settings.orm.desc#</td>

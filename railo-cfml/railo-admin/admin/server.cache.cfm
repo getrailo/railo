@@ -107,10 +107,10 @@ Create Datasource --->
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">

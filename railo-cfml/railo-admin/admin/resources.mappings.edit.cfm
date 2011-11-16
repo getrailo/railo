@@ -12,7 +12,7 @@
 </cfsilent>
 
 <cfoutput>
-<table class="tbl" width="600">
+<table class="tbl" width="100%">
 <tr>
 	<td colspan="2">#stText.Mappings.editDesc#</td>
 </tr>
@@ -31,16 +31,16 @@
 <tr>
 	<td class="tblHead" width="150">#stText.Mappings.PhysicalHead#</td>
 	<cfset css=iif(len(mapping.physical) EQ 0 and len(mapping.strPhysical) NEQ 0,de('Red'),de(''))>
-	<td class="tblContent#css#" nowrap <cfif len(mapping.strPhysical)>title="#mapping.strPhysical##newLine()##mapping.Physical#"</cfif>><cfif mapping.readOnly>#cut(mapping.strPhysical,72)#<cfelse><cfinput  onKeyDown="checkTheBox(this)" type="text" 
+	<td class="tblContent#css#" nowrap <cfif len(mapping.strPhysical)>title="#mapping.strPhysical##newLine()##mapping.Physical#"</cfif>><cfif mapping.readOnly>#cut(mapping.strPhysical,72)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mapping.id#" value="#mapping.strPhysical#" required="no"  
-			style="width:420px" message="#stText.Mappings.PhysicalMissing##mapping.id#)"></cfif></td>
+			style="width:100%" message="#stText.Mappings.PhysicalMissing##mapping.id#)"></cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Mappings.ArchiveHead#</td>
 	<cfset css=iif(len(mapping.archive) EQ 0 and len(mapping.strArchive) NEQ 0,de('Red'),de(''))>
 	<td class="tblContent#css#" nowrap <cfif len(mapping.strArchive)>title="#mapping.strArchive##newLine()##mapping.Archive#"</cfif>><cfif mapping.readOnly>#cut(mappings.strArchive,72)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 		name="archive_#mapping.id#" value="#mapping.strArchive#" required="no"  
-		style="width:420px" message="#stText.Mappings.ArchiveMissing##mapping.id#)"></cfif></td>
+		style="width:100%" message="#stText.Mappings.ArchiveMissing##mapping.id#)"></cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Mappings.PrimaryHead#</td>
@@ -94,7 +94,7 @@
 
 
 </table>
-<br /><br />
+<br />
 <h2>#stText.Mappings.compileTitle#</h2>
 #stText.Mappings.compileDesc#
 
@@ -124,7 +124,7 @@
 
 Create Archive --->
 </table>
-<br /><br />
+<br />
 <h2>#stText.Mappings.archiveTitle#</h2>
 #stText.Mappings.archiveDesc#
 

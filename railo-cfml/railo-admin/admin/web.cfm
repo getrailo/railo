@@ -1,6 +1,8 @@
 <cfsilent> 
 <cfparam name="request.disableFrame" default="false" type="boolean">
 <cfparam name="request.setCFApplication" default="true" type="boolean">
+
+
 <cfif request.setCFApplication>
 <cfapplication name="webadmin" 
 	sessionmanagement="yes" 
@@ -8,6 +10,21 @@
 	setclientcookies="yes" 
 	setdomaincookies="no">
 </cfif>
+
+<cfparam name="session.screenWidth" default="825">
+<cfparam name="session.screenMode" default="compact">
+<cfif structKeyExists(url,'screenmode')>
+	<cfset session.screenmode=url.screenmode>
+    <cfset session.realScreenSize=url.realScreenSize>
+    <cfif session.screenmode EQ "full">
+    	<cfset session.screenwidth=session.realScreenSize-260>
+    <cfelse>
+    	<cfset session.screenwidth=825>
+    </cfif>
+</cfif>
+
+
+
 <cfif structKeyExists(url,'enable')>
 	<cfset session.enable=url.enable>
 </cfif>
@@ -314,9 +331,9 @@ request.getRemoteClients=getRemoteClients;
 
 
 
-<cfsavecontent variable="strNav">
 <script src="../jquery.js.cfm"></script>
 <script src="../jquery.blockUI.js.cfm"></script>
+<cfsavecontent variable="strNav">
 <script>
 function initMenu() {
 	$('#menu ul').show();

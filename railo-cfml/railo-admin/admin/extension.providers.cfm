@@ -135,17 +135,20 @@ function selectAll(field) {
 
 <cfset columns=doMode?5:4>
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
+ 	<colgroup>
+        <col width="10">
+    </colgroup>
 <tr>
 	<td colspan="#columns#">#stText.ext.prov.IntroText#</td>
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
-		<td width="30"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
-		<td width="300" class="tblHead" nowrap>#stText.ext.prov.url#</td>
-		<td width="260" class="tblHead" nowrap>#stText.ext.prov.title#</td>
-		<cfif doMode><td width="80" class="tblHead" nowrap>#stText.ext.prov.mode#</td></cfif>
-		<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
+		<td class="tblHead" nowrap>#stText.ext.prov.url#</td>
+		<td class="tblHead" nowrap>#stText.ext.prov.title#</td>
+		<cfif doMode><td class="tblHead" nowrap>#stText.ext.prov.mode#</td></cfif>
+		<td class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
     
 	<cfloop query="providers">
@@ -202,7 +205,7 @@ function selectAll(field) {
 		</table></td>
 		
 		<td class="tblContent" nowrap colspan="#columns-1#"><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="url_#providers.recordcount+1#" value="" required="no"  style="width:600px">
+			name="url_#providers.recordcount+1#" value="" required="no"  style="width:100%">
             <br /><span class="comment">&nbsp;&nbsp;#stText.ext.prov.urlDesc#</span></td>
 	</tr>
 </cfif>

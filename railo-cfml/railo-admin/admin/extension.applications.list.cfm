@@ -13,7 +13,7 @@
 <cfif extensions.recordcount>
 <!--- 
 Installed Applications --->
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <tr>
     <td colspan="5"><h2>#stText.ext.installed#</h2>
 #stText.ext.installeddesc#</td>
@@ -32,17 +32,6 @@ Installed Applications --->
 </cfform>
 </table>
 
-<table class="tbl" width="740">
-<colgroup>
-    <col width="148">
-    <col width="148">
-    <col width="148">
-    <col width="148">
-    <col width="148">
-</colgroup>
-</tr>
-
-
 <cfset row=0>
 <cfset missingRows=5>
 
@@ -58,7 +47,7 @@ Installed Applications --->
             </cfcatch>
         </cftry>
         
-        <cfif
+        <cfif 
 			doFilter(session.extFilter.filter,extensions.label,false)
 			or
 			doFilter(session.extFilter.filter,extensions.category,false)
@@ -72,22 +61,18 @@ Installed Applications --->
 			<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#uid#">
             <cfset dn=getDumpNail(extensions.image,130,50)>
 			<cfset hasUpdate=updateAvailable(extensions)>
-            <td height="80" class="tblContent" nowrap align="center" <cfif hasUpdate>style="border-color:red"</cfif>><cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
+            
+            <div class="tblContent" style="width:130px;height:80px;margin:2px;float:left" align="center">
+            <cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
             <a href="#link#" style="text-decoration:none;"><b>#cut(extensions.label,20)#</b><br />
             #cut(extensions.category,20)#</a><cfif hasUpdate><br /><span class="CheckError">Update Available</span></cfif>
-            </td>
-			<cfif row mod 5 EQ 0></tr><tr></cfif>
-        </cfif>
+            </div>
+            
+            
+        </cfif></cfloop>		
 	
-</cfloop>		
-	
-	
-	<cfif missingRows LT 5><cfloop from="1" to="#missingRows#" index="i"><td height="80" class="tblHead"><cfmodule template="tp.cfm"  width="100" height="50"></td></cfloop></cfif>
 
-
-</tr>
-</table>
-<br><br>
+<br ><br>
 </cfif>
 
 
@@ -108,7 +93,7 @@ Installed Applications --->
 <cfif true>
 <!--- 
 Not Installed Applications --->
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <tr>
     <td colspan="2"><h2>#stText.ext.notInstalled#</h2>
 #stText.ext.notInstalleddesc#</td>
@@ -128,17 +113,6 @@ Not Installed Applications --->
 </table>
 
 
-
-<table class="tbl" width="740">
-<colgroup>
-    <col width="148">
-    <col width="148">
-    <col width="148">
-    <col width="148">
-    <col width="148">
-</colgroup>
-    
-<tr>
 <cfset row=0>
 <cfset missingRows=5>
 <cfif isQuery(data)><cfoutput query="data" group="uid">
@@ -160,17 +134,22 @@ Not Installed Applications --->
 			<cfset missingRows=5-(row mod 5)>
 			<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#data.uid#">
             <cfset dn=getDumpNail(data.image,130,50)>
-			<td height="80" class="tblContent" nowrap align="center"><cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
+			<!----<table class="tbl" width="148">
+            <td>
+            <td height="80" class="tblContent" nowrap align="center"><cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
             <a href="#link#" style="text-decoration:none;"><b>#cut(data.label,20)#</b><br />
             #cut(data.category,20)#</a>
             </td>
-			<cfif row mod 5 EQ 0></tr><tr></cfif>
-        </cfif>
+			</tr>
+			</table>--->
+			<div class="tblContent" style="width:130px;height:80px;margin:2px;float:left" align="center">
+            <cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
+            <a href="#link#" style="text-decoration:none;"><b>#cut(data.label,20)#</b><br />
+            #cut(data.category,20)#</a>
+            </div>
+			            
+        </cfif></cfoutput></cfif>
 
-</cfoutput></cfif>
-	<cfif missingRows LT 5><cfloop from="1" to="#missingRows#" index="i"><td height="80" class="tblHead"><cfmodule template="tp.cfm"  width="100" height="50"></td></cfloop></cfif>
-</tr>
-</table>
 
 
 

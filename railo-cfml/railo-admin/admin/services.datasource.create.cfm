@@ -165,10 +165,10 @@ Error Output--->
 	#stText.Settings.DatasourceDescriptionCreate#
 	</cfif> #driver.getName()#</h2>
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">#driver.getDescription()#</td>
@@ -417,7 +417,7 @@ storage --->
 <cfset type=field.getType()>
 <tr>
 	<td class="tblHead" width="150">#field.getDisplayName()#</td>
-	<td class="tblContent" width="300"><span class="comment">#field.getDescription()#</span>
+	<td class="tblContent" width="300"><cfif len(trim(field.getDescription()))><span class="comment">#field.getDescription()#</span><br /></cfif>
 	<cfif type EQ "text" or type EQ "password">
 	<cfinput type="#type#" 
 		name="custom_#field.getName()#" 

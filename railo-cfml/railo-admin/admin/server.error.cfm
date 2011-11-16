@@ -95,7 +95,11 @@ Error Output --->
 
 <!--- 
 Create Datasource --->
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
+<colgroup>
+    <col width="150">
+    <col>
+</colgroup>
 <tr>
 	<td colspan="2">#stText.err.descr#</td>
 </tr>

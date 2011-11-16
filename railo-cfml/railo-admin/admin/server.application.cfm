@@ -134,10 +134,10 @@ function selectCustom(form) {
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">
@@ -168,15 +168,15 @@ function selectCustom(form) {
 		<table class="tbl">
 		<tr>
 			<td class="tblHead">none</td>
-			<td class="tblContent"><input type="radio" class="radio" onclick="deSelectCustom(this.form)" name="scriptProtect" value="none" <cfif isNone>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectNone#</span></td>
+			<td class="tblContent"><input type="radio" class="radio" onclick="deSelectCustom(this.form)" name="scriptProtect" value="none" <cfif isNone>checked="checked"</cfif>> <span class="comment">#stText.application.scriptProtectNone#</span></td>
 		</tr>
 		<tr>
 			<td class="tblHead">all</td>
-			<td class="tblContent"><input type="radio" onclick="deSelectCustom(this.form)" class="radio" name="scriptProtect" value="all" <cfif isAll>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectAll#</span></td>
+			<td class="tblContent"><input type="radio" onclick="deSelectCustom(this.form)" class="radio" name="scriptProtect" value="all" <cfif isAll>checked="checked"</cfif>> <span class="comment">#stText.application.scriptProtectAll#</span></td>
 		</tr>
 		<tr>
 			<td class="tblHead">custom</td>
-			<td class="tblContent"><input type="radio" class="radio" name="scriptProtect" value="custom" <cfif isCustom>checked="checked"</cfif>><span class="comment">#stText.application.scriptProtectCustom#</span>
+			<td class="tblContent"><input type="radio" class="radio" name="scriptProtect" value="custom" <cfif isCustom>checked="checked"</cfif>> <span class="comment">#stText.application.scriptProtectCustom#</span>
 			<table class="tbl">
 			<tr>
 				<td class="tblHead">cgi</td>
@@ -211,39 +211,46 @@ function selectCustom(form) {
 	<td class="tblHead" width="150">#stText.application.RequestTimeout#</td>
 	<td class="tblContent">
 		<cfset timeout=appSettings.requestTimeout>
-		<span class="comment">#stText.application.RequestTimeoutDescription#</span>
 		<table class="tbl">
-		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
-		</tr>
+        <tr>
+        	<td>
+            <table class="tbl">
+            <tr>
+                <td class="tblHead">#stText.General.Days#</td>
+                <td class="tblHead">#stText.General.Hours#</td>
+                <td class="tblHead">#stText.General.Minutes#</td>
+                <td class="tblHead">#stText.General.Seconds#</td>
+            </tr>
+            
+            <cfif hasAccess>
+            <tr>
+                <td class="tblContent"><cfinput type="text" name="request_days" value="#appSettings.requestTimeout_day#" 
+                    style="width:40px" required="yes" validate="integer" 
+                    message="#stText.Scopes.TimeoutDaysValue#request#stText.Scopes.TimeoutEndValue#"></td>
+                <td class="tblContent"><cfinput type="text" name="request_hours" value="#appSettings.requestTimeout_hour#" 
+                    style="width:40px" required="yes" validate="integer" 
+                    message="#stText.Scopes.TimeoutHoursValue#request#stText.Scopes.TimeoutEndValue#"></td>
+                <td class="tblContent"><cfinput type="text" name="request_minutes" value="#appSettings.requestTimeout_minute#" 
+                    style="width:40px" required="yes" validate="integer" 
+                    message="#stText.Scopes.TimeoutMinutesValue#request#stText.Scopes.TimeoutEndValue#"></td>
+                <td class="tblContent"><cfinput type="text" name="request_seconds" value="#appSettings.requestTimeout_second#" 
+                    style="width:40px" required="yes" validate="integer" 
+                    message="#stText.Scopes.TimeoutSecondsValue#request#stText.Scopes.TimeoutEndValue#"></td>
+            </tr>
+            <cfelse>
+            <tr>
+                <td class="tblContent" align="center"><b>#appSettings.requestTimeout_day#</b></td>
+                <td class="tblContent" align="center"><b>#appSettings.requestTimeout_hour#</b></td>
+                <td class="tblContent" align="center"><b>#appSettings.requestTimeout_minute#</b></td>
+                <td class="tblContent" align="center"><b>#appSettings.requestTimeout_second#</b></td>
+            </tr>
+            </cfif>
+            </table>
+            </td>
+            <td><span class="comment">#stText.application.RequestTimeoutDescription#</span></td>
+        </tr>
+        </table>
 		
-		<cfif hasAccess>
-		<tr>
-			<td class="tblContent"><cfinput type="text" name="request_days" value="#appSettings.requestTimeout_day#" 
-				style="width:40px" required="yes" validate="integer" 
-				message="#stText.Scopes.TimeoutDaysValue#request#stText.Scopes.TimeoutEndValue#"></td>
-			<td class="tblContent"><cfinput type="text" name="request_hours" value="#appSettings.requestTimeout_hour#" 
-				style="width:40px" required="yes" validate="integer" 
-				message="#stText.Scopes.TimeoutHoursValue#request#stText.Scopes.TimeoutEndValue#"></td>
-			<td class="tblContent"><cfinput type="text" name="request_minutes" value="#appSettings.requestTimeout_minute#" 
-				style="width:40px" required="yes" validate="integer" 
-				message="#stText.Scopes.TimeoutMinutesValue#request#stText.Scopes.TimeoutEndValue#"></td>
-			<td class="tblContent"><cfinput type="text" name="request_seconds" value="#appSettings.requestTimeout_second#" 
-				style="width:40px" required="yes" validate="integer" 
-				message="#stText.Scopes.TimeoutSecondsValue#request#stText.Scopes.TimeoutEndValue#"></td>
-		</tr>
-		<cfelse>
-		<tr>
-			<td class="tblContent" align="center"><b>#appSettings.requestTimeout_day#</b></td>
-			<td class="tblContent" align="center"><b>#appSettings.requestTimeout_hour#</b></td>
-			<td class="tblContent" align="center"><b>#appSettings.requestTimeout_minute#</b></td>
-			<td class="tblContent" align="center"><b>#appSettings.requestTimeout_second#</b></td>
-		</tr>
-		</cfif>
-		</table>
 		
 	</td>
 </tr>
@@ -280,13 +287,16 @@ function selectCustom(form) {
 
 </cfform>
 </table>
-<br /><br />
+<br />
 
 <h2>#stText.application.listener#</h2>
 #stText.application.listenerDescription#
 
-<table class="tbl" width="740">
-
+<table class="tbl" width="100%">
+<colgroup>
+    <col width="100">
+    <col>
+</colgroup>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <!--- listener type --->
@@ -298,8 +308,8 @@ function selectCustom(form) {
 		<table class="tbl" width="100%">
         <cfloop index="key" list="none,classic,modern,mixed">
 		<tr>
-			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerType_' & key]#</td>
-			<td width="400" class="tblContent"><input type="radio" name="type" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
+			<td width="170" class="tblHead" nowrap="nowrap">#stText.application['listenerType_' & key]#</td>
+			<td class="tblContent"><input type="radio" name="type" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
 			<span class="comment">#stText.application['listenerTypeDescription_' & key]#</span></td>
 		</tr>
 		</cfloop>
@@ -322,8 +332,8 @@ function selectCustom(form) {
 		<table class="tbl" width="100%">
 		<cfloop index="key" list="curr,root,curr2root">
 		<tr>
-			<td width="200" class="tblHead" nowrap="nowrap">#stText.application['listenerMode_' & key]#</td>
-			<td width="400" class="tblContent"><input type="radio" name="mode" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>
+			<td width="170" class="tblHead" nowrap="nowrap">#stText.application['listenerMode_' & key]#</td>
+			<td  class="tblContent"><input type="radio" name="mode" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>
 			<span class="comment">#stText.application['listenerModeDescription_' & key]#</span></td>
 		</tr>
 		</cfloop>
