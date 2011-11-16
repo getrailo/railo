@@ -98,5 +98,6 @@
 	<classpathentry exported="true" kind="lib" path="xml-apis.jar"/>
 	<classpathentry exported="true" kind="lib" path="xmlparserv2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="apache-commons-sanselan.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
