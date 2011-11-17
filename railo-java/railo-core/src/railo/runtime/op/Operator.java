@@ -271,7 +271,10 @@ public final class Operator {
 			if(Decision.isNumeric(right)){
 				// long numbers
 				if(left.length()>9 || right.length()>9) {
-					return new BigDecimal(left).compareTo(new BigDecimal(right));
+					try{
+						return new BigDecimal(left).compareTo(new BigDecimal(right));
+					}
+					catch(Throwable t){}
 				}
 				return compare(Caster.toDoubleValue(left,Double.NaN),Caster.toDoubleValue(right,Double.NaN));
 			}
