@@ -294,6 +294,10 @@ private function isColumnEmpty(string columnName){
 <p class="cfdebug"><hr/><b class="cfdebuglge"><a name="cfdebug_sql">SQL Queries</a></b></p>
 <cfloop query="queries">	
 <code><b>#queries.name#</b> (Datasource=#queries.datasource#, Time=#queries.time#ms, Records=#queries.count#) in #queries.src#</code><br />
+<cfif ListFindNoCase(queries.columnlist,'usage') and IsStruct(queries.usage)><cfset usage=queries.usage><cfset lstNeverRead="">
+<cfloop collection="#usage#" item="item"><cfif not usage[item]><cfset lstNeverRead=ListAppend(lstNeverRead,item,', ')></cfif></cfloop>
+<cfif len(lstNeverRead)><font color="red">the following colum(s) are never read within the request:#lstNeverRead#</font><br /></cfif>
+</cfif>
 <pre>#queries.sql#</pre></cfloop>
 </cfif>
 
