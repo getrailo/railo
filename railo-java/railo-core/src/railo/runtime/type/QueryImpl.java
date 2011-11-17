@@ -3572,7 +3572,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	}
 
 	public synchronized void enableShowQueryUsage() {
-		for(int i=0;i<columns.length;i++){
+		if(columns!=null)for(int i=0;i<columns.length;i++){
 			columns[i]=columns[i].toDebugColumn();
 		}
 	}
