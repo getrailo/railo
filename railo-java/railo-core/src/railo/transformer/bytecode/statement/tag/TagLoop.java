@@ -66,6 +66,11 @@ public final class TagLoop extends TagBase implements FlowControl {
 			Types.ITERATOR,
 			new Type[]{Types.OBJECT});
 
+	private static final Method VALUE_ITERATOR = new Method(
+			"valueIterator",
+			Types.ITERATOR,
+			new Type[]{});
+
 	private static final Method NEXT = new Method(
 			"next",
 			Types.OBJECT,
@@ -252,7 +257,8 @@ public final class TagLoop extends TagBase implements FlowControl {
 			writeOutTypeListArray(bc,false);
 		break;
 		case TYPE_ARRAY:
-			writeOutTypeListArray(bc,true);
+			writeOutTypeArray(bc);
+			//writeOutTypeListArray(bc,true);
 		break;
 		case TYPE_QUERY:
 			writeOutTypeQuery(bc);
@@ -300,6 +306,61 @@ public final class TagLoop extends TagBase implements FlowControl {
 			adapter.loadArg(0);
 				adapter.loadLocal(it);
 			adapter.invokeInterface(Types.ITERATOR, NEXT);
+			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+			adapter.pop();
+		
+			getBody().writeOut(bc);
+		whileVisitor.visitAfterBody(bc,getEndLine());
+		
+	}
+	
+
+	private void writeOutTypeArray(BytecodeContext bc) throws BytecodeException {
+		WhileVisitor whileVisitor = new WhileVisitor();
+		loopVisitor=whileVisitor;
+		GeneratorAdapter adapter = bc.getAdapter();
+		// java.util.Iterator it=Caster.toIterator(@collection');
+		int it=adapter.newLocal(Types.ITERATOR);
+		getAttribute("array").getValue().writeOut(bc,Expression.MODE_REF);
+		adapter.invokeInterface(Types.ITERATORABLE, VALUE_ITERATOR);
+		//adapter.invokeStatic(Types.CASTER,TO_ITERATOR);
+		adapter.storeLocal(it);
+		
+		//VariableReference item=VariableInterpreter.getVariableReference(pc,item);
+		int item = adapter.newLocal(Types.VARIABLE_REFERENCE);
+		adapter.loadArg(0);
+		
+		getAttribute("index").getValue().writeOut(bc, Expression.MODE_REF);
+//		if(Variable.register Key(bc, getAttribute("item").getValue()))
+		
+		//	adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE_KEY);
+		//else
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+		adapter.storeLocal(item);
+		
+		int obj=adapter.newLocal(Types.OBJECT);
+		// while(it.hasNext()) {
+		whileVisitor.visitBeforeExpression(bc);
+			adapter.loadLocal(it);
+			adapter.invokeInterface(Types.ITERATOR, HAS_NEXT);
+		
+		whileVisitor.visitAfterExpressionBeforeBody(bc);
+			// obj=it.next();
+			adapter.loadLocal(it);
+			adapter.invokeInterface(Types.ITERATOR, NEXT);
+			adapter.storeLocal(obj);
+			
+			Label endIf=new Label();
+			adapter.loadLocal(obj);
+			adapter.visitJumpInsn(Opcodes.IFNONNULL, endIf);
+				adapter.visitJumpInsn(Opcodes.GOTO, whileVisitor.getContinueLabel());
+			adapter.visitLabel(endIf);
+			
+			
+			// item.set(pc,obj);
+			adapter.loadLocal(item);
+			adapter.loadArg(0);
+			adapter.loadLocal(obj);
 			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
 			adapter.pop();
 		

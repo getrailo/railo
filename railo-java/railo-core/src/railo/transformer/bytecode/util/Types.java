@@ -35,6 +35,7 @@ import railo.runtime.op.Operator;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
+import railo.runtime.type.Iteratorable;
 import railo.runtime.type.List;
 import railo.runtime.type.Scope;
 import railo.runtime.type.UDF;
@@ -121,8 +122,9 @@ public final class Types {
     public static final Type RESOURCE=Type.getType(Resource.class);
     
 	public static final Type FUNCTION_VALUE = Type.getType(FunctionValue.class);
-    
+
     public static final Type ITERATOR=Type.getType(Iterator.class);
+    public static final Type ITERATORABLE=Type.getType(Iteratorable.class);
 
     public static final Type NODE=Type.getType(org.w3c.dom.Node.class);
 
