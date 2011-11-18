@@ -58,6 +58,7 @@
 						</td>--->
 						<td align="left" class="cfdebug" colspan="2">
 							<cfset sUsageText = "All columns have been used.">
+                            <cfset hasQueryUsage=false>
 							<cfif ListFindNoCase(queries.columnlist,'usage') and IsStruct(queries.usage)>
 								<cfset usage=queries.usage><cfset lstNeverRead="">
 								<cfset iNotUsed = 0>
@@ -71,21 +72,18 @@
 									</cfif>
 								</cfloop>
 								<cfif len(lstNeverRead)><cfset sUsageText = "The following colum(s) have never ben used within this request:#lstNeverRead##Chr(10)#"></cfif>
+                            	<cfset hasQueryUsage=true>
 								<cfset iUsagePct   = iUsed/(iNotUsed + iUsed)>
 								<cfset iUsageExPct = 1-iUsagePct>
 								<cfset sUsageColor = RGBtoHex(255 * iUsageExPct, 160 * (1 - iUsageExPct), 0)>
 								<cfset sUsagePercentage = numberFormat(iUsagePct*100, "999.9") & "%">
-							</cfif>
-
-
-
-                            
-							<b>#queries.name#</b> (Datasource=<cftry>#queries.datasource#<cfcatch></cfcatch></cftry>, Time=#queries.time#ms, Records=#queries.count#, Usage=<span style="color:#sUsageColor#" alt="#sUsageText#" title="#sUsageText#">#sUsagePercentage#</span>) in #queries.src#
+							</cfif>                            
+							<b>#queries.name#</b> (Datasource=<cftry>#queries.datasource#<cfcatch></cfcatch></cftry>, Time=#queries.time#ms, Records=#queries.count#<cfif hasQueryUsage>, Usage=<span style="color:#sUsageColor#" alt="#sUsageText#" title="#sUsageText#">#sUsagePercentage#</span></cfif>) in #queries.src#
 						</td>
 					</tr><tr id="sql#iDebug#" style="display:none">
 						<td colspan="3">
                         	<textarea name="sql" readonly="readonly" style="width:100%;height:100px;background-color:##DDDDDD;">#stDisplaySQL.sSql#</textarea>
-<cfif len(lstNeverRead)><font color="red"><br />the following column(s) are never read within the request:<br />#lstNeverRead#</font></cfif>
+<cfif hasQueryUsage and len(lstNeverRead)><font color="red"><br />the following column(s) are never read within the request:<br />#lstNeverRead#</font></cfif>
 						</td>
 					</tr>
 					<cfif stDisplaySQL.Executeable>
