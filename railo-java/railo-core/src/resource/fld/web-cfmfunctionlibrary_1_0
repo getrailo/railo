@@ -2510,6 +2510,23 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	
+	<!-- decodeFromURL -->	
+	<function>
+		<name>decodeFromURL</name>
+		<class>railo.runtime.functions.owasp.decodeFromURL</class>
+		<description>Decodes a string that has been encoded in the URL using the encodeForURL </description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- decrypt -->
 	<function>
 		<name>decrypt</name>
@@ -3078,6 +3095,170 @@ dec: descending (z to a) sort order.
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- ESAPI Functions -->
+	<!-- encodeForHTML -->
+	<function>
+		<name>encodeForHTML</name>
+		<class>railo.runtime.functions.owasp.encodeForHTML</class>
+		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForHTMLAttribute -->
+	<function>
+		<name>encodeForHTMLAttribute</name>
+		<class>railo.runtime.functions.owasp.encodeForHTMLAttribute</class>
+		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>	
+	
+	<!-- encodeForCSS -->
+	<function>
+		<name>encodeForCSS</name>
+		<class>railo.runtime.functions.owasp.encodeForCSS</class>
+		<description>Encodes the given string for safe output in CSS to stop Cross Site Scripting attacks</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForJavaScript -->
+	<function>
+		<name>encodeForJavaScript</name>
+		<class>railo.runtime.functions.owasp.encodeForJavaScript</class>
+		<description>Encodes the given string for safe output in JavaScript to stop Cross Site Scripting attacks</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForXML -->
+	<function>
+		<name>encodeForXML</name>
+		<class>railo.runtime.functions.owasp.encodeForXML</class>
+		<description>Encodes the given string for safe output in XML to stop Cross Site Scripting attacks</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- encodeForXMLAttribute -->
+	<function>
+		<name>encodeForXMLAttribute</name>
+		<class>railo.runtime.functions.owasp.encodeForXMLAttribute</class>
+		<description>Encodes the given string for safe output in XMLAttribute to stop Cross Site Scripting attacks</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- encodeForURL -->	
+	<function>
+		<name>encodeForURL</name>
+		<class>railo.runtime.functions.owasp.encodeForURL</class>
+		<description>Encodes the given string for safe output in a URL</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	
+	<!-- encodeForLDAP -->	
+	<function>
+		<name>encodeForLDAP</name>
+		<class>railo.runtime.functions.owasp.encodeForLDAP</class>
+		<description>Encodes the given string for safe output in LDAP queries</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForDN -->	
+	<function>
+		<name>encodeForDN</name>
+		<class>railo.runtime.functions.owasp.encodeForDN</class>
+		<description>Encodes the given string for safe output in LDAP Distinguished Names</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForXPath -->	
+	<function>
+		<name>encodeForXPath</name>
+		<class>railo.runtime.functions.owasp.encodeForXPath</class>
+		<description>Encodes the given string for safe use in an XPath Query</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+
+
+	
 	
 	
 	<!-- encrypt -->
