@@ -4277,8 +4277,17 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>suppressFunction</name>
 			<type>boolean</type>
 			<required>no</required>
-			<description>if true only data members from this sope are returned (no functions), default is false</description>
+			<description>if true only data members from this scope are returned (no functions), default is false</description>
 		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	<!-- ApplicationGetMetaData -->
+	<function>
+		<name>ApplicationGetMetaData</name>
+		<class>railo.runtime.functions.system.ApplicationGetMetaData</class>
+		<description>return all data from this scope, when using a application.cfc or all setting defined in tag cfapplication</description>
 		<return>
 			<type>struct</type>
 		</return>
