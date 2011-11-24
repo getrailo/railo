@@ -23,7 +23,15 @@ public final class MD5	{
        return  new MD5(barr).getDigest();
     }
 
-	
+
+    public static String getDigestAsString(String str, String defaultValue) {
+        try {
+			return  new MD5(str).getDigest();
+		} 
+        catch (Throwable t) {
+			return defaultValue;
+		}
+     }
 	
 	private static String stringify(byte digest[]) {
 		char[] chars = new char[2*digest.length];

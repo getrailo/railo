@@ -640,7 +640,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     /**
      * @see railo.runtime.PageSource#exists()
      */
-    public boolean exists() {
+    public synchronized boolean exists() {
     	if(mapping.isPhysicalFirst())
 	        return physcalExists() || archiveExists();
 	    return archiveExists() || physcalExists();
@@ -660,7 +660,11 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         	if(clazz==null) return getArchiveFile().exists();
         	mapping.getClassLoaderForArchive().loadClass(clazz);
         	return true;
-        } catch (Exception e) {
+        } 
+        catch(ClassNotFoundException cnfe){
+        	return false;
+        }
+        catch (Exception e) {
             return getArchiveFile().exists();
         }
     }

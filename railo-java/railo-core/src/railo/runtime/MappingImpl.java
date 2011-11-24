@@ -61,7 +61,7 @@ public final class MappingImpl implements Mapping {
     //private Resource classRoot;
     private Map<String,Object> customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
-	private int classLoaderMaxElements=100;
+	private int classLoaderMaxElements=1000;
 	/**
 	 * @return the classLoaderMaxElements
 	 */
@@ -150,16 +150,17 @@ public final class MappingImpl implements Mapping {
 			return physicalClassLoader;
 		}
 		// return existing classloader when not to big
-		if(!reload){//print.o(physicalClassLoader+":"+classLoaderMaxElements+"-"+physicalClassLoader.count());
-			if(classLoaderMaxElements>physicalClassLoader.count()) return physicalClassLoader;
+		if(!reload){
+			if(classLoaderMaxElements>physicalClassLoader.count()) 
+				return physicalClassLoader;
 			
 			getConfigImpl().getMappingLogger().info(getVirtual(), "max size ["+classLoaderMaxElements+"] for classloader reached");
 		}
-		
 		// reset existing classloader
 		config.resetRPCClassLoader();
 		physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
         pageSourcePool.clearPages();
+		System.gc();
         return physicalClassLoader;
 	}
 	

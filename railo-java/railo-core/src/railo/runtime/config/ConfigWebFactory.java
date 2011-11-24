@@ -243,7 +243,7 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,servletConfig);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc);
+		load(configServer,configWeb,doc,false);
 		createContextFilesPost(configDir,configWeb,servletConfig,false);
 	    return configWeb;
     }
@@ -292,7 +292,7 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,null);
         config.reset();
         
-		load(config.getConfigServerImpl(),config,doc);
+		load(config.getConfigServerImpl(),config,doc,true);
 		createContextFilesPost(configDir,config,null,false);
     }
     
@@ -311,7 +311,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
@@ -324,7 +324,7 @@ public final class ConfigWebFactory {
     	}
     	
     	loadConstants(configServer,config,doc);
-    	loadTempDirectory(configServer, config, doc);
+    	loadTempDirectory(configServer, config, doc,isReload);
     	loadId(config);
     	loadVersion(config,doc);
     	loadSecurity(configServer,config,doc);
@@ -2336,7 +2336,7 @@ public final class ConfigWebFactory {
         
     
     
-    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) throws ExpressionException, TagLibException, FunctionLibException {
         Resource configDir=config.getConfigDir();
         boolean hasCS=configServer!=null;
         
@@ -2351,15 +2351,15 @@ public final class ConfigWebFactory {
 	  	if(!StringUtil.isEmpty(strTempDirectory)) {
 		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
 		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config));
+		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
 	  	}
 	  	else if(hasCS) {
-	  		config.setTempDirectory(configServer.getTempDirectory());
+	  		config.setTempDirectory(configServer.getTempDirectory(),!isReload);
 	  	}
 	  	if(config.getTempDirectory()==null) {
 	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
 		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config));
+		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
 	  	}
     }
 

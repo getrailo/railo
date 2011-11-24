@@ -1451,8 +1451,8 @@ public abstract class ConfigImpl implements Config {
      * @param strTempDirectory temp directory
      * @throws ExpressionException
      */
-    protected void setTempDirectory(String strTempDirectory) throws ExpressionException {
-        setTempDirectory(resources.getResource(strTempDirectory));
+    protected void setTempDirectory(String strTempDirectory, boolean flush) throws ExpressionException {
+        setTempDirectory(resources.getResource(strTempDirectory),flush);
     }   
     
     /**
@@ -1460,7 +1460,7 @@ public abstract class ConfigImpl implements Config {
      * @param tempDirectory temp directory
      * @throws ExpressionException
      */
-    protected void setTempDirectory(Resource tempDirectory) throws ExpressionException {
+    protected void setTempDirectory(Resource tempDirectory, boolean flush) throws ExpressionException {
         if(!isDirectory(tempDirectory) || !tempDirectory.isWriteable()) {
         	SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable or can not be created, using directory ["+SystemUtil.getTempDirectory()+"] instead");
         	tempDirectory=SystemUtil.getTempDirectory();
@@ -1468,7 +1468,7 @@ public abstract class ConfigImpl implements Config {
         		SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable");
         	}
         }
-        ResourceUtil.removeChildrenEL(tempDirectory);// start with a empty temp directory
+        if(flush)ResourceUtil.removeChildrenEL(tempDirectory);// start with a empty temp directory
         this.tempDirectory=tempDirectory;
     }
 
@@ -3339,7 +3339,7 @@ public abstract class ConfigImpl implements Config {
 		this.componentRootSearch = componentRootSearch;
 	}
 
-	private final Map compressResources=new WeakHashMap();
+	private final Map compressResources= new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
 		Compress compress=(Compress) compressResources.get(zipFile.getPath());
 		if(compress==null) {

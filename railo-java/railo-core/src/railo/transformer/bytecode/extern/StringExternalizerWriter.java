@@ -16,7 +16,7 @@ public class StringExternalizerWriter {
 	
 	public StringExternalizerWriter(Resource res) throws IOException{
 		this.res=res;
-		ResourceUtil.clear(res);
+		if(res.exists())res.delete();
 	}
 	
 	public Range write(String str){
