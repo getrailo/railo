@@ -1482,7 +1482,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public Query getQuery(String key) throws PageException {
 		Object o=VariableInterpreter.getVariable(this,key);
 		if(o instanceof Query) return (Query) o;
-		throw new ExpressionException("["+key+"] is not a query object");
+		throw new CasterException(o,Query.class);///("["+key+"] is not a query object, object is from type ");
 	}
 
 	/**
@@ -2814,7 +2814,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 
 	public DatasourceConnection _getConnection(String datasource, String user,String pass) throws PageException {
-		DataSource ds = config.getDataSource(datasource);
+		return _getConnection(config.getDataSource(datasource),user,pass);
+	}
+	
+	public DatasourceConnection _getConnection(DataSource ds, String user,String pass) throws PageException {
 		
 		String id=DatasourceConnectionPool.createId(ds,user,pass);
 		DatasourceConnection dc=(DatasourceConnection) conns.get(id);

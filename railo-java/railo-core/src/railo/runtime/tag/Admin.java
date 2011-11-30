@@ -2234,7 +2234,7 @@ private void doGetMappings() throws PageException {
         //config.getConnectionPool().remove(name);
         DataSource ds=null;
 		try {
-			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage);
+			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null);
 		} catch (ClassException e) {
 			throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
 		}
