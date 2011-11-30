@@ -84,6 +84,7 @@ import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.QueryUtil;
 
 /**
  * implementation of the query interface
@@ -206,7 +207,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		Statement stat=null;
 		// check SQL Restrictions
 		if(dc.getDatasource().hasSQLRestriction()) {
-            checkSQLRestriction(dc,sql);
+			QueryUtil.checkSQLRestriction(dc,sql);
         }
 		// check if datasource support Generated Keys
 		boolean createGeneratedKeys=createUpdateData;
@@ -351,38 +352,9 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		}
 	}
 
-	/**
-     * check if there is a sql restriction
-	 * @param ds
-	 * @param sql
-	 * @throws PageException 
-	 */
-	private static void checkSQLRestriction(DatasourceConnection dc, SQL sql) throws PageException {
-        Array sqlparts = List.listToArrayRemoveEmpty(
-        		SQLUtil.removeLiterals(sql.getSQLString())
-        		," \t"+System.getProperty("line.separator"));
-        
-        
-        
-        //print.ln(List.toStringArray(sqlparts));
-        DataSource ds = dc.getDatasource();
-        if(!ds.hasAllow(DataSource.ALLOW_ALTER))    checkSQLRestriction(dc,"alter",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_CREATE))   checkSQLRestriction(dc,"create",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_DELETE))   checkSQLRestriction(dc,"delete",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_DROP))     checkSQLRestriction(dc,"drop",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_GRANT))    checkSQLRestriction(dc,"grant",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_INSERT))   checkSQLRestriction(dc,"insert",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_REVOKE))   checkSQLRestriction(dc,"revoke",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_SELECT))   checkSQLRestriction(dc,"select",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_UPDATE))   checkSQLRestriction(dc,"update",sqlparts,sql);        
-        
-    }
+	
 
-    private static void checkSQLRestriction(DatasourceConnection dc, String keyword, Array sqlparts, SQL sql) throws PageException {
-        if(ArrayFind.find(sqlparts,keyword,false)>0) {
-            throw new DatabaseException("access denied to execute \""+StringUtil.ucFirst(keyword)+"\" SQL statment for datasource "+dc.getDatasource().getName(),null,sql,dc);
-        }
-    }
+    
 
     private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys) throws SQLException, IOException, PageException {
     	if(result==null) return false;
@@ -478,7 +450,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		return IOUtil.toString(clob.getCharacterStream());
 	}
 
-    private int getIndexFrom(Collection.Key[] tmpColumnNames, Collection.Key key, int from, int to) {
+    private static int getIndexFrom(Collection.Key[] tmpColumnNames, Collection.Key key, int from, int to) {
 		for(int i=from;i<to;i++) {
 			if(tmpColumnNames[i]!=null && tmpColumnNames[i].equalsIgnoreCase(key))return i;
 		}
@@ -720,17 +692,10 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @see railo.runtime.type.Collection#keysAsString()
 	 */
 	public String[] keysAsString() {
-		return toString(columnNames);
+		return QueryUtil.toStringArray(columnNames);
 	}
 
-	private String[] toString(Collection.Key[] keys) {
-		if(keys==null) return new String[0];
-		String[] strKeys=new String[keys.length];
-		for(int i=0	;i<columns.length;i++) {
-			strKeys[i]=keys[i].getString();
-		}
-		return strKeys;
-	}
+	
 
 	/**
 	 * @see railo.runtime.type.Collection#removeEL(java.lang.String)
