@@ -9734,6 +9734,14 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			- query: default for all dbtype expect "hql", returns a query object
 			- array_of_entity: works only with dbtype "hql" and is also the default value for dbtype "hql"</description>
 		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>timezone</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+			the timezone used to convert a date object to a timestamp (string), this value is needed when your database runs in another timezone and you are not using cfqueryparam to to insert dates.</description>
+		</attribute>
 	</tag>
 	<!-- QueryParam -->
 	<tag>
