@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 
 import railo.aprint;
 import railo.commons.collections.HashTable;
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
@@ -1716,6 +1717,7 @@ public final class ConfigWebFactory {
             ,DataSource.ALLOW_ALL
             ,false
             ,false
+            ,null
             ,new StructImpl()
 		);
 
@@ -1780,6 +1782,7 @@ public final class ConfigWebFactory {
                         ,toInt(dataSource.getAttribute("allow"),DataSource.ALLOW_ALL)
                         ,toBoolean(dataSource.getAttribute("validate"),false)
                         ,toBoolean(dataSource.getAttribute("storage"),false)
+                        ,dataSource.getAttribute("timezone")
                         ,toStruct(dataSource.getAttribute("custom"))
     				);
 			  	}
@@ -1996,7 +1999,6 @@ public final class ConfigWebFactory {
 
 	private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		boolean hasCS=configServer!=null;
-        
 		if(!hasCS) return;
 		ConfigWebImpl cw=(ConfigWebImpl) config;
 		
@@ -2122,21 +2124,24 @@ public final class ConfigWebFactory {
     }
 
 
-    private static void setDatasource(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
+    private static void setDatasource(ConfigImpl config,Map<String,DataSource> datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) throws ClassException {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,
+            boolean validate,boolean storage,String timezone, Struct custom) throws ClassException {
 		
         
 		datasources.put(datasourceName.toLowerCase(),
-          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,metaCacheTimeout,blob,clob, allow,custom, false,validate,storage));
+          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,
+        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,TimeZoneUtil.toTimeZone(timezone,null)));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,
+            boolean storage,String timezone, Struct custom) {
     	try {
 			setDatasource(config,datasources,datasourceName,className, server, 
-			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, validate,storage,custom);
+			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, validate,storage,timezone,custom);
 		} catch (Throwable t) {}
     }
     
