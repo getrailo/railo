@@ -2741,22 +2741,6 @@ public final class Caster {
 		if(q instanceof QueryPro)return (QueryPro) q;
 		return defaultValue;
 	}
-    
-
-    /* *
-     * cast a query to a QueryImpl Object
-     * @param q query to cast
-     * @return casted Query Object
-     * @throws CasterException 
-     * /
-    public static QueryImpl toQueryImpl(Query q,QueryImpl defaultValue) {
-		while(q instanceof QueryWrap){
-			q=((QueryWrap)q).getQuery();
-		}
-		
-		if(q instanceof QueryImpl)return (QueryImpl) q;
-		return defaultValue;
-	}*/
 
     /**
      * cast a Object to a Query Object
