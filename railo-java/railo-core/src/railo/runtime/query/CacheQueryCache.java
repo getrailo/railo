@@ -17,6 +17,7 @@ import railo.runtime.db.SQL;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.QueryPro;
 
  class CacheQueryCache extends QueryCacheSupport {
 	
@@ -123,13 +124,13 @@ import railo.runtime.type.QueryImpl;
     	String key;
     	CacheEntry entry;
     	QueryCacheEntry ce;
-    	QueryImpl q;
+    	QueryPro q;
     	while(it.hasNext()){
 			entry=(CacheEntry) it.next();
 			if(!(entry.getValue() instanceof QueryCacheEntry)) continue;
 			ce=(QueryCacheEntry) entry.getValue();
-			if(!(ce.getValue() instanceof QueryImpl)) continue;
-			q=(QueryImpl) ce.getValue();
+			if(!(ce.getValue() instanceof QueryPro)) continue;
+			q=(QueryPro) ce.getValue();
 			key=entry.getKey();
     		if(filter.accept(q.getSql().toString())){
 				c.remove(key);

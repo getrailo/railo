@@ -1,5 +1,6 @@
 package railo.runtime.type;
 
+import railo.runtime.db.SQL;
 import railo.runtime.exp.ExpressionException;
 
 // FUTURE move everything to interface query and delete querypro
@@ -23,4 +24,6 @@ public interface QueryPro extends Query {
 	public String[] getColumnNamesAsString();
 	
 	public Query getGeneratedKeys();
+	
+	public SQL getSql();
 }
