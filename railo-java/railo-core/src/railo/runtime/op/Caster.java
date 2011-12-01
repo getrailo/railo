@@ -4210,6 +4210,18 @@ public final class Caster {
 		return value;
 	}
 
+	public static CharSequence toCharSequence(Object obj) throws PageException {
+		if(obj instanceof CharSequence) return (CharSequence) obj;
+		return Caster.toString(obj);
+	}
+
+	public static CharSequence toCharSequence(Object obj, CharSequence defaultValue) {
+		if(obj instanceof CharSequence) return (CharSequence) obj;
+		String str = Caster.toString(obj,null);
+		if(str==null) return defaultValue;
+		return str;
+	}
+
 
 	
 	
