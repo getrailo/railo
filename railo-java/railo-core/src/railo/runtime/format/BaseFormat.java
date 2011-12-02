@@ -1,7 +1,6 @@
 package railo.runtime.format;
 
 import java.text.DateFormatSymbols;
-import java.util.Date;
 import java.util.Locale;
 
 public abstract class BaseFormat implements Format {

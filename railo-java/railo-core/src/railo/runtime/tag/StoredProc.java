@@ -25,7 +25,6 @@ import railo.runtime.db.ProcMetaCollection;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItemImpl;
-import railo.runtime.debug.Debugger;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;

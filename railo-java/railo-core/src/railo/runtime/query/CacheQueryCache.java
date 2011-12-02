@@ -16,7 +16,6 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.SQL;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
 import railo.runtime.type.QueryPro;
 
  class CacheQueryCache extends QueryCacheSupport {

@@ -2,7 +2,6 @@ package railo.commons.net;
 
 import org.apache.commons.httpclient.Cookie;
 
-import railo.commons.lang.StringUtil;
 import railo.runtime.net.http.ReqRspUtil;
 
 public class CookieUtil {
