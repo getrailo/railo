@@ -61,14 +61,11 @@ public final class GetComponentMetaData implements Function {
 			meta=getMetaData(pc,obj);
 			config.putComponentMetadata(key, new ConfigImpl.ComponentMetaData(meta,lastMod));
 		}
-		else 
+		else {
+			Struct tmp = getMetaData(pc,obj);
 			meta=data.meta;
-		/*else {
-			Key[] keys = metadata.keys();
-			for(int i=0;i<keys.length;i++){
-				meta.setEL(keys[i],metadata.get(keys[i],null));
-			}
-		}*/
+			meta.setEL("functions", tmp.get("functions"));
+		}
 		return meta;
 	}
 
