@@ -13,6 +13,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -574,7 +575,7 @@ public class Input extends TagImpl {
      * @param name The name to set.
      */
     public void setName(String name) {
-        attributes.setEL("name",name);
+        attributes.setEL(KeyImpl.NAME,name);
         input.setName(name);
     }
     /**

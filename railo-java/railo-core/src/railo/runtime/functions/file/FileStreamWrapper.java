@@ -13,6 +13,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -71,10 +72,10 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 		if(info==null) {
 			info=new StructImpl();
 			info.setEL("mode", getMode());
-			info.setEL("name", res.getName());
-			info.setEL("path", res.getParent());
+			info.setEL(KeyImpl.NAME, res.getName());
+			info.setEL(KeyImpl.PATH, res.getParent());
 			info.setEL("status", getStatus());
-			info.setEL("size", getSize()+" bytes");
+			info.setEL(KeyImpl.SIZE, getSize()+" bytes");
 			info.setEL("lastmodified", getLastmodified());
 		}
 		

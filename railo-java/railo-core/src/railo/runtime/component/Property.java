@@ -177,15 +177,15 @@ public final class Property extends MemberSupport implements ASMProperty {
 
 	public Object getMetaData() {
 		Struct sct=new StructImpl();
-		sct.setEL("name",name);
-		if(!StringUtil.isEmpty(hint))sct.setEL("hint",hint);
+		sct.setEL(KeyImpl.NAME,name);
+		if(!StringUtil.isEmpty(hint))sct.setEL(KeyImpl.HINT,hint);
 		if(!StringUtil.isEmpty(displayname))sct.setEL("displayname",displayname);
-		if(!StringUtil.isEmpty(type))sct.setEL("type",type);
+		if(!StringUtil.isEmpty(type))sct.setEL(KeyImpl.TYPE,type);
 		Iterator it = meta.keySet().iterator();
 		Object key;
 		while(it.hasNext()) {
 			key=it.next();
-			sct.setEL(key.toString(),meta.get(key));
+			sct.setEL(KeyImpl.init(key.toString()),meta.get(key));
 		}
 		return sct;
 	}

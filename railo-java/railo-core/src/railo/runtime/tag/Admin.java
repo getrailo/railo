@@ -2692,13 +2692,13 @@ private void doGetMappings() throws PageException {
     			String returnVariable=getString("admin",action,"returnVariable");
     			pageContext.setVariable(returnVariable,sct);
 
-    			sct.setEL("name", qry.getAt("name", row, ""));
+    			sct.setEL(KeyImpl.NAME, qry.getAt(KeyImpl.NAME, row, ""));
     			sct.setEL("level", qry.getAt("level", row, ""));
     			sct.setEL("virtualpath", qry.getAt("virtualpath", row, ""));
     			sct.setEL("class", qry.getAt("class", row, ""));
     			sct.setEL("maxFile", qry.getAt("maxFile", row, ""));
     			sct.setEL("maxFileSize", qry.getAt("maxFileSize", row, ""));
-    			sct.setEL("path", qry.getAt("path", row, ""));
+    			sct.setEL(KeyImpl.PATH, qry.getAt(KeyImpl.PATH, row, ""));
     			
     			return;
     		}
@@ -2991,7 +2991,7 @@ private void doGetMappings() throws PageException {
         if(cc!=null){
         	Struct sct=new StructImpl();
             
-            sct.setEL("name",cc.getName());
+            sct.setEL(KeyImpl.NAME,cc.getName());
             sct.setEL("class",cc.getClazz().getName());
             sct.setEL("custom",cc.getCustom());
             sct.setEL("default",Caster.toBoolean(true));
@@ -3025,7 +3025,7 @@ private void doGetMappings() throws PageException {
                 else if(cc==dTmp)d="template";
                 else if(cc==dQry)d="query";
                 else if(cc==dRes)d="resource";
-                sct.setEL("name",cc.getName());
+                sct.setEL(KeyImpl.NAME,cc.getName());
                 sct.setEL("class",cc.getClazz().getName());
                 sct.setEL("custom",cc.getCustom());
                 sct.setEL("default",d);
@@ -3077,7 +3077,7 @@ private void doGetMappings() throws PageException {
                 DataSourceImpl d=(DataSourceImpl) ds.get(key);
                 Struct sct=new StructImpl();
                 
-                sct.setEL("name",key);
+                sct.setEL(KeyImpl.NAME,key);
                 sct.setEL("host",d.getHost());
                 sct.setEL("classname",d.getClazz().getName());
                 sct.setEL("dsn",d.getDsnOriginal());
