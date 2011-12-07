@@ -13440,8 +13440,8 @@ _- asc (default): ascending (a to z) sort order
 		<class>railo.runtime.functions.other.SystemOutput</class>
 		<description>writes the given string to the output stream</description>
 		<argument>
-			<name>str</name>
-			<type>string</type>
+			<name>obj</name>
+			<type>Object</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
