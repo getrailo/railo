@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -125,13 +126,15 @@ public final class SMTPClient implements Serializable  {
 	
 	ProxyData proxyData=new ProxyDataImpl();
 	private ArrayList<MailPart> parts;
+
+	private TimeZone timeZone;
 	
 	
-	public static String getNow(Config config){
-		TimeZone tz = ThreadLocalPageContext.getTimeZone(config);
+	public static String getNow(TimeZone tz){
+		tz = ThreadLocalPageContext.getTimeZone(tz);
 		SimpleDateFormat df=formatters.get(tz);
 		if(df==null) {
-			df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+			df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)",Locale.US);
 			df.setTimeZone(tz);
 			formatters.put(tz, df);
 		}
@@ -492,7 +495,7 @@ public final class SMTPClient implements Serializable  {
 		}
 		msg.setHeader("X-Mailer", xmailer);
 		
-		msg.setHeader("Date",getNow(config)); 
+		msg.setHeader("Date",getNow(timeZone)); 
 	    //msg.setSentDate(new Date());
 			
 	    Multipart mp=null;
@@ -907,5 +910,10 @@ public final class SMTPClient implements Serializable  {
 	public void setPart(MailPart part) {
 		if(parts==null) parts=new ArrayList<MailPart>();
 		parts.add(part);
+	}
+
+
+	public void setTimeZone(TimeZone timeZone) {
+		this.timeZone=timeZone;
 	}
 }
