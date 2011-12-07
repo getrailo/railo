@@ -7,7 +7,6 @@ import java.util.List;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
-import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
