@@ -26,4 +26,8 @@ public interface QueryPro extends Query {
 	public Query getGeneratedKeys();
 	
 	public SQL getSql();
+
+	public String getTemplate();
+
+	public long getExecutionTime();
 }

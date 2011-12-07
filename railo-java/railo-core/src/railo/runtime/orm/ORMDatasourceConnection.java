@@ -85,6 +85,11 @@ public class ORMDatasourceConnection implements DatasourceConnectionPro {
 	}
 
 	@Override
+	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+		return getConnection().prepareStatement(sql.getSQLString(),resultSetType,resultSetConcurrency);
+	}
+
+	@Override
 	public void close() throws SQLException {
 		getConnection().close();
 	}

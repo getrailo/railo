@@ -28,7 +28,6 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,7 +41,6 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.CFTypes;
-import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
@@ -50,21 +48,14 @@ import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpRow;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -1166,65 +1157,9 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		maxlevel--;
-		String[] keys=keysAsString();
-		DumpData[] heads=new DumpData[keys.length+1];
-		//int tmp=1;
-		heads[0]=new SimpleDumpData("");
-		for(int i=0;i<keys.length;i++) {
-			heads[i+1]=new SimpleDumpData(keys[i]);
-		}
-		
-		StringBuilder comment=new StringBuilder(); 
-		
-		//table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
-		if(!StringUtil.isEmpty(template))
-			comment.append("Template:").append(template).append("\n");
-		//table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
-		
-		comment.append("Execution Time (ms):").append(Caster.toString(exeTime)).append("\n");
-		comment.append("Recordcount:").append(Caster.toString(getRecordcount())).append("\n");
-		comment.append("Cached:").append(isCached()?"Yes\n":"No\n");
-		if(sql!=null)
-			comment.append("SQL:").append("\n").append(StringUtil.suppressWhiteSpace(sql.toString().trim())).append("\n");
-		
-		//table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
-		//table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
-		//table.appendRow(1, new SimpleDumpData("cached"), new SimpleDumpData(isCached()?"Yes":"No"));
-		
-		
-		
-		DumpTable recs=new DumpTablePro("query","#cc99cc","#ffccff","#000000");
-		recs.setTitle("Query");
-		if(dp.getMetainfo())recs.setComment(comment.toString());
-		recs.appendRow(new DumpRow(-1,heads));
-		
-		// body
-		DumpData[] items;
-		for(int i=0;i<recordcount;i++) {
-			items=new DumpData[columncount+1];
-			items[0]=new SimpleDumpData(i+1);
-			for(int y=0;y<keys.length;y++) {
-				try {
-					Object o=getAt(keys[y],i+1);
-					if(o instanceof String)items[y+1]=new SimpleDumpData(o.toString());
-                    else if(o instanceof Number) items[y+1]=new SimpleDumpData(Caster.toString(((Number)o).doubleValue()));
-                    else if(o instanceof Boolean) items[y+1]=new SimpleDumpData(((Boolean)o).booleanValue());
-                    else if(o instanceof Date) items[y+1]=new SimpleDumpData(Caster.toString(o));
-                    else if(o instanceof Clob) items[y+1]=new SimpleDumpData(Caster.toString(o));								
-					else items[y+1]=DumpUtil.toDumpData(o, pageContext,maxlevel,dp);
-				} catch (PageException e) {
-					items[y+1]=new SimpleDumpData("[empty]");
-				}
-			}
-			recs.appendRow(new DumpRow(1,items));
-		}
-		if(!dp.getMetainfo()) return recs;
-		
-		//table.appendRow(1, new SimpleDumpData("result"), recs);
-		return recs;
+		return QueryUtil.toDumpData(this, pageContext, maxlevel, dp);
 	}
-
+	
 	/**
 	 * sorts a query by a column
 	 * @param column colun to sort
@@ -1931,7 +1866,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
     	Struct column;
         for(int i=0;i<columns.length;i++) {
         	column=new StructImpl();
-        	column.setEL("name",columnNames[i].getString());
+        	column.setEL(KeyImpl.NAME,columnNames[i].getString());
         	column.setEL("isCaseSensitive",Boolean.FALSE);
         	column.setEL("typeName",columns[i].getTypeAsString());
         	cols.appendEL(column);
@@ -3541,4 +3476,38 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			columns[i]=columns[i].toDebugColumn();
 		}
 	}
+
+	public long getExecutionTime() {
+		return exeTime;
+	}
+	
+	public static QueryImpl cloneQuery(QueryPro qry,boolean deepCopy) {
+        QueryImpl newResult=new QueryImpl();
+        ThreadLocalDuplication.set(qry, newResult);
+        try{
+	        
+    	    newResult.columnNames=qry.getColumnNames();
+	        newResult.columns=new QueryColumnPro[newResult.columnNames.length];
+	        QueryColumnPro col;
+	        for(int i=0;i<newResult.columnNames.length;i++) {
+	        	col = (QueryColumnPro) qry.getColumn(newResult.columnNames[i],null);
+	        	newResult.columns[i]=col.cloneColumn(newResult,deepCopy);
+	        }
+	        
+		        
+		    newResult.sql=qry.getSql();
+	        newResult.template=qry.getTemplate();
+	        newResult.recordcount=qry.getRecordcount();
+	        newResult.columncount=newResult.columnNames.length;
+	        newResult.isCached=qry.isCached();
+	        newResult.name=qry.getName();
+	        newResult.exeTime=qry.getExecutionTime();
+	        newResult.updateCount=qry.getUpdateCount();
+	        if(qry.getGeneratedKeys()!=null)newResult.generatedKeys=((QueryImpl)qry.getGeneratedKeys()).cloneQuery(false);
+	        return newResult;
+        }
+        finally {
+        	ThreadLocalDuplication.remove(qry);
+        }
+    }
 }

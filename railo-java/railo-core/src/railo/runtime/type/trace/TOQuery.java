@@ -2267,4 +2267,14 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 		return qry.getSql();
 	}
 
+	@Override
+	public String getTemplate() {
+		return qry.getTemplate();
+	}
+
+	@Override
+	public long getExecutionTime() {
+		return qry.getExecutionTime();
+	}
+
 }

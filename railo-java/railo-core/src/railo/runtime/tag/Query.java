@@ -39,6 +39,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.query.SimpleQuery;
 
 
 
@@ -117,6 +118,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private int returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
 	private TimeZone timezone;
 	private TimeZone tmpTZ;
+	private boolean lazy;
 	
 	
 	
@@ -149,6 +151,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
 		timezone=null;
 		tmpTZ=null;
+		lazy=false;
 	}
 	
 	
@@ -250,6 +253,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		else clearCache=true;
 	}
 	
+	public void setLazy(boolean lazy)	{
+		this.lazy=lazy;
+	}
+
 	/** set the value providerdsn
 	*  Data source name for the COM provider, OLE-DB only.
 	* @param providerdsn value to set
@@ -467,7 +474,6 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			else query=executeDatasoure(sql,result!=null);
 			//query=(dbtype!=null && dbtype.equals("query"))?executeQoQ(sql):executeDatasoure(sql,result!=null);
 			
-			
 			if(cachedWithin!=null) {
 				DateTimeImpl cachedBefore = null;
 				//if(cachedWithin!=null)
@@ -609,6 +615,10 @@ cachename: Name of the cache in secondary cache.
 		DatasourceManagerImpl manager = (DatasourceManagerImpl) pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
+			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
+				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());
+			
+			
 			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData);
 		}
 		finally {
@@ -630,5 +640,4 @@ cachename: Name of the cache in secondary cache.
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
-
 }
