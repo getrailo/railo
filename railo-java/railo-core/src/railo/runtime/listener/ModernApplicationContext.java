@@ -1,6 +1,5 @@
 package railo.runtime.listener;
 
-import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
