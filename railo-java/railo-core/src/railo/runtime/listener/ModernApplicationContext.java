@@ -191,7 +191,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 * @see railo.runtime.util.ApplicationContext#hasName()
 	 */
 	public boolean hasName() {
-		return !StringUtil.isEmpty(getName());
+		return true;//!StringUtil.isEmpty(getName());
 	}
 	
 	/**

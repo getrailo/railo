@@ -4,11 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.activation.DataHandler;
 import javax.mail.Authenticator;
@@ -23,6 +26,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
 
+import org.apache.commons.collections.ReferenceMap;
+
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
@@ -34,6 +39,7 @@ import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.mail.EmailNamePair;
@@ -77,6 +83,8 @@ public final class SMTPClient implements Serializable  {
 	private static final String TEXT_HTML = "text/html";
 	private static final String TEXT_PLAIN = "text/plain";
 	private static final SerializableObject LOCK = new SerializableObject();
+
+	private static Map<TimeZone, SimpleDateFormat> formatters=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	//private static final int PORT = 25; 
 	
 	private int spool=SPOOL_UNDEFINED;
@@ -117,6 +125,19 @@ public final class SMTPClient implements Serializable  {
 	
 	ProxyData proxyData=new ProxyDataImpl();
 	private ArrayList<MailPart> parts;
+	
+	
+	public static String getNow(Config config){
+		TimeZone tz = ThreadLocalPageContext.getTimeZone(config);
+		SimpleDateFormat df=formatters.get(tz);
+		if(df==null) {
+			df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+			df.setTimeZone(tz);
+			formatters.put(tz, df);
+		}
+		return df.format(new Date());
+	}
+	
 	
 	public void setSpoolenable(boolean spoolenable) {
 		spool=spoolenable?SPOOL_YES:SPOOL_NO;
@@ -213,7 +234,7 @@ public final class SMTPClient implements Serializable  {
 	 * @see mail.Mail#addTo(java.lang.String)
 	 */
 	public void addTo(Object to) throws AddressException, UnsupportedEncodingException, PageException, MailException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddress(to);
+		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(to);
 		for(int i=0;i<tmp.length;i++) {
 			addTo(tmp[i]);
 		}
@@ -234,7 +255,7 @@ public final class SMTPClient implements Serializable  {
 	 * @see mail.Mail#setFrom(java.lang.String)
 	 */
 	public void setFrom(Object from) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] addrs = EmailNamePair.toInternetAddress(from);
+		InternetAddress[] addrs = EmailNamePair.toInternetAddresses(from);
 		if(addrs.length==0) return;
 		setFrom(addrs[0]);
 	}
@@ -253,7 +274,7 @@ public final class SMTPClient implements Serializable  {
 	 * @see mail.Mail#addBCC(java.lang.String)
 	 */
 	public void addBCC(Object bcc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddress(bcc);
+		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(bcc);
 		for(int i=0;i<tmp.length;i++) {
 			addBCC(tmp[i]);
 		}
@@ -274,7 +295,7 @@ public final class SMTPClient implements Serializable  {
 	 * @see mail.Mail#addCC(java.lang.String)
 	 */
 	public void addCC(Object cc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddress(cc);
+		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(cc);
 		for(int i=0;i<tmp.length;i++) {
 			addCC(tmp[i]);
 		}
@@ -295,7 +316,7 @@ public final class SMTPClient implements Serializable  {
 	 * @see mail.Mail#addReplyTo(java.lang.String)
 	 */
 	public void addReplyTo(Object rt) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddress(rt);
+		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(rt);
 		for(int i=0;i<tmp.length;i++) {
 			addReplyTo(tmp[i]);
 		}
@@ -323,7 +344,7 @@ public final class SMTPClient implements Serializable  {
 	 * @see mail.Mail#addFailTo(java.lang.String)
 	 */
 	public void addFailTo(Object ft) throws AddressException, UnsupportedEncodingException, MailException, PageException {
-		InternetAddress[] tmp = EmailNamePair.toInternetAddress(ft);
+		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(ft);
 		for(int i=0;i<tmp.length;i++) {
 			addFailTo(tmp[i]);
 		}
@@ -469,8 +490,10 @@ public final class SMTPClient implements Serializable  {
 		} catch (UnsupportedEncodingException e) {
 			throw new MessagingException("the encoding "+charset+" is not supported");
 		}
-	    msg.setHeader("X-Mailer", xmailer);
-	    msg.setSentDate(new Date());
+		msg.setHeader("X-Mailer", xmailer);
+		
+		msg.setHeader("Date",getNow(config)); 
+	    //msg.setSentDate(new Date());
 			
 	    Multipart mp=null;
 	    
