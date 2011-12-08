@@ -31,10 +31,16 @@ public final class SystemOutput implements Function {
     	PrintStream stream = System.out;
     	//string+=":"+Thread.currentThread().getId();
     	if(doErrorStream) stream = System.err;
-        if(string!=null && StringUtil.indexOfIgnoreCase(string,"<print-stack-trace>")!=-1){
-        	String st = ExceptionUtil.getStacktrace(new Exception("Stack trace"), false);
-        	string=StringUtil.replace(string, "<print-stack-trace>", "\n"+st+"\n", true).trim();
-        }
+    	if(string!=null) {
+	    	if(StringUtil.indexOfIgnoreCase(string,"<print-stack-trace>")!=-1){
+	        	String st = ExceptionUtil.getStacktrace(new Exception("Stack trace"), false);
+	        	string=StringUtil.replace(string, "<print-stack-trace>", "\n"+st+"\n", true).trim();
+	        }
+	    	if(StringUtil.indexOfIgnoreCase(string,"<hash-code>")!=-1){
+	        	String st = obj.hashCode()+"";
+	        	string=StringUtil.replace(string, "<hash-code>", st, true).trim();
+	        }
+    	}
         if(addNewLine)stream.println(string);
         else stream.print(string);
         
