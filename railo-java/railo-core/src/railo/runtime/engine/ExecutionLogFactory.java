@@ -25,4 +25,8 @@ public class ExecutionLogFactory {
 		el.init(pc, arguments);
 		return el;
 	}
+	
+	public String toString(){
+		return super.toString()+":"+clazz.getName();
+	}
 }
