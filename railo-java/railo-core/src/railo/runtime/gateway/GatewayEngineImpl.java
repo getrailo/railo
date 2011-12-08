@@ -147,7 +147,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void start(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.START);
 	}
-	private void start(Gateway gateway) throws PageException {
+	private void start(Gateway gateway) {
 		executeThread(gateway,GatewayThread.START);
 	}
 
@@ -166,7 +166,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	
 
 
-	public void reset() throws PageException {
+	public void reset() {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		Entry<String, GatewayEntry> entry;
 		GatewayEntry ge;

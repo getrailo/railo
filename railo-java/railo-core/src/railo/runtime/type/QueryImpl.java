@@ -3479,7 +3479,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return exeTime;
 	}
 	
-	public static QueryImpl cloneQuery(QueryPro qry,boolean deepCopy) {
+	public static QueryImpl cloneQuery(Query qry,boolean deepCopy) {
         QueryImpl newResult=new QueryImpl();
         ThreadLocalDuplication.set(qry, newResult);
         try{

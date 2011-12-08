@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.Map;
 
+import railo.runtime.db.SQL;
 import railo.runtime.exp.PageException;
 
 /**
@@ -320,5 +321,13 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	public String[] getColumnNamesAsString();
 	
 	public Query getGeneratedKeys();
+	
+	public SQL getSql();
+
+	public String getTemplate();
+
+	public long getExecutionTime();
+	
+	
 	
 }

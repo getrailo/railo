@@ -375,11 +375,9 @@ public final class Page extends BodyBase {
      */
     public byte[] execute(Resource classFile) throws BytecodeException {
     	
-    	try {
-    		Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
-            this.externalizer=new StringExternalizerWriter(p);
-		} catch (IOException e) {}
-    	
+    	Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
+        this.externalizer=new StringExternalizerWriter(p);
+		
     	List keys=new ArrayList();
     	ClassWriter cw = ASMUtil.getClassWriter(); 
     	//ClassWriter cw = new ClassWriter(true);

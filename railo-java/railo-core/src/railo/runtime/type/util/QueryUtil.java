@@ -14,7 +14,6 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.DatabaseException;
@@ -105,7 +104,7 @@ public class QueryUtil {
         }
     }
 
-	public static DumpData toDumpData(QueryPro query,PageContext pageContext, int maxlevel, DumpProperties dp) {
+	public static DumpData toDumpData(Query query,PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
 		Collection.Key[] keys=query.keys();
 		DumpData[] heads=new DumpData[keys.length+1];
@@ -138,7 +137,7 @@ public class QueryUtil {
 		
 		
 		
-		DumpTable recs=new DumpTablePro("query","#cc99cc","#ffccff","#000000");
+		DumpTable recs=new DumpTable("query","#cc99cc","#ffccff","#000000");
 		recs.setTitle("Query");
 		if(dp.getMetainfo())recs.setComment(comment.toString());
 		recs.appendRow(new DumpRow(-1,heads));

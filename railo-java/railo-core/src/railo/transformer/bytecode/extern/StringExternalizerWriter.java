@@ -13,7 +13,7 @@ public class StringExternalizerWriter {
 	private int offset=0;
 	private Resource res;
 	
-	public StringExternalizerWriter(Resource res) throws IOException{
+	public StringExternalizerWriter(Resource res) {
 		this.res=res;
 		if(res.exists())res.delete();
 	}

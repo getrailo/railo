@@ -57,7 +57,6 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryColumnRef;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -65,7 +64,7 @@ import railo.runtime.type.it.CollectionIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.QueryUtil;
 
-public class SimpleQuery implements QueryPro, ResultSet, Objects {
+public class SimpleQuery implements Query, ResultSet, Objects {
 	
 	static final Object DEFAULT_VALUE = new Object();
 	private ResultSet res;
@@ -113,7 +112,6 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	            setItems(preStat,items);
 		        hasResult=preStat.execute();    
 	        }
-			int uc;
 			ResultSet res;
 			
 			do {
@@ -122,8 +120,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 					init(res);
 					break;
 				}
-				else 
-					throw new ApplicationException("Simple queries can only be used for queries returning a resultset");
+				throw new ApplicationException("Simple queries can only be used for queries returning a resultset");
 			}
 			while(true);
 		} 
@@ -254,7 +251,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 * @see railo.runtime.type.QueryImpl#remove(java.lang.String)
 	 */
 	
-	public synchronized Object remove(String key) throws PageException {
+	public synchronized Object remove(String key) {
 		throw notSupported();
 	}
 
@@ -892,7 +889,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 * @see railo.runtime.type.QueryImpl#setColumnNames(railo.runtime.type.Collection.Key[])
 	 */
 	
-	public void setColumnNames(Key[] trg) throws PageException {
+	public void setColumnNames(Key[] trg) {
 		throw notSupported();
 	}
 

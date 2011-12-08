@@ -126,7 +126,7 @@ public class TimeZoneUtil {
 	public static TimeZone toTimeZone(String strTimezone,TimeZone defaultValue){
 		if(strTimezone==null) return defaultValue;
 		strTimezone=StringUtil.replace(strTimezone.trim().toLowerCase(), " ", "", false);
-		TimeZone tz = (TimeZone) IDS.get(strTimezone);
+		TimeZone tz = IDS.get(strTimezone);
 		if(tz!=null) return tz;
 		return defaultValue;
 	}
