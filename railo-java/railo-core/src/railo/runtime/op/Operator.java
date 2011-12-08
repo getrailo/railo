@@ -513,6 +513,8 @@ public final class Operator {
 		}
 		if(left instanceof Collection && right instanceof Collection)
 			return CollectionUtil.equals((Collection)left, (Collection)right);
+		
+		if(left==null) return right==null;
 		return left.equals(right);
 	}
 	
