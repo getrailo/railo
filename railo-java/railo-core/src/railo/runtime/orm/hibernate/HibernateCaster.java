@@ -36,8 +36,8 @@ public class HibernateCaster {
 	
 	private static final int NULL = -178696;
 	private static final Key ENTITY_NAME = KeyImpl.intern("entityname");
-	
-	public static Object toCFML(Object src) throws PageException {
+
+	public static Object toCFML(Object src) {
 		if(src==null) return null;
 		if(src instanceof Collection) return src;
 		
@@ -50,7 +50,7 @@ public class HibernateCaster {
 		return src;
 	}
 	
-	public static Array toCFML(List src) throws PageException {
+	public static Array toCFML(List src)  {
         int size=src.size();
         
         Array trg = new ArrayImpl();

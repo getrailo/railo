@@ -6,6 +6,8 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.hibernate.HibernateUtil;
 import railo.runtime.type.Collection;
@@ -13,6 +15,8 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
+import railo.runtime.type.util.ComponentUtil;
 
 public abstract class EventListener {
 
@@ -70,29 +74,31 @@ public abstract class EventListener {
     	Component c=allEvents?component:caller;
     	if(c==null) return;
     	
+    	if(!allEvents &&!caller.getPageSource().equals(component.getPageSource())) return;
+		invoke(name, c, data, allEvents?obj:null);
+    	
+	}
+    
+    public static void invoke(Key name, Component cfc, Struct data, Object arg) {
+    	if(cfc==null) return;
+    	
 		try {
 			PageContext pc = ThreadLocalPageContext.get();
 			Object[] args;
 			if(data==null) {
-				args=allEvents?new Object[]{obj}:new Object[]{};
+				args=arg!=null?new Object[]{arg}:new Object[]{};
 			}
 			else {
-				args=allEvents?new Object[]{obj,data}:new Object[]{data};
+				args=arg!=null?new Object[]{arg,data}:new Object[]{data};
 			}
-			
-			if(!allEvents && !caller.getPageSource().equals(component.getPageSource())) return;
-			
-			c.call(pc, name, args);
+			cfc.call(pc, name, args);
 		}
-		catch (Throwable e) {}
+		catch (PageException pe) {
+			throw new PageRuntimeException(pe);
+		}
 	}
-
-	/*private void print(ComponentPro c) {
-		print.e(c.getAbsName());
-		Property[] props = HBMCreator.getIds(null,null,c.getProperties(true),null,true);
-		for(int i=0;i<props.length;i++){
-			Object l = c.getComponentScope().get(KeyImpl.getInstance(props[i].getName()),null);
-			print.e("- "+l);
-		}
-	}*/
+    
+	public static boolean hasEventType(Component cfc, Collection.Key eventType) {
+		return cfc.get(eventType,null) instanceof UDF;
+	}
 }
