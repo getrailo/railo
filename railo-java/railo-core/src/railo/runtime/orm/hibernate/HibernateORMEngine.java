@@ -50,6 +50,7 @@ import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.event.AllEventListener;
 import railo.runtime.orm.hibernate.event.EventListener;
+import railo.runtime.orm.hibernate.event.InterceptorImpl;
 import railo.runtime.orm.hibernate.event.PostDeleteEventListenerImpl;
 import railo.runtime.orm.hibernate.event.PostInsertEventListenerImpl;
 import railo.runtime.orm.hibernate.event.PostLoadEventListenerImpl;
@@ -310,8 +311,9 @@ public class HibernateORMEngine implements ORMEngine {
 		        //config.setInterceptor(listener);
 			//}catch (PageException e) {e.printStackTrace();}
 		}
+		config.setInterceptor(new InterceptorImpl(listener));
         EventListeners listeners = config.getEventListeners();
-		
+        
         // post delete
 		List<EventListener> 
 		list=merge(listener,cfcs,EventListener.POST_DELETE);
@@ -325,7 +327,7 @@ public class HibernateORMEngine implements ORMEngine {
 		list=merge(listener,cfcs,EventListener.POST_UPDATE);
 		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
 		
-		// post update
+		// post load
 		list=merge(listener,cfcs,EventListener.POST_LOAD);
 		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
 		
@@ -334,19 +336,17 @@ public class HibernateORMEngine implements ORMEngine {
 		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
 		
 		// pre insert
-		list=merge(listener,cfcs,EventListener.PRE_INSERT);
-		listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
+		//list=merge(listener,cfcs,EventListener.PRE_INSERT);
+		//listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
 		
 		// pre load
 		list=merge(listener,cfcs,EventListener.PRE_LOAD);
 		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
 		
 		// pre update
-		list=merge(listener,cfcs,EventListener.PRE_UPDATE);
-		listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
-		
-
-    }
+		//list=merge(listener,cfcs,EventListener.PRE_UPDATE);
+		//listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
+	}
 
 	private static List<EventListener> merge(EventListener listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
 		List<EventListener> list=new ArrayList<EventListener>();
@@ -358,7 +358,7 @@ public class HibernateORMEngine implements ORMEngine {
 		while(it.hasNext()){
 			entry = it.next();
 			cfc = entry.getValue().getCFC();
-			if(is(cfc,eventType)) {
+			if(EventListener.hasEventType(cfc,eventType)) {
 				if(EventListener.POST_DELETE.equals(eventType))
 					list.add(new PostDeleteEventListenerImpl(cfc));
 				if(EventListener.POST_INSERT.equals(eventType))
@@ -380,14 +380,10 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 		
 		// general listener
-		if(listener!=null && is(listener.getCFC(),eventType))
+		if(listener!=null && EventListener.hasEventType(listener.getCFC(),eventType))
 			list.add(listener);
 		
 		return list;
-	}
-
-	private static boolean is(Component cfc, Collection.Key eventType) {
-		return cfc.get(eventType,null) instanceof UDF;
 	}
 
 	private Object hash(ApplicationContextPro appContext) {
