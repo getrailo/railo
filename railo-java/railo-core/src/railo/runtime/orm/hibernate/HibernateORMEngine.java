@@ -199,11 +199,14 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		//List<Component> arr = null;
 		arr=null;
-		if(init && ormConf.autogenmap()){
-			arr = HibernateSessionFactory.loadComponents(pc, this, ormConf);
-			cfcs.clear();
+		if(init){
+			if(ormConf.autogenmap()){
+				arr = HibernateSessionFactory.loadComponents(pc, this, ormConf);
+				cfcs.clear();
+			}
+			else 
+				throw new HibernateException(this,"orm setting autogenmap=false is not supported yet");
 		}
-		
 		
 		// load entities
 		if(!ArrayUtil.isEmpty(arr)) {
