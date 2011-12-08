@@ -147,6 +147,9 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void start(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.START);
 	}
+	private void start(Gateway gateway) throws PageException {
+		executeThread(gateway,GatewayThread.START);
+	}
 
 	/**
 	 * stop the gateway
@@ -160,7 +163,30 @@ public class GatewayEngineImpl implements GatewayEngine {
 		executeThread(gateway,GatewayThread.STOP);
 	}
 	
+	
 
+
+	public void reset() throws PageException {
+		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
+		Entry<String, GatewayEntry> entry;
+		GatewayEntry ge;
+		Gateway g;
+		while(it.hasNext()){
+			entry = it.next();
+			ge = entry.getValue();
+			g=ge.getGateway();
+			if(g.getState()==Gateway.RUNNING) {
+				try {
+					g.doStop();
+				} catch (GatewayException e) {
+					log(g, LOGLEVEL_ERROR, e.getMessage());
+				}
+			}
+			if(ge.getStartupMode()==GatewayEntry.STARTUP_MODE_AUTOMATIC)
+				start(g);
+			
+		}
+	}
 
 	public synchronized void clear() {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();

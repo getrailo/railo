@@ -304,6 +304,7 @@ public class ModernAppListener extends AppListenerSupport {
 	 * @see railo.runtime.listener.ApplicationListener#onDebug(railo.runtime.PageContext)
 	 */
 	public void onDebug(PageContext pc) throws PageException {
+		if(((PageContextImpl)pc).isGatewayContext()) return;
 		ComponentAccess app = (ComponentAccess) apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_DEBUG)) {
 			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData(pc)});

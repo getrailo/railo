@@ -363,7 +363,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 
                 
                 // thread
-                sctThread.setEL("name",thread.getName());
+                sctThread.setEL(KeyImpl.NAME,thread.getName());
                 sctThread.setEL("priority",Caster.toDouble(thread.getPriority()));
                 data.setEL("TagContext",PageExceptionImpl.getTagContext(pc.getConfig(),thread.getStackTrace() ));
 
@@ -376,7 +376,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 data.setEL("requestid", pc.getId());
 
                 // Scopes
-                scopes.setEL("name", pc.getApplicationContext().getName());
+                scopes.setEL(KeyImpl.NAME, pc.getApplicationContext().getName());
                 try {
 					scopes.setEL("application", pc.applicationScope());
 				} catch (PageException e) {}

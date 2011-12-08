@@ -11,6 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -95,14 +96,14 @@ public final class Select extends BodyTagImpl {
      * @param name The name to set.
      */
     public void setName(String name) {
-        attributes.setEL("name",name);
+        attributes.setEL(KeyImpl.NAME,name);
         input.setName(name);
     }
     /**
      * @param size The size to set.
      */
     public void setSize(double size) {
-        attributes.setEL("size",Caster.toString(size));
+        attributes.setEL(KeyImpl.SIZE,Caster.toString(size));
     }
     /**
      * @param tabindex The tabindex to set.
@@ -114,7 +115,7 @@ public final class Select extends BodyTagImpl {
      * @param title The title to set.
      */
     public void setTitle(String title) {
-        attributes.setEL("title",title);
+        attributes.setEL(KeyImpl.TITLE,title);
     }
     /**
      * @param title The title to set.

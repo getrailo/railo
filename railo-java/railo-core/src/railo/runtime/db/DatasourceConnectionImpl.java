@@ -171,6 +171,28 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		preparedStatements.put(key,ps);
 		return ps;
 	}
+	
+
+	/**
+	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
+	 */
+	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException {
+		// create key
+		String strSQL=sql.getSQLString();
+		String key=strSQL.trim()+":"+resultSetType+":"+resultSetConcurrency;
+		try {
+			key = MD5.getDigestAsString(key);
+		} catch (IOException e) {}
+		PreparedStatement ps = preparedStatements.get(key);
+		if(ps!=null) return ps;
+		
+		ps=getConnection().prepareStatement(strSQL,resultSetType,resultSetConcurrency);
+		if(preparedStatements.size()>MAX_PS)
+			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
+		preparedStatements.put(key,ps);
+		return ps;
+	}
+	
 
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#close()

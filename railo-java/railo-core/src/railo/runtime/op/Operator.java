@@ -1,5 +1,6 @@
 package railo.runtime.op;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
@@ -271,7 +272,10 @@ public final class Operator {
 			if(Decision.isNumeric(right)){
 				// long numbers
 				if(left.length()>9 || right.length()>9) {
-					return new BigDecimal(left).compareTo(new BigDecimal(right));
+					try{
+						return new BigDecimal(left).compareTo(new BigDecimal(right));
+					}
+					catch(Throwable t){}
 				}
 				return compare(Caster.toDoubleValue(left,Double.NaN),Caster.toDoubleValue(right,Double.NaN));
 			}
@@ -635,21 +639,20 @@ public final class Operator {
     
 
     /**
-     * concat to Strings
+     * concat 2 CharSequences
      * @param left
      * @param right
      * @return concated String
      */
-    public static String concat(String left,String right) {
-        int ll = left.length();
-        int rl = right.length();
-        int i;
-        
-        char[] chars=new char[ll+rl];
-        for(i=0;i<ll;i++)chars[i]=left.charAt(i);
-        for(i=0;i<rl;i++)chars[ll+i]=right.charAt(i);
-        return new String(chars);
-    }
+	public static CharSequence concat(CharSequence left, CharSequence right) {
+		if(left instanceof Appendable) {
+			try {
+				((Appendable)left).append(right);
+				return left;
+			} catch (IOException e) {}
+		}
+		return new StringBuilder(left).append(right);
+	}
 
     /**
      * plus operation
@@ -720,7 +723,6 @@ public final class Operator {
     public static double bitor(double left, double right) {
         return (int)left|(int)right;
     }
-    
     
 
     public static Double divRef(Object left, Object right) throws PageException {

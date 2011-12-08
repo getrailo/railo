@@ -10,6 +10,7 @@ import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.cache.CacheEvent;
 import railo.commons.io.cache.CacheEventListener;
 import railo.runtime.cache.CacheSupport;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 public abstract class EHCacheSupport extends CacheSupport implements Cache,CacheEvent {
@@ -51,7 +52,7 @@ public abstract class EHCacheSupport extends CacheSupport implements Cache,Cache
 		info.setEL("max_elements_on_disk", new Double(conf.getMaxElementsOnDisk()));
 		info.setEL("time_to_idle", new Double(conf.getTimeToIdleSeconds()));
 		info.setEL("time_to_live", new Double(conf.getTimeToLiveSeconds()));
-		info.setEL("name", conf.getName());
+		info.setEL(KeyImpl.NAME, conf.getName());
 		return info;
 	}
 

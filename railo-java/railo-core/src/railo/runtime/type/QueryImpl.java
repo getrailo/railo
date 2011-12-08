@@ -28,7 +28,6 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,7 +41,6 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.CFTypes;
-import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceUtil;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionImpl;
@@ -61,7 +59,6 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -81,6 +78,7 @@ import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.QueryUtil;
 
 /**
  * implementation of the query interface
@@ -203,7 +201,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		Statement stat=null;
 		// check SQL Restrictions
 		if(dc.getDatasource().hasSQLRestriction()) {
-            checkSQLRestriction(dc,sql);
+			QueryUtil.checkSQLRestriction(dc,sql);
         }
 		// check if datasource support Generated Keys
 		boolean createGeneratedKeys=createUpdateData;
@@ -348,39 +346,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-     * check if there is a sql restriction
-	 * @param ds
-	 * @param sql
-	 * @throws PageException 
-	 */
-	private static void checkSQLRestriction(DatasourceConnection dc, SQL sql) throws PageException {
-        Array sqlparts = List.listToArrayRemoveEmpty(
-        		SQLUtil.removeLiterals(sql.getSQLString())
-        		," \t"+System.getProperty("line.separator"));
-        
-        
-        
-        //print.ln(List.toStringArray(sqlparts));
-        DataSource ds = dc.getDatasource();
-        if(!ds.hasAllow(DataSource.ALLOW_ALTER))    checkSQLRestriction(dc,"alter",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_CREATE))   checkSQLRestriction(dc,"create",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_DELETE))   checkSQLRestriction(dc,"delete",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_DROP))     checkSQLRestriction(dc,"drop",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_GRANT))    checkSQLRestriction(dc,"grant",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_INSERT))   checkSQLRestriction(dc,"insert",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_REVOKE))   checkSQLRestriction(dc,"revoke",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_SELECT))   checkSQLRestriction(dc,"select",sqlparts,sql);
-        if(!ds.hasAllow(DataSource.ALLOW_UPDATE))   checkSQLRestriction(dc,"update",sqlparts,sql);        
-        
-    }
-
-    private static void checkSQLRestriction(DatasourceConnection dc, String keyword, Array sqlparts, SQL sql) throws PageException {
-        if(ArrayFind.find(sqlparts,keyword,false)>0) {
-            throw new DatabaseException("access denied to execute \""+StringUtil.ucFirst(keyword)+"\" SQL statment for datasource "+dc.getDatasource().getName(),null,sql,dc);
-        }
-    }
-
     private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys) throws SQLException, IOException, PageException {
     	if(result==null) return false;
     	recordcount=0;
@@ -475,7 +440,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return IOUtil.toString(clob.getCharacterStream());
 	}
 
-    private int getIndexFrom(Collection.Key[] tmpColumnNames, Collection.Key key, int from, int to) {
+    private static int getIndexFrom(Collection.Key[] tmpColumnNames, Collection.Key key, int from, int to) {
 		for(int i=from;i<to;i++) {
 			if(tmpColumnNames[i]!=null && tmpColumnNames[i].equalsIgnoreCase(key))return i;
 		}
@@ -717,17 +682,10 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see railo.runtime.type.Collection#keysAsString()
 	 */
 	public String[] keysAsString() {
-		return toString(columnNames);
+		return QueryUtil.toStringArray(columnNames);
 	}
 
-	private String[] toString(Collection.Key[] keys) {
-		if(keys==null) return new String[0];
-		String[] strKeys=new String[keys.length];
-		for(int i=0	;i<columns.length;i++) {
-			strKeys[i]=keys[i].getString();
-		}
-		return strKeys;
-	}
+	
 
 	/**
 	 * @see railo.runtime.type.Collection#removeEL(java.lang.String)
@@ -1197,65 +1155,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		maxlevel--;
-		String[] keys=keysAsString();
-		DumpData[] heads=new DumpData[keys.length+1];
-		//int tmp=1;
-		heads[0]=new SimpleDumpData("");
-		for(int i=0;i<keys.length;i++) {
-			heads[i+1]=new SimpleDumpData(keys[i]);
-		}
-		
-		StringBuilder comment=new StringBuilder(); 
-		
-		//table.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData(sql.toString()));
-		if(!StringUtil.isEmpty(template))
-			comment.append("Template:").append(template).append("\n");
-		//table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
-		
-		comment.append("Execution Time (ms):").append(Caster.toString(exeTime)).append("\n");
-		comment.append("Recordcount:").append(Caster.toString(getRecordcount())).append("\n");
-		comment.append("Cached:").append(isCached()?"Yes\n":"No\n");
-		if(sql!=null)
-			comment.append("SQL:").append("\n").append(StringUtil.suppressWhiteSpace(sql.toString().trim())).append("\n");
-		
-		//table.appendRow(1, new SimpleDumpData("Execution Time (ms)"), new SimpleDumpData(exeTime));
-		//table.appendRow(1, new SimpleDumpData("recordcount"), new SimpleDumpData(getRecordcount()));
-		//table.appendRow(1, new SimpleDumpData("cached"), new SimpleDumpData(isCached()?"Yes":"No"));
-		
-		
-		
-		DumpTable recs=new DumpTable("query","#cc99cc","#ffccff","#000000");
-		recs.setTitle("Query");
-		if(dp.getMetainfo())recs.setComment(comment.toString());
-		recs.appendRow(new DumpRow(-1,heads));
-		
-		// body
-		DumpData[] items;
-		for(int i=0;i<recordcount;i++) {
-			items=new DumpData[columncount+1];
-			items[0]=new SimpleDumpData(i+1);
-			for(int y=0;y<keys.length;y++) {
-				try {
-					Object o=getAt(keys[y],i+1);
-					if(o instanceof String)items[y+1]=new SimpleDumpData(o.toString());
-                    else if(o instanceof Number) items[y+1]=new SimpleDumpData(Caster.toString(((Number)o).doubleValue()));
-                    else if(o instanceof Boolean) items[y+1]=new SimpleDumpData(((Boolean)o).booleanValue());
-                    else if(o instanceof Date) items[y+1]=new SimpleDumpData(Caster.toString(o));
-                    else if(o instanceof Clob) items[y+1]=new SimpleDumpData(Caster.toString(o));								
-					else items[y+1]=DumpUtil.toDumpData(o, pageContext,maxlevel,dp);
-				} catch (PageException e) {
-					items[y+1]=new SimpleDumpData("[empty]");
-				}
-			}
-			recs.appendRow(new DumpRow(1,items));
-		}
-		if(!dp.getMetainfo()) return recs;
-		
-		//table.appendRow(1, new SimpleDumpData("result"), recs);
-		return recs;
+		return QueryUtil.toDumpData(this, pageContext, maxlevel, dp);
 	}
-
+	
 	/**
 	 * sorts a query by a column
 	 * @param column colun to sort
@@ -1962,7 +1864,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
     	Struct column;
         for(int i=0;i<columns.length;i++) {
         	column=new StructImpl();
-        	column.setEL("name",columnNames[i].getString());
+        	column.setEL(KeyImpl.NAME,columnNames[i].getString());
         	column.setEL("isCaseSensitive",Boolean.FALSE);
         	column.setEL("typeName",columns[i].getTypeAsString());
         	cols.appendEL(column);
@@ -3568,8 +3470,42 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
 	public synchronized void enableShowQueryUsage() {
-		for(int i=0;i<columns.length;i++){
+		if(columns!=null)for(int i=0;i<columns.length;i++){
 			columns[i]=columns[i].toDebugColumn();
 		}
 	}
+
+	public long getExecutionTime() {
+		return exeTime;
+	}
+	
+	public static QueryImpl cloneQuery(QueryPro qry,boolean deepCopy) {
+        QueryImpl newResult=new QueryImpl();
+        ThreadLocalDuplication.set(qry, newResult);
+        try{
+	        
+    	    newResult.columnNames=qry.getColumnNames();
+	        newResult.columns=new QueryColumnPro[newResult.columnNames.length];
+	        QueryColumnPro col;
+	        for(int i=0;i<newResult.columnNames.length;i++) {
+	        	col = (QueryColumnPro) qry.getColumn(newResult.columnNames[i],null);
+	        	newResult.columns[i]=col.cloneColumn(newResult,deepCopy);
+	        }
+	        
+		        
+		    newResult.sql=qry.getSql();
+	        newResult.template=qry.getTemplate();
+	        newResult.recordcount=qry.getRecordcount();
+	        newResult.columncount=newResult.columnNames.length;
+	        newResult.isCached=qry.isCached();
+	        newResult.name=qry.getName();
+	        newResult.exeTime=qry.getExecutionTime();
+	        newResult.updateCount=qry.getUpdateCount();
+	        if(qry.getGeneratedKeys()!=null)newResult.generatedKeys=((QueryImpl)qry.getGeneratedKeys()).cloneQuery(false);
+	        return newResult;
+        }
+        finally {
+        	ThreadLocalDuplication.remove(qry);
+        }
+    }
 }

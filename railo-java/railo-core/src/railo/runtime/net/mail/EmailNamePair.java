@@ -34,9 +34,6 @@ public final class EmailNamePair {
 	
 	static {
 		String email="([\\w\\._\\-\\%\\+\\'\\!\\#\\$\\%\\&]*@[\\w\\._\\-]*)";
-		
-		//^((?>[a-zA-Z\d!#$%&'*+\-/=?^_`{|}~]+\x20*|"((?=[\x01-\x7f])[^"\\]|\\[\x01-\x7f])*"\x20*)*(?<angle><))?((?!\.)(?>\.?[a-zA-Z\d!#$%&'*+\-/=?^_`{|}~]+)+|"((?=[\x01-\x7f])[^"\\]|\\[\x01-\x7f])*")@(((?!-)[a-zA-Z\d\-]+(?<!-)\.)+[a-zA-Z]{2,}|\[(((?(?<!\[)\.)(25[0-5]|2[0-4]\d|[01]?\d?\d)){4}|[a-zA-Z\d\-]*[a-zA-Z\d]:((?=[\x01-\x7f])[^\\\[\]]|\\[\x01-\x7f])+)\])(?(angle)>)$
-		
 		patterns[0]=Pattern.compile("^"+email+"\\s*\\(([^\\)]+)\\)$");
 		patterns[1]=Pattern.compile("^"+email+"\\s*:\\s*(.+)$");
 		patterns[2]=Pattern.compile("^([^:]+)\\s*:\\s*"+email+"$");
@@ -103,11 +100,25 @@ public final class EmailNamePair {
 	}
 
 
+	public static InternetAddress toInternetAddress(Object emails) throws MailException, AddressException, UnsupportedEncodingException, PageException {
+		if(emails instanceof String){
+			EmailNamePair pair = _factoryMail((String)emails);
+			if(!StringUtil.isEmpty(pair.getName()))return new InternetAddress(pair.getEmail(),pair.getName());
+			return new InternetAddress(pair.getEmail());
+		}
+		else {
+			InternetAddress[] addresses = toInternetAddresses(emails);
+			if(addresses!=null && addresses.length>0) return addresses[0];
+		}
+		return null;
+	}
 	
-	public static InternetAddress[] toInternetAddress(Object emails) throws MailException, AddressException, UnsupportedEncodingException, PageException {
+	
+	
+	public static InternetAddress[] toInternetAddresses(Object emails) throws MailException, AddressException, UnsupportedEncodingException, PageException {
 		EmailNamePair[] pairs=null;
 		if(emails instanceof String){
-			pairs = _factory((String)emails);
+			pairs = _factoryMailList((String)emails);
 		}
 		else if(Decision.isArray(emails)) {
 			pairs = _factory(Caster.toArray(emails));
@@ -164,7 +175,7 @@ public final class EmailNamePair {
 	 * @return parsed email n ame pairs
 	 * @throws MailException
 	 */
-	private static EmailNamePair[] _factory(String strEmails) throws MailException {
+	private static EmailNamePair[] _factoryMailList(String strEmails) throws MailException {
 		if(StringUtil.isEmpty(strEmails,true)) return new EmailNamePair[0];
 		Array raw = List.listWithQuotesToArray(strEmails,",;","\"");
 		
@@ -177,6 +188,12 @@ public final class EmailNamePair {
 			pairs.add(new EmailNamePair(address));
 		}
 		return pairs.toArray(new EmailNamePair[pairs.size()]);
+	}
+	
+
+	private static EmailNamePair _factoryMail(String strEmail) throws MailException {
+		if(StringUtil.isEmpty(strEmail,true)) return null;
+		return new EmailNamePair(strEmail);
 	}
 	
 

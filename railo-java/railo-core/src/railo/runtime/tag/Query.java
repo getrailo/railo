@@ -1,11 +1,15 @@
 package railo.runtime.tag;
 
 import java.util.ArrayList;
+import java.util.TimeZone;
 
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.db.DataSourceManager;
+import railo.runtime.db.DataSource;
+import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.DatasourceManagerImpl;
 import railo.runtime.db.HSQLDBHandler;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
@@ -13,6 +17,7 @@ import railo.runtime.db.SQLItem;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.op.Caster;
@@ -32,6 +37,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.query.SimpleQuery;
 
 
 
@@ -55,7 +61,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private String password;
 
 	/** The name of the data source from which this query should retrieve data. */
-	private String datasource=null;
+	private DataSource datasource=null;
 
 	/** The maximum number of milliseconds for the query to execute before returning an error 
 	** 		indicating that the query has timed-out. This attribute is not supported by most ODBC drivers. 
@@ -108,6 +114,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private boolean unique;
 	private Struct ormoptions;
 	private int returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
+	private TimeZone timezone;
+	private TimeZone tmpTZ;
+	private boolean lazy;
 	
 	
 	
@@ -138,6 +147,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		ormoptions=null;
 		returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
+		timezone=null;
+		tmpTZ=null;
+		lazy=false;
 	}
 	
 	
@@ -196,8 +208,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	*  The name of the data source from which this query should retrieve data.
 	* @param datasource value to set
 	**/
-	public void setDatasource(String datasource)	{
-		this.datasource=datasource;
+	public void setDatasource(String datasource) throws PageException	{
+		this.datasource=pageContext.getConfig().getDataSource(datasource);
 	}
 
 	/** set the value timeout
@@ -238,6 +250,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			this.cachedWithin=cachedwithin;
 		else clearCache=true;
 	}
+	
+	public void setLazy(boolean lazy)	{
+		this.lazy=lazy;
+	}
 
 	/** set the value providerdsn
 	*  Data source name for the COM provider, OLE-DB only.
@@ -254,6 +270,11 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	**/
 	public void setConnectstring(String connectstring) throws ApplicationException	{
 	    throw new ApplicationException("attribute connectstring (with value ["+connectstring+"]) is Deprecated");
+	}
+	
+
+	public void setTimezone(String timezone) throws ExpressionException	{
+	    this.timezone=TimeZoneUtil.toTimeZone(timezone);
 	}
 
 	/** set the value blockfactor
@@ -356,27 +377,47 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 
 
 	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
+	* @throws PageException 
+	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
-	public int doStartTag()	{
+	public int doStartTag() throws PageException	{
+		// default datasource
+		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
+			String str = pageContext.getApplicationContext().getDefaultDataSource();
+			if(StringUtil.isEmpty(str))
+				throw new ApplicationException(
+						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
+						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+			
+			datasource=pageContext.getConfig().getDataSource(str);
+		}
+		
+		
+		// timezone
+		if(timezone!=null || (datasource!=null && (timezone=((DataSourceImpl)datasource).getTimeZone())!=null)) {
+			tmpTZ=pageContext.getTimeZone();
+			pageContext.setTimeZone(timezone);
+		}
+		
+		
 		return EVAL_BODY_BUFFERED;
+	}
+	
+	/**
+	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
+	 */
+	public void doFinally() {
+		if(tmpTZ!=null) {
+			pageContext.setTimeZone(tmpTZ);
+		}
+		super.doFinally();
 	}
 
 	/**
 	* @throws PageException
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
-	public int doEndTag() throws PageException	{
-		
-		if(StringUtil.isEmpty(datasource) && (dbtype==null || !dbtype.equals("query"))){
-			datasource=pageContext.getApplicationContext().getDefaultDataSource();
-			if(StringUtil.isEmpty(datasource))
-				throw new ApplicationException(
-						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
-		}
-		
-		
+	public int doEndTag() throws PageException	{		
 		if(hasChangedPSQ)pageContext.setPsq(orgPSQ);
 		String strSQL=bodyContent.getString();
 		if(strSQL.length()==0) throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
@@ -389,10 +430,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		if(clearCache) {
 			hasCached=false;
-			pageContext.getQueryCache().remove(sql,datasource,username,password);
+			pageContext.getQueryCache().remove(sql,datasource!=null?datasource.getName():null,username,password);
 		}
 		else if(hasCached) {
-			query=pageContext.getQueryCache().getQuery(sql,datasource,username,password,cachedafter);
+			query=pageContext.getQueryCache().getQuery(sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
 		}
 		
 		
@@ -429,12 +470,11 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			else query=executeDatasoure(sql,result!=null);
 			//query=(dbtype!=null && dbtype.equals("query"))?executeQoQ(sql):executeDatasoure(sql,result!=null);
 			
-			
 			if(cachedWithin!=null) {
 				DateTimeImpl cachedBefore = null;
 				//if(cachedWithin!=null)
 					cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
-	                pageContext.getQueryCache().set(sql,datasource,username,password,query,cachedBefore);
+	                pageContext.getQueryCache().set(sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
                 
                 
 			}
@@ -444,7 +484,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		if(pageContext.getConfig().debug() && debug) {
 			boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-			((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
+			((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 		}
 		
 		if(!query.isEmpty() && !StringUtil.isEmpty(name)) {
@@ -567,10 +607,13 @@ cachename: Name of the cache in secondary cache.
 	}
 	
 	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
-		DataSourceManager manager = pageContext.getDataSourceManager();
-		
+		DatasourceManagerImpl manager = (DatasourceManagerImpl) pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
 		try {
+			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
+				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());
+			
+			
 			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData);
 		}
 		finally {
@@ -592,5 +635,4 @@ cachename: Name of the cache in secondary cache.
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
-
 }

@@ -15,6 +15,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.FlowControl;
+import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.AndVisitor;
@@ -66,6 +67,16 @@ public final class TagLoop extends TagBase implements FlowControl {
 			"toIterator",
 			Types.ITERATOR,
 			new Type[]{Types.OBJECT});
+
+	private static final Method KEYS = new Method(
+			"keyIterator",
+			Types.COLLECTION_KEY_ARRAY,
+			new Type[]{});
+
+	private static final Method GET = new Method(
+			"get",
+			Types.OBJECT,
+			new Type[]{Types.INT_VALUE,Types.OBJECT});
 
 	private static final Method NEXT = new Method(
 			"next",
@@ -673,7 +684,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			}
 		}
 		adapter.storeLocal(array);
-		
+	
 		
 		// int len=array.size();
 		adapter.loadLocal(array);
@@ -686,15 +697,44 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
 		adapter.storeLocal(index);
 		
-
+		int obj=0;
+		if(isArray)obj=adapter.newLocal(Types.OBJECT);
+		
 		// for(int i=1;i<=len;i++) {		
 		int i = forVisitor.visitBegin(adapter, 1, false);
 			// index.set(pc, list.get(i));
-			adapter.loadLocal(index);
-			adapter.loadArg(0);
+			
+			if(isArray) {
+				
+
 				adapter.loadLocal(array);
 				adapter.visitVarInsn(Opcodes.ILOAD, i);
-			adapter.invokeInterface(Types.ARRAY, GETE);
+				ASMConstants.NULL(adapter);
+				adapter.invokeInterface(Types.ARRAY, GET);
+				adapter.dup();
+				adapter.storeLocal(obj);
+				Label endIf=new Label();
+				//adapter.loadLocal(obj);
+				adapter.visitJumpInsn(Opcodes.IFNONNULL, endIf);
+					adapter.goTo(forVisitor.getContinueLabel());
+				adapter.visitLabel(endIf);
+				
+				adapter.loadLocal(index);
+				adapter.loadArg(0);
+				
+				
+				adapter.loadLocal(obj);
+				
+			}
+			else {
+				adapter.loadLocal(index);
+				adapter.loadArg(0);
+					adapter.loadLocal(array);
+					adapter.visitVarInsn(Opcodes.ILOAD, i);
+					adapter.invokeInterface(Types.ARRAY, GETE);
+					
+				
+			}
 			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
 			adapter.pop();
 			getBody().writeOut(bc);

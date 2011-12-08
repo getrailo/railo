@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
+import railo.runtime.db.SQL;
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
@@ -2257,6 +2258,21 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	public void updateSQLXML(String columnIndex, SQLXML x) throws SQLException {
 		log(columnIndex);
 		qry.updateSQLXML(columnIndex, x);
+	}
+
+	@Override
+	public SQL getSql() {
+		return qry.getSql();
+	}
+
+	@Override
+	public String getTemplate() {
+		return qry.getTemplate();
+	}
+
+	@Override
+	public long getExecutionTime() {
+		return qry.getExecutionTime();
 	}
 
 }

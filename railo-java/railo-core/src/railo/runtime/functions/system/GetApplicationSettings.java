@@ -43,7 +43,7 @@ public class GetApplicationSettings {
 		sct.setEL("datasource", ac.getDefaultDataSource());
 		sct.setEL("loginstorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
 		sct.setEL("mappings", toStruct(ac.getMappings()));
-		sct.setEL("name", ac.getName());
+		sct.setEL(KeyImpl.NAME, ac.getName());
 		sct.setEL("scriptprotect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
 		sct.setEL("securejson", Caster.toBoolean(ac.getSecureJson()));
 		sct.setEL("securejsonprefix", ac.getSecureJsonPrefix());
@@ -52,7 +52,7 @@ public class GetApplicationSettings {
 		sct.setEL("clienttimeout", ac.getClientTimeout());
 		sct.setEL("setclientcookies", Caster.toBoolean(ac.isSetClientCookies()));
 		sct.setEL("setdomaincookies", Caster.toBoolean(ac.isSetDomainCookies()));
-		sct.setEL("name", ac.getName());
+		sct.setEL(KeyImpl.NAME, ac.getName());
 		sct.setEL("localmode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?"always":"update");
 		sct.setEL("sessiontype", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
