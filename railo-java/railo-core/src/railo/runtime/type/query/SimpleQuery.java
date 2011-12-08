@@ -34,7 +34,6 @@ import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.db.DatasourceConnection;
-import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
@@ -106,7 +105,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = ((DatasourceConnectionPro)dc).getPreparedStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+	        	PreparedStatement preStat = dc.getPreparedStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
