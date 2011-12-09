@@ -218,9 +218,9 @@
 <tr>
 	<td class="tblHead" width="150">#stText.Security.File#</td>
 	<td class="tblContent"><span class="comment">#stText.Security.FileDescription#</span><select name="#prefix#File" onChange="changeFileAccessVisibility('fileAccess',this)">
-			<option <cfif access.file EQ "all">selected</cfif>>#stText.Security.FileAll#</option>
-			<option <cfif access.file EQ "local">selected</cfif>>#stText.Security.FileLocal#</option>
-			<option <cfif access.file EQ "none">selected</cfif>>#stText.Security.FileNone#</option>
+			<option value="all" <cfif access.file EQ "all">selected</cfif>>#stText.Security.FileAll#</option>
+			<option value="local" <cfif access.file EQ "local">selected</cfif>>#stText.Security.FileLocal#</option>
+			<option value="none" <cfif access.file EQ "none">selected</cfif>>#stText.Security.FileNone#</option>
 		</select>
 	
     
@@ -234,7 +234,7 @@ function changeFileAccessVisibility(name,field){
 	var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);
 	var s=null;
 	for(var i=0;i<tds.length;i++) {
-		if(tds[i].name && tds[i].name!=name)continue;
+		if(document.all && tds[i].name!=name)continue;
 		s=tds[i].style;
 		if(display==1) s.display='none';
 		else if(display==2) s.display='';
