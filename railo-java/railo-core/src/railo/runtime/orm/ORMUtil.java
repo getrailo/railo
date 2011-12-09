@@ -126,12 +126,10 @@ public class ORMUtil {
 	}
 	
 	public static Object getPropertyValue(Component cfc, String name, Object defaultValue) {
-		ComponentPro cp =ComponentUtil.toComponentPro(cfc,null);
-		
-		Property[] props = cp.getProperties(true);
+		Property[] props = cfc.getProperties(true);
 		for(int i=0;i<props.length;i++){
 			if(!props[i].getName().equalsIgnoreCase(name)) continue;
-			return cp.getComponentScope().get(KeyImpl.getInstance(name),null);
+			return cfc.getComponentScope().get(KeyImpl.getInstance(name),null);
 		}
 		return defaultValue;
 	}
