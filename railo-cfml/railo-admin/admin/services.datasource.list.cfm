@@ -150,7 +150,7 @@ function selectAll(field) {
 	var form=field.form;
 	var str="";
 	for(var key in form.elements){
-		if((""+form.elements[key].name).indexOf("row_")==0){
+		if(form.elements[key] && (""+form.elements[key].name).indexOf("row_")==0){
 			form.elements[key].checked=field.checked;
 		}
 	}
