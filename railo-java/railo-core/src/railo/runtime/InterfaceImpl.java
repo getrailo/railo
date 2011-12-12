@@ -79,7 +79,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
 
 
     public static InterfaceImpl[] loadImplements(PageContext pc, String lstExtend, Map interfaceUdfs) throws PageException {
-    	List interfaces=new ArrayList();
+    	List<InterfaceImpl> interfaces=new ArrayList<InterfaceImpl>();
     	loadImplements(pc, lstExtend, interfaces, interfaceUdfs);
     	return (InterfaceImpl[]) interfaces.toArray(new InterfaceImpl[interfaces.size()]);
     	
@@ -228,9 +228,11 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
         if(!StringUtil.isEmpty(icfc.dspName))sct.set("displayname",icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
-        	Struct ex=new StructImpl();
+            Set _set = railo.runtime.type.List.listToSet(icfc.extend, ",",true);
+            Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
+        		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
         		ex.setEL(icfc.superInterfaces[i].getCallPath(),_getMetaData(pc,icfc.superInterfaces[i]));
         	}
         	

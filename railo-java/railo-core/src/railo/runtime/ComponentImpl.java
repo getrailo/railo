@@ -1452,10 +1452,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             // implements
             InterfaceCollection ic = comp.interfaceCollection;
             if(ic!=null){
-	            InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
+            	Set set = List.listToSet(comp.properties.implement, ",",true);
+                InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
 	            if(!ArrayUtil.isEmpty(interfaces)){
 		            Struct imp=new StructImpl();
 	            	for(int i=0;i<interfaces.length;i++){
+	            		if(!set.contains(interfaces[i].getCallPath())) continue;
+	            		//print.e("-"+interfaces[i].getCallPath());
 	            		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc));
 		            }
 		            sct.set(IMPLEMENTS,imp);
