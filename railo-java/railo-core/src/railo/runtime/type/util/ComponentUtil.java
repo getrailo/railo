@@ -580,7 +580,7 @@ public final class ComponentUtil {
 		Property[] props = getProperties(c, onlyPeristent);
 		java.util.List<Property> tmp=new ArrayList<Property>();
 		for(int i=0;i<props.length;i++){
-			if("id".equalsIgnoreCase(Caster.toString(props[i].getMeta().get(FIELD_TYPE,null),"")))
+			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))
 				tmp.add(props[i]);
 		}
 		return tmp.toArray(new Property[tmp.size()]);

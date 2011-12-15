@@ -30,10 +30,10 @@ public class UDFSetterProperty extends UDFGSProperty {
 		this.prop=prop; 
 		this.propName=KeyImpl.getInstance(prop.getName());
 		
-		this.validate=Caster.toString(prop.getMeta().get(VALIDATE,null),null);
+		this.validate=Caster.toString(prop.getDynamicAttributes().get(VALIDATE,null),null);
 		if(!StringUtil.isEmpty(validate,true)) {
 			validate=validate.trim().toLowerCase();
-			Object o = prop.getMeta().get(VALIDATE_PARAMS,null);
+			Object o = prop.getDynamicAttributes().get(VALIDATE_PARAMS,null);
 			if(o!=null){
 				if(Decision.isStruct(o))validateParams=Caster.toStruct(o);
 				else {

@@ -4,10 +4,10 @@ import railo.transformer.bytecode.expression.Expression;
 
 public final class Attribute {
 	
-	String name;
-	Expression value;
-	private String type;
-	private boolean dynamicType;
+	final String name;
+	final Expression value;
+	private final String type;
+	private final boolean dynamicType;
 	private String setterName;
 	
 	public Attribute(boolean dynamicType,String name, Expression value, String type) {

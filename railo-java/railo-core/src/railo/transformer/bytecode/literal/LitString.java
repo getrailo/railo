@@ -20,6 +20,7 @@ public final class LitString extends ExpressionBase implements Literal,ExprStrin
 	public static final int TYPE_ORIGINAL = 0;
 	public static final int TYPE_UPPER = 1;
 	public static final int TYPE_LOWER = 2;
+	public static final LitString EMPTY = new LitString("",-1);
 	private String str;
 	private boolean fromBracket;
 

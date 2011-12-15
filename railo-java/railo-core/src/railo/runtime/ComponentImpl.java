@@ -1423,6 +1423,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         metaUDFs(pc, comp, sct,access);
            
         
+
+        if(comp.properties.meta!=null) {
+        	Key[] keys = comp.properties.meta.keys();
+        	for(int i=0;i<keys.length;i++) {
+        		sct.setEL(keys[i],comp.properties.meta.get(keys[i],null));
+        	}
+        }
         
             
             
@@ -1434,15 +1441,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             sct.set("persistent",comp.properties.persistent);
             sct.set("accessors",comp.properties.accessors);
             sct.set("synchronized",comp.properties._synchronized);
+            if(comp.properties.output!=null)
+            sct.set(KeyImpl.OUTPUT,comp.properties.output);
             
             
-            
-            if(comp.properties.meta!=null) {
-            	Key[] keys = comp.properties.meta.keys();
-            	for(int i=0;i<keys.length;i++) {
-            		sct.setEL(keys[i],comp.properties.meta.get(keys[i],null));
-            	}
-            }
             
             // extends
             Struct ex=null;
