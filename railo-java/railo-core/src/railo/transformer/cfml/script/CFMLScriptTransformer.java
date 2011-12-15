@@ -85,6 +85,22 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	};
  
 
+	private static EndCondition SEMI_BLOCK=new EndCondition() {
+		public boolean isEnd(Data data) {
+			return data.cfml.isCurrent('{') || data.cfml.isCurrent(';');
+		}
+	};
+	private static EndCondition SEMI=new EndCondition() {
+		public boolean isEnd(Data data) {
+			return data.cfml.isCurrent(';');
+		}
+	};
+	private static EndCondition COMMA_ENDBRACKED=new EndCondition() {
+		public boolean isEnd(Data data) {
+			return data.cfml.isCurrent(',') || data.cfml.isCurrent(')');
+		}
+	};
+	
 	
 	
 	
@@ -693,8 +709,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				}
 				else defaultValue=null;
 				
-				
-				// assign meta data
+				// assign meta data defined in doc comment
 				passByRef = LitBoolean.TRUE;
 				displayName=LitString.EMPTY;
 				hint=LitString.EMPTY;
@@ -725,6 +740,18 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 					}
 					
 				}
+				
+				// argument attributes
+				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,EMPTY_STRING,true,null,false);
+				Attribute _attr;
+				if(!ArrayUtil.isEmpty(_attrs)){
+					if(meta==null) meta=new HashMap<String, Attribute>();
+					for(int i=0;i<_attrs.length;i++){
+						_attr=_attrs[i];
+						meta.put(_attr.getName(), _attr);
+					}
+				}
+				
 				func.addArgument(
 						LitString.toExprString(idName),
 						LitString.toExprString(typeName),
@@ -765,7 +792,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 			
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,true,EMPTY_STRING,true,null,false);
+		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,EMPTY_STRING,true,null,false);
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -940,7 +967,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		// attributes
 		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,true,EMPTY_STRING,script.getRtexpr(),null,false);
+		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,EMPTY_STRING,script.getRtexpr(),null,false);
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -1103,7 +1130,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		
 		// folgend wird tlt extra nicht Ÿbergeben, sonst findet prŸfung statt
-		Attribute[] attrs = attributes(property,tlt,data,false,	NULL,false,"name",true);
+		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,false,"name",true);
 		
 		checkSemiColonLineFeed(data,true);
 
@@ -1604,7 +1631,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	
 	
 	
-	public Attribute[] attributes(Tag tag,TagLibTag tlt, Data data, boolean allowBlock,Expression defaultValue,boolean allowExpression, 
+	public Attribute[] attributes(Tag tag,TagLibTag tlt, Data data, EndCondition endCond,Expression defaultValue,boolean allowExpression, 
 			String ignoreAttrReqFor, boolean allowTwiceAttr) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
@@ -1612,7 +1639,8 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		while(data.cfml.isValidIndex())	{
 			data.cfml.removeSpace();
 			// if no more attributes break
-			if((allowBlock && data.cfml.isCurrent('{')) || data.cfml.isCurrent(';')) break;
+			if(endCond.isEnd(data)) break;
+			//if((allowBlock && data.cfml.isCurrent('{')) || data.cfml.isCurrent(';')) break;
 			Attribute attr = attribute(tlt,data,ids,defaultValue,allowExpression, allowTwiceAttr);
 			attrs.add(attr);
 		}
@@ -1784,6 +1812,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return expr;
 	}*/
 	
-	
-	
+	public static interface EndCondition {
+		public boolean isEnd(Data data);
+	}
 }
