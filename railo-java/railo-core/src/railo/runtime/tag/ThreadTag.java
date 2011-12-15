@@ -108,6 +108,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
+		if(StringUtil.isEmpty(name,true)) return;
 		this.name = name.trim();
 		this.lcName=this.name.toLowerCase();
 	}
