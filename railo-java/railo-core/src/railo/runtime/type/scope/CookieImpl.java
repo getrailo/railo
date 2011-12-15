@@ -68,7 +68,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		String name=StringUtil.toLowerCase(ReqRspUtil.decode(cookie.getName(),charset,false));
 		raw.put(name,cookie.getValue());
     	if(isScriptProtected())	super.set (KeyImpl.init(name),ScriptProtect.translate(dec(cookie.getValue())));
-        else super.set (KeyImpl.init(name),cookie.getValue());
+        else super.set (KeyImpl.init(name),dec(cookie.getValue()));
 	}
 	
     /**
