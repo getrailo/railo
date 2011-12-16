@@ -18,6 +18,8 @@ public class TimeZoneUtil {
 		for(int i=0;i<ids.length;i++){
 			IDS.put(ids[i].toLowerCase(), TimeZone.getTimeZone(ids[i]));
 		}
+		TimeZone def = TimeZone.getDefault();
+		if(def!=null)IDS.put(def.getID(),def);
 		IDS.put("jvm", TimeZone.getDefault());
 		IDS.put("default", TimeZone.getDefault());
 		IDS.put("", TimeZone.getDefault());
