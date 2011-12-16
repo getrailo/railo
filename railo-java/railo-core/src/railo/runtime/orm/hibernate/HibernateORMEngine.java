@@ -697,7 +697,7 @@ public class HibernateORMEngine implements ORMEngine {
 			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		
-		throw new ORMException(this,"entity ["+name+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
+		throw new ORMException(this,"entity ["+name+"] "+(StringUtil.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
 		
 	}
 	
