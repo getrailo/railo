@@ -3,10 +3,10 @@ package railo.runtime.lock;
 import java.util.ArrayList;
 import java.util.List;
 
-import railo.commons.lock.KeyLock;
 import railo.commons.lock.Lock;
 import railo.commons.lock.LockException;
 import railo.commons.lock.LockInterruptedException;
+import railo.commons.lock.rw.RWKeyLock;
 
 /**
  * Lock mnager to make a log by a string name
@@ -14,7 +14,7 @@ import railo.commons.lock.LockInterruptedException;
 public final class LockManagerImpl implements LockManager {
 
 	private static List<LockManagerImpl> managers=new ArrayList<LockManagerImpl>();
-    private KeyLock<String> locks=new KeyLock<String>();
+    private RWKeyLock<String> locks=new RWKeyLock<String>();
 	private boolean caseSensitive;
 	
     private LockManagerImpl(boolean caseSensitive) {
@@ -36,25 +36,20 @@ public final class LockManagerImpl implements LockManager {
 		if(timeout<=0)timeout=1;
 		Lock lock;
 		try {
-			lock=locks.lock(name,timeout);
+			lock=locks.lock(name,timeout,type==LockManager.TYPE_READONLY);
 		} catch (LockException e) {
 			throw new LockTimeoutException(type,name,timeout);
 		} 
 		catch (LockInterruptedException e) {
 			throw e.getLockInterruptedException();
 		}
-		if(type==LockManager.TYPE_READONLY) {
-			unlock(new ExklLockData(lock,name,pageContextId));
-			return new ReadLockData(name,pageContextId);
-		}
-		return new ExklLockData(lock,name,pageContextId);
+		
+		return new LockDataImpl(lock,name,pageContextId,type==LockManager.TYPE_READONLY);
 	}
 	
 	public void unlock(LockData data) {
-		if(data.isReadOnly()) return;
-		Lock l = ((ExklLockData)data).getLock();
+		Lock l = ((LockDataPro)data).getLock();
 		locks.unlock(l);
-		//locks.unlock(data.getName());
 	}
 
 
@@ -74,7 +69,6 @@ public final class LockManagerImpl implements LockManager {
 	public String[] getOpenLockNames() {
 		List<String> list = locks.getOpenLockNames();
 		return list.toArray(new String[list.size()]);
-		//throw new RuntimeException("no longer supported");//FUTURE remove from interface
 	}
 
 	public void clean() {
