@@ -271,7 +271,7 @@ function changeFileAccessVisibility(name,field){
 	<!--- INSERT --->
 	
 		<tr name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
-			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no" onclick="changeFileAccessVisibility('fileAccess')"  style="width:400px"></td>
+			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no" style="width:400px"></td>
 		</tr>
 	
 </table>
