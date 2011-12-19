@@ -631,9 +631,9 @@ public final class ComponentUtil {
 		if(pc.getActiveComponent()==null) return current; 
 		if(pc.getActiveUDF()!=null && ((ComponentPro)pc.getActiveComponent()).getPageSource()==((ComponentPro)pc.getActiveUDF().getOwnerComponent()).getPageSource()){
 			
-			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
+			return (ComponentAccess) pc.getActiveUDF().getOwnerComponent();
 		}
-		return (ComponentImpl) pc.getActiveComponent();//+++
+		return (ComponentAccess) pc.getActiveComponent();//+++
 		
 		
 	}
