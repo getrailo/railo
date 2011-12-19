@@ -80,7 +80,7 @@ import railo.runtime.util.ArrayIterator;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
+public final class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
 
 
 	private ComponentProperties properties;
