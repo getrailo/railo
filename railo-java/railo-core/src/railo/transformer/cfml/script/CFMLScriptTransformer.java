@@ -776,14 +776,14 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 			
 			
 			// params
-			Map<String, Attribute> params = data.docComment.getParams();
+			/*Map<String, Attribute> params = data.docComment.getParams();
 			Iterator<Attribute> it = params.values().iterator();
 			Attribute attr;
 			String name;
 			while(it.hasNext()){
 				attr=it.next();
 				name=attr.getName();
-			}
+			}*/
 			
 			func.setMetaData(data.docComment.getParams());
 			data.docComment=null;

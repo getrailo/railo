@@ -143,7 +143,7 @@ public class TimeZoneUtil {
 		
 		if(!Float.isNaN(gmtOffset)) {
 			strTimezone="etc/gmt"+(gmtOffset>=0?"+":"")+Caster.toString(gmtOffset);
-			tz = (TimeZone) IDS.get(strTimezone);
+			tz =  IDS.get(strTimezone);
 			if(tz!=null) return tz;
 			
 		}

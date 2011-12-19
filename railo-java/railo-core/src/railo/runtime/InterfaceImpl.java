@@ -93,7 +93,7 @@ public class InterfaceImpl implements Interface {
     public static InterfaceImpl[] loadImplements(PageContext pc, String lstExtend, Map interfaceUdfs) throws PageException {
     	List<InterfaceImpl> interfaces=new ArrayList<InterfaceImpl>();
     	loadImplements(pc, lstExtend, interfaces, interfaceUdfs);
-    	return (InterfaceImpl[]) interfaces.toArray(new InterfaceImpl[interfaces.size()]);
+    	return interfaces.toArray(new InterfaceImpl[interfaces.size()]);
     	
 	}
 

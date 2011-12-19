@@ -429,7 +429,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		ga.newArray(FUNCTION_ARGUMENT);
 		Argument arg;
         for (int i = 0; i < arguments.size(); i++) {
-        	arg=(Argument) arguments.get(i);
+        	arg=arguments.get(i);
             ga.dup();
             ga.push(i);
             	

@@ -58,5 +58,7 @@ public interface Property extends Serializable,Member {
 	public boolean isPeristent();
 
 	public String getOwnerName();
+	
+	public Struct getDynamicAttributes();
 
 }
