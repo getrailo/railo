@@ -28,11 +28,11 @@ import railo.runtime.type.util.ArraySupport;
 /**
  * cold fusion array object
  */
-public class ArrayImplNS extends ArraySupport implements Array,Sizeable {
+public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	
 	private Object[] arr;
 	private int dimension=1;
-	private int cap=32;
+	private final int cap=32;
 	private int size=0;
 	private int offset=0;
 	private int offCount=0;

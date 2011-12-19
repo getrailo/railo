@@ -2,7 +2,7 @@ package railo.runtime.type.scope;
 
 import railo.runtime.config.ConfigServer;
 
-public class ClusterRemoteNotSupported implements ClusterRemote {
+public final class ClusterRemoteNotSupported implements ClusterRemote {
 
 	public void addEntry(ClusterEntry entry) {}
 

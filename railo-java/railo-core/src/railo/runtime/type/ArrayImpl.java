@@ -34,7 +34,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 
 	private Object[] arr;
 	private int dimension=1;
-	private int cap=32;
+	private final int cap=32;
 	private int size=0;
 	private int offset=0;
 	private int offCount=0;

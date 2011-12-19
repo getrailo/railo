@@ -25,7 +25,7 @@ import railo.runtime.type.wrap.ArrayAsList;
 /**
  * implementation of the argument scope 
  */
-public class ArgumentImpl extends ScopeSupport implements ArgumentPro {
+public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 		
 	private boolean bind;
 	private Set functionArgumentNames;

@@ -12,12 +12,12 @@ import railo.runtime.op.Decision;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection.Key;
 
-public class UDFSetterProperty extends UDFGSProperty {
+public final class UDFSetterProperty extends UDFGSProperty {
 
 	private static final Collection.Key VALIDATE = KeyImpl.intern("validate");
 	private static final Collection.Key VALIDATE_PARAMS = KeyImpl.intern("validateParams");
-	private Property prop;
-	private Key propName;
+	private final Property prop;
+	private final Key propName;
 	private String validate;
 	private Struct validateParams;
 

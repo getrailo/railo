@@ -13,12 +13,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.PropertyFactory;
 
-public class UDFAddProperty extends UDFGSProperty {
+public final class UDFAddProperty extends UDFGSProperty {
 
-	private Property prop;
+	private final Property prop;
 	//private ComponentScope scope;
 	
-	private Key propName;
+	private final Key propName;
 	
 	private static final Object NULL=new Object();
 

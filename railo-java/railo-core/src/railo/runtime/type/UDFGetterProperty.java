@@ -8,11 +8,11 @@ import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
 
-public class UDFGetterProperty extends UDFGSProperty {
+public final class UDFGetterProperty extends UDFGSProperty {
 
-	private Property prop;
+	private final Property prop;
 	//private ComponentScope scope;
-	private Key propName;
+	private final Key propName;
 
 	public UDFGetterProperty(ComponentImpl component,Property prop)  {
 		super(component,"get"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[0],CFTypes.TYPE_STRING,"wddx");

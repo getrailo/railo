@@ -20,7 +20,7 @@ import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.type.util.ComponentUtil;
 
-public class UDFProperties implements Sizeable,Serializable,Externalizable {
+public final class UDFProperties implements Sizeable,Serializable,Externalizable {
 
 
 	public  String functionName;

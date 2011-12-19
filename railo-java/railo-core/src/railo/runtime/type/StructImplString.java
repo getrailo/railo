@@ -20,7 +20,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * cold fusion data type struct
  */
-public class StructImplString extends StructImpl implements Struct {
+public final class StructImplString extends StructImpl implements Struct {
 
 	public static final int TYPE_WEAKED=0;
 	public static final int TYPE_LINKED=1;

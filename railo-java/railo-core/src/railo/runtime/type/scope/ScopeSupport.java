@@ -29,7 +29,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * Simple standart implementation of a Scope, for standart use.
  */
-public class ScopeSupport extends StructImpl implements Scope,Sizeable {
+public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	
 
 	public static final Key APPLICATION = KeyImpl.intern("application");

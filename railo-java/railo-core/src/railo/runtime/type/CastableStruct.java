@@ -16,7 +16,7 @@ import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 
-public class CastableStruct extends StructImpl  {
+public final class CastableStruct extends StructImpl  {
 	
 	private Object value;
 
