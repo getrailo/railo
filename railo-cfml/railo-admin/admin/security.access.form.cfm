@@ -362,7 +362,5 @@ function changeFileAccessVisibility(name,field){
 </tr>
 </cfform></cfoutput>
 </table>
-
-<cfif access.file EQ "all"><script>changeFileAccessVisibility('fileAccess');</script></cfif>
 <br><br>
 
