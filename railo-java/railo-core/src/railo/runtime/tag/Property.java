@@ -33,6 +33,9 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 	 * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
 	 */
 	public void setDynamicAttribute(String uri, String name, Object value) {
+		property.getDynamicAttributes().setEL(KeyImpl.getInstance(name),value);
+	}
+	public void setMetaData(String name, Object value) {
 		property.getMeta().setEL(KeyImpl.getInstance(name),value);
 	}
 	

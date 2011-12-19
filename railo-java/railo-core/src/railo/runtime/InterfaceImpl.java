@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import railo.commons.lang.StringUtil;
@@ -42,6 +43,7 @@ public class InterfaceImpl implements Interface {
 	private String dspName;
 	private String callPath;
 	private boolean realPath;
+	private Map meta;
 	
 	private InterfaceImpl[] superInterfaces;
 	
@@ -55,18 +57,28 @@ public class InterfaceImpl implements Interface {
      * @param hint 
      * @param dspName 
      */
-	 public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
-	    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs);
-	 }
-	 public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
-	    	this.pageSource=pageSource;
-	    	this.extend=extend;
-	    	this.hint=hint;
-	    	this.dspName=dspName;
-	    	this.callPath=callPath;
-	    	this.realPath=realPath;
-	    	this.interfacesUDFs=interfacesUDFs;
+	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
+    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs,null);
 	}
+	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs, Map meta) {
+    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs,meta);
+	}
+	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
+    	this(pageSource, extend, hint, dspName, callPath, realPath, interfacesUDFs, null);
+	}
+	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs, Map meta) {
+    	this.pageSource=pageSource;
+    	this.extend=extend;
+    	this.hint=hint;
+    	this.dspName=dspName;
+    	this.callPath=callPath;
+    	this.realPath=realPath;
+    	this.interfacesUDFs=interfacesUDFs;
+    	this.meta=meta;
+}
+	 
+	 
+	 
 	    
 
 	private static void init(PageContext pc,InterfaceImpl icfc) throws PageException {
@@ -79,7 +91,7 @@ public class InterfaceImpl implements Interface {
 
 
     public static InterfaceImpl[] loadImplements(PageContext pc, String lstExtend, Map interfaceUdfs) throws PageException {
-    	List interfaces=new ArrayList();
+    	List<InterfaceImpl> interfaces=new ArrayList<InterfaceImpl>();
     	loadImplements(pc, lstExtend, interfaces, interfaceUdfs);
     	return (InterfaceImpl[]) interfaces.toArray(new InterfaceImpl[interfaces.size()]);
     	
@@ -223,14 +235,25 @@ public class InterfaceImpl implements Interface {
             //}
         }
         
+        if(icfc.meta!=null) {
+        	it=icfc.meta.entrySet().iterator();
+        	Map.Entry entry;
+        	while(it.hasNext()){
+        		entry=(Entry) it.next();
+        		sct.put(entry.getKey(), entry.getValue());
+        	}
+        }
         
-        if(!StringUtil.isEmpty(icfc.hint))sct.set("hint",icfc.hint);
-        if(!StringUtil.isEmpty(icfc.dspName))sct.set("displayname",icfc.dspName);
+        
+        if(!StringUtil.isEmpty(icfc.hint,true))sct.set("hint",icfc.hint);
+        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set("displayname",icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
-        	Struct ex=new StructImpl();
+            Set _set = railo.runtime.type.List.listToSet(icfc.extend, ",",true);
+            Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
+        		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
         		ex.setEL(icfc.superInterfaces[i].getCallPath(),_getMetaData(pc,icfc.superInterfaces[i]));
         	}
         	

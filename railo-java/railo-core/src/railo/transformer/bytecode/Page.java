@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -221,7 +222,8 @@ public final class Page extends BodyBase {
 						Types.STRING, // display
 						Types.STRING, // callpath
 						Types.BOOLEAN_VALUE, // realpath
-						Types.MAP 
+						Types.MAP, //interfaceudfs
+						Types.MAP // meta
 					}
     		);
 	
@@ -375,9 +377,11 @@ public final class Page extends BodyBase {
      */
     public byte[] execute(Resource classFile) throws BytecodeException {
     	
-    	Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
-        this.externalizer=new StringExternalizerWriter(p);
-		
+    	try {
+    		Resource p = classFile.getParentResource().getRealResource(classFile.getName()+".txt");
+            this.externalizer=new StringExternalizerWriter(p);
+		} catch (IOException e) {}
+    	
     	List keys=new ArrayList();
     	ClassWriter cw = ASMUtil.getClassWriter(); 
     	//ClassWriter cw = new ClassWriter(true);
@@ -1013,6 +1017,8 @@ public final class Page extends BodyBase {
 		adapter.visitVarInsn(Opcodes.ALOAD, 0);
 		adapter.checkCast(Types.COMPONENT_PAGE);
 
+		// !!! also check CFMLScriptTransformer.addMetaData if you do any change here !!!
+		
 		// Output
 		attr = component.removeAttribute("output");
 		if(attr!=null) {
@@ -1082,8 +1088,7 @@ public final class Page extends BodyBase {
 		//ExpressionUtil.writeOutSilent(attr.getValue(),bc, Expression.MODE_VALUE);
 		
 		//adapter.visitVarInsn(Opcodes.ALOAD, 4);
-		
-		createMetaDataStruct(bc,component.getAttributes());
+		createMetaDataStruct(bc,component.getAttributes(),component.getMetaData());
 		
 		adapter.invokeConstructor(Types.COMPONENT_IMPL, CONSTR_COMPONENT_IMPL);
 		
@@ -1159,6 +1164,8 @@ public final class Page extends BodyBase {
 		// interface udfs
 		adapter.visitVarInsn(Opcodes.ALOAD, 3);
 		
+		createMetaDataStruct(bc,interf.getAttributes(),interf.getMetaData());
+		
 		
 		adapter.invokeConstructor(Types.INTERFACE_IMPL, CONSTR_INTERFACE_IMPL);
 		
@@ -1187,9 +1194,11 @@ public final class Page extends BodyBase {
 	
 	
 	
-	public static void createMetaDataStruct(BytecodeContext bc, Map attrs) throws BytecodeException {
+	public static void createMetaDataStruct(BytecodeContext bc, Map attrs, Map meta) throws BytecodeException {
+		
+		
 		GeneratorAdapter adapter = bc.getAdapter();
-		if(attrs==null || attrs.size()==0){
+		if((attrs==null || attrs.size()==0) && (meta==null || meta.size()==0)){
 			ASMConstants.NULL(bc.getAdapter());
 			bc.getAdapter().cast(Types.OBJECT,STRUCT_IMPL);
 			return;
@@ -1200,19 +1209,30 @@ public final class Page extends BodyBase {
 		adapter.dup();
 		adapter.invokeConstructor(STRUCT_IMPL, INIT_STRUCT_IMPL);
 		adapter.storeLocal(sct);
-		if(attrs!=null) {
-			Attribute attr;
-			Iterator it = attrs.entrySet().iterator();
-			while(it.hasNext()){
-				attr=(Attribute) ((Map.Entry)it.next()).getValue();
-				adapter.loadLocal(sct);
-				adapter.push(attr.getName());
-				ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
-				adapter.invokeVirtual(STRUCT_IMPL, SET_EL);
-				adapter.pop();
-			}
+		if(meta!=null) {
+			_createMetaDataStruct(bc,adapter,sct,meta);
 		}
+		if(attrs!=null) {
+			_createMetaDataStruct(bc,adapter,sct,attrs);
+		}
+		
+		
 		adapter.loadLocal(sct);
+	}
+
+	private static void _createMetaDataStruct(BytecodeContext bc, GeneratorAdapter adapter, int sct, Map attrs) throws BytecodeException {
+		Attribute attr;
+		Iterator it = attrs.entrySet().iterator();
+		Entry entry;
+		while(it.hasNext()){
+			entry = (Map.Entry)it.next();
+			attr=(Attribute) entry.getValue();
+			adapter.loadLocal(sct);
+			adapter.push(attr.getName());
+			ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			adapter.invokeVirtual(STRUCT_IMPL, SET_EL);
+			adapter.pop();
+		}
 	}
 
 	private void writeOutCall(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter cw) throws BytecodeException {

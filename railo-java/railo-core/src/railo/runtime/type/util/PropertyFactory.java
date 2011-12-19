@@ -33,7 +33,7 @@ public class PropertyFactory {
 			PropertyFactory.addSet(comp,property);
 		}
 
-		String fieldType = Caster.toString(property.getMeta().get(PropertyFactory.FIELD_TYPE,null),null);
+		String fieldType = Caster.toString(property.getDynamicAttributes().get(PropertyFactory.FIELD_TYPE,null),null);
 		
 		// add
 		if(fieldType!=null) {
@@ -90,7 +90,7 @@ public class PropertyFactory {
 	}
 
 	public static String getSingularName(Property prop) {
-		String singularName=Caster.toString(prop.getMeta().get(SINGULAR_NAME,null),null);
+		String singularName=Caster.toString(prop.getDynamicAttributes().get(SINGULAR_NAME,null),null);
 		if(!StringUtil.isEmpty(singularName)) return singularName;
 		return prop.getName();
 	}
@@ -98,7 +98,7 @@ public class PropertyFactory {
 	public static String getType(Property prop){
 		String type = prop.getType();
 		if(StringUtil.isEmpty(type) || "any".equalsIgnoreCase(type) || "object".equalsIgnoreCase(type)){
-			String fieldType = Caster.toString(prop.getMeta().get(FIELD_TYPE,null),null);
+			String fieldType = Caster.toString(prop.getDynamicAttributes().get(FIELD_TYPE,null),null);
 			if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType)){
 				return "array";
 			}

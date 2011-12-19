@@ -3,7 +3,7 @@ package railo.runtime.type.scope;
 import railo.runtime.op.Caster;
 import railo.runtime.type.KeyImpl;
 
-public class ArgumentIntKey extends KeyImpl {
+public final class ArgumentIntKey extends KeyImpl {
 	
 	private static final ArgumentIntKey[] KEYS = new ArgumentIntKey[]{
 		new ArgumentIntKey(0),

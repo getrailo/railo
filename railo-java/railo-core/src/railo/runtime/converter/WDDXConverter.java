@@ -206,7 +206,7 @@ public final class WDDXConverter {
         	if(!ignoreRemotingFetch) {
         		p=(Property) props.get(key,null);
             	if(p!=null) {
-            		remotingFetch=Caster.toBoolean(p.getMeta().get(REMOTING_FETCH,null),null);
+            		remotingFetch=Caster.toBoolean(p.getDynamicAttributes().get(REMOTING_FETCH,null),null);
 	            	if(remotingFetch==null){
     					if(isPeristent  && HBMCreator.isRelated(p)) continue;
 	    			}

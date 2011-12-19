@@ -12,12 +12,12 @@ import railo.runtime.op.Decision;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection.Key;
 
-public class UDFSetterProperty extends UDFGSProperty {
+public final class UDFSetterProperty extends UDFGSProperty {
 
 	private static final Collection.Key VALIDATE = KeyImpl.intern("validate");
 	private static final Collection.Key VALIDATE_PARAMS = KeyImpl.intern("validateParams");
-	private Property prop;
-	private Key propName;
+	private final Property prop;
+	private final Key propName;
 	private String validate;
 	private Struct validateParams;
 
@@ -30,10 +30,10 @@ public class UDFSetterProperty extends UDFGSProperty {
 		this.prop=prop; 
 		this.propName=KeyImpl.getInstance(prop.getName());
 		
-		this.validate=Caster.toString(prop.getMeta().get(VALIDATE,null),null);
+		this.validate=Caster.toString(prop.getDynamicAttributes().get(VALIDATE,null),null);
 		if(!StringUtil.isEmpty(validate,true)) {
 			validate=validate.trim().toLowerCase();
-			Object o = prop.getMeta().get(VALIDATE_PARAMS,null);
+			Object o = prop.getDynamicAttributes().get(VALIDATE_PARAMS,null);
 			if(o!=null){
 				if(Decision.isStruct(o))validateParams=Caster.toStruct(o);
 				else {

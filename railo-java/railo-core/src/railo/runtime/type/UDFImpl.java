@@ -559,9 +559,20 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
 	
 	public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
+		StructImpl func=new StructImpl();
+        
+		// TODO func.set("roles", value);
+        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
+        // meta data
+        Struct meta = udf.getMeta();
+        if(meta!=null) {
+        	Key[] keys = meta.keys();
+        	for(int i=0;i<keys.length;i++) {
+        		func.setEL(keys[i],meta.get(keys[i],null));
+        	}
+        }
 		
-        StructImpl func=new StructImpl();
-        func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
+		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
         String hint=udf.getHint();
         if(!StringUtil.isEmpty(hint))func.set(KeyImpl.HINT,hint);
         String displayname=udf.getDisplayName();
@@ -579,19 +590,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
         else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
         else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
-        
-        
-        // TODO func.set("roles", value);
-        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
-        // meta data
-        Struct meta = udf.getMeta();
-        if(meta!=null) {
-        	Key[] keys = meta.keys();
-        	for(int i=0;i<keys.length;i++) {
-        		func.setEL(keys[i],meta.get(keys[i],null));
-        	}
-        }
-        
         
         
         FunctionArgument[] args =  udf.getFunctionArguments();

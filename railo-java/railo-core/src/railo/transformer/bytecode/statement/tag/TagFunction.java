@@ -184,7 +184,7 @@ public final class TagFunction extends TagBase implements IFunction {
 //		 %**%
 		Map attrs = getAttributes();
 		Iterator it = attrs.entrySet().iterator();
-		HashMap metadatas=new HashMap();
+		HashMap<String,Attribute> metadatas=new HashMap<String,Attribute>();
 		while(it.hasNext()){
 			attr=(Attribute) ((Map.Entry)it.next()).getValue();
 			metadatas.put(attr.getName(),attr);

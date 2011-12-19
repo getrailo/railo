@@ -63,7 +63,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#addColumn(railo.runtime.type.Collection.Key, railo.runtime.type.Array)
 	 */
-	public boolean addColumn(Key columnName, Array content) throws PageException {
+	public boolean addColumn(Collection.Key columnName, Array content) throws PageException {
 		disconnectCache();
 		return query.addColumn(columnName, content);
 	}
@@ -79,7 +79,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#addColumn(railo.runtime.type.Collection.Key, railo.runtime.type.Array, int)
 	 */
-	public boolean addColumn(Key columnName, Array content, int type) throws DatabaseException {
+	public boolean addColumn(Collection.Key columnName, Array content, int type) throws DatabaseException {
 		disconnectCache();
 		return query.addColumn(columnName, content, type);
 	}
@@ -110,7 +110,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
-	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
+	public Object call(PageContext pc, Collection.Key methodName, Object[] arguments) throws PageException {
 		return query.call(pc, methodName, arguments);
 	}
 
@@ -124,7 +124,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
 	 */
-	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+	public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {
 		return query.callWithNamedValues(pc, methodName, args);
 	}
 
@@ -244,7 +244,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#containsKey(railo.runtime.type.Collection.Key)
 	 */
-	public boolean containsKey(Key key) {
+	public boolean containsKey(Collection.Key key) {
 		return query.containsKey(key);
 	}
 
@@ -280,7 +280,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public Object get(Key key, Object defaultValue) {
+	public Object get(Collection.Key key, Object defaultValue) {
 		return query.get(key, defaultValue);
 	}
 
@@ -294,7 +294,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#get(railo.runtime.type.Collection.Key)
 	 */
-	public Object get(Key key) throws PageException {
+	public Object get(Collection.Key key) throws PageException {
 		return query.get(key);
 	}
 
@@ -308,7 +308,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public Object get(PageContext pc, Key key, Object defaultValue) {
+	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
 		return query.get(pc, key, defaultValue);
 	}
 
@@ -322,7 +322,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
 	 */
-	public Object get(PageContext pc, Key key) throws PageException {
+	public Object get(PageContext pc, Collection.Key key) throws PageException {
 		return query.get(pc, key);
 	}
 
@@ -336,7 +336,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#getAt(railo.runtime.type.Collection.Key, int, java.lang.Object)
 	 */
-	public Object getAt(Key key, int row, Object defaultValue) {
+	public Object getAt(Collection.Key key, int row, Object defaultValue) {
 		return query.getAt(key, row, defaultValue);
 	}
 
@@ -350,7 +350,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#getAt(railo.runtime.type.Collection.Key, int)
 	 */
-	public Object getAt(Key key, int row) throws PageException {
+	public Object getAt(Collection.Key key, int row) throws PageException {
 		return query.getAt(key, row);
 	}
 
@@ -378,7 +378,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#getColumn(railo.runtime.type.Collection.Key)
 	 */
-	public QueryColumn getColumn(Key key) throws DatabaseException {
+	public QueryColumn getColumn(Collection.Key key) throws DatabaseException {
 		if(!isCloned) {
 			QueryColumn column = (QueryColumn) _columns.get(key);
 			if(column==null) {
@@ -401,7 +401,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#getColumn(railo.runtime.type.Collection.Key, railo.runtime.type.QueryColumn)
 	 */
-	public QueryColumn getColumn(Key key, QueryColumn defaultValue) {
+	public QueryColumn getColumn(Collection.Key key, QueryColumn defaultValue) {
 		if(!isCloned) {
 			QueryColumn column = (QueryColumn) _columns.get(key);
 			if(column==null) {
@@ -592,7 +592,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#keys()
 	 */
-	public Key[] keys() {
+	public Collection.Key[] keys() {
 		return query.keys();
 	}
 
@@ -628,7 +628,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#remove(railo.runtime.type.Collection.Key)
 	 */
-	public Object remove(Key key) throws PageException {
+	public Object remove(Collection.Key key) throws PageException {
 		disconnectCache();
 		return query.remove(key);
 	}
@@ -644,7 +644,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeColumn(railo.runtime.type.Collection.Key)
 	 */
-	public QueryColumn removeColumn(Key key) throws DatabaseException {
+	public QueryColumn removeColumn(Collection.Key key) throws DatabaseException {
 		disconnectCache();
 		return query.removeColumn(key);
 	}
@@ -660,7 +660,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeColumnEL(railo.runtime.type.Collection.Key)
 	 */
-	public QueryColumn removeColumnEL(Key key) {
+	public QueryColumn removeColumnEL(Collection.Key key) {
 		disconnectCache();
 		return query.removeColumnEL(key);
 	}
@@ -676,7 +676,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeEL(railo.runtime.type.Collection.Key)
 	 */
-	public Object removeEL(Key key) {
+	public Object removeEL(Collection.Key key) {
 		disconnectCache();
 		return query.removeEL(key);
 	}
@@ -723,7 +723,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public Object set(Key key, Object value) throws PageException {
+	public Object set(Collection.Key key, Object value) throws PageException {
 		disconnectCache();
 		return query.set(key, value);
 	}
@@ -739,7 +739,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
 		disconnectCache();
 		return query.set(pc, propertyName, value);
 	}
@@ -755,7 +755,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#setAt(railo.runtime.type.Collection.Key, int, java.lang.Object)
 	 */
-	public Object setAt(Key key, int row, Object value) throws PageException {
+	public Object setAt(Collection.Key key, int row, Object value) throws PageException {
 		disconnectCache();
 		return query.setAt(key, row, value);
 	}
@@ -771,7 +771,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#setAtEL(railo.runtime.type.Collection.Key, int, java.lang.Object)
 	 */
-	public Object setAtEL(Key key, int row, Object value) {
+	public Object setAtEL(Collection.Key key, int row, Object value) {
 		disconnectCache();
 		return query.setAtEL(key, row, value);
 	}
@@ -802,7 +802,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public Object setEL(Key key, Object value) {
+	public Object setEL(Collection.Key key, Object value) {
 		disconnectCache();
 		return query.setEL(key, value);
 	}
@@ -818,7 +818,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
-	public Object setEL(PageContext pc, Key propertyName, Object value) {
+	public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
 		disconnectCache();
 		return query.setEL(pc, propertyName, value);
 	}
@@ -858,7 +858,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#sort(railo.runtime.type.Collection.Key)
 	 */
-	public void sort(Key column) throws PageException {
+	public void sort(Collection.Key column) throws PageException {
 		disconnectCache();
 		query.sort(column);
 	}
@@ -874,7 +874,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#sort(railo.runtime.type.Collection.Key, int)
 	 */
-	public synchronized void sort(Key keyColumn, int order) throws PageException {
+	public synchronized void sort(Collection.Key keyColumn, int order) throws PageException {
 		disconnectCache();
 		query.sort(keyColumn, order);
 	}
@@ -924,7 +924,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#rename(railo.runtime.type.Collection.Key, railo.runtime.type.Collection.Key)
 	 */
-	public synchronized void rename(Key columnName, Key newColumnName)
+	public synchronized void rename(Collection.Key columnName, Collection.Key newColumnName)
 			throws ExpressionException {
 		disconnectCache();
 		query.rename(columnName, newColumnName);
@@ -1577,7 +1577,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#getColumnName(int)
 	 */
-	public Key getColumnName(int columnIndex) {
+	public Collection.Key getColumnName(int columnIndex) {
 		// TODO Auto-generated method stub
 		return query.getColumnName(columnIndex);
 	}
@@ -1585,7 +1585,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#getColumnNames()
 	 */
-	public Key[] getColumnNames() {
+	public Collection.Key[] getColumnNames() {
 		// TODO Auto-generated method stub
 		return query.getColumnNames();
 	}
@@ -2019,7 +2019,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#setColumnNames(railo.runtime.type.Collection.Key[])
 	 */
-	public void setColumnNames(Key[] trg) throws PageException {
+	public void setColumnNames(Collection.Key[] trg) throws PageException {
 		// TODO Auto-generated method stub
 		query.setColumnNames(trg);
 	}

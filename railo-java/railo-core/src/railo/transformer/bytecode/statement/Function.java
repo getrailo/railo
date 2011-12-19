@@ -79,8 +79,8 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	
 	
 	private static final ExprString ANY = LitString.toExprString("any");
-	private static final ExprString PUBLIC = LitString.toExprString("public");
-	private static final ExprString EMPTY = LitString.toExprString("");
+	//private static final ExprString PUBLIC = LitString.toExprString("public");
+	//private static final ExprString EMPTY = LitString.toExprString("");
 
 
 	//private static final Type UDF = Type.getType(railo.runtime.type.UDFImpl.class);
@@ -162,11 +162,11 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	private ExprBoolean output=LitBoolean.TRUE;
 	private ExprBoolean abstr=LitBoolean.FALSE;
 	private int access=Component.ACCESS_PUBLIC;
-	private ExprString displayName=EMPTY;
-	private ExprString hint=EMPTY;
+	private ExprString displayName=LitString.EMPTY;
+	private ExprString hint=LitString.EMPTY;
 	private Body body;
-	private List arguments=new ArrayList();
-	private Map metadata;
+	private List<Argument> arguments=new ArrayList<Argument>();
+	private Map<String,Attribute> metadata;
 	private ExprString returnFormat;
 	private ExprString description;
 	private ExprBoolean secureJson;
@@ -390,7 +390,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		if(verifyClient!=null)ExpressionUtil.writeOutSilent(verifyClient,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
 		
-		Page.createMetaDataStruct(bc,metadata);
+		Page.createMetaDataStruct(bc,metadata,null);
 		adapter.invokeConstructor(UDF_PROPERTIES, type==-1?INIT_UDF_PROPERTIES_STRTYPE:INIT_UDF_PROPERTIES_SHORTTYPE);
 	}
 	
@@ -449,7 +449,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
     		arg.isPassByReference().writeOut(bc, Expression.MODE_VALUE);
     		arg.getDisplayName().writeOut(bc, Expression.MODE_REF);
     		arg.getHint().writeOut(bc, Expression.MODE_REF);
-    		Page.createMetaDataStruct(bc,arg.getMetaData());
+    		Page.createMetaDataStruct(bc,arg.getMetaData(),null);
     		ga.invokeConstructor(FUNCTION_ARGUMENT_IMPL, hasKey?INIT_FAI_KEY:INIT_FAI_STRING);
 
             ga.visitInsn(Opcodes.AASTORE);
@@ -487,23 +487,12 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 				LitBoolean.toExprBoolean(required),
 				defaultValue, 
 				LitBoolean.TRUE,
-				EMPTY,
-				EMPTY,null);
+				LitString.EMPTY,
+				LitString.EMPTY,null);
 	}
 
-	public void addArgument(String name, String type, boolean required) {
-		addArgument(
-				LitString.toExprString(name), 
-				LitString.toExprString(type), 
-				LitBoolean.toExprBoolean(required),
-				null,
-				LitBoolean.TRUE, 
-				EMPTY,
-				EMPTY,null);
-	}
-	
-
-	public void addArgument(Expression name, Expression type, Expression required, Expression defaultValue,ExprBoolean passByReference, Expression displayName, Expression hint,Map meta) {
+	public void addArgument(Expression name, Expression type, Expression required, Expression defaultValue,ExprBoolean passByReference, 
+			Expression displayName, Expression hint,Map meta) {
 		arguments.add(new Argument(name,type,required,defaultValue,passByReference,displayName,hint,meta));
 	}
 
@@ -521,8 +510,12 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		return body;
 	}
 
-	public void setMetaData(Map metadata) {
+	public void setMetaData(Map<String,Attribute> metadata) {
 		this.metadata=metadata;
+	}
+	
+	public void setHint(String hint){
+		this.hint=LitString.toExprString(hint);
 	}
 
 	public void addAttribute(Attribute attr) throws TemplateException {

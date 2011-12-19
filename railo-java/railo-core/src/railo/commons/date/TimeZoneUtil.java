@@ -6,6 +6,7 @@ import java.util.TimeZone;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 
 public class TimeZoneUtil {
@@ -17,6 +18,8 @@ public class TimeZoneUtil {
 		for(int i=0;i<ids.length;i++){
 			IDS.put(ids[i].toLowerCase(), TimeZone.getTimeZone(ids[i]));
 		}
+		TimeZone def = TimeZone.getDefault();
+		if(def!=null)IDS.put(def.getID(),def);
 		IDS.put("jvm", TimeZone.getDefault());
 		IDS.put("default", TimeZone.getDefault());
 		IDS.put("", TimeZone.getDefault());
@@ -128,9 +131,59 @@ public class TimeZoneUtil {
 		strTimezone=StringUtil.replace(strTimezone.trim().toLowerCase(), " ", "", false);
 		TimeZone tz = IDS.get(strTimezone);
 		if(tz!=null) return tz;
+		
+		//parse GMT followd by a number
+		float gmtOffset=Float.NaN;
+		if(strTimezone.startsWith("gmt")) gmtOffset=getGMTOffset(strTimezone.substring(3).trim(),Float.NaN);
+		else if(strTimezone.startsWith("etc/gmt")) gmtOffset=getGMTOffset(strTimezone.substring(7).trim(),Float.NaN);
+		else if(strTimezone.startsWith("utc")) gmtOffset=getGMTOffset(strTimezone.substring(3).trim(),Float.NaN);
+		else if(strTimezone.startsWith("etc/utc")) gmtOffset=getGMTOffset(strTimezone.substring(7).trim(),Float.NaN);
+		
+
+		
+		if(!Float.isNaN(gmtOffset)) {
+			strTimezone="etc/gmt"+(gmtOffset>=0?"+":"")+Caster.toString(gmtOffset);
+			tz = (TimeZone) IDS.get(strTimezone);
+			if(tz!=null) return tz;
+			
+		}
+		
+		
+		
+		
 		return defaultValue;
 	}
 	
+	private static float getGMTOffset(String str, float defaultValue) {
+		int index;
+		String left=null,right=null;
+		if((index=str.indexOf(':'))!=-1) {
+			left = str.substring(0,index);
+			right=str.substring(index+1);
+		}
+		else if(str.startsWith("-")) {
+			if(str.length()>=4 && str.indexOf('.')==-1){
+				left = str.substring(0,str.length()-2);
+				right=str.substring(str.length()-2);
+			}
+		}
+		else if(str.length()>=3 && str.indexOf('.')==-1) {
+			left = str.substring(0,str.length()-2);
+			right=str.substring(str.length()-2);
+		}
+		if(left!=null) {
+			int l = Caster.toIntValue(left,Integer.MIN_VALUE);
+			int r = Caster.toIntValue(right,Integer.MIN_VALUE);
+			if(l==Integer.MIN_VALUE || r==Integer.MIN_VALUE || r>59) return defaultValue;
+			return l+(r/60f);
+		}
+		
+		
+		float f=Caster.toFloatValue(str,Float.NaN);
+		if(Float.isNaN(f)) return defaultValue;
+		return f;
+	}
+
 	public static TimeZone toTimeZone(String strTimezone) throws ExpressionException{
 		TimeZone tz = toTimeZone(strTimezone, null);
 		if(tz!=null) return tz;

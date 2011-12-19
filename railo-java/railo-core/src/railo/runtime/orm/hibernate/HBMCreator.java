@@ -232,10 +232,10 @@ public class HBMCreator {
 				String columns=null;
 				try {
 					if(isRelated(props[i])){
-			        	columns=toString(engine,cfc,props[i], prop.getMeta(), "fkcolumn");
+			        	columns=toString(engine,cfc,props[i], prop.getDynamicAttributes(), "fkcolumn");
 			        }
 			        else {
-			        	columns=toString(engine,cfc,props[i], prop.getMeta(), "joincolumn");
+			        	columns=toString(engine,cfc,props[i], prop.getDynamicAttributes(), "joincolumn");
 			        }
 				}
 				catch(ORMException e){}
@@ -283,7 +283,7 @@ public class HBMCreator {
         	if(!ignoreTableName && !hasTable(engine,cfc,props[y], tableName)) continue;
         	
         	
-        	String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,null),null);
+        	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
 			if("id".equalsIgnoreCase(fieldType) || List.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
 				ids.add(props[y]);
 		}
@@ -293,10 +293,10 @@ public class HBMCreator {
         	String fieldType;
         	for(int y=0;y<props.length;y++){
         		if(!ignoreTableName && !hasTable(engine,cfc,props[y], tableName)) continue;
-            	fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,null),null);
+            	fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
     			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase("id")){
     				ids.add(props[y]);
-    				props[y].getMeta().setEL(FIELD_TYPE, "id");
+    				props[y].getDynamicAttributes().setEL(FIELD_TYPE, "id");
     			}
     		}
         } 
@@ -311,10 +311,10 @@ public class HBMCreator {
         		String id=owner+"id";
         		for(int y=0;y<props.length;y++){
         			if(!ignoreTableName && !hasTable(engine,cfc,props[y], tableName)) continue;
-                	fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,null),null);
+                	fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
 	    			if(StringUtil.isEmpty(fieldType,true) && props[y].getName().equalsIgnoreCase(id)){
 	    				ids.add(props[y]);
-	    				props[y].getMeta().setEL(FIELD_TYPE, "id");
+	    				props[y].getDynamicAttributes().setEL(FIELD_TYPE, "id");
 	    			}
 	    		}
         	}
@@ -330,7 +330,7 @@ public class HBMCreator {
 	private static void addVersion(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine) throws PageException {
     	Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,null),null);
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
 			if("version".equalsIgnoreCase(fieldType))
 				createXMLMappingVersion(engine,clazz,pc, cfc,props[y]);
 			else if("timestamp".equalsIgnoreCase(fieldType))
@@ -343,7 +343,7 @@ public class HBMCreator {
 	private static void addCollection(Component cfc,Element clazz, PageContext pc,PropertyCollection propColl, Struct columnsInfo, String tableName,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,"column"),"column");
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
 			if("collection".equalsIgnoreCase(fieldType))
 				createXMLMappingCollection(clazz,pc, cfc,props[y],ormConf,engine);
 		}
@@ -379,16 +379,16 @@ public class HBMCreator {
         Property first = properties[0];
         String schema = null, catalog=null, mappedBy=null, columns=null;
         if(isRelated(first)){
-        	catalog=toString(engine,cfc,first, first.getMeta(), "linkcatalog");
-        	schema=toString(engine,cfc,first, first.getMeta(), "linkschema");
-        	columns=toString(engine,cfc,first, first.getMeta(), "fkcolumn");
+        	catalog=toString(engine,cfc,first, first.getDynamicAttributes(), "linkcatalog");
+        	schema=toString(engine,cfc,first, first.getDynamicAttributes(), "linkschema");
+        	columns=toString(engine,cfc,first, first.getDynamicAttributes(), "fkcolumn");
         	
         }
         else {
-        	catalog=toString(engine,cfc,first, first.getMeta(), "catalog");
-        	schema=toString(engine,cfc,first, first.getMeta(), "schema");
-        	mappedBy=toString(engine,cfc,first, first.getMeta(), "mappedby");
-        	columns=toString(engine,cfc,first, first.getMeta(), "joincolumn");
+        	catalog=toString(engine,cfc,first, first.getDynamicAttributes(), "catalog");
+        	schema=toString(engine,cfc,first, first.getDynamicAttributes(), "schema");
+        	mappedBy=toString(engine,cfc,first, first.getDynamicAttributes(), "mappedby");
+        	columns=toString(engine,cfc,first, first.getDynamicAttributes(), "joincolumn");
         }
 
         if(!StringUtil.isEmpty(catalog)) join.setAttribute("catalog", catalog);
@@ -421,7 +421,7 @@ public class HBMCreator {
     	Property[] props = propColl.getProperties();
 		int count=0;
     	for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,"column"),"column");
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
 			if("one-to-one".equalsIgnoreCase(fieldType)){
 				createXMLMappingOneToOne(clazz,pc, cfc,props[y],engine);
 				count++;
@@ -443,7 +443,7 @@ public class HBMCreator {
 	}
 	
 	public static boolean isRelated(Property prop) {
-		String fieldType = Caster.toString(prop.getMeta().get(FIELD_TYPE,"column"),"column");
+		String fieldType = Caster.toString(prop.getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
 		if(StringUtil.isEmpty(fieldType,true)) return false;
 		fieldType=fieldType.toLowerCase().trim();
 		
@@ -459,7 +459,7 @@ public class HBMCreator {
 	private static void addProperty(Component cfc,Element clazz, PageContext pc, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws ORMException {
 		Property[] props = propColl.getProperties();
 		for(int y=0;y<props.length;y++){
-			String fieldType = Caster.toString(props[y].getMeta().get(FIELD_TYPE,"column"),"column");
+			String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,"column"),"column");
 			if("column".equalsIgnoreCase(fieldType))
 				createXMLMappingProperty(clazz,pc,cfc, props[y],columnsInfo,tableName,engine);
 		}
@@ -575,7 +575,7 @@ public class HBMCreator {
 	
 	private static String getTable(HibernateORMEngine engine,Component cfc,Property prop) {
 		try {
-			return engine.convertTableName(toString(engine,cfc,prop, prop.getMeta(), "table"));
+			return engine.convertTableName(toString(engine,cfc,prop, prop.getDynamicAttributes(), "table"));
 		} catch (ORMException e) {
 			return null;
 		}
@@ -609,7 +609,7 @@ public class HBMCreator {
 		// ids
 		for(int y=0;y<props.length;y++){
 			prop=props[y];
-			meta = prop.getMeta();
+			meta = prop.getDynamicAttributes();
 			Element key = doc.createElement("key-property");
 			cid.appendChild(key);
 			
@@ -652,7 +652,7 @@ public class HBMCreator {
 		String fieldType;
 		for(int y=0;y<props.length;y++){
 			prop=props[y];
-			meta = prop.getMeta();
+			meta = prop.getDynamicAttributes();
 			fieldType = toString(engine,cfc,prop,meta,"fieldType");
 			if(List.listFindNoCaseIgnoreEmpty(fieldType,"many-to-one",',')==-1)continue;
 			
@@ -676,7 +676,7 @@ public class HBMCreator {
 	
 	
 	private static void createXMLMappingId(Component cfc,Element clazz, PageContext pc,Property prop,Struct columnsInfo,String tableName,HibernateORMEngine engine) throws PageException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		String str;
 		
 		Document doc = XMLUtil.getDocument(clazz);
@@ -727,8 +727,8 @@ public class HBMCreator {
 						Property[] ids = getIds(engine,cfc,cfc.getProperties(true),null,true);
 						if(!ArrayUtil.isEmpty(ids)){
 							Property id = ids[0];
-							id.getMeta();
-							Struct meta = id.getMeta();
+							id.getDynamicAttributes();
+							Struct meta = id.getDynamicAttributes();
 							if(meta!=null){
 								String type=Caster.toString(meta.get(KeyImpl.TYPE,null));
 								
@@ -827,7 +827,7 @@ public class HBMCreator {
 	}*/
 
 	private static String createXMLMappingGenerator(HibernateORMEngine engine,Element id, PageContext pc,Component cfc,Property prop,StringBuilder foreignCFC) throws PageException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		
 		// generator
 		String className=toString(engine,cfc,prop,meta,"generator");
@@ -894,7 +894,7 @@ public class HBMCreator {
 	
 
 	private static void createXMLMappingProperty(Element clazz, PageContext pc,Component cfc,Property prop,Struct columnsInfo,String tableName,HibernateORMEngine engine) throws ORMException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		
         
 		
@@ -1013,7 +1013,7 @@ public class HBMCreator {
    >
 	 * */
 	private static void createXMLMappingOneToOne(Element clazz, PageContext pc,Component cfc,Property prop,HibernateORMEngine engine) throws PageException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		
 		Boolean b;
 		
@@ -1136,7 +1136,7 @@ public class HBMCreator {
 
 
 	private static void createXMLMappingCollection(Element clazz, PageContext pc,Component cfc,Property prop,ORMConfiguration ormConf, HibernateORMEngine engine) throws PageException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element el=null;
 		        
@@ -1287,7 +1287,7 @@ public class HBMCreator {
 
 	private static void createXMLMappingManyToMany(Component cfc,HibernateORMEngine engine,PropertyCollection propColl,Element clazz, PageContext pc,Property prop,ORMConfiguration ormConf, DatasourceConnection dc) throws PageException {
 		Element el = createXMLMappingXToMany(engine,propColl,clazz, pc, cfc,prop);
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element m2m = doc.createElement("many-to-many");
 		el.appendChild(m2m);
@@ -1316,7 +1316,7 @@ public class HBMCreator {
 				Struct m;
 				Property _prop=null;
 				for(int i=0;i<_props.length;i++){
-					m = _props[i].getMeta();
+					m = _props[i].getDynamicAttributes();
 					// fieldtype
 					String fieldtype = Caster.toString(m.get(FIELD_TYPE,null),null);
 					if("many-to-many".equalsIgnoreCase(fieldtype)) {
@@ -1383,7 +1383,7 @@ public class HBMCreator {
 
 	private static void createXMLMappingOneToMany(Component cfc,HibernateORMEngine engine,PropertyCollection propColl,ORMConfiguration ormConf,Element clazz, PageContext pc,Property prop) throws PageException {
 		Element el = createXMLMappingXToMany(engine,propColl,clazz, pc, cfc,prop);
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element x2m;
 		
@@ -1420,7 +1420,7 @@ public class HBMCreator {
 	
 	
 	private static Element createXMLMappingXToMany(HibernateORMEngine engine,PropertyCollection propColl,Element clazz, PageContext pc,Component cfc,Property prop) throws PageException {
-		final Struct meta = prop.getMeta();
+		final Struct meta = prop.getDynamicAttributes();
 		Document doc = XMLUtil.getDocument(clazz);
 		Element el=null;
 		
@@ -1518,12 +1518,12 @@ public class HBMCreator {
 		
 		
 		// fk column from local defintion
-		String str=prop==null?null:toString(engine,cfc,prop,prop.getMeta(),"fkcolumn");
+		String str=prop==null?null:toString(engine,cfc,prop,prop.getDynamicAttributes(),"fkcolumn");
 		if(!StringUtil.isEmpty(str))
 			return str;
 		
 		// no local defintion, get from Foreign enity
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		String type=toString(engine,cfc,prop,meta,"fieldtype",false);
 		String otherType;
 		if("many-to-one".equalsIgnoreCase(type)) 		otherType="one-to-many";
@@ -1540,17 +1540,17 @@ public class HBMCreator {
 			p=feProps[i];
 
 			// compare fieldType
-			str=toString(engine,feCFC,p,p.getMeta(),"fieldtype",false);
+			str=toString(engine,feCFC,p,p.getDynamicAttributes(),"fieldtype",false);
 			if(!otherType.equalsIgnoreCase(str)) continue;
 			
 			// compare cfc
-			str=toString(engine,feCFC,p,p.getMeta(),"cfc",false);
+			str=toString(engine,feCFC,p,p.getDynamicAttributes(),"cfc",false);
 			if(StringUtil.isEmpty(str)) continue;
 			_cfc=engine.getEntityByCFCName(str, false);
 			if(_cfc==null || !_cfc.equals(cfc))continue;
 			
 			// get fkcolumn
-			str=toString(engine,_cfc,p,p.getMeta(),"fkcolumn");
+			str=toString(engine,_cfc,p,p.getDynamicAttributes(),"fkcolumn");
 			if(!StringUtil.isEmpty(str)) return str;
 			
 			
@@ -1561,14 +1561,14 @@ public class HBMCreator {
 	
 	private static String createM2MFKColumnName(HibernateORMEngine engine, Component cfc, Property prop, PropertyCollection propColl) throws ORMException {
 		
-		String str=prop==null?null:toString(engine,cfc,prop,prop.getMeta(),"fkcolumn");
+		String str=prop==null?null:toString(engine,cfc,prop,prop.getDynamicAttributes(),"fkcolumn");
 		if(StringUtil.isEmpty(str)){
 			Property[] ids = getIds(engine,cfc,propColl);
 			if(ids.length==1) {
-				str=toString(engine,cfc,ids[0],ids[0].getMeta(),"column");
+				str=toString(engine,cfc,ids[0],ids[0].getDynamicAttributes(),"column");
 		    	if(StringUtil.isEmpty(str,true)) str=ids[0].getName();
 			}
-			else if(prop!=null)str=toString(engine,cfc,prop,prop.getMeta(),"fkcolumn",true);
+			else if(prop!=null)str=toString(engine,cfc,prop,prop.getDynamicAttributes(),"fkcolumn",true);
 			else
 				throw new ORMException(engine, "cannot terminate forgein key column name");
 			
@@ -1657,7 +1657,7 @@ public class HBMCreator {
 
 
 	private static void createXMLMappingManyToOne(Element clazz, PageContext pc,Component cfc,Property prop, HibernateORMEngine engine, PropertyCollection propColl) throws PageException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		Boolean b;
 		
 		Document doc = XMLUtil.getDocument(clazz);
@@ -1819,7 +1819,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	}
 
 	private static void createXMLMappingTimestamp(HibernateORMEngine engine,Element clazz, PageContext pc,Component cfc,Property prop) throws PageException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		String str;
 		Boolean b;
 		
@@ -1878,7 +1878,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 
 
 	private static void createXMLMappingVersion(HibernateORMEngine engine,Element clazz, PageContext pc,Component cfc,Property prop) throws PageException {
-		Struct meta = prop.getMeta();
+		Struct meta = prop.getDynamicAttributes();
 		
 		Document doc = XMLUtil.getDocument(clazz);
 		Element version = doc.createElement("version");

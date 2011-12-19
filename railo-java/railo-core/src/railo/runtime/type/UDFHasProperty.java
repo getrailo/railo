@@ -15,12 +15,12 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.PropertyFactory;
 
-public class UDFHasProperty extends UDFGSProperty {
+public final class UDFHasProperty extends UDFGSProperty {
 
-	private Property prop;
+	private final Property prop;
 	//private ComponentScope scope;
 	
-	private Key propName;
+	private final Key propName;
 	
 	//private static final String NULL="sdsdsdfsfsfjkln fsdfsa";
 

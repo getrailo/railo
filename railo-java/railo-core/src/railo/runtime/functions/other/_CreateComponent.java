@@ -27,16 +27,15 @@ public class _CreateComponent {
 			return cfc;
 		}
 		
+		Object rtn;
 		// no arguments
 		if(objArr.length==1) {
-			cfc.call(pc, INIT, EMPTY);
-			return cfc;
+			rtn = cfc.call(pc, INIT, EMPTY);
 		}	
 		// named arguments
 		else if(objArr[0] instanceof FunctionValue) {
 			Struct args=Caster.toFunctionValues(objArr,0,objArr.length-1);
-			cfc.callWithNamedValues(pc, INIT, args);
-			return cfc;
+			rtn = cfc.callWithNamedValues(pc, INIT, args);
 		}
 		// no name arguments
 		else {
@@ -46,9 +45,10 @@ public class _CreateComponent {
 				if(args[i] instanceof FunctionValue) 
 					throw new ExpressionException("invalid argument defintion,when using named parameters to a function, every parameter must have a name.");
 			}
-			cfc.call(pc, INIT, args);
-			return cfc;
+			rtn = cfc.call(pc, INIT, args);
 		}
+		if(rtn==null)return cfc;
+		return rtn;
 	}
 
 }

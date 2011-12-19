@@ -37,7 +37,8 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	private String _default;
 	private String displayname="";
 	private String hint="";
-	private Struct meta=new StructImpl();
+	private Struct dynAttrs=new StructImpl();
+	private Struct metadata;
 
 	private String ownerName;
 	
@@ -178,21 +179,38 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 
 	public Object getMetaData() {
 		Struct sct=new StructImpl();
-		sct.setEL(KeyImpl.NAME,name);
-		if(!StringUtil.isEmpty(hint))sct.setEL(KeyImpl.HINT,hint);
-		if(!StringUtil.isEmpty(displayname))sct.setEL("displayname",displayname);
-		if(!StringUtil.isEmpty(type))sct.setEL(KeyImpl.TYPE,type);
-		Iterator it = meta.keySet().iterator();
+		Iterator it;
 		Object key;
+		
+		// meta 
+		if(metadata!=null){
+			it = metadata.keySet().iterator();
+			while(it.hasNext()) {
+				key=it.next();
+				sct.setEL(KeyImpl.init(key.toString()),metadata.get(key));
+			}
+		}
+		
+		sct.setEL(KeyImpl.NAME,name);
+		if(!StringUtil.isEmpty(hint,true))sct.setEL(KeyImpl.HINT,hint);
+		if(!StringUtil.isEmpty(displayname,true))sct.setEL("displayname",displayname);
+		if(!StringUtil.isEmpty(type,true))sct.setEL(KeyImpl.TYPE,type);
+		
+		// dyn attributes
+		it = dynAttrs.keySet().iterator();
 		while(it.hasNext()) {
 			key=it.next();
-			sct.setEL(KeyImpl.init(key.toString()),meta.get(key));
+			sct.setEL(KeyImpl.init(key.toString()),dynAttrs.get(key));
 		}
 		return sct;
 	}
-	
+
+	public Struct getDynamicAttributes() {
+		return dynAttrs;
+	}
 	public Struct getMeta() {
-		return meta;
+		if(metadata==null) metadata=new StructImpl();
+		return metadata;
 	}
 
 	/**
@@ -203,7 +221,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	}
 
 	public boolean isPeristent() {
-		return Caster.toBooleanValue(meta.get(PERSITENT,Boolean.TRUE),true);
+		return Caster.toBooleanValue(dynAttrs.get(PERSITENT,Boolean.TRUE),true);
 	}
 
 	public void setOwnerName(String ownerName) {
@@ -220,14 +238,14 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		String strMeta="";
+		String strDynAttrs="";
 		try{
-		strMeta=new ScriptConverter().serialize(meta);
+		strDynAttrs=new ScriptConverter().serialize(dynAttrs);
 		}
 		catch(ConverterException ce){}
 		
 		return "default:"+this._default+";displayname:"+this.displayname+";hint:"+this.hint+
-		";name:"+this.name+";type:"+this.type+";ownerName:"+ownerName+";meta:"+strMeta+";";
+		";name:"+this.name+";type:"+this.type+";ownerName:"+ownerName+";attrs:"+strDynAttrs+";";
 	}
 	
 	public boolean equals(Object obj) {
@@ -244,7 +262,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		other.displayname=displayname;
 		other.getter=getter;
 		other.hint=hint;
-		other.meta=deepCopy?(Struct) Duplicator.duplicate(meta,deepCopy):meta;
+		other.dynAttrs=deepCopy?(Struct) Duplicator.duplicate(dynAttrs,deepCopy):dynAttrs;
 		other.name=name;
 		other.ownerName=ownerName;
 		other.required=required;

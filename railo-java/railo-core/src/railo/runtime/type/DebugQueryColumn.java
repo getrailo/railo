@@ -8,7 +8,7 @@ import railo.runtime.exp.DatabaseException;
 /**
  * implementation of the query column
  */
-public class DebugQueryColumn extends QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
+public final class DebugQueryColumn extends QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
       
 	
 	private boolean used;

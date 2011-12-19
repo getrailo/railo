@@ -96,7 +96,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	/**
 	 * @see railo.runtime.spooler.SpoolerEngine#add(railo.runtime.spooler.SpoolerTask)
 	 */
-	public void add(SpoolerTask task) {
+	public synchronized void add(SpoolerTask task) {
 		//openTasks.add(task);
 		add++;
 		task.setNextExecution(System.currentTimeMillis());

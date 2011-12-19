@@ -12,15 +12,15 @@ import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 
-public class CastableArray extends ArrayImpl {
+public final class CastableArray extends ArrayImpl {
 	
-	private Object value;
+	private final Object value;
 
 	/**
 	 * Constructor of the class
 	 * generates as string list of the array
 	 */
-	public CastableArray(){}
+	public CastableArray(){value=null;}
 	
 	public CastableArray(Object value){
 		this.value=value;

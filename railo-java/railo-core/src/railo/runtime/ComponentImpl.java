@@ -82,7 +82,7 @@ import railo.runtime.util.ArrayIterator;
  * %**%
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
+public final class ComponentImpl extends StructSupport implements Externalizable,ComponentAccess,coldfusion.runtime.TemplateProxy,Sizeable {
 
 
 	private ComponentProperties properties;
@@ -522,7 +522,7 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         		UDFImpl.argumentCollection(_namedArgs, new FunctionArgument[]{});
         		Key[] keys = _namedArgs.keys();
         		for(int i=0;i<keys.length;i++) {
-        			args.setEL(keys[i],_namedArgs.get(keys[i]));
+        			args.setEL(keys[i],_namedArgs.get(keys[i],null));
         		}
         	}
         	
@@ -1400,6 +1400,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
         metaUDFs(pc, comp, sct,access);
            
         
+
+        if(comp.properties.meta!=null) {
+        	Key[] keys = comp.properties.meta.keys();
+        	for(int i=0;i<keys.length;i++) {
+        		sct.setEL(keys[i],comp.properties.meta.get(keys[i],null));
+        	}
+        }
         
             
             
@@ -1411,15 +1418,10 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             sct.set("persistent",comp.properties.persistent);
             sct.set("accessors",comp.properties.accessors);
             sct.set("synchronized",comp.properties._synchronized);
+            if(comp.properties.output!=null)
+            sct.set(KeyImpl.OUTPUT,comp.properties.output);
             
             
-            
-            if(comp.properties.meta!=null) {
-            	Key[] keys = comp.properties.meta.keys();
-            	for(int i=0;i<keys.length;i++) {
-            		sct.setEL(keys[i],comp.properties.meta.get(keys[i],null));
-            	}
-            }
             
             // extends
             Struct ex=null;
@@ -1429,10 +1431,13 @@ public class ComponentImpl extends StructSupport implements Externalizable,Compo
             // implements
             InterfaceCollection ic = comp.interfaceCollection;
             if(ic!=null){
-	            InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
+            	Set set = List.listToSet(comp.properties.implement, ",",true);
+                InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
 	            if(!ArrayUtil.isEmpty(interfaces)){
 		            Struct imp=new StructImpl();
 	            	for(int i=0;i<interfaces.length;i++){
+	            		if(!set.contains(interfaces[i].getCallPath())) continue;
+	            		//print.e("-"+interfaces[i].getCallPath());
 	            		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc));
 		            }
 		            sct.set(IMPLEMENTS,imp);

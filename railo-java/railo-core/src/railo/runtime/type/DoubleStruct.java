@@ -11,7 +11,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.type.dt.DateTime;
 
-public class DoubleStruct extends StructImpl  {
+public final class DoubleStruct extends StructImpl  {
 	
 	/**
 	 * @see railo.runtime.type.util.StructSupport#castToBoolean(java.lang.Boolean)

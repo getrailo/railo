@@ -73,7 +73,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 */
 	public Object callWithNamedValues(PageContext pc, String name, Struct args) throws PageException {
 		return comp._call(pc, getAccess(), KeyImpl.init(name), args,null,true);
-		//return comp._call(pc,name,args,null,true);
 	}
 
 	/**
@@ -82,7 +81,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 */
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
 		return comp._call(pc, getAccess(), methodName, args,null,true);
-		//return comp._call(pc,methodName,args,null,true);
 	}
 	
 	/**
@@ -216,30 +214,13 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public synchronized Collection duplicate(boolean deepCopy) {
 		return new SuperComponent((ComponentImpl) comp.duplicate(deepCopy));
 	}
-	
-
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#get(railo.runtime.PageContext, java.lang.String)
-	 */
-	public Object get(PageContext pc, String name) throws PageException {
-		return comp.get(getAccess(), name);
-	}
 
 	/**
 	 *
 	 * @see railo.runtime.ComponentImpl#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
 	 */
 	public Object get(PageContext pc, Key key) throws PageException {
-		return comp.get(getAccess(), key);
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object get(PageContext pc, String name, Object defaultValue) {
-		return comp.get(getAccess(), name, defaultValue);
+		return get(key);
 	}
 
 	/**
@@ -247,7 +228,24 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see railo.runtime.ComponentImpl#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(PageContext pc, Key key, Object defaultValue) {
-		return comp.get(getAccess(), key, defaultValue);
+		return get(key, defaultValue);
+	}
+	
+
+	/**
+	 *
+	 * @see railo.runtime.ComponentImpl#get(railo.runtime.PageContext, java.lang.String)
+	 */
+	public Object get(PageContext pc, String name) throws PageException {
+		return get(KeyImpl.init(name));
+	}
+
+	/**
+	 *
+	 * @see railo.runtime.ComponentImpl#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
+	 */
+	public Object get(PageContext pc, String name, Object defaultValue) {
+		return get(KeyImpl.init(name),defaultValue);
 	}
 
 	/**
@@ -255,15 +253,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see railo.runtime.ComponentImpl#get(java.lang.String)
 	 */
 	public Object get(String name) throws PageException {
-		return comp.get(getAccess(),name);
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#get(railo.runtime.type.Collection.Key)
-	 */
-	public Object get(Key key) throws PageException {
-		return comp.get(getAccess(),key);
+		return get(KeyImpl.init(name));
 	}
 
 	/**
@@ -271,7 +261,17 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see railo.runtime.ComponentImpl#get(java.lang.String, java.lang.Object)
 	 */
 	public Object get(String name, Object defaultValue) {
-		return comp.get(getAccess(),name, defaultValue);
+		return get(KeyImpl.init(name), defaultValue);
+	}
+
+	/**
+	 *
+	 * @see railo.runtime.ComponentImpl#get(railo.runtime.type.Collection.Key)
+	 */
+	public Object get(Key key) throws PageException {
+		Member member=comp.getMember(getAccess(),key,true,true);
+        if(member!=null) return member.getValue();
+        return comp.get(getAccess(), key);
 	}
 
 	/**
@@ -279,7 +279,9 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see railo.runtime.ComponentImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		return comp.get(getAccess(),key, defaultValue);
+		Member member=getMember(getAccess(),key,true,true);
+        if(member!=null) return member.getValue();
+		return comp.get(getAccess(), key, defaultValue);
 	}
 
 	/**
