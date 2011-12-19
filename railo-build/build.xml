@@ -1,0 +1,111 @@
+<project name="RailoBuildFile" default="compile-core" basedir=".">
+    
+	<description>Main File to build the Railo Server Project</description>
+
+	<!-- Load properties -->
+	<property file="build.properties"/>
+	
+	<!-- Set jars -->
+	<path id="classpath">
+		<fileset dir="${lib.dir}"/>
+	</path>
+	
+	
+	<!-- cleaning up functions -->
+    <target name="clean-folders" description="Clears the build and dist directories.">
+    	<echo>Deleting ${build.dir} and ${dist.dir}</echo>
+    	<delete dir="${build.dir}" />
+    	<delete dir="${dist.dir}"/>
+
+		<echo>Creating the build, admin and dist directories.</echo>
+    	<mkdir dir="${build.dir}/loader"/>
+    	<mkdir dir="${build.dir}/core"/>
+    	<mkdir dir="${build.dir}/admin"/>
+    	<mkdir dir="${dist.dir}"/>
+    </target>
+	
+	<target name="build-loader" depends="clean-folders" description="Compiles the src classes.">
+        <echo>Compiling and building the railo loader</echo>
+        <javac srcdir="${src.dir}" destdir="${build.dir}/loader">
+        	<classpath refid="classpath"/>
+        </javac>
+        <echo>Packaging the railo-loader.jar file.</echo>
+    	<jar destfile="${dist.dir}/railo-loader.jar">
+    		<fileset dir="${build.dir}/loader"/>
+    	</jar>
+    </target>
+	
+
+    <target name="compile-core" depends="build-loader" description="Compiles the src classes.">
+        <echo>Compile Railo src.</echo>
+		
+        <javac srcdir="${src.dir}" destdir="${build.dir}/core">
+        	<classpath refid="classpath"/>
+        	<classpath location="${dist.dir}/railo-loader.jar" />
+        </javac>
+    </target>
+        	
+	<!-- ================================= 
+          target: createadmin              
+         ================================= -->
+    <target name="createadmin" depends="compile-core" description="Create the railo-context.ra">
+    	
+    	<property name="railo.admin_source_abs" location="${railo.admin_source}"/>
+    	<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>
+		<echo>Compiling Railo Administrator</echo>
+    	<!-- please note, that you have to set the railo.admin_source location in the properties file -->
+		<get src="${railo.url}?password=${railo.password}&amp;admin_source=${railo.admin_source_abs}" verbose="on" dest="generate.html"/>
+    	<loadfile property="railo.compile_message" srcFile="generate.html" />
+		<echo>Message from Railo: ${railo.compile_message}</echo>
+    	<echo>Admin compiled to: ${railo.admin_source_abs}/railo-context.ra</echo>
+    	<echo>Copying Railo Admin archive...</echo>
+		<copy tofile="${src.dir}/resource/context/railo-context.ra" file="${railo.admin_source_abs}/railo-context.ra" overwrite="yes"/>
+		<copy todir="${src.dir}/resource/context/admin/dbdriver">
+			<fileset dir="${railo.admin_source_abs}/admin/dbdriver"/>
+		</copy>
+		<copy todir="${src.dir}/resource/context/admin/plugin">
+			<fileset dir="${railo.admin_source_abs}/admin/plugin"/>
+		</copy>
+		<copy todir="${src.dir}/resource/context/templates">
+			<fileset dir="${railo.admin_source_abs}/templates"/>
+		</copy>
+    	
+    </target>
+	
+	<!-- ================================= 
+          target: copy railo.rc dependencies              
+         ================================= -->
+    <target name="copy" depends="createadmin" description="Copies the resource directory.">
+        <echo>Copy resource directory to build.</echo>
+    	<copy todir="${build.dir}/classes/resource">
+    		<fileset dir="${src.dir}/resource"/>
+    	</copy>
+		<echo>Copy railo-context.ra (admin) to context (Not yet implemented).</echo>
+		<copy todir="${build.dir}/classes/resource/context">
+			<fileset dir="${build.dir}/admin"/>
+		</copy>
+    	<!-- copy version information inside info.ini into the dist directory -->
+		<copy tofile="${build.dir}/classes/railo/runtime/Info.ini" file="${src.dir}/railo/runtime/Info.ini" overwrite="yes"/>
+    </target>
+	
+	<!-- ================================= 
+          target: package railo.rc              
+         ================================= -->
+    <target name="package" depends="copy" description="Creates the the core.rc file.">
+        <echo>Packaging the core.rc</echo>
+    	<jar destfile="${dist.dir}/${core.version}.rc">
+			<fileset dir="${build.dir}/classes" excludes="**/servlet/**"/>
+		</jar>
+    </target>
+		
+	<!-- ================================= 
+          target: install              
+         ================================= -->
+    <target name="install" depends="package" description="Copies the railo.jar file to the core directory.">
+        <echo>Copy the railo.rc file to the RailoLoader.</echo>
+    	<copy todir="${core.dir}">
+    		<fileset dir="${dist.dir}"/>
+    	</copy>
+    </target>
+
+</project>
