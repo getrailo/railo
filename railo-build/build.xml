@@ -4,6 +4,7 @@
 
 	<!-- Load properties -->
 	<property file="build.properties"/>
+	<property name="cfmladmin" location="${railo.admin_source}" />
 	
 	<!-- Set jars -->
 	<path id="classpath">
@@ -16,17 +17,20 @@
     	<echo>Deleting ${build.dir} and ${dist.dir}</echo>
     	<delete dir="${build.dir}" />
     	<delete dir="${dist.dir}"/>
+    	<delete dir="${work.dir}"/>
 
 		<echo>Creating the build, admin and dist directories.</echo>
     	<mkdir dir="${build.dir}/loader"/>
     	<mkdir dir="${build.dir}/core"/>
     	<mkdir dir="${build.dir}/admin"/>
+    	<mkdir dir="${build.dir}/debug"/>
     	<mkdir dir="${dist.dir}"/>
+    	<mkdir dir="${work.dir}"/>
     </target>
 	
 	<target name="build-loader" depends="clean-folders" description="Compiles the src classes.">
         <echo>Compiling and building the railo loader</echo>
-        <javac srcdir="${src.dir}" destdir="${build.dir}/loader">
+        <javac srcdir="${src.loader}" destdir="${build.dir}/loader">
         	<classpath refid="classpath"/>
         </javac>
         <echo>Packaging the railo-loader.jar file.</echo>
@@ -39,17 +43,68 @@
     <target name="compile-core" depends="build-loader" description="Compiles the src classes.">
         <echo>Compile Railo src.</echo>
 		
-        <javac srcdir="${src.dir}" destdir="${build.dir}/core">
+        <javac srcdir="${src.main}" destdir="${build.dir}/core">
         	<classpath refid="classpath"/>
         	<classpath location="${dist.dir}/railo-loader.jar" />
         </javac>
+    	 <echo>Packaging the railo-core as a .jar file (temporarily to run the debugger).</echo>
+    	 <jar destfile="${dist.dir}/railo-core.jar">
+    	   	<fileset dir="${build.dir}/core"/>
+    	 </jar>
     </target>
+	
+	<!-- now build the debugger so that we can then compile the admin depends="compile-core" -->
+   <target name="compile-debug"  description="Compiles the src classes.">
+        <echo>Compile the railo debugger.</echo>
+        <javac srcdir="${src.debug}" destdir="${build.dir}/debug" >
+        	<classpath location="${lib.debug}/javax.servlet.jar" />
+        	<classpath location="${lib.debug}/org.mortbay.jetty.jar" />
+        	<classpath location="${lib.debug}/mongo-2.2.jar" />
+        	<classpath location="${dist.dir}/railo-core.jar" />
+        	<classpath location="${dist.dir}/railo-loader.jar" />
+        </javac>
+   	
+   		<echo>Packaging the railo-debug as a .jar file (just to keep everything tidy).</echo>
+   	     <jar destfile="${dist.dir}/railo-debug.jar">
+   	    	   	<fileset dir="${build.dir}/debug"/>
+   	     </jar>
+    </target>
+	
+	
+	
+	 <target name="run-debug" depends="compile-debug" description="Runs railo from the debugger">
+	        <echo>Run the Railo debugger</echo>
+	 		<java fork="true" classname="main.RunAsJavaApplication">
+	 			<classpath location="${dist.dir}/railo-debug.jar" />
+	 			<classpath location="${lib.debug}/javax.servlet.jar" />
+	 			<classpath location="${lib.debug}/org.mortbay.jetty.jar" />
+	 			<classpath location="${lib.debug}/mongo-2.2.jar" />
+	 			<classpath location="${dist.dir}/railo-core.jar" />
+	 			<classpath location="${dist.dir}/railo-loader.jar" />
+	 			<classpath refid="classpath"/>
+	 			<!-- 
+	 			<arg value="8123"/> 
+	 			<classpath refid="classpath"/>
+	 			<classpath location="${dist.dir}/railo-loader.jar" /> -->
+	 		</java>
+	    </target>
+	
+	<!--
+	Removed for the moment
+	<target name="compile-admin" description="Compiles the administrator">
+		<java jar="buildserver/libs/railo-cli.jar" fork="true">
+			<arg value="-webroot=../railo-cfml/"/>
+			<arg value="-uri=/compileAdmin.cfm?admin_source=${cfmladmin}"/>
+			<classpath refid="classpath"/>
+			<classpath location="${dist.dir}/railo-loader.jar" />
+		</java>
+	</target>
+	-->
         	
 	<!-- ================================= 
-          target: createadmin              
+          target: createadmin        depends="compile-core"      
          ================================= -->
-    <target name="createadmin" depends="compile-core" description="Create the railo-context.ra">
-    	
+    <target name="createadmin"  description="Create the railo-context.ra">
     	<property name="railo.admin_source_abs" location="${railo.admin_source}"/>
     	<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>
 		<echo>Compiling Railo Administrator</echo>
