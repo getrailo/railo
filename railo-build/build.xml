@@ -69,18 +69,21 @@
 	
 	
 
-	
-	<target name="compile-admin" depends="compile-core" description="tests if the cli is working">
+	<!-- depends="compile-core" -->
+	<target name="compile-admin"  description="tests if the cli is working">
 		
-		<!-- libs for the cli specifically -->
-		<path id="cliclasspath">
-			<fileset dir="cli/lib"/>
-		</path>
-			<java jar="cli/railo-cli.jar" fork="true">
+			<java classname="railo.cli.Main" fork="true">
+			<classpath>
+				<pathelement location="cli/railo-cli.jar" /> 
+				<fileset dir="cli/lib">
+				     <include name="**/*.jar"/>
+				</fileset>
+		     	<fileset dir="../railo-java/libs/">
+		     	     <include name="**/*.jar"/>
+		     	</fileset>
+			</classpath>
 				<arg value="-webroot=cli/webroot/"/>
 				<arg value="-uri=/compileAdmin.cfm?admin_source=${cfmladmin}"/>
-				<classpath refid="classpath"/>
-				<classpath refid="cliclasspath" />
 			</java>
 			<move file="${cfmladmin}/railo-context.ra" todir="${dist.dir}" />
 			
