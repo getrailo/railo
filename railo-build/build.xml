@@ -69,8 +69,8 @@
 	
 	
 
-	<!-- depends="compile-core" -->
-	<target name="compile-admin"  description="tests if the cli is working">
+	<!--  -->
+	<target name="compile-admin" depends="compile-core" description="tests if the cli is working">
 		
 			<java classname="railo.cli.Main" fork="true">
 			<classpath>
