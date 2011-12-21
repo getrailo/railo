@@ -19,7 +19,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
 
-public class ObjectStruct extends StructSupport implements Struct,Objects {
+public final class ObjectStruct extends StructSupport implements Struct,Objects {
 
 
 	private JavaObject jo;

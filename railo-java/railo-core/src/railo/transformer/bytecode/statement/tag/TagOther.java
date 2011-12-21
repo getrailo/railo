@@ -53,6 +53,11 @@ public final class TagOther {
 			"setDynamicAttribute",
 			Type.VOID_TYPE,
 			new Type[]{Types.STRING,Types.STRING,Types.OBJECT});
+	
+	private static final Method SET_META_DATA = new Method(
+			"setMetaData",
+			Type.VOID_TYPE,
+			new Type[]{Types.STRING,Types.OBJECT});
 
 	// void hasBody(boolean hasBody)
 	private static final Method HAS_BODY = new Method(
@@ -214,6 +219,19 @@ public final class TagOther {
 			}
 		}
 
+
+		// metadata
+		Map<String, Attribute> metadata = tag.getMetaData();
+		if(metadata!=null){
+			Iterator<Attribute> it = metadata.values().iterator();
+			while(it.hasNext()) {
+				attr=it.next();
+					adapter.loadLocal(currLocal);
+					adapter.push(attr.getName());
+					attr.getValue().writeOut(bc, Expression.MODE_REF);
+					adapter.invokeVirtual(currType, SET_META_DATA);
+			}
+		}
 		
 		
 		
@@ -245,6 +263,7 @@ public final class TagOther {
 				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}
 		}
+		
 		
 		
 	// Body

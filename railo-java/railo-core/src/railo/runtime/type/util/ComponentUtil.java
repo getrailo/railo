@@ -23,7 +23,6 @@ import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.Page;
@@ -575,7 +574,7 @@ public final class ComponentUtil {
 		Property[] props = getProperties(c, onlyPeristent);
 		java.util.List<Property> tmp=new ArrayList<Property>();
 		for(int i=0;i<props.length;i++){
-			if("id".equalsIgnoreCase(Caster.toString(props[i].getMeta().get(FIELD_TYPE,null),"")))
+			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))
 				tmp.add(props[i]);
 		}
 		return tmp.toArray(new Property[tmp.size()]);
@@ -615,9 +614,9 @@ public final class ComponentUtil {
 		if(pc.getActiveComponent()==null) return current; 
 		if(pc.getActiveUDF()!=null && (pc.getActiveComponent()).getPageSource()==(pc.getActiveUDF().getOwnerComponent()).getPageSource()){
 			
-			return (ComponentImpl) pc.getActiveUDF().getOwnerComponent();
+			return (ComponentAccess) pc.getActiveUDF().getOwnerComponent();
 		}
-		return (ComponentImpl) pc.getActiveComponent();//+++
+		return (ComponentAccess) pc.getActiveComponent();//+++
 		
 		
 	}

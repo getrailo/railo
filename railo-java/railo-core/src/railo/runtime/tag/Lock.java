@@ -187,20 +187,21 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
         
 	    String lockType = null;
 	    if(name==null) {
+	    	String cid=pageContext.getConfig().getId();
 	        // Session
 	        if(scope==SCOPE_REQUEST){
 	            lockType="request"; 
-	            name="__request_"+ ((RequestImpl)pageContext.requestScope())._getId();
+	            name="__request_"+cid+"__"+ ((RequestImpl)pageContext.requestScope())._getId();
 	        }
 	        // Session
 	        else if(scope==SCOPE_SESSION){
 	            lockType="session"; 
-	            name="__session_"+ pageContext.sessionScope()._getId();
+	            name="__session_"+cid+"__"+ pageContext.sessionScope()._getId();
 	        }
 	        // Application 
 	        else if(scope==SCOPE_APPLICATION){
 	            lockType="application";
-	            name="__application_"+((ApplicationImpl)pageContext.applicationScope())._getId();
+	            name="__application_"+cid+"__"+((ApplicationImpl)pageContext.applicationScope())._getId();
 	        }
 	        // Server
 	        else if(scope==SCOPE_SERVER){
@@ -208,7 +209,6 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	            name="__server_"+((ServerImpl)pageContext.serverScope())._getId();
 	        }
 	    }
-	    
 	    Struct cflock=new StructImpl();
 	    cflock.set("succeeded",Boolean.TRUE);
 	    cflock.set("errortext","");

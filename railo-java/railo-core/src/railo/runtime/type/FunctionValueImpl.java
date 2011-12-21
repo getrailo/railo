@@ -19,9 +19,9 @@ import railo.runtime.type.dt.DateTime;
 public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	
 
-	private Collection.Key name;
-	private String[] names;
-	private Object value;
+	private final Collection.Key name;
+	private final String[] names;
+	private final Object value;
 
 	/**
 	 * @param name
@@ -48,16 +48,19 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	public FunctionValueImpl(String name,Object value) {
         this.name=KeyImpl.init(name);
 		this.value=value;
+		names=null;
 	} 
 
 	public FunctionValueImpl(Collection.Key name,Object value) {
         this.name=name;
 		this.value=value;
+		names=null;
 	} 
 	
 	public FunctionValueImpl(String[] names,Object value) {
         this.names=names;
 		this.value=value;
+		name=null;
 	} 
 	
 	/**

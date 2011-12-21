@@ -17,11 +17,15 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 public final class GetComponentMetaData implements Function {
 	
 	
+	private static final Collection.Key FUNCTIONS = KeyImpl.init("functions");
+
 	public static Struct call(PageContext pc , Object obj) throws PageException {
 		if(obj instanceof Component){
 			Component cfc = (Component)obj;
@@ -60,14 +64,12 @@ public final class GetComponentMetaData implements Function {
 			meta=getMetaData(pc,obj);
 			config.putComponentMetadata(key, new ConfigImpl.ComponentMetaData(meta,lastMod));
 		}
-		else 
+		else {
+			Struct tmp = getMetaData(pc,obj);
 			meta=data.meta;
-		/*else {
-			Key[] keys = metadata.keys();
-			for(int i=0;i<keys.length;i++){
-				meta.setEL(keys[i],metadata.get(keys[i],null));
-			}
-		}*/
+			Object funcs = tmp.get(FUNCTIONS,null);
+			if(funcs!=null)meta.setEL(FUNCTIONS, funcs);
+		}
 		return meta;
 	}
 

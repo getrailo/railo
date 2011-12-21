@@ -15,7 +15,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 
-public class ClusterWrap extends ScopeSupport implements Cluster,Sizeable {
+public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable {
 
 	private ClusterRemote core;
 	private int offset;

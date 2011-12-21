@@ -20,7 +20,6 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.op.Caster;
 
 public final class Compress {
@@ -81,7 +80,7 @@ public final class Compress {
 	}
 	
 	
-	private void load(boolean caseSensitive) {
+	private synchronized void load(boolean caseSensitive) {
 		long actLastMod = ffile.lastModified();
 		lastMod=actLastMod;
 		lastCheck=System.currentTimeMillis();
@@ -108,10 +107,18 @@ public final class Compress {
 			catch(Throwable t){}
 		}
 		
+		
 		if(temp!=null) {
-			if(root!=null)ResourceUtil.removeChildrenEL(root);
-			String name=CreateUUID.invoke();
+			String name=Caster.toString(actLastMod)+":"+Caster.toString(ffile.length());
+			name=MD5.getDigestAsString(name,name);
 			root=temp.getRealResource(name);
+			if(actLastMod>0 && root.exists()) return;
+			
+			
+			ResourceUtil.removeChildrenEL(temp);
+			//if(root!=null)ResourceUtil.removeChildrenEL(root);
+			//String name=CreateUUID.invoke();
+			//root=temp.getRealResource(name);
 			root.mkdirs();
 		}
 		else {
@@ -173,7 +180,7 @@ public final class Compress {
 
 	private void doSynchronize() {
 		try {
-			CompressUtil.compress(format, new Resource[]{root}, ffile, 777);
+			CompressUtil.compress(format, root.listResources(), ffile, 777);
 			//ramProvider=null;
 		} 
 		catch (IOException e) {}
@@ -209,7 +216,7 @@ public final class Compress {
 				}
 				// sync
 				tmpis = tmp.getInputStream();
-				CompressUtil.compressTar(new Resource[]{root}, tmp, -1);
+				CompressUtil.compressTar(root.listResources(), tmp, -1);
 				CompressUtil.compressGZip(tmpis, gos);
 			}
 			catch (IOException e) {}
@@ -231,7 +238,7 @@ public final class Compress {
 					if(zip.syn+interval<=System.currentTimeMillis()) break;
 				}
 				// sync
-				CompressUtil.compressTar(new Resource[]{root}, tos, -1);
+				CompressUtil.compressTar(root.listResources(), tos, -1);
 			}
 			catch (IOException e) {}
 			finally {
@@ -250,7 +257,7 @@ public final class Compress {
 					if(zip.syn+interval<=System.currentTimeMillis()) break;
 				}
 				// sync
-				CompressUtil.compressZip(new Resource[]{root}, zos, null);
+				CompressUtil.compressZip(root.listResources(), zos, null);
 			}
 			catch (IOException e) {}
 			finally {

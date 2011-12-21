@@ -16,6 +16,7 @@ import railo.runtime.cache.eh.remote.soap.SoapClient;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 
@@ -130,7 +131,7 @@ public class EHCacheRemote extends CacheSupport {
 			info.setEL("max_elements_on_disk", new Double(conf.getMaxElementsOnDisk()));
 			info.setEL("time_to_idle", new Double(conf.getTimeToIdleSeconds()));
 			info.setEL("time_to_live", new Double(conf.getTimeToLiveSeconds()));
-			info.setEL("name", conf.getName());
+			info.setEL(KeyImpl.NAME, conf.getName());
 		}
 		catch(Throwable t){
 			//print.printST(t);

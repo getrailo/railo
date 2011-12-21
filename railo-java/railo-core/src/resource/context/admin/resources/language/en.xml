@@ -983,7 +983,7 @@
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
 	<data key="settings.cache.Buttons.default">set as default</data>
 	<data key="settings.orm.title">Settings</data>
-	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with struct ""ormsettings""</data>
+	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with the struct "ormsettings".</data>
 	<data key="settings.orm.autogenmap">Automatically generate mapping</data>
 	<data key="settings.orm.autogenmapDesc">Specifies whether Railo should automatically generate mapping for the persistent CFCs. If disabled, mapping should be provided in the form of .HBMXML files. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.autogenmap=true]</data>
 	<data key="settings.orm.catalog">Catalog</data>

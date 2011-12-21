@@ -3,7 +3,7 @@ package railo.runtime.type.scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 
-public class VariablesImpl extends ScopeSupport implements Variables {
+public final class VariablesImpl extends ScopeSupport implements Variables {
 
 	public VariablesImpl() {
 		super("variables",SCOPE_VARIABLES,Struct.TYPE_REGULAR);

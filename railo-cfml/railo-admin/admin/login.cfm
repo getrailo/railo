@@ -55,7 +55,7 @@ function doFocus() {<cfoutput>
     	<td class="tblHead" width="100" align="right">#stText.login.captchaHelp#</td>
         
 		<td class="tblContent" width="200">
-        <cfimage action="captcha" width="160" height="28" text="#cap#" difficulty="medium">
+        <cfimage action="captcha" width="160" height="30" text="#cap#" difficulty="medium">
         <a style="font-size : 10px" href="#request.self#<cfif structKeyExists(url,"action")>?action=#url.action#</cfif>">Reload</a><br />
         
         

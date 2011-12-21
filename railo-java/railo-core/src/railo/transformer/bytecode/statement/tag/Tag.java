@@ -121,4 +121,9 @@ public interface Tag extends Statement,HasBody {
 	public abstract void setScriptBase(boolean scriptBase);
 	public abstract boolean isScriptBase();
 
+	//public abstract void setHint(String hint);
+	public abstract void addMetaData(Attribute metadata);
+	//public abstract String getHint();
+	public abstract Map<String, Attribute> getMetaData();
+
 }

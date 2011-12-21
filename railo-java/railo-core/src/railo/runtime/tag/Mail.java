@@ -514,7 +514,7 @@ public final class Mail extends BodyTagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
 	public int doEndTag() throws PageException	{
-		
+		smtp.setTimeZone(pageContext.getTimeZone());
 		try {
 			smtp.send((ConfigImpl) pageContext.getConfig());
 		} 

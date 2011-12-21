@@ -134,7 +134,7 @@ public class HibernateUtil {
 			while(res.next()) {
 				name=res.getString("COLUMN_NAME");
 				p=(Property) properties.get(name,null);
-				if(p!=null) p.getMeta().setEL("fieldtype", "id");
+				if(p!=null) p.getDynamicAttributes().setEL("fieldtype", "id");
 			}
 			
 			// MUST foreign-key relation
@@ -169,7 +169,7 @@ public class HibernateUtil {
 
 
 	private static int getFieldType(Property property, int defaultValue) {
-		return getFieldType(Caster.toString(property.getMeta().get(FIELDTYPE, null),null),defaultValue);
+		return getFieldType(Caster.toString(property.getDynamicAttributes().get(FIELDTYPE, null),null),defaultValue);
 			
 	}
 	

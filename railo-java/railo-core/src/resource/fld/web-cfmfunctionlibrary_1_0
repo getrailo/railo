@@ -2191,6 +2191,76 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	
+	<!-- dateTimeFormat
+	<function>
+		<name>dateTimeFormat</name>
+		<class>railo.runtime.functions.displayFormatting.DateTimeFormat</class>
+		<description>Formats a date/time string to a given output</description>
+		<argument>
+			<name>datetime</name>
+			<type>any</type>
+			<required>Yes</required>
+		<description>Datetime object</description>
+    </argument>
+		<argument>
+			<name>mask</name>
+			<type>string</type>
+			<required>No</required>
+			<default>dd-mmm-yy hh:nn tt</default>
+		<description>
+Characters that show how Railo displays a date:
+- d: Day of the month as digits; no leading zero for single-digit days.
+- dd: Day of the month as digits; leading zero for single-digit days.
+- ddd: Day of the week as a three-letter abbreviation.
+- dddd: Day of the week as its full name.
+- m: Month as digits; no leading zero for single-digit months.
+- mm: Month as digits; leading zero for single-digit months.
+- mmm: Month as a three-letter abbreviation.
+- mmmm: Month as its full name.
+- yy: Year as last two digits; leading zero for years less than 10.
+- yyyy: Year represented by four digits.
+- gg: Period/era string. Ignored. Reserved. The following masks tell how to format the full date and cannot be combined with other masks:
+- h: hours; no leading zero for single-digit hours (12-hour clock)
+- hh: hours; leading zero for single-digit hours (12-hour clock)
+- H: hours; no leading zero for single-digit hours (24-hour clock)
+- HH: hours; leading zero for single-digit hours (24-hour clock)
+- n: minutes; no leading zero for single-digit minutes
+- nn: minutes; a leading zero for single-digit minutes
+- s: seconds; no leading zero for single-digit seconds
+- ss: seconds; leading zero for single-digit seconds
+- l or L: milliseconds, with no leading zeros
+- t: one-character time marker string, such as A or P
+- tt: multiple-character time marker string, such as AM or PM
+
+- short: equivalent to m/d/y h:mm tt
+- medium: equivalent to mmm d, yyyy h:mm:ss tt
+- long: equivalent to mmmm d, yyyy h:mm:ss tt {timezone-3-letters}
+- full: equivalent to dddd, mmmm d, yyyy h:mm:ss tt {timezone-3-letters}
+
+</description>
+    </argument>
+		<argument>
+			<name>timezone</name>
+			<type>string</type>
+			<required>No</required>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	 -->
+	
 	<!-- datePart -->
 	<function>
 		<name>datePart</name>
@@ -4458,8 +4528,17 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>suppressFunction</name>
 			<type>boolean</type>
 			<required>no</required>
-			<description>if true only data members from this sope are returned (no functions), default is false</description>
+			<description>if true only data members from this scope are returned (no functions), default is false</description>
 		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
+	<!-- ApplicationGetMetaData -->
+	<function>
+		<name>ApplicationGetMetaData</name>
+		<class>railo.runtime.functions.system.ApplicationGetMetaData</class>
+		<description>return all data from this scope, when using a application.cfc or all setting defined in tag cfapplication</description>
 		<return>
 			<type>struct</type>
 		</return>
@@ -4573,6 +4652,40 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>array</type>
 		</return>
 	</function>
+	<!-- GetFreeSpace -->
+	<function>
+		<name>GetFreeSpace</name>
+		<class>railo.runtime.functions.file.GetFreeSpace</class>
+		<description>
+		Returns the number of unallocated bytes in the partition named by this abstract path name.
+The returned number of unallocated bytes is a hint, but not a guarantee, that it is possible to use most or any of these bytes. The number of unallocated bytes is most likely to be accurate immediately after this call. It is likely to be made inaccurate by any external I/O operations including those made on the system outside of this virtual machine. This method makes no guarantee that write operations to this file system will succeed.
+</description>
+		<argument>
+			<name>filepath</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>file path</description>
+	    </argument>
+		<return>
+			<type>numeric</type>
+		</return>
+	</function>
+	<!-- GetTotalSpace -->
+	<function>
+		<name>GetTotalSpace</name>
+		<class>railo.runtime.functions.file.GetTotalSpace</class>
+		<description>Returns the size of the partition named by this abstract pathname.</description>
+		<argument>
+			<name>filepath</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>file path</description>
+	    </argument>
+		<return>
+			<type>numeric</type>
+		</return>
+	</function>
+	
 	<!-- getDirectoryFromPath -->
 	<function>
 		<name>getDirectoryFromPath</name>
@@ -13533,8 +13646,8 @@ _- asc (default): ascending (a to z) sort order
 		<class>railo.runtime.functions.other.SystemOutput</class>
 		<description>writes the given string to the output stream</description>
 		<argument>
-			<name>str</name>
-			<type>string</type>
+			<name>obj</name>
+			<type>Object</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
@@ -13585,7 +13698,26 @@ _- asc (default): ascending (a to z) sort order
 			<type>string</type>
 			<required>No</required>
 			<default>"hh:mm tt</default>
-		<description>Masking characters that determine the format</description>
+		<description>
+Characters that show how Railo displays a time:
+- h: hours; no leading zero for single-digit hours (12-hour clock)
+- hh: hours; leading zero for single-digit hours (12-hour clock)
+- H: hours; no leading zero for single-digit hours (24-hour clock)
+- HH: hours; leading zero for single-digit hours (24-hour clock)
+- m: minutes; no leading zero for single-digit minutes
+- mm: minutes; a leading zero for single-digit minutes
+- s: seconds; no leading zero for single-digit seconds
+- ss: seconds; leading zero for single-digit seconds
+- l or L: milliseconds, with no leading zeros
+- t: one-character time marker string, such as A or P
+- tt: multiple-character time marker string, such as AM or PM
+
+- short: equivalent to h:mm tt
+- medium: equivalent to h:mm:ss tt
+- long: equivalent to h:mm:ss tt {timezone-3-letters}
+- full: equivalent to h:mm:ss tt {timezone-3-letters}
+		
+		</description>
     </argument>
 		<argument>
 			<name>timezone</name>

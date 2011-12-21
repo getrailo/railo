@@ -300,6 +300,8 @@ public final class Controler extends Thread {
 			
 			clearClassLoaders(config.getTagMapping());
 			clear(getPageSourcePools(config.getTagMapping()));
+			
+			System.gc();
 		}
 		
     }

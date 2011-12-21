@@ -31,6 +31,7 @@ public final class GetMetaData implements Function {
 	public static Object call(PageContext pc , Object object) throws PageException {
 		return call(pc, object, false);
 	}
+	
 	public static Object call(PageContext pc , Object object,boolean source) throws PageException {
 		if(object instanceof JavaObject){
 			return call(pc,((JavaObject)object).getClazz(),source);
@@ -42,7 +43,8 @@ public final class GetMetaData implements Function {
 		if(!source){
 			// Component
 			if(object instanceof Component) {
-				return ((Component)object).getMetaData(pc);
+				return GetComponentMetaData.call(pc, object);
+				//return ((Component)object).getMetaData(pc);
 			}
 			// UDF
 			if(object instanceof UDF) {

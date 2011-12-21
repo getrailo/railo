@@ -49,7 +49,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private ServletConfig config;
     private ConfigServerImpl configServer;
     private SecurityManager securityManager;
-    private final LockManager lockManager= LockManagerImpl.getInstance(false);
+    private static final LockManager lockManager= LockManagerImpl.getInstance(false);
     private Resource rootDir;
     private CFMLCompilerImpl compiler=new CFMLCompilerImpl();
     private Page baseComponentPage;

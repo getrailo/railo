@@ -35,17 +35,21 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 	}
 
 	/**
-	 *
+	 * FUTURE deprecated
 	 * @see DataSourceManager#getConnection(PageContext pc,java.lang.String, java.lang.String, java.lang.String)
 	 */
-
 	public DatasourceConnection getConnection(PageContext pc,String _datasource, String user, String pass) throws PageException {
+		return getConnection(pc,pc.getConfig().getDataSource(_datasource), user, pass);
+	}
+
+	// FUTURE add to interface
+	public DatasourceConnection getConnection(PageContext pc,DataSource ds, String user, String pass) throws PageException {
 		if(autoCommit)
-			return config.getDatasourceConnectionPool().getDatasourceConnection(pc,config.getDataSource(_datasource),user,pass);
+			return config.getDatasourceConnectionPool().getDatasourceConnection(pc,ds,user,pass);
 		
 		
 		pc=ThreadLocalPageContext.get(pc);
-		DatasourceConnection dc=((PageContextImpl)pc)._getConnection(_datasource,user,pass);
+		DatasourceConnection dc=((PageContextImpl)pc)._getConnection(ds,user,pass);
 		
 		// transaction
 		//if(!autoCommit) {
@@ -58,7 +62,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
                     transConn=dc;
     			}
     			else if(!transConn.equals(dc)) {
-                	if("_queryofquerydb".equalsIgnoreCase(_datasource)) return dc;
+                	if("_queryofquerydb".equalsIgnoreCase(ds.getName())) return dc;
     				throw new DatabaseException(
     						"can't use different connections inside a transaction",null,null,dc);
     			}

@@ -20,7 +20,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.IteratorWrapper;
 
-public class RequestImpl extends StructSupport implements Request {
+public final class RequestImpl extends StructSupport implements Request {
 
 	
 	private HttpServletRequest req;

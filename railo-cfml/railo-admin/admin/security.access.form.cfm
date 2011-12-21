@@ -228,9 +228,8 @@
 function changeFileAccessVisibility(name,field){
 	var display=0;
 	if(field){
-		display=field.value=='all'?1:2;
+		display=field.value!='local'?1:2;
 	}
-	
 	var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);
 	var s=null;
 	for(var i=0;i<tds.length;i++) {
@@ -252,16 +251,16 @@ function changeFileAccessVisibility(name,field){
 <tr>
 	<td ><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<tr  name="fileAccess">
+<tr  name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
 	<td colspan="5">#stText.Security.FileCustom#<br />
 <span class="comment">#stText.Security.FileCustomDesc#</span></td>
 </tr>
-<tr name="fileAccess">
+<tr name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
 	<td width="350" class="tblHead" nowrap>#stText.Security.FilePath#</td>
 </tr>
 
 	<cfloop index="idx" from="1" to="#arrayLen(access.file_access)#">
-		<tr name="fileAccess">
+		<tr name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
 		<!--- path --->
 			<td class="tblContent" nowrap><cfinput 
 				type="text" name="path_#idx#" 
@@ -271,8 +270,8 @@ function changeFileAccessVisibility(name,field){
 	</cfloop>
 	<!--- INSERT --->
 	
-		<tr name="fileAccess">
-			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no" onclick="changeFileAccessVisibility('fileAccess')"  style="width:400px"></td>
+		<tr name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
+			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no" style="width:400px"></td>
 		</tr>
 	
 </table>
@@ -363,7 +362,5 @@ function changeFileAccessVisibility(name,field){
 </tr>
 </cfform></cfoutput>
 </table>
-
-<cfif access.file EQ "all"><script>changeFileAccessVisibility('fileAccess');</script></cfif>
 <br><br>
 
