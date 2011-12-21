@@ -76,7 +76,6 @@
 		<path id="cliclasspath">
 			<fileset dir="cli/lib"/>
 		</path>
-		
 			<java jar="cli/railo-cli.jar" fork="true">
 				<arg value="-webroot=cli/webroot/"/>
 				<arg value="-uri=/compileAdmin.cfm?admin_source=${cfmladmin}"/>
