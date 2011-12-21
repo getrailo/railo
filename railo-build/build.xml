@@ -47,20 +47,27 @@
         	<classpath refid="classpath"/>
         	<classpath location="${dist.dir}/railo-loader.jar" />
         </javac>
-    	 <echo>Packaging the railo-core as a .jar file (temporarily to run the debugger).</echo>
+    	 <echo>Packaging the railo-core.jar file.</echo>
     	 <jar destfile="${dist.dir}/railo-core.jar">
-    	   	<fileset dir="${build.dir}/core"/>
+    	 	<fileset dir="${build.dir}/core"/>
     	 </jar>
+    	
+    	
     </target>
 	
 	<!-- now build the debugger so that we can then compile the admin depends="compile-core" -->
-   <target name="compile-debug"  description="Compiles the src classes.">
+   <target name="compile-debug" depends="compile-core" description="Compiles the src classes.">
         <echo>Compile the railo debugger.</echo>
+   	
+   		<path id="coreclasspath">
+   			<fileset dir="${build.dir}/core"/>
+   		</path>
         <javac srcdir="${src.debug}" destdir="${build.dir}/debug" >
+        	<classpath refid="coreclasspath" />
+        	<classpath refid="classpath"/>
         	<classpath location="${lib.debug}/javax.servlet.jar" />
         	<classpath location="${lib.debug}/org.mortbay.jetty.jar" />
         	<classpath location="${lib.debug}/mongo-2.2.jar" />
-        	<classpath location="${dist.dir}/railo-core.jar" />
         	<classpath location="${dist.dir}/railo-loader.jar" />
         </javac>
    	
@@ -74,14 +81,17 @@
 	
 	 <target name="run-debug" depends="compile-debug" description="Runs railo from the debugger">
 	        <echo>Run the Railo debugger</echo>
+			 	<path id="coreclasspath">
+	 	   			<fileset dir="${build.dir}/core"/>
+		   		</path>
 	 		<java fork="true" classname="main.RunAsJavaApplication">
+	 	        <classpath refid="coreclasspath" />
+	 			<classpath refid="classpath"/>
 	 			<classpath location="${dist.dir}/railo-debug.jar" />
 	 			<classpath location="${lib.debug}/javax.servlet.jar" />
 	 			<classpath location="${lib.debug}/org.mortbay.jetty.jar" />
 	 			<classpath location="${lib.debug}/mongo-2.2.jar" />
-	 			<classpath location="${dist.dir}/railo-core.jar" />
 	 			<classpath location="${dist.dir}/railo-loader.jar" />
-	 			<classpath refid="classpath"/>
 	 			<!-- 
 	 			<arg value="8123"/> 
 	 			<classpath refid="classpath"/>
@@ -100,6 +110,15 @@
 		</java>
 	</target>
 	-->
+	
+	<target name="test-cli" description="tests if the cli is working">
+			<java jar="cli/libs/railo-cli.jar" fork="true">
+				<arg value="-webroot=../railo-cfml/"/>
+				<arg value="-uri=/compileAdmin.cfm?admin_source=${cfmladmin}"/>
+				<classpath refid="classpath"/>
+				<classpath location="cli/libs/objectweb-asm-all.jar" />
+			</java>
+		</target>
         	
 	<!-- ================================= 
           target: createadmin        depends="compile-core"      
