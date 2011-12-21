@@ -1,4 +1,4 @@
-<project name="RailoBuildFile" default="compile-admin" basedir=".">
+<project name="RailoBuildFile" default="package" basedir=".">
     
 	<description>Main File to build the Railo Server Project</description>
 
@@ -20,11 +20,8 @@
 	</taskdef>
 	
 	
-	
-	
-	
 	<!-- cleaning up functions -->
-    <target name="clean-folders" description="Clears the build and dist directories.">
+    <target name="clean" description="Clears the build and dist directories.">
     	<echo>Deleting ${build.dir} and ${dist.dir}</echo>
     	<delete dir="${build.dir}" />
     	<delete dir="${dist.dir}"/>
@@ -32,14 +29,14 @@
 
 		<echo>Creating the build, admin and dist directories.</echo>
     	<mkdir dir="${build.dir}/loader"/>
-    	<mkdir dir="${build.dir}/core"/>
+    	<mkdir dir="${build.dir}/classes"/>
     	<mkdir dir="${build.dir}/admin"/>
     	<mkdir dir="${build.dir}/debug"/>
     	<mkdir dir="${dist.dir}"/>
     	<mkdir dir="${work.dir}"/>
     </target>
 	
-	<target name="build-loader" depends="clean-folders" description="Compiles the src classes.">
+	<target name="build-loader" depends="clean" description="Compiles the src classes.">
         <echo>Compiling and building the railo loader</echo>
         <javac srcdir="${src.loader}" destdir="${build.dir}/loader">
         	<classpath refid="classpath"/>
@@ -51,26 +48,26 @@
     </target>
 	
 
-    <target name="compile-core" depends="build-loader" description="Compiles the src classes.">
+    <target name="compile-classes" depends="build-loader" description="Compiles the src classes.">
         <echo>Compile Railo src.</echo>
 		
-        <javac srcdir="${src.main}" destdir="${build.dir}/core">
+        <javac srcdir="${src.main}" destdir="${build.dir}/classes">
         	<classpath refid="classpath"/>
         	<classpath location="${dist.dir}/railo-loader.jar" />
         </javac>
+    	
+    	<!--
     	 <echo>Packaging the railo-core.jar file.</echo>
     	 <jar destfile="${dist.dir}/railo-core.jar">
     	 	<fileset dir="${build.dir}/core"/>
     	 </jar>
-    	
+    	-->
     	
     </target>
 	
 	
 	
-
-	<!--  -->
-	<target name="compile-admin" depends="compile-core" description="tests if the cli is working">
+	<target name="compile-railo-context" depends="compile-classes" description="tests if the cli is working">
 		
 			<java classname="railo.cli.Main" fork="true">
 			<classpath>
@@ -87,11 +84,52 @@
 			</java>
 			<move file="${cfmladmin}/railo-context.ra" todir="${dist.dir}" />
 			
+			<!-- these are ok to copy since we are getting them from the source -->
+			<copy todir="${dist.dir}/resource/context/admin/dbdriver">
+				<fileset dir="${cfmladmin}/admin/dbdriver"/>
+			</copy>
+			<copy todir="${dist.dir}/resource/context/admin/plugin">
+				<fileset dir="${cfmladmin}/admin/plugin"/>
+			</copy>
+			<copy todir="${dist.dir}/resource/context/templates">
+				<fileset dir="${cfmladmin}/templates"/>
+			</copy>
+				
 		</target>
         	
-	
+		<!-- ================================= 
+   	          target: copy railo.rc dependencies              
+   	         ================================= -->
+   	    <target name="copy-dependencies" depends="compile-railo-context" description="Copies the resource directory.">
+   	        <echo>Copy resource directory to build from ${src.dir} to ${build.dir}</echo>
+   	    	<copy todir="${build.dir}/classes/resource">
+   	    		<fileset dir="${src.dir}/resource"/>
+   	    	</copy>
+   			<echo>Copy railo-context.ra (admin) to context (Not yet implemented).</echo>
+   			<copy todir="${build.dir}/classes/resource/context">
+   				<fileset dir="${build.dir}/admin"/>
+   			</copy>
+   	    	<!-- copy version information inside info.ini into the dist directory -->
+   			<copy tofile="${build.dir}/classes/railo/runtime/Info.ini" file="${src.dir}/railo/runtime/Info.ini" overwrite="yes"/>
+   	    </target>
+   		
+   		<!-- ================================= 
+   	          target: package railo.rc              
+   	         ================================= -->
+   	    <target name="package" depends="copy-dependencies" description="Creates the the core.rc file.">
+   	        <echo>Packaging the core.rc from ${dist.dir}</echo>
+   	    	<jar destfile="${dist.dir}/${version.number}.rc">
+   				<fileset dir="${build.dir}/classes" excludes="**/servlet/**"/>
+   			</jar>
+
+   	    </target>
+   			
+   	
+   	    			
+   	    			
+   	    			
 	<!-- now build the debugger so that we can then compile the admin depends="compile-core" -->
-	   <target name="compile-debug" depends="compile-core" description="Compiles the src classes.">
+	   <target name="compile-debug" depends="compile-classes" description="Compiles the src classes.">
 	        <echo>Compile the railo debugger.</echo>
 	   	
 	   		<path id="coreclasspath">
@@ -111,6 +149,10 @@
 	   	    	   	<fileset dir="${build.dir}/debug"/>
 	   	     </jar>
 	    </target>
+	   	    	   		
+	   	    	   		
+	   	
+	   	    	   		
 		
 		
 		
@@ -161,40 +203,6 @@
     	
     </target>
 	
-	<!-- ================================= 
-          target: copy railo.rc dependencies              
-         ================================= -->
-    <target name="copy" depends="createadmin" description="Copies the resource directory.">
-        <echo>Copy resource directory to build.</echo>
-    	<copy todir="${build.dir}/classes/resource">
-    		<fileset dir="${src.dir}/resource"/>
-    	</copy>
-		<echo>Copy railo-context.ra (admin) to context (Not yet implemented).</echo>
-		<copy todir="${build.dir}/classes/resource/context">
-			<fileset dir="${build.dir}/admin"/>
-		</copy>
-    	<!-- copy version information inside info.ini into the dist directory -->
-		<copy tofile="${build.dir}/classes/railo/runtime/Info.ini" file="${src.dir}/railo/runtime/Info.ini" overwrite="yes"/>
-    </target>
 	
-	<!-- ================================= 
-          target: package railo.rc              
-         ================================= -->
-    <target name="package" depends="copy" description="Creates the the core.rc file.">
-        <echo>Packaging the core.rc</echo>
-    	<jar destfile="${dist.dir}/${core.version}.rc">
-			<fileset dir="${build.dir}/classes" excludes="**/servlet/**"/>
-		</jar>
-    </target>
-		
-	<!-- ================================= 
-          target: install              
-         ================================= -->
-    <target name="install" depends="package" description="Copies the railo.jar file to the core directory.">
-        <echo>Copy the railo.rc file to the RailoLoader.</echo>
-    	<copy todir="${core.dir}">
-    		<fileset dir="${dist.dir}"/>
-    	</copy>
-    </target>
 
 </project>
