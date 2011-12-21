@@ -1,4 +1,4 @@
-<project name="RailoBuildFile" default="compile-core" basedir=".">
+<project name="RailoBuildFile" default="compile-admin" basedir=".">
     
 	<description>Main File to build the Railo Server Project</description>
 
@@ -70,7 +70,7 @@
 	
 
 	
-	<target name="compile-admin" description="tests if the cli is working">
+	<target name="compile-admin" depends="compile-core" description="tests if the cli is working">
 		
 		<!-- libs for the cli specifically -->
 		<path id="cliclasspath">
