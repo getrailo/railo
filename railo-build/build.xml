@@ -125,8 +125,41 @@
    	    </target>
    			
    	
-   	    			
-   	    			
+   	    	
+	
+<!-- 
+main targets 
+	build a rc
+	build a railo jar
+	build tomcat bundle
+	build war
+	build jars zip
+-->
+	
+	
+	<target name="build-rc">
+		<echo>Builds the .rc file that can be added to your patches directory of an existing server</echo>
+	</target>
+	
+	<target name="build-railo-jar">
+		<echo>Builds the main railo.jar file that can be deployed in the lib directory of a server</echo>
+	</target>
+	
+	<target name="build-tomcat">
+		<echo>Builds a version of tomcat with railo already installed and all the settings for it to run on multiple operating systems</echo>
+	</target>
+			
+	<target name="build-jetty">
+		<echo>Builds a version of jetty with railo already installed and all the settings for it to run on multiple operating systems</echo>
+	</target>
+			
+	<target name="build-war">
+		<echo>Builds railo packaged as a WAR ready to deploy to a servlet container</echo>
+	</target>   	    			
+
+	<target name="build-jar-zip">
+		<echo>Builds railo packaged as a zip with all the other reqiured jars </echo>
+	</target>   	    			
    	    			
 	<!-- now build the debugger so that we can then compile the admin depends="compile-core" -->
 	   <target name="compile-debug" depends="compile-classes" description="Compiles the src classes.">
