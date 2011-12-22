@@ -11,7 +11,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigImpl.ComponentMetaData;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -20,6 +19,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ComponentUtil;
 
 public final class GetComponentMetaData implements Function {
@@ -29,54 +29,17 @@ public final class GetComponentMetaData implements Function {
 
 	public static Struct call(PageContext pc , Object obj) throws PageException {
 		if(obj instanceof Component){
-			Component cfc = (Component)obj;
-			return getMetaData(pc,cfc);
+			return ((Component)obj).getMetaData(pc);
 		}
 		
 		try{
 			Component cfc = CreateObject.doComponent(pc, Caster.toString(obj));
-			return getMetaData(pc,cfc);
+			return cfc.getMetaData(pc);
 		}
 		// TODO better solution
 		catch(ApplicationException ae){
 			InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
-			return getMetaData(pc,inter);
+			return inter.getMetaData(pc);
 		}
 	}
-
-	private static Struct getMetaData(PageContext pc, Component cfc) throws PageException {
-		return getMetaData(pc, ComponentUtil.toComponentPro(cfc).getPageSource(), cfc);
-	}
-	
-	private static Struct getMetaData(PageContext pc, InterfaceImpl inter) throws PageException {
-		return getMetaData(pc, inter.getPageSource(), inter);
-	}
-	
-
-	private static Struct getMetaData(PageContext pc, PageSource ps, Object obj) throws PageException {// FUTURE make a class instance of cfc instead of all this
-		String key=ps.getDisplayPath();
-		long lastMod=0;
-		if(ps.physcalExists()) lastMod=ps.getFile().lastModified();
-		
-		ConfigImpl config=(ConfigWebImpl) pc.getConfig();
-		ComponentMetaData data = config.getComponentMetadata(key);
-		Struct meta;
-		if(data==null || data.lastMod!=lastMod) {
-			meta=getMetaData(pc,obj);
-			config.putComponentMetadata(key, new ConfigImpl.ComponentMetaData(meta,lastMod));
-		}
-		else {
-			Struct tmp = getMetaData(pc,obj);
-			meta=data.meta;
-			Object funcs = tmp.get(FUNCTIONS,null);
-			if(funcs!=null)meta.setEL(FUNCTIONS, funcs);
-		}
-		return meta;
-	}
-
-	private static Struct getMetaData(PageContext pc, Object obj) throws PageException {
-		if(obj instanceof Component) return ((Component)obj).getMetaData(pc);
-		return ((InterfaceImpl)obj).getMetaData(pc);
-	}
-	
 }

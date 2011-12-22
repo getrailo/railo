@@ -407,7 +407,7 @@ public abstract class ConfigImpl implements Config {
         clearFunctionCache();
         clearCTCache();
         clearComponentCache();
-        clearComponentMetadata();
+        //clearComponentMetadata();
     }
     
     /**
@@ -833,8 +833,8 @@ public abstract class ConfigImpl implements Config {
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
 	        	for(int i=0;i<cmappings.length;i++) {
-	                PageSource ps = cmappings[i].getPageSource(realPath);
-	            	if(ps.exists()) return ps;
+	        		PageSource ps = cmappings[i].getPageSource(realPath);
+	        		if(ps.exists()) return ps;
 	            }
         	}
         }
@@ -3356,35 +3356,7 @@ public abstract class ConfigImpl implements Config {
 		return false;
 	}
 	
-	private Map<String,ComponentMetaData> componentMetaData=null;
-	public ComponentMetaData getComponentMetadata(String key) {
-		if(componentMetaData==null) return null;
-		return componentMetaData.get(key.toLowerCase());
-	}
-	public void putComponentMetadata(String key,ComponentMetaData data) {
-		if(componentMetaData==null) componentMetaData=new HashMap<String, ComponentMetaData>();
-		componentMetaData.put(key.toLowerCase(),data);
-	}
 	
-	public void clearComponentMetadata() {
-		if(componentMetaData==null) return; 
-		componentMetaData.clear();
-	}
-	
-	public static class ComponentMetaData {
-
-		public final Struct meta;
-		public final long lastMod;
-
-		public ComponentMetaData(Struct meta, long lastMod) {
-			this.meta=meta;
-			this.lastMod=lastMod;
-		}
-		
-	}
-	
-	
-
 
 	public abstract int getLoginDelay();
 	

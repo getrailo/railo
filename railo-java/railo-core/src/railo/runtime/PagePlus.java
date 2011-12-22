@@ -1,6 +1,7 @@
 package railo.runtime;
 
 import railo.runtime.component.ImportDefintion;
+import railo.runtime.type.Struct;
 
 
 // FUTURE move all this to page and delete this class
@@ -35,4 +36,6 @@ public abstract class PagePlus extends Page {
 		
 		return ZERO;//new ImportDefintion[]{ImportDefintion.getInstance("jm.test.components.*",null),ImportDefintion.getInstance("jm.test.*",null)};
 	}
+	
+	public Struct metaData;
 }
