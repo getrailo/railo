@@ -43,8 +43,7 @@ public final class GetMetaData implements Function {
 		if(!source){
 			// Component
 			if(object instanceof Component) {
-				return GetComponentMetaData.call(pc, object);
-				//return ((Component)object).getMetaData(pc);
+				return ((Component)object).getMetaData(pc);
 			}
 			// UDF
 			if(object instanceof UDF) {

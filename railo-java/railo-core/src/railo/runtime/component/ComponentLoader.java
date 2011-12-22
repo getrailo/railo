@@ -32,15 +32,19 @@ public class ComponentLoader {
 	
 
     public static ComponentImpl loadComponent(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
-    	return (ComponentImpl)load(pc, rawPath, searchLocal, searchRoot,null);
+    	return (ComponentImpl)load(pc, rawPath, searchLocal, searchRoot,null,false);
     }
-    
 
     public static InterfaceImpl loadInterface(PageContext pc,String rawPath, Map interfaceUDFs) throws PageException  {
-    	return (InterfaceImpl)load(pc, rawPath, Boolean.TRUE, Boolean.TRUE,interfaceUDFs);
+    	return (InterfaceImpl)load(pc, rawPath, Boolean.TRUE, Boolean.TRUE,interfaceUDFs,false);
     }
 	
-    private static Object load(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot, Map interfaceUDFs) throws PageException  {
+    public static PagePlus loadPage(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    	return (PagePlus)load(pc, rawPath, searchLocal, searchRoot,null,true);
+    }
+    
+    
+    private static Object load(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot, Map interfaceUDFs, boolean returnPage) throws PageException  {
     	ConfigImpl config=(ConfigImpl) pc.getConfig();
     	boolean doCache=config.useComponentPathCache();
     	
@@ -71,7 +75,7 @@ public class ComponentLoader {
 	    	localCacheName=localCacheName.substring(0,localCacheName.lastIndexOf('/')+1).concat(pathWithCFC);
 	    	if(doCache){
 	    		page=config.getCachedPage(pc, localCacheName);
-	    		if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    		if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    	}
 	    }
 	    
@@ -84,7 +88,7 @@ public class ComponentLoader {
 	    		
 	    		if(impDef.isWildcard() || impDef.getName().equalsIgnoreCase(path)){
 	    			page=config.getCachedPage(pc, "import:"+impDef.getPackageAsPath()+pathWithCFC);
-	    			if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    			if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    			
 	    			//app-page=config.getCachedPage(pc, "import:"+appName+":"+impDef.getPackageAsPath()+pathWithCFC);
 	    			//app-if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
@@ -97,7 +101,7 @@ public class ComponentLoader {
     	if(doCache) {
 	    	// check global in cache
 	    	page=config.getCachedPage(pc, pathWithCFC);
-	    	if(page!=null) return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    	if(page!=null) return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    	
 	    	// get pages from application mappings
 	    	//app-page=config.getCachedPage(pc, ":"+appName+":"+pathWithCFC);
@@ -114,7 +118,7 @@ public class ComponentLoader {
 
 				if(page!=null){
 					if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
-					return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+					return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 				}
 			}
     	}
@@ -141,7 +145,7 @@ public class ComponentLoader {
 			    		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 			    		if(page!=null)	{
 			    			if(doCache)config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
-			    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+			    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 			        	}
 	    			}
 	    			
@@ -169,7 +173,7 @@ public class ComponentLoader {
 	    	    		
 	    	    		if(doCache && !((MappingImpl)ps.getMapping()).isAppMapping())
 	    	    			config.putCachedPageSource("import:"+key, page.getPageSource());
-	    				return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+	    				return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    	    	}
 		    		
 	    			// search component mappings
@@ -180,7 +184,7 @@ public class ComponentLoader {
 		        		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 			    		if(page!=null)	{    
 			    			if(doCache)config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
-			    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+			    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 			        	}
 		        	}
 		    	}
@@ -218,7 +222,7 @@ public class ComponentLoader {
     		//app-String key=((MappingImpl)ps.getMapping()).isAppMapping()?":"+appName+":"+pathWithCFC:pathWithCFC;
     		String key=pathWithCFC;
     		if(doCache && !((MappingImpl)ps.getMapping()).isAppMapping())config.putCachedPageSource(key, page.getPageSource());
-			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	}
 		
     	// search component mappings
@@ -230,7 +234,7 @@ public class ComponentLoader {
     		
     		if(page!=null){
     			if(doCache)config.putCachedPageSource(pathWithCFC, page.getPageSource());
-    			return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
         	}
     	}
     	
@@ -246,7 +250,7 @@ public class ComponentLoader {
 	
 					if(page!=null){
 						//if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
-						return load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
+						return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 					}
 				}
     		}
@@ -256,7 +260,7 @@ public class ComponentLoader {
     	if(StringUtil.startsWithIgnoreCase(rawPath, "cfide.")) {
     		String rpm="org.railo.cfml."+rawPath.substring(6);
     		try{
-    			return load(pc,rpm, searchLocal, searchRoot, interfaceUDFs);
+    			return load(pc,rpm, searchLocal, searchRoot, interfaceUDFs,returnPage);
         	}
         	catch(ExpressionException ee){
         		throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath+" or "+rpm);

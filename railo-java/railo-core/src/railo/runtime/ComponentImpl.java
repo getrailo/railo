@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
@@ -55,7 +54,6 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -125,8 +123,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	private static final Key PERSISTENT = KeyImpl.intern("persistent");
 	private static final Key ACCESSORS = KeyImpl.intern("accessors");
 	private static final Key SYNCRONIZED = KeyImpl.intern("synchronized");
-	private static final Key HINT = KeyImpl.intern("hint");
-	private static final Key DISPLAY_NAME = KeyImpl.intern("displayname");
+	protected static final Key DISPLAY_NAME = KeyImpl.intern("displayname");
 	
 	public long sizeOf() {
 		return 
@@ -1445,7 +1442,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
             
         String hint=comp.properties.hint;
         String displayname=comp.properties.dspName;
-        if(!StringUtil.isEmpty(hint))sct.set(HINT,hint);
+        if(!StringUtil.isEmpty(hint))sct.set(KeyImpl.HINT,hint);
         if(!StringUtil.isEmpty(displayname))sct.set(DISPLAY_NAME,displayname);
         
         sct.set(PERSISTENT,comp.properties.persistent);
@@ -1462,7 +1459,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         // implements
         InterfaceCollection ic = comp.interfaceCollection;
         if(ic!=null){
-        	Set set = List.listToSet(comp.properties.implement, ",",true);
+        	Set<String> set = List.listToSet(comp.properties.implement, ",",true);
             InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
             if(!ArrayUtil.isEmpty(interfaces)){
 	            Struct imp=new StructImpl();
