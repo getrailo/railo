@@ -74,6 +74,19 @@ component output="false" extends="Base" accessors="true"{
 				Pos += Len ;
 
 			}
+			// If SQL comment found, consume until closing comment.
+			elseif ( Mid(Sql,Pos,2) EQ '/*' )
+			{
+				var Len = 2 ;
+				while ( Mid(Sql,Pos+Len,2) NEQ '*/' AND Pos LTE TotalLen )
+				{
+					Len++ ;
+				}
+				Len += 2 ;
+
+				result.add({type='String',value=Mid(Sql,StartPos,Len)});
+				Pos += Len ;
+			}
 			// If colon found outside a string, check if named param.
 			elseif (NextChar EQ ':')
 			{
@@ -100,7 +113,7 @@ component output="false" extends="Base" accessors="true"{
 			// If Pos marker has not changed, find any non-significant text and treat as string.
 			if (Pos EQ StartPos)
 			{
-				var Match = refind( '[^:"''?]+' , Sql , Pos , true ) ;
+				var Match = refind( '(?:[^:"''?/]|/(?!\*))+' , Sql , Pos , true ) ;
 				if (ArrayLen(Match.Pos) AND Match.Pos[1] EQ Pos)
 				{
 					result.add({type='String',value=Mid(Sql,Match.Pos[1],Match.Len[1])})
