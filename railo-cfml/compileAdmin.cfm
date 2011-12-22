@@ -1,11 +1,9 @@
 <cfsetting showdebugoutput="No" enablecfoutputonly="Yes">
-
 <cftry>
 
 	<cfadmin 
 		action="updateMapping"
 		type="web"
-		password="#url.password#"
 		archive=""
 		primary="physical"
 		trusted="false"
@@ -16,14 +14,19 @@
 	<cfadmin 
 		action="createArchive"
 		type="web"
-		password="#url.password#"
 		file="#url.admin_source#/railo-context.ra"
 		virtual="/railo-context-compiled"
 		secure="true"
 		append="false"
 		remoteClients="">
+		
+		
 	<cfcatch type="Any">
 		<cfoutput>Mapping not created. Error occured. (#cfcatch.message#)</cfoutput>
+		<cfsavecontent variable="errorFull">
+		<cfdump var="#cfcatch#">
+		</cfsavecontent>
+		<cffile action="write" file="error.html" output="#errorFull#">
 		<cfabort>
 	</cfcatch>
 </cftry>

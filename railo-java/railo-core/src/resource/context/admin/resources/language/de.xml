@@ -123,9 +123,9 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.resources.component">Komponenten</data>
 	<data key="menu.resources.customtags">Custom Tags</data>
 	<data key="menu.resources.cfx_tags">CFX Tags</data>
-	<data key="menu.debugging.label">Debugging</data>
-	<data key="menu.debugging.logs">Logs</data>
-	<data key="menu.debugging.templates">Templates</data>
+	<data key="menu.development.label">Entwicklung</data>
+	<data key="menu.monitor.label">Monitoring</data>
+	<data key="menu.development.debugging">Debugging</data>
 	<data key="menu.security.label">Sicherheit</data>
 	<data key="menu.security.access">Zugriff</data>
 	<data key="menu.security.password">Passwort</data>
@@ -134,7 +134,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
 	<data key="security.customtagdescription">Custom tags können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
-	<data key="security.tagobject">Tag CFObject / Funktion createObject</data>
+	<data key="security.tagobject">Tag CFObject / &lt;br&gt;Funktion createObject</data>
 	<data key="security.debugging">Debugging</data>
 	<data key="security.mail">Mail</data>
 	<data key="security.filecustom">Zusätzliche Verzeichnisse</data>
@@ -162,7 +162,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="security.cfmlenvironmentdescription">Einstellungen die festlegen wie Railo Code mit dem Hostsystem interagiert.</data>
 	<data key="security.functions">Tags &amp; Funktionen</data>
 	<data key="security.functionsdescription">Tags and Funktionen, die ein potentielles Sicherheitsrisiko für das Hostsystem darstellen.</data>
-	<data key="security.filedescription">Legt fest, wie Railo mit dem lokalen Dateisystem in einer Instanz interagieren kann.&lt;br&gt;- none: erlaubt keinen Zugriff auf das lokale Dateisystem&lt;br&gt;- local: erlaubt nur Dateizugriffe innerhalb des Webrootverzeichnisses&lt;br&gt;- all: erlaubt vollen Dateizugriff auf das Hostsystem.</data>
+	<data key="security.filedescription">Legt fest, wie Railo mit dem lokalen Dateisystem in einer Instanz interagieren kann.&lt;br&gt;- none: erlaubt keinen Zugriff auf das lokale Dateisystem&lt;br&gt;- local: erlaubt nur Dateizugriffe innerhalb des Webrootverzeichnisses&lt;br&gt;- all: erlaubt vollen Dateizugriff auf das Hostsystem.&lt;br&gt;</data>
 	<data key="security.cfmlenvironment">CFML Umgebung</data>
 	<data key="security.file">Dateizugriff</data>
 	<data key="security.settingsdescription">Die Einstellungen Region, Komponenten und Scope können im &apos;Web Administrator&apos; geändert werden.</data>
@@ -390,7 +390,6 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="general.year">Jahr</data>
 	<data key="general.day">Tag</data>
 	<data key="general.hours">Stunden</data>
-	<data key="general.wait">Bitte warten...</data>
 	<data key="general.seconds">Sekunden</data>
 	<data key="general.days">Tage</data>
 	<data key="general.no">Nein</data>
@@ -483,16 +482,6 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="login.m">einen Monat</data>
 	<data key="login.language">Sprache</data>
 	<data key="login.newpassword">Neues Passwort</data>
-	<data key="login.settings">Einstellungen</data>
-	<data key="login.captchaHelp">Sicherheitscode</data>
-	<data key="login.captchaHelpDesc">Bitte geben Sie das Wort ein, welches Sie im Bild oberhalb sehen.</data>
-	<data key="login.captchaHelpMiss">>Bitte geben Sie das Wort ein, wlches Sie im Sicherheitscode Bild sehen.</data>
-	<data key="login.seconds">Sekunden</data>
-	<data key="login.useCaptcha">Captcha</data>
-	<data key="login.useCaptchaDesc">Captcha verwenden um sicher zu stellen das die Eingabe durch einen Menschen stattfindet.</data>
-	<data key="login.delay">Verzögerung</data>
-	<data key="login.delayDesc">Die Verzögerungszeit zwischen Loginversuchen. Diese Einstellung gilt für alle Benutzer.</data>
-	
 	<data key="login.changepassword">Passwort ändern</data>
 	<data key="login.d">einen Tag</data>
 	<data key="login.changepassworddescription">Passwort für diesen Administrator ändern.</data>
@@ -532,8 +521,6 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="debug.timezone">Bitte geben Sie einen Wert für die Zeitzone an.</data>
 	<data key="debug.enabledebugging">Debug Informationen anzeigen</data>
 	<data key="debug.memorylogger">Memory Logger</data>
-	<data key="debug.showQueryUsage">Query Zugriffe anzeigen</data>
-	<data key="debug.showQueryUsageDesc">Wenn engeschaltete werden die Zugriff auf die Queries die innerhalb eines request gezogen wurden angezeigt.</data>
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Template Cache leeren</data>
 	<data key="setting.querycache">Query Cache</data>
@@ -665,7 +652,6 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">einverstanden</data>
 	<data key="buttons.submit">senden</data>
-	<data key="buttons.stop">stop</data>
 	<data key="buttons.ok">OK</data>
 	<data key="buttons.purge">leeren</data>
 	<data key="buttons.install">installieren</data>
@@ -846,7 +832,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="regional.other"> --- andere --- </data>
 	<data key="regional.defaultencoding">Standard Encoding</data>
 	<data key="regional.timeservermissing">Bitte wählen Sie einen Wert für die Zeitzone aus.</data>
-	<data key="regional.timezonedescription">Definiert die gewünschte Zeitzone für Railo. Diese Einstellung ändert die Zeit für den Kontext der Webs.</data>
+	<data key="regional.timezonedescription">Definiert die gewünschte Zeitzone für Railo. Diese Einstellung ändert die Zeit für den Kontext der Webs.&lt;br&gt;</data>
 	<data key="regional.serverprop.web">Server Administrator Wert</data>
 	<data key="regional.serverprop.server">Server Wert</data>
 	<data key="regional.locale">Locale</data>
@@ -898,7 +884,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="doc.depTag">This Tag is deprecated</data>
 	<data key="doc.depAttr">This Attribute is deprecated</data>
 	<data key="doc.depArg">This Argument is deprecated</data>
-	<data key="overview.installedtls">Installierte Tag Bibliotheken</data>
+	<data key="overview.installedtls">Installierte Tag&lt;br&gt;Bibliotheken</data>
 	<data key="overview.bugreport">Fehlerreport</data>
 	<data key="overview.issuetracker">Issue Tracker</data>
 	<data key="overview.datetime">Railo Datum/Zeit</data>
@@ -928,7 +914,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="overview.cfcompatibility">Kompatibel zu ColdFusion&amp;reg; Version</data>
 	<data key="overview.os">Betriebssystem</data>
 	<data key="overview.salesmail">sales@railo.ch</data>
-	<data key="overview.installedfls">Installierte Funktions Bibliotheken</data>
+	<data key="overview.installedfls">Installierte Funktions&lt;br&gt;Bibliotheken</data>
 	<data key="overview.bugreportmail">bugs@railo.ch</data>
 	<data key="overview.purchase">Hol Dir Deine Railo Lizenz</data>
 	<data key="overview.sales">Verkauf</data>

@@ -66,7 +66,6 @@
 	<classpathentry exported="true" kind="lib" path="microsoft-msbase.jar"/>
 	<classpathentry exported="true" kind="lib" path="microsoft-mssqlserver.jar"/>
 	<classpathentry exported="true" kind="lib" path="microsoft-msutil.jar"/>
-	<classpathentry exported="true" kind="lib" path="microsoft-sqljdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="mysql-connector-java-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="objectweb-asm-all.jar"/>
 	<classpathentry exported="true" kind="lib" path="ojdbc14.jar"/>
@@ -99,5 +98,7 @@
 	<classpathentry exported="true" kind="lib" path="xmlparserv2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="apache-commons-sanselan.jar"/>
+	<classpathentry kind="lib" path="microsoft-sqljdbc.jar"/>
+	<classpathentry kind="lib" path="ESAPI-1.4.5a.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
