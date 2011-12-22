@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import railo.print;
 import railo.commons.lock.Lock;
 import railo.commons.lock.LockException;
 import railo.commons.lock.LockInterruptedException;
@@ -15,7 +14,6 @@ import railo.commons.lock.LockInterruptedException;
 public class RWKeyLock<K> {
 
 	private Map<K,RWLock<K>> locks=new HashMap<K,RWLock<K>>();
-	
 	
 	public Lock lock(K token, long timeout, boolean readOnly) throws LockException, LockInterruptedException {
 		if(timeout<=0) throw new LockException("timeout must be a postive number");
@@ -28,12 +26,8 @@ public class RWKeyLock<K> {
 			if(lock==null) {
 				locks.put(token, lock=new RWLock<K>(token));
 			}
-			// ignore inner calls with same id
-			/*else if(lock.getLabel().getThreadId()==token.getThreadId()) {print.ds();
-				return null;
-			}*/
+			lock.inc();
 			wrap= new RWWrap<K>(lock, readOnly);
-			
 		}
 		wrap.lock(timeout);
 		return wrap;
@@ -41,16 +35,17 @@ public class RWKeyLock<K> {
 
 	public void unlock(Lock lock) {
 		if(!(lock instanceof RWWrap)) {
-			print.ds(lock);
 			return;
 		}
 		
+		lock.unlock();
+		
 		synchronized (locks) {
+			((RWWrap)lock).getLock().dec();
 			if(lock.getQueueLength()==0){
 				locks.remove(((RWWrap)lock).getLabel());
 			}
 		}
-		lock.unlock();
 	}
 	
 	public List<K> getOpenLockNames() {

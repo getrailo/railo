@@ -14,6 +14,7 @@ public class RWLock<L> {
     private final Lock wl;
 
 	private L label;
+	private int count;
 	
 	public RWLock(L label) {
 		rwl=new ReentrantReadWriteLock(true);
@@ -24,7 +25,6 @@ public class RWLock<L> {
 
 	
 	public void lock(long timeout, boolean readOnly) throws LockException, LockInterruptedException {
-		//print.e("a-lock:"+readOnly);
 		if(timeout<=0) throw new LockException("timeout must be a postive number");
 		try {
 			if(!getLock(readOnly).tryLock(timeout, TimeUnit.MILLISECONDS)){
@@ -34,8 +34,13 @@ public class RWLock<L> {
 		catch (InterruptedException e) {
 			throw new LockInterruptedException(e);
 		}
-		//print.e("b-lock:"+readOnly);
-		
+	}
+
+	synchronized void inc(){
+		count++;
+	}
+	synchronized void dec(){
+		count--;
 	}
 
 
@@ -59,7 +64,7 @@ public class RWLock<L> {
      * @return the estimated number of threads waiting for this lock
      */
     public int getQueueLength()	{
-		return rwl.getQueueLength();
+		return count;
 	}
     
 
