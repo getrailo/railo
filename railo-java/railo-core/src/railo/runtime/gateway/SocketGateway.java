@@ -116,9 +116,9 @@ public class SocketGateway implements Gateway {
 		try	{
             serverSocket = new ServerSocket(port);
         }
-        catch (IOException ioe) {
-            error("Failed to start Socket Gateway ["+id+"] on port ["+port+"] " +ioe.getMessage());
-            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(ioe);
+        catch (Throwable t) {
+            error("Failed to start Socket Gateway ["+id+"] on port ["+port+"] " +t.getMessage());
+            throw CFMLEngineFactory.getInstance().getCastUtil().toPageException(t);
         }
 	}
 	 
