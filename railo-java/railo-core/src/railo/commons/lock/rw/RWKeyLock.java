@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 import railo.commons.lock.Lock;
 import railo.commons.lock.LockException;
 import railo.commons.lock.LockInterruptedException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 
 public class RWKeyLock<K> {
 
@@ -29,7 +31,21 @@ public class RWKeyLock<K> {
 			lock.inc();
 			wrap= new RWWrap<K>(lock, readOnly);
 		}
-		wrap.lock(timeout);
+		try{
+			wrap.lock(timeout);
+		}
+		catch(LockException e){
+			synchronized (locks) {wrap.getLock().dec();}
+			throw e;
+		}
+		catch(LockInterruptedException e){
+			synchronized (locks) {wrap.getLock().dec();}
+			throw e;
+		}
+		catch(Throwable t){
+			synchronized (locks) {wrap.getLock().dec();}
+			throw new PageRuntimeException(Caster.toPageException(t));
+		}
 		return wrap;
 	}
 
