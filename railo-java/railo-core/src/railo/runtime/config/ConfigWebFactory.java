@@ -31,6 +31,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.MD5;
@@ -513,14 +514,16 @@ public final class ConfigWebFactory {
     
 
 
-	private static Map toArguments(String attributes) {
-		Map map=new HashTable();
+	private static Map<String,String> toArguments(String attributes) {
+		Map<String,String> map=new HashTable();
 		if(attributes==null) return map;
 		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
 		String[] item;
+		int index;
 		for(int i=0;i<arr.length;i++) {
-			item=List.toStringArray(List.listToArray(arr[i], ':'),null);
-			if(item.length>1) map.put(item[0], item[1]);
+			index=arr[i].indexOf(':');
+			if(index==-1)map.put(arr[i].trim(), "");
+			else map.put(arr[i].substring(0,index).trim(), arr[i].substring(index+1).trim());
 		}
 		return map;
 	}
