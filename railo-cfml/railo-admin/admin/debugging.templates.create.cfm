@@ -61,7 +61,7 @@
                     
 		</cfcase>
 	</cfswitch>
-	<cfcatch><cfrethrow>
+	<cfcatch>
     	<cfset driver.onBeforeError(cfcatch)>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
@@ -161,7 +161,7 @@ Error Output--->
             <cfinput type="text" 
                 name="custom_#field.getName()#" 
                 value="#default#" style="width:#mid(type,5)#px" required="#field.getRequired()#" 
-                message="Missing value for field #field.getDisplayName()#">
+                message="Missing value for field #field.getDisplayName()#"> 
             
 			
 			
@@ -268,7 +268,19 @@ Error Output--->
                 </cfoutput>
             </cfif>
 <cfif type NEQ "hidden">
-			<cfif isSimpleValue(field.getDescription()) and len(trim(field.getDescription()))><cfif doBr><br /></cfif><span class="comment">#field.getDescription()#</span></cfif>
+			<cfset _desc=field.getDescription()>
+			<cfset _comment="">
+			<cfif isSimpleValue(_desc)>
+            	<cfset _comment=_desc>
+			<cfelse>
+                <cfif StructKeyExists(_desc,'_appendix')>
+				#_desc._appendix#
+				</cfif>
+				<cfif StructKeyExists(_desc,'_bottom')>
+					<cfset _comment=_desc._bottom>
+                </cfif>
+			</cfif>
+            <cfif len(trim(_comment))><cfif doBr><br /></cfif><span class="comment">#trim(_comment)#</span></cfif>
             </td>
         </tr>
 </cfif>

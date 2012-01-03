@@ -554,7 +554,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		if(pc.getConfig().debug()) {
 		    DebugEntry debugEntry=pc.getDebugger().getEntry(pc,pageSource,udf.getFunctionName());//new DebugEntry(src,udf.getFunctionName());
 			int currTime=pc.getExecutionTime();
-			long time=System.currentTimeMillis();
+			long time=System.nanoTime();
 			
 			// sync yes
 			if(top.properties._synchronized){
@@ -566,7 +566,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 					}		
 					finally {
 						pc.setVariablesScope(parent);
-						int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
+						int diff= ((int)(System.nanoTime()-time)-(pc.getExecutionTime()-currTime));
 						pc.setExecutionTime(pc.getExecutionTime()+diff);
 						debugEntry.updateExeTime(diff);	
 					}	
@@ -582,7 +582,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				}		
 				finally {
 					pc.setVariablesScope(parent);
-					int diff= ((int)(System.currentTimeMillis()-time)-(pc.getExecutionTime()-currTime));
+					int diff= ((int)(System.nanoTime()-time)-(pc.getExecutionTime()-currTime));
 					pc.setExecutionTime(pc.getExecutionTime()+diff);
 					debugEntry.updateExeTime(diff);	
 				}	

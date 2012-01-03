@@ -328,9 +328,9 @@ public class ComponentLoader {
             
             int currTime=pc.getExecutionTime();
             long exeTime=0;
-            long time=System.currentTimeMillis();
+            long time=System.nanoTime();
             try {
-            	debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
+            	debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
             	exeTime=System.currentTimeMillis();
                 if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initComponent(pc,page,callPath,isRealPath);
@@ -338,8 +338,8 @@ public class ComponentLoader {
                 
             }
             finally {
-                int diff= ((int)(System.currentTimeMillis()-exeTime)-(pc.getExecutionTime()-currTime));
-                pc.setExecutionTime(pc.getExecutionTime()+(int)(System.currentTimeMillis()-time));
+                int diff= ((int)(System.nanoTime()-exeTime)-(pc.getExecutionTime()-currTime));
+                pc.setExecutionTime(pc.getExecutionTime()+(int)(System.nanoTime()-time));
                 debugEntry.updateExeTime(diff);
                 pc.removeLastPageSource(true);
             }
@@ -367,16 +367,16 @@ public class ComponentLoader {
             
             int currTime=pc.getExecutionTime();
             long exeTime=0;
-            long time=System.currentTimeMillis();
+            long time=System.nanoTime();
             try {
-                debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
-                exeTime=System.currentTimeMillis();
+                debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
+                exeTime=System.nanoTime();
             	if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initInterface(pc,page,callPath,isRealPath,interfaceUDFs);
             }
             finally {
-                int diff= ((int)(System.currentTimeMillis()-exeTime)-(pc.getExecutionTime()-currTime));
-                pc.setExecutionTime(pc.getExecutionTime()+(int)(System.currentTimeMillis()-time));
+                int diff= ((int)(System.nanoTime()-exeTime)-(pc.getExecutionTime()-currTime));
+                pc.setExecutionTime(pc.getExecutionTime()+(int)(System.nanoTime()-time));
                 debugEntry.updateExeTime(diff);
                 pc.removeLastPageSource(true);
             }

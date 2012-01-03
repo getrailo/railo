@@ -440,7 +440,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(query==null) {
 			if("query".equals(dbtype)) 		query=executeQoQ(sql);
 			else if("orm".equals(dbtype) || "hql".equals(dbtype)) 	{
-				long start=System.currentTimeMillis();
+				long start=System.nanoTime();
 				Object obj = executeORM(sql,returntype,ormoptions);
 				
 				if(obj instanceof railo.runtime.type.Query){
@@ -453,7 +453,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 					if(result!=null){
 						Struct sct=new StructImpl();
 						sct.setEL(QueryImpl.CACHED, Boolean.FALSE);
-						sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(System.currentTimeMillis()-start));
+						sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(System.nanoTime()-start));
 						sct.setEL(QueryImpl.SQL, sql.getSQLString());
 						if(Decision.isArray(obj)){
 							
@@ -463,7 +463,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 						pageContext.setVariable(result, sct);
 					}
 					else
-						setExecutionTime(System.currentTimeMillis()-start);
+						setExecutionTime(System.nanoTime()-start);
 					return EVAL_PAGE;
 				}
 			}

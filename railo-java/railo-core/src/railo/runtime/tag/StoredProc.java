@@ -397,7 +397,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	 * @see railo.runtime.ext.tag.TagSupport#doEndTag()
 	 */
 	public int doEndTag() throws JspException {
-		long start=System.currentTimeMillis();
+		long startNS=System.nanoTime();
 		
 		if(StringUtil.isEmpty(datasource)){
 			datasource=pageContext.getApplicationContext().getDefaultDataSource();
@@ -538,7 +538,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    long exe;
 		    
 		    setVariable(this.result, res);
-		    res.set(QueryImpl.EXECUTION_TIME,Caster.toDouble(exe=(System.currentTimeMillis()-start)));
+		    res.set(QueryImpl.EXECUTION_TIME,Caster.toDouble(exe=(System.nanoTime()-startNS)));
 		    res.set(QueryImpl.CACHED,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {

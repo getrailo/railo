@@ -738,13 +738,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			DebugEntry debugEntry=debugger.getEntry(this,source);
 			int currTime=executionTime;
             long exeTime=0;
-            long time=System.currentTimeMillis();
+            long time=System.nanoTime();
             
             Page currentPage = ((PageSourceImpl)source).loadPage(this);
             try {
                 addPageSource(source,true);
-                debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
-                exeTime=System.currentTimeMillis();
+                debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
+                exeTime=System.nanoTime();
                 currentPage.call(this);
 			}
 			catch(Throwable t){
@@ -762,8 +762,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
                 }
 			}
 			finally {
-				int diff= ((int)(System.currentTimeMillis()-exeTime)-(executionTime-currTime));
-			    executionTime+=(int)(System.currentTimeMillis()-time);
+				int diff= ((int)(System.nanoTime()-exeTime)-(executionTime-currTime));
+			    executionTime+=(int)(System.nanoTime()-time);
 				debugEntry.updateExeTime(diff);
 				removeLastPageSource(true);
 			}	

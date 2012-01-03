@@ -392,7 +392,7 @@ public final class Directory extends TagImpl  {
 			throw new ApplicationException("no access to read directory ["+directory.toString()+"]");
 		}
 		
-		long start=System.currentTimeMillis();
+		long startNS=System.nanoTime();
 		
 		try {
 			// Query All
@@ -437,7 +437,7 @@ public final class Directory extends TagImpl  {
 				catch(Throwable t) {}
 			}		
 		}
-		if(query!=null)query.setExecutionTime(System.currentTimeMillis()-start);
+		if(query!=null)query.setExecutionTime(System.nanoTime()-startNS);
 		return rtn; 
 	}
 	
