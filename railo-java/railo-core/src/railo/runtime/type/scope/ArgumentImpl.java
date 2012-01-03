@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import railo.runtime.PageContext;
@@ -268,11 +269,11 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 			setEL(key,value);
 		
 		// reset upper values
-			Iterator it = lhm.keySet().iterator();
+			Iterator it = lhm.entrySet().iterator();
+			Map.Entry entry;
 			while(it.hasNext()) {			
-				Object o=it.next();
-				k=o.toString();
-				setEL(k,lhm.get(k));
+				entry=(Entry) it.next();
+				setEL(KeyImpl.toKey(entry.getKey()),entry.getValue());
 			}		
 		return true;
 	}

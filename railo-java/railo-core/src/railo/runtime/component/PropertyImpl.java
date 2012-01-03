@@ -15,6 +15,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.StructUtil;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
 
@@ -183,13 +184,8 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		Object key;
 		
 		// meta 
-		if(metadata!=null){
-			it = metadata.keySet().iterator();
-			while(it.hasNext()) {
-				key=it.next();
-				sct.setEL(KeyImpl.init(key.toString()),metadata.get(key));
-			}
-		}
+		if(metadata!=null)
+			StructUtil.copy(metadata, sct, true);
 		
 		sct.setEL(KeyImpl.NAME,name);
 		if(!StringUtil.isEmpty(hint,true))sct.setEL(KeyImpl.HINT,hint);
@@ -197,11 +193,9 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		if(!StringUtil.isEmpty(type,true))sct.setEL(KeyImpl.TYPE,type);
 		
 		// dyn attributes
-		it = dynAttrs.keySet().iterator();
-		while(it.hasNext()) {
-			key=it.next();
-			sct.setEL(KeyImpl.init(key.toString()),dynAttrs.get(key));
-		}
+
+		StructUtil.copy(dynAttrs, sct, true);
+		
 		return sct;
 	}
 

@@ -22,6 +22,7 @@ import railo.transformer.bytecode.util.Types;
  */
 public class BodyBase extends StatementBase implements Body {
 
+	private static long counter=0;
 	private LinkedList statements=new LinkedList();
     private Statement last=null;
 	//private int count=-1;
@@ -112,7 +113,8 @@ public class BodyBase extends StatementBase implements Body {
 
 	
 	
-	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
+<<<<<<< HEAD
+	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
 		Iterator it = statements.iterator();
 		//int lastLine=-1;
 		int count=0;
@@ -125,17 +127,17 @@ public class BodyBase extends StatementBase implements Body {
 		//ExpressionUtil.writeLog(bc, lastLine);	
     }
 	
-	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
+	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List keys,List<Statement> statements,BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
         boolean isOutsideMethod;
         GeneratorAdapter a=null;
 		Method m;
 		BytecodeContext _bc=bc;
-		Iterator it = statements.iterator();
-		int lastLine=-1;
+		Iterator<Statement> it = statements.iterator();
+		//int lastLine=-1;
 		while(it.hasNext()) {
 			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
-	    	Statement s = ((Statement)it.next());
+	    	Statement s = it.next();
 	    	if(_bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
 					(isOutsideMethod || !s.hasFlowController()) && s.getLine()!=-1) {
         		if(a!=null){
@@ -166,17 +168,35 @@ public class BodyBase extends StatementBase implements Body {
 				_bc=bc;
 				a=null;
 			}
-        	s.writeOut(_bc);
-        	if(s.getLine()>0)lastLine=s.getLine();
-        }
-		ExpressionUtil.writeLog(bc, lastLine);	
+        	/*
+        	if(s instanceof TagBase){
+        		TagBase tb=(TagBase) s;
+        		print.e(tb.getFullname()+":"+s.getClass().getName()+":"+s.getLine()+":"+tb.getStartLine()+":"+tb.getEndLine());
+        	}
+        	else print.e(s.getClass().getName()+":"+s.getLine());
+        	*/
+        	
+        	if(ExpressionUtil.doLog(bc)) {
+        		String id=id();
+        		ExpressionUtil.callStartLog(bc, s,id);
+            	s.writeOut(_bc);
+            	ExpressionUtil.callEndLog(bc, s,id);
+        	}
+        	else s.writeOut(_bc);
+        		
+        	
+        }	
         if(a!=null){
         	a.returnValue();
 			a.endMethod();
         } 
     }
-
     
+	private static synchronized String id() {
+		counter++;
+		if(counter<0) counter=1;
+		return Long.toString(counter, Character.MAX_RADIX);
+	}
 
 	/**
 	 *

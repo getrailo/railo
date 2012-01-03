@@ -6,43 +6,36 @@ import java.util.Map;
 import railo.commons.lang.SystemOut;
 import railo.runtime.PageContext;
 
-public class ConsoleExecutionLog implements ExecutionLog {
+public class ConsoleExecutionLog extends ExecutionLogSupport {
 	
 	private PrintWriter pw;
 	private PageContext pc;
-	private long last;
 	
-	/**
-	 * @see railo.runtime.engine.ExecutionLog#init(railo.runtime.PageContext, java.util.Map)
-	 */
-	public void init(PageContext pc,Map<String,String> arguments) {
+	protected void _init(PageContext pc,Map<String,String> arguments) {
 		this.pc=pc;
-		String type=arguments.get("stream-type");
-		if(type!=null && type.trim().equalsIgnoreCase("error"))
-			pw=new PrintWriter(System.err);
-		else
-			pw=new PrintWriter(System.out);
-		last=System.nanoTime();
-	}
-	
-	public void release() {
 		
+		if(pw==null) {
+			// stream type
+			String type=arguments.get("stream-type");
+			if(type!=null && type.trim().equalsIgnoreCase("error"))
+				pw=new PrintWriter(System.err);
+			else
+				pw=new PrintWriter(System.out);
+			
+		}
 	}
 	
-
-	/* *
-	 * @see railo.runtime.engine.ExecutionLog#start()
-	 * /
-	public void start() {
-	}*/
-	
-	/**
-	 * @see railo.runtime.engine.ExecutionLog#line(int)
-	 */
-	public void line(int line) {
-		SystemOut.print(pw, pc.getId()+":"+pc.getCurrentPageSource().getDisplayPath()+":"+line+" > "+(System.nanoTime()-last)+" ns");
-		last=System.nanoTime();
+	@Override
+	protected void _log(int startLine, int endLine, long startTime, long endTime) {
+		long diff=endTime-startTime;
+		SystemOut.print(pw, pc.getId()+":"+pc.getCurrentPageSource().getDisplayPath()+":"+lines(startLine,endLine)+" > "+timeLongToString(diff));	
 	}
-
+	
+	protected void _release() {}
+	
+	private static String lines(int startLine, int endLine) {
+		if(startLine==endLine) return startLine+"";
+		return startLine+":"+endLine;
+	}
 
 }

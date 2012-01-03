@@ -405,7 +405,7 @@ public abstract class ConfigImpl implements Config {
         clearFunctionCache();
         clearCTCache();
         clearComponentCache();
-        clearComponentMetadata();
+        //clearComponentMetadata();
     }
     
     /**
@@ -833,8 +833,8 @@ public abstract class ConfigImpl implements Config {
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
 	        	for(int i=0;i<cmappings.length;i++) {
-	                PageSource ps = cmappings[i].getPageSource(realPath);
-	            	if(ps.exists()) return ps;
+	        		PageSource ps = cmappings[i].getPageSource(realPath);
+	        		if(ps.exists()) return ps;
 	            }
         	}
         }
@@ -3413,11 +3413,7 @@ public abstract class ConfigImpl implements Config {
 	public int getDebugMaxRecordsLogged() {
 		return debugMaxRecordsLogged;
 	}
-
 	
-	
-
-
 	public abstract int getLoginDelay();
 	
 	public abstract boolean getLoginCaptcha();

@@ -213,9 +213,19 @@ public class GatewayEngineImpl implements GatewayEngine {
 	}
 	
 	private GatewayEntry getGatewayEntry(String gatewayId) throws PageException {
-		GatewayEntry ge=entries.get(gatewayId);
+		String id=gatewayId.toLowerCase().trim();
+		GatewayEntry ge=entries.get(id);
 		if(ge!=null) return ge;
-		throw new ExpressionException("there is no Gateway instance with id ["+gatewayId+"]");
+		
+		// create list
+		Iterator<String> it = entries.keySet().iterator();
+		StringBuilder sb=new StringBuilder();
+		while(it.hasNext()){
+			if(sb.length()>0) sb.append(", ");
+			sb.append(it.next());
+		}
+		
+		throw new ExpressionException("there is no gateway instance with id ["+gatewayId+"], available gateway instances are ["+sb+"]");
 	}
 	private GatewayEntry getGatewayEntry(Gateway gateway)  {
 		String gatewayId=gateway.getId();

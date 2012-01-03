@@ -18,6 +18,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -47,7 +48,7 @@ public class InterfaceImpl implements Interface {
 	
 	private InterfaceImpl[] superInterfaces;
 	
-	private Map udfs=new HashMap();
+	private Map<Collection.Key,UDF> udfs=new HashMap<Collection.Key,UDF>();
 	private Map interfacesUDFs;
 
 	/**
@@ -115,7 +116,7 @@ public class InterfaceImpl implements Interface {
     	}
 	}
     
-    private void setUDFListener(Map interfacesUDFs) {
+    private void setUDFListener(Map<Collection.Key,UDF> interfacesUDFs) {
 		this.interfacesUDFs=interfacesUDFs;
 	}
 
@@ -221,40 +222,33 @@ public class InterfaceImpl implements Interface {
 	private static Struct _getMetaData(PageContext pc,InterfaceImpl icfc) throws PageException {
 		Struct sct=new StructImpl();
 		ArrayImpl arr=new ArrayImpl();
-        Set set=icfc.udfs.keySet();
-        Iterator it = set.iterator();
-        //Collection.Key name;
-        Object oKey;
-        UDF udf;
-        //String[] keys=comp.keysOnlyThis(access);
-        while(it.hasNext()) {
-        	oKey=it.next();
-        	//name=KeyImpl.toKey(oKey,null);
-        	udf=(UDF)icfc.udfs.get(oKey);
-            arr.append(udf.getMetaData(pc));
-            //}
-        }
+        {
+			Iterator<UDF> it = icfc.udfs.values().iterator();
+	        while(it.hasNext()) {
+	        	arr.append(it.next().getMetaData(pc));
+	        }
+		}
         
         if(icfc.meta!=null) {
-        	it=icfc.meta.entrySet().iterator();
+        	Iterator it = icfc.meta.entrySet().iterator();
         	Map.Entry entry;
         	while(it.hasNext()){
         		entry=(Entry) it.next();
-        		sct.put(entry.getKey(), entry.getValue());
+        		sct.setEL(KeyImpl.toKey(entry.getKey()), entry.getValue());
         	}
         }
         
         
-        if(!StringUtil.isEmpty(icfc.hint,true))sct.set("hint",icfc.hint);
-        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set("displayname",icfc.dspName);
+        if(!StringUtil.isEmpty(icfc.hint,true))sct.set(KeyImpl.HINT,icfc.hint);
+        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(ComponentImpl.DISPLAY_NAME,icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
-            Set _set = railo.runtime.type.List.listToSet(icfc.extend, ",",true);
+            Set<String> _set = railo.runtime.type.List.listToSet(icfc.extend,',',true);
             Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
         		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
-        		ex.setEL(icfc.superInterfaces[i].getCallPath(),_getMetaData(pc,icfc.superInterfaces[i]));
+        		ex.setEL(KeyImpl.init(icfc.superInterfaces[i].getCallPath()),_getMetaData(pc,icfc.superInterfaces[i]));
         	}
         	
         }
@@ -262,7 +256,7 @@ public class InterfaceImpl implements Interface {
         if(arr.size()!=0)sct.set(ComponentImpl.FUNCTIONS,arr);
         PageSource ps = icfc.pageSource;
         sct.set(KeyImpl.NAME,ps.getComponentName());
-        sct.set("fullname",ps.getComponentName());
+        sct.set(ComponentImpl.FULLNAME,ps.getComponentName());
        
         sct.set(KeyImpl.PATH,ps.getDisplayPath());
         sct.set(KeyImpl.TYPE,"interface");

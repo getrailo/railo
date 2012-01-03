@@ -38,6 +38,7 @@ import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.StructUtil;
 import railo.runtime.writer.BodyContentUtil;
 
 /**
@@ -565,12 +566,8 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
         // meta data
         Struct meta = udf.getMeta();
-        if(meta!=null) {
-        	Key[] keys = meta.keys();
-        	for(int i=0;i<keys.length;i++) {
-        		func.setEL(keys[i],meta.get(keys[i],null));
-        	}
-        }
+        if(meta!=null) StructUtil.copy(meta, func, true);
+        
 		
 		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
         String hint=udf.getHint();
@@ -612,22 +609,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
             else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
             	param.set(KeyImpl.DEFAULT, udf.getDefaultValue(pc,y));
             }
-            /*
-             try {
-                defaultValue = getDefaultValue(pc, y);
-                if(defaultValue!=null) {
-                		if(Decision.isSimpleValue(defaultValue))
-                			param.set(DEFAULT,defaultValue);
-                		else
-                			param.set(DEFAULT,COMPLEX_DEFAULT_TYPE);
-                	
-                }
-            }
-            catch(Throwable e) {e.printStackTrace();
-            	param.set(DEFAULT,COMPLEX_DEFAULT_TYPE);
-            } 
-             */
-            
             
             hint=args[y].getHint();
             if(!StringUtil.isEmpty(hint))param.set(KeyImpl.HINT,hint);
@@ -635,12 +616,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
             
             // meta data
             m=args[y].getMetaData();
-            if(m!=null) {
-            	Key[] keys = m.keys();
-            	for(int i=0;i<keys.length;i++) {
-            		param.setEL(keys[i],m.get(keys[i],null));
-            	}
-            }
+            if(m!=null) StructUtil.copy(m, param, true);
                 
             params.append(param);
         }

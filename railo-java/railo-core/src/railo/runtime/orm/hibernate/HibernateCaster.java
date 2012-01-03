@@ -191,12 +191,12 @@ public class HibernateCaster {
 		if("clob".equals(type)) return Types.CLOB;
 		if("date".equals(type)) return Types.DATE;
 		if("big_decimal".equals(type)) return Types.DECIMAL;
+		if("big_integer".equals(type)) return Types.NUMERIC;
 		if("double".equals(type)) return Types.DOUBLE;
 		if("float".equals(type)) return Types.FLOAT;
 		if("integer".equals(type)) return Types.INTEGER;
 		if("binary".equals(type)) return Types.VARBINARY;
 		if("string".equals(type)) return Types.VARCHAR;
-		if("big_decimal".equals(type)) return Types.NUMERIC;
 		if("short".equals(type)) return Types.SMALLINT;
 		if("time".equals(type)) return Types.TIME;
 		if("timestamp".equals(type)) return Types.TIMESTAMP;

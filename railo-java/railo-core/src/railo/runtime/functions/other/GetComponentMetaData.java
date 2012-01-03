@@ -8,74 +8,37 @@ import java.util.HashMap;
 import railo.runtime.Component;
 import railo.runtime.InterfaceImpl;
 import railo.runtime.PageContext;
-import railo.runtime.PageSource;
+import railo.runtime.Page;
 import railo.runtime.component.ComponentLoader;
-import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigImpl.ComponentMetaData;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 
 public final class GetComponentMetaData implements Function {
-	
-	
-	private static final Collection.Key FUNCTIONS = KeyImpl.init("functions");
 
 	public static Struct call(PageContext pc , Object obj) throws PageException {
 		if(obj instanceof Component){
-			Component cfc = (Component)obj;
-			return getMetaData(pc,cfc);
+			return ((Component)obj).getMetaData(pc);
 		}
+		// load existing meta without loading the cfc
+		try{
+			PagePlus page = ComponentLoader.loadPage(pc, Caster.toString(obj), null,null);
+			if(page.metaData!=null) return page.metaData;
+			
+		}
+		catch(Throwable t){}
 		
+		// load the cfc when metadata was not defined before
 		try{
 			Component cfc = CreateObject.doComponent(pc, Caster.toString(obj));
-			return getMetaData(pc,cfc);
+			return cfc.getMetaData(pc);
 		}
 		// TODO better solution
 		catch(ApplicationException ae){
 			InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
-			return getMetaData(pc,inter);
+			return inter.getMetaData(pc);
 		}
 	}
-
-	private static Struct getMetaData(PageContext pc, Component cfc) throws PageException {
-		return getMetaData(pc, cfc.getPageSource(), cfc);
-	}
-	
-	private static Struct getMetaData(PageContext pc, InterfaceImpl inter) throws PageException {
-		return getMetaData(pc, inter.getPageSource(), inter);
-	}
-	
-
-	private static Struct getMetaData(PageContext pc, PageSource ps, Object obj) throws PageException {// FUTURE make a class instance of cfc instead of all this
-		String key=ps.getDisplayPath();
-		long lastMod=0;
-		if(ps.physcalExists()) lastMod=ps.getResource().lastModified();
-		
-		ConfigImpl config=(ConfigWebImpl) pc.getConfig();
-		ComponentMetaData data = config.getComponentMetadata(key);
-		Struct meta;
-		if(data==null || data.lastMod!=lastMod) {
-			meta=getMetaData(pc,obj);
-			config.putComponentMetadata(key, new ConfigImpl.ComponentMetaData(meta,lastMod));
-		}
-		else {
-			Struct tmp = getMetaData(pc,obj);
-			meta=data.meta;
-			Object funcs = tmp.get(FUNCTIONS,null);
-			if(funcs!=null)meta.setEL(FUNCTIONS, funcs);
-		}
-		return meta;
-	}
-
-	private static Struct getMetaData(PageContext pc, Object obj) throws PageException {
-		if(obj instanceof Component) return ((Component)obj).getMetaData(pc);
-		return ((InterfaceImpl)obj).getMetaData(pc);
-	}
-	
 }

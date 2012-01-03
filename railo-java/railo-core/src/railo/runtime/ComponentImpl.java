@@ -76,6 +76,7 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
+import railo.runtime.type.util.StructUtil;
 import railo.runtime.util.ArrayIterator;
 
 /**
@@ -122,6 +123,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	protected static final Key SKELETON = KeyImpl.intern("skeleton");
 	protected static final Key PROPERTIES = KeyImpl.intern("properties");
 	private static final Key MAPPED_SUPER_CLASS = KeyImpl.intern("mappedSuperClass");
+	private static final Key PERSISTENT = KeyImpl.intern("persistent");
+	private static final Key ACCESSORS = KeyImpl.intern("accessors");
+	private static final Key SYNCRONIZED = KeyImpl.intern("synchronized");
+	protected static final Key DISPLAY_NAME = KeyImpl.intern("displayname");
 	
 	public long sizeOf() {
 		return 
@@ -698,7 +703,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return set;
     }
     
-    protected Set<Key> udfKeySet(int access) {
+    /*protected Set<Key> udfKeySet(int access) {
     	Set<Key> set=new HashSet<Key>();
         Member m;
         Map.Entry<Key, UDF> entry;
@@ -709,7 +714,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
             if(m.getAccess()<=access)set.add(entry.getKey());
         }
         return set;
-    }
+    }*/
     
     
     protected java.util.List<Member> getMembers(int access) {
@@ -1388,123 +1393,112 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         }
     	return null;
     }
-    
-    
-    
-    
 
     protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp) throws PageException {
-        StructImpl sct=new StructImpl();
-        
+    	
+    	//PagePlus page = (PagePlus) ((PageSourceImpl)comp.pageSource).loadPage(pc.getConfig());
+    	PagePlus page = (PagePlus) ((PageSourceImpl)comp.pageSource).getPage();
+    	if(page==null) page = (PagePlus) comp.pageSource.loadPage(pc.getConfig());
+    	if(page.metaData!=null) {
+    		return page.metaData;
+    	}
+    	
+    	StructImpl sct=new StructImpl();
+    	
         // fill udfs
         metaUDFs(pc, comp, sct,access);
-           
         
-
-        if(comp.properties.meta!=null) {
-        	Key[] keys = comp.properties.meta.keys();
-        	for(int i=0;i<keys.length;i++) {
-        		sct.setEL(keys[i],comp.properties.meta.get(keys[i],null));
-        	}
-        }
+        // meta
+        if(comp.properties.meta!=null) 
+        	StructUtil.copy(comp.properties.meta, sct, true);
+            
+        String hint=comp.properties.hint;
+        String displayname=comp.properties.dspName;
+        if(!StringUtil.isEmpty(hint))sct.set(KeyImpl.HINT,hint);
+        if(!StringUtil.isEmpty(displayname))sct.set(DISPLAY_NAME,displayname);
         
+        sct.set(PERSISTENT,comp.properties.persistent);
+        sct.set(ACCESSORS,comp.properties.accessors);
+        sct.set(SYNCRONIZED,comp.properties._synchronized);
+        if(comp.properties.output!=null)
+        sct.set(KeyImpl.OUTPUT,comp.properties.output);
             
-            
-            String hint=comp.properties.hint;
-            String displayname=comp.properties.dspName;
-            if(!StringUtil.isEmpty(hint))sct.set("hint",hint);
-            if(!StringUtil.isEmpty(displayname))sct.set("displayname",displayname);
-            
-            sct.set("persistent",comp.properties.persistent);
-            sct.set("accessors",comp.properties.accessors);
-            sct.set("synchronized",comp.properties._synchronized);
-            if(comp.properties.output!=null)
-            sct.set(KeyImpl.OUTPUT,comp.properties.output);
-            
-            
-            
-            // extends
-            Struct ex=null;
-            if(comp.base!=null) ex=getMetaData(access,pc,comp.base);
-            if(ex!=null)sct.set(EXTENDS,ex);
-            
-            // implements
-            InterfaceCollection ic = comp.interfaceCollection;
-            if(ic!=null){
-            	Set set = List.listToSet(comp.properties.implement, ",",true);
-                InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
-	            if(!ArrayUtil.isEmpty(interfaces)){
-		            Struct imp=new StructImpl();
-	            	for(int i=0;i<interfaces.length;i++){
-	            		if(!set.contains(interfaces[i].getCallPath())) continue;
-	            		//print.e("-"+interfaces[i].getCallPath());
-	            		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc));
-		            }
-		            sct.set(IMPLEMENTS,imp);
+        // extends
+        Struct ex=null;
+        if(comp.base!=null) ex=getMetaData(access,pc,comp.base);
+        if(ex!=null)sct.set(EXTENDS,ex);
+        
+        // implements
+        InterfaceCollection ic = comp.interfaceCollection;
+        if(ic!=null){
+        	Set<String> set = List.listToSet(comp.properties.implement, ",",true);
+            InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
+            if(!ArrayUtil.isEmpty(interfaces)){
+	            Struct imp=new StructImpl();
+            	for(int i=0;i<interfaces.length;i++){
+            		if(!set.contains(interfaces[i].getCallPath())) continue;
+            		//print.e("-"+interfaces[i].getCallPath());
+            		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc));
 	            }
+	            sct.set(IMPLEMENTS,imp);
             }
-            
-            
-            PageSource ps = comp.pageSource;
-            
+		}
+
+            // PageSource
+        	PageSource ps = comp.pageSource;
             sct.set(FULLNAME,ps.getComponentName());
             sct.set(KeyImpl.NAME,ps.getComponentName());
             sct.set(KeyImpl.PATH,ps.getDisplayPath());
+            sct.set(KeyImpl.TYPE,"component");
+            
+            Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
+            if(skeleton !=null)sct.set(SKELETON, skeleton);
             
             HttpServletRequest req = pc.getHttpServletRequest();
-            
             try {
             	String path=ContractPath.call(pc, ps.getDisplayPath()); // MUST better impl !!!
 				sct.set("remoteAddress",""+new URL(req.getScheme(),req.getServerName(),req.getServerPort(),req.getContextPath()+path+"?wsdl"));
 			} catch (Throwable t) {}
             
-            
-            
-            
-            
-            sct.set(KeyImpl.TYPE,"component");
-            Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
-            if(skeleton !=null)sct.set(SKELETON, skeleton);
-            
-            if(comp.properties.properties!=null) {
+            // Properties
+        	if(comp.properties.properties!=null) {
             	ArrayImpl parr = new ArrayImpl();
             	Property p;
-            	
             	Iterator<Entry<String, Property>> pit = comp.properties.properties.entrySet().iterator();
             	while(pit.hasNext()){
             		p=pit.next().getValue();
             		parr.add(p.getMetaData());
             	}
             	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
-            	
-            	
             	sct.set(PROPERTIES,parr);
             }
+
             
             // TODO attr userMetadata
-        return sct;
+        return page.metaData=sct;
     }    
 
     private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {
     	ArrayImpl arr=new ArrayImpl();
-    	Collection.Key name;
-        Iterator<Key> it = comp.udfKeySet(access).iterator();
-        while(it.hasNext()) {
-        	name=it.next();
-        	Object o=comp.getMember(access,name,true,true);
-            if(o instanceof UDF) {
-            	UDF udf=(UDF)o;
-            	if(comp.base!=null) {
-            		if(udf==comp.base.getMember(access,name,true,true))
+    	//Collection.Key name;
+        
+    	
+    	Iterator<Entry<Key, UDF>> it = comp._udfs.entrySet().iterator();
+        Entry<Key, UDF> entry;
+		UDF udf;
+		while(it.hasNext()) {
+    		entry= it.next();
+    		udf=entry.getValue();
+            if(udf.getAccess()>access) continue;
+    			if(comp.base!=null) {
+            		if(udf==comp.base.getMember(access,entry.getKey(),true,true))
             			continue;
             	}
             	arr.append(udf.getMetaData(pc));
-            }
+            
         }
         if(arr.size()!=0)sct.set(FUNCTIONS,arr);
 	}
-    
-    
     
     
     
