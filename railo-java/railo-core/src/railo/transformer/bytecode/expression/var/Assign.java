@@ -214,7 +214,7 @@ public class Assign extends ExpressionBase {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_ARGUMENTS);
 			value.writeOut(bc, MODE_REF);
-			adapter.invokeVirtual(TypeScope.SCOPE_ARGUMENT,SET_ARGUMENT);
+			adapter.invokeInterface(TypeScope.SCOPE_ARGUMENT,SET_ARGUMENT);
 		}
 		else {
 			adapter.loadArg(0);
