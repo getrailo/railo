@@ -21,6 +21,7 @@ import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
+import railo.runtime.component.ImportDefintionImpl;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
@@ -191,6 +192,7 @@ public final class Types {
 	public static final Type BODY_CONTENT = Type.getType(BodyContent.class);
 	public static final Type BODY_CONTENT_UTIL = Type.getType(BodyContentUtil.class);
 	public static final Type IMPORT_DEFINITIONS = Type.getType(ImportDefintion.class);
+	public static final Type IMPORT_DEFINITIONS_IMPL = Type.getType(ImportDefintionImpl.class);
 	public static final Type IMPORT_DEFINITIONS_ARRAY = Type.getType(ImportDefintion[].class);
 	 
 

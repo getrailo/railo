@@ -1,8 +1,11 @@
 package railo.runtime.exp;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -47,11 +50,10 @@ public final class MissingIncludeException extends PageExceptionImpl {
 	}
 
 	/**
-	 *
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
 	 */
-	public Struct getCatchBlock(PageContext pc) {
-		Struct sct=super.getCatchBlock(pc);
+	public CatchBlock getCatchBlock(Config config) {
+		CatchBlock sct=super.getCatchBlock(config);
 		String mapping="";
 		if(StringUtil.startsWith(pageSource.getRealpath(),'/')){
 			mapping = pageSource.getMapping().getVirtual();

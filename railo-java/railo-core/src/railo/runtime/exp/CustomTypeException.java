@@ -1,6 +1,7 @@
 package railo.runtime.exp;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.type.Struct;
 
@@ -28,8 +29,8 @@ public final class CustomTypeException extends PageExceptionImpl {
 	 *
 	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
 	 */
-	public Struct getCatchBlock(PageContext pc) {
-		Struct cb=super.getCatchBlock(pc);
+	public CatchBlock getCatchBlock(Config config) {
+		CatchBlock cb=super.getCatchBlock(config);
 		cb.setEL("code",cb.get("errorcode",null));
 		cb.setEL("type",getCustomTypeAsString());
 		String ei=getExtendedInfo();

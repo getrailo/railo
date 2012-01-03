@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -178,8 +179,8 @@ public abstract class PageExceptionImpl extends PageException {
 	 *
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
-	public Struct getCatchBlock(PageContext pc) {
-		return new CatchBlockImpl(this);
+	public final Struct getCatchBlock(PageContext pc) {
+		return getCatchBlock(ThreadLocalPageContext.getConfig(pc));
 	}
 	
 	/**

@@ -414,7 +414,7 @@ public final class Page extends BodyBase {
 				av.visitBeginItem(adapter,index++);
 				adapter.push(it.next());
 				ASMConstants.NULL(adapter);
-				adapter.invokeStatic(Types.IMPORT_DEFINITIONS, ID_GET_INSTANCE);
+				adapter.invokeStatic(Types.IMPORT_DEFINITIONS_IMPL, ID_GET_INSTANCE);
 				av.visitEndItem(adapter);
 			}
 			av.visitEnd();
