@@ -38,45 +38,7 @@ public final class DebugEntryImpl implements DebugEntry {
 		this.key=key;
 		id=Caster.toString(++_id);
 	}
-	
-	
-	/* *
-     * @see railo.runtime.debug.DebugEntry#start()
-     * /
-	public void start() {
-		isRunning=true;
-		start=System.currentTimeMillis();
-	}*/
-	
-	/* *
-     * @see railo.runtime.debug.DebugEntry#stop()
-     * /
-	public int stop() {
-		if(isRunning) {
-			int time=(int)(System.currentTimeMillis()-start);
-			isRunning=false;
-			return time;
-			
-		}
-		return 0;
-	}*/
-	
-	/* *
-     * @see railo.runtime.debug.DebugEntry#time()
-     * /
-	public int time() {
-		if(isRunning)return (int)(System.currentTimeMillis()-start);
-		return 0;
-	}*/
-	
-	/* *
-     * @see railo.runtime.debug.DebugEntry#reset()
-     * /
-	public void reset() {
-		start=0;
-		isRunning=false;
-	}*/
-	
+    
 	/**
      * @see railo.runtime.debug.DebugEntry#getExeTime()
      */

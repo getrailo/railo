@@ -98,50 +98,6 @@ public final class JSStringFormat implements Function {
             	break;
             }
 		}
-        
-        
-		//if(start<len)sb.append(xmlString.substring(start,len));
-		return new String(chars);
+        return new String(chars);
 	}
-	
-	
-	
-	
-	
-	
-	/*public static void main(String[] args) {
-        long start;
-        int count=1000000;
-        
-
-        print.ln(call(null,"sasffdf\nfsd\n'ss'"));
-        print.ln(callx(null,"sasffdf\nfsd\n'ss'"));
-
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) call(null,"sasffdf\nfsd\n'ss'");
-        print.ln(System.currentTimeMillis()-start);
-        
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) call(null,"sasffdf");
-        print.ln(System.currentTimeMillis()-start);
-        
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) callx(null,"sasffdf\nfsd\n'ss'");
-        print.ln(System.currentTimeMillis()-start);
-        
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) callx(null,"sasffdf");
-        print.ln(System.currentTimeMillis()-start);
-    }*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

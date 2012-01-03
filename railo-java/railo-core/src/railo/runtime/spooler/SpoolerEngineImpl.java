@@ -434,7 +434,6 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			finally {
 				sleeping=false;
 			}
-			//print.out(sleep+":"+(System.currentTimeMillis()-start));
 		}
 		
 	}

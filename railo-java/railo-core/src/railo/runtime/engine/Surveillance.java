@@ -78,18 +78,12 @@ import railo.runtime.type.scope.ScopeContext;
 
 	private static void _getInfoMemory(Struct web, Struct server, ConfigImpl config) throws PageException {
 		DoubleStruct sct = new DoubleStruct();
-		//long start=System.currentTimeMillis();
 		infoMapping(sct,config);
-			//print.out(System.currentTimeMillis()-start);
 		//infoResources(sct,config);
-			//print.out(System.currentTimeMillis()-start);
 		
 		infoScopes(sct,server,config);
-			//print.out(System.currentTimeMillis()-start);
 		infoPageContextStack(sct,config.getFactory());
-			//print.out(System.currentTimeMillis()-start);
 		infoQueryCache(sct,config.getFactory());
-			//print.out(System.currentTimeMillis()-start);
 		//size+=infoResources(sct,cs);
 		
 		web.set(config.getConfigDir().getPath(), sct);
