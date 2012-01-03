@@ -6,7 +6,7 @@
 		//,field("Extensions","extension","cfm,cfc,cfml",false,"Output the templates with the following extensions","checkbox","cfm,cfc,cfml")
 		
 		
-		,field("Unit","unit","millisecond",true,"the unit used to display the execution time.","select","millisecond,microsecond,nanosecond")
+		//,field("Unit","unit","millisecond",true,"the unit used to display the execution time.","select","millisecond,microsecond,nanosecond")
 		
 		,field("Minimal Execution Time","minimal","0",true,
 				{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
@@ -225,7 +225,7 @@ millisecond:"ms"
 	<td align="left" class="cfdebug"><i><b>TOTAL EXECUTION TIME</b></i></td>
 </tr>
 </table>
-<font color="red"><span class="template_overage">red = over #custom.highlight# ms average execution time</span></font>
+<font color="red"><span class="template_overage">red = over #formatUnit(custom.unit,custom.highlight*1000)# average execution time</span></font>
 </a>
 
 
@@ -355,8 +355,25 @@ millisecond:"ms"
 </cfoutput>
     
     </cffunction>
-    
+   
 <cffunction name="formatUnit" output="no" returntype="string">
+	<cfargument name="unit" type="string" required="yes">
+	<cfargument name="time" type="numeric" required="yes">
+    
+    <cfif time GTE 100000000><!--- 1000ms --->
+    	<cfreturn int(time/1000000)&" ms">
+    <cfelseif time GTE 10000000><!--- 100ms --->
+    	<cfreturn (int(time/100000)/10)&" ms">
+    <cfelseif time GTE 1000000><!--- 10ms --->
+    	<cfreturn (int(time/10000)/100)&" ms">
+    <cfelse><!--- 0ms --->
+    	<cfreturn (int(time/1000)/1000)&" ms">
+    </cfif>
+    
+    
+    <cfreturn (time/1000000)&" ms">
+</cffunction>   
+<!---<cffunction name="formatUnit2" output="no" returntype="string">
 	<cfargument name="unit" type="string" required="yes">
 	<cfargument name="time" type="numeric" required="yes">
     <cfif unit EQ "millisecond">
@@ -366,6 +383,6 @@ millisecond:"ms"
     <cfelse>
     	<cfreturn int(time)&" ns">
     </cfif>
-</cffunction>
+</cffunction>--->
 </cfcomponent>
 
