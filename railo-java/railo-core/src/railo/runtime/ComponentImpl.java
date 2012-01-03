@@ -74,6 +74,7 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
+import railo.runtime.type.util.StructUtil;
 import railo.runtime.util.ArrayIterator;
 
 /**
@@ -1431,14 +1432,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         metaUDFs(pc, comp, sct,access);
         
         // meta
-        if(comp.properties.meta!=null) {
-        	Iterator it = comp.properties.meta.entrySet().iterator();
-        	Map.Entry entry;
-        	while(it.hasNext()) {
-        		entry=(Entry) it.next();
-        		sct.setEL(KeyImpl.toKey(entry.getKey()),entry.getValue());
-        	}
-        }    
+        if(comp.properties.meta!=null) 
+        	StructUtil.copy(comp.properties.meta, sct, true);
             
         String hint=comp.properties.hint;
         String displayname=comp.properties.dspName;
