@@ -21,7 +21,7 @@ public class FTPException extends ApplicationException {
 		code = client.getReplyCode();
 		msg = client.getReplyString();
 	}
-	
+
 	/**
 	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
 	 */
@@ -30,12 +30,5 @@ public class FTPException extends ApplicationException {
 		cb.setEL("Cause", msg);
 		cb.setEL("Code", Caster.toDouble(code));
 		return cb;
-	}
-	
-	/**
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock()
-	 */
-	public Struct getCatchBlock() {
-		return getCatchBlock(ThreadLocalPageContext.get());
 	}
 }

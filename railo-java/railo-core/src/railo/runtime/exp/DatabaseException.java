@@ -102,7 +102,7 @@ public final class DatabaseException extends PageExceptionImpl {
 	public DatabaseException(SQLException sqle,DatasourceConnection dc) {
 		this(sqle!=null?sqle.getMessage():null,null,sqle,null,dc);
 	}
-	
+
 	/**
 	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
 	 */

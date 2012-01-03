@@ -52,7 +52,7 @@ public final class HTTPException extends ApplicationException {
         return statusCode;
     }
 
-	/**
+    /**
 	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
 	 */
 	public CatchBlock getCatchBlock(Config config) {
