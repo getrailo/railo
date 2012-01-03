@@ -522,7 +522,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 
 	private static Struct checkTableFill(DatabaseMetaData md, String dbName, String tableName) throws SQLException, PageException {
-		Struct rows=new CastableStruct(tableName);
+		Struct rows=new CastableStruct(tableName,Struct.TYPE_LINKED);
 		ResultSet columns = md.getColumns(dbName, null, tableName, null);
 		//print.o(new QueryImpl(columns,""));
 		try{
