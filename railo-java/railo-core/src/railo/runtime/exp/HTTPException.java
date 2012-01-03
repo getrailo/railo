@@ -4,6 +4,7 @@ import org.apache.commons.httpclient.HttpMethod;
 
 import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.type.Struct;
 
 /**
@@ -51,12 +52,9 @@ public final class HTTPException extends ApplicationException {
         return statusCode;
     }
     
-    /**
-     *
-     * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
-     */
-    public Struct getCatchBlock(PageContext pc) {
-        Struct sct = super.getCatchBlock(pc);
+
+	public CatchBlock getCatchBlock(Config config) {
+		CatchBlock sct = super.getCatchBlock(config);
         sct.setEL("statusCode",statusCode+"");
         return sct;
     }
