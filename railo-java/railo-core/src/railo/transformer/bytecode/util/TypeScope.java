@@ -70,19 +70,10 @@ public final class TypeScope {
     
     
     public final static Type SCOPE_ARGUMENT=		Type.getType(Argument.class);
-    public final static Type SCOPE_ARGUMENT_IMPL=		Type.getType(ArgumentImpl.class);
     
     
     public static Type invokeScope(GeneratorAdapter adapter, int scope) {
-		/*OLD
-    	 boolean isLocal=scope==Scope.SCOPE_LOCAL;
-    	if(isLocal){
-    		adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-    	}
-    	
-    	return invokeScope(adapter,TypeScope.METHODS[scope],isLocal?Types.PAGE_CONTEXT_IMPL:Types.PAGE_CONTEXT);
-    	*/
-    	return invokeScope(adapter,TypeScope.METHODS[scope],Types.PAGE_CONTEXT);
+		return invokeScope(adapter,TypeScope.METHODS[scope],Types.PAGE_CONTEXT);
 	}
 	
 	public static Type invokeScope(GeneratorAdapter adapter, Method m, Type type) {
