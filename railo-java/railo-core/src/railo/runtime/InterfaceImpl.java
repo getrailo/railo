@@ -234,7 +234,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
         	Map.Entry entry;
         	while(it.hasNext()){
         		entry=(Entry) it.next();
-        		sct.put(entry.getKey(), entry.getValue());
+        		sct.setEL(KeyImpl.toKey(entry.getKey()), entry.getValue());
         	}
         }
         
@@ -243,12 +243,12 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
         if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(ComponentImpl.DISPLAY_NAME,icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
-            Set _set = railo.runtime.type.List.listToSet(icfc.extend, ",",true);
+            Set<String> _set = railo.runtime.type.List.listToSet(icfc.extend,',',true);
             Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
         		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
-        		ex.setEL(icfc.superInterfaces[i].getCallPath(),_getMetaData(pc,icfc.superInterfaces[i]));
+        		ex.setEL(KeyImpl.init(icfc.superInterfaces[i].getCallPath()),_getMetaData(pc,icfc.superInterfaces[i]));
         	}
         	
         }

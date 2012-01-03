@@ -2870,8 +2870,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		pagesUsed.add(""+page.hashCode());
 	}
 
+	/**
+	 * @param line
+	 * @deprecated no longer supported and ignored
+	 */
 	public void exeLogEndline(int line){
-		execLog.line(line);
+		//execLog.line(line);
+	}
+	public void exeLogStart(int line,String id){
+		execLog.start(line, id);
+	}
+	public void exeLogEnd(int line,String id){
+		execLog.end(line, id);
 	}
 
 	

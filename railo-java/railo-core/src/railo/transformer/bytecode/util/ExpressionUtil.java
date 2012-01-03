@@ -13,28 +13,31 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.statement.StatementBase;
+import railo.transformer.bytecode.statement.tag.Tag;
 
 public final class ExpressionUtil {
 
-	public static final Method END_LINE = new Method(
+	/*public static final Method END_LINE = new Method(
 			"exeLogEndline",
 			Types.VOID,
-			new Type[]{Types.INT_VALUE});
+			new Type[]{Types.INT_VALUE});*/
 	
-	/*public static final Method START = new Method(
+	public static final Method START = new Method(
 			"exeLogStart",
 			Types.VOID,
-			new Type[]{});
+			new Type[]{Types.INT_VALUE,Types.STRING});
 	public static final Method END = new Method(
 			"exeLogEnd",
 			Types.VOID,
-			new Type[]{});
-	*/
+			new Type[]{Types.INT_VALUE,Types.STRING});
+	
 
-	private static Map last=new HashMap();
+	private static Map<String,String> last=new HashMap<String,String>();
 
 	public static void writeOutExpressionArray(BytecodeContext bc, Type arrayType, Expression[] array) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
@@ -48,15 +51,16 @@ public final class ExpressionUtil {
         }
     }
 
-    /* *
+    /**
      * visit line number
      * @param adapter
      * @param line
+     * @param silent id silent this is ignored for log
      */
     public static synchronized void visitLine(BytecodeContext bc, int line) {
     	if(line>0){
 	    	if(!(""+line).equals(last.get(bc.getClassName()+":"+bc.getId()))){
-	    		writeLog(bc,line-1);
+	    		//writeLog(bc,line);
 	    		bc.visitLineNumber(line);
 	    		last.put(bc.getClassName()+":"+bc.getId(),""+line);
 	    		last.put(bc.getClassName(),""+line);
@@ -92,33 +96,42 @@ public final class ExpressionUtil {
 		}
 		return defaultValue;
 	}
-  
-    public static void writeLog(BytecodeContext bc, int line) {
+
+	public static void callStartLog(BytecodeContext bc, Statement s, String id) {
+		call_Log(bc, START, getStartLine(s),id);
+	}
+	public static void callEndLog(BytecodeContext bc, Statement s, String id) {
+		call_Log(bc, END, getEndLine(s),id);
+	}
+
+	private static void call_Log(BytecodeContext bc, Method method, int line, String id) {
     	if(!bc.writeLog() || line<0 || (StringUtil.indexOfIgnoreCase(bc.getMethod().getName(),"call")==-1))return;
-    	
     	try{
 	    	GeneratorAdapter adapter = bc.getAdapter();
 	    	adapter.loadArg(0);
 	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 	        adapter.push(line);
-		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END_LINE);
-			
+	        adapter.push(id);
+		    adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, method);
 		}
 		catch(Throwable t) {
 			t.printStackTrace();
 		}		
 	}
-  
-    /*public static void writeLogEnd(BytecodeContext bc) {
-    	if(!bc.writeLog())return;
-		try{
-	    	GeneratorAdapter adapter = bc.getAdapter();
-	    	adapter.loadArg(0);
-	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, END);
-		}
-		catch(Throwable t) {
-			t.printStackTrace();
-		}		
-	}*/
+    
+    public static int getStartLine(Statement s){
+    	if(s instanceof StatementBase)return ((StatementBase)s).getStartLine();
+    	if(s instanceof Tag)return ((Tag)s).getStartLine();
+    	return s.getLine();
+    }
+    
+    public static int getEndLine(Statement s){
+    	if(s instanceof StatementBase)return ((StatementBase)s).getEndLine();
+    	if(s instanceof Tag)return ((Tag)s).getEndLine();
+    	return s.getLine();
+    }
+
+	public static boolean doLog(BytecodeContext bc) {
+		return bc.writeLog() && StringUtil.indexOfIgnoreCase(bc.getMethod().getName(),"call")!=-1;
+	}
 }
