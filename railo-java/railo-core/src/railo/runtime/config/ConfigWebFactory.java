@@ -521,7 +521,6 @@ public final class ConfigWebFactory {
 		Map<String,String> map=new HashTable();
 		if(attributes==null) return map;
 		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
-		String[] item;
 		int index;
 		for(int i=0;i<arr.length;i++) {
 			index=arr[i].indexOf(':');

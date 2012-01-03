@@ -109,11 +109,7 @@ public class BodyBase extends StatementBase implements Body {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
         writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),statements, bc);
     }
-	
 
-	
-	
-<<<<<<< HEAD
 	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
 		Iterator it = statements.iterator();
 		//int lastLine=-1;
@@ -168,14 +164,7 @@ public class BodyBase extends StatementBase implements Body {
 				_bc=bc;
 				a=null;
 			}
-        	/*
-        	if(s instanceof TagBase){
-        		TagBase tb=(TagBase) s;
-        		print.e(tb.getFullname()+":"+s.getClass().getName()+":"+s.getLine()+":"+tb.getStartLine()+":"+tb.getEndLine());
-        	}
-        	else print.e(s.getClass().getName()+":"+s.getLine());
-        	*/
-        	
+        	        	
         	if(ExpressionUtil.doLog(bc)) {
         		String id=id();
         		ExpressionUtil.callStartLog(bc, s,id);

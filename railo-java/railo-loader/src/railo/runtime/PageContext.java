@@ -898,7 +898,10 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract void setCatch(PageException pe);
     public abstract void setCatch(PageException pe,boolean caught, boolean store);
     
-    public abstract void exeLogEndline(int line);
+    public abstract void exeLogStart(int line,String id);
+	public abstract void exeLogEnd(int line,String id);
+    
+    
     /**
      * sets state of cfoutput only
      * @param enablecfoutputonly

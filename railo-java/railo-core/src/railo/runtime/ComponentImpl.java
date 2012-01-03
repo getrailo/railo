@@ -1395,10 +1395,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp) throws PageException {
-    	
-    	//PagePlus page = (PagePlus) ((PageSourceImpl)comp.pageSource).loadPage(pc.getConfig());
-    	PagePlus page = (PagePlus) ((PageSourceImpl)comp.pageSource).getPage();
-    	if(page==null) page = (PagePlus) comp.pageSource.loadPage(pc.getConfig());
+    	Page page =  ((PageSourceImpl)comp.pageSource).getPage();
+    	if(page==null) page = comp.pageSource.loadPage(pc.getConfig());
     	if(page.metaData!=null) {
     		return page.metaData;
     	}

@@ -24,7 +24,7 @@ public final class GetComponentMetaData implements Function {
 		}
 		// load existing meta without loading the cfc
 		try{
-			PagePlus page = ComponentLoader.loadPage(pc, Caster.toString(obj), null,null);
+			Page page = ComponentLoader.loadPage(pc, Caster.toString(obj), null,null);
 			if(page.metaData!=null) return page.metaData;
 			
 		}

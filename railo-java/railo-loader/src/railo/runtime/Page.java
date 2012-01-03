@@ -3,6 +3,7 @@ package railo.runtime;
 import java.io.Serializable;
 
 import railo.runtime.component.ImportDefintion;
+import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 
 /**
@@ -96,4 +97,7 @@ public abstract class Page implements Serializable{
 	public ImportDefintion[] getImportDefintions() {
 		return ZERO;
 	}
+	
+
+	public Struct metaData;
 }

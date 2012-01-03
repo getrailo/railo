@@ -37,8 +37,8 @@ public class ComponentLoader {
     	return (InterfaceImpl)load(pc, rawPath, Boolean.TRUE, Boolean.TRUE,interfaceUDFs,false);
     }
 	
-    public static PagePlus loadPage(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
-    	return (PagePlus)load(pc, rawPath, searchLocal, searchRoot,null,true);
+    public static Page loadPage(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    	return (Page)load(pc, rawPath, searchLocal, searchRoot,null,true);
     }
     
     

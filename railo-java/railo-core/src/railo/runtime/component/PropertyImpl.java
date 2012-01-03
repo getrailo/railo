@@ -180,8 +180,6 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 
 	public Object getMetaData() {
 		Struct sct=new StructImpl();
-		Iterator it;
-		Object key;
 		
 		// meta 
 		if(metadata!=null)
