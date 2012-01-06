@@ -335,6 +335,8 @@ public final class Page extends BodyBase {
 	public static final byte CF = (byte)207;
 	public static final byte _33 = (byte)51;
 	private static final boolean ADD_C33 = false;
+	//private static final String SUB_CALL_UDF = "udfCall";
+	private static final String SUB_CALL_UDF = "_";
 		
     private int version;
     private long lastModifed;
@@ -529,7 +531,7 @@ public final class Page extends BodyBase {
 			        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
 			        	adapter.visitVarInsn(Opcodes.ALOAD, 2);
 			        	adapter.visitVarInsn(Opcodes.ILOAD, 3);
-			        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, name, "udfCall"+(++count), "(Lrailo/runtime/PageContext;Lrailo/runtime/type/UDF;I)Ljava/lang/Object;");
+			        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, name, createFunctionName(++count), "(Lrailo/runtime/PageContext;Lrailo/runtime/type/UDF;I)Ljava/lang/Object;");
 			        	adapter.visitInsn(Opcodes.ARETURN);//adapter.returnValue();
 		        	cv.visitWhenAfterBody(bc);
 		        }
@@ -542,7 +544,7 @@ public final class Page extends BodyBase {
 	        count=0;
 	        Method innerCall;
 	        for(int i=0;i<functions.length;i+=10) {
-	        	innerCall = new Method("udfCall"+(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT_VALUE});
+	        	innerCall = new Method(createFunctionName(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT_VALUE});
 	        	
 	        	adapter = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , innerCall, null, new Type[]{Types.THROWABLE}, cw);
 	        	writeOutUdfCallInner(new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,innerCall,writeLog()), functions, i, i+10>functions.length?functions.length:i+10);
@@ -667,6 +669,10 @@ public final class Page extends BodyBase {
     
 
 
+
+	private String createFunctionName(int i) {
+		return "_"+Integer.toString(i, Character.MAX_RADIX);
+	}
 
 	private boolean writeLog() {
 		return _writeLog && !isInterface();
