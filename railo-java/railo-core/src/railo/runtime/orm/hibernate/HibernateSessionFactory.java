@@ -28,7 +28,6 @@ import railo.runtime.Component;
 import railo.runtime.ComponentPro;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
@@ -337,10 +336,10 @@ public class HibernateSessionFactory {
 					
 					
 					
-					Page p = ps.loadPage(pc.getConfig());
+					//Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);
+					ComponentAccess cfc = ComponentLoader.loadComponent(pc, null, ps, name, true,true);
 					if(cfc.isPersistent()){
 						components.add(cfc);
 					}

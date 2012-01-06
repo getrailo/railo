@@ -3,9 +3,7 @@ package railo.runtime.exp;
 import org.apache.commons.httpclient.HttpMethod;
 
 import railo.commons.net.HTTPUtil;
-import railo.runtime.PageContext;
 import railo.runtime.config.Config;
-import railo.runtime.type.Struct;
 
 /**
  * Exception class for the HTTP Handling
