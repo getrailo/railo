@@ -1,12 +1,10 @@
 package railo.runtime.exp;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
 
 /**
  * Exception throwed when missing include
