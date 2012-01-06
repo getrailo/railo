@@ -172,4 +172,18 @@ public final class StructUtil {
 	public static void setELIgnoreWhenNull(Struct sct, Collection.Key key, Object value) {
 		if(value!=null)sct.setEL(key, value);
 	}
+
+	/**
+	 * remove every entry hat has this value
+	 * @param map
+	 * @param obj
+	 */
+	public static void removeValue(Map map, Object value) {
+		Iterator it = map.entrySet().iterator();
+		Map.Entry entry;
+		while(it.hasNext()){
+			entry=(Entry) it.next();
+			if(entry.getValue()==value)it.remove();
+		}
+	}
 }
