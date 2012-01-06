@@ -2878,10 +2878,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		//execLog.line(line);
 	}
 	public void exeLogStart(int line,String id){
-		execLog.start(line, id);
+		if(execLog!=null)execLog.start(line, id);
 	}
 	public void exeLogEnd(int line,String id){
-		execLog.end(line, id);
+		if(execLog!=null)execLog.end(line, id);
 	}
 
 	
