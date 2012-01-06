@@ -232,6 +232,12 @@ public class Variable extends ExpressionBase implements Invoker {
 				lit=lit.duplicate();
 				lit.upperCase();
 			}
+			
+			///////
+			//ExpressionUtil.writeOutSilent(lit,bc, Expression.MODE_REF);
+			//bc.getAdapter().invokeStatic(Page.KEY_IMPL, Page.KEY_INTERN);
+			//////
+			
 			String key=bc.registerKey(lit);
 			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, bc.getClassName(), key, "Lrailo/runtime/type/Collection$Key;");
 			return true;
