@@ -14,6 +14,7 @@ import java.util.Set;
 
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
+import railo.commons.io.IOUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -466,8 +467,7 @@ public final class ClassUtil {
 		return names;
 	}
 
-
-
-
-	
+	public static byte[] toBytes(Class clazz) throws IOException {
+		return IOUtil.toBytes(clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.','/')+".class"),true);
+	}	
 }
