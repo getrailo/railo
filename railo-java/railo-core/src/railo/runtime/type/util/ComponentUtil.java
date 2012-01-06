@@ -23,7 +23,6 @@ import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
-import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
@@ -152,7 +151,6 @@ public final class ComponentUtil {
         try {
         	ResourceUtil.touch(classFile);
 	        IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
-	        //PhysicalClassLoader cl=(PhysicalClassLoader) mapping.getClassLoaderForPhysical(true); 
 	        
 	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
 	        
