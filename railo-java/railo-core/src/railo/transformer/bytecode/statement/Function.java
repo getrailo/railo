@@ -31,6 +31,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitInteger;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.util.ASMConstants;
@@ -147,14 +148,94 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	private static final Method INIT_FAI_STRING = new Method(
 			"<init>",
 			Types.VOID,
-			new Type[]{Types.STRING,Types.STRING,Types.SHORT_VALUE,Types.BOOLEAN_VALUE,Types.INT_VALUE,Types.BOOLEAN_VALUE,Types.STRING,Types.STRING,Page.STRUCT_IMPL}
+			new Type[]{Types.STRING,        Types.STRING,Types.SHORT_VALUE,Types.BOOLEAN_VALUE,Types.INT_VALUE,Types.BOOLEAN_VALUE,Types.STRING,Types.STRING,Page.STRUCT_IMPL}
     		);	
-	private static final Method INIT_FAI_KEY = new Method(
+	private static final Method INIT_FAI_KEY1 = new Method(
 			"<init>",
 			Types.VOID,
-			new Type[]{Types.COLLECTION_KEY,Types.STRING,Types.SHORT_VALUE,Types.BOOLEAN_VALUE,Types.INT_VALUE,Types.BOOLEAN_VALUE,Types.STRING,Types.STRING,Page.STRUCT_IMPL}
+			new Type[]{
+					Types.COLLECTION_KEY}
     		);	
-	
+	private static final Method INIT_FAI_KEY3 = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.COLLECTION_KEY,
+					Types.STRING,
+					Types.SHORT_VALUE}
+    		);
+	private static final Method INIT_FAI_KEY4 = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.COLLECTION_KEY,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.BOOLEAN_VALUE}
+    		);	
+	private static final Method INIT_FAI_KEY5 = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.COLLECTION_KEY,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.INT_VALUE}
+    		);
+	private static final Method INIT_FAI_KEY6 = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.COLLECTION_KEY,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.INT_VALUE,
+					Types.BOOLEAN_VALUE}
+    		);
+	private static final Method INIT_FAI_KEY7 = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.COLLECTION_KEY,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.INT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.STRING}
+    		);
+	private static final Method INIT_FAI_KEY8 = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.COLLECTION_KEY,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.INT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.STRING,
+					Types.STRING}
+    		);
+	private static final Method INIT_FAI_KEY9 = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.COLLECTION_KEY,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.INT_VALUE,
+					Types.BOOLEAN_VALUE,
+					Types.STRING,
+					Types.STRING,
+					Page.STRUCT_IMPL}
+    		);	
+	private static final Method[] INIT_FAI_KEY=new Method[]{
+		INIT_FAI_KEY1,INIT_FAI_KEY3,INIT_FAI_KEY4,INIT_FAI_KEY5,INIT_FAI_KEY6,INIT_FAI_KEY7,INIT_FAI_KEY8,INIT_FAI_KEY9
+	};
 	
 	
 	private ExprString name;
@@ -438,35 +519,108 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
     		ga.dup();
     		boolean hasKey = Variable.registerKey(bc,arg.getName(),false);
     		//arg.getName().writeOut(bc, Expression.MODE_REF);
+    		int functionIndex=7;
     		
-    		writeOutType(bc, arg.getType());
-    		//arg.getType().writeOut(bc, Expression.MODE_REF);
+    	// CHECK if default values
+    		// type
+    		ExprString _strType = arg.getType();
+    		short _type=CFTypes.TYPE_UNKNOW;
+    		if(_strType instanceof LitString){
+    			_type=CFTypes.toShortStrict(((LitString)_strType).getString(),CFTypes.TYPE_UNKNOW);
+    		}
+    		boolean useType=!hasKey || _type!=CFTypes.TYPE_ANY;
     		
+    		// required
+    		ExprBoolean _req = arg.getRequired();
+    		boolean useReq=!hasKey || toBoolean(_req,null)!=Boolean.FALSE;
     		
+    		// default-type
+    		Expression _def = arg.getDefaultValueType();
+    		boolean useDef=!hasKey || toInt(_def,-1)!=CFTypes.TYPE_ANY;
     		
-    		arg.getRequired().writeOut(bc, Expression.MODE_VALUE);
-    		arg.getDefaultValueType().writeOut(bc, Expression.MODE_VALUE);
-    		arg.isPassByReference().writeOut(bc, Expression.MODE_VALUE);
-    		arg.getDisplayName().writeOut(bc, Expression.MODE_REF);
-    		arg.getHint().writeOut(bc, Expression.MODE_REF);
-    		Page.createMetaDataStruct(bc,arg.getMetaData(),null);
-    		ga.invokeConstructor(FUNCTION_ARGUMENT_IMPL, hasKey?INIT_FAI_KEY:INIT_FAI_STRING);
+    		// pass by reference
+    		ExprBoolean _pass = arg.isPassByReference();
+    		boolean usePass=!hasKey || toBoolean(_pass,null)!=Boolean.TRUE;
+    		
+    		// display-hint
+    		ExprString _dsp = arg.getDisplayName();
+    		boolean useDsp=!hasKey || !isLiteralEmptyString(_dsp);
+    		
+    		// hint
+    		ExprString _hint = arg.getHint();
+    		boolean useHint=!hasKey || !isLiteralEmptyString(_hint);
+    		
+    		// meta
+    		Map _meta = arg.getMetaData();
+    		boolean useMeta=!hasKey || (_meta!=null && !_meta.isEmpty());
+    		if(!useMeta) {
+    			functionIndex--;
+    			if(!useHint) {
+    				functionIndex--;
+    				if(!useDsp){
+        				functionIndex--;
+        				if(!usePass) {
+        					functionIndex--;
+        					if(!useDef) {
+        						functionIndex--;
+        						if(!useReq) {
+        							functionIndex--;
+        							if(!useType){
+        								functionIndex--;
+        							}
+        						}
+        					}
+        				}
+    				}
+    			}
+    		}
+    	// write out arguments	
+    		
+    		// type
+    		if(functionIndex>=INIT_FAI_KEY.length-7) {
+    			_strType.writeOut(bc, Expression.MODE_REF);
+    			bc.getAdapter().push(_type);
+    		}
+    		// required
+    		if(functionIndex>=INIT_FAI_KEY.length-6)_req.writeOut(bc, Expression.MODE_VALUE);
+    		// default value
+    		if(functionIndex>=INIT_FAI_KEY.length-5)_def.writeOut(bc, Expression.MODE_VALUE);
+    		// pass by reference
+    		if(functionIndex>=INIT_FAI_KEY.length-4)_pass.writeOut(bc, Expression.MODE_VALUE);
+    		// display-name
+    		if(functionIndex>=INIT_FAI_KEY.length-3)_dsp.writeOut(bc, Expression.MODE_REF);
+    		// hint
+    		if(functionIndex>=INIT_FAI_KEY.length-2)_hint.writeOut(bc, Expression.MODE_REF);
+    		//meta
+    		if(functionIndex==INIT_FAI_KEY.length-1)Page.createMetaDataStruct(bc,_meta,null);
+    		
+    		ga.invokeConstructor(FUNCTION_ARGUMENT_IMPL, hasKey?INIT_FAI_KEY[functionIndex]:INIT_FAI_STRING);
 
             ga.visitInsn(Opcodes.AASTORE);
         }
 	}
 
-	private void writeOutType(BytecodeContext bc,ExprString expr) throws BytecodeException {
-		
-		//write string type
-		expr.writeOut(bc, Expression.MODE_REF);
-		// write short type
-		if(expr instanceof LitString){
-			short type=CFTypes.toShortStrict(((LitString)expr).getString(),CFTypes.TYPE_UNKNOW);
-			bc.getAdapter().push(type);
+	private int toInt(Expression expr, int defaultValue) {
+		if(expr instanceof LitInteger) {
+			return ((LitInteger)expr).getInteger().intValue();
 		}
-		else bc.getAdapter().push(CFTypes.TYPE_UNKNOW);
+		return defaultValue;
 	}
+
+	private Boolean toBoolean(ExprBoolean expr, Boolean defaultValue) {
+		if(expr instanceof LitBoolean) {
+			return ((LitBoolean)expr).getBooleanValue()?Boolean.TRUE:Boolean.FALSE;
+		}
+		return defaultValue;
+	}
+
+	private boolean isLiteralEmptyString(ExprString expr) {
+		if(expr instanceof LitString) {
+			return StringUtil.isEmpty(((LitString)expr).getString());
+		}
+		return false;
+	}
+
 	private void writeOutAccess(BytecodeContext bc,ExprString expr) {
 		
 		// write short type
