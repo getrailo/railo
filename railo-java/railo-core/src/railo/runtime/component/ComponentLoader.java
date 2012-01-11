@@ -306,6 +306,9 @@ public class ComponentLoader {
 	//
 
 	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, boolean silent) throws PageException  {
+		if(page==null && ps instanceof PageSourceImpl) {
+			page=((PageSourceImpl)ps).getPage();
+		}
 		if(silent) {
 			// TODO is there a more direct way
 			BodyContent bc =  pc.pushBody();

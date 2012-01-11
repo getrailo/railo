@@ -33,6 +33,6 @@ public final class PagePoolClear implements Function {
 	}
 	public static void clear(Mapping mapping) {
 		if(mapping==null)return;
-		((MappingImpl) mapping).getPageSourcePool().clearPages();
+		((MappingImpl) mapping).getPageSourcePool().clearPages(null);
 	}
 }

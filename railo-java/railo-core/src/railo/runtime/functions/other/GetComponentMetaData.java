@@ -6,6 +6,7 @@ package railo.runtime.functions.other;
 import java.util.HashMap;
 
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.InterfaceImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PagePlus;
@@ -25,15 +26,24 @@ public final class GetComponentMetaData implements Function {
 		// load existing meta without loading the cfc
 		try{
 			PagePlus page = ComponentLoader.loadPage(pc, Caster.toString(obj), null,null);
-			if(page.metaData!=null) return page.metaData;
-			
+			if(page.metaData!=null && page.metaData.get()!=null) return page.metaData.get();
 		}
 		catch(Throwable t){}
+		
+		/*try{
+			PagePlus page = ComponentLoader.loadPage(pc, Caster.toString(obj), null,null);
+			Struct meta=null;
+			if(page!=null)meta=GetMetaData.getMetaData(page.getPageSource());
+			if(meta!=null) return meta;
+			
+		}
+		catch(Throwable t){}*/
+		
 		
 		// load the cfc when metadata was not defined before
 		try{
 			Component cfc = CreateObject.doComponent(pc, Caster.toString(obj));
-			return cfc.getMetaData(pc);
+			return GetMetaData.getMetaData((ComponentPro) cfc, pc);
 		}
 		// TODO better solution
 		catch(ApplicationException ae){

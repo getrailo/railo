@@ -4,6 +4,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -1422,8 +1423,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// Cache
     	PagePlus page = (PagePlus) ((PageSourceImpl)comp.pageSource).getPage();
     	if(page==null) page = (PagePlus) comp.pageSource.loadPage(pc.getConfig());
-    	if(page.metaData!=null) {
-    		return page.metaData;
+    	if(page.metaData!=null && page.metaData.get()!=null) {
+    		return page.metaData.get();
     	}
     	
     	StructImpl sct=new StructImpl();
@@ -1488,8 +1489,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
         	sct.set(PROPERTIES,parr);
         }
-
-        return page.metaData=sct;
+        page.metaData=new SoftReference<Struct>(sct);
+        return page.metaData.get();
     }    
 
     private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {

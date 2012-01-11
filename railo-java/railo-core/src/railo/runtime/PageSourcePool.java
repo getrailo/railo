@@ -142,7 +142,7 @@ public final class PageSourcePool implements Dumpable,Sizeable {
 		table.setTitle("Page Source Pool");
 		table.appendRow(1,new SimpleDumpData("Count"),new SimpleDumpData(pageSources.size()));
 		while(it.hasNext()) {
-		    PageSource ps=(PageSource) pageSources.get(it.next());
+		    PageSource ps= pageSources.get(it.next());
 		    DumpTable inner = new DumpTable("#FFCC00","#FFFF00","#000000");
 			inner.setWidth("100%");
 			inner.appendRow(1,new SimpleDumpData("source"),new SimpleDumpData(ps.getDisplayPath()));
@@ -152,14 +152,19 @@ public final class PageSourcePool implements Dumpable,Sizeable {
 		}
 		return table;
 	}
-	         
-	public void clearPages() {
+	
+	/**
+	 * remove all Page from Pool using this classloader
+	 * @param cl 
+	 */
+	public void clearPages(ClassLoader cl) {
 		synchronized(pageSources){
 			Iterator<Entry<Object, PageSource>> it = this.pageSources.entrySet().iterator();
 			PageSourceImpl entry;
 			while(it.hasNext()) {
 				entry = (PageSourceImpl) it.next().getValue();
-				entry.clear();
+				if(cl!=null)entry.clear(cl);
+				else entry.clear();
 			}
 		}
 	}

@@ -2,7 +2,6 @@ package railo.runtime.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.management.MemoryUsage;
 import java.util.Map;
 
 import railo.commons.io.IOUtil;
@@ -11,6 +10,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.PCLCollection;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.CFMLFactoryImpl;
@@ -38,7 +38,6 @@ public final class Controler extends Thread {
 	private long lastMinuteInterval=System.currentTimeMillis();
 	private long lastHourInterval=System.currentTimeMillis();
 	
-	int maxPoolSize=500;
     private final Map contextes;
     private final RefBoolean run;
 	//private ScheduleThread scheduleThread;
@@ -54,6 +53,10 @@ public final class Controler extends Thread {
 		this.interval=interval;
         this.run=run;
         this.configServer=configServer;
+        
+        
+        // Register Memory Notification Listener
+        //MemoryControler.init(configServer);
         
 	}
 	
@@ -89,6 +92,9 @@ public final class Controler extends Thread {
 				t.printStackTrace();
 			}
             
+            if(doHour) {
+            	try{checkPermGenSpace(configServer,true);}catch(Throwable t){}
+            }
             
             for(int i=0;i<factories.length;i++) {
 	            run(factories[i], doMinute, doHour,firstRun);
@@ -149,8 +155,8 @@ public final class Controler extends Thread {
 					// clear Query Cache
 					try{cfmlFactory.getQueryCache().clearUnused();}catch(Throwable t){}
 					// contract Page Pool
-					try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
-					try{doClearClassLoaders((ConfigWebImpl) config);}catch(Throwable t){}
+					//try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
+					//try{checkPermGenSpace((ConfigWebImpl) config);}catch(Throwable t){}
 					try{doCheckMappings(config);}catch(Throwable t){}
 					try{doClearMailConnections();}catch(Throwable t){}
 					// clean LockManager
@@ -263,58 +269,6 @@ public final class Controler extends Thread {
         }
     }
 
-    private void doClearPagePools(ConfigWebImpl config) {
-        PageSourcePool[] pools=getPageSourcePools(config);
-        int poolSize=getPageSourcePoolSize(pools);
-        long start =System.currentTimeMillis();
-        int startsize=poolSize;
-        while(poolSize>maxPoolSize) {
-            removeOldest(pools);
-            poolSize--;
-        }
-        if(startsize>poolSize)
-        	SystemOut.printDate(config.getOutWriter(),"contract pagepools from "+startsize+" to "+poolSize +" in "+(System.currentTimeMillis()-start)+" millis");
-    }
-
-    private void doClearClassLoaders(ConfigWebImpl config) {
-    	MemoryUsage pg = SystemUtil.getPermGenSpaceSize();
-		if((pg.getMax()-pg.getUsed())<1024*1024) {
-			SystemOut.printDate(config.getOutWriter(),"Free Perm Gen Space is less than 1mb (used:"+(pg.getUsed()/1024)+"kb;free:"+((pg.getMax()-pg.getUsed())/1024)+"kb), reset all template classloaders");
-			
-			clearClassLoaders(config.getMappings());
-			clear(getPageSourcePools(config.getMappings()));
-			
-			clearClassLoaders(config.getComponentMappings());
-			clear(getPageSourcePools(config.getComponentMappings()));
-			
-			clearClassLoaders(config.getCustomTagMappings());
-			clear(getPageSourcePools(config.getCustomTagMappings()));
-			
-			clearClassLoaders(config.getFunctionMapping());
-			clear(getPageSourcePools(config.getFunctionMapping()));
-			
-			clearClassLoaders(config.getServerFunctionMapping());
-			clear(getPageSourcePools(config.getServerFunctionMapping()));
-			
-			clearClassLoaders(config.getServerTagMapping());
-			clear(getPageSourcePools(config.getServerTagMapping()));
-			
-			clearClassLoaders(config.getTagMapping());
-			clear(getPageSourcePools(config.getTagMapping()));
-			
-			System.gc();
-		}
-		
-    }
-
-    private void clearClassLoaders(Mapping... mappings) {
-		for(int i=0;i<mappings.length;i++){
-			try {
-				mappings[i].getClassLoaderForPhysical(true);
-			} catch (IOException e) {}
-		}
-	}
-
 	private PageSourcePool[] getPageSourcePools(ConfigWeb config) {
 		return getPageSourcePools(config.getMappings());
 	}
@@ -417,5 +371,97 @@ public final class Controler extends Thread {
 		}
     	
     }
+
+	/**
+	 * if free permspace gen is lower than 10000000 bytes, railo shrinks all classloaders 
+	 * @param cs
+	 */
+    public static void checkPermGenSpace(ConfigServer cs, boolean check) {
+    	//print.e(Runtime.getRuntime().freeMemory());
+		// Runtime.getRuntime().freeMemory()<200000 || 
+    	if(!check || SystemUtil.getFreePermGenSpaceSize()<1024*1024){
+			SystemOut.printDate(cs.getOutWriter(),"+Free Perm Gen Space is less than 1mb (free:"+((SystemUtil.getFreePermGenSpaceSize())/1024)+"kb), shrink all template classloaders");
+			// first just call GC and check if it help
+			System.gc();
+			if(SystemUtil.getFreePermGenSpaceSize()>1024*1024) return;
+			
+			ConfigWeb[] webs = cs.getConfigWebs();
+			int count=0;
+			for(int i=0;i<webs.length;i++){
+				count+=_checkPermGenSpace((ConfigWebImpl) webs[i],false);
+			}
+			if(count==0) {
+				for(int i=0;i<webs.length;i++){
+					_checkPermGenSpace((ConfigWebImpl) webs[i],true);
+				}
+			}
+		}
+	}
+
+	private static int _checkPermGenSpace(ConfigWebImpl config, boolean force) {
+		int count=0;
+		count+=shrink(config.getMappings(),force);
+		count+=shrink(config.getCustomTagMappings(),force);
+		count+=shrink(config.getComponentMappings(),force);
+		count+=shrink(config.getFunctionMapping(),force);
+		count+=shrink(config.getServerFunctionMapping(),force);
+		count+=shrink(config.getTagMapping(),force);
+		count+=shrink(config.getServerTagMapping(),force);
+		count+=shrink(((ConfigWebImpl)config).getServerTagMapping(),force);
+		return count;
+	}
+
+	private static int shrink(Mapping[] mappings, boolean force) {
+		int count=0;
+		for(int i=0;i<mappings.length;i++){
+			count+=shrink(mappings[i],force);
+		}
+		return count;
+	}
+
+	private static int shrink(Mapping mapping, boolean force) {
+		try {
+			PCLCollection pcl = ((MappingImpl)mapping).getPCLCollection();
+			if(pcl!=null)return pcl.shrink(force);
+		} 
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return 0;
+	}
+	
+	 public static long countLoadedPages(ConfigServer cs) {
+		 long count=0;
+		 ConfigWeb[] webs = cs.getConfigWebs();
+			for(int i=0;i<webs.length;i++){
+	    	count+=_count((ConfigWebImpl) webs[i]);
+		}	
+		return count;
+	 }
+	 private static long _count(ConfigWebImpl config) {
+		 long count=0;
+		count+=_count(config.getMappings());
+		count+=_count(config.getCustomTagMappings());
+		count+=_count(config.getComponentMappings());
+		count+=_count(config.getFunctionMapping());
+		count+=_count(config.getServerFunctionMapping());
+		count+=_count(config.getTagMapping());
+		count+=_count(config.getServerTagMapping());
+		count+=_count(((ConfigWebImpl)config).getServerTagMapping());
+		return count;
+	}
+
+	 private static long _count(Mapping[] mappings) {
+		 long count=0;
+		for(int i=0;i<mappings.length;i++){
+			count+=_count(mappings[i]);
+		}
+		return count;
+	}
+
+	private static long _count(Mapping mapping) {
+		PCLCollection pcl = ((MappingImpl)mapping).getPCLCollection();
+		return pcl==null?0:pcl.count();
+	}
 
 }
