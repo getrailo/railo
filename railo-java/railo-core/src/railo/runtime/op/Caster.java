@@ -3136,27 +3136,36 @@ public final class Caster {
                     break;
            }
         }
+        // array
+        if(type.endsWith("[]")) {
+        	Class clazz = cfTypeToClass(type.substring(0,type.length()-2));
+        	clazz=ClassUtil.toArrayClass(clazz);
+        	return clazz;
+        }
         
         // check for argument
-        PageContext pc = ThreadLocalPageContext.get();
+        Class<?> clazz=otherTypeToClass(type);
+        if(clazz!=null) return clazz;
+        throw new ExpressionException("invalid type ["+type+"]");
+    }
+    
+    private static Class<?> otherTypeToClass(String type){
+    	PageContext pc = ThreadLocalPageContext.get();
         if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
         		return ComponentUtil.getServerComponentPropertiesClass(c);
     		} 
-            catch (PageException pe) {
-            	pe.printStackTrace();
-            }
+            catch (PageException pe) {}
         }
         try {
 			return ClassUtil.loadClass(type);
 		} 
-        catch (ClassException e) {
-        	
-        }
+        catch (ClassException e) {}
         
-        throw new ExpressionException("invalid type ["+type+"]");
+        return null;
     }
+    
 
     
     /**
@@ -3329,6 +3338,22 @@ public final class Caster {
                     break;
            }
         }
+        
+        // <type>[]
+        if(type.endsWith("[]")){
+        	String componentType = type.substring(0,type.length()-2);
+        	Object[] src = toNativeArray(o);
+        	Array trg=new ArrayImpl();
+        	for(int i=0;i<src.length;i++){
+        		if(src[i]==null){
+        			continue;
+        		}
+        		trg.setE(i+1,castTo(pc, componentType, src[i],alsoPattern));
+        	}        	
+        	return trg;	
+        }
+        
+        
         if(o instanceof Component) {
             Component comp=((Component)o);
             if(comp.instanceOf(type)) return o;

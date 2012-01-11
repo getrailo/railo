@@ -469,5 +469,26 @@ public final class ClassUtil {
 
 	public static byte[] toBytes(Class clazz) throws IOException {
 		return IOUtil.toBytes(clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.','/')+".class"),true);
-	}	
+	}
+
+	/**
+	 * return a array class based on the given class (opposite from Class.getComponentType())
+	 * @param clazz
+	 * @return
+	 */
+	public static Class toArrayClass(Class clazz) {
+		return java.lang.reflect.Array.newInstance(clazz, 0).getClass();
+	}
+
+
+
+	public static Class<?> toComponentType(Class<?> clazz) {
+		Class<?> tmp;
+		while(true){
+			tmp=clazz.getComponentType();
+			if(tmp==null) break;
+			else clazz=tmp;
+		}
+		return clazz;
+	}
 }

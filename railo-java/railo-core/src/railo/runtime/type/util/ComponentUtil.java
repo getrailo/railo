@@ -200,6 +200,7 @@ public final class ComponentUtil {
 	}
 
 	private static boolean _hasChangesOfChildren(PageContext pc, long last, Class clazz) {
+		clazz=ClassUtil.toComponentType(clazz);
 		java.lang.reflect.Method m = getComplexTypeMethod(clazz);
 		if(m==null) return false;
 		try {
@@ -372,8 +373,7 @@ public final class ComponentUtil {
 		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
 		
 		Resource classFile = cl.getDirectory().getRealResource(real.concat(".class"));
-		
-    	String classNameOriginal=cp.getPageSource().getFullClassName();
+		String classNameOriginal=cp.getPageSource().getFullClassName();
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
 		
