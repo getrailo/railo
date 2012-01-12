@@ -182,7 +182,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	
 	public UDFImpl(UDFProperties properties) {
 		super(properties.getAccess());
-		this.properties=(UDFPropertiesImpl) properties;
+		this.properties= (UDFPropertiesImpl) properties;
 	}
 
 	public UDF duplicate(ComponentImpl c) {

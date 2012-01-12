@@ -1565,14 +1565,14 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	registerUDF(KeyImpl.init(key), (UDFImpl) udf,useShadow,false);
     }
     public void registerUDF(String key, UDFProperties prop) {
-    	registerUDF(KeyImpl.init(key), new UDFImpl(prop),useShadow,false);
+    	registerUDF(KeyImpl.init(key), new UDFImpl( prop),useShadow,false);
     }
 
     public void registerUDF(Collection.Key key, UDF udf) {
     	registerUDF(key, (UDFImpl) udf,useShadow,false);
     }
     public void registerUDF(Collection.Key key, UDFProperties prop) {
-    	registerUDF(key, new UDFImpl(prop),useShadow,false);
+    	registerUDF(key, new UDFImpl( prop),useShadow,false);
     }
     
     /*

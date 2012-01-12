@@ -39,6 +39,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
 import railo.runtime.type.scope.Scope;
@@ -182,6 +183,7 @@ public final class Types {
 	public static final Type MEMBER = Type.getType(Member.class);
 	public static final Type UDF = Type.getType(UDF.class);
 	public static final Type UDF_PROPERTIES = Type.getType(UDFProperties.class);
+	public static final Type UDF_PROPERTIES_IMPL = Type.getType(UDFPropertiesImpl.class);
 	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
 	public static final Type UDF_PROPERTIES_ARRAY = Type.getType(UDFProperties[].class);
 	public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);

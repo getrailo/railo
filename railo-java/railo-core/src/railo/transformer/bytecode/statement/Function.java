@@ -80,12 +80,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	
 	
 	private static final ExprString ANY = LitString.toExprString("any");
-	//private static final ExprString PUBLIC = LitString.toExprString("public");
-	//private static final ExprString EMPTY = LitString.toExprString("");
-
-
-	private static final Type UDF_PROPERTIES = Type.getType(railo.runtime.type.UDFProperties.class);
-
+	
 	// <init>(Page,FunctionArgument[],int String,String,boolean);
 	private static final Type FUNCTION_ARGUMENT = Type.getType(FunctionArgument.class);
 	private static final Type FUNCTION_ARGUMENT_IMPL = Type.getType(FunctionArgumentImpl.class);
@@ -385,7 +380,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 			adapter.newInstance(Types.UDF_IMPL);
 			adapter.dup();
 		}
-		adapter.newInstance(UDF_PROPERTIES);
+		adapter.newInstance(Types.UDF_PROPERTIES_IMPL);
 		adapter.dup();
 		adapter.visitVarInsn(ALOAD, 1);
 		// page
@@ -427,7 +422,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		// meta
 		Page.createMetaDataStruct(bc,metadata,null);
 		
-		adapter.invokeConstructor(UDF_PROPERTIES, type==-1?INIT_UDF_PROPERTIES_STRTYPE:INIT_UDF_PROPERTIES_SHORTTYPE);
+		adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, type==-1?INIT_UDF_PROPERTIES_STRTYPE:INIT_UDF_PROPERTIES_SHORTTYPE);
 		if(!onlyProps)adapter.invokeConstructor(Types.UDF_IMPL, INIT_UDF_IMPL_PROP);
 		
 	}

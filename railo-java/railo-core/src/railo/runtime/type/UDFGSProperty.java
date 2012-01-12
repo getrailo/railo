@@ -56,7 +56,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 		this.component=component;
 	}
 
-	private static UDFProperties UDFProperties(PageSource pageSource,
+	private static UDFPropertiesImpl UDFProperties(PageSource pageSource,
 	        FunctionArgument[] arguments,
 			int index,
 	        String functionName, 
