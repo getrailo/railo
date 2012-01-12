@@ -3072,19 +3072,6 @@ public abstract class ConfigImpl implements Config {
 			
 			if(hasError) {
 				// try to load hibernate jars
-				/*if(ormEngineClass.getName().equals("railo.runtime.orm.hibernate.HibernateORMEngine")){
-					try {
-						Resource[] jars = JarLoader.download(pc,new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar"});
-						
-						if(!ArrayUtil.isEmpty(jars))
-							throw new ORMException(
-									"Railo cannot initialize the ORM Engine ["+ormEngineClass.getName()+"], please restart your servlet engine",
-									"Railo has downloaded the following jars ["+ResourceUtil.names(jars)+"] into directory ["+jars[0].getParent()+"]");
-					} 
-					catch (Throwable t) {
-						t.printStackTrace();;
-					}
-				}*/
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
 						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
