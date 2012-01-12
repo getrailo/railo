@@ -11625,11 +11625,17 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Name of an executed query.</description>
     </argument>
 		<argument>
-			<name>number</name>
-			<type>number</type>
+			<name>numberOrData</name>
+			<alias>number,data</alias>
+			<type>any</type>
 			<required>No</required>
 			<default>1</default>
-		<description>number of rows to add, default is 1</description>
+		<description>Number of rows to add to the query or a struct/array containing the data tp populate the row.
+		Example:
+		queryAddRow(qry,3);
+		queryAddRow(qry,["Susi",20]);
+		queryAddRow(qry,{name:"Susi",age:20});
+		</description>
     </argument>		
 		<return>
 			<type>number</type>
@@ -11819,16 +11825,29 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Creates an empty query (query object).</description>
 		<argument>
 			<name>columnlist</name>
+			<alias>names,columns</alias>
 			<type>string</type>
 			<required>Yes</required>
-		<description>Comma-delimited list of column names, or an empty string. </description>
-    </argument>
+			<description>Comma-delimited list of column names, or an empty string. </description>
+    	</argument>
 		<argument>
 			<name>columntypelist</name>
+			<alias>types</alias>
 			<type>string</type>
 			<required>No</required>
-		<description>Comma-delimited list specifying column data types.</description>
-    </argument>
+			<description>Comma-delimited list specifying column data types.</description>
+    	</argument>
+		<argument>
+			<name>data</name>
+			<type>any</type>
+			<required>No</required>
+			<description>data to populate the new Query, a array of arrays or a array of structs.
+			Example usage:
+			queryNew("name,age","varchar,numeric",[["Susi",20],["Urs",24]]);
+			queryNew("name,age","varchar,numeric",[[name:"Susi",age:20],[name:"Urs",age:24]]);
+			queryNew("name,age","varchar,numeric",{name:["Susi","Urs"],age:[20,24]});
+			</description>
+    	</argument>
 		<return>
 			<type>query</type>
 		</return>
