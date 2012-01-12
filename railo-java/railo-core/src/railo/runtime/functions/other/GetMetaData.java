@@ -4,7 +4,6 @@
 package railo.runtime.functions.other;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
@@ -45,7 +44,7 @@ public final class GetMetaData implements Function {
 		if(!source){
 			// Component
 			if(object instanceof Component) {
-				return getMetaData((ComponentPro)object,pc);
+				return getMetaData((Component)object,pc);
 				//return ((Component)object).getMetaData(pc);
 			}
 			// UDF
@@ -69,7 +68,7 @@ public final class GetMetaData implements Function {
 		
 	}
 
-	public static Struct getMetaData(ComponentPro cfc, PageContext pc) throws PageException {
+	public static Struct getMetaData(Component cfc, PageContext pc) throws PageException {
 		return cfc.getMetaData(pc);
 	}
 

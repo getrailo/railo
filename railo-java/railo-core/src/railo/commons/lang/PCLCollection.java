@@ -72,7 +72,7 @@ public final class PCLCollection {
     
     
 
-    public synchronized Class<?> loadClass(String name, byte[] barr, boolean isCFC) throws ClassNotFoundException   {
+    public synchronized Class<?> loadClass(String name, byte[] barr, boolean isCFC)   {
     	// if class is already loaded flush the classloader and do new classloader
     	PCLBlock cl = index.get(name);
     	if(cl!=null) {

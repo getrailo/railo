@@ -42,7 +42,7 @@ public final class GetComponentMetaData implements Function {
 		// load the cfc when metadata was not defined before
 		try{
 			Component cfc = CreateObject.doComponent(pc, Caster.toString(obj));
-			return GetMetaData.getMetaData((ComponentPro) cfc, pc);
+			return GetMetaData.getMetaData(cfc, pc);
 		}
 		// TODO better solution
 		catch(ApplicationException ae){

@@ -159,7 +159,7 @@ public final class PCLBlock extends ClassLoader implements Sizeable  {
     }
     
 
-    public Class<?> loadClass(String name, byte[] barr) throws ClassNotFoundException   {
+    public Class<?> loadClass(String name, byte[] barr)   {
     	int start=0;
     	//if(ClassUtil.hasCF33Prefix(barr)) start=10;
     	size+=barr.length-start;

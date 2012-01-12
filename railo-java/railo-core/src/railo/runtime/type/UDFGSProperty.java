@@ -72,7 +72,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	        Boolean verifyClient,
 	        StructImpl meta) {
 		try {
-			return new UDFProperties( pageSource,
+			return new UDFPropertiesImpl( pageSource,
 			        arguments,
 					 index,
 			         functionName, 
@@ -88,7 +88,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 			         verifyClient,
 			         meta);
 		} catch (ExpressionException e) {
-			return new UDFProperties();
+			return new UDFPropertiesImpl();
 		}
 	}
 

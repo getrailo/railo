@@ -407,7 +407,7 @@ public final class Controler extends Thread {
 		count+=shrink(config.getServerFunctionMapping(),force);
 		count+=shrink(config.getTagMapping(),force);
 		count+=shrink(config.getServerTagMapping(),force);
-		count+=shrink(((ConfigWebImpl)config).getServerTagMapping(),force);
+		//count+=shrink(config.getServerTagMapping(),force);
 		return count;
 	}
 
@@ -447,7 +447,7 @@ public final class Controler extends Thread {
 		count+=_count(config.getServerFunctionMapping());
 		count+=_count(config.getTagMapping());
 		count+=_count(config.getServerTagMapping());
-		count+=_count(((ConfigWebImpl)config).getServerTagMapping());
+		//count+=_count(((ConfigWebImpl)config).getServerTagMapping());
 		return count;
 	}
 

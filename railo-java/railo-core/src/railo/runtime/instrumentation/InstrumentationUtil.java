@@ -43,7 +43,7 @@ public class InstrumentationUtil {
 		ClassWriter cw = ASMUtil.getClassWriter();
         ChangeAdapter ca = new ChangeAdapter(cw);  
         ClassReader cr = new ClassReader(org); 
-        cr.accept(ca, false);  
+        cr.accept(ca, 0);  
         return cw.toByteArray();
     }  
 	

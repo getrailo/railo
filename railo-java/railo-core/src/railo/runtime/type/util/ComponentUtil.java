@@ -50,6 +50,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.util.ASMProperty;
@@ -656,7 +657,7 @@ public final class ComponentUtil {
 		}
 		return sct;
 	}
-	public static Struct getMetaData(PageContext pc,UDFProperties udf) throws PageException {
+	public static Struct getMetaData(PageContext pc,UDFPropertiesImpl udf) throws PageException {
 		StructImpl func=new StructImpl();
         pc=ThreadLocalPageContext.get(pc);
 		// TODO func.set("roles", value);

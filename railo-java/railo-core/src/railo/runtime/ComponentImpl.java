@@ -67,6 +67,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFGSProperty;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
@@ -1480,18 +1481,17 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         }
         page.metaData=new SoftReference<Struct>(sct);
         return page.metaData.get();
->>>>>>> 3.3
     }    
 
     private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {
     	ArrayImpl arr=new ArrayImpl();
     	//Collection.Key name;
         
-    	PagePlus page = (PagePlus) ((PageSourceImpl)comp._getPageSource()).getPage();
+    	Page page = ((PageSourceImpl)comp._getPageSource()).getPage();
     	if(page!=null && page.udfs!=null){
     		for(int i=0;i<page.udfs.length;i++){
     			if(page.udfs[i].getAccess()>access) continue;
-        		arr.add(ComponentUtil.getMetaData(pc,page.udfs[i]));
+        		arr.add(ComponentUtil.getMetaData(pc,(UDFPropertiesImpl) page.udfs[i]));
     		}
     	}
     	

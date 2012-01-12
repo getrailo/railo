@@ -1,10 +1,12 @@
 package railo.runtime;
 
 import java.io.Serializable;
+import java.lang.ref.SoftReference;
 
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 
 /**
  * abstract Method for all generated Page Object
@@ -99,5 +101,7 @@ public abstract class Page implements Serializable{
 	}
 	
 
-	public Struct metaData;
+	public SoftReference<Struct> metaData;
+	
+	protected UDFProperties[] udfs;
 }

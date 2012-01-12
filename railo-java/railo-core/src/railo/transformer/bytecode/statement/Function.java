@@ -359,10 +359,6 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 
 	public void loadUDF(BytecodeContext bc, int index, boolean onlyProps) throws BytecodeException {
 		BytecodeContext constr = bc.getConstructor();
-		ClassWriter cw = bc.getClassWriter();
-		//String type = Type.getType(UDFProperties.class).toString();
-		String type = onlyProps?Types.UDF_PROPERTIES.toString():Types.UDF_IMPL.toString();
-		String str="u"+index;
 		GeneratorAdapter cga = constr.getAdapter();
 		GeneratorAdapter ga = bc.getAdapter();
 		
@@ -471,7 +467,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		ga.newArray(FUNCTION_ARGUMENT);
 		Argument arg;
         for (int i = 0; i < arguments.size(); i++) {
-        	arg=(Argument) arguments.get(i);
+        	arg= arguments.get(i);
             
         	boolean canHaveKey = Variable.canRegisterKey(arg.getName());
     		

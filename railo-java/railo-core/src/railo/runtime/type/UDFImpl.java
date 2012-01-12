@@ -50,7 +50,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	
 	
 	private ComponentImpl ownerComponent;
-	private UDFProperties properties;
+	private UDFPropertiesImpl properties;
     
 
 	/**
@@ -98,7 +98,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	        Boolean verifyClient,
 	        StructImpl meta) throws ExpressionException {
 		super(ComponentUtil.toIntAccess(strAccess));
-		properties=new UDFProperties(page,
+		properties=new UDFPropertiesImpl(page,
 		        arguments,
 				index,
 		        functionName, 
@@ -153,7 +153,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	        Boolean verifyClient,
 	        StructImpl meta) throws ExpressionException {
 		super(ComponentUtil.toIntAccess(strAccess));
-		properties=new UDFProperties(
+		properties=new UDFPropertiesImpl(
 		        page,
 		        arguments,
 				index,
@@ -182,7 +182,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	
 	public UDFImpl(UDFProperties properties) {
 		super(properties.getAccess());
-		this.properties=properties;
+		this.properties=(UDFPropertiesImpl) properties;
 	}
 
 	public UDF duplicate(ComponentImpl c) {
@@ -787,7 +787,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		setAccess(in.readInt());
 		
 		// properties
-		properties=(UDFProperties) in.readObject();
+		properties=(UDFPropertiesImpl) in.readObject();
 	}
 
 

@@ -698,10 +698,7 @@ public final class Page extends BodyBase {
 			ga.push(index++);
 			
 			ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-			if(value instanceof Literal)
-				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
-			else 
-				ga.invokeStatic(KEY_IMPL, KEY_INIT);
+			ga.invokeStatic(KEY_IMPL, KEY_INTERN);
 			ga.visitInsn(Opcodes.AASTORE);
 		}
 		ga.visitFieldInsn(Opcodes.PUTSTATIC, 

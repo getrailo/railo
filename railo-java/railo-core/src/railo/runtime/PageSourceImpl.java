@@ -270,7 +270,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
 	}
 
-	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws TemplateException, IOException, ClassNotFoundException, SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws TemplateException, IOException, SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
         ConfigWebImpl cwi=(ConfigWebImpl) config;
         byte[] barr = cwi.getCompiler().
         	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());

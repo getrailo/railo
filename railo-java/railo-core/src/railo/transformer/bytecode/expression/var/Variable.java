@@ -246,7 +246,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		return false;
 	}
 
-	public static boolean canRegisterKey(Expression name) throws BytecodeException {
+	public static boolean canRegisterKey(Expression name) {
 		return name instanceof LitString;
 	}
 

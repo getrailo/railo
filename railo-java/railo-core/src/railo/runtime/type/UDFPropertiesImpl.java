@@ -20,7 +20,7 @@ import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.type.util.ComponentUtil;
 
-public final class UDFProperties implements Sizeable,Serializable,Externalizable {
+public final class UDFPropertiesImpl implements UDFProperties {
 
 
 	public  String functionName;
@@ -44,7 +44,7 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 	public int access; 
 
 
-		public UDFProperties(
+		public UDFPropertiesImpl(
 		        Page page,
 		        FunctionArgument[] arguments,
 				int index,
@@ -79,7 +79,7 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 		}
 
 	 
-	public UDFProperties(
+	public UDFPropertiesImpl(
 	        Page page,
 	        FunctionArgument[] arguments,
 			int index,
@@ -115,7 +115,7 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 		
 	}
 	
-	public UDFProperties(
+	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
 			int index,
@@ -170,7 +170,7 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 	}
 	
 	
-	public UDFProperties(
+	public UDFPropertiesImpl(
 	        Page page,
 	        FunctionArgument[] arguments,
 			int index,
@@ -206,19 +206,19 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 	/**
 	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
 	 */
-	public UDFProperties(){
+	public UDFPropertiesImpl(){
 		
 	}
 	
 	//@deprecated use instead UDFProperties(PageSource pageSource,...
-	public UDFProperties(Page page, FunctionArgument[] arguments, int index, String functionName, short returnType,
+	public UDFPropertiesImpl(Page page, FunctionArgument[] arguments, int index, String functionName, short returnType,
 			String strReturnFormat, boolean output, boolean async, int access, String displayName, String description,String hint, 
 			Boolean secureJson,Boolean verifyClient,StructImpl meta) throws ExpressionException {
 		this(page.getPageSource(),arguments,index,functionName, returnType, strReturnFormat, output, async,access, displayName, 
 				description, hint, secureJson,verifyClient,meta);
 	}
 	
-	public UDFProperties(
+	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
 			int index,
