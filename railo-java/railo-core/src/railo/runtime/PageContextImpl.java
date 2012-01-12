@@ -651,10 +651,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void write(String str) throws IOException {
     	writer.write(str);
-		//TODO remove
-		//if(str.equalsIgnoreCase("throw"))throw new R untimeException("throw from write");
 	}
-    
+
     /**
      * @see railo.runtime.PageContext#forceWrite(java.lang.String)
      */
@@ -2897,14 +2895,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see railo.runtime.PageContext#exeLogStart(int, java.lang.String)
 	 */
 	public void exeLogStart(int line,String id){
-		execLog.start(line, id);
+		if(execLog!=null)execLog.start(line, id);
 	}
 	
 	/**
 	 * @see railo.runtime.PageContext#exeLogEnd(int, java.lang.String)
 	 */
 	public void exeLogEnd(int line,String id){
-		execLog.end(line, id);
+		if(execLog!=null)execLog.end(line, id);
 	}
 
 	

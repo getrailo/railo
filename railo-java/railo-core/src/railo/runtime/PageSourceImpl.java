@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -208,12 +207,9 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 			//if(page!=null && !recompileAlways) {
 				// java file is newer !mapping.isTrusted() && 
 				if(srcLastModified!=page.getSourceLastModified()) {
-                	this.page=page=compile(config,mapping.getClassRootDirectory(),Boolean.TRUE);
-					page.setPageSource(this);
+					this.page=page=compile(config,mapping.getClassRootDirectory(),Boolean.TRUE);
+                	page.setPageSource(this);
 					page.setLoadType(LOAD_PHYSICAL);
-					/*if(srcLastModified!=page.getSourceLastModified()){
-						srcFile.setLastModified(page.getSourceLastModified());// Future da class files die nach cfm unbenannt sind nicht den gleichen zeitstempel haben wie page.getSourceLastModified, kopiert railo die files immer wider, die klasse page braucht eine methode setSourceLastModified, dann kann dies hier entfernt werden
-					}*/
 				}
 		    	
 			}
@@ -232,23 +228,12 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
                     // load page
                     else {
                     	try {
-                    		/*long lastMod=PhysicalClassLoader.lastModified(classFile,-1);
-                    		if(lastMod!=-1 && srcLastModified!=lastMod) {
-                    			isNew=true;
-                                this.page=page=compile(config,classRootDir,null);
-                    		}
-                    		else {
-                        		this.page=page=newInstance(mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()));
-                    		}*/
-                    		this.page=page=newInstance(mapping.getClassLoaderForPhysical(isNew).loadClass(getClazz()));
-                    		
-                        } 
-                        // if there is a problem to load the existing version, it will be recompiled
-                        catch (Throwable e) {
-                        	this.page=page=compile(config,classRootDir,Boolean.TRUE);
-                            isNew=true;
-                        }
-                        
+							this.page=page=newInstance(mapping.touchPCLCollection().getClass(this));
+						} catch (Throwable t) {t.printStackTrace();
+							this.page=page=null;
+						}
+                    	if(page==null) this.page=page=compile(config,classRootDir,Boolean.TRUE);
+                              
                     }
                     
                     // check if there is a newwer version
@@ -289,30 +274,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         ConfigWebImpl cwi=(ConfigWebImpl) config;
         byte[] barr = cwi.getCompiler().
         	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
-           
-        PhysicalClassLoader cl;
-        if(resetCL==null){
-        	cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical();
-            resetCL=Caster.toBoolean(cl!=null && cl.isClassLoaded(getClazz()));
-        }
-        Class clazz=null;
-        /*
-        Instrumentation inst = InstrumentationFactory.getInstance();
-        if(resetCL.booleanValue() && inst!=null && inst.isRedefineClassesSupported()) {
-        	try {
-            	cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(false);
-            	if(page!=null) clazz=page.getClass();
-            	else clazz=cl.loadClass(getClazz());
-            	inst.redefineClasses(new ClassDefinition(clazz,ClassUtil.removeCF33Prefix(barr)));
-				return  newInstance(clazz);
-			} 
-        	catch (Throwable t) {
-				t.printStackTrace();
-			}
-        }*/
-        
-        cl = (PhysicalClassLoader)mapping.getClassLoaderForPhysical(resetCL.booleanValue());
-        clazz = cl.loadClass(getClazz(),barr);
+        Class<?> clazz = mapping.touchPCLCollection().loadClass(getClazz(), barr,isComponent());
         return  newInstance(clazz);
     }
 
@@ -363,6 +325,10 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
             else if(pse)return getPhyscalFile().toString();
             return getArchiveSourcePath();
         }
+    }
+    
+    public boolean isComponent() {
+        return ResourceUtil.getExtension(getRealpath(), "").equalsIgnoreCase(mapping.getConfig().getCFCExtension());
     }
     
     /**
@@ -791,7 +757,16 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 
     public void clear() {
     	if(page!=null){
-    		//print.o("clear:"+getDisplayPath()+":"+hashCode()+":"+page.hashCode());
+    		page=null;
+    	}
+    }
+    
+    /**
+     * clear page, but only when page use the same clasloader as provided
+     * @param cl
+     */
+    public void clear(ClassLoader cl) {
+    	if(page!=null && page.getClass().getClassLoader().equals(cl)){
     		page=null;
     	}
     }

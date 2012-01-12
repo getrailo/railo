@@ -148,7 +148,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	public static final String[] ORM_JARS = new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar"};
 	public static final String[] CACHE_JARS = new String[]{"ehcache.jar"};
 	public static final String[] CFX_JARS = new String[]{"com.naryx.tagfusion.cfx.jar"};
-	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar"};
+	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar","railo-inst.jar"};
+	
 	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
 	private static final Collection.Key DEBUG_SRC = KeyImpl.intern("debugSrc");
 	private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.intern("debugTemplate");

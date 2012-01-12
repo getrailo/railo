@@ -14044,6 +14044,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
         has the specified name.</description>
 		<argument>
 			<name>node</name>
+			<alias>xmlObj,xmlDoc,xml</alias>
 			<type>node</type>
 			<required>Yes</required>
 		<description>XML element within which to search.</description>
@@ -14071,7 +14072,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Creates an XML document object element</description>
 		<argument>
 			<name>xmlObj</name>
-			<alias>node,element</alias>
+			<alias>node,element,xml,xmlDoc</alias>
 			<type>node</type>
 			<required>Yes</required>
 		<description>Name of the XML document object in which you are creating the element</description>
@@ -14116,7 +14117,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.xml.XmlGetNodeType</class>
 		<description>Determines the type of an XML document object node.</description>
 		<argument>
-			<name>xmlObj</name>
+			<name>xml</name>
+			<alias>xmlDoc,xmlObj</alias>
 			<type>node</type>
 			<required>Yes</required>
 		<description>An XML DOM object node</description>
@@ -14148,6 +14150,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
         variable into an XML document object.</description>
 		<argument>
 			<name>xmlString</name>
+			<alias>xmlText,xml</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>Any of the following:</description>
@@ -14179,6 +14182,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>parse the given html (not only xhtml) as xml Object, work similar to xmlParse, but this function is very forgiving with the syntax..</description>
 		<argument>
 			<name>html</name>
+			<alias>string,text</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description></description>
@@ -14199,13 +14203,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.xml.XmlSearch</class>
 		<description>Uses an XPath language expression to search an XML document object.</description>
 		<argument>
-			<name>node</name>
+			<name>xml</name>
+			<alias>xmlObj,xmlDoc,node</alias>
 			<type>node</type>
 			<required>Yes</required>
 		<description>XML document object</description>
     </argument>
 		<argument>
-			<name>xPathString</name>
+			<name>xpath</name>
+			<alias>path,xPathString</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>XPath expression</description>
@@ -14224,13 +14230,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
         or representation by applying an Extensible Stylesheet
         Language (XSL) stylesheet to it.</description>
 		<argument>
-			<name>xmlObj</name>
+			<name>xml</name>
+			<alias>xmlObj,xmlDoc,node</alias>
 			<type>any</type>
 			<required>Yes</required>
 		<description>An XML document in string format, or an XML document object</description>
     </argument>
 		<argument>
-			<name>xslString</name>
+			<name>xsl</name>
+			<alias>xslString,xslText</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description></description>
@@ -14255,7 +14263,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.xml.XmlValidate</class>
 		<description>Uses a Document Type Definition (DTD) or XML Schema to validate an XML text document or an XML document object.</description>
 		<argument>
-			<name>xml</name>
+			<name>xmlDoc</name>
+			<alias>xml,xmlText,xmlString</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>The XML to validate</description>

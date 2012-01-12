@@ -33,8 +33,8 @@ public final class ComponentController {
 		try {
 			return _invoke(name, args);
 		} 
-		catch (PageException e) {
-			throw AxisFault.makeFault((e));
+		catch (Throwable t) {
+			throw AxisFault.makeFault((Caster.toPageException(t)));
 		}
 	}
 	public static Object _invoke(String name, Object[] args) throws PageException {
@@ -58,10 +58,12 @@ public final class ComponentController {
 		try {
 			RPCServer server = RPCServer.getInstance(p.getId(),p.getServletContext());
 			TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
-			return AxisCaster.toAxisType(tm,Caster.castTo(p, rt, rv, false));
+			rv=Caster.castTo(p, rt, rv, false);
+			Class clazz = Caster.cfTypeToClass(rt);
+			return AxisCaster.toAxisType(tm,rv,clazz.getComponentType()!=null?clazz:null);
 		} 
-		catch (AxisFault af) {
-			throw Caster.toPageException(af);
+		catch (Throwable t) {
+			throw Caster.toPageException(t);
 		}
 	}
 

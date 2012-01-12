@@ -18,7 +18,7 @@ public class BytecodeContext {
 	private ClassWriter classWriter;
 	private GeneratorAdapter adapter;
 	private String className;
-	private List keys;
+	private List<LitString> keys;
 	private int count=0;
 	private Method method;
 	private boolean doSubFunctions=true;
@@ -118,13 +118,13 @@ public class BytecodeContext {
 		this.className = className;
 	}
 
-	public String registerKey(LitString lit)  {
+	public synchronized int registerKey(LitString lit)  {
 		int index = keys.indexOf(lit);
-		if(index!=-1)return "k"+(index+1);// calls the toString method of litString
+		if(index!=-1)return index;// calls the toString method of litString
 		
 		keys.add(lit);
 		
-		return "k"+(keys.size());
+		return keys.size()-1;
 	}
 
 	public List getKeys() {

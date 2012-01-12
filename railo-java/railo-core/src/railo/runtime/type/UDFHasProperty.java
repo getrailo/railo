@@ -34,10 +34,10 @@ public final class UDFHasProperty extends UDFGSProperty {
 		String t = PropertyFactory.getType(prop);
 		
 		if("struct".equalsIgnoreCase(t)){
-			FunctionArgumentImpl key = new FunctionArgumentImpl("key","string",false);
+			FunctionArgument key = new FunctionArgumentImpl(KeyImpl.KEY,"string",CFTypes.TYPE_STRING,false);
 			return new FunctionArgument[]{key};
 		}
-		FunctionArgumentImpl value = new FunctionArgumentImpl(PropertyFactory.getSingularName(prop),"any",false);
+		FunctionArgument value = new FunctionArgumentImpl(KeyImpl.init(PropertyFactory.getSingularName(prop)),"any",CFTypes.TYPE_ANY,false);
 		return new FunctionArgument[]{value};
 	}
 	

@@ -4,13 +4,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Struct;
 
 
 /**

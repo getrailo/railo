@@ -78,32 +78,32 @@ public final class AxisCaster {
      * @return Axis Compatible Type
      * @throws PageException
      */
-    public static Object toAxisType(TypeMapping pc,TimeZone tz,QName type, Object value) throws PageException {
+    public static Object toAxisType(TypeMapping pc,TimeZone tz,QName type, Object value, Class targetClass) throws PageException {
         
         // XSD
         for(int i=0;i<Constants.URIS_SCHEMA_XSD.length;i++) {
             if(Constants.URIS_SCHEMA_XSD[i].equals(type.getNamespaceURI())) {
-                return toAxisTypeXSD(pc,tz,type, value);
+                return toAxisTypeXSD(pc,tz,type, value,targetClass);
             }
         }
         //SOAP
         if(type.getNamespaceURI().indexOf("soap")!=-1) {
-            return toAxisTypeSoap(pc,type, value);
+            return toAxisTypeSoap(pc,type, value,targetClass);
         }
         // Specials
         if(type.getLocalPart().equals("ArrayOf_xsd_anyType"))
-            return toArrayList(pc,value);
+            return toArrayList(pc,value,targetClass);
         
-        return toAxisType(pc,value);
+        return toAxisType(pc,value,targetClass);
     }
     
-    private static Object toAxisTypeSoap(TypeMapping pc,QName type, Object value) throws PageException {
+    private static Object toAxisTypeSoap(TypeMapping pc,QName type, Object value, Class targetClass) throws PageException {
         String local = type.getLocalPart();
         
-        if(local.equals(Constants.SOAP_ARRAY.getLocalPart())) return toArrayList(pc,value);
-        if(local.equals(Constants.SOAP_ARRAY12.getLocalPart())) return toArrayList(pc,value);
-        if(local.equals(Constants.SOAP_ARRAY_ATTRS11.getLocalPart())) return toArrayList(pc,value);
-        if(local.equals(Constants.SOAP_ARRAY_ATTRS12.getLocalPart())) return toArrayList(pc,value);
+        if(local.equals(Constants.SOAP_ARRAY.getLocalPart())) return toArrayList(pc,value,targetClass);
+        if(local.equals(Constants.SOAP_ARRAY12.getLocalPart())) return toArrayList(pc,value,targetClass);
+        if(local.equals(Constants.SOAP_ARRAY_ATTRS11.getLocalPart())) return toArrayList(pc,value,targetClass);
+        if(local.equals(Constants.SOAP_ARRAY_ATTRS12.getLocalPart())) return toArrayList(pc,value,targetClass);
         if(local.equals(Constants.SOAP_BASE64.getLocalPart())) return Caster.toBinary(value);
         if(local.equals(Constants.SOAP_BASE64BINARY.getLocalPart())) return Caster.toBinary(value);
         if(local.equals(Constants.SOAP_BOOLEAN.getLocalPart())) return Caster.toBoolean(value);
@@ -114,18 +114,18 @@ public final class AxisCaster {
         if(local.equals(Constants.SOAP_INT.getLocalPart())) return Caster.toInteger(value);
         if(local.equals(Constants.SOAP_INTEGER.getLocalPart())) return Caster.toInteger(value);
         if(local.equals(Constants.SOAP_LONG.getLocalPart())) return Caster.toLong(value);
-        if(local.equals(Constants.SOAP_MAP.getLocalPart())) return toMap(pc,value);
+        if(local.equals(Constants.SOAP_MAP.getLocalPart())) return toMap(pc,value,targetClass);
         if(local.equals(Constants.SOAP_SHORT.getLocalPart())) return Caster.toShort(value);
         if(local.equals(Constants.SOAP_STRING.getLocalPart())) return Caster.toString(value);
-        if(local.equals(Constants.SOAP_VECTOR.getLocalPart())) return toVector(pc,value);
+        if(local.equals(Constants.SOAP_VECTOR.getLocalPart())) return toVector(pc,value,targetClass);
         
         // TODO SOAP_COMMON_ATTRS11, SOAP_COMMON_ATTRS12, SOAP_DOCUMENT, SOAP_ELEMENT
-        return toAxisType(pc,value);
+        return toAxisType(pc,value,targetClass);
         
         
     }
 
-    private static Object toAxisTypeXSD(TypeMapping pc,TimeZone tz,QName type, Object value) throws PageException {
+    private static Object toAxisTypeXSD(TypeMapping pc,TimeZone tz,QName type, Object value, Class targetClass) throws PageException {
         String local = type.getLocalPart();
         if(local.equals(Constants.XSD_ANYSIMPLETYPE.getLocalPart())) return Caster.toString(value);
         if(local.equals(Constants.XSD_ANYURI.getLocalPart())) return toURI(value);
@@ -174,48 +174,57 @@ public final class AxisCaster {
         if(local.equals(Constants.XSD_UNSIGNEDSHORT.getLocalPart())) return Caster.toShort(value);
         if(local.equals(Constants.XSD_YEAR.getLocalPart())) return toYear(value);
         if(local.equals(Constants.XSD_YEARMONTH.getLocalPart())) return toYearMonth(value);
-        return toAxisType(pc,value);
+        return toAxisType(pc,value,targetClass);
     }
 
-    private static ArrayList toArrayList(TypeMapping pc,Object value) throws PageException {
+    private static ArrayList toArrayList(TypeMapping pc,Object value, Class targetClass) throws PageException {
         Array arr = Caster.toArray(value);
         ArrayList al=new ArrayList();
         int len=arr.size();
         Object o;
         for(int i=0;i<len;i++) {
             o=arr.get(i+1,null);
-            al.add(i,toAxisType(pc,o));
+            al.add(i,toAxisType(pc,o,targetClass));
         }
         return al;
     }
-    private static Object[] toNativeArray(TypeMapping pc,Object value) throws PageException {
+    private static Object[] toNativeArray(TypeMapping pc,Object value,Class targetClass) throws PageException {
     	Object[] objs = Caster.toNativeArray(value);
-    	Object[] rtns = new Object[objs.length];
+    	Object[] rtns;
+    	Class componentType = null;
+    	if(targetClass!=null) {
+        	componentType = targetClass.getComponentType();
+        }
         
+    	if(componentType!=null) 
+        	rtns = (Object[]) java.lang.reflect.Array.newInstance(componentType, objs.length);
+        else 
+        	rtns = new Object[objs.length];
+    	
         for(int i=0;i<objs.length;i++) {
-            rtns[i]=toAxisType(pc,objs[i]);
+        	rtns[i]=toAxisType(pc,objs[i],componentType);
         }
         return rtns;
     }
 
-    private static Vector toVector(TypeMapping pc,Object value) throws PageException {
+    private static Vector toVector(TypeMapping pc,Object value, Class targetClass) throws PageException {
         Array arr = Caster.toArray(value);
         Vector v=new Vector();
         int len=arr.size();
         Object o;
         for(int i=0;i<len;i++) {
             o=arr.get(i+1,null);
-            v.set(i,toAxisType(pc,o));
+            v.set(i,toAxisType(pc,o,targetClass));
         }
         return v;
     }
 
-    private static Object toPojo(TypeMapping tm,Component comp) throws PageException {
+    private static Object toPojo(TypeMapping tm,Component comp, Class targetClass) throws PageException {
 
     	PageContext pc = ThreadLocalPageContext.get(); 
     	
 	    try {
-	    	return _toPojo(pc, tm, comp);
+	    	return _toPojo(pc, tm, comp,targetClass);
 			
 		}
 		catch (Exception e) {
@@ -226,7 +235,7 @@ public final class AxisCaster {
 		}*/
     }
     
-    private static Object _toPojo(PageContext pc, TypeMapping tm,Component comp) throws PageException {
+    private static Object _toPojo(PageContext pc, TypeMapping tm,Component comp, Class targetClass) throws PageException {
     	ComponentAccess ca = ComponentUtil.toComponentAccess(comp);
     	comp=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ca);
 		ComponentScope scope = ca.getComponentScope();
@@ -277,13 +286,13 @@ public final class AxisCaster {
     			if(p.isRequired())throw new ExpressionException("required property ["+p.getName()+"] is not defined");
     		}
     		else {
-    			Reflector.callSetter(obj, p.getName().toLowerCase(), toAxisType(tm,v));	
+    			Reflector.callSetter(obj, p.getName().toLowerCase(), toAxisType(tm,v,targetClass));	
     		}
     	}
     	return obj;
     }
     
-    private static QueryBean toQueryBean(TypeMapping pc,Object value) throws PageException {
+    private static QueryBean toQueryBean(TypeMapping pc,Object value, Class targetClass) throws PageException {
     	Query query = Caster.toQuery(value);
 		int recordcount=query.getRecordcount();
         String[] columnList = query.getColumns();
@@ -297,7 +306,7 @@ public final class AxisCaster {
         int row;
         for(row=1;row<=recordcount;row++) {
             for(int i=0;i<columns.length;i++) {
-            	data[row-1][i]=toAxisType(pc,columns[i].get(row));
+            	data[row-1][i]=toAxisType(pc,columns[i].get(row),targetClass);
             }
         }
     	
@@ -310,28 +319,31 @@ public final class AxisCaster {
     
 
     
-    private static Map toMap(TypeMapping pc,Object value) throws PageException {
+    private static Map toMap(TypeMapping pc,Object value, Class targetClass) throws PageException {
         Struct src = Caster.toStruct(value);
         Map trg=new HashMap();
         String[] keys = src.keysAsString();
         for(int i=0;i<keys.length;i++) {
-            trg.put(keys[i],toAxisType(pc,src.get(keys[i],null)));
+            trg.put(keys[i],toAxisType(pc,src.get(keys[i],null),targetClass));
         }
         return trg;
         
     }
 
-    public static Object toAxisType(TypeMapping tm,Object value) throws PageException {
+    public static Object toAxisType(TypeMapping tm,Object value,Class targetClass) throws PageException {
+    	// Date
     	if(value instanceof Date) {// not set to Decision.isDate(value)
         	return new Date(((Date)value).getTime());
     	}
+    	// Array
     	if(Decision.isArray(value) && !(value instanceof Argument)) {
     		if(value instanceof byte[]) return value;
-    		return toNativeArray(tm,value);
+    		return toNativeArray(tm,value,targetClass);
     	}
+    	// Struct
         if(Decision.isStruct(value)) {
         	if(value instanceof Component) {
-        		Object pojo= toPojo(tm,(Component)value);
+        		Object pojo= toPojo(tm,(Component)value,targetClass);
         		try	{	
 	        		QName name = new QName("http://rpc.xml.coldfusion",pojo.getClass().getName());
 		    		if(tm.getSerializer(pojo.getClass(),name)==null){
@@ -346,9 +358,11 @@ public final class AxisCaster {
         		}
         		return pojo;
         	}
-        	return toMap(tm,value);
+        	return toMap(tm,value,targetClass);
         }
-        if(Decision.isQuery(value)) return toQueryBean(tm,value);
+        // Query
+        if(Decision.isQuery(value)) return toQueryBean(tm,value,targetClass);
+        // Other
         return value;
     }
     

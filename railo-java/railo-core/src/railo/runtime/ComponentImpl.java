@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.net.URL;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFGSProperty;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.cfc.ComponentAccess;
@@ -1065,6 +1067,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    if(properties.callPath==null) return "";
 	    return List.last(properties.callPath,"./",true);
 	}
+    public PageSource _getPageSource() {
+    	return pageSource;
+	}
 	
     /**
      * @see railo.runtime.Component#getCallName()
@@ -1395,10 +1400,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     protected static Struct getMetaData(int access,PageContext pc, ComponentImpl comp) throws PageException {
-    	Page page =  ((PageSourceImpl)comp.pageSource).getPage();
+    	// Cache
+    	Page page = ((PageSourceImpl)comp.pageSource).getPage();
     	if(page==null) page = comp.pageSource.loadPage(pc.getConfig());
-    	if(page.metaData!=null) {
-    		return page.metaData;
+    	if(page.metaData!=null && page.metaData.get()!=null) {
+    		return page.metaData.get();
+
     	}
     	
     	StructImpl sct=new StructImpl();
@@ -1440,54 +1447,62 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	            }
 	            sct.set(IMPLEMENTS,imp);
             }
-		}
-
-            // PageSource
-        	PageSource ps = comp.pageSource;
-            sct.set(FULLNAME,ps.getComponentName());
-            sct.set(KeyImpl.NAME,ps.getComponentName());
-            sct.set(KeyImpl.PATH,ps.getDisplayPath());
-            sct.set(KeyImpl.TYPE,"component");
+        }
+         
+        // PageSource
+        PageSource ps = comp.pageSource;
+        sct.set(FULLNAME,ps.getComponentName());
+        sct.set(KeyImpl.NAME,ps.getComponentName());
+        sct.set(KeyImpl.PATH,ps.getDisplayPath());
+        sct.set(KeyImpl.TYPE,"component");
             
-            Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
-            if(skeleton !=null)sct.set(SKELETON, skeleton);
-            
-            HttpServletRequest req = pc.getHttpServletRequest();
+        Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
+        if(skeleton !=null)sct.set(SKELETON, skeleton);
+        
+        HttpServletRequest req = pc.getHttpServletRequest();
             try {
             	String path=ContractPath.call(pc, ps.getDisplayPath()); // MUST better impl !!!
 				sct.set("remoteAddress",""+new URL(req.getScheme(),req.getServerName(),req.getServerPort(),req.getContextPath()+path+"?wsdl"));
 			} catch (Throwable t) {}
             
-            // Properties
-        	if(comp.properties.properties!=null) {
-            	ArrayImpl parr = new ArrayImpl();
-            	Property p;
-            	Iterator<Entry<String, Property>> pit = comp.properties.properties.entrySet().iterator();
-            	while(pit.hasNext()){
-            		p=pit.next().getValue();
-            		parr.add(p.getMetaData());
-            	}
-            	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
-            	sct.set(PROPERTIES,parr);
-            }
-
-            
-            // TODO attr userMetadata
-        return page.metaData=sct;
+        
+        // Properties
+        if(comp.properties.properties!=null) {
+        	ArrayImpl parr = new ArrayImpl();
+        	Property p;
+        	Iterator<Entry<String, Property>> pit = comp.properties.properties.entrySet().iterator();
+        	while(pit.hasNext()){
+        		p=pit.next().getValue();
+        		parr.add(p.getMetaData());
+        	}
+        	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
+        	sct.set(PROPERTIES,parr);
+        }
+        page.metaData=new SoftReference<Struct>(sct);
+        return page.metaData.get();
+>>>>>>> 3.3
     }    
 
     private static void metaUDFs(PageContext pc,ComponentImpl comp,Struct sct, int access) throws PageException {
     	ArrayImpl arr=new ArrayImpl();
     	//Collection.Key name;
         
+    	PagePlus page = (PagePlus) ((PageSourceImpl)comp._getPageSource()).getPage();
+    	if(page!=null && page.udfs!=null){
+    		for(int i=0;i<page.udfs.length;i++){
+    			if(page.udfs[i].getAccess()>access) continue;
+        		arr.add(ComponentUtil.getMetaData(pc,page.udfs[i]));
+    		}
+    	}
     	
+    	// property functions
     	Iterator<Entry<Key, UDF>> it = comp._udfs.entrySet().iterator();
         Entry<Key, UDF> entry;
 		UDF udf;
 		while(it.hasNext()) {
     		entry= it.next();
     		udf=entry.getValue();
-            if(udf.getAccess()>access) continue;
+            if(udf.getAccess()>access || !(udf instanceof UDFGSProperty)) continue;
     			if(comp.base!=null) {
             		if(udf==comp.base.getMember(access,entry.getKey(),true,true))
             			continue;
@@ -1539,13 +1554,20 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
     
 
+    public void reg(Collection.Key key, UDFImpl udf) {
+    	registerUDF(key, udf,useShadow,false);
+    }
+    public void reg(String key, UDFImpl udf) {
+    	registerUDF(KeyImpl.init(key), udf,useShadow,false);
+    }
+
     public void registerUDF(String key, UDF udf) {
     	registerUDF(KeyImpl.init(key), (UDFImpl) udf,useShadow,false);
     }
     public void registerUDF(String key, UDFProperties prop) {
     	registerUDF(KeyImpl.init(key), new UDFImpl(prop),useShadow,false);
     }
-    
+
     public void registerUDF(Collection.Key key, UDF udf) {
     	registerUDF(key, (UDFImpl) udf,useShadow,false);
     }
@@ -2057,6 +2079,5 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	 */
 	public ComponentAccess _base() {
 		return base;
-	}
-	
+	}		
 }

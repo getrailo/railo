@@ -2,11 +2,8 @@ package railo.runtime.exp;
 
 import org.apache.commons.net.ftp.FTPClient;
 
-import railo.runtime.PageContext;
 import railo.runtime.config.Config;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Struct;
 
 public class FTPException extends ApplicationException {
 

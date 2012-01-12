@@ -152,14 +152,19 @@ public final class PageSourcePool implements Dumpable,Sizeable {
 		}
 		return table;
 	}
-	         
-	public void clearPages() {
+	
+	/**
+	 * remove all Page from Pool using this classloader
+	 * @param cl 
+	 */
+	public void clearPages(ClassLoader cl) {
 		synchronized(pageSources){
 			Iterator<Entry<Object, PageSource>> it = this.pageSources.entrySet().iterator();
 			PageSourceImpl entry;
 			while(it.hasNext()) {
 				entry = (PageSourceImpl) it.next().getValue();
-				entry.clear();
+				if(cl!=null)entry.clear(cl);
+				else entry.clear();
 			}
 		}
 	}

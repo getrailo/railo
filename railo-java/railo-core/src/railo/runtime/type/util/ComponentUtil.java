@@ -39,6 +39,8 @@ import railo.runtime.net.rpc.Pojo;
 import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
@@ -47,6 +49,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.util.ASMProperty;
@@ -137,7 +140,7 @@ public final class ComponentUtil {
         
         // Constructor
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
-        adapter.loadThis();
+		adapter.loadThis();
         adapter.invokeConstructor(Types.OBJECT, CONSTRUCTOR_OBJECT);
         railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
         adapter.returnValue();
@@ -150,7 +153,6 @@ public final class ComponentUtil {
         try {
         	ResourceUtil.touch(classFile);
 	        IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
-	        //PhysicalClassLoader cl=(PhysicalClassLoader) mapping.getClassLoaderForPhysical(true); 
 	        
 	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
 	        
@@ -200,6 +202,7 @@ public final class ComponentUtil {
 	}
 
 	private static boolean _hasChangesOfChildren(PageContext pc, long last, Class clazz) {
+		clazz=ClassUtil.toComponentType(clazz);
 		java.lang.reflect.Method m = getComplexTypeMethod(clazz);
 		if(m==null) return false;
 		try {
@@ -634,7 +637,6 @@ public final class ComponentUtil {
 	}
 
 	public static Page getPage(PageContext pc, PageSource ps) throws PageException {
-		pc=ThreadLocalPageContext.get(pc);
 		PageSourceImpl psi = (PageSourceImpl)ps;
 		
 		Page p = psi.getPage();
@@ -642,7 +644,7 @@ public final class ComponentUtil {
 			//print.o("getPage(existing):"+ps.getDisplayPath()+":"+psi.hashCode()+":"+p.hashCode());
 			return p;
 		}
-		//print.o("getPage(load):"+ps.getDisplayPath()+":"+psi.hashCode());
+		pc=ThreadLocalPageContext.get(pc);
 		return psi.loadPage(pc);
 	}
 
@@ -654,4 +656,70 @@ public final class ComponentUtil {
 		}
 		return sct;
 	}
+	public static Struct getMetaData(PageContext pc,UDFProperties udf) throws PageException {
+		StructImpl func=new StructImpl();
+        pc=ThreadLocalPageContext.get(pc);
+		// TODO func.set("roles", value);
+        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
+        // meta data
+        Struct meta = udf.meta;
+        if(meta!=null) StructUtil.copy(meta, func, true);
+        
+		
+		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
+        String hint=udf.hint;
+        if(!StringUtil.isEmpty(hint))func.set(KeyImpl.HINT,hint);
+        String displayname=udf.displayName;
+        if(!StringUtil.isEmpty(displayname))func.set(KeyImpl.DISPLAY_NAME,displayname);
+        func.set(KeyImpl.NAME,udf.functionName);
+        func.set(KeyImpl.OUTPUT,Caster.toBoolean(udf.output));
+        func.set(KeyImpl.RETURN_TYPE, udf.strReturnType);
+        func.set(KeyImpl.DESCRIPTION, udf.description);
+        
+        func.set(KeyImpl.OWNER, udf.pageSource.getDisplayPath());
+        
+	    	   
+	    int format = udf.returnFormat;
+        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyImpl.RETURN_FORMAT, "wddx");
+        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
+        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
+        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
+        
+        
+        FunctionArgument[] args =  udf.arguments;
+        Array params=new ArrayImpl();
+        //Object defaultValue;
+        Struct m;
+        //Object defaultValue;
+        for(int y=0;y<args.length;y++) {
+            StructImpl param=new StructImpl();
+            param.set(KeyImpl.NAME,args[y].getName().getString());
+            param.set(KeyImpl.REQUIRED,Caster.toBoolean(args[y].isRequired()));
+            param.set(KeyImpl.TYPE,args[y].getTypeAsString());
+            displayname=args[y].getDisplayName();
+            if(!StringUtil.isEmpty(displayname)) param.set(KeyImpl.DISPLAY_NAME,displayname);
+            
+            int defType = args[y].getDefaultType();
+            if(defType==FunctionArgument.DEFAULT_TYPE_RUNTIME_EXPRESSION){
+            	param.set(KeyImpl.DEFAULT, "[runtime expression]");
+            }
+            else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
+            	param.set(KeyImpl.DEFAULT, ComponentUtil.getPage(pc,udf.pageSource).udfDefaultValue(pc,udf.index,y));
+            }
+            
+            hint=args[y].getHint();
+            if(!StringUtil.isEmpty(hint))param.set(KeyImpl.HINT,hint);
+            // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche attr, die dann hier ausgebenen werden blﾚdsinn
+            
+            // meta data
+            m=args[y].getMetaData();
+            if(m!=null) StructUtil.copy(m, param, true);
+                
+            params.append(param);
+        }
+        func.set(KeyImpl.PARAMETERS,params);
+		return func;
+	}
+
+
 }

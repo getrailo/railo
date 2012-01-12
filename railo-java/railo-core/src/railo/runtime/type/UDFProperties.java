@@ -169,6 +169,7 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 		
 	}
 	
+	
 	public UDFProperties(
 	        Page page,
 	        FunctionArgument[] arguments,
@@ -259,7 +260,7 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 		this.output = output;
 		this.pageSource = pageSource;
 		
-		this.strReturnType=CFTypes.toString(returnType);
+		this.strReturnType=CFTypes.toString(returnType,"any");
 		this.returnType=returnType;
 		this.strReturnFormat=strReturnFormat;
 		this.returnFormat=UDFImpl.toReturnFormat(strReturnFormat);

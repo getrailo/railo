@@ -42,7 +42,10 @@ import railo.runtime.type.StructImpl;
  * 
  */
 public final class SystemUtil {
-	
+
+	private static final Collection.Key MAX = KeyImpl.intern("max");
+	private static final Collection.Key INIT = KeyImpl.intern("init");
+	private static final Collection.Key USED = KeyImpl.intern("used");
 
 	public static final int MEMORY_TYPE_ALL=0;
 	public static final int MEMORY_TYPE_HEAP=1;
@@ -587,10 +590,12 @@ public final class SystemUtil {
 		}
 		throw new RuntimeException("Perm Gen Space information not available");
 	}
+	
 
-	private static final Collection.Key MAX = KeyImpl.intern("max");
-	private static final Collection.Key INIT = KeyImpl.intern("init");
-	private static final Collection.Key USED = KeyImpl.intern("used");
+	public static long getFreePermGenSpaceSize() {
+		MemoryUsage permgen = getPermGenSpaceSize();
+		return permgen.getMax()-permgen.getUsed();
+	}
 	
 	public static Query getMemoryUsage(int type) {
 		
@@ -667,5 +672,8 @@ public final class SystemUtil {
 		}
 		catch(Throwable t){}
 		return null;
+	}
+	public static long microTime() {
+		return System.nanoTime()/1000L;
 	}
 }
