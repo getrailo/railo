@@ -7,7 +7,6 @@ import java.io.ObjectOutput;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExternalizableUtil;
-import railo.runtime.op.Constants;
 
 /**
  * a single argument of a function
@@ -77,15 +76,19 @@ public final class FunctionArgumentImpl implements FunctionArgument,Externalizab
 
 	
 	public FunctionArgumentImpl(Collection.Key name) {
-		this(name, "any", Constants.SHORT_VALUE_ZERO, false, 0, true, "", "", null);
+		this(name, "any", CFTypes.TYPE_ANY, false, DEFAULT_TYPE_NULL, true, "", "", null);
+	}
+
+	public FunctionArgumentImpl(Collection.Key name,short type) {
+		this(name, CFTypes.toString(type,"any"), type, false, DEFAULT_TYPE_NULL, true, "", "", null);
 	}
 
 	public FunctionArgumentImpl(Collection.Key name,String strType,short type) {
-		this(name, strType, type, false, 0, true, "", "", null);
+		this(name, strType, type, false, DEFAULT_TYPE_NULL, true, "", "", null);
 	}
 
 	public FunctionArgumentImpl(Collection.Key name,String strType,short type,boolean required) {
-		this(name, strType, type, required, 0, true, "", "", null);
+		this(name, strType, type, required, DEFAULT_TYPE_NULL, true, "", "", null);
 	}
 	
 	public FunctionArgumentImpl(Collection.Key name,String strType,short type,boolean required,int defaultType) {
