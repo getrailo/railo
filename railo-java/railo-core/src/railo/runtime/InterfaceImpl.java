@@ -48,7 +48,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
 	private InterfaceImpl[] superInterfaces;
 	
 	private Map<Collection.Key,UDF> udfs=new HashMap<Collection.Key,UDF>();
-	private Map interfacesUDFs;
+	private Map<Collection.Key,UDF> interfacesUDFs;
 
 	/**
      * Constructor of the Component
@@ -100,7 +100,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
     private static void loadImplements(PageContext pc, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
     	
     	Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(lstExtend, ',');
-    	Iterator it = arr.iterator();
+    	Iterator<?> it = arr.iterator();
     	InterfaceImpl ic;
     	String extend;
 
