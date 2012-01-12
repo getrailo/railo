@@ -171,9 +171,13 @@ public final class PCLBlock extends ClassLoader implements Sizeable  {
 			SystemUtil.sleep(1);
 			try {
 	    		return defineClass(name,barr,start,barr.length-start);
-			} catch (Throwable t2) {SystemUtil.sleep(1);}
+			} 
+			catch (Throwable t2) {
+				SystemUtil.sleep(1);
+				return defineClass(name,barr,start,barr.length-start);
+			}
 		}
-    	return loadClass(name,false);
+    	//return loadClass(name,false);
     }
     
     /**

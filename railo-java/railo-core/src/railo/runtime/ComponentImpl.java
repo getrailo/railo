@@ -62,6 +62,7 @@ import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.UDFGSProperty;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.cfc.ComponentAccess;
@@ -1089,6 +1090,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    if(properties.callPath==null) return "";
 	    return List.last(properties.callPath,"./",true);
 	}
+    public PageSource _getPageSource() {
+    	return pageSource;
+	}
 	
     /**
      * @see railo.runtime.Component#getCallName()
@@ -1497,14 +1501,22 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	ArrayImpl arr=new ArrayImpl();
     	//Collection.Key name;
         
+    	PagePlus page = (PagePlus) ((PageSourceImpl)comp._getPageSource()).getPage();
+    	if(page!=null && page.udfs!=null){
+    		for(int i=0;i<page.udfs.length;i++){
+    			if(page.udfs[i].getAccess()>access) continue;
+        		arr.add(ComponentUtil.getMetaData(pc,page.udfs[i]));
+    		}
+    	}
     	
+    	// property functions
     	Iterator<Entry<Key, UDF>> it = comp._udfs.entrySet().iterator();
         Entry<Key, UDF> entry;
 		UDF udf;
 		while(it.hasNext()) {
     		entry= it.next();
     		udf=entry.getValue();
-            if(udf.getAccess()>access) continue;
+            if(udf.getAccess()>access || !(udf instanceof UDFGSProperty)) continue;
     			if(comp.base!=null) {
             		if(udf==comp.base.getMember(access,entry.getKey(),true,true))
             			continue;
@@ -1556,13 +1568,20 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
     
 
+    public void reg(Collection.Key key, UDFImpl udf) {
+    	registerUDF(key, udf,useShadow,false);
+    }
+    public void reg(String key, UDFImpl udf) {
+    	registerUDF(KeyImpl.init(key), udf,useShadow,false);
+    }
+
     public void registerUDF(String key, UDF udf) {
     	registerUDF(KeyImpl.init(key), (UDFImpl) udf,useShadow,false);
     }
     public void registerUDF(String key, UDFProperties prop) {
     	registerUDF(KeyImpl.init(key), new UDFImpl(prop),useShadow,false);
     }
-    
+
     public void registerUDF(Collection.Key key, UDF udf) {
     	registerUDF(key, (UDFImpl) udf,useShadow,false);
     }
@@ -2073,6 +2092,5 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	 */
 	public ComponentAccess _base() {
 		return base;
-	}
-	
+	}		
 }

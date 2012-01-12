@@ -42,7 +42,6 @@ import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.type.util.StructUtil;
 import railo.runtime.writer.BodyContentUtil;
 
 /**
@@ -566,10 +565,11 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
 	
 	public Struct getMetaData(PageContext pc) throws PageException {
-		return getMetaData(pc, this);
+		return ComponentUtil.getMetaData(pc, properties);
+		//return getMetaData(pc, this);
 	}
 	
-	public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
+	/*public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
 		StructImpl func=new StructImpl();
         
 		// TODO func.set("roles", value);
@@ -632,7 +632,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         }
         func.set(KeyImpl.PARAMETERS,params);
 		return func;
-	}
+	}*/
 
 	public Object getValue() {
 		return this;

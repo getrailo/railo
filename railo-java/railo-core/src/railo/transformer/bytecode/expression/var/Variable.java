@@ -224,7 +224,7 @@ public class Variable extends ExpressionBase implements Invoker {
 		return registerKey(bc, name, false);
 	}
 	
-	public static boolean registerKey(BytecodeContext bc,Expression name,boolean doUpperCase) throws BytecodeException {
+public static boolean registerKey(BytecodeContext bc,Expression name,boolean doUpperCase) throws BytecodeException {
 		
 		if(name instanceof LitString) {
 			LitString lit = (LitString)name;
@@ -233,17 +233,21 @@ public class Variable extends ExpressionBase implements Invoker {
 				lit.upperCase();
 			}
 			
-			///////
-			//ExpressionUtil.writeOutSilent(lit,bc, Expression.MODE_REF);
-			//bc.getAdapter().invokeStatic(Page.KEY_IMPL, Page.KEY_INTERN);
-			//////
+			int index=bc.registerKey(lit);
+			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, 
+					bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
+			bc.getAdapter().push(index);
+			bc.getAdapter().visitInsn(Opcodes.AALOAD);
 			
-			String key=bc.registerKey(lit);
-			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, bc.getClassName(), key, "Lrailo/runtime/type/Collection$Key;");
+			//bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, bc.getClassName(), key, "Lrailo/runtime/type/Collection$Key;");
 			return true;
 		}
 		name.writeOut(bc, MODE_REF);
 		return false;
+	}
+
+	public static boolean canRegisterKey(Expression name) throws BytecodeException {
+		return name instanceof LitString;
 	}
 
 	

@@ -4,6 +4,7 @@ import java.lang.ref.SoftReference;
 
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDFProperties;
 
 
 // FUTURE move all this to page and delete this class
@@ -40,4 +41,6 @@ public abstract class PagePlus extends Page {
 	}
 	
 	public SoftReference<Struct> metaData;
+	
+	protected UDFProperties[] udfs;
 }

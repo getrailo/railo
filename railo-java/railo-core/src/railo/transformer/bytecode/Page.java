@@ -678,39 +678,36 @@ public final class Page extends BodyBase {
 		return _writeLog && !isInterface();
 	}
 
-	public static void registerFields(BytecodeContext staticBC, List keys) throws BytecodeException {
-		Iterator it = keys.iterator();
-		//GeneratorAdapter ad = bc.getAdapter();
-		int count=0;
-		String name;
+	public static void registerFields(BytecodeContext bc, List keys) throws BytecodeException {
+		//if(keys.size()==0) return;
+		
+		GeneratorAdapter ga = bc.getAdapter();
+		
+		FieldVisitor fv = bc.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
+				"keys", Types.COLLECTION_KEY_ARRAY.toString(), null, null);
+		fv.visitEnd();
+		
+		
+		int index=0;
 		LitString value;
-		
-		//GeneratorAdapter statcConst = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,bc.getClassWriter());
-		//BytecodeContext cbw = new BytecodeContext(null,bc.getClassWriter(),bc.getClassName(),statcConst,STATIC_CONSTRUCTOR);
-		//BytecodeContext cbw = bc.getStaticConstructor();
-		GeneratorAdapter statcConst = staticBC.getAdapter();
-		
-		
-		
+		Iterator it = keys.iterator();
+		//ga.visitVarInsn(Opcodes.ALOAD, 0);
+		ga.push(keys.size());
+		ga.newArray(Types.COLLECTION_KEY);
 		while(it.hasNext()) {
-			name="k"+(++count);
 			value=(LitString) it.next();
+			ga.dup();
+			ga.push(index++);
 			
-
-			FieldVisitor fv = staticBC.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, 
-					name, "Lrailo/runtime/type/Collection$Key;", null, null);
-			fv.visitEnd();
-			ExpressionUtil.writeOutSilent(value,staticBC, Expression.MODE_REF);
+			ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
 			if(value instanceof Literal)
-				statcConst.invokeStatic(KEY_IMPL, KEY_INTERN);
+				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
 			else 
-				statcConst.invokeStatic(KEY_IMPL, KEY_INIT);
-			
-			statcConst.visitFieldInsn(Opcodes.PUTSTATIC, staticBC.getClassName(), name, "Lrailo/runtime/type/Collection$Key;");
-			
-			
-			
+				ga.invokeStatic(KEY_IMPL, KEY_INIT);
+			ga.visitInsn(Opcodes.AASTORE);
 		}
+		ga.visitFieldInsn(Opcodes.PUTSTATIC, 
+				bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
 
 		//statcConst.returnValue();
 		//statcConst.endMethod();
@@ -1264,8 +1261,27 @@ public final class Page extends BodyBase {
 
 	private void writeOutCallBody(BytecodeContext bc,Body body, int pageType) throws BytecodeException {
 		// Other
-		writeOutFunctions(bc,body,pageType);
+		List<IFunction> functions=new ArrayList<IFunction>();
+		getFunctions(functions,bc,body,pageType);
 		
+		String className = Types.UDF_PROPERTIES_ARRAY.toString();
+		//FieldVisitor fv = bc.getClassWriter().visitField(Opcodes.ACC_PRIVATE , "udfs",className , null, null);
+		//fv.visitEnd();
+		
+		BytecodeContext constr = bc.getConstructor();
+		GeneratorAdapter cga = constr.getAdapter();
+		
+		cga.visitVarInsn(Opcodes.ALOAD, 0);
+		cga.push(functions.size());
+		//cga.visitTypeInsn(Opcodes.ANEWARRAY, Types.UDF_PROPERTIES.toString());
+		cga.newArray(Types.UDF_PROPERTIES);
+		cga.visitFieldInsn(Opcodes.PUTFIELD, bc.getClassName(), "udfs", className);
+		
+		
+		Iterator<IFunction> it = functions.iterator();
+		while(it.hasNext()){
+			it.next().writeOut(bc, pageType);
+		}
 		
 		if(pageType==IFunction.PAGE_TYPE_COMPONENT) {
 			GeneratorAdapter adapter = bc.getAdapter();
@@ -1310,7 +1326,7 @@ public final class Page extends BodyBase {
 	}
 	
 	
-	private static void writeOutFunctions(BytecodeContext bc, Body body, int pageType) throws BytecodeException {
+	private static void getFunctions(List<IFunction> functions,BytecodeContext bc, Body body, int pageType) throws BytecodeException {
 		//writeOutImports(bc, body, pageType);
 		if(ASMUtil.isEmpty(body)) return;
 		Statement stat;
@@ -1321,16 +1337,17 @@ public final class Page extends BodyBase {
         	
         	// IFunction
         	if(stat instanceof IFunction) {
-        		((IFunction)stat).writeOut(bc,pageType);
+        		functions.add((IFunction)stat);
+        		//((IFunction)stat).writeOut(bc,pageType);
         		stats.remove(i);
         		len--;
         		i--;
         	}
-        	else if(stat instanceof HasBody) writeOutFunctions(bc, ((HasBody)stat).getBody(), pageType);
+        	else if(stat instanceof HasBody) getFunctions(functions,bc, ((HasBody)stat).getBody(), pageType);
         	else if(stat instanceof HasBodies) {
         		Body[] bodies=((HasBodies)stat).getBodies();
         		for(int y=0;y<bodies.length;y++) {
-        			writeOutFunctions(bc,bodies[y] , pageType);
+        			getFunctions(functions,bc,bodies[y] , pageType);
         		}
         		
         	}

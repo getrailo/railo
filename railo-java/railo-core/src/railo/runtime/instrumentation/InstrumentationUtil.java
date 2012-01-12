@@ -3,6 +3,7 @@ package railo.runtime.instrumentation;
 import java.io.IOException;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -25,7 +26,7 @@ public class InstrumentationUtil {
 	 */
 	public static byte[] clearAllBodies(Class<?> clazz,boolean redefineClass){
 		byte[] barr = clean(clazz);
-		if(redefineClass)redefineClass(clazz, barr);
+		if(redefineClass)redefineClassEL(clazz, barr);
 		return barr;
 	}
 
@@ -52,7 +53,7 @@ public class InstrumentationUtil {
 	 * @param barr
 	 * @return
 	 */
-	public static boolean redefineClass(Class clazz, byte[] barr){
+	public static boolean redefineClassEL(Class clazz, byte[] barr){
 		Instrumentation inst = InstrumentationFactory.getInstance();
 	    if(inst!=null && inst.isRedefineClassesSupported()) {
 	    	try {
@@ -63,7 +64,12 @@ public class InstrumentationUtil {
 	    }
 	    return false;
 	}
+	public static void redefineClass(Class clazz, byte[] barr) throws ClassNotFoundException, UnmodifiableClassException{
+		Instrumentation inst = InstrumentationFactory.getInstance();
+	    inst.redefineClasses(new ClassDefinition(clazz,barr));
+	}
 
+	
 	public static class ChangeAdapter extends ClassAdapter {  
 		public ChangeAdapter(ClassVisitor cv) {  
 		    super(cv);
@@ -106,5 +112,11 @@ public class InstrumentationUtil {
 		        mv.visitEnd();
 		        return mv;
 			}
-		} 
+		}
+
+
+	public static boolean isSupported() {
+		Instrumentation inst = InstrumentationFactory.getInstance();
+	    return (inst!=null && inst.isRedefineClassesSupported());
+	} 
 }

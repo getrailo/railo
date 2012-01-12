@@ -18,7 +18,7 @@ import railo.runtime.Component;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.FunctionArgumentImpl;
-import railo.runtime.type.UDFProperties;
+import railo.runtime.type.FunctionArgumentLight;
 import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
@@ -64,14 +64,14 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 			new Type[]{Types.COLLECTION_KEY,Types.OBJECT}
     		);
 	
-	private static final Method REGISTER_UDF_STR = new Method(
+	private static final Method REG_UDF_STR = new Method(
 			"registerUDF",
 			Types.VOID,
 			new Type[]{Types.STRING,Types.UDF_PROPERTIES}
     		);
 
 	
-	private static final Method REGISTER_UDF_KEY = new Method(
+	private static final Method REG_UDF_KEY = new Method(
 			"registerUDF",
 			Types.VOID,
 			new Type[]{Types.COLLECTION_KEY,Types.UDF_PROPERTIES}
@@ -84,12 +84,12 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 	//private static final ExprString EMPTY = LitString.toExprString("");
 
 
-	//private static final Type UDF = Type.getType(railo.runtime.type.UDFImpl.class);
 	private static final Type UDF_PROPERTIES = Type.getType(railo.runtime.type.UDFProperties.class);
 
 	// <init>(Page,FunctionArgument[],int String,String,boolean);
 	private static final Type FUNCTION_ARGUMENT = Type.getType(FunctionArgument.class);
 	private static final Type FUNCTION_ARGUMENT_IMPL = Type.getType(FunctionArgumentImpl.class);
+	private static final Type FUNCTION_ARGUMENT_LIGHT = Type.getType(FunctionArgumentLight.class);
 	private static final Type FUNCTION_ARGUMENT_ARRAY = Type.getType(FunctionArgument[].class);
 	
 	private static final Method INIT_UDF_IMPL_PROP = new Method(
@@ -105,7 +105,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 			"<init>",
 			Types.VOID,
 			new Type[]{
-					Types.PAGE,
+					Types.PAGE_SOURCE,
 					FUNCTION_ARGUMENT_ARRAY,
 					Types.INT_VALUE,
 					Types.STRING,
@@ -126,7 +126,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 			"<init>",
 			Types.VOID,
 			new Type[]{
-					Types.PAGE,
+					Types.PAGE_SOURCE,
 					FUNCTION_ARGUMENT_ARRAY,
 					Types.INT_VALUE,
 					Types.STRING,
@@ -143,6 +143,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 					Page.STRUCT_IMPL
 				}
     		);
+
 
 	// FunctionArgumentImpl(String name,String type,boolean required,int defaultType,String dspName,String hint,StructImpl meta)
 	private static final Method INIT_FAI_STRING = new Method(
@@ -235,6 +236,9 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
     		);	
 	private static final Method[] INIT_FAI_KEY=new Method[]{
 		INIT_FAI_KEY1,INIT_FAI_KEY3,INIT_FAI_KEY4,INIT_FAI_KEY5,INIT_FAI_KEY6,INIT_FAI_KEY7,INIT_FAI_KEY8,INIT_FAI_KEY9
+	};
+	private static final Method[] INIT_FAI_KEY_LIGHT=new Method[]{
+		INIT_FAI_KEY1,INIT_FAI_KEY3
 	};
 	
 	
@@ -339,156 +343,113 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		//createUDF(bc,index);
 		
 		if(pageType==PAGE_TYPE_COMPONENT) {
-			loadUDFProperties(bc,index);
-			adapter.invokeVirtual(Types.COMPONENT_IMPL, hasKey?REGISTER_UDF_KEY:REGISTER_UDF_STR);
+			loadUDF(bc,index,true);
+			adapter.invokeVirtual(Types.COMPONENT_IMPL, hasKey?REG_UDF_KEY:REG_UDF_STR);
 		}
 		else if(pageType==PAGE_TYPE_INTERFACE) {
-			loadUDFProperties(bc,index);
-			adapter.invokeVirtual(Types.INTERFACE_IMPL, hasKey?REGISTER_UDF_KEY:REGISTER_UDF_STR);
+			loadUDF(bc,index,true);
+			adapter.invokeVirtual(Types.INTERFACE_IMPL, hasKey?REG_UDF_KEY:REG_UDF_STR);
 		}
 		else {
-			createUDFImpl(bc, index);
+			loadUDF(bc, index);
 			adapter.invokeInterface(Types.VARIABLES, hasKey?SET_KEY:SET_STR);
 			adapter.pop();
 		}
 	}
 
-
-	/*public void loadUDFOLD(BytecodeContext bc, int index) throws BytecodeException {
+	public void loadUDF(BytecodeContext bc, int index, boolean onlyProps) throws BytecodeException {
 		BytecodeContext constr = bc.getConstructor();
 		ClassWriter cw = bc.getClassWriter();
-		String type = Type.getType(UDFImpl.class).toString();
-		String str="udf_"+index;
+		//String type = Type.getType(UDFProperties.class).toString();
+		String type = onlyProps?Types.UDF_PROPERTIES.toString():Types.UDF_IMPL.toString();
+		String str="u"+index;
+		GeneratorAdapter cga = constr.getAdapter();
+		GeneratorAdapter ga = bc.getAdapter();
 		
-		// create field
-		FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE  , 
-				str, type, null, null);
+		// store
+		cga.visitVarInsn(ALOAD, 0);
+		cga.visitFieldInsn(GETFIELD, bc.getClassName(), "udfs", onlyProps?Types.UDF_PROPERTIES_ARRAY.toString():Types.UDF_IMPL_ARRAY.toString());
+		cga.push(index);
+		createUDFProperties(constr,index,onlyProps);
+		//cga.visitInsn(DUP_X2);
+		cga.visitInsn(AASTORE);
 		
-		// put field
-		fv.visitEnd();
-		constr.getAdapter().loadThis();
-		createUDFOLD(constr,index);
-		constr.getAdapter().visitFieldInsn(Opcodes.PUTFIELD, constr.getClassName(),str, type);//(Opcodes.PUTFIELD, bc.getClassName(), str, type);
-		
-		// get field
-		bc.getAdapter().loadThis();
-		bc.getAdapter().visitFieldInsn(Opcodes.GETFIELD, constr.getClassName(), str, type);
-		
-	}*/
-	
-	/*public void createUDFOLD(BytecodeContext bc, int index) throws BytecodeException {
-		// new UDF(...)
-		GeneratorAdapter adapter=bc.getAdapter();
-		adapter.newInstance(UDF);
-		adapter.dup();
-		//adapter.visitVarInsn(ALOAD, 0);
-		adapter.loadThis();
-		createArguments(bc);
-		
-
-		adapter.push(index);
-		//Variable.registerKey(bc, name,false);
-		ExpressionUtil.writeOutSilent(name,bc, Expression.MODE_REF);
-		short type=ExpressionUtil.toShortType(returnType);
-		if(type==-1) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
-		else adapter.push(type);
-		if(returnFormat!=null)ExpressionUtil.writeOutSilent(returnFormat,bc, Expression.MODE_REF);
-		else ASMConstants.NULL(adapter);
-		
-		ExpressionUtil.writeOutSilent(output,bc, Expression.MODE_VALUE);
-		ExpressionUtil.writeOutSilent(abstr,bc, Expression.MODE_VALUE);
-
-		ExpressionUtil.writeOutSilent(access,bc, Expression.MODE_REF); // access;
-		ExpressionUtil.writeOutSilent(displayName,bc, Expression.MODE_REF);// displayName;
-		if(description!=null)ExpressionUtil.writeOutSilent(description,bc, Expression.MODE_REF);// displayName;
-		else adapter.push("");
-		ExpressionUtil.writeOutSilent(hint,bc, Expression.MODE_REF);// hint;
-		
-		if(secureJson!=null)ExpressionUtil.writeOutSilent(secureJson,bc, Expression.MODE_REF);
-		else ASMConstants.NULL(adapter);
-		if(verifyClient!=null)ExpressionUtil.writeOutSilent(verifyClient,bc, Expression.MODE_REF);
-		else ASMConstants.NULL(adapter);
-		
-		Page.createMetaDataStruct(bc,metadata);
-		adapter.invokeConstructor(UDF, type==-1?INIT_UDF_STRTYPE:INIT_UDF_SHORTTYPE);
-	}*/
-	public void loadUDFProperties(BytecodeContext bc, int index) throws BytecodeException {
-		BytecodeContext constr = bc.getConstructor();
-		ClassWriter cw = bc.getClassWriter();
-		String type = Type.getType(UDFProperties.class).toString();
-		String str="up"+index;
-		
-		// create field
-		FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL  , 
-				str, type, null, null);
-		
-		// put field
-		fv.visitEnd();
-		constr.getAdapter().loadThis();
-		createUDFProperties(constr,index);
-		constr.getAdapter().visitFieldInsn(Opcodes.PUTFIELD, constr.getClassName(),str, type);//(Opcodes.PUTFIELD, bc.getClassName(), str, type);
-		
-		// get field
-		bc.getAdapter().loadThis();
-		bc.getAdapter().visitFieldInsn(Opcodes.GETFIELD, constr.getClassName(), str, type);
-		
-		
+		// get
+		ga.visitVarInsn(ALOAD, 0);
+		ga.visitFieldInsn(GETFIELD, bc.getClassName(), "udfs", onlyProps?Types.UDF_PROPERTIES_ARRAY.toString():Types.UDF_IMPL_ARRAY.toString());
+		ga.push(index);
+		ga.visitInsn(AALOAD);
 	}
 	
 	
 	
-	public void createUDFProperties(BytecodeContext bc, int index) throws BytecodeException {
+	public void createUDFProperties(BytecodeContext bc, int index, boolean onlyProps) throws BytecodeException {
 		GeneratorAdapter adapter=bc.getAdapter();
+		if(!onlyProps) {
+			adapter.newInstance(Types.UDF_IMPL);
+			adapter.dup();
+		}
 		adapter.newInstance(UDF_PROPERTIES);
 		adapter.dup();
-		//adapter.visitVarInsn(ALOAD, 0);
-		adapter.loadThis();
-		createArguments(bc);
+		adapter.visitVarInsn(ALOAD, 1);
+		// page
+		//adapter.loadLocal(0);
+		//adapter.loadThis();
 		
-
+		// arguments
+		createArguments(bc);
+		// index
 		adapter.push(index);
-		//Variable.registerKey(bc, name,false);
+		// name
 		ExpressionUtil.writeOutSilent(name,bc, Expression.MODE_REF);
+		// return type
 		short type=ExpressionUtil.toShortType(returnType,CFTypes.TYPE_UNKNOW);
 		if(type==CFTypes.TYPE_UNKNOW) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
 		else adapter.push(type);
+		// return format
 		if(returnFormat!=null)ExpressionUtil.writeOutSilent(returnFormat,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
-		
+		// output
 		ExpressionUtil.writeOutSilent(output,bc, Expression.MODE_VALUE);
+		// abstract
 		ExpressionUtil.writeOutSilent(abstr,bc, Expression.MODE_VALUE);
-
+		// access
 		writeOutAccess(bc, access);
-		//ExpressionUtil.writeOutSilent(access,bc, Expression.MODE_REF); // access;
-		
+		// displayName
 		ExpressionUtil.writeOutSilent(displayName,bc, Expression.MODE_REF);// displayName;
+		// description
 		if(description!=null)ExpressionUtil.writeOutSilent(description,bc, Expression.MODE_REF);// displayName;
 		else adapter.push("");
+		// hint
 		ExpressionUtil.writeOutSilent(hint,bc, Expression.MODE_REF);// hint;
-		
+		// secureJson
 		if(secureJson!=null)ExpressionUtil.writeOutSilent(secureJson,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		// verify client
 		if(verifyClient!=null)ExpressionUtil.writeOutSilent(verifyClient,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
-		
+		// meta
 		Page.createMetaDataStruct(bc,metadata,null);
+		
 		adapter.invokeConstructor(UDF_PROPERTIES, type==-1?INIT_UDF_PROPERTIES_STRTYPE:INIT_UDF_PROPERTIES_SHORTTYPE);
+		if(!onlyProps)adapter.invokeConstructor(Types.UDF_IMPL, INIT_UDF_IMPL_PROP);
+		
 	}
 	
-	public void createUDFImpl(BytecodeContext bc, int index) throws BytecodeException {
+	public void loadUDF(BytecodeContext bc, int index) throws BytecodeException {
 		// new UDF(...)
 		GeneratorAdapter adapter=bc.getAdapter();
 		adapter.newInstance(Types.UDF_IMPL);
 		adapter.dup();
 		
-		loadUDFProperties(bc,index);
+		loadUDF(bc, index,true);
 		
 		adapter.invokeConstructor(Types.UDF_IMPL, INIT_UDF_IMPL_PROP);
 	}
 	
 	
 
-	private void loadArguments(BytecodeContext bc, int index) throws BytecodeException {
+	/*private void loadArguments(BytecodeContext bc, int index) throws BytecodeException {
 		BytecodeContext constr = bc.getStaticConstructor();
 		String type = Type.getType(FunctionArgument[].class).toString();
 		String fa="fa_"+index;
@@ -502,7 +463,7 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		//createArguments(bc, adapter);
 		
 		
-	}
+	}*/
 	
 	private void createArguments(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter ga = bc.getAdapter();
@@ -511,15 +472,8 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
 		Argument arg;
         for (int i = 0; i < arguments.size(); i++) {
         	arg=(Argument) arguments.get(i);
-            ga.dup();
-            ga.push(i);
-            	
-            // new FunctionArgument(...)
-    		ga.newInstance(FUNCTION_ARGUMENT_IMPL);
-    		ga.dup();
-    		boolean hasKey = Variable.registerKey(bc,arg.getName(),false);
-    		//arg.getName().writeOut(bc, Expression.MODE_REF);
-    		int functionIndex=7;
+            
+        	boolean canHaveKey = Variable.canRegisterKey(arg.getName());
     		
     	// CHECK if default values
     		// type
@@ -528,31 +482,33 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
     		if(_strType instanceof LitString){
     			_type=CFTypes.toShortStrict(((LitString)_strType).getString(),CFTypes.TYPE_UNKNOW);
     		}
-    		boolean useType=!hasKey || _type!=CFTypes.TYPE_ANY;
+    		boolean useType=!canHaveKey || _type!=CFTypes.TYPE_ANY;
+    		//boolean useStrType=useType && (_type==CFTypes.TYPE_UNDEFINED || _type==CFTypes.TYPE_UNKNOW || CFTypes.toString(_type, null)==null);
     		
     		// required
     		ExprBoolean _req = arg.getRequired();
-    		boolean useReq=!hasKey || toBoolean(_req,null)!=Boolean.FALSE;
+    		boolean useReq=!canHaveKey || toBoolean(_req,null)!=Boolean.FALSE;
     		
     		// default-type
     		Expression _def = arg.getDefaultValueType();
-    		boolean useDef=!hasKey || toInt(_def,-1)!=CFTypes.TYPE_ANY;
+    		boolean useDef=!canHaveKey || toInt(_def,-1)!=FunctionArgument.DEFAULT_TYPE_NULL;
     		
     		// pass by reference
     		ExprBoolean _pass = arg.isPassByReference();
-    		boolean usePass=!hasKey || toBoolean(_pass,null)!=Boolean.TRUE;
+    		boolean usePass=!canHaveKey || toBoolean(_pass,null)!=Boolean.TRUE;
     		
     		// display-hint
     		ExprString _dsp = arg.getDisplayName();
-    		boolean useDsp=!hasKey || !isLiteralEmptyString(_dsp);
+    		boolean useDsp=!canHaveKey || !isLiteralEmptyString(_dsp);
     		
     		// hint
     		ExprString _hint = arg.getHint();
-    		boolean useHint=!hasKey || !isLiteralEmptyString(_hint);
+    		boolean useHint=!canHaveKey || !isLiteralEmptyString(_hint);
     		
     		// meta
     		Map _meta = arg.getMetaData();
-    		boolean useMeta=!hasKey || (_meta!=null && !_meta.isEmpty());
+    		boolean useMeta=!canHaveKey || (_meta!=null && !_meta.isEmpty());
+    		int functionIndex=7;
     		if(!useMeta) {
     			functionIndex--;
     			if(!useHint) {
@@ -575,6 +531,13 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
     			}
     		}
     	// write out arguments	
+    		ga.dup();
+            ga.push(i);
+            	
+            // new FunctionArgument(...)
+            ga.newInstance(canHaveKey && functionIndex<INIT_FAI_KEY_LIGHT.length?FUNCTION_ARGUMENT_LIGHT:FUNCTION_ARGUMENT_IMPL);
+    		ga.dup();
+    		boolean hasKey = Variable.registerKey(bc,arg.getName(),false);
     		
     		// type
     		if(functionIndex>=INIT_FAI_KEY.length-7) {
@@ -594,7 +557,10 @@ public final class Function extends StatementBase implements Opcodes, IFunction,
     		//meta
     		if(functionIndex==INIT_FAI_KEY.length-1)Page.createMetaDataStruct(bc,_meta,null);
     		
-    		ga.invokeConstructor(FUNCTION_ARGUMENT_IMPL, hasKey?INIT_FAI_KEY[functionIndex]:INIT_FAI_STRING);
+    		if(hasKey && functionIndex<INIT_FAI_KEY_LIGHT.length)
+        		ga.invokeConstructor(FUNCTION_ARGUMENT_LIGHT, INIT_FAI_KEY[functionIndex]);
+    		else 
+    			ga.invokeConstructor(FUNCTION_ARGUMENT_IMPL, hasKey?INIT_FAI_KEY[functionIndex]:INIT_FAI_STRING);
 
             ga.visitInsn(Opcodes.AASTORE);
         }

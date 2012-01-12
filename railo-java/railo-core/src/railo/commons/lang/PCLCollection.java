@@ -76,7 +76,20 @@ public final class PCLCollection {
     	// if class is already loaded flush the classloader and do new classloader
     	PCLBlock cl = index.get(name);
     	if(cl!=null) {
-        	mapping.clearPages(cl);
+    		// if can upate class
+    		/*if(InstrumentationUtil.isSupported()){
+    			try{
+    				Class<?> old = cl.loadClass(name);
+            		InstrumentationUtil.redefineClass(old, barr);
+            		return old;
+    			}
+    			catch(Throwable t){
+    				t.printStackTrace();
+    			}
+    		}*/
+    		
+    		// flash classloader when update is not possible
+    		mapping.clearPages(cl);
     		StructUtil.removeValue(index,cl);
     		if(isCFC){
             	cfcs.remove(cl);
