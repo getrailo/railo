@@ -100,7 +100,7 @@ public class QueryUtil {
 	
 	private static void checkSQLRestriction(DatasourceConnection dc, String keyword, Array sqlparts, SQL sql) throws PageException {
         if(ArrayFind.find(sqlparts,keyword,false)>0) {
-            throw new DatabaseException("access denied to execute \""+StringUtil.ucFirst(keyword)+"\" SQL statment for datasource "+dc.getDatasource().getName(),null,sql,dc);
+            throw new DatabaseException("access denied to execute \""+StringUtil.ucFirst(keyword)+"\" SQL statement for datasource "+dc.getDatasource().getName(),null,sql,dc);
         }
     }
 

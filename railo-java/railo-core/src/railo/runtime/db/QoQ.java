@@ -399,7 +399,7 @@ public final class QoQ {
 			if(o==Operation.OPERATION3_LIKE) return executeLike(pc,sql,qr,op3,row);
 		}
 		
-		if(!(operation instanceof OperationN)) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
+		if(!(operation instanceof OperationN)) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
 		
 		OperationN opn=(OperationN) operation;
 		
@@ -408,7 +408,7 @@ public final class QoQ {
 		
 		/*if(count==0 && op.equals("?")) {
 		    int pos=sql.getPosition(); 
-		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql);
+		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql);
 		    sql.setPosition(pos+1);
 		    return sql.getItems()[pos].getValueForCF();
 		}*/
@@ -913,7 +913,7 @@ public final class QoQ {
 	private Object executeColumn(SQL sql,Query qr, Column column, int row) throws PageException {
 		if(column.getColumn().equals("?")) {
 		    int pos=column.getColumnIndex();
-		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
+		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
 		    return sql.getItems()[pos].getValueForCF();
 		}
 		return column.getValue(qr, row);
@@ -923,7 +923,7 @@ public final class QoQ {
 	private Object executeColumn(SQL sql,Query qr, Column column, int row, Object defaultValue) throws PageException {
 	    if(column.getColumn().equals("?")) {
 		    int pos=column.getColumnIndex();
-		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
+		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
 		    return sql.getItems()[pos].getValueForCF();
 		}
 		return column.getValue(qr, row,defaultValue);	

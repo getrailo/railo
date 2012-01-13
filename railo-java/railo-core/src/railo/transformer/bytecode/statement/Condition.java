@@ -45,7 +45,7 @@ public final class Condition extends StatementBase implements HasBodies {
 	}
 
 	/**
-     * adds a else statment
+     * adds a else statement
      * @param condition
      * @param body
      */
