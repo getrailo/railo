@@ -2,15 +2,28 @@ package railo.transformer.cfml.expression;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
+import railo.print;
+import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
+import railo.runtime.Component;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
+import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.UDFUtil;
+import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.FunctionBody;
+import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprDouble;
@@ -18,6 +31,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionInvoker;
 import railo.transformer.bytecode.expression.Invoker;
+import railo.transformer.bytecode.expression.ClosureAsExpression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.Assign;
 import railo.transformer.bytecode.expression.var.BIF;
@@ -39,8 +53,14 @@ import railo.transformer.bytecode.op.OpNegate;
 import railo.transformer.bytecode.op.OpNegateNumber;
 import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.op.OpVariable;
+import railo.transformer.bytecode.statement.tag.Attribute;
+import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.bytecode.statement.udf.AbstrFunction;
+import railo.transformer.bytecode.statement.udf.Closure;
+import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
+import railo.transformer.cfml.script.CFMLScriptTransformer;
 import railo.transformer.cfml.script.DocComment;
 import railo.transformer.cfml.script.DocCommentTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
@@ -48,6 +68,7 @@ import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 import railo.transformer.library.tag.TagLibTag;
+import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.library.tag.TagLibTagScript;
 import railo.transformer.util.CFMLString;
 
@@ -116,7 +137,7 @@ import railo.transformer.util.CFMLString;
 </pre>
  *
  */
-public class CFMLExprTransformer implements ExprTransformer {
+public abstract class AbstrCFMLExprTransformer {
 
 	private static final short STATIC=0;
 	private static final short DYNAMIC=1;
@@ -150,6 +171,35 @@ public class CFMLExprTransformer implements ExprTransformer {
 	
 	private DocCommentTransformer docCommentTransformer= new DocCommentTransformer();
 	
+
+	protected short ATTR_TYPE_NONE=TagLibTagAttr.SCRIPT_SUPPORT_NONE;
+	protected short ATTR_TYPE_OPTIONAL=TagLibTagAttr.SCRIPT_SUPPORT_OPTIONAL;
+	protected short ATTR_TYPE_REQUIRED=TagLibTagAttr.SCRIPT_SUPPORT_REQUIRED;
+	
+	protected static final Expression NULL = LitString.toExprString("NULL"); 
+	protected static final Expression EMPTY_STRING = LitString.toExprString("sadsdasdasdadasdasdsas");
+	protected static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
+
+
+	protected static EndCondition SEMI_BLOCK=new EndCondition() {
+		public boolean isEnd(Data data) {
+			return data.cfml.isCurrent('{') || data.cfml.isCurrent(';');
+		}
+	};
+	protected static EndCondition SEMI=new EndCondition() {
+		public boolean isEnd(Data data) {
+			return data.cfml.isCurrent(';');
+		}
+	};
+	protected static EndCondition COMMA_ENDBRACKED=new EndCondition() {
+		public boolean isEnd(Data data) {
+			return data.cfml.isCurrent(',') || data.cfml.isCurrent(')');
+		}
+	};
+
+	public static interface EndCondition {
+		public boolean isEnd(Data data);
+	}
 	
 	/*private short mode=0;
 	protected CFMLString cfml;
@@ -172,6 +222,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		public short context=CTX_NONE; 
 		public TagLibTag[] scriptTags;
 		public DocComment docComment;
+		public Body parent;
 		
 		public Data(EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
 			this.ep=ep;
@@ -179,45 +230,6 @@ public class CFMLExprTransformer implements ExprTransformer {
 			this.fld=fld;
 			this.allowLowerThan=allowLowerThan;
 		}
-	}
-	
-	/**
-	 * Wird aufgerufen um aus dem ￼bergebenen CFMLString einen Ausdruck auszulesen 
-	 * und diesen in ein CFXD Element zu ￼bersetzten.
-	 * <br />
-	 * Beispiel eines ￼bergebenen String:<br />
-	 * <code>session.firstName</code> oder <code>trim(left('test'&var1,3))</code>
-	 * <br />
-	 * EBNF:<br />
-	 * <code>spaces impOp;</code>
-	 * 
-	 * @param fld Array von Function Libraries, 
-	 * Mithilfe dieser Function Libraries kann der Transfomer buil-in Funktionen innerhalb des CFML Codes erkennen 
-	 * und validieren.
-	 * @param doc XML Document des aktuellen zu erstellenden CFXD
-	 * @param cfml Text der transfomiert werden soll.
-	 * @return Element CFXD Element
-	 * @throws TemplateException
-	 */
-	public Expression transform(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml) throws TemplateException {
-		
-		// Init Parameter
-		Data data = init(ep,fld, cfml,false);
-
-		// parse the houle Page String
-        comments(data);
-		//Expression expr = assignOp();
-
-		// return the Root Element of the Document	
-		return assignOp(data);
-	}
-	
-	/**
-	 * @see railo.transformer.data.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
-	 */
-	public Expression transformAsString(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
-		
-		return transformAsString(init(ep,fld, cfml,allowLowerThan),new String[]{" ", ">", "/>"});
 	}
 	
 	protected Expression transformAsString(Data data,String[] breakConditions) throws TemplateException {
@@ -277,11 +289,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Argument functionArgument(Data data) throws TemplateException {
+	private Argument functionArgument(Data data) throws TemplateException {
 		return functionArgument(data,null);
 	}
 	
-	protected Argument functionArgument(Data data,String type) throws TemplateException {
+	private Argument functionArgument(Data data,String type) throws TemplateException {
 		Expression expr = assignOp(data);
 		try{
 			if (data.cfml.forwardIfCurrent(":")) {
@@ -303,6 +315,9 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return new Argument(expr,type);
 	}
 
+	
+	
+	
 	/**
 	* Transfomiert Zuweisungs Operation.
 	* <br />
@@ -328,7 +343,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return expr;
 	}
 	
-	protected Expression conditionalOp(Data data) throws TemplateException {
+	private Expression conditionalOp(Data data) throws TemplateException {
         
 		Expression expr = impOp(data);
         if (data.cfml.forwardIfCurrent('?')) {
@@ -352,7 +367,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression impOp(Data data) throws TemplateException {
+	private Expression impOp(Data data) throws TemplateException {
 		Expression expr = eqvOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) { 
 			comments(data);
@@ -369,7 +384,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression eqvOp(Data data) throws TemplateException {
+	private Expression eqvOp(Data data) throws TemplateException {
 		Expression expr = xorOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("eqv")) {
 			comments(data);
@@ -386,7 +401,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression xorOp(Data data) throws TemplateException {
+	private Expression xorOp(Data data) throws TemplateException {
 		Expression expr = orOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("xor")) {
 			comments(data);
@@ -404,7 +419,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression orOp(Data data) throws TemplateException {
+	private Expression orOp(Data data) throws TemplateException {
 		Expression expr = andOp(data);
 		
 		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrentAndNoWordAfter("or")) {
@@ -423,7 +438,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression andOp(Data data) throws TemplateException {
+	private Expression andOp(Data data) throws TemplateException {
 		Expression expr = notOp(data);
 		
 		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrentAndNoWordAfter("and")) {
@@ -442,7 +457,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression notOp(Data data) throws TemplateException {
+	private Expression notOp(Data data) throws TemplateException {
 		// And Operation
 		int line=data.cfml.getLine();
 		if (data.cfml.isCurrent('!') && !data.cfml.isCurrent("!=")) {
@@ -467,7 +482,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression decsionOp(Data data) throws TemplateException {
+	private Expression decsionOp(Data data) throws TemplateException {
 
 		Expression expr = concatOp(data);
 		boolean hasChanged=false;
@@ -635,7 +650,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression concatOp(Data data) throws TemplateException {
+	private Expression concatOp(Data data) throws TemplateException {
 		Expression expr = plusMinusOp(data);
 		
 		while(data.cfml.isCurrent('&') && !data.cfml.isCurrent("&&")) {
@@ -666,7 +681,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression plusMinusOp(Data data) throws TemplateException {
+	private Expression plusMinusOp(Data data) throws TemplateException {
 		Expression expr = modOp(data);
 		
 		while(!data.cfml.isLast()) {
@@ -717,7 +732,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression modOp(Data data) throws TemplateException {
+	private Expression modOp(Data data) throws TemplateException {
 		Expression expr = divMultiOp(data);
 		
 		// Modulus Operation
@@ -749,7 +764,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression divMultiOp(Data data) throws TemplateException {
+	private Expression divMultiOp(Data data) throws TemplateException {
 		Expression expr = expoOp(data);
 
 		while (!data.cfml.isLast()) {
@@ -803,7 +818,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression expoOp(Data data) throws TemplateException {
+	private Expression expoOp(Data data) throws TemplateException {
 		Expression expr = unaryOp(data);
 
 		// Modulus Operation
@@ -814,7 +829,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return expr;
 	}
 	
-	protected Expression unaryOp(Data data) throws TemplateException {
+	private Expression unaryOp(Data data) throws TemplateException {
 		Expression expr = negatePlusMinusOp(data);
 		
 		// Plus Operation
@@ -841,7 +856,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression negatePlusMinusOp(Data data) throws TemplateException {
+	private Expression negatePlusMinusOp(Data data) throws TemplateException {
 		// And Operation
 		int line=data.cfml.getLine();
 		if (data.cfml.forwardIfCurrent('-')) {
@@ -876,7 +891,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression clip(Data data) throws TemplateException {
+	private Expression clip(Data data) throws TemplateException {
 	    return checker(data);
 	}
 	/**
@@ -888,9 +903,9 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression checker(Data data) throws TemplateException {
+	private Expression checker(Data data) throws TemplateException {
 		Expression expr=null;
-		// String
+			// String
 			if((expr=string(data))!=null) {
 				expr = subDynamic(data,expr);
 				data.mode=STATIC;//(expr instanceof Literal)?STATIC:DYNAMIC;// STATIC
@@ -901,7 +916,13 @@ public class CFMLExprTransformer implements ExprTransformer {
 				expr = subDynamic(data,expr);
 				data.mode=STATIC;//(expr instanceof Literal)?STATIC:DYNAMIC;// STATIC
 				return expr;
+			}
+			// closure
+			if((expr=closure(data))!=null) {
+				data.mode=DYNAMIC;
+				return expr;
 			} 
+			
 		// Dynamic
 			if((expr=dynamic(data))!=null) {
 				expr = newOp(data, expr);
@@ -929,7 +950,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			throw new TemplateException(data.cfml,"Syntax Error, Invalid Construct");	
 	}
 	
-	protected Expression variable(Data data) throws TemplateException {
+	/*private Expression variable(Data data) throws TemplateException {
 		Expression expr=null;
 		
 		// Dynamic
@@ -939,7 +960,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			return expr;
 		} 
 		return null;
-	}
+	}*/
 	
 	/**
 	* Transfomiert einen lierale Zeichenkette.
@@ -1040,7 +1061,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected LitDouble number(Data data) throws TemplateException {
+	private LitDouble number(Data data) throws TemplateException {
 		// check first character is a number literal representation
 		if(!(data.cfml.isCurrentBetween('0','9') || data.cfml.isCurrent('.'))) return null;
 		
@@ -1094,7 +1115,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* <code>"0"|..|"9";</code>
 	* @return digit Ausgelesene Zahlen als Zeichenkette.
 	*/
-	protected String digit(Data data) {
+	private String digit(Data data) {
 		String rtn="";
 		while (data.cfml.isValidIndex()) {
 			if(!data.cfml.isCurrentBetween('0','9'))break;
@@ -1115,7 +1136,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression dynamic(Data data) throws TemplateException {
+	private Expression dynamic(Data data) throws TemplateException {
 		// Die Implementation weicht ein wenig von der Grammatik ab, 
 		// aber nicht in der Logik sondern rein wie es umgesetzt wurde.
 		
@@ -1163,7 +1184,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	
 
 	
-	protected Expression json(Data data,FunctionLibFunction flf, char start, char end) throws TemplateException {
+	private Expression json(Data data,FunctionLibFunction flf, char start, char end) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent(start))return null;
 		
 		int line = data.cfml.getLine();
@@ -1190,8 +1211,15 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return var;
 	}
 	
-
+	private Expression closure(Data data) throws TemplateException {
+		if(!data.cfml.forwardIfCurrent("function",'('))return null;
+		data.cfml.previous();
+		if(data.parent==null)print.ds();
+		return new ClosureAsExpression((Closure) closurePart(data, data.parent, "anonymous", Component.ACCESS_PUBLIC, "any", data.cfml.getLine(),true));
+	}
 	
+	protected  abstract AbstrFunction closurePart(Data data,Body parent, String id, int access, String rtnType, int line,boolean closure) throws TemplateException;
+
 	
 	protected FunctionLibFunction getFLF(Data data,String name) {
 		FunctionLibFunction flf=null;
@@ -1359,7 +1387,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Variable startElement(Data data,String name, int line) throws TemplateException {
+	private Variable startElement(Data data,String name, int line) throws TemplateException {
 		
 		
 		
@@ -1400,7 +1428,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	 * @return CFXD Variable Element oder null
 	 * @throws TemplateException 
 	*/
-	protected Variable scope(Data data,String idStr, int line) throws TemplateException {
+	private Variable scope(Data data,String idStr, int line) throws TemplateException {
 		if(data.ignoreScopes)return null;
 		if (idStr.equals("CGI")) 				return new Variable(Scope.SCOPE_CGI,line);
 		else if (idStr.equals("ARGUMENTS"))  	return new Variable(Scope.SCOPE_ARGUMENTS,line);
@@ -1468,7 +1496,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected Expression structElement(Data data) throws TemplateException {
+	private Expression structElement(Data data) throws TemplateException {
         comments(data);
 		Expression name = CastString.toExprString(assignOp(data));
 		if(name instanceof LitString)((LitString)name).fromBracket(true);
@@ -1490,7 +1518,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	protected FunctionMember getFunctionMember(Data data,
+	private FunctionMember getFunctionMember(Data data,
 		String name,
 		boolean checkLibrary,
 		Expression exprName)
@@ -1519,11 +1547,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 			fm=bif;
 			
 			if(flf.getArgType()== FunctionLibFunction.ARG_DYNAMIC && flf.hasDefaultValues()){
-        		ArrayList args = flf.getArg();
-				Iterator it = args.iterator();
+        		ArrayList<FunctionLibFunctionArg> args = flf.getArg();
+				Iterator<FunctionLibFunctionArg> it = args.iterator();
         		FunctionLibFunctionArg arg;
         		while(it.hasNext()){
-        			arg=(FunctionLibFunctionArg) it.next();
+        			arg=it.next();
         			if(arg.getDefaultValue()!=null)
         				bif.addArgument(
         						new NamedArgument(
@@ -1543,7 +1571,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		
 
 		// Function Attributes
-		ArrayList arrFuncLibAtt = null;
+		ArrayList<FunctionLibFunctionArg> arrFuncLibAtt = null;
 		int libLen = 0;
 		if (checkLibrary) {
 			arrFuncLibAtt = flf.getArg();
@@ -1578,7 +1606,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 						TemplateException te = new TemplateException(
 							data.cfml,
 							"too many Attributes in function call [" + name + "]");
-						addFunctionDoc(te, flf);
+						UDFUtil.addFunctionDoc(te, flf);
 						throw te;
 					}
 				}
@@ -1588,7 +1616,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			//Argument arg;
 			if (checkLibrary && !isDynamic) {
 				// current attribues from library
-				FunctionLibFunctionArg funcLibAtt =(FunctionLibFunctionArg) arrFuncLibAtt.get(count);
+				FunctionLibFunctionArg funcLibAtt =arrFuncLibAtt.get(count);
 				fm.addArgument(functionArgument(data,funcLibAtt.getTypeAsString()));	
 			} 
 			else {
@@ -1615,7 +1643,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			TemplateException te = new TemplateException(
 				data.cfml,
 				"too few attributes in function [" + name + "]");
-			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) addFunctionDoc(te, flf);
+			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) UDFUtil.addFunctionDoc(te, flf);
 			throw te;
 		}
 
@@ -1629,63 +1657,6 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return fm;
 	}
 	
-	public static void addFunctionDoc(PageExceptionImpl pe,FunctionLibFunction flf) {
-		ArrayList<FunctionLibFunctionArg> args=flf.getArg();
-		Iterator<FunctionLibFunctionArg> it = args.iterator();
-		
-		// Pattern
-		StringBuilder pattern=new StringBuilder(flf.getName());
-		StringBuilder end=new StringBuilder();
-		pattern.append("(");
-		FunctionLibFunctionArg arg;
-		int c=0;
-		while(it.hasNext()){
-			arg = it.next();
-			if(!arg.isRequired()) {
-				pattern.append(" [");
-				end.append("]");
-			}
-			if(c++>0)pattern.append(", ");
-			pattern.append(arg.getName());
-			pattern.append(":");
-			pattern.append(arg.getType());
-			
-		}
-		pattern.append(end);
-		pattern.append("):");
-		pattern.append(flf.getReturnTypeAsString());
-		
-		pe.setAdditional("Pattern", pattern);
-		
-		// Documentation
-		StringBuilder doc=new StringBuilder(flf.getDescription());
-		StringBuilder req=new StringBuilder();
-		StringBuilder opt=new StringBuilder();
-		StringBuilder tmp;
-		doc.append("\n");
-		
-		it = args.iterator();
-		while(it.hasNext()){
-			arg = it.next();
-			tmp=arg.isRequired()?req:opt;
-			
-			tmp.append("- ");
-			tmp.append(arg.getName());
-			tmp.append(" (");
-			tmp.append(arg.getType());
-			tmp.append("): ");
-			tmp.append(arg.getDescription());
-			tmp.append("\n");
-		}
-
-		if(req.length()>0)doc.append("\nRequired:\n").append(req);
-		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
-		
-		
-		pe.setAdditional("Documentation", doc);
-		
-	}
-
 	/**
 	 * Sharps (#) die innerhalb von Expressions auftauchen haben in CFML keine weitere Beteutung 
 	 * und werden durch diese Methode einfach entfernt.
@@ -1697,7 +1668,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	 * @return CFXD Element
 	 * @throws TemplateException 
 	*/
-	protected Expression sharp(Data data) throws TemplateException {
+	private Expression sharp(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent('#'))
 			return null;
 		Expression expr;
@@ -1733,7 +1704,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			if(data.cfml.isCurrent('"') || data.cfml.isCurrent('#') || data.cfml.isCurrent('\'')) {
 				throw new TemplateException(data.cfml,"simple attribute value can't contain ["+data.cfml.getCurrent()+"]");
 			}
-			else sb.append(data.cfml.getCurrent());
+			sb.append(data.cfml.getCurrent());
 			data.cfml.next();
 		}
         comments(data);
@@ -1763,7 +1734,7 @@ public class CFMLExprTransformer implements ExprTransformer {
      * @return bool Wurde ein Kommentar entfernt?
      * @throws TemplateException
      */
-    protected boolean comment(Data data) throws TemplateException {
+    private boolean comment(Data data) throws TemplateException {
         if(singleLineComment(data.cfml) || multiLineComment(data) || CFMLTransformer.comment(data.cfml)) return true;
         return false;
     }
@@ -1810,18 +1781,4 @@ public class CFMLExprTransformer implements ExprTransformer {
         return cfml.nextLine();
     }
 
-	/* *
-	 * @return the ignoreScopes
-	 * /
-	public boolean isIgnoreScopes() {
-		return ignoreScopes;
-	}*/
-
-	/* *
-	 * @param ignoreScopes the ignoreScopes to set
-	 * /
-	public void setIgnoreScopes(boolean ignoreScopes) {
-		this.ignoreScopes = ignoreScopes;
-	}*/
-    
 }

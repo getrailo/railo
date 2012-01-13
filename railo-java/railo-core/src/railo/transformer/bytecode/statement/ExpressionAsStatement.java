@@ -10,7 +10,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
-public final class ExpressionStatement extends StatementBase {
+public final class ExpressionAsStatement extends StatementBase {
 
 	private Expression expr;
 
@@ -18,7 +18,7 @@ public final class ExpressionStatement extends StatementBase {
 	 * Constructor of the class
 	 * @param expr
 	 */
-	public ExpressionStatement(Expression expr) {
+	public ExpressionAsStatement(Expression expr) {
 		super(expr.getLine());
 		this.expr=expr;
 	}

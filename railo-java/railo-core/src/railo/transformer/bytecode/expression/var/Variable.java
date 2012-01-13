@@ -14,6 +14,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -343,7 +344,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
 						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getLine());
-						CFMLExprTransformer.addFunctionDoc(bce, bif.getFlf());
+						UDFUtil.addFunctionDoc(bce, bif.getFlf());
 						throw bce;
 					}
 				}
@@ -500,7 +501,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 			
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
-		CFMLExprTransformer.addFunctionDoc(be, flfa.getFunction());
+		UDFUtil.addFunctionDoc(be, flfa.getFunction());
 		throw be;
 	}
 	

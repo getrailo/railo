@@ -20,6 +20,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.UDFUtil;
 import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -100,7 +101,7 @@ public final class BIFCall extends RefSupport implements Ref {
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
 						ExpressionException ee = new ExpressionException("argument ["+names[y]+"] is not allowed for function ["+flf.getName()+"]");
-						CFMLExprTransformer.addFunctionDoc(ee, flf);
+						UDFUtil.addFunctionDoc(ee, flf);
 						throw ee;
 					}
 				}
@@ -161,7 +162,7 @@ public final class BIFCall extends RefSupport implements Ref {
 			
 		}
 		ExpressionException ee = new ExpressionException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]");
-		CFMLExprTransformer.addFunctionDoc(ee, flfa.getFunction());
+		UDFUtil.addFunctionDoc(ee, flfa.getFunction());
 		throw ee;
 	}
 
@@ -195,7 +196,7 @@ public final class BIFCall extends RefSupport implements Ref {
 		}
 		if(count!=0 && count!=refArgs.length){
 			ExpressionException ee = new ExpressionException("invalid argument for function "+flf.getName()+", you can not mix named and unnamed arguments");
-			CFMLExprTransformer.addFunctionDoc(ee, flf);
+			UDFUtil.addFunctionDoc(ee, flf);
 			throw ee;
 		}
 		return count!=0;

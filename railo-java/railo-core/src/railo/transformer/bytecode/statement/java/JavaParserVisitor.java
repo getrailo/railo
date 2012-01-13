@@ -40,7 +40,7 @@ import railo.transformer.bytecode.literal.LitFloat;
 import railo.transformer.bytecode.literal.LitInteger;
 import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.ExpressionStatement;
+import railo.transformer.bytecode.statement.ExpressionAsStatement;
 
 public class JavaParserVisitor extends VoidVisitorAdapter {
 
@@ -101,7 +101,7 @@ public class JavaParserVisitor extends VoidVisitorAdapter {
 		Expression e=(Expression) db.rtn.pop();
 		
 		
-		body.addStatement(new ExpressionStatement(e));
+		body.addStatement(new ExpressionAsStatement(e));
 		db.rtn.clear();
 	}
 	

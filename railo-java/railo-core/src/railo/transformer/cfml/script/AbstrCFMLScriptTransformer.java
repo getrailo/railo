@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -36,10 +37,9 @@ import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Condition;
 import railo.transformer.bytecode.statement.DoWhile;
-import railo.transformer.bytecode.statement.ExpressionStatement;
+import railo.transformer.bytecode.statement.ExpressionAsStatement;
 import railo.transformer.bytecode.statement.For;
 import railo.transformer.bytecode.statement.ForEach;
-import railo.transformer.bytecode.statement.Function;
 import railo.transformer.bytecode.statement.Return;
 import railo.transformer.bytecode.statement.Switch;
 import railo.transformer.bytecode.statement.TryCatchFinally;
@@ -47,10 +47,14 @@ import railo.transformer.bytecode.statement.While;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagBase;
+import railo.transformer.bytecode.statement.udf.AbstrFunction;
+import railo.transformer.bytecode.statement.udf.Closure;
+import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
+import railo.transformer.cfml.expression.AbstrCFMLExprTransformer;
 import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
@@ -72,7 +76,7 @@ import railo.transformer.util.CFMLString;
  * wird der Inhalt des Tag script übersetzt.
  * 
  */
-public final class CFMLScriptTransformer extends CFMLExprTransformer implements TagDependentBodyTransformer {
+public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransformer {
 
 	private static final String[] IGNORE_LIST_COMPONENT = new String[]{
 		"output","synchronized","extends","implements","displayname","style","persistent","accessors"};
@@ -132,53 +136,6 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	private static final Expression EMPTY_STRING = LitString.toExprString("sadsdasdasdadasdasdsas");
 	private static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
 
-	/**
-	 * Einstiegsmethode für den CFScript Transformer, 
-	 * die Methode erbt sich von der Transform Methode der data.cfmlExprTransformer Klasse.
-	 * Der einzige Unterschied liegt darin, das der data.cfmlString der eingegeben wird als vererbte Klasse CFScriptString vorliegen muss.
-	 * Der Parameter ist als data.cfmlString definiert, so dass er die transform Methode überschreibt.
-	 * @param fld Array von Function Libraries, 
-	 * Mithilfe dieser Function Libraries kann der Transfomer buil-in Funktionen innerhalb des data.cfml Codes erkennen 
-	 * und validieren.
-	 * <br />
-	 * EBNF:<br />
-	 * <code>statements;</code>
-	 * @param cfxdTag XML Document des aktuellen zu erstellenden CFXD
-	 * @param libTag Definition des aktuellen Tag.
-	 * @param data.cfml data.cfml Code 
-	 * @param parentTransformer
-	 * @throws TemplateException
-	 */
-
-	public void transform(Config config,CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) throws TemplateException	{
-		Page page = ASMUtil.getAncestorPage(tag);
-		boolean isCFC= page.isComponent();
-		boolean isInterface= page.isInterface();
-		
-		Data data = init(ep,fld,cfml,true);
-		data.insideFunction=false; 
-		data.tagName=libTag.getFullName();
-		data.isCFC=isCFC;
-		data.isInterface=isInterface;
-		data.scriptTags=((ConfigImpl) config).getCoreTagLib().getScriptTags();
-		
-		tag.setBody(statements(data));
-	}
-
-	/**
-	 * @throws TemplateException 
-	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
-	 */
-	public Expression transform(FunctionLib[] fld,CFMLString cfml) throws TemplateException {// FUTURE is this method needed anymore?
-		throw new TemplateException(cfml,"you can't use Method transform on class CFMLScriptTransformer");
-	}
-	/**
-	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.data.cfmlString)
-	 */
-	public Expression transformAsString(FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException {// FUTURE is this method needed anymore?
-		throw new TemplateException(cfml,"you can't use Method transformAsString on class CFMLScriptTransformer");
-	}
-	
 	
 	/** 
 	 * Liest sämtliche Statements des CFScriptString ein. 
@@ -188,7 +145,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return a statement
 	 * @throws TemplateException
 	 */
-	protected Body statements(Data data) throws TemplateException {
+	protected final Body statements(Data data) throws TemplateException {
 		ScriptBody body=new ScriptBody();
 		
 		statements(data,body,true);
@@ -204,7 +161,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @param isRoot befindet sich der Parser im root des data.cfml Docs
 	 * @throws TemplateException
 	 */
-	protected void statements(Data data,Body body, boolean isRoot) throws TemplateException {
+	private final void statements(Data data,Body body, boolean isRoot) throws TemplateException {
 		do {
 			if(isRoot && isFinish(data))return;
 			statement(data,body);
@@ -223,7 +180,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @param parent Übergeornetes Element dem das Statement zugewiesen wird.
 	 * @throws TemplateException
 	 */
-	protected void statement(Data data,Body parent) throws TemplateException {
+	private final void statement(Data data,Body parent) throws TemplateException {
 		statement(data, parent, data.context);
 	}
 	private void statement(Data data,Body parent,short context) throws TemplateException {
@@ -243,7 +200,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		else if((child=tryStatement(data))!=null) 				parent.addStatement(child);
 		else if((child=tagStatement(data,parent))!=null)	parent.addStatement(child);
 		else if(block(data,parent)){}
-		else parent.addStatement(expressionStatement(data));
+		else parent.addStatement(expressionStatement(data,parent));
 		data.docComment=null;
 		data.context=prior;
 	}
@@ -257,7 +214,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return if Statement
 	 * @throws TemplateException
 	 */
-	protected Statement ifStatement(Data data) throws TemplateException {
+	private final Statement ifStatement(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("if",'(')) return null;
 		
 		
@@ -290,7 +247,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return else if Statement
 	 * @throws TemplateException
 	 */
-	protected boolean elseifStatement(Data data,Condition cont) throws TemplateException {
+	private  final boolean elseifStatement(Data data,Condition cont) throws TemplateException {
 		int pos=data.cfml.getPos();
 		if(!data.cfml.forwardIfCurrent("else")) return false;
 		
@@ -321,7 +278,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @throws TemplateException
 	 * 
 	 */
-	protected boolean elseStatement(Data data,Condition cont) throws TemplateException {
+	private final boolean elseStatement(Data data,Condition cont) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("else",'{') && !data.cfml.forwardIfCurrent("else ") && !data.cfml.forwardIfCurrent("else",'/')) 
 			return false;
 
@@ -336,7 +293,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	}
 	
 
-	protected boolean finallyStatement(Data data,TryCatchFinally tcf) throws TemplateException {
+	private final boolean finallyStatement(Data data,TryCatchFinally tcf) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("finally",'{') && !data.cfml.forwardIfCurrent("finally ") && !data.cfml.forwardIfCurrent("finally",'/')) 
 			return false;
 
@@ -358,7 +315,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return while Statement
 	 * @throws TemplateException
 	 */
-	public While whileStatement(Data data) throws TemplateException {
+	private final While whileStatement(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("while",'('))
 			return null;
 		
@@ -379,7 +336,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return switch Statement
 	 * @throws TemplateException
 	 */
-	public Switch switchStatement(Data data) throws TemplateException {
+	private final Switch switchStatement(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("switch",'('))
 			return null;
 		
@@ -426,7 +383,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return case Statement
 	 * @throws TemplateException
 	 */
-	public boolean caseStatement(Data data,Switch swit) throws TemplateException {
+	private final boolean caseStatement(Data data,Switch swit) throws TemplateException {
 		if(!data.cfml.forwardIfCurrentAndNoWordAfter("case"))
 			return false;
 		
@@ -449,7 +406,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return default Statement
 	 * @throws TemplateException
 	 */
-	public boolean defaultStatement(Data data,Switch swit) throws TemplateException {
+	private final boolean defaultStatement(Data data,Switch swit) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("default",':'))
 			return false;
 		
@@ -466,7 +423,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @param block
 	 * @throws TemplateException
 	 */
-	public void switchBlock(Data data,Body body) throws TemplateException {
+	private final void switchBlock(Data data,Body body) throws TemplateException {
 		while(data.cfml.isValidIndex()) {
 			comments(data);
 			if(data.cfml.isCurrent("case ") || data.cfml.isCurrent("default",':') || data.cfml.isCurrent('}')) 
@@ -484,7 +441,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return do Statement
 	 * @throws TemplateException
 	 */
-	public DoWhile doStatement(Data data) throws TemplateException {
+	private final DoWhile doStatement(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/'))
 			return null;
 		
@@ -516,7 +473,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return for Statement
 	 * @throws TemplateException
 	 */
-	public Statement forStatement(Data data) throws TemplateException {
+	private final Statement forStatement(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("for",'(')) 
 			return null;
 		Expression left=null;
@@ -568,10 +525,10 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				// ex block
 				statement(data,body,CTX_FOR);
 				if(!(left instanceof Variable))
-					throw new TemplateException(data.cfml,"invalid syntax in for statment, left value is invalid");
+					throw new TemplateException(data.cfml,"invalid syntax in for statement, left value is invalid");
 				
 				if(!(value instanceof Variable))
-					throw new TemplateException(data.cfml,"invalid syntax in for statment, right value is invalid");
+					throw new TemplateException(data.cfml,"invalid syntax in for statement, right value is invalid");
 				return new ForEach((Variable)left,(Variable)value,body,line,data.cfml.getLine());	
 			}
 			else 
@@ -586,7 +543,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return function Statement
 	 * @throws TemplateException
 	 */
-	public Function funcStatement(Data data,Body parent) throws TemplateException {
+	private final AbstrFunction funcStatement(Data data,Body parent) throws TemplateException {
 		int pos=data.cfml.getPos();
 		
 		// access modifier
@@ -651,11 +608,16 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 				FunctionLibFunction flf = getFLF(data,id);
 				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a built in Function");
 			}
-				
-			Body body=new FunctionBody();
-			Function func=new Function(id,access,rtnType,body,line,-1);
-			
-		// start (
+			return closurePart(data, parent, id,access,rtnType,line,false);
+	}
+
+	protected  final AbstrFunction closurePart(Data data,Body parent, String id, int access, String rtnType, int line,boolean closure) throws TemplateException {		
+
+		Body body=new FunctionBody();
+		AbstrFunction func=closure?
+				new Closure(id,access,rtnType,body,line,-1)
+				:new Function(id,access,rtnType,body,line,-1);
+		
 			comments(data);
 			if(!data.cfml.forwardIfCurrent('('))
 				throw new TemplateException(data.cfml,"invalid syntax in function head, missing begin [(]");
@@ -895,7 +857,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 
 	
 	
-	public Statement _multiAttrStatement(Body parent, Data data,TagLibTag tlt) throws TemplateException  {
+	private final Statement _multiAttrStatement(Body parent, Data data,TagLibTag tlt) throws TemplateException  {
 		int pos = data.cfml.getPos();
 		try {
 			return __multiAttrStatement(parent,data,tlt);
@@ -906,7 +868,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		catch (TemplateException e) {
 			try {
 				data.cfml.setPos(pos);
-				return expressionStatement(data);
+				return expressionStatement(data,parent);
 			} catch (TemplateException e1) {
 				if(tlt.getScript().getContext()==CTX_CFC) throw new ComponentTemplateException(e);
 				throw e;
@@ -914,26 +876,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		}
 	}
 
-	/*public Statement _multiAttrStatement(Body parent, Data data,String type,short context,boolean hasBody,boolean allowExpression) throws TemplateException  {
-		int pos = data.cfml.getPos();
-		try {
-			return __multiAttrStatement(parent,data,type,context,hasBody,allowExpression);
-		} 
-		catch (ProcessingDirectiveException e) {
-			throw e;
-		}
-		catch (TemplateException e) {
-			try {
-				data.cfml.setPos(pos);
-				return expressionStatement(data);
-			} catch (TemplateException e1) {
-				if(context==CTX_CFC) throw new ComponentBodyException(e);
-				throw e;
-			}
-		}
-	}*/
-	
-	public Tag __multiAttrStatement(Body parent, Data data,TagLibTag tlt) throws TemplateException  {
+	private final Tag __multiAttrStatement(Body parent, Data data,TagLibTag tlt) throws TemplateException  {
 		if(data.ep==null) return null;
 		String type=tlt.getName();
 		if(data.cfml.forwardIfCurrent(type)) {
@@ -989,7 +932,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	
 	
 	
-	private void addMetaData(Data data, Tag tag, String[] ignoreList) {
+	private final void addMetaData(Data data, Tag tag, String[] ignoreList) {
 		if(data.docComment==null) return;
 		
 
@@ -1010,95 +953,22 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		}
 		data.docComment=null;
 	}
-
-	/*private void addMetaData(Data data, Tag tag, String[] ignoreList) {
-		if(data.docComment==null) return ;
-		
-		tag.addAttribute(new Attribute(false, "hint", LitString.toExprString(data.docComment.getHint()), "string"));
-		Map<String, Attribute> params = data.docComment.getParams();
-		
-		Iterator<Entry<String, Attribute>> it = params.entrySet().iterator();
-		Entry<String, Attribute> entry;
-		outer:while(it.hasNext()){
-			entry = it.next();
-
-			// ignore list
-			if(!ArrayUtil.isEmpty(ignoreList)) {
-				for(int i=0;i<ignoreList.length;i++){
-					if(ignoreList[i].equalsIgnoreCase(entry.getKey())) continue outer;
-				}
-			}
-			tag.addAttribute(entry.getValue());
-		}
-		
-
-		data.docComment=null;
-		
-	}*/
-
-	/*public Tag __multiAttrStatement(Body parent, Data data,String type,short context,boolean hasBody,boolean allowExpression) throws TemplateException  {
-		if(data.ep==null) return null;
-		
-		if(data.cfml.forwardIfCurrent(type)){
-			boolean isValid=(data.cfml.isCurrent(' ') || (hasBody && data.cfml.isCurrent('{')));
-			if(!isValid){
-				data.cfml.setPos(data.cfml.getPos()-type.length());
-				return null;
-			}
-		}
-		else return null;
-		int line=data.cfml.getLine();
-		
-		
-		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,type);
-		if(context==CTX_CFC)data.isCFC=true;
-		else if(context==CTX_INTERFACE)data.isInterface=true;
-		//Tag tag=new TagComponent(line);
-		Tag tag=getTag(parent,tlt, line);
-		tag.setTagLibTag(tlt);
-		tag.setScriptBase(true);
-		//EvaluatorPool.getPool();
-		comments(data);
-		
-		// attributes
-		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,true,EMPTY_STRING,allowExpression,null,false);
-		
-		for(int i=0;i<attrs.length;i++){
-			tag.addAttribute(attrs[i]);
-		}
-		
-		comments(data);
 	
-		// body
-		if(hasBody){
-			Body body=new BodyBase();
-			statement(data,body,context);
-			tag.setBody(body);
-		}
-		else checkSemiColonLineFeed(data,true);
-		
-		eval(tlt,data,tag);
-		return tag;
-	}*/
-	
-	
-	
-	public Statement propertyStatement(Data data,Body parent) throws TemplateException  {
+	private final Statement propertyStatement(Data data,Body parent) throws TemplateException  {
 		int pos = data.cfml.getPos();
 		try {
 			return _propertyStatement(data, parent);
 		} catch (TemplateException e) {
 			try {
 				data.cfml.setPos(pos);
-				return expressionStatement(data);
+				return expressionStatement(data,parent);
 			} catch (TemplateException e1) {
 				throw e;
 			}
 		}
 	}
 	
-	private Tag _propertyStatement(Data data,Body parent) throws TemplateException  {
+	private final Tag _propertyStatement(Data data,Body parent) throws TemplateException  {
 		if(data.context!=CTX_CFC || !data.cfml.forwardIfCurrent("property "))
 			return null;
 		int line=data.cfml.getLine();
@@ -1214,7 +1084,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	}
 
 
-	protected String variableDeclaration(Data data,boolean firstCanBeNumber,boolean upper) {
+	private final String variableDeclaration(Data data,boolean firstCanBeNumber,boolean upper) {
 		
 		String id=identifier(data, firstCanBeNumber, upper);
 		if(id==null) return null;
@@ -1246,7 +1116,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return return Statement
 	 * @throws TemplateException
 	 */
-	protected Return returnStatement(Data data) throws TemplateException {
+	private final Return returnStatement(Data data) throws TemplateException {
 	    if(!data.cfml.forwardIfCurrentAndNoVarExt("return")) return null;
 	    
 	    int line=data.cfml.getLine();
@@ -1269,7 +1139,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	}
 
 	
-	protected Statement _singleAttrStatement(Body parent, Data data, TagLibTag tlt) throws TemplateException   {
+	private final Statement _singleAttrStatement(Body parent, Data data, TagLibTag tlt) throws TemplateException   {
 		int pos = data.cfml.getPos();
 		try {
 			return __singleAttrStatement(parent,data,tlt, false);
@@ -1280,7 +1150,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		catch (TemplateException e) {
 			data.cfml.setPos(pos);
 			try {
-				return expressionStatement(data);
+				return expressionStatement(data,parent);
 			} catch (TemplateException e1) {
 				throw e;
 			}
@@ -1305,7 +1175,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		}
 	}*/
 	
-	protected Statement __singleAttrStatement(Body parent, Data data, TagLibTag tlt, boolean allowTwiceAttr) throws TemplateException {
+	private final Statement __singleAttrStatement(Body parent, Data data, TagLibTag tlt, boolean allowTwiceAttr) throws TemplateException {
 		String tagName = tlt.getName();
 		if(data.cfml.forwardIfCurrent(tagName)){
 			if(!data.cfml.isCurrent(' ') && !data.cfml.isCurrent(';')){
@@ -1403,7 +1273,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	
 	
 
-	private void eval(TagLibTag tlt, railo.transformer.cfml.expression.CFMLExprTransformer.Data data, Tag tag) throws TemplateException {
+	private final void eval(TagLibTag tlt, railo.transformer.cfml.expression.CFMLExprTransformer.Data data, Tag tag) throws TemplateException {
 		if(!StringUtil.isEmpty(tlt.getTteClassName())){
 			try {
 				tlt.getEvaluator().execute(ThreadLocalPageContext.getConfig(), tag, tlt,data.fld, data.cfml);
@@ -1414,7 +1284,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		}
 	}
 
-	private Tag getTag(Body parent, TagLibTag tlt, int line) {
+	private final Tag getTag(Body parent, TagLibTag tlt, int line) {
 		Tag tag =null;
 		if(StringUtil.isEmpty(tlt.getTttClassName()))tag= new TagBase(line);
 		else {
@@ -1440,17 +1310,20 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * <br />
 	 * EBNF:<br />
 	 * <code>expression ";";</code>
+	 * @param parent 
 	 * @return Ausdruck
 	 * @throws TemplateException
 	 */
-	public ExpressionStatement expressionStatement(Data data) throws TemplateException {
+	private ExpressionAsStatement expressionStatement(Data data, Body parent) throws TemplateException {
+		data.parent=parent;
 		Expression expr=expression(data);
+		data.parent=null;
 		checkSemiColonLineFeed(data,true);
 		
-		return new ExpressionStatement(expr);
+		return new ExpressionAsStatement(expr);
 	}
 	
-	private boolean checkSemiColonLineFeed(Data data,boolean throwError) throws TemplateException {
+	private final boolean checkSemiColonLineFeed(Data data,boolean throwError) throws TemplateException {
 		comments(data);
 		if(!data.cfml.forwardIfCurrent(';')){
 			if(!data.cfml.hasNLBefore() && !data.cfml.isCurrent("</",data.tagName) && !data.cfml.isCurrent('}')){
@@ -1461,15 +1334,6 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return true;
 	}
 
-	/**
-	 * @see railo.transformer.data.cfml.expression.data.cfmlExprTransformer#expression()
-	 */
-	public Expression expression(Data data) throws TemplateException {
-		Expression expr;
-		expr = super.expression(data);
-		comments(data);
-		return expr;
-	}
 	
 	/**
 	 * Ruft die Methode expression der zu vererbenten Klasse auf 
@@ -1480,7 +1344,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return condition
 	 * @throws TemplateException
 	 */
-	public ExprBoolean condition(Data data) throws TemplateException {
+	private final ExprBoolean condition(Data data) throws TemplateException {
 		ExprBoolean condition=null;
 		comments(data);
 		condition=CastBoolean.toExprBoolean(super.expression(data));
@@ -1496,7 +1360,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return Try Block
 	 * @throws TemplateException
 	*/
-	public TryCatchFinally tryStatement(Data data) throws TemplateException {
+	private final TryCatchFinally tryStatement(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("try",'{') && !data.cfml.forwardIfCurrent("try ") && !data.cfml.forwardIfCurrent("try",'/'))
 			return null;
 		data.cfml.previous();
@@ -1587,7 +1451,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return Ende ScriptBlock?
 	 * @throws TemplateException
 	 */
-	public boolean isFinish(Data data) throws TemplateException {
+	private final boolean isFinish(Data data) throws TemplateException {
 		comments(data);
 		return data.cfml.isCurrent("</",data.tagName);		
 	}
@@ -1602,7 +1466,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	 * @return was a block
 	 * @throws TemplateException
 	 */
-	private boolean block(Data data,Body body) throws TemplateException {
+	private final boolean block(Data data,Body body) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent('{'))
 			return false;
 		comments(data);
@@ -1631,7 +1495,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	
 	
 	
-	public Attribute[] attributes(Tag tag,TagLibTag tlt, Data data, EndCondition endCond,Expression defaultValue,boolean allowExpression, 
+	private final Attribute[] attributes(Tag tag,TagLibTag tlt, Data data, EndCondition endCond,Expression defaultValue,boolean allowExpression, 
 			String ignoreAttrReqFor, boolean allowTwiceAttr) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
@@ -1665,7 +1529,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return attrs.toArray(new Attribute[attrs.size()]);
 	}
 	
-	private boolean contains(ArrayList<Attribute> attrs, String name) {
+	private final boolean contains(ArrayList<Attribute> attrs, String name) {
 		Iterator<Attribute> it = attrs.iterator();
 		while(it.hasNext()){
 			if(it.next().getName().equals(name)) return true;
@@ -1673,7 +1537,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return false;
 	}
 
-	private Attribute attribute(TagLibTag tlt, Data data, ArrayList<String> args, Expression defaultValue,boolean allowExpression, boolean allowTwiceAttr) throws TemplateException {
+	private final Attribute attribute(TagLibTag tlt, Data data, ArrayList<String> args, Expression defaultValue,boolean allowExpression, boolean allowTwiceAttr) throws TemplateException {
 		StringBuffer sbType=new StringBuffer();
     	RefBoolean dynamic=new RefBooleanImpl(false);
     	
@@ -1738,14 +1602,14 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		return id;
 	}*/
 	
-	private String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
+	private final String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
 		String id=StringUtil.toLowerCase(CFMLTransformer.identifier(cfml,true));
 		return validateAttributeName(id, cfml, args, tag, dynamic, sbType,allowTwiceAttr);
 	}
 	
 	
 	
-	private String validateAttributeName(String id,CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
+	private final String validateAttributeName(String id,CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType, boolean allowTwiceAttr) throws TemplateException {
 		if(args.contains(id) && !allowTwiceAttr) throw new TemplateException(cfml,"you can't use the same attribute ["+id+"] twice");
 		args.add(id);
 		
@@ -1783,34 +1647,9 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 	}
 	
 		
-	private Expression attributeValue(Data data, boolean allowExpression) throws TemplateException {
+	private final Expression attributeValue(Data data, boolean allowExpression) throws TemplateException {
 		return allowExpression?super.expression(data):transformAsString(data,new String[]{" ", ";", "{"});
-		//return transformAsString(data);
 	}
-	
-	/*public static Expression attributeValue(Data data,TagLibTag tag, String type,boolean isNonName, Expression noExpression) throws TemplateException {
-		Expression expr;
-		try {
-			
-			if(isNonName) {
-			    int pos=data.cfml.getPos();
-			    try {
-			    expr=transfomer.transform(data.ep,data.flibs,data.cfml);
-			    }
-			    catch(TemplateException ete) {
-			       if(data.cfml.getPos()==pos)expr=noExpression;
-			       else throw ete;
-			    }
-			}
-			else expr=transfomer.transformAsString(data.ep,data.flibs,data.cfml,true);
-			if(type.length()>0) {
-				expr=Cast.toExpression(expr, type);
-			}
-		} catch (TagLibException e) {
-			throw new TemplateException(data.cfml,e);
-		} 
-		return expr;
-	}*/
 	
 	public static interface EndCondition {
 		public boolean isEnd(Data data);

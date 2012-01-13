@@ -38,7 +38,7 @@ import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.SimpleExprTransformer;
 import railo.transformer.cfml.script.CFMLScriptTransformer;
-import railo.transformer.cfml.script.CFMLScriptTransformer.ComponentTemplateException;
+import railo.transformer.cfml.script.AbstrCFMLScriptTransformer.ComponentTemplateException;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.CustomTagLib;
 import railo.transformer.library.tag.TagLib;
