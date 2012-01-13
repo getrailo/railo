@@ -69,6 +69,7 @@ public final class SystemUtil {
     private static Resource[] classPathes;
     private static String charset=System.getProperty("file.encoding");
     private static String lineSeparator=System.getProperty("line.separator","\n");
+    private static MemoryPoolMXBean permGenSpaceBean;
 
 	public static int osArch=-1;
 	public static int jreArch=-1;
@@ -76,6 +77,27 @@ public final class SystemUtil {
 	static {
 		if(charset==null || charset.equalsIgnoreCase("MacRoman"))
 			charset="cp1252";
+		
+		// Perm Gen
+		permGenSpaceBean=getPermGenSpaceBean();
+		// make sure the JVM does not always a new bean
+		MemoryPoolMXBean tmp = getPermGenSpaceBean();
+		if(tmp!=permGenSpaceBean)permGenSpaceBean=null;
+	}
+	
+	
+	
+	public static MemoryPoolMXBean getPermGenSpaceBean() {
+		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		MemoryPoolMXBean bean;
+		while(it.hasNext()){
+			bean = it.next();
+			if(StringUtil.indexOfIgnoreCase(bean.getName(),"Perm Gen")!=-1 || StringUtil.indexOfIgnoreCase(bean.getName(),"PermGen")!=-1) {
+				return bean;
+			}
+		}
+		return null;
 	}
 	
     private static Boolean isFSCaseSensitive;
@@ -576,16 +598,22 @@ public final class SystemUtil {
 	    
 	}
 	public static MemoryUsage getPermGenSpaceSize() {
+		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();
+		// create on the fly when the bean is not permanent
+		MemoryPoolMXBean tmp = getPermGenSpaceBean();
+		if(tmp!=null) return tmp.getUsage();
+		
+		// create error message including info about available memory blocks
+		StringBuilder sb=new StringBuilder();
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
 		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		MemoryPoolMXBean bean;
 		while(it.hasNext()){
 			bean = it.next();
-			if(bean.getName().indexOf("Perm Gen")!=-1) {
-				return bean.getUsage();
-			}
+			if(sb.length()>0)sb.append(", ");
+			sb.append(bean.getName());
 		}
-		throw new RuntimeException("Perm Gen Space information not available");
+		throw new RuntimeException("PermGen Space information not available, available Memory blocks are ["+sb+"]");
 	}
 	
 
