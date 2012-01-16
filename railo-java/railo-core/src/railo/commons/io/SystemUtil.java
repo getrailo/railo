@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -91,12 +92,35 @@ public final class SystemUtil {
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
 		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		MemoryPoolMXBean bean;
+		// PERM GEN
 		while(it.hasNext()){
 			bean = it.next();
 			if(StringUtil.indexOfIgnoreCase(bean.getName(),"Perm Gen")!=-1 || StringUtil.indexOfIgnoreCase(bean.getName(),"PermGen")!=-1) {
 				return bean;
 			}
 		}
+		// take none-heap when only one
+		it = manager.iterator();
+		LinkedList<MemoryPoolMXBean> beans=new LinkedList<MemoryPoolMXBean>();
+		while(it.hasNext()){
+			bean = it.next();
+			if(bean.getType().equals(MemoryType.NON_HEAP)) {
+				beans.add(bean);
+				return bean;
+			}
+		}
+		if(beans.size()==1) return beans.getFirst();
+		
+		// Class Memory/ClassBlock Memory?
+		it = manager.iterator();
+		while(it.hasNext()){
+			bean = it.next();
+			if(StringUtil.indexOfIgnoreCase(bean.getName(),"Class Memory")!=-1) {
+				return bean;
+			}
+		}
+		
+		
 		return null;
 	}
 	
