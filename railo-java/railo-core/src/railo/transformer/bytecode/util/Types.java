@@ -32,6 +32,7 @@ import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.Iteratorable;
@@ -185,6 +186,7 @@ public final class Types {
 	public static final Type UDF_PROPERTIES = Type.getType(UDFProperties.class);
 	public static final Type UDF_PROPERTIES_IMPL = Type.getType(UDFPropertiesImpl.class);
 	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
+	public static final Type CLOSURE = Type.getType(Closure.class);
 	public static final Type UDF_PROPERTIES_ARRAY = Type.getType(UDFProperties[].class);
 	public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);
 	public static final Type COLLECTION_KEY = Type.getType(Collection.Key.class);
