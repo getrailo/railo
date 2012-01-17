@@ -147,7 +147,6 @@ public class BodyBase extends StatementBase implements Body {
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
     			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
     			
-    			
     			_bc=new BytecodeContext(statConstr,constr,keys,bc,a,m);
     			if(bc.getRoot()!=null)_bc.setRoot(bc.getRoot());
     			else _bc.setRoot(bc);

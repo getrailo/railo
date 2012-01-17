@@ -360,6 +360,17 @@ public final class ASMUtil {
 		}
 	}
 	
+	public static Page getAncestorPage(Statement stat, Page defaultValue) {
+		Statement parent=stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null) {
+				return defaultValue;
+			}
+			if(parent instanceof Page)	return (Page) parent;
+		}
+	}
+	
 	public static void listAncestor(Statement stat) {
 		Statement parent=stat;
 		aprint.o(stat);

@@ -18,6 +18,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
@@ -398,7 +399,7 @@ public final class Page extends BodyBase {
 
         // static constructor
         GeneratorAdapter ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,cw);
-		BytecodeContext statConstr = new BytecodeContext(null,null,externalizer,keys,cw,name,ga,STATIC_CONSTRUCTOR,writeLog());
+		BytecodeContext statConstr = new BytecodeContext(null,null,this,externalizer,keys,cw,name,ga,STATIC_CONSTRUCTOR,writeLog());
 		
 		// private static  ImportDefintion[] test=new ImportDefintion[]{...};
 	    if(list.size()>0){
@@ -426,7 +427,7 @@ public final class Page extends BodyBase {
 		
         // constructor
         ga = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_PS,null,null,cw);
-		BytecodeContext constr = new BytecodeContext(null,null,externalizer,keys,cw,name,ga,CONSTRUCTOR_PS,writeLog());
+		BytecodeContext constr = new BytecodeContext(null,null,this,externalizer,keys,cw,name,ga,CONSTRUCTOR_PS,writeLog());
 		ga.loadThis();
         Type t=Types.PAGE;
         if(isComponent())t=Types.COMPONENT_PAGE;
@@ -496,7 +497,7 @@ public final class Page extends BodyBase {
         if(functions.length==0 || isInterface()){}
         else if(functions.length<=10) {
         	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_CALL, null, new Type[]{Types.THROWABLE}, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,UDF_CALL,writeLog());
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,UDF_CALL,writeLog());
             if(functions.length==0){}
             else if(functions.length==1){
         		ExpressionUtil.visitLine(bc,functions[0].getStartLine());
@@ -511,7 +512,7 @@ public final class Page extends BodyBase {
    // more than 10 functions
         else {
         	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_CALL, null, new Type[]{Types.THROWABLE}, cw);
-        	BytecodeContext bc = new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,UDF_CALL,writeLog());
+        	BytecodeContext bc = new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,UDF_CALL,writeLog());
 		        cv = new ConditionVisitor();
 		        cv.visitBefore();
 		        int count=0;
@@ -545,7 +546,7 @@ public final class Page extends BodyBase {
 	        	innerCall = new Method(createFunctionName(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT_VALUE});
 	        	
 	        	adapter = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , innerCall, null, new Type[]{Types.THROWABLE}, cw);
-	        	writeOutUdfCallInner(new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,innerCall,writeLog()), functions, i, i+10>functions.length?functions.length:i+10);
+	        	writeOutUdfCallInner(new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,innerCall,writeLog()), functions, i, i+10>functions.length?functions.length:i+10);
 	        	
 	        	adapter.visitInsn(Opcodes.ACONST_NULL);
 		        adapter.returnValue();
@@ -558,7 +559,7 @@ public final class Page extends BodyBase {
              TagThread[] threads=getThreads();
              if(threads.length>0) {
              	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , THREAD_CALL, null, new Type[]{Types.THROWABLE}, cw);
-         			writeOutThreadCallInner(new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,THREAD_CALL,writeLog()),threads,0,threads.length);
+         			writeOutThreadCallInner(new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,THREAD_CALL,writeLog()),threads,0,threads.length);
          		//adapter.visitInsn(Opcodes.ACONST_NULL);
          		adapter.returnValue();
          		adapter.endMethod();
@@ -572,7 +573,7 @@ public final class Page extends BodyBase {
         if(functions.length==0 || isInterface()) {}
         else if(functions.length<=10) {
         	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_DEFAULT_VALUE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-            writeUdfDefaultValueInner(new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,UDF_DEFAULT_VALUE,writeLog()),functions,0,functions.length);
+            writeUdfDefaultValueInner(new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,UDF_DEFAULT_VALUE,writeLog()),functions,0,functions.length);
             
             ASMConstants.NULL(adapter);
         	adapter.returnValue();
@@ -580,7 +581,7 @@ public final class Page extends BodyBase {
         }
         else {
         	adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , UDF_DEFAULT_VALUE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,UDF_DEFAULT_VALUE,writeLog());
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,UDF_DEFAULT_VALUE,writeLog());
         	cv = new ConditionVisitor();
 	        cv.visitBefore();
 	        int count=0;
@@ -614,7 +615,7 @@ public final class Page extends BodyBase {
         for(int i=0;i<functions.length;i+=10) {
         	innerDefaultValue = new Method("udfDefaultValue"+(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, Types.INT_VALUE, Types.INT_VALUE});
         	adapter = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , innerDefaultValue, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        	writeUdfDefaultValueInner(new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,innerDefaultValue,writeLog()), functions, i, i+10>functions.length?functions.length:i+10);
+        	writeUdfDefaultValueInner(new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,innerDefaultValue,writeLog()), functions, i, i+10>functions.length?functions.length:i+10);
         	
         	adapter.visitInsn(Opcodes.ACONST_NULL);
 	        adapter.returnValue();
@@ -787,7 +788,7 @@ public final class Page extends BodyBase {
 
 	private void writeOutInitComponent(BytecodeContext statConstr,BytecodeContext constr,List keys, ClassWriter cw, Tag component) throws BytecodeException {
 		final GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_COMPONENT, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(statConstr, constr,externalizer,keys,cw,name,adapter,INIT_COMPONENT,writeLog());
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,this,externalizer,keys,cw,name,adapter,INIT_COMPONENT,writeLog());
 		Label methodBegin=new Label();
     	Label methodEnd=new Label();
 
@@ -886,7 +887,7 @@ public final class Page extends BodyBase {
 	
 	private void writeOutInitInterface(BytecodeContext statConstr,BytecodeContext constr,List keys, ClassWriter cw, Tag interf) throws BytecodeException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , INIT_INTERFACE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(statConstr, constr,externalizer,keys,cw,name,adapter,INIT_INTERFACE,writeLog());
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,this,externalizer,keys,cw,name,adapter,INIT_INTERFACE,writeLog());
 		Label methodBegin=new Label();
     	Label methodEnd=new Label();
 
@@ -1000,7 +1001,7 @@ public final class Page extends BodyBase {
 	private void writeOutNewComponent(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter cw, Tag component) throws BytecodeException {
 		
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_COMPONENT_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(statConstr, constr,externalizer,keys,cw,name,adapter,NEW_COMPONENT_IMPL_INSTANCE,writeLog());
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,this,externalizer,keys,cw,name,adapter,NEW_COMPONENT_IMPL_INSTANCE,writeLog());
     	Label methodBegin=new Label();
     	Label methodEnd=new Label();
     	
@@ -1118,7 +1119,7 @@ public final class Page extends BodyBase {
 	
 	private void writeOutNewInterface(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter cw, Tag interf) throws BytecodeException {
 		GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , NEW_INTERFACE_IMPL_INSTANCE, null, new Type[]{Types.PAGE_EXCEPTION}, cw);
-        BytecodeContext bc=new BytecodeContext(statConstr, constr,externalizer,keys,cw,name,adapter,NEW_INTERFACE_IMPL_INSTANCE,writeLog());
+        BytecodeContext bc=new BytecodeContext(statConstr, constr,this,externalizer,keys,cw,name,adapter,NEW_INTERFACE_IMPL_INSTANCE,writeLog());
     	Label methodBegin=new Label();
     	Label methodEnd=new Label();
 
@@ -1245,7 +1246,7 @@ public final class Page extends BodyBase {
 			adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
 	    	adapter.visitLabel(methodBegin);
 
-	    		        writeOutCallBody(new BytecodeContext(statConstr, constr,externalizer,keys,cw,name,adapter,CALL,writeLog()),this,IFunction.PAGE_TYPE_REGULAR);
+	    		        writeOutCallBody(new BytecodeContext(statConstr, constr,this,externalizer,keys,cw,name,adapter,CALL,writeLog()),this,IFunction.PAGE_TYPE_REGULAR);
 	        
 	        adapter.visitLabel(methodEnd);
 	        adapter.returnValue();
@@ -1328,7 +1329,8 @@ public final class Page extends BodyBase {
     	int len=stats.size();
         for(int i=0;i<len;i++) {
         	stat = (Statement)stats.get(i);
-        	
+        	print.e(stat.getClass().getName()+":"+(stat instanceof IFunction));
+    		
         	// IFunction
         	if(stat instanceof IFunction) {
         		functions.add((IFunction)stat);

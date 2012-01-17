@@ -47,9 +47,9 @@ import railo.transformer.bytecode.statement.While;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagBase;
-import railo.transformer.bytecode.statement.udf.AbstrFunction;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
+import railo.transformer.bytecode.statement.udf.FunctionImpl;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
@@ -543,7 +543,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @return function Statement
 	 * @throws TemplateException
 	 */
-	private final AbstrFunction funcStatement(Data data,Body parent) throws TemplateException {
+	private final Function funcStatement(Data data,Body parent) throws TemplateException {
 		int pos=data.cfml.getPos();
 		
 		// access modifier
@@ -603,20 +603,29 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		// Name
 			String id=identifier(data,false,false);
-			if(id==null) throw new TemplateException(data.cfml,"invalid name for a function");
+			
+			
+			if(id==null) {
+				if(data.cfml.isCurrent('(')) {
+					data.cfml.setPos(pos);
+					return null;
+				}
+				throw new TemplateException(data.cfml,"invalid name for a function");
+			}
+			
 			if(!data.isCFC && !data.isInterface){
 				FunctionLibFunction flf = getFLF(data,id);
 				if(flf!=null && flf.getCazz()!=CFFunction.class)throw new TemplateException(data.cfml,"The name ["+id+"] is already used by a built in Function");
 			}
-			return closurePart(data, parent, id,access,rtnType,line,false);
+			return closurePart(data, id,access,rtnType,line,false);
 	}
 
-	protected  final AbstrFunction closurePart(Data data,Body parent, String id, int access, String rtnType, int line,boolean closure) throws TemplateException {		
+	protected  final Function closurePart(Data data, String id, int access, String rtnType, int line,boolean closure) throws TemplateException {		
 
 		Body body=new FunctionBody();
-		AbstrFunction func=closure?
+		Function func=closure?
 				new Closure(id,access,rtnType,body,line,-1)
-				:new Function(id,access,rtnType,body,line,-1);
+				:new FunctionImpl(id,access,rtnType,body,line,-1);
 		
 			comments(data);
 			if(!data.cfml.forwardIfCurrent('('))
@@ -1315,9 +1324,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private ExpressionAsStatement expressionStatement(Data data, Body parent) throws TemplateException {
-		data.parent=parent;
 		Expression expr=expression(data);
-		data.parent=null;
 		checkSemiColonLineFeed(data,true);
 		
 		return new ExpressionAsStatement(expr);

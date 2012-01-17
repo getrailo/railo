@@ -32,8 +32,9 @@ public class BytecodeContext {
 	}
 	
 	private String id=id();
+	private Page page;
 
-	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,StringExternalizerWriter externalizer,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method,boolean writeLog) {
+	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,Page page,StringExternalizerWriter externalizer,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method,boolean writeLog) {
 		this.classWriter = classWriter;
 		this.className = className;
 		this.writeLog = writeLog;
@@ -43,6 +44,7 @@ public class BytecodeContext {
 		this.staticConstr=statConstr;
 		this.constr=constr;
 		this.externalizer=externalizer;
+		this.page=page;
 	}
 	
 	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List keys,BytecodeContext bc, GeneratorAdapter adapter,Method method) {
@@ -56,6 +58,7 @@ public class BytecodeContext {
 		this.method=method;
 		this.staticConstr=statConstr;
 		this.constr=constr;
+		this.page=bc.getPage();
 	}
 	
 	/**
@@ -225,6 +228,10 @@ public class BytecodeContext {
 
 	public StringExternalizerWriter getStringExternalizerWriter() {
 		return externalizer;
+	}
+
+	public Page getPage() {
+		return page;
 	}
 
 }

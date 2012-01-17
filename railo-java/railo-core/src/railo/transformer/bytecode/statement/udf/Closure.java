@@ -2,6 +2,7 @@ package railo.transformer.bytecode.statement.udf;
 
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.print;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -10,7 +11,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
-public final class Closure extends AbstrFunction {
+public final class Closure extends Function {
 
 	public Closure(Expression name, Expression returnType, Expression returnFormat, Expression output, Expression abstr,
 			int access, Expression displayName, Expression description,Expression hint, Expression secureJson, Expression verifyClient,
@@ -24,23 +25,25 @@ public final class Closure extends AbstrFunction {
 	}
 
 	public final void _writeOut(BytecodeContext bc, int pageType) throws BytecodeException{
-		GeneratorAdapter adapter = bc.getAdapter();
-		Page page = ASMUtil.getAncestorPage(this);
+		//GeneratorAdapter adapter = bc.getAdapter();
+		
+		Page page = bc.getPage();
+		if(page==null)page=ASMUtil.getAncestorPage(this);
 		int index=page.addFunction(this);
 
-		// c.set(<name>,udf);
-		if(pageType==PAGE_TYPE_INTERFACE) {
+		/*if(pageType==PAGE_TYPE_INTERFACE) {
 			adapter.loadArg(0);
 		}
 		else if(pageType==PAGE_TYPE_COMPONENT) {
 			adapter.loadArg(1);
 		}
-		// pc.variablesScope().set(<name>,udf);
 		else {
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, VARIABLE_SCOPE);
 		}
-		loadUDF(bc, index);
+		*/
+		createUDF(bc, index,true);
+		
 	}
 	
 }

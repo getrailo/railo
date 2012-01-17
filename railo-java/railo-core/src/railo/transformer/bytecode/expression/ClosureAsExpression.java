@@ -10,6 +10,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
 public class ClosureAsExpression extends ExpressionBase {

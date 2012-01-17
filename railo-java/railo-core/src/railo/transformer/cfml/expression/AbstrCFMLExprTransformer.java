@@ -14,6 +14,7 @@ import railo.runtime.Component;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.op.Caster;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
@@ -55,7 +56,6 @@ import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.op.OpVariable;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
-import railo.transformer.bytecode.statement.udf.AbstrFunction;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.cfml.ExprTransformer;
@@ -222,7 +222,6 @@ public abstract class AbstrCFMLExprTransformer {
 		public short context=CTX_NONE; 
 		public TagLibTag[] scriptTags;
 		public DocComment docComment;
-		public Body parent;
 		
 		public Data(EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
 			this.ep=ep;
@@ -1214,11 +1213,10 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression closure(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("function",'('))return null;
 		data.cfml.previous();
-		if(data.parent==null)print.ds();
-		return new ClosureAsExpression((Closure) closurePart(data, data.parent, "anonymous", Component.ACCESS_PUBLIC, "any", data.cfml.getLine(),true));
+		return new ClosureAsExpression((Closure) closurePart(data, "closure_"+CreateUniqueId.invoke(), Component.ACCESS_PUBLIC, "any", data.cfml.getLine(),true));
 	}
 	
-	protected  abstract AbstrFunction closurePart(Data data,Body parent, String id, int access, String rtnType, int line,boolean closure) throws TemplateException;
+	protected  abstract Function closurePart(Data data, String id, int access, String rtnType, int line,boolean closure) throws TemplateException;
 
 	
 	protected FunctionLibFunction getFLF(Data data,String name) {
