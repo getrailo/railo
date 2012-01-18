@@ -195,7 +195,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		return UDFImpl.toDumpData(pageContext, maxlevel, properties, this);
+		return UDFImpl.toDumpData(pageContext, maxlevel, properties, this,false);
 	}
 	
 	/**

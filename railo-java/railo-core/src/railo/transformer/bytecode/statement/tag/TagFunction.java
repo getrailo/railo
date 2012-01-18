@@ -17,6 +17,7 @@ import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.udf.Function;
+import railo.transformer.bytecode.statement.udf.FunctionImpl;
  
 public final class TagFunction extends TagBase implements IFunction {
 
@@ -178,7 +179,7 @@ public final class TagFunction extends TagBase implements IFunction {
 		if(acc==-1)
 			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
         
-		Function func = new Function(name, returnType,returnFormat, output,abstr, acc, displayname,description,
+		Function func = new FunctionImpl(name, returnType,returnFormat, output,abstr, acc, displayname,description,
 				hint,secureJson,verifyClient, body, getStartLine(),getEndLine());
 		
 //		 %**%

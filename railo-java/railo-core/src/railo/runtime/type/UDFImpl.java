@@ -49,8 +49,8 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	
 	
 	
-	private ComponentImpl ownerComponent;
-	private UDFPropertiesImpl properties;
+	protected ComponentImpl ownerComponent;
+	protected UDFPropertiesImpl properties;
     
 
 	/**
@@ -462,17 +462,17 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	 */
 
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return toDumpData(pageContext, maxlevel, dp,this);
+		return toDumpData(pageContext, maxlevel, dp,this,false);
 	}
-	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp,UDF udf) {
+	public static DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp,UDF udf, boolean closure) {
 	
 		if(!dp.getShowUDFs())
-			return new SimpleDumpData("<UDF>");
+			return new SimpleDumpData(closure?"<Closure>":"<UDF>");
 		
 		// arguments
 		FunctionArgument[] args = udf.getFunctionArguments();
         
-        DumpTable atts = new DumpTable("udf","#9999cc","#ccccff","#000000");
+        DumpTable atts = closure?new DumpTable("udf","#ffff33","#ffffcc","#000000"):new DumpTable("udf","#9999cc","#ccccff","#000000");
         
 		atts.appendRow(new DumpRow(63,new DumpData[]{new SimpleDumpData("label"),new SimpleDumpData("name"),new SimpleDumpData("required"),new SimpleDumpData("type"),new SimpleDumpData("default"),new SimpleDumpData("hint")}));
 		for(int i=0;i<args.length;i++) {
@@ -500,13 +500,20 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 		}
 		
-		DumpTable func = new DumpTable("#9999cc","#ccccff","#000000");
-		String f="Function ";
-		try {
-			f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
-		} 
-		catch (ExpressionException e) {}
-		func.setTitle(f+udf.getFunctionName());
+		DumpTable func = closure?new DumpTable("#ffff33","#ffffcc","#000000"):new DumpTable("#9999cc","#ccccff","#000000");
+		if(closure) func.setTitle("Closure");
+		else {
+			String f="Function ";
+			try {
+				f=StringUtil.ucFirst(ComponentUtil.toStringAccess(udf.getAccess()).toLowerCase())+" "+f;
+			} 
+			catch (ExpressionException e) {}
+			func.setTitle(f+udf.getFunctionName());
+		}
+		
+		
+		
+		
 		if(udf instanceof UDFImpl)func.setComment("source:"+((UDFImpl)udf).getPageSource().getDisplayPath());
 		
 		

@@ -143,7 +143,7 @@ public final class ComponentUtil {
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
 		adapter.loadThis();
         adapter.invokeConstructor(Types.OBJECT, CONSTRUCTOR_OBJECT);
-        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
+        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
         adapter.returnValue();
         adapter.endMethod();
         
@@ -165,7 +165,14 @@ public final class ComponentUtil {
         
     }
 
-    /**
+    private static railo.transformer.bytecode.Page getPage(BytecodeContext bc1, BytecodeContext bc2) {
+    	railo.transformer.bytecode.Page page=null;
+    	if(bc1!=null)page=bc1.getPage();
+    	if(page==null && bc2!=null)page=bc2.getPage();
+    	return page;
+	}
+
+	/**
 	 * check if one of the children is changed
 	 * @param component
 	 * @param clazz
@@ -419,7 +426,7 @@ public final class ComponentUtil {
         			types
             		);
             GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,null,keys,cw,className,adapter,method,writeLog);
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,keys,cw,className,adapter,method,writeLog);
             Label start=adapter.newLabel();
             adapter.visitLabel(start);
             
@@ -666,6 +673,7 @@ public final class ComponentUtil {
         Struct meta = udf.meta;
         if(meta!=null) StructUtil.copy(meta, func, true);
         
+        func.setEL(KeyImpl.CLOSURE, Boolean.FALSE);
 		
 		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
         String hint=udf.hint;
