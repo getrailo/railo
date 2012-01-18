@@ -109,7 +109,7 @@ public final class DocumentItem extends BodyTagImpl {
 		else if(TYPE_BOOKMARK==type) {
 			if(StringUtil.isEmpty(name))
 				throw new ApplicationException("attribute [name] is required when type is [bookmark]");
-			pageContext.write("<pd4ml:bookmark>"+name+"</pd4ml:bookmark>");
+			pageContext.forceWrite("<pd4ml:bookmark>"+name+"</pd4ml:bookmark>");
 		}
 		else if(body!=null) {
 			provideDocumentItem();

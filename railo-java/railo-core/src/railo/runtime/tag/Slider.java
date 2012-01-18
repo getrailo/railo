@@ -331,33 +331,33 @@ public final class Slider extends TagImpl {
 	    form.setInput(input);
 	    String codebase;
         
-        pageContext.write("<input type=\"hidden\" name=\""+enc(input.getName())+"\" value=\"\">");
-        pageContext.write("<applet MAYSCRIPT code=\"thinlet.AppletLauncher\"");
-        pageContext.write(" archive=\""+form.getArchive()+"?version=101\"");
-        pageContext.write(" width=\""+width+"\"");
+        pageContext.forceWrite("<input type=\"hidden\" name=\""+enc(input.getName())+"\" value=\"\">");
+        pageContext.forceWrite("<applet MAYSCRIPT code=\"thinlet.AppletLauncher\"");
+        pageContext.forceWrite(" archive=\""+form.getArchive()+"?version=101\"");
+        pageContext.forceWrite(" width=\""+width+"\"");
         if(!StringUtil.isEmpty(codebase=form.getCodebase()))
-        	pageContext.write(" codebase=\""+codebase+"\"");
-        if(height>0)pageContext.write(" height=\""+height+"\"");
-        if(hspace>0)pageContext.write(" hspace=\""+hspace+"\"");
-        if(vspace>0)pageContext.write(" vspace=\""+vspace+"\"");
+        	pageContext.forceWrite(" codebase=\""+codebase+"\"");
+        if(height>0)pageContext.forceWrite(" height=\""+height+"\"");
+        if(hspace>0)pageContext.forceWrite(" hspace=\""+hspace+"\"");
+        if(vspace>0)pageContext.forceWrite(" vspace=\""+vspace+"\"");
         Object align = params.get("align",null);
-        if(align!=null)pageContext.write(" align=\""+align+"\"");
-        pageContext.write(">\n");
-        pageContext.write("<param name=\"class\" value=\"railo.applet.SliderThinlet\"></param>\n");
-        pageContext.write("<param name=\"form\" value=\""+enc(form.getName())+"\"></param>\n");
-        pageContext.write("<param name=\"element\" value=\""+enc(input.getName())+"\"></param>\n");
+        if(align!=null)pageContext.forceWrite(" align=\""+align+"\"");
+        pageContext.forceWrite(">\n");
+        pageContext.forceWrite("<param name=\"class\" value=\"railo.applet.SliderThinlet\"></param>\n");
+        pageContext.forceWrite("<param name=\"form\" value=\""+enc(form.getName())+"\"></param>\n");
+        pageContext.forceWrite("<param name=\"element\" value=\""+enc(input.getName())+"\"></param>\n");
         
         railo.runtime.type.Collection.Key[] keys = params.keys();
         railo.runtime.type.Collection.Key key;
         for(int i=0;i<keys.length;i++) {
             key = keys[i];
-            pageContext.write("<param name=\"");
-            pageContext.write(key.getString());
-            pageContext.write("\" value=\"");
-            pageContext.write(enc(Caster.toString(params.get(key,""))));
-            pageContext.write("\"></param>\n");
+            pageContext.forceWrite("<param name=\"");
+            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite("\" value=\"");
+            pageContext.forceWrite(enc(Caster.toString(params.get(key,""))));
+            pageContext.forceWrite("\"></param>\n");
         }
-        pageContext.write("</applet>");
+        pageContext.forceWrite("</applet>");
     }
 
     /**
