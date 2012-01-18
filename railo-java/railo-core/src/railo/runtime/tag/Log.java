@@ -11,6 +11,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.tag.util.DeprecatedUtil;
 
 /**
 * Writes a message to a log file.
@@ -103,8 +104,10 @@ public final class Log extends TagImpl {
 	* @param time value to set
 	 * @throws ApplicationException
 	**/
-	public void setTime(String time) throws ApplicationException	{
-	    throw new ApplicationException("attribute [time] for tag [log] is deprecated");
+	public void setTime(boolean useTime) throws ApplicationException	{
+		if(useTime) return;
+		DeprecatedUtil.tagAttribute("Log", "time");
+	    throw new ApplicationException("attribute [time] for tag [log] is deprecated, only the value true is allowed");
 	}
 
 	/** set the value file
@@ -126,8 +129,10 @@ public final class Log extends TagImpl {
 	* @param date value to set
 	 * @throws ApplicationException
 	**/
-	public void setDate(railo.runtime.type.dt.DateTime date) throws ApplicationException	{
-	    throw new ApplicationException("attribute [date] for tag [log] is deprecated");
+	public void setDate(boolean useDate) throws ApplicationException	{
+		if(useDate) return;
+		DeprecatedUtil.tagAttribute("Log", "date");
+	    throw new ApplicationException("attribute [date] for tag [log] is deprecated, only the value true is allowed");
 	}
 
 	/** set the value thread
