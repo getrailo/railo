@@ -384,7 +384,7 @@ public final class Controler extends Thread {
     	
     	// Pen Gen Space info not available 
     	if(pgs==-1) {
-    		if(countLoadedPages(cs)>10000)
+    		if(countLoadedPages(cs)>500)
     			shrink(cs);
     	}
     	else if(!check || pgs<1024*1024){
