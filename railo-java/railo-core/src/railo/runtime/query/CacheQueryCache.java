@@ -7,7 +7,7 @@ import java.util.List;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
-import railo.commons.lang.Md5;
+import railo.commons.lang.KeyGenerator;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.config.Config;
@@ -108,7 +108,8 @@ import railo.runtime.type.QueryPro;
 
     private String key(SQL sql, String datasource, String username,String password) {
     	try {
-    		return Util.key(Md5.getDigestAsString(sql.toHashString()+datasource+username+password));
+    		return Util.key(KeyGenerator.createKey(sql.toHashString()+datasource+username+password));
+    		//return Util.key(Md5.getDigestAsString(sql.toHashString()+datasource+username+password));
 		} 
     	catch (IOException e) {
 			return null;
