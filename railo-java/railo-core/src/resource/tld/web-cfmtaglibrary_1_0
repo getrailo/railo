@@ -7757,7 +7757,7 @@ Valid only for cfinput type="text".</description>
 		Leaving thread IDs turned on can help diagnose patterns of server activity.</description>
 		</attribute>
 		<attribute>
-			<type>datetime</type>
+			<type>boolean</type>
 			<name>date</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -7765,7 +7765,7 @@ Valid only for cfinput type="text".</description>
 			<description>Specifies whether to log the system date.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>boolean</type>
 			<name>time</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -91,14 +92,44 @@ public final class SystemUtil {
 	
 	public static MemoryPoolMXBean getPermGenSpaceBean() {
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
-		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		MemoryPoolMXBean bean;
+		// PERM GEN
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		while(it.hasNext()){
+			bean = it.next();
+			if("Perm Gen".equalsIgnoreCase(bean.getName()) || "CMS Perm Gen".equalsIgnoreCase(bean.getName())) {
+				return bean;
+			}
+		}
+		it = manager.iterator();
 		while(it.hasNext()){
 			bean = it.next();
 			if(StringUtil.indexOfIgnoreCase(bean.getName(),"Perm Gen")!=-1 || StringUtil.indexOfIgnoreCase(bean.getName(),"PermGen")!=-1) {
 				return bean;
 			}
 		}
+		// take none-heap when only one
+		it = manager.iterator();
+		LinkedList<MemoryPoolMXBean> beans=new LinkedList<MemoryPoolMXBean>();
+		while(it.hasNext()){
+			bean = it.next();
+			if(bean.getType().equals(MemoryType.NON_HEAP)) {
+				beans.add(bean);
+				return bean;
+			}
+		}
+		if(beans.size()==1) return beans.getFirst();
+		
+		// Class Memory/ClassBlock Memory?
+		it = manager.iterator();
+		while(it.hasNext()){
+			bean = it.next();
+			if(StringUtil.indexOfIgnoreCase(bean.getName(),"Class Memory")!=-1) {
+				return bean;
+			}
+		}
+		
+		
 		return null;
 	}
 	
@@ -599,12 +630,9 @@ public final class SystemUtil {
 		}
 	    
 	}
-	
-	public static MemoryUsage getPermGenSpaceSize() {
-		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();
-		// create on the fly when the bean is not permanent
-		MemoryPoolMXBean tmp = getPermGenSpaceBean();
-		if(tmp!=null) return tmp.getUsage();
+	private static MemoryUsage getPermGenSpaceSize() {
+		MemoryUsage mu = getPermGenSpaceSize(null);
+		if(mu!=null) return mu;
 		
 		// create error message including info about available memory blocks
 		StringBuilder sb=new StringBuilder();
@@ -619,10 +647,24 @@ public final class SystemUtil {
 		throw new RuntimeException("PermGen Space information not available, available Memory blocks are ["+sb+"]");
 	}
 	
+	private static MemoryUsage getPermGenSpaceSize(MemoryUsage defaultValue) {
+		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();
+		// create on the fly when the bean is not permanent
+		MemoryPoolMXBean tmp = getPermGenSpaceBean();
+		if(tmp!=null) return tmp.getUsage();
+		
+		return defaultValue;
+	}
+	
 
 	public static long getFreePermGenSpaceSize() {
-		MemoryUsage permgen = getPermGenSpaceSize();
-		return permgen.getMax()-permgen.getUsed();
+		MemoryUsage mu = getPermGenSpaceSize(null);
+		if(mu==null) return -1;
+		
+		long max = mu.getMax();
+		long used = mu.getUsed();
+		if(max<0 || used<0) return -1;
+		return max-used;
 	}
 	
 	public static Query getMemoryUsage(int type) {

@@ -426,36 +426,36 @@ public final class Form extends BodyTagImpl {
         if(scriptSrc==null)scriptSrc=contextPath+"/railo-context/form.cfm";
         attributes.setEL("method",method);
         
-        pageContext.write("<script language = \"JavaScript\" type=\"text/javascript\" src=\""+scriptSrc+"\"></script>");
+        pageContext.forceWrite("<script language = \"JavaScript\" type=\"text/javascript\" src=\""+scriptSrc+"\"></script>");
         //if(hasListener) {
-            pageContext.write("<script language = \"JavaScript\" type=\"text/javascript\">\n");
-            if(onsubmit!=null)pageContext.write("function "+checkName+"() { if("+funcName+".check()){"+onsubmit+"\nreturn true;}else {return false;}}\n");
-            else pageContext.write("function "+checkName+"() { return "+funcName+".check();}\n");
+            pageContext.forceWrite("<script language = \"JavaScript\" type=\"text/javascript\">\n");
+            if(onsubmit!=null)pageContext.forceWrite("function "+checkName+"() { if("+funcName+".check()){"+onsubmit+"\nreturn true;}else {return false;}}\n");
+            else pageContext.forceWrite("function "+checkName+"() { return "+funcName+".check();}\n");
              
             
-            if(onreset!=null)pageContext.write("function "+resetName+"() {"+onreset+"\n}\n");
-            if(onload!=null)pageContext.write("function "+loadName+"() {"+onload+"\n}\n");
-            pageContext.write("\n</script>");
+            if(onreset!=null)pageContext.forceWrite("function "+resetName+"() {"+onreset+"\n}\n");
+            if(onload!=null)pageContext.forceWrite("function "+loadName+"() {"+onload+"\n}\n");
+            pageContext.forceWrite("\n</script>");
             
         //}
-        pageContext.write("<form");
+        pageContext.forceWrite("<form");
         
         railo.runtime.type.Collection.Key[] keys = attributes.keys();
         railo.runtime.type.Collection.Key key;
         for(int i=0;i<keys.length;i++) {
             key = keys[i];
-            pageContext.write(" ");
-            pageContext.write(key.getString());
-            pageContext.write("=");
-            pageContext.write(de(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite(" ");
+            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite("=");
+            pageContext.forceWrite(de(Caster.toString(attributes.get(key,null))));
             
         }
         
         if(passthrough!=null) {
-            pageContext.write(" ");
-            pageContext.write(passthrough);
+            pageContext.forceWrite(" ");
+            pageContext.forceWrite(passthrough);
         }
-        pageContext.write(">");
+        pageContext.forceWrite(">");
         
         return EVAL_BODY_INCLUDE;
     }
@@ -467,13 +467,13 @@ public final class Form extends BodyTagImpl {
     public int doEndTag() throws PageException {
         String funcName="railo_form_"+count;
         try {
-            pageContext.write("</form><!-- name:"+name+" --><script>\n");
-            pageContext.write(funcName+"=new RailoForms("+js(name)+","+js(onError)+");\n");
+            pageContext.forceWrite("</form><!-- name:"+name+" --><script>\n");
+            pageContext.forceWrite(funcName+"=new RailoForms("+js(name)+","+js(onError)+");\n");
             Iterator it = inputs.keySet().iterator();
             while(it.hasNext()) {
                 InputBean input=(InputBean) inputs.get(it.next());
                 
-                pageContext.write(funcName+".addInput("+js(input.getName())+","+input.isRequired()+
+                pageContext.forceWrite(funcName+".addInput("+js(input.getName())+","+input.isRequired()+
                         ","+input.getType()+","+input.getValidate()+
                         ","+(input.getPattern())+","+js(input.getMessage())+
                         ","+js(input.getOnError())+","+js(input.getOnValidate())+
@@ -481,7 +481,7 @@ public final class Form extends BodyTagImpl {
                         ","+(input.getMaxLength())+
                 ");\n");
             }
-            pageContext.write("</script>");    
+            pageContext.forceWrite("</script>");    
         } 
         catch (IOException e) {
             throw Caster.toPageException(e);

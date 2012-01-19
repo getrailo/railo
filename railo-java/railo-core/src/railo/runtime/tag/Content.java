@@ -137,7 +137,14 @@ public final class Content extends BodyTagImpl {
         }*/
     }
     private int _doStartTag() throws PageException   {
+        // check the file before doing anyrhing else
+    	Resource file=null;
+		if(content==null && !StringUtil.isEmpty(strFile)) 
+    		file = ResourceUtil.toResourceExisting(pageContext,strFile);
         
+    	
+    	
+    	
 		// get response object
 		HttpServletResponse rsp = pageContext. getHttpServletResponse();
 	    
@@ -160,10 +167,9 @@ public final class Content extends BodyTagImpl {
         
         
         // set content
-        if(this.content!=null || !StringUtil.isEmpty(strFile)) {
+        if(this.content!=null || file!=null) {
             pageContext.clear();
-        	Resource file=null;
-            InputStream is=null;
+        	InputStream is=null;
             OutputStream os=null;
             long length;
             try {
@@ -175,7 +181,6 @@ public final class Content extends BodyTagImpl {
                      is=new BufferedInputStream(new ByteArrayInputStream(content));  
                 }
                 else {
-                    file = ResourceUtil.toResourceExisting(pageContext,strFile);
                     ReqRspUtil.setContentLength(rsp,file.length());
                     pageContext.getConfig().getSecurityManager().checkFileLocation(file);
                     length=file.length();

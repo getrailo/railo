@@ -142,7 +142,7 @@ public final class Wddx extends TagImpl {
 	// cfml > wddx
 		if(action.equals("cfml2wddx")) {
 			if(output!=null) pageContext.setVariable(output,cfml2wddx(input));
-			else pageContext.write(cfml2wddx(input));
+			else pageContext.forceWrite(cfml2wddx(input));
 		}
 		
 	// wddx > cfml
@@ -154,13 +154,13 @@ public final class Wddx extends TagImpl {
 	// cfml > js
 		else if(action.equals("cfml2js")) {
 			if(output!=null) pageContext.setVariable(output,cfml2js(input));
-			else pageContext.write(cfml2js(input));
+			else pageContext.forceWrite(cfml2js(input));
 		}
 		
 	// wddx > js
 		else if(action.equals("wddx2js")) {
 			if(output!=null) pageContext.setVariable(output,wddx2js(Caster.toString(input)));
-			else pageContext.write(wddx2js(Caster.toString(input)));
+			else pageContext.forceWrite(wddx2js(Caster.toString(input)));
 		}
 		
 		

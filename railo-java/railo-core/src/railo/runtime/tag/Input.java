@@ -624,25 +624,25 @@ public class Input extends TagImpl {
     void draw() throws IOException, PageException {
 
         // start output
-        pageContext.write("<input");
+        pageContext.forceWrite("<input");
         
         railo.runtime.type.Collection.Key[] keys = attributes.keys();
         railo.runtime.type.Collection.Key key;
         for(int i=0;i<keys.length;i++) {
             key = keys[i];
-            pageContext.write(" ");
-            pageContext.write(key.getString());
-            pageContext.write("=\"");
-            pageContext.write(enc(Caster.toString(attributes.get(key,null))));
-            pageContext.write("\"");
+            pageContext.forceWrite(" ");
+            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite("=\"");
+            pageContext.forceWrite(enc(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite("\"");
            
         }
         
         if(passthrough!=null) {
-            pageContext.write(" ");
-            pageContext.write(passthrough);
+            pageContext.forceWrite(" ");
+            pageContext.forceWrite(passthrough);
         }
-        pageContext.write(">");
+        pageContext.forceWrite(">");
 	}
 
 	/**
