@@ -90,9 +90,16 @@ public final class SystemUtil {
 	
 	public static MemoryPoolMXBean getPermGenSpaceBean() {
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
-		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		MemoryPoolMXBean bean;
 		// PERM GEN
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		while(it.hasNext()){
+			bean = it.next();
+			if("Perm Gen".equalsIgnoreCase(bean.getName()) || "CMS Perm Gen".equalsIgnoreCase(bean.getName())) {
+				return bean;
+			}
+		}
+		it = manager.iterator();
 		while(it.hasNext()){
 			bean = it.next();
 			if(StringUtil.indexOfIgnoreCase(bean.getName(),"Perm Gen")!=-1 || StringUtil.indexOfIgnoreCase(bean.getName(),"PermGen")!=-1) {
