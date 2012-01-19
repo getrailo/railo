@@ -379,26 +379,38 @@ public final class Controler extends Thread {
     public static void checkPermGenSpace(ConfigServer cs, boolean check) {
     	//print.e(Runtime.getRuntime().freeMemory());
 		// Runtime.getRuntime().freeMemory()<200000 || 
-    	if(!check || SystemUtil.getFreePermGenSpaceSize()<1024*1024){
-			SystemOut.printDate(cs.getOutWriter(),"+Free Perm Gen Space is less than 1mb (free:"+((SystemUtil.getFreePermGenSpaceSize())/1024)+"kb), shrink all template classloaders");
+    	
+    	long pgs=SystemUtil.getFreePermGenSpaceSize();
+    	
+    	// Pen Gen Space info not available 
+    	if(pgs==-1) {
+    		if(countLoadedPages(cs)>10000)
+    			shrink(cs);
+    	}
+    	else if(!check || pgs<1024*1024){
+			SystemOut.printDate(cs.getErrWriter(),"+Free Perm Gen Space is less than 1mb (free:"+((SystemUtil.getFreePermGenSpaceSize())/1024)+"kb), shrink all template classloaders");
 			// first just call GC and check if it help
 			System.gc();
 			if(SystemUtil.getFreePermGenSpaceSize()>1024*1024) return;
 			
-			ConfigWeb[] webs = cs.getConfigWebs();
-			int count=0;
+			shrink(cs);
+		}
+	}
+    
+    private static void shrink(ConfigServer cs) {
+    	ConfigWeb[] webs = cs.getConfigWebs();
+		int count=0;
+		for(int i=0;i<webs.length;i++){
+			count+=shrink((ConfigWebImpl) webs[i],false);
+		}
+		if(count==0) {
 			for(int i=0;i<webs.length;i++){
-				count+=_checkPermGenSpace((ConfigWebImpl) webs[i],false);
-			}
-			if(count==0) {
-				for(int i=0;i<webs.length;i++){
-					_checkPermGenSpace((ConfigWebImpl) webs[i],true);
-				}
+				shrink((ConfigWebImpl) webs[i],true);
 			}
 		}
 	}
 
-	private static int _checkPermGenSpace(ConfigWebImpl config, boolean force) {
+	private static int shrink(ConfigWebImpl config, boolean force) {
 		int count=0;
 		count+=shrink(config.getMappings(),force);
 		count+=shrink(config.getCustomTagMappings(),force);

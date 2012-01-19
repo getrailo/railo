@@ -621,11 +621,9 @@ public final class SystemUtil {
 		}
 	    
 	}
-	public static MemoryUsage getPermGenSpaceSize() {
-		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();
-		// create on the fly when the bean is not permanent
-		MemoryPoolMXBean tmp = getPermGenSpaceBean();
-		if(tmp!=null) return tmp.getUsage();
+	private static MemoryUsage getPermGenSpaceSize() {
+		MemoryUsage mu = getPermGenSpaceSize(null);
+		if(mu!=null) return mu;
 		
 		// create error message including info about available memory blocks
 		StringBuilder sb=new StringBuilder();
@@ -640,10 +638,24 @@ public final class SystemUtil {
 		throw new RuntimeException("PermGen Space information not available, available Memory blocks are ["+sb+"]");
 	}
 	
+	private static MemoryUsage getPermGenSpaceSize(MemoryUsage defaultValue) {
+		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();
+		// create on the fly when the bean is not permanent
+		MemoryPoolMXBean tmp = getPermGenSpaceBean();
+		if(tmp!=null) return tmp.getUsage();
+		
+		return defaultValue;
+	}
+	
 
 	public static long getFreePermGenSpaceSize() {
-		MemoryUsage permgen = getPermGenSpaceSize();
-		return permgen.getMax()-permgen.getUsed();
+		MemoryUsage mu = getPermGenSpaceSize(null);
+		if(mu==null) return -1;
+		
+		long max = mu.getMax();
+		long used = mu.getUsed();
+		if(max<0 || used<0) return -1;
+		return max-used;
 	}
 	
 	public static Query getMemoryUsage(int type) {
