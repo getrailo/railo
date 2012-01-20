@@ -14,8 +14,12 @@ component extends="Debug" {
 		,field("General Debug Information ","general",true,false,
 				"Select this option to show general information about this request.","checkbox")
 		
+		,field("Unit","unit","millisecond",true,"the unit used to display the execution time.","select","millisecond,microsecond,nanosecond")
+		
 		,field("Minimal Execution Time","minimal","0",true,
-				"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in ms) defined above.","text40")
+				{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
+		
+		
 		
 		,field("Scope Variables","scopes","Application,CGI,Client,Cookie,Form,Request,Server,Session,URL",true,"Select this option to show the content of the corresponding Scope.","checkbox","Application,CGI,Client,Cookie,Form,Request,Server,Session,URL")
 		
@@ -118,10 +122,11 @@ component extends="Debug" {
 		var pages=duplicate(debugging.pages);
         if(structKeyExists(custom,"minimal") && custom.minimal>0) {
             for(var row=pages.recordcount;row>0;row--){
-                if(pages.total[row]<custom.minimal)
+                if(pages.total[row]<custom.minimal*1000)
                     queryDeleteRow(pages,row);
             }
 		}
+        formatUnits(pages,['load','query','app','total'],custom.unit);
 		print("Pages",array('src','count','load','query','app','total'),pages);
 	 	
 	// DATABASE
@@ -240,5 +245,23 @@ component extends="Debug" {
 		}
 		writeOutput(RepeatString("=",total)&NL&NL);
  	}   
+    
+function formatUnits(query data,array columns, string unit){
+	loop query="data" {
+    	loop array="#columns#" index="col" {
+        	data[col]=formatUnit(unit,data[col]);
+        }
+    }
 }
+	
+
+function formatUnit(string unit, numeric time ){
+	if(unit EQ "millisecond")
+    	return int(time/1000000)&" ms";
+    elseif(unit EQ "microsecond")
+    	return int(time/1000)&" #chr(181)#s";
+    else
+    	return int(time)&" ns";
+}
+}  
 </cfscript>

@@ -6,11 +6,14 @@
 		//,field("Extensions","extension","cfm,cfc,cfml",false,"Output the templates with the following extensions","checkbox","cfm,cfc,cfml")
 		
 		
-		,field("Minimal","minimal","0",true,
-				"output only templates taking longer than the following (ms).","text40")
+		//,field("Unit","unit","millisecond",true,"the unit used to display the execution time.","select","millisecond,microsecond,nanosecond")
 		
-		,field("Highlight","highlight","250",true,
-				"Highlight templates taking longer than the following (ms) in red.","text40")
+		,field("Minimal Execution Time","minimal","0",true,
+				{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
+		
+		,field("Highlight","highlight","250000",true,
+				{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
+		
 		
 		
 		,group("Custom Debugging Output","Define what is outputted",3)
@@ -57,6 +60,8 @@ string function getid(){
 void function onBeforeUpdate(struct custom){
 	throwWhenEmpty(custom,"color");
 	throwWhenEmpty(custom,"bgcolor");
+	throwWhenNotNumeric(custom,"minimal");
+	throwWhenNotNumeric(custom,"highlight");
 }
 
 
@@ -64,6 +69,11 @@ void function onBeforeUpdate(struct custom){
 private void function throwWhenEmpty(struct custom, string name){
 	if(!structKeyExists(custom,name) or len(trim(custom[name])) EQ 0)
 		throw "value for ["&name&"] is not defined";
+}
+private void function throwWhenNotNumeric(struct custom, string name){
+	throwWhenEmpty(custom,name);
+	if(!isNumeric(trim(custom[name])))
+		throw "value for ["&name&"] must be numeric";
 }
 
 private function isColumnEmpty(string columnName){
@@ -92,10 +102,19 @@ private function isColumnEmpty(string columnName){
 <cfset traces=debugging.traces>
 <cfset querySort(pages,"avg","desc")>
 
+<cfparam name="custom.unit" default="millisecond">
 <cfparam name="custom.color" default="black">
 <cfparam name="custom.bgcolor" default="white">
 <cfparam name="custom.font" default="Times New Roman">
 <cfparam name="custom.size" default="medium">
+
+<cfset unit={
+millisecond:"ms"
+,microsecond:"µs"
+,nanosecond:"ns"
+
+}>
+
 
 
 </cfsilent></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
@@ -109,6 +128,8 @@ private function isColumnEmpty(string columnName){
 .template_overage {	color: red; background-color: #custom.bgcolor#; font-family:#custom.font#; font-weight: bold;
 	font-size:<cfif custom.size EQ "small">smaller<cfelseif custom.size EQ "medium">small<cfelse>medium</cfif>; }
 </style>
+ 
+
 <table class="cfdebug" bgcolor="#custom.bgcolor#" style="border-color:#custom.color#">
 <tr>
 	<td>
@@ -176,34 +197,35 @@ private function isColumnEmpty(string columnName){
 <cfset tot=0>
 <cfset q=0>
 <cfloop query="pages">
-		<cfif pages.avg LT custom.minimal><cfcontinue></cfif>
-		<cfset bad=pages.avg GTE custom.highlight><cfset loa=loa+pages.load><cfset tot=tot+pages.total><cfset q=q+pages.query>
+		<cfset tot=tot+pages.total><cfset q=q+pages.query>
+		<cfif pages.avg LT custom.minimal*1000><cfcontinue></cfif>
+		<cfset bad=pages.avg GTE custom.highlight*1000><cfset loa=loa+pages.load>
 		<tr>
-			<td align="right" class="cfdebug" nowrap><cfif bad><font color="red"><span class="template_overage"></cfif>#pages.total-pages.load#<cfif bad></span></font></cfif> ms</td>
-			<td align="right" class="cfdebug" nowrap><cfif bad><font color="red"><span class="template_overage"></cfif>#pages.avg#<cfif bad></span></font></cfif> ms</td>
+			<td align="right" class="cfdebug" nowrap><cfif bad><font color="red"><span class="template_overage"></cfif>#formatUnit(custom.unit, pages.total-pages.load)#<cfif bad></span></font></cfif></td>
+			<td align="right" class="cfdebug" nowrap><cfif bad><font color="red"><span class="template_overage"></cfif>#formatUnit(custom.unit, pages.avg)#<cfif bad></span></font></cfif></td>
 			<td align="center" class="cfdebug" nowrap>#pages.count#</td>
 			<td align="left" class="cfdebug" nowrap><cfif bad><font color="red"><span class="template_overage"></cfif>#pages.src#<cfif bad></span></font></cfif></td>
 		</tr>
 </cfloop>                
             
 <tr>
-	<td align="right" class="cfdebug" nowrap><i>#loa# ms</i></td><td colspan=2>&nbsp;</td>
+	<td align="right" class="cfdebug" nowrap><i>#formatUnit(custom.unit, loa)#</i></td><td colspan=2>&nbsp;</td>
 	<td align="left" class="cfdebug"><i>STARTUP, PARSING, COMPILING, LOADING, &amp; SHUTDOWN</i></td>
 </tr>
 <tr>
-	<td align="right" class="cfdebug" nowrap><i>#(tot-q-loa)# ms</i></td><td colspan=2>&nbsp;</td>
+	<td align="right" class="cfdebug" nowrap><i>#formatUnit(custom.unit, tot-q-loa)#</i></td><td colspan=2>&nbsp;</td>
 	<td align="left" class="cfdebug"><i>APPLICATION EXECUTION TIME</i></td>
 </tr>
 <tr>
-	<td align="right" class="cfdebug" nowrap><i>#q# ms</i></td><td colspan=2>&nbsp;</td>
+	<td align="right" class="cfdebug" nowrap><i>#formatUnit(custom.unit, q)#</i></td><td colspan=2>&nbsp;</td>
 	<td align="left" class="cfdebug"><i>QUERY EXECUTION TIME</i></td>
 </tr>
 <tr>
-	<td align="right" class="cfdebug" nowrap><i><b>#tot# ms</i></b></td><td colspan=2>&nbsp;</td>
+	<td align="right" class="cfdebug" nowrap><i><b>#formatUnit(custom.unit, tot)#</i></b></td><td colspan=2>&nbsp;</td>
 	<td align="left" class="cfdebug"><i><b>TOTAL EXECUTION TIME</b></i></td>
 </tr>
 </table>
-<font color="red"><span class="template_overage">red = over #custom.highlight# ms average execution time</span></font>
+<font color="red"><span class="template_overage">red = over #formatUnit(custom.unit,custom.highlight*1000)# average execution time</span></font>
 </a>
 
 
@@ -244,7 +266,7 @@ private function isColumnEmpty(string columnName){
 <cfloop query="timers">
 		<tr>
 			<td align="right" class="cfdebug" nowrap>#timers.label#</td>
-			<td align="right" class="cfdebug" nowrap>#timers.time# ms</td>
+			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, timers.time)#</td>
 			<td align="right" class="cfdebug" nowrap>#timers.template#</td>
 		</tr>
 </cfloop>                
@@ -281,8 +303,8 @@ private function isColumnEmpty(string columnName){
 			<cfif hasAction><td align="left" class="cfdebug" nowrap>#traces.action#</td></cfif>
 			<td align="left" class="cfdebug" nowrap><cfif len(traces.varName)>#traces.varName#<cfif structKeyExists(traces,'varValue')> = #traces.varValue#</cfif><cfelse>&nbsp;<br />
 			</cfif></td>
-			<td align="right" class="cfdebug" nowrap>#total# ms</td>
-			<td align="right" class="cfdebug" nowrap>#traces.time# ms</td>
+			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, total)#</td>
+			<td align="right" class="cfdebug" nowrap>#formatUnit(custom.unit, traces.time)#</td>
 		</tr>
 </cfloop>                
  </table>
@@ -293,7 +315,7 @@ private function isColumnEmpty(string columnName){
 <cfif structKeyExists(custom,"database") and custom.database and queries.recordcount>
 <p class="cfdebug"><hr/><b class="cfdebuglge"><a name="cfdebug_sql">SQL Queries</a></b></p>
 <cfloop query="queries">	
-<code><b>#queries.name#</b> (Datasource=#queries.datasource#, Time=#queries.time#ms, Records=#queries.count#) in #queries.src#</code><br />
+<code><b>#queries.name#</b> (Datasource=#queries.datasource#, Time=#formatUnit(custom.unit, queries.time)#, Records=#queries.count#) in #queries.src#</code><br />
 <cfif ListFindNoCase(queries.columnlist,'usage') and IsStruct(queries.usage)><cfset usage=queries.usage><cfset lstNeverRead="">
 <cfloop collection="#usage#" item="item"><cfif not usage[item]><cfset lstNeverRead=ListAppend(lstNeverRead,item,', ')></cfif></cfloop>
 <cfif len(lstNeverRead)><font color="red">the following colum(s) are never read within the request:#lstNeverRead#</font><br /></cfif>
@@ -326,13 +348,41 @@ private function isColumnEmpty(string columnName){
 </cfif>
 </cfloop>
 </cfif>
-<font size="-1" class="cfdebug"><i>Debug Rendering Time: #getTickCount()-time# ms</i></font><br />
+<font size="-1" class="cfdebug"><i>Debug Rendering Time: #formatUnit(custom.unit, getTickCount()-time)#</i></font><br />
 	</td>
 </tr>
 </table>
 </cfoutput>
     
     </cffunction>
+   
+<cffunction name="formatUnit" output="no" returntype="string">
+	<cfargument name="unit" type="string" required="yes">
+	<cfargument name="time" type="numeric" required="yes">
     
+    <cfif time GTE 100000000><!--- 1000ms --->
+    	<cfreturn int(time/1000000)&" ms">
+    <cfelseif time GTE 10000000><!--- 100ms --->
+    	<cfreturn (int(time/100000)/10)&" ms">
+    <cfelseif time GTE 1000000><!--- 10ms --->
+    	<cfreturn (int(time/10000)/100)&" ms">
+    <cfelse><!--- 0ms --->
+    	<cfreturn (int(time/1000)/1000)&" ms">
+    </cfif>
+    
+    
+    <cfreturn (time/1000000)&" ms">
+</cffunction>   
+<!---<cffunction name="formatUnit2" output="no" returntype="string">
+	<cfargument name="unit" type="string" required="yes">
+	<cfargument name="time" type="numeric" required="yes">
+    <cfif unit EQ "millisecond">
+    	<cfreturn int(time/1000000)&" ms">
+    <cfelseif unit EQ "microsecond">
+    	<cfreturn int(time/1000)&" &micro;s">
+    <cfelse>
+    	<cfreturn int(time)&" ns">
+    </cfif>
+</cffunction>--->
 </cfcomponent>
 

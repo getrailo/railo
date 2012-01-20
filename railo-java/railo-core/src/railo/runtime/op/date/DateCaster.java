@@ -855,6 +855,12 @@ public final class DateCaster {
     	DateTime date = DateCaster.toDateAdvanced(o, timeZone);
     	return new railo.runtime.format.DateFormat(Locale.US).format(date,"dd.mm.yyyy");
     }
-    
-    
+
+	public static String toShortTime(long time) {
+		return Long.toString(time/1000,36);
+	}
+	
+	public static long fromShortTime(String str) {
+		return Long.parseLong(str,36)*1000;
+	}
 }
