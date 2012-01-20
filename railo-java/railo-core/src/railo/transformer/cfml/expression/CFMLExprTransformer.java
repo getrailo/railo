@@ -1,11 +1,10 @@
 package railo.transformer.cfml.expression;
 
-import railo.print;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
-import railo.transformer.cfml.expression.AbstrCFMLExprTransformer.Data;
 import railo.transformer.cfml.script.AbstrCFMLScriptTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.util.CFMLString;
@@ -15,8 +14,8 @@ public class CFMLExprTransformer extends AbstrCFMLScriptTransformer implements E
 	/**
 	 * @see railo.transformer.data.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
-	public Expression transformAsString(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
-		return transformAsString(init(ep,fld, cfml,allowLowerThan),new String[]{" ", ">", "/>"});
+	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
+		return transformAsString(init(page,ep,fld, cfml,allowLowerThan),new String[]{" ", ">", "/>"});
 	}
 	
 	
@@ -38,8 +37,8 @@ public class CFMLExprTransformer extends AbstrCFMLScriptTransformer implements E
 	 * @return Element CFXD Element
 	 * @throws TemplateException
 	 */
-	public Expression transform(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml) throws TemplateException {
-		Data data = init(ep,fld, cfml,false);
+	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml) throws TemplateException {
+		Data data = init(page,ep,fld, cfml,false);
 		comments(data);
 		return assignOp(data);
 	}

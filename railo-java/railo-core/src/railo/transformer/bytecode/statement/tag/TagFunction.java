@@ -10,6 +10,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
@@ -54,7 +55,7 @@ public final class TagFunction extends TagBase implements IFunction {
 
 	public void _writeOut(BytecodeContext bc, int type) throws BytecodeException {
 		Body functionBody = new BodyBase();
-		Function func = createFunction(functionBody);
+		Function func = createFunction(bc.getPage(),functionBody);
 		func.setParent(getParent());
 
 		List statements = getBody().getStatements();
@@ -124,7 +125,7 @@ public final class TagFunction extends TagBase implements IFunction {
 
 	}
 
-	private Function createFunction(Body body) throws BytecodeException {
+	private Function createFunction(Page page, Body body) throws BytecodeException {
 		Attribute attr;
 
 		// name
@@ -179,7 +180,7 @@ public final class TagFunction extends TagBase implements IFunction {
 		if(acc==-1)
 			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
         
-		Function func = new FunctionImpl(name, returnType,returnFormat, output,abstr, acc, displayname,description,
+		Function func = new FunctionImpl(page,name, returnType,returnFormat, output,abstr, acc, displayname,description,
 				hint,secureJson,verifyClient, body, getStartLine(),getEndLine());
 		
 //		 %**%

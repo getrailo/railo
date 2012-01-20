@@ -21,7 +21,6 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.UDFUtil;
-import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 

@@ -1,10 +1,8 @@
 package railo.runtime.type;
 
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,14 +10,12 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.ExternalizableUtil;
 import railo.commons.lang.SizeOf;
-import railo.runtime.Page;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.type.util.ComponentUtil;
 
 public final class UDFPropertiesImpl implements UDFProperties {
 
@@ -44,75 +40,10 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	public Set<Collection.Key> argumentsSet;
 	public int access; 
 
-
-		public UDFPropertiesImpl(
-		        Page page,
-		        FunctionArgument[] arguments,
-				int index,
-		        String functionName, 
-		        String strReturnType, 
-		        String strReturnFormat, 
-		        boolean output, 
-		        boolean async, 
-		        String strAccess, 
-		        String displayName, 
-		        String description, 
-		        String hint, 
-		        Boolean secureJson,
-		        Boolean verifyClient,
-		        StructImpl meta) throws ExpressionException {
-			this(page.getPageSource(),
-			    arguments,
-				index,
-			    functionName, 
-			    strReturnType, 
-			    strReturnFormat, 
-			    output, 
-			    async, 
-			    ComponentUtil.toIntAccess(strAccess), 
-			    displayName, 
-			    description, 
-			    hint, 
-			    secureJson,
-			    verifyClient,
-			    meta);
-			
-		}
-
-	 
-	public UDFPropertiesImpl(
-	        Page page,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        String strReturnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        boolean async, 
-	        int access, 
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        StructImpl meta) throws ExpressionException {
-		
-		this(
-		        page.getPageSource(),
-		        arguments,
-				index,
-		        functionName, 
-		        strReturnType, 
-		        strReturnFormat, 
-		        output, 
-		        async, 
-		        access, 
-		        displayName, 
-		        description, 
-		        hint, 
-		        secureJson,
-		        verifyClient,
-		        meta);
+	/**
+	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
+	 */
+	public UDFPropertiesImpl(){
 		
 	}
 	
@@ -171,53 +102,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	}
 	
 	
-	public UDFPropertiesImpl(
-	        Page page,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        short returnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        boolean async, 
-	        String strAccess, 
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        StructImpl meta) throws ExpressionException {
-		this(page.getPageSource(),
-		    arguments,
-			index,
-		    functionName, 
-		    returnType, 
-		    strReturnFormat, 
-		    output, 
-		    async, 
-		    ComponentUtil.toIntAccess(strAccess), 
-		    displayName, 
-		    description, 
-		    hint, 
-		    secureJson,
-		    verifyClient,
-		    meta);
-	}
 		
-	/**
-	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
-	 */
-	public UDFPropertiesImpl(){
-		
-	}
-	
-	//@deprecated use instead UDFProperties(PageSource pageSource,...
-	public UDFPropertiesImpl(Page page, FunctionArgument[] arguments, int index, String functionName, short returnType,
-			String strReturnFormat, boolean output, boolean async, int access, String displayName, String description,String hint, 
-			Boolean secureJson,Boolean verifyClient,StructImpl meta) throws ExpressionException {
-		this(page.getPageSource(),arguments,index,functionName, returnType, strReturnFormat, output, async,access, displayName, 
-				description, hint, secureJson,verifyClient,meta);
-	}
 	
 	public UDFPropertiesImpl(
 	        PageSource pageSource,

@@ -37,8 +37,8 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.SimpleExprTransformer;
-import railo.transformer.cfml.script.CFMLScriptTransformer;
 import railo.transformer.cfml.script.AbstrCFMLScriptTransformer.ComponentTemplateException;
+import railo.transformer.cfml.script.CFMLScriptTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.CustomTagLib;
 import railo.transformer.library.tag.TagLib;
@@ -429,7 +429,7 @@ public final class CFMLTransformer {
 							text=new StringBuffer();
 						}
                         int line=data.cfml.getLine();
-						parent.addStatement(new PrintOut(transformer.transform(data.ep,data.flibs,data.cfml),line));
+						parent.addStatement(new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.cfml),line));
 							
 						if(!data.cfml.isCurrent('#'))
 							throw new TemplateException(data.cfml,"missing terminating [#] for expression");
@@ -581,7 +581,7 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
-				tdbt.transform(data.config,this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
+				tdbt.transform(data.config,data.page,this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
 				
 				//	get TagLib of end Tag
 				if(!data.cfml.forwardIfCurrent("</")) {
@@ -1028,14 +1028,14 @@ public final class CFMLTransformer {
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    expr=transfomer.transform(data.ep,data.flibs,data.cfml);
+			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.cfml);
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;
 			       else throw ete;
 			    }
 			}
-			else expr=transfomer.transformAsString(data.ep,data.flibs,data.cfml,true);
+			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.cfml,true);
 			if(type.length()>0) {
 				expr=Cast.toExpression(expr, type);
 			}

@@ -1,6 +1,7 @@
 package railo.transformer.cfml;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
@@ -33,7 +34,7 @@ public interface ExprTransformer {
 	 * @throws railo.runtime.exp.TemplateException 
 	 * @throws TemplateException
 	 */
-	public Expression transform(EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml) throws TemplateException;
+	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml) throws TemplateException;
 	
 	/**
 	* Wird aufgerufen um aus dem übergebenen CFMLString einen Ausdruck auszulesen 
@@ -50,5 +51,5 @@ public interface ExprTransformer {
 	 * @return Element CFXD Element
 	 * @throws TemplateException
 	 */
-	public Expression transformAsString(EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException;
+	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException;
 }

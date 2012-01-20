@@ -386,9 +386,15 @@ public final class ComponentScopeThis extends StructSupport implements Component
     }
 
 	/**
-	 * @see railo.runtime.ComponentScope#setComponent(railo.runtime.ComponentImpl)
-	 * /
-	public void setComponentd(ComponentImpl c) {
-		this.component=c;
-	}*/
+	 * @see railo.runtime.type.scope.Variables#setBind(boolean)
+	 */
+	public void setBind(boolean bind) {}
+
+	/**
+	 * @see railo.runtime.type.scope.Variables#isBind()
+	 * return always true because this scope is always binf to the cfc
+	 */
+	public boolean isBind() {
+		return true;
+	}
 }

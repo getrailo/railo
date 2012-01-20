@@ -4,8 +4,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.net.URL;
 import java.lang.ref.SoftReference;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -658,7 +658,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     			registerUDF(key, udf,false,true);
     		}
     	}
-    	
 	}
     
     /**

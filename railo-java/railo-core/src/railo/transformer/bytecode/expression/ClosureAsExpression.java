@@ -2,20 +2,15 @@ package railo.transformer.bytecode.expression;
 
 import org.objectweb.asm.Type;
 
-import railo.print;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.udf.Closure;
-import railo.transformer.bytecode.statement.udf.Function;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
 public class ClosureAsExpression extends ExpressionBase {
 
 	private Closure closure;
+
 
 	public ClosureAsExpression(Closure closure) {
 		super(closure.getLine());
@@ -27,4 +22,10 @@ public class ClosureAsExpression extends ExpressionBase {
 		return Types.UDF_IMPL;
 	}
 
+	/**
+	 * @return the closure
+	 */
+	public Closure getClosure() {
+		return closure;
+	}
 }

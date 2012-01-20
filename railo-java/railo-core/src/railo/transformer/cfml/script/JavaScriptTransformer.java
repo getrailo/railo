@@ -10,6 +10,7 @@ import org.objectweb.asm.Label;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.statement.java.DataBag;
 import railo.transformer.bytecode.statement.java.JavaParserVisitor;
@@ -35,7 +36,7 @@ import railo.transformer.util.CFMLString;
  */
 public final class JavaScriptTransformer extends CFMLExprTransformer implements TagDependentBodyTransformer {
 	
-	public void transform(Config config,CFMLTransformer parent, EvaluatorPool ep,
+	public void transform(Config config,Page page,CFMLTransformer parent, EvaluatorPool ep,
 			FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml)
 			throws TemplateException {
 		

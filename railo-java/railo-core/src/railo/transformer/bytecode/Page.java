@@ -18,7 +18,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
@@ -42,6 +41,7 @@ import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagImport;
 import railo.transformer.bytecode.statement.tag.TagThread;
 import railo.transformer.bytecode.statement.udf.Function;
+import railo.transformer.bytecode.statement.udf.FunctionImpl;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -351,7 +351,7 @@ public final class Page extends BodyBase {
 	private boolean isComponent;
 	private boolean isInterface;
 
-	private List functions=new ArrayList();
+	private List<IFunction> functions=new ArrayList<IFunction>();
 	private List threads=new ArrayList();
 	private boolean _writeLog;
 	private StringExternalizerWriter externalizer;
@@ -490,7 +490,6 @@ public final class Page extends BodyBase {
         
 // udfCall     
         Function[] functions=getFunctions();
-        
         ConditionVisitor cv;
         DecisionIntVisitor div;
     // less/equal than 10 functions
@@ -1329,8 +1328,7 @@ public final class Page extends BodyBase {
     	int len=stats.size();
         for(int i=0;i<len;i++) {
         	stat = (Statement)stats.get(i);
-        	print.e(stat.getClass().getName()+":"+(stat instanceof IFunction));
-    		
+        	
         	// IFunction
         	if(stat instanceof IFunction) {
         		functions.add((IFunction)stat);
@@ -1400,9 +1398,16 @@ public final class Page extends BodyBase {
 	}
 
 
-	public int addFunction(IFunction function) {
+	public int[] addFunction(IFunction function) {
+		int[] indexes=new int[2];
+		Iterator<IFunction> it = functions.iterator();
+		while(it.hasNext()){
+			if(it.next() instanceof FunctionImpl)indexes[IFunction.ARRAY_INDEX]++;
+		}
+		indexes[IFunction.VALUE_INDEX]=functions.size();
+		
 		functions.add(function);
-		return functions.size()-1;
+		return indexes;
 	}
 	
 	public int addThread(TagThread thread) {

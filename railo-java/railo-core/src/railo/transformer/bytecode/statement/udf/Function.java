@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -39,7 +37,6 @@ import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.util.ASMConstants;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 
@@ -97,7 +94,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	private static final Type FUNCTION_ARGUMENT_LIGHT = Type.getType(FunctionArgumentLight.class);
 	private static final Type FUNCTION_ARGUMENT_ARRAY = Type.getType(FunctionArgument[].class);
 	
-	private static final Method INIT_UDF_IMPL_PROP = new Method(
+	protected static final Method INIT_UDF_IMPL_PROP = new Method(
 			"<init>",
 			Types.VOID,
 			new Type[]{
@@ -261,20 +258,22 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	ExprString description;
 	ExprBoolean secureJson;
 	ExprBoolean verifyClient;
+	protected int valueIndex;
+	protected int arrayIndex;
 
-	public Function(String name,int access,String returnType,Body body,int startline,int endline) {
+	public Function(Page page,String name,int access,String returnType,Body body,int startline,int endline) {
 		super(startline,endline);
 		this.name=LitString.toExprString(name, -1);
 		this.access=access;
 		if(!StringUtil.isEmpty(returnType))this.returnType=LitString.toExprString(returnType);
-		
 		this.body=body;
 		body.setParent(this);
-		
-		
+		int[] indexes = page.addFunction(this);
+		valueIndex=indexes[VALUE_INDEX];
+		arrayIndex=indexes[ARRAY_INDEX];
 	}
 	
-	public Function(Expression name,Expression returnType,Expression returnFormat,Expression output,Expression abstr,
+	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression abstr,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
 			Expression verifyClient,Body body,int startline,int endline) {
 		super(startline,endline);
@@ -294,6 +293,9 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		
 		this.body=body;
 		body.setParent(this);
+		int[] indexes=page.addFunction(this);
+		valueIndex=indexes[VALUE_INDEX];
+		arrayIndex=indexes[ARRAY_INDEX];
 		
 	}
 
@@ -324,34 +326,30 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	public abstract void _writeOut(BytecodeContext bc, int pageType) throws BytecodeException;
 	
 
-	public final void loadUDF(BytecodeContext bc, int index, boolean onlyProps) throws BytecodeException {
+	public final void loadUDFProperties(BytecodeContext bc, int valueIndex,int arrayIndex, boolean closure) throws BytecodeException {
 		BytecodeContext constr = bc.getConstructor();
 		GeneratorAdapter cga = constr.getAdapter();
 		GeneratorAdapter ga = bc.getAdapter();
 		
 		// store
 		cga.visitVarInsn(ALOAD, 0);
-		cga.visitFieldInsn(GETFIELD, bc.getClassName(), "udfs", onlyProps?Types.UDF_PROPERTIES_ARRAY.toString():Types.UDF_IMPL_ARRAY.toString());
-		cga.push(index);
-		createUDFProperties(constr,index,onlyProps,false);
+		cga.visitFieldInsn(GETFIELD, bc.getClassName(), "udfs", Types.UDF_PROPERTIES_ARRAY.toString());
+		cga.push(arrayIndex);
+		createUDFProperties(constr,valueIndex,closure);
 		//cga.visitInsn(DUP_X2);
 		cga.visitInsn(AASTORE);
 		
 		// get
 		ga.visitVarInsn(ALOAD, 0);
-		ga.visitFieldInsn(GETFIELD, bc.getClassName(), "udfs", onlyProps?Types.UDF_PROPERTIES_ARRAY.toString():Types.UDF_IMPL_ARRAY.toString());
-		ga.push(index);
+		ga.visitFieldInsn(GETFIELD, bc.getClassName(), "udfs", Types.UDF_PROPERTIES_ARRAY.toString());
+		ga.push(arrayIndex);
 		ga.visitInsn(AALOAD);
 	}
 	
 	
 	
-	public final void createUDFProperties(BytecodeContext bc, int index, boolean onlyProps,boolean closure) throws BytecodeException {
+	public final void createUDFProperties(BytecodeContext bc, int index, boolean closure) throws BytecodeException {
 		GeneratorAdapter adapter=bc.getAdapter();
-		if(!onlyProps) {
-			adapter.newInstance(Types.UDF_IMPL);
-			adapter.dup();
-		}
 		adapter.newInstance(Types.UDF_PROPERTIES_IMPL);
 		adapter.dup();
 		if(closure){
@@ -399,20 +397,19 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		Page.createMetaDataStruct(bc,metadata,null);
 		
 		adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, type==-1?INIT_UDF_PROPERTIES_STRTYPE:INIT_UDF_PROPERTIES_SHORTTYPE);
-		if(!onlyProps)adapter.invokeConstructor(Types.UDF_IMPL, INIT_UDF_IMPL_PROP);
 		
 	}
 	
-	public final void loadUDF(BytecodeContext bc, int index) throws BytecodeException {
+	/*public final void loadUDF(BytecodeContext bc, int index) throws BytecodeException {
 		// new UDF(...)
 		GeneratorAdapter adapter=bc.getAdapter();
 		adapter.newInstance(Types.UDF_IMPL);
 		adapter.dup();
 		
-		loadUDF(bc, index,true);
+		loadUDFProperties(bc, index,false);
 		
 		adapter.invokeConstructor(Types.UDF_IMPL, INIT_UDF_IMPL_PROP);
-	}
+	}*/
 	
 	public final void createUDF(BytecodeContext bc, int index, boolean closure) throws BytecodeException {
 		// new UDF(...)
@@ -420,7 +417,8 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		adapter.newInstance(closure?Types.CLOSURE:Types.UDF_IMPL);
 		adapter.dup();
 		
-		createUDFProperties(bc, index, true,closure);
+		createUDFProperties(bc, index,closure);
+		//loadUDFProperties(bc, index,closure);
 		
 		adapter.invokeConstructor(closure?Types.CLOSURE:Types.UDF_IMPL, INIT_UDF_IMPL_PROP);
 	}

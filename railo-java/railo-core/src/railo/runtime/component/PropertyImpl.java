@@ -1,7 +1,5 @@
 package railo.runtime.component;
 
-import java.util.Iterator;
-
 import org.objectweb.asm.Type;
 
 import railo.commons.lang.StringUtil;

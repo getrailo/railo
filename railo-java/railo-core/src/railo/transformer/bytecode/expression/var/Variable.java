@@ -31,7 +31,6 @@ import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
-import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 

@@ -14,6 +14,7 @@ public final class ExpressionAsStatement extends StatementBase {
 
 	private Expression expr;
 
+
 	/**
 	 * Constructor of the class
 	 * @param expr
@@ -35,5 +36,12 @@ public final class ExpressionAsStatement extends StatementBase {
 			//if(type.equals(Types.DOUBLE_VALUE))adapter.pop2();
 			//else adapter.pop();
 		}
+	}
+	
+	/**
+	 * @return the expr
+	 */
+	public Expression getExpr() {
+		return expr;
 	}
 }

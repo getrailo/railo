@@ -6,9 +6,7 @@ import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.tag.Tag;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
-import railo.transformer.cfml.expression.AbstrCFMLExprTransformer.Data;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
 import railo.transformer.library.function.FunctionLib;
@@ -34,12 +32,12 @@ public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements
 	 * @param parentTransformer
 	 * @throws TemplateException
 	 */
-	public void transform(Config config,CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) throws TemplateException	{
-		Page page = ASMUtil.getAncestorPage(tag);
+	public void transform(Config config,Page page,CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) throws TemplateException	{
+		//Page page = ASMUtil.getAncestorPage(tag);
 		boolean isCFC= page.isComponent();
 		boolean isInterface= page.isInterface();
 		
-		Data data = init(ep,fld,cfml,true);
+		Data data = init(page,ep,fld,cfml,true);
 		data.insideFunction=false; 
 		data.tagName=libTag.getFullName();
 		data.isCFC=isCFC;

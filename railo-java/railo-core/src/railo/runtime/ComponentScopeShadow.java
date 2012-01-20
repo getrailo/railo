@@ -420,4 +420,17 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Map<Key,Object> getShadow() {
 		return shadow;
 	}
+
+	/**
+	 * @see railo.runtime.type.scope.Variables#setBind(boolean)
+	 */
+	public void setBind(boolean bind) {}
+
+	/**
+	 * @see railo.runtime.type.scope.Variables#isBind()
+	 * return always true because this scope is always binf to the cfc
+	 */
+	public boolean isBind() {
+		return true;
+	}
 }

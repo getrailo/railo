@@ -2,6 +2,7 @@ package railo.transformer.cfml.script;
 
 import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
@@ -19,7 +20,7 @@ public class CFMLOrJavaScriptTransformer implements TagDependentBodyTransformer 
 	private JavaScriptTransformer jst=new JavaScriptTransformer();
 	private CFMLScriptTransformer cst=new CFMLScriptTransformer();
 	
-	public void transform(Config config,CFMLTransformer parent, EvaluatorPool ep,FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml) 
+	public void transform(Config config,Page page,CFMLTransformer parent, EvaluatorPool ep,FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml) 
 	throws TemplateException {
 		Attribute attr = tag.getAttribute("language");
 		if(attr!=null) {
@@ -27,8 +28,8 @@ public class CFMLOrJavaScriptTransformer implements TagDependentBodyTransformer 
 			if(!(expr instanceof LitString))
 				throw new TemplateException(cfml,"Attribute language of the Tag script, must be a literal string value");
 			String str = ((LitString)expr).getString().trim();
-			if("java".equalsIgnoreCase(str))		jst.transform(config,parent, ep, flibs, tag, tagLibTag, cfml);
-			else if("cfml".equalsIgnoreCase(str))	cst.transform(config,parent, ep, flibs, tag, tagLibTag, cfml);
+			if("java".equalsIgnoreCase(str))		jst.transform(config,page,parent, ep, flibs, tag, tagLibTag, cfml);
+			else if("cfml".equalsIgnoreCase(str))	cst.transform(config,page,parent, ep, flibs, tag, tagLibTag, cfml);
 			else 
 				throw new TemplateException(cfml,"invalid value for attribute language from tag script ["+str+"], valid values are [cfml,java]");
 		}

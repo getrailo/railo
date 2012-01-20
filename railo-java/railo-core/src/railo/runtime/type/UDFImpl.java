@@ -15,7 +15,6 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
@@ -52,126 +51,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	protected ComponentImpl ownerComponent;
 	protected UDFPropertiesImpl properties;
     
-
-	/**
-	 * @see railo.runtime.engine.Sizeable#sizeOf()
-	 */
-	public long sizeOf() {
-		return SizeOf.size(properties);
-	}
-    
-	
-	/**
-	 * Constructor of the class
-	 * @param page
-	 * @param arguments
-	 * @param index
-	 * @param functionName
-	 * @param strReturnType
-	 * @param strReturnFormat
-	 * @param output
-	 * @param async
-	 * @param strAccess
-	 * @param displayName
-	 * @param description
-	 * @param hint
-	 * @param secureJson
-	 * @param verifyClient
-	 * @param meta
-	 * @throws ExpressionException
-	 * @deprecated use instead <code>UDFImpl(UDFProperties properties)</code>
-	 */
-	public UDFImpl(
-	        Page page,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        String strReturnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        boolean async, 
-	        String strAccess, 
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        StructImpl meta) throws ExpressionException {
-		super(ComponentUtil.toIntAccess(strAccess));
-		properties=new UDFPropertiesImpl(page,
-		        arguments,
-				index,
-		        functionName, 
-		        strReturnType, 
-		        strReturnFormat, 
-		        output, 
-		         async, 
-		         getAccess(), 
-		         displayName, 
-		         description, 
-		         hint, 
-		         secureJson,
-		         verifyClient,
-		         meta);
-		
-	}
-    
-	/**
-	 * Constructor of the class
-	 * @param page
-	 * @param arguments
-	 * @param index
-	 * @param functionName
-	 * @param returnType
-	 * @param strReturnFormat
-	 * @param output
-	 * @param async
-	 * @param strAccess
-	 * @param displayName
-	 * @param description
-	 * @param hint
-	 * @param secureJson
-	 * @param verifyClient
-	 * @param meta
-	 * @throws ExpressionException
-	 * @deprecated use instead <code>UDFImpl(UDFProperties properties)</code>
-	 */
-	public UDFImpl(
-	        Page page,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        short returnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        boolean async, 
-	        String strAccess, 
-	        String displayName, 
-	        String description, 
-	        String hint, 
-	        Boolean secureJson,
-	        Boolean verifyClient,
-	        StructImpl meta) throws ExpressionException {
-		super(ComponentUtil.toIntAccess(strAccess));
-		properties=new UDFPropertiesImpl(
-		        page,
-		        arguments,
-				index,
-		        functionName, 
-		        returnType, 
-		        strReturnFormat, 
-		        output, 
-		        async, 
-		        getAccess(), 
-		        displayName, 
-		        description, 
-		        hint, 
-		        secureJson,
-		        verifyClient,
-		        meta);
-		//ownerComponent=null;
-	}
-	
 	/**
 	 * DO NOT USE THIS CONSTRUCTOR!
 	 * this constructor is only for deserialize process
@@ -185,6 +64,14 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		this.properties= (UDFPropertiesImpl) properties;
 	}
 
+	/**
+	 * @see railo.runtime.engine.Sizeable#sizeOf()
+	 */
+	public long sizeOf() {
+		return SizeOf.size(properties);
+	}
+    
+	
 	public UDF duplicate(ComponentImpl c) {
 		UDFImpl udf = new UDFImpl(properties);
 		udf.ownerComponent=c;
@@ -472,7 +359,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		// arguments
 		FunctionArgument[] args = udf.getFunctionArguments();
         
-        DumpTable atts = closure?new DumpTable("udf","#ffff33","#ffffcc","#000000"):new DumpTable("udf","#9999cc","#ccccff","#000000");
+        DumpTable atts = closure?new DumpTable("udf","#ff00ff","#ffccff","#000000"):new DumpTable("udf","#cc66ff","#ffccff","#000000");
         
 		atts.appendRow(new DumpRow(63,new DumpData[]{new SimpleDumpData("label"),new SimpleDumpData("name"),new SimpleDumpData("required"),new SimpleDumpData("type"),new SimpleDumpData("default"),new SimpleDumpData("hint")}));
 		for(int i=0;i<args.length;i++) {
@@ -500,7 +387,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 		}
 		
-		DumpTable func = closure?new DumpTable("#ffff33","#ffffcc","#000000"):new DumpTable("#9999cc","#ccccff","#000000");
+		DumpTable func = closure?new DumpTable("#ff00ff","#ffccff","#000000"):new DumpTable("#cc66ff","#ffccff","#000000");
 		if(closure) func.setTitle("Closure");
 		else {
 			String f="Function ";
@@ -535,6 +422,15 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			return box;
 		}
 		
+		/* / meta data
+		try {
+			Struct meta = udf.getMetaData(pageContext);
+			if(meta.size()>0)
+				func.appendRow(1,new SimpleDumpData("metadata"),meta.toDumpData(pageContext, maxlevel, dp));
+				
+		}
+		catch (PageException e) {}
+		*/
 		return func;
 	}
 	/**

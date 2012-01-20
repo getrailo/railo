@@ -6,14 +6,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
-import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.system.CFFunction;
@@ -24,12 +21,12 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.FunctionBody;
-import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastString;
+import railo.transformer.bytecode.expression.ClosureAsExpression;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
@@ -50,15 +47,10 @@ import railo.transformer.bytecode.statement.tag.TagBase;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.statement.udf.FunctionImpl;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
-import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.AbstrCFMLExprTransformer;
-import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
-import railo.transformer.cfml.tag.TagDependentBodyTransformer;
-import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
@@ -621,11 +613,11 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	}
 
 	protected  final Function closurePart(Data data, String id, int access, String rtnType, int line,boolean closure) throws TemplateException {		
-
+		
 		Body body=new FunctionBody();
 		Function func=closure?
-				new Closure(id,access,rtnType,body,line,-1)
-				:new FunctionImpl(id,access,rtnType,body,line,-1);
+				new Closure(data.page,id,access,rtnType,body,line,-1)
+				:new FunctionImpl(data.page,id,access,rtnType,body,line,-1);
 		
 			comments(data);
 			if(!data.cfml.forwardIfCurrent('('))
@@ -1323,10 +1315,12 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @return Ausdruck
 	 * @throws TemplateException
 	 */
-	private ExpressionAsStatement expressionStatement(Data data, Body parent) throws TemplateException {
+	private Statement expressionStatement(Data data, Body parent) throws TemplateException {
 		Expression expr=expression(data);
 		checkSemiColonLineFeed(data,true);
-		
+		if(expr instanceof ClosureAsExpression)
+			return ((ClosureAsExpression)expr).getClosure();
+			
 		return new ExpressionAsStatement(expr);
 	}
 	

@@ -2,37 +2,26 @@ package railo.transformer.cfml.expression;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
-import railo.print;
-import railo.commons.lang.StringUtil;
-import railo.commons.lang.types.RefBoolean;
-import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
 import railo.runtime.exp.CasterException;
-import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.op.Caster;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
-import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.UDFUtil;
-import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.FunctionBody;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
+import railo.transformer.bytecode.expression.ClosureAsExpression;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionInvoker;
 import railo.transformer.bytecode.expression.Invoker;
-import railo.transformer.bytecode.expression.ClosureAsExpression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.Assign;
 import railo.transformer.bytecode.expression.var.BIF;
@@ -55,12 +44,9 @@ import railo.transformer.bytecode.op.OpNegateNumber;
 import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.op.OpVariable;
 import railo.transformer.bytecode.statement.tag.Attribute;
-import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
-import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
-import railo.transformer.cfml.script.CFMLScriptTransformer;
 import railo.transformer.cfml.script.DocComment;
 import railo.transformer.cfml.script.DocCommentTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
@@ -222,8 +208,10 @@ public abstract class AbstrCFMLExprTransformer {
 		public short context=CTX_NONE; 
 		public TagLibTag[] scriptTags;
 		public DocComment docComment;
+		public Page page;
 		
-		public Data(EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
+		public Data(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
+			this.page=page;
 			this.ep=ep;
 			this.cfml=cfml;
 			this.fld=fld;
@@ -259,8 +247,8 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @param doc XML Document des aktuellen CFXD
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
-	protected Data init(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) {
-		Data data = new Data(ep,cfml,fld,allowLowerThan);
+	protected Data init(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) {
+		Data data = new Data(page,ep,cfml,fld,allowLowerThan);
 		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
 		return data;

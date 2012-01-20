@@ -436,6 +436,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	 
         	 hasFamily=false;
          }
+         else if(variables==null) {
+        	 variablesRoot=new VariablesImpl();
+        	 variables=variablesRoot;
+         }
          request.initialize(this);
          
 		 if(config.mergeFormAndURL()) {
@@ -536,8 +540,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             
         }
         else {
-            variables=variablesRoot;
-            variables.release();
+            if(variables.isBind()) {
+            	variables=null;
+            	variablesRoot=null;
+            }
+            else {
+            	variables=variablesRoot;
+            	variables.release();
+            }
             undefined.release();
             urlForm.release();
         	request.release();

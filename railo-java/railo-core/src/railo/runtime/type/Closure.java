@@ -8,20 +8,37 @@ import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.other.CreateUniqueId;
+import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ComponentUtil;
 
 public class Closure extends UDFImpl {
 	
 	
+	private Variables variables;
+
+
 	public Closure(){
 		super();
 	}
-	
+
 	public Closure(UDFProperties properties) {
 		super(properties);
+		PageContext pc = ThreadLocalPageContext.get();
+		if(((UndefinedImpl)pc.undefinedScope()).getCheckArguments())
+			this.variables=new railo.runtime.type.scope.Closure(pc.argumentsScope(),pc.localScope(),pc.variablesScope());
+		else{
+			this.variables=pc.variablesScope();
+			variables.setBind(true);
+		}
+	}
+	
+	public Closure(UDFProperties properties, Variables variables) {
+		super(properties);
+		this.variables=variables;
+		
 	}
 
 	/* (non-Javadoc)
@@ -38,17 +55,28 @@ public class Closure extends UDFImpl {
 	 */
 	@Override
 	public Object callWithNamedValues(PageContext pc, Struct values, boolean doIncludePath) throws PageException {
-		// TODO Auto-generated method stub
-		return super.callWithNamedValues(pc, values, doIncludePath);
+		Variables parent=pc.variablesScope();
+        try{
+        	pc.setVariablesScope(variables);
+        	return super.callWithNamedValues(pc, values, doIncludePath);
+		}
+		finally {
+			pc.setVariablesScope(parent);
+		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see railo.runtime.type.UDFImpl#call(railo.runtime.PageContext, java.lang.Object[], boolean)
 	 */
-	@Override
 	public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
-		// TODO Auto-generated method stub
-		return super.call(pc, args, doIncludePath);
+		Variables parent=pc.variablesScope();
+        try{
+        	pc.setVariablesScope(variables);
+			return super.call(pc, args, doIncludePath);
+		}
+		finally {
+			pc.setVariablesScope(parent);
+		}
 	}
 
 	/* (non-Javadoc)
