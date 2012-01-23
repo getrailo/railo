@@ -36,6 +36,7 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
+import railo.runtime.config.Constants;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
 import railo.runtime.orm.ORMUtil;
@@ -72,7 +73,7 @@ public class HibernateSessionFactory {
 		String dialect=Dialect.getDialect(ormConf.getDialect());
 		if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
 		if(StringUtil.isEmpty(dialect))
-			throw new ORMException(engine,"A valid dialect definition inside the application.cfc/cfapplication is missing. The dialect cannot be determinated automatically");
+			throw new ORMException(engine,"A valid dialect definition inside the "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME+" is missing. The dialect cannot be determinated automatically");
 		
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
@@ -318,7 +319,7 @@ public class HibernateSessionFactory {
 			}
 		}
 		else if(res.isFile()){
-			if(!res.getName().equalsIgnoreCase("Application.cfc"))	{
+			if(!res.getName().equalsIgnoreCase(Constants.APP_CFC))	{
 				try {
 					
 					// MUST still a bad solution

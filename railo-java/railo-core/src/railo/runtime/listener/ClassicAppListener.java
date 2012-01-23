@@ -5,6 +5,7 @@ import java.io.IOException;
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 
@@ -21,7 +22,7 @@ public final class ClassicAppListener extends AppListenerSupport {
 	public void onRequest(PageContext pc,PageSource requestedPage) throws PageException {
 		
 		PageSource application=//pc.isCFCRequest()?null:
-			AppListenerUtil.getApplicationPageSource(pc,requestedPage,"Application.cfm",mode);
+			AppListenerUtil.getApplicationPageSource(pc,requestedPage,Constants.APP_CFM,mode);
 		
 		_onRequest(pc, requestedPage, application);
 	}

@@ -10,7 +10,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
- * DTO Interface for Application Context data (defined by tag cfapplication)
+ * DTO Interface for Application Context data (defined by tag application)
  */
 public interface ApplicationContext extends Serializable {
 

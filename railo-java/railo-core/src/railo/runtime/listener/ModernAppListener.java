@@ -21,6 +21,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
@@ -76,7 +77,7 @@ public class ModernAppListener extends AppListenerSupport {
 	public void onRequest(PageContext pc, PageSource requestedPage) throws PageException {
 		// on requestStart
 		PageSource appPS=//pc.isCFCRequest()?null:
-			AppListenerUtil.getApplicationPageSource(pc,requestedPage,"Application.cfc",mode);
+			AppListenerUtil.getApplicationPageSource(pc,requestedPage,Constants.APP_CFC,mode);
 		
 		_onRequest(pc, requestedPage, appPS);
 	}

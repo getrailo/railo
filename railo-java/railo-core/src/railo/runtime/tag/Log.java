@@ -39,7 +39,7 @@ public final class Log extends TagImpl {
 	/**  */
 	private String file;
 
-	/** Specifies whether to log the application name if one has been specified in a cfapplication tag. */
+	/** Specifies whether to log the application name if one has been specified in a application tag. */
 	private boolean application;
 	private String charset=null;
 	
@@ -148,7 +148,7 @@ public final class Log extends TagImpl {
 	}
 
 	/** set the value application
-	*  Specifies whether to log the application name if one has been specified in a cfapplication tag.
+	*  Specifies whether to log the application name if one has been specified in a application tag.
 	* @param application value to set
 	**/
 	public void setApplication(boolean application)	{

@@ -61,7 +61,7 @@ public final class Constants {
 	public static final Double DOUBLE_ZERO = new Double(0);
     
     
-
+	
     /**
      * return a Integer object with same value
      * @param i

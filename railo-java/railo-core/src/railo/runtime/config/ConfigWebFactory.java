@@ -1037,7 +1037,7 @@ public final class ConfigWebFactory {
 	    }
 	    
 	    
-	    f=contextDir.getRealResource("application.cfm");
+	    f=contextDir.getRealResource(Constants.APP_CFM);
 	    if(!f.exists())createFileFromResourceEL("/resource/context/application.cfm",f);
 	    
 	    f=contextDir.getRealResource("form.cfm");
@@ -1305,10 +1305,10 @@ public final class ConfigWebFactory {
         Resource displayDir = templatesDir.getRealResource("display");
         if(!displayDir.exists())displayDir.mkdirs();
 
-        f=displayDir.getRealResource("Application.cfm");
+        f=displayDir.getRealResource(Constants.APP_CFM);
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/Application.cfm",f);
         
-        f=displayDir.getRealResource("Application.cfc");
+        f=displayDir.getRealResource(Constants.APP_CFC);
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/Application.cfc",f);
         /*
         f=displayDir.getRealResource("debugging-console-output-pages.cfm");

@@ -39,6 +39,7 @@ import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
+import railo.runtime.config.Constants;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
@@ -174,14 +175,14 @@ public class HibernateORMEngine implements ORMEngine {
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
 		ApplicationContext appContext = pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
-			throw new ORMException(this,"ORM is not enabled in application.cfc/cfapplication");
+			throw new ORMException(this,"ORM is not enabled in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME);
 		
 		this.hash=hash(appContext);
 		
 		// datasource
 		String dsn=appContext.getORMDatasource();
 		if(StringUtil.isEmpty(dsn))
-			throw new ORMException(this,"missing datasource defintion in application.cfc/cfapplication");
+			throw new ORMException(this,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME);
 		if(!dsn.equalsIgnoreCase(datasource)){
 			configuration=null;
 			if(_factory!=null) _factory.close();

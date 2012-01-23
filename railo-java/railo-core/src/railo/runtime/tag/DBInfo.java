@@ -19,7 +19,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
+import railo.runtime.config.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -293,7 +293,7 @@ public final class DBInfo extends TagImpl {
 		if(col==null){
 			Array arr=new ArrayImpl();
 			for(int i=1;i<=len;i++) {
-				arr.append(Constants.DOUBLE_ZERO);
+				arr.append(railo.runtime.op.Constants.DOUBLE_ZERO);
 			}
 			qry.addColumn(DECIMAL_DIGITS, arr);
 		}
@@ -309,7 +309,7 @@ public final class DBInfo extends TagImpl {
 			
 			// decimal digits
 			o=qry.getAt(DECIMAL_DIGITS, i,null);
-			if(o==null)qry.setAtEL(DECIMAL_DIGITS, i,Constants.DOUBLE_ZERO);
+			if(o==null)qry.setAtEL(DECIMAL_DIGITS, i,railo.runtime.op.Constants.DOUBLE_ZERO);
 			
 			set=(Set) primaries.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(set==null) {
@@ -676,7 +676,7 @@ public final class DBInfo extends TagImpl {
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 		}
 		return datasource;
 	}

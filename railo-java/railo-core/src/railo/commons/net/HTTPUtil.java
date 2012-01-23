@@ -414,109 +414,15 @@ public final class HTTPUtil {
     	
     	return new URI(rtn.toString()); 
     }
-    
-    private static void test(String str) throws URISyntaxException {
-    	//print.o(str);
-    	int port=-1;
-    	String res;
-    	try {
-			res=toURL(new URL(str),port).toString();
-		} catch (MalformedURLException e) {
-			res=toURI(str).toString();
-		}
-    	String res2 = encode(str);
-		
-    	if(res.equals(res2)){
-    		aprint.o(res);
-    	}
-    	else {
-    		aprint.e(str);
-    		aprint.e("- uri:"+res);
-    		aprint.e("- enc:"+res2);
-    	}
-    	
-		
-    	/*String uri = toURI(str).toString();
-    	String url = toURL(str).toString();
-    	
-    	if(uri.equals(url)){
-    		print.o(uri);
-    	}
-    	else {
-    		print.e(str);
-    		print.e("uri:"+uri);
-    		print.e("url:"+url);
-    	}*/
-		
-	}
 
-	public static void main(String[] args) throws Exception {
-		
-		// valid urls
-		test("http://localhost:8080/jm/test/tags/_http.cfm;jsessionid=48lhqe568il0d?CFID=2fa614d8-9deb-4051-92e9-100ed44fd2df&CFTOKEN=0&jsessionid=48lhqe568il0d");
-		test("http://www.railo.ch");
-		test("http://www.railo.ch/");
-		test("http://www.railo.ch/a.cfm");
-		test("http://www.railo.ch/a.cfm?");
-		test("http://www.railo.ch/a.cfm?test=1");
-		test("http://www.railo.ch/a.cfm?test=1&");
-		test("http://www.railo.ch:80/a.cfm?test=1&");
-		test("http://hans@www.railo.ch:80/a.cfm?test=1&");
-		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x");
-		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x#");
-		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x#xx");
-		
-		test("http://www.railo.ch");
-		test("http://www.railo.ch/");
-		test("http://www.railo.ch/ä.cfm");
-		test("http://www.railo.ch/ä.cfm?");
-		test("http://www.railo.ch/ä.cfm?testä=ä");
-		test("http://www.railo.ch/ä.cfm?testä=ä&");
-		test("http://www.railo.ch:80/ä.cfm?testä=ä&");
-		test("http://häns@www.railo.ch:80/ä.cfm?testä=ä&");
-		test("http://häns:püter@www.railo.ch:80/ä.cfm?testä=ä&x");
-		test("http://häns:püter@www.railo.ch:80/ä.cfm?testä=ä&x#");
-		test("http://häns:püter@www.railo.ch:80/ä.cfm?testä=ä&x#ü");
-		
-		test("/");
-		test("/a.cfm");
-		test("/a.cfm?");
-		test("/a.cfm?test=1");
-		test("/a.cfm?test=1&");
-		test("/a.cfm?test=1&");
-		test("/a.cfm?test=1&");
-		test("/a.cfm?test=1&x");
-		test("/a.cfm?test=1&x#");
-		test("/a.cfm?test=1&x#xx");
-		
-
-		test("/");
-		test("/ä.cfm");
-		test("/ä.cfm?");
-		test("/ä.cfm?testö=1ü");
-		test("/ä.cfm?testö=1ü&");
-		test("/ä.cfm?testö=1ü&");
-		test("/ä.cfm?testö=1ü&");
-		test("/ä.cfm?testö=1ü&x");
-		test("/ä.cfm?testö=1ü&x#");
-		test("/ä.cfm?testö=1ü&x#xxä");
-		//test("http://haöns:geheöim@www.example.org:80/döemo/example.cgi?lanöd=de&stadt=aa#geschiächte");
-		//print.o(toURI("http://www.railo.ch/teöst.cfm?do=pöhoto.view&id=289#commentAdd"));
-		//print.o(toURI("/test.cfm?do=photo.view&id=289#commentAdd"));
-		//print.o(toURI("http://localhost/testingapp/index.cfm?do=photo.view&id=289#commentAdd"));
-	}
-    
-    
-
-
-	private static String getProtocol(URI uri) {
+	/*private static String getProtocol(URI uri) {
     	String p=uri.getRawSchemeSpecificPart();
     	if(p==null) return null;
 		if(p.indexOf('/')==-1) return p;
 		if(p.indexOf("https")!=-1) return "https";
 		if(p.indexOf("http")!=-1) return "http";
 		return p;
-	}
+	}*/
     
     private static String getProtocol(URL url) {
 		String p=url.getProtocol().toLowerCase();
@@ -525,16 +431,6 @@ public final class HTTPUtil {
 		if(p.indexOf("http")!=-1) return "http";
 		return p;
 	}
-
-
-	/*public static void main(String[] args) throws MalformedURLException {
-    	print.o(toURL("http://www.railo.ch/index.cfm#susi"));
-    	print.o(toURL("http://www.railo.ch/index.cfm#öäü"));
-    	print.o(toURL("http://hans:geheim@www.example.org:80/demo/example.cgi?land=de&stadt=aa#geschichte"));
-    	print.o(toURL("http://haöns:geheöim@www.example.org/döemo/example.cgi?lanöd=de&stadt=aa#geschiächte"));
-		// 
-	}*/
-
     
 
     

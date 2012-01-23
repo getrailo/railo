@@ -114,7 +114,6 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	 * @see res.ResourceProvider#getResource(java.lang.String)
 	 */
 	public Resource getResource(String path) {
-		// ds://[ username [: password ]@]datasource/dir/file.cfm
 		StringBuilder sb=new StringBuilder();
 		return new DatasourceResource(this,parse(sb,path),sb.toString());
 	}

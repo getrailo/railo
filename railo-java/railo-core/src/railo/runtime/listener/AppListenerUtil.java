@@ -12,6 +12,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
@@ -86,35 +87,35 @@ public final class AppListenerUtil {
 	}
 	
 	public static PageSource getApplicationPageSourceCurrent(PageSource requestedPage, RefBoolean isCFC) {
-		PageSource res=requestedPage.getRealPage("Application.cfc");
+		PageSource res=requestedPage.getRealPage(Constants.APP_CFC);
 	    if(res.exists()) {
 	    	isCFC.setValue(true);
 	    	return res;
 	    }
-	    res=requestedPage.getRealPage("Application.cfm");
+	    res=requestedPage.getRealPage(Constants.APP_CFM);
 	    if(res.exists()) return res;
 		return null;
 	}
 	
 	public static PageSource getApplicationPageSourceRoot(PageContext pc, RefBoolean isCFC) {
-		PageSource res = pc.getPageSource("/Application.cfc");
+		PageSource res = pc.getPageSource("/"+Constants.APP_CFC);
 		if(res.exists()) {
 			isCFC.setValue(true);
 	    	return res;
 		}
-		res = pc.getPageSource("/Application.cfm");
+		res = pc.getPageSource("/"+Constants.APP_CFM);
 		if(res.exists()) return res;
 		return null;
 	}
 	
 
 	public static PageSource getApplicationPageSourceCurr2Root(PageContext pc,PageSource requestedPage, RefBoolean isCFC) {
-	    PageSource res=requestedPage.getRealPage("Application.cfc");
+	    PageSource res=requestedPage.getRealPage(Constants.APP_CFC);
 	    if(res.exists()) {
 	    	isCFC.setValue(true);
 	    	return res;
 	    }
-	    res=requestedPage.getRealPage("Application.cfm");
+	    res=requestedPage.getRealPage(Constants.APP_CFM);
 	    if(res.exists()) return res;
 	    
 	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
@@ -127,13 +128,13 @@ public final class AppListenerUtil {
 			    sb.append('/');
 			}
 			path=sb.toString();
-			res = pc.getPageSource(path.concat("Application.cfc"));
+			res = pc.getPageSource(path.concat(Constants.APP_CFC));
 			if(res.exists()) {
 				isCFC.setValue(true);
 				return res;
 			}
 
-			res = pc.getPageSource(path.concat("Application.cfm"));
+			res = pc.getPageSource(path.concat(Constants.APP_CFM));
 			if(res.exists()) return res;
 		}
 		return null;
@@ -240,7 +241,7 @@ public final class AppListenerUtil {
 	public static int toLocalMode(String strMode) throws ApplicationException {
 		int lm = toLocalMode(strMode, -1);
 		if(lm!=-1) return lm;
-		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag application/application.cfc, valid values are [always,update]");
+		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [always,update]");
 	}
 
 	public static short toSessionType(String str, short defaultValue) {
@@ -266,7 +267,7 @@ public final class AppListenerUtil {
 			if("j".equals(str)) return Config.SESSION_TYPE_J2EE;
 			if("c".equals(str)) return Config.SESSION_TYPE_J2EE;
 		}
-		throw new ApplicationException("invalid sessionType definition ["+str+"] for tag application/application.cfc, valid values are [cfml,j2ee]");
+		throw new ApplicationException("invalid sessionType definition ["+str+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [cfml,j2ee]");
 	}
 	
 	public static Properties toS3(Struct sct) {

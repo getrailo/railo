@@ -30,6 +30,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallySupport;
 import railo.runtime.op.Caster;
+import railo.runtime.config.Constants;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -404,7 +405,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 		}
 		
 		

@@ -125,11 +125,6 @@ public final class ConfigServerFactory {
 	}
 	
 	public static void createContextFiles(Resource configDir, ConfigServer config) {
-		//Resource tagDir = configDir.getRealResource("library/tag/");
-		//if()
-		//f=cDir.getRealResource("Cache.cfc");
-        //if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Cache.cfc",f);
-		
 		// Security certificate
         Resource secDir = configDir.getRealResource("security");
         if(!secDir.exists())secDir.mkdirs();

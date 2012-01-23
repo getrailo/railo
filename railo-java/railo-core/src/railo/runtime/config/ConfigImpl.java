@@ -492,13 +492,13 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getCFMLExtension()
      */
     public String[] getCFMLExtensions() {
-        return new String[]{"cfm","cfc"};
+        return Constants.CFML_EXTENSION;
     }
     /**
      * @see railo.runtime.config.Config#getCFCExtension()
      */
     public String getCFCExtension() {
-        return "cfc";
+        return Constants.CFC_EXTENSION;
     }
 
     
@@ -786,7 +786,7 @@ public abstract class ConfigImpl implements Config {
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
         
-        // app.cfc mappings
+        // app-cfc mappings
         if(mappings!=null){
 	        for(int i=0;i<mappings.length;i++) {
 	            mapping = mappings[i];
@@ -864,7 +864,7 @@ public abstract class ConfigImpl implements Config {
         Mapping mapping;
         //print.out(realPath);
         
-        // app.cfc mappings
+        // app-cfc mappings
         if(mappings!=null){        	
 	        for(int i=0;i<mappings.length;i++) {
 	            mapping = mappings[i];
@@ -896,7 +896,7 @@ public abstract class ConfigImpl implements Config {
         Resource root;
         String path;
         
-        // app.cfc mappings
+        // app-cfc mappings
         if(mappings!=null){
             for(int i=0;i<mappings.length;i++) {
                 mapping = mappings[i];

@@ -29,6 +29,7 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
 import railo.loader.util.Util;
+import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -81,7 +82,7 @@ public final class S3 implements S3Constants {
 	 */
 	String getSecretAccessKeyValidate() throws S3Exception {
 		if(StringUtil.isEmpty(secretAccessKey))
-			throw new S3Exception("secretAccessKey is not defined, define in application.cfc (s3.awsSecretKey) or as part of the path.");
+			throw new S3Exception("secretAccessKey is not defined, define in "+Constants.APP_CFC+" (s3.awsSecretKey) or as part of the path.");
 		return secretAccessKey;
 	}
 	
@@ -91,7 +92,7 @@ public final class S3 implements S3Constants {
 	 */
 	String getAccessKeyIdValidate() throws S3Exception {
 		if(StringUtil.isEmpty(accessKeyId))
-			throw new S3Exception("accessKeyId is not defined, define in application.cfc (this.s3.accessKeyId) or as part of the path.");
+			throw new S3Exception("accessKeyId is not defined, define in "+Constants.APP_CFC+" (this.s3.accessKeyId) or as part of the path.");
 		return accessKeyId;
 	}
 	

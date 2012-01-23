@@ -15,6 +15,7 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
@@ -166,7 +167,7 @@ public abstract class ComponentPage extends Page  {
             // Include MUST
             Array path = pc.getTemplatePath();
             //if(path.size()>1 ) {
-            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase("application.cfc")) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
             	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ComponentUtil.toComponentAccess(component));
             	Key[] keys = c.keys();

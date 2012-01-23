@@ -21,6 +21,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.config.Constants;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
@@ -387,7 +388,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			if(StringUtil.isEmpty(str))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 			
 			datasource=pageContext.getConfig().getDataSource(str);
 		}

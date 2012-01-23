@@ -56,6 +56,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
@@ -411,7 +412,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         startTime=System.currentTimeMillis();
         thread=Thread.currentThread();
         
-        isCFCRequest = StringUtil.endsWithIgnoreCase(req.getServletPath(),".cfc");
+        isCFCRequest = StringUtil.endsWithIgnoreCase(req.getServletPath(),"."+config.getCFCExtension());
         
         this.req=new HTTPServletRequestWrap(req);
         this.rsp=rsp;
@@ -1082,7 +1083,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public Application applicationScope() throws PageException {
 		if(application==null) {
 			if(!applicationContext.hasName())
-				throw new ExpressionException("there is no application context defined for this application","you can define a application context with the tag cfapplication");
+				throw new ExpressionException("there is no application context defined for this application","you can define a application context with the tag "+railo.runtime.config.Constants.CFAPP_NAME+"/"+railo.runtime.config.Constants.APP_CFC);
 			application=scopeContext.getApplicationScope(this,DUMMY_BOOL);
 		}
 		return application; 
@@ -1168,9 +1169,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public Session sessionScope(boolean checkExpires) throws PageException {
 		if(session==null)	{
 			if(!applicationContext.hasName())
-				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag cfapplication/Application.cfc");
+				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 			if(!applicationContext.isSetSessionManagement())
-				throw new ExpressionException("session scope is not enabled","you can enable session scope with tag cfapplication");
+				throw new ExpressionException("session scope is not enabled","you can enable session scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 			session=scopeContext.getSessionScope(this,DUMMY_BOOL);
 		}
 		return session;
@@ -1215,10 +1216,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(client==null) {
 			if(!applicationContext.hasName())
 				throw new ExpressionException("there is no client context defined for this application",
-						"you can define a client context with the tag cfapplication/Application.cfc");
+						"you can define a client context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 			if(!applicationContext.isSetClientManagement())
 				throw new ExpressionException("client scope is not enabled",
-						"you can enable client scope with tag cfapplication/Application.cfc");
+						"you can enable client scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 			
 			client= scopeContext.getClientScope(this);
 		}

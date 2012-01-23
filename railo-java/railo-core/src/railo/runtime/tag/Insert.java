@@ -18,6 +18,7 @@ import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -188,7 +189,7 @@ public final class Insert extends TagImpl {
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 		}
 		return datasource;
 	}
