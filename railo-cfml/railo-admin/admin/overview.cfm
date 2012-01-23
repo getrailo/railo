@@ -44,12 +44,21 @@ Error Output --->
 
 
 
+<cfset pool['HEAP']="Heap">
+<cfset pool['NON_HEAP']="Non-Heap">
+
+<cfset pool['HEAP_desc']="The JVM (Java Virtual Machine) has a heap that is the runtime data area from which memory for all objects are allocated.">
+<cfset pool['NON_HEAP_desc']="Also, the JVM has memory other than the heap, referred to as non-heap memory. It stores all cfc/cfm templates, java classes, interned Strings and meta-data.">
 
 <cfset pool["Par Eden Space"]="The pool from which memory is initially allocated for most objects.">
 <cfset pool["Par Survivor Space"]="The pool containing objects that have survived the garbage collection of the Eden space.">
 <cfset pool["CMS Old Gen"]="The pool containing objects that have existed for some time in the survivor space.">
 <cfset pool["CMS Perm Gen"]="The pool containing all the reflective data of the virtual machine itself, such as class and method objects.">
 <cfset pool["Code Cache"]="The HotSpot Java VM also includes a code cache, containing memory that is used for compilation and storage of native code.">
+
+
+
+
 
 
 <cfset pool["Eden Space"]=pool["Par Eden Space"]>
@@ -69,7 +78,25 @@ Error Output --->
 	
     <cfset height=6>
     <cfset width=100>
-       	<table cellpadding="0" cellspacing="0">
+    	<cfset var used=evaluate(ValueList(usage.used,'+'))>
+    	<cfset var max=evaluate(ValueList(usage.max,'+'))>
+    	<cfset var init=evaluate(ValueList(usage.init,'+'))>
+        
+		<cfset var qry=QueryNew(usage.columnlist)>
+		<cfset QueryAddRow(qry)>
+        <cfset QuerySetCell(qry,"type",usage.type)>
+        <cfset QuerySetCell(qry,"name",pool[usage.type])>
+        <cfset QuerySetCell(qry,"init",init,qry.recordcount)>
+        <cfset QuerySetCell(qry,"max",max,qry.recordcount)>
+        <cfset QuerySetCell(qry,"used",used,qry.recordcount)>
+        
+        <cfset usage=qry>
+    	<b>#pool[usage.type]#</b>
+        <cfif StructKeyExists(pool,usage.type& "_desc")><br /><span class="comment">#pool[usage.type& "_desc"]#</span></cfif>
+        
+        
+        
+        <table cellpadding="0" cellspacing="0">
         <cfloop query="usage">
         	<cfset _used=int(width/usage.max*usage.used)>
         	<cfset _free=width-_used> 
@@ -87,9 +114,6 @@ Error Output --->
                 	<td colspan="2"><cfmodule template="tp.cfm" height="1" width="#width#" /></td>
                 </tr>
                 <tr>
-                    <td  colspan="2"><b>#usage.name#</b><cfif StructKeyExists(pool,usage.name)><br /><span class="comment">#pool[usage.name]#</span></cfif></td>
-                </tr>
-                <tr>
                     <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#" title="#int(usage.used/1024)#kb (#pused#%)"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
                     <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#" title="#int((usage.max-usage.used)/1024)#kb (#pfree#%)"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
                 </tr>
@@ -98,6 +122,9 @@ Error Output --->
              </tr>
     	</cfloop>
         </table>
+        
+        
+        
 </cffunction>
 
 <cfset total=query(
@@ -298,6 +325,8 @@ Error Output --->
 
 </td>
 <td valign="top">
+
+<!--- Memory Usage --->
 <cftry>
 <cfsavecontent variable="memoryInfo">
 
@@ -307,15 +336,9 @@ Error Output --->
 	<td><h2>Memory Usage</h2></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">Heap</td>
-</tr>
-<tr>
 	<td class="tblContent">
         <cfset printMemory(getmemoryUsage("heap"))>
     </td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">Non-Heap</td>
 </tr>
 <tr>
 	<td class="tblContent">
@@ -328,8 +351,60 @@ Error Output --->
 </cftry>
 </table>
 
+
+
+<!--- Support --->
+
+
+
+<table class="tbl" width="100%">
+<tr>
+	<td colspan="2"><h2>#stText.Overview.Support#</h2></td>
+</tr>
+<tr>
+	<td class="tblContent" colspan="2">
+    
+    <!--- Professional --->
+    <a href="http://www.getrailo.com/index.cfm/services/support/" target="_blank">#stText.Overview.Professional#</a><br />
+    <span class="comment">#stText.Overview.ProfessionalDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    <!--- Mailing list --->
+    <a href="http://groups.google.com/group/railo" target="_blank">#stText.Overview.Mailinglist#</a><br />
+    <span class="comment">#stText.Overview.MailinglistDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    <!--- Book --->
+    <a href="http://groups.google.com/group/railo" target="_blank">#stText.Overview.book#</a><br />
+    <span class="comment">#stText.Overview.bookDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    
+    <!--- <a href="http://www.linkedin.com/e/gis/71368/0CF7D323BBC1" target="_blank">Linked in</a><br /><br />--->
+    
+    <!--- Jira --->
+    <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">#stText.Overview.issueTracker#</a><br />
+    <span class="comment">#stText.Overview.bookDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    <!--- Blog --->
+    <a href="http://www.railo-technologies.com/blog/" target="_blank">#stText.Overview.blog#</a><br />
+    <span class="comment">#stText.Overview.bookDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    
+    
+    <!--- Twitter --->
+    <a href="https://twitter.com/##!/railo" target="_blank">#stText.Overview.twitter#</a><br />
+    <span class="comment">#stText.Overview.twitterDesc#</span>
+    
+    </td>
+</tr>
+
+</table>
+
+
+
 </td>
 </tr>
+
+
+
 </table>
 
 
@@ -380,36 +455,7 @@ Error Output --->
  
 
 
-<table class="tbl">
-<tr>
-	<td colspan="2"><h2>#stText.Overview.Support#</h2></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.Professional#</td>
-	<td class="tblContent"><a href="http://www.getrailo.com/index.cfm/services/support/" target="_blank">Support by Railo Technologies</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.Mailinglist_en#</td>
-	<td class="tblContent"><a href="http://groups.google.com/group/railo" target="_blank">groups.google.com.railo</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.Mailinglist_de#</td>
-	<td class="tblContent"><a href="http://de.groups.yahoo.com/group/railo/" target="_blank">de.groups.yahoo.com.railo</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">Linked in</td>
-	<td class="tblContent"><a href="http://www.linkedin.com/e/gis/71368/0CF7D323BBC1" target="_blank">Linked in</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.issueTracker#</td>
-	<td class="tblContent"><a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">jira.jboss.org.railo</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.blog#</td>
-	<td class="tblContent"><a href="http://www.railo-technologies.com/blog/" target="_blank">railo-technologies.com.blog</a></td>
-</tr>
 
-</table>
 <!---
 <cfif request.admintype EQ "server">
 	<h2>#stText.Overview.LanguageSupport#</h2>
