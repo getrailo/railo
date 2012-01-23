@@ -379,7 +379,7 @@ public final class Controler extends Thread {
     public static void checkPermGenSpace(ConfigServer cs, boolean check) {
     	//print.e(Runtime.getRuntime().freeMemory());
 		// Runtime.getRuntime().freeMemory()<200000 || 
-    	long pgs=SystemUtil.getFreePermGenSpaceSize();
+    	 long pgs=SystemUtil.getFreePermGenSpaceSize();
     	int promille=SystemUtil.getFreePermGenSpacePromille();
     	
     	// Pen Gen Space info not available 
