@@ -494,6 +494,7 @@ public final class Cast extends ExpressionBase {
         break;
         case 'u':
         	if("uuid".equals(lcType)) 							return Types.STRING;
+        	if("udf".equals(lcType)) 							return Types.UDF;
         break;
         case 'q':
         	if("query".equals(lcType)) 							return Types.QUERY;
