@@ -385,7 +385,7 @@ public final class List {
    
         char[] del = delimeter.toCharArray();
         char c;
-        StringBuffer result=new StringBuffer();
+        StringBuilder result=new StringBuilder();
         String end="";
         int len;
         
@@ -879,7 +879,7 @@ public final class List {
 	 */
 	public static String arrayToList(String[] array, String delimeter) {
 		if(ArrayUtil.isEmpty(array)) return "";
-		StringBuffer sb=new StringBuffer(array[0]);
+		StringBuilder sb=new StringBuilder(array[0]);
 		
 		if(delimeter.length()==1) {
 			char c=delimeter.charAt(0);
@@ -901,7 +901,7 @@ public final class List {
 	
 	public static String arrayToList(Collection.Key[] array, String delimeter) {
 		if(array.length==0) return "";
-		StringBuffer sb=new StringBuffer(array[0].getString());
+		StringBuilder sb=new StringBuilder(array[0].getString());
 		
 		if(delimeter.length()==1) {
 			char c=delimeter.charAt(0);
@@ -930,7 +930,7 @@ public final class List {
 	 */
 	public static String arrayToList(Array array, String delimeter) throws PageException {
 		if(array.size()==0) return "";
-		StringBuffer sb=new StringBuffer(Caster.toString(array.getE(1)));
+		StringBuilder sb=new StringBuilder(Caster.toString(array.getE(1)));
 		int len=array.size();
 		
 		for(int i=2;i<=len;i++) {
@@ -942,7 +942,7 @@ public final class List {
 	
 	public static String listToList(java.util.List list, String delimeter) throws PageException {
 		if(list.size()==0) return "";
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		Iterator it = list.iterator();
 		
 		if(it.hasNext()) sb.append(Caster.toString(it.next()));
@@ -1109,7 +1109,7 @@ public final class List {
 		if(ee!=null) {
 			throw new ExpressionException("invalid value to sort the list",ee.getMessage());
 		}
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<arr.length;i++) {
 			if(i!=0)sb.append(delimiter);
 			sb.append(arr[i]);
