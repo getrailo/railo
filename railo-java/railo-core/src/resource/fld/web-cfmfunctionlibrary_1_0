@@ -3749,6 +3749,34 @@ EntitySave(entity, [forceinsert])</description>
 			<type>boolean</type>
 		</return>
 	</function>
+		<!-- FileAppend -->
+	<function>
+		<name>FileAppend</name>
+		<class>railo.runtime.functions.file.FileAppend</class>
+		<description>appends the entire content to the specified file. </description>
+		<argument>
+			<name>file</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>file path</description>
+		</argument>
+		<argument>
+			<name>data</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>data to append to the file</description>
+		</argument>
+		<argument>
+			<name>charset</name>
+			<type>string</type>
+			<required>no</required>
+			<description>The character encoding in which the file contents is encoded.</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- FileGetMimeType -->
 	<function>
 		<name>FileGetMimeType</name>
