@@ -261,6 +261,48 @@ All elements in the array must contain values that can be automatically converte
 			<type>number</type>
 		</return>
 	</function>
+	<!-- arrayFindAll -->
+	<function>
+		<name>arrayFindAll</name>
+		<class>railo.runtime.functions.arrays.ArrayFindAll</class>
+		<description>These functions searches the array for the specified object and return the positions of all occurrence of this values.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>The array to search in</description>
+		</argument>
+		<argument>
+			<name>value</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>The value to find</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	<!-- arrayFindAllNoCase -->
+	<function>
+		<name>arrayFindAllNoCase</name>
+		<class>railo.runtime.functions.arrays.ArrayFindAllNoCase</class>
+		<description>These functions searches the array for the specified object and return the positions of all occurrence of this values.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>The array to search in</description>
+		</argument>
+		<argument>
+			<name>value</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>The value to find</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- arrayEach -->
 	<function>
 		<name>arrayEach</name>
