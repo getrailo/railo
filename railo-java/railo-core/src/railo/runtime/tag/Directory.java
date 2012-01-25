@@ -36,6 +36,7 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.UDFUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -144,39 +145,19 @@ public final class Directory extends TagImpl  {
 	
 	
 
-	public static ResourceAndResourceNameFilter createFilter(Object filter) throws PageException	{
-	   if(filter instanceof UDF)
-		   return createFilter((UDF)filter);
-	   return createFilter(Caster.toString(filter));
-	}
-
 	
-	public static ResourceAndResourceNameFilter createFilter(UDF filter) throws PageException	{
-		return new UDFFilter(filter);
-	}
-	
-	public static ResourceAndResourceNameFilter createFilter(String pattern) throws PageException	{
-	    if(pattern.trim().length()>0) {
-            try {
-            	return new WildCardFilter(pattern);
-            } catch (MalformedPatternException e) {
-                throw Caster.toPageException(e);
-            }
-        }
-	    return null;
-	}
 	
 	
 
 	public void setFilter(Object filter) throws PageException	{
-		this.filter=nameFilter=createFilter(filter);
+		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(filter);
 	}
 	
 	public void setFilter(UDF filter) throws PageException	{
-		this.filter=nameFilter=createFilter(filter);
+		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(filter);
 	}
 	public void setFilter(String pattern) throws PageException	{
-		this.filter=nameFilter=createFilter(pattern);
+		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(pattern);
 	}
 	
 	/** set the value acl
