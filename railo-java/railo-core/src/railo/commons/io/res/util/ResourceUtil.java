@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicMatch;
+
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -30,6 +31,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.List;
 
 public final class ResourceUtil {
+
+	public static final int MIMETYPE_CHECK_EXTENSION=1;
+	public static final int MIMETYPE_CHECK_HEADER=2;
+	
 	
 	/**
      * Field <code>FILE_SEPERATOR</code>
@@ -79,7 +84,9 @@ public final class ResourceUtil {
     	EXT_MT.put("cgm","image/cgm");
     	EXT_MT.put("cmx","image/x-cmx");
     	EXT_MT.put("csh","application/x-csh");
-    	EXT_MT.put("css ","text/css");
+    	EXT_MT.put("cfm","text/html");
+    	EXT_MT.put("cfml","text/html");
+    	EXT_MT.put("css","text/css");
     	EXT_MT.put("doc","application/msword");
     	EXT_MT.put("docx","application/msword");
     	EXT_MT.put("eps","application/postscript");
@@ -112,6 +119,7 @@ public final class ResourceUtil {
     	EXT_MT.put("pict","image/x-pict");
     	EXT_MT.put("pl","application/x-perl");
     	EXT_MT.put("png","image/png");
+    	EXT_MT.put("php","text/html");
     	EXT_MT.put("pnm","image/x-portable-anymap");
     	EXT_MT.put("ppm","image/x-portable-pixmap");
     	EXT_MT.put("ppt","application/vnd.ms-powerpoint");
@@ -723,30 +731,39 @@ public final class ResourceUtil {
      * @return mime type of the file
      */
     public static String getMymeType(Resource res, String defaultValue) {
-        return getMymeType(res, false,defaultValue);
+        return getMymeType(res, MIMETYPE_CHECK_HEADER,defaultValue);
     }
     
-    public static String getMymeType(Resource res, boolean alsoCheckExtension, String defaultValue) {
-        if(alsoCheckExtension) {
+    public static String getMymeType(Resource res, int checkingType, String defaultValue) {
+        
+    	// check Extension
+    	if((checkingType&MIMETYPE_CHECK_EXTENSION)!=0) {
         	String ext = getExtension(res, null);
 			if(!StringUtil.isEmpty(ext)){
         		String mt=EXT_MT.get(ext.trim().toLowerCase());
         		if(mt!=null) return mt;
 			}
         }
-    	PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            MagicMatch match = Magic.getMagicMatch(IOUtil.toBytes(res));
-            return match.getMimeType();
-        } 
-        catch (Exception e) {
-            return defaultValue;
-        }
-        finally {
-        	System.setOut(out);
-        }
+    	
+    	// check mimetype
+    	if((checkingType&MIMETYPE_CHECK_HEADER)!=0) {
+	    	PrintStream out = System.out;
+	        try {
+	        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+	            MagicMatch match = Magic.getMagicMatch(IOUtil.toBytes(res));
+	            return match.getMimeType();
+	        } 
+	        catch (Exception e) {
+	            return defaultValue;
+	        }
+	        finally {
+	        	System.setOut(out);
+	        }
+    	}
+    	
+    	return defaultValue;
     }
+    
 
     /**
      * return the mime type of a file, dont check extension

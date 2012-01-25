@@ -3749,7 +3749,29 @@ EntitySave(entity, [forceinsert])</description>
 			<type>boolean</type>
 		</return>
 	</function>
-	
+	<!-- FileGetMimeType -->
+	<function>
+		<name>FileGetMimeType</name>
+		<class>railo.runtime.functions.file.FileGetMimeType</class>
+		<description>Returns the mimetype of the given file</description>
+		<argument>
+			<name>file</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>file path or object</description>
+		</argument>
+		<argument>
+			<name>checkHeader</name>
+			<name>checkNotExtension</name>
+			<type>boolean</type>
+			<required>No</required>
+			<default>true</default>
+			<description>if set to true, Railo checks the header of the file, when set to false, Railo only checks the extension.</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 
 	<!-- fileOpen -->
 	<function>
