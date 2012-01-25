@@ -261,6 +261,49 @@ All elements in the array must contain values that can be automatically converte
 			<type>number</type>
 		</return>
 	</function>
+	<!-- arrayEach -->
+	<function>
+		<name>arrayEach</name>
+		<class>railo.runtime.functions.arrays.ArrayEach</class>
+		<description>call the given UDF/Closure with every value in the array.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>UDF</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the values from array</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- arrayFilter -->
+	<function>
+		<name>arrayFilter</name>
+		<class>railo.runtime.functions.arrays.ArrayFilter</class>
+		<description>This function creates a new Array that returns all the values from an array that match the given filter.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to filter values from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>UDF</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any arg):boolean].</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- arrayFindNoCase -->
 	<function>
 		<name>arrayFindNoCase</name>
@@ -9888,6 +9931,27 @@ The value determines whether the image is blurred or sharpened:
 			<type>string</type>
 		</return>
 	</function>
+	<!-- listFilter -->
+	<function>
+		<name>listFilter</name>
+		<class>railo.runtime.functions.list.ListFilter</class>
+		<description>This function creates a new string list that returns all entries from an string list that match the given filter.</description>
+		<argument>
+			<name>list</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>list to filter entries from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>UDF</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any value):boolean].</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 	<!-- listFind -->
 	<function>
 		<name>listFind</name>
@@ -10285,6 +10349,29 @@ The value determines whether the image is blurred or sharpened:
 			<type>boolean</type>
 			<required>No</required>
 			<description>if set to true, empty values are included as well</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- ListRemoveDuplicates -->
+	<function>
+		<name>ListRemoveDuplicates</name>
+		<class>railo.runtime.functions.list.ListRemoveDuplicates</class>
+		<description>Removes duplicate values from list.</description>
+		<argument>
+			<name>list</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>a string list</description>
+		</argument>
+		<argument>
+			<name>delimiters</name>
+			<alias>delimiter</alias>
+			<type>string</type>
+			<required>No</required>
+			<default>,</default>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -13118,6 +13205,50 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<return>
 			<type>boolean</type>
+		</return>
+	</function>
+	
+	<!-- structEach -->
+	<function>
+		<name>structEach</name>
+		<class>railo.runtime.functions.struct.StructEach</class>
+		<description>call the given UDF/Closure with every entry (key/value) in the struct.</description>
+		<argument>
+			<name>struct</name>
+			<type>struct</type>
+			<required>Yes</required>
+			<description>struct to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>UDF</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the entries from struct</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+		<!-- structFilter -->
+	<function>
+		<name>structFilter</name>
+		<class>railo.runtime.functions.struct.StructFilter</class>
+		<description>This function creates a new Struct that returns all entries from an struct that match the given filter.</description>
+		<argument>
+			<name>struct</name>
+			<type>struct</type>
+			<required>Yes</required>
+			<description>struct to filter entries from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>UDF</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
+		</argument>
+		<return>
+			<type>struct</type>
 		</return>
 	</function>
 	<!-- structFind -->
