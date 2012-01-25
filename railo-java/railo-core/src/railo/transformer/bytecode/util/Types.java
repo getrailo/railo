@@ -282,6 +282,9 @@ public final class Types {
             if("short".equals(type))								return SHORT_VALUE;
             if("short".equals(lcType))								return SHORT;
         break;
+        case 'u':
+            if("udf".equals(lcType))								return UDF;
+        break;
         case 'v':
             if("void".equals(lcType))								return VOID;
     	    if("variablestring".equals(lcType)) 					return STRING;
