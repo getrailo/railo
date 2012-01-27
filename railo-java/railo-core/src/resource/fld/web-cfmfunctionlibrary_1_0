@@ -4641,6 +4641,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
+	<!-- GetFunctionCalledName -->
+	<function>
+		<name>GetFunctionCalledName</name>
+		<class>railo.runtime.functions.system.GetFunctionCalledName</class>
+		<description></description>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 	<!-- GetFreeSpace -->
 	<function>
 		<name>GetFreeSpace</name>
@@ -4659,6 +4668,9 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>numeric</type>
 		</return>
 	</function>
+	
+	
+	
 	<!-- GetTotalSpace -->
 	<function>
 		<name>GetTotalSpace</name>
