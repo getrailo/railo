@@ -8939,7 +8939,22 @@ The value determines whether the image is blurred or sharpened:
 			<type>struct</type>
 		</return>
 	</function>
-	
+	<!-- IsClosure -->
+	<function>
+		<name>IsClosure</name>
+		<class>railo.runtime.functions.decision.IsClosure</class>
+		<description>checks if given Object is a closure or not.</description>
+		<argument>
+			<name>object</name>
+			<alias>obj,value</alias>
+			<type>any</type>
+			<required>Yes</required>
+		<description>The object that is checked.</description>
+    </argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	<!-- IsImage -->
 	<function>
 		<name>IsImage</name>
