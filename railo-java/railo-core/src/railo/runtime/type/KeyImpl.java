@@ -75,6 +75,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public static final Key LABEL = KeyImpl.intern("label");
 	public static final Key TOTAL = KeyImpl.intern("total");
 	public static final Key CLOSURE = KeyImpl.intern("closure");
+	public static final Key FUNCTION = KeyImpl.intern("function");
 	
 	
 	

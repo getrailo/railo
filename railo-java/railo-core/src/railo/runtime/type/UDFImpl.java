@@ -296,8 +296,8 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 			
 			
-			
 			pci.addPageSource(ps,psInc);
+			pci.addUDF(this);
 //////////////////////////////////////////
 			BodyContent bc =  (getOutput()?null:pci.pushBody());
 		    //boolean isC=ownerComponent!=null;
@@ -337,6 +337,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		}
 		finally {
 			pc.removeLastPageSource(psInc!=null);
+			pci.removeUDF();
             pci.setFunctionScopes(oldLocal,oldArgs);
 		    undefined.setMode(oldCheckArgs);
             pci.getScopeFactory().recycle(newArgs);

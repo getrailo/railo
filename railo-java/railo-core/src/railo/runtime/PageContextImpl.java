@@ -170,6 +170,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	/** 
 	 * Field <code>pathList</code>
 	 */
+    private LinkedList<UDF> udfs=new LinkedList<UDF>();
     private LinkedList<PageSource> pathList=new LinkedList<PageSource>();
     private LinkedList<PageSource> includePathList=new LinkedList<PageSource>();
 	
@@ -2520,6 +2521,22 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	pathList.removeLast();
         if(alsoInclude) 
             includePathList.removeLast();
+    }
+
+
+    public UDF[] getUDFs() {
+    	return udfs.toArray(new UDF[udfs.size()]);
+    }
+    
+    public void addUDF(UDF udf) {
+    	udfs.add(udf);
+    }
+
+    /**
+     * @see railo.runtime.PageContext#removeLastPageSource(boolean)
+     */
+    public void removeUDF() {
+    	udfs.pop();
     }
 
     /**

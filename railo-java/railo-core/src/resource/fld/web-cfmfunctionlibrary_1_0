@@ -3072,7 +3072,11 @@ dec: descending (z to a) sort order.
 			<name>output</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Where to send the results of the dump. The following values are valid:
+- browser: outputs in browser window
+- console: outputs on (System.out stream; see also setting in railo-server.xml {system-out})
+- filename: outputs in a file
+		</description>
     </argument>
 		<argument>
 			<name>format</name>
@@ -4601,11 +4605,42 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>getCurrentContext</name>
 		<class>railo.runtime.functions.system.GetCurrentContext</class>
+		<status>deprecated</status>
+		<description>this function is deprecated, use function CallStackGet instead.</description>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	<!-- CallStackDump -->
+	<function>
+		<name>CallStackDump</name>
+		<class>railo.runtime.functions.system.CallStackDump</class>
+		<description>dump the context (stacktrace) of the current position.</description>
+		<argument>
+			<name>output</name>
+			<type>string</type>
+			<required>no</required>
+			<default>browser</default>
+			<description>Where to send the results of cfdump. The following values are valid:
+- browser: outputs in browser window
+- console: outputs on (System.out stream; see also setting in railo-server.xml {system-out})
+- filename: outputs in a file</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- CallStackGet -->
+	<function>
+		<name>CallStackGet</name>
+		<class>railo.runtime.functions.system.CallStackGet</class>
 		<description>return the context (stacktrace) of the current position.</description>
 		<return>
 			<type>array</type>
 		</return>
 	</function>
+	
+	
 	<!-- GetFreeSpace -->
 	<function>
 		<name>GetFreeSpace</name>
