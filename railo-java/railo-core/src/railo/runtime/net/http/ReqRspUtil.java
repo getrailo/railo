@@ -214,6 +214,7 @@ public final class ReqRspUtil {
     		if(c =='_') continue;
     		if(c =='.') continue;
     		if(c =='*') continue;
+    		if(c =='/') continue;
     		if(allowPlus && c =='+') continue;
     		
     		if(c =='%') {

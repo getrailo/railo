@@ -143,8 +143,10 @@ public final class Log extends TagImpl {
 	* @param thread value to set
 	 * @throws ApplicationException
 	**/
-	public void setThread(String thread) throws ApplicationException	{
-	    throw new ApplicationException("attribute [thread] for tag [log] is deprecated");
+	public void setThread(boolean thread) throws ApplicationException	{
+		if(thread) return;
+		DeprecatedUtil.tagAttribute("Log", "thread");
+	    throw new ApplicationException("attribute [thread] for tag [log] is deprecated, only the value true is allowed");
 	}
 
 	/** set the value application

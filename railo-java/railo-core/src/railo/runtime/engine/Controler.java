@@ -379,19 +379,21 @@ public final class Controler extends Thread {
     public static void checkPermGenSpace(ConfigServer cs, boolean check) {
     	//print.e(Runtime.getRuntime().freeMemory());
 		// Runtime.getRuntime().freeMemory()<200000 || 
-    	
-    	long pgs=SystemUtil.getFreePermGenSpaceSize();
+    	 long pgs=SystemUtil.getFreePermGenSpaceSize();
+    	int promille=SystemUtil.getFreePermGenSpacePromille();
     	
     	// Pen Gen Space info not available 
-    	if(pgs==-1) {
+    	if(promille==-1) {//if(pgs==-1) {
     		if(countLoadedPages(cs)>500)
     			shrink(cs);
     	}
-    	else if(!check || pgs<1024*1024){
+    	else if(!check || promille<50){//else if(!check || pgs<1024*1024){
 			SystemOut.printDate(cs.getErrWriter(),"+Free Perm Gen Space is less than 1mb (free:"+((SystemUtil.getFreePermGenSpaceSize())/1024)+"kb), shrink all template classloaders");
 			// first just call GC and check if it help
 			System.gc();
-			if(SystemUtil.getFreePermGenSpaceSize()>1024*1024) return;
+			//if(SystemUtil.getFreePermGenSpaceSize()>1024*1024) 
+			if(SystemUtil.getFreePermGenSpacePromille()>50) 
+				return;
 			
 			shrink(cs);
 		}

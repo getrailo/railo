@@ -667,6 +667,16 @@ public final class SystemUtil {
 		return max-used;
 	}
 	
+	public static int getFreePermGenSpacePromille() {
+		MemoryUsage mu = getPermGenSpaceSize(null);
+		if(mu==null) return -1;
+		
+		long max = mu.getMax();
+		long used = mu.getUsed();
+		if(max<0 || used<0) return -1;
+		return (int)(1000L-(1000L*used/max));
+	}
+	
 	public static Query getMemoryUsage(int type) {
 		
 		

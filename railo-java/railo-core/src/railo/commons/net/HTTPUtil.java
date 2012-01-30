@@ -190,7 +190,6 @@ public final class HTTPUtil {
 	        catch(MalformedURLException mue) {
 	            url=new URL("http://"+strUrl);
 	        }
-		  
 		  return toURL(url, port);
 	  }
 	 
@@ -434,8 +433,7 @@ public final class HTTPUtil {
 
     
     public static String escapeQSValue(String str) {
-    	if(!ReqRspUtil.needEncoding(str,false)) return str;
-    	
+    	if(!ReqRspUtil.needEncoding(str,true)) return str;
     	Config config = ThreadLocalPageContext.getConfig();
     	if(config!=null){
     		try {

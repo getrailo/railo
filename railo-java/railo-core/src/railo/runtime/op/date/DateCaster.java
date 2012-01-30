@@ -53,7 +53,6 @@ public final class DateCaster {
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime();
 		else if(o instanceof String) 	{
 		    DateTime dt=toDateAdvanced((String)o,timezone,null);
-		    if(dt==null)dt=Caster.toDateTime(Locale.US, (String)o, timezone, false);
 		    if(dt==null)
 				throw new ExpressionException("can't cast ["+o+"] to date value");
 		    return dt;
@@ -130,6 +129,7 @@ public final class DateCaster {
 					//}catch (ParseException e) {}
 				}
 	    	}
+		    dt=Caster.toDateTime(Locale.US, str, timeZone,defaultValue, false);
 	    }
 	    return dt;
 	}
