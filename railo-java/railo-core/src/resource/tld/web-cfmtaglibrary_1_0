@@ -7739,15 +7739,12 @@ Valid only for cfinput type="text".</description>
 			<description>The type or severity of the message.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>boolean</type>
 			<name>thread</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<status>deprecated</status>
-			<description>Specifies whether to log the thread ID. The thread ID identifies which internal service thread logged a
-		message. Since a service thread normally services a CFML page request to completion, then moves on to
-		the next queued request, the thread ID serves as a rough indication of which request logged a message.
-		Leaving thread IDs turned on can help diagnose patterns of server activity.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -7755,7 +7752,7 @@ Valid only for cfinput type="text".</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<status>deprecated</status>
-			<description>Specifies whether to log the system date.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -7763,7 +7760,7 @@ Valid only for cfinput type="text".</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<status>deprecated</status>
-			<description>Specifies whether to log the system time.</description>
+			<description>This attribute has been deprecated and is non-functional.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
