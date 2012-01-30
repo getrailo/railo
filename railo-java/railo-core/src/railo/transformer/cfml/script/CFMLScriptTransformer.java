@@ -47,6 +47,7 @@ import railo.transformer.bytecode.statement.While;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagBase;
+import railo.transformer.bytecode.statement.tag.TagParam;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
@@ -234,6 +235,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		if(data.cfml.forwardIfCurrent(';')){}
 		else if((child=ifStatement(data))!=null) 				parent.addStatement(child);
 		else if((child=propertyStatement(data,parent))!=null)	parent.addStatement(child);
+		else if((child=paramStatement(data,parent))!=null)	parent.addStatement(child);
 		else if((child=funcStatement(data,parent))!=null)		parent.addStatement(child);
 		else if((child=whileStatement(data))!=null) 			parent.addStatement(child);
 		else if((child=doStatement(data))!=null) 				parent.addStatement(child);
@@ -1212,7 +1214,138 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		return property;
 	}
+	
 
+	public Statement paramStatement(Data data,Body parent) throws TemplateException  {
+		int pos = data.cfml.getPos();
+		try {
+			return _paramStatement(data, parent);
+		} catch (TemplateException e) {
+			try {
+				data.cfml.setPos(pos);
+				return expressionStatement(data);
+			} catch (TemplateException e1) {
+				throw e;
+			}
+		}
+	}
+	
+	private Tag _paramStatement(Data data,Body parent) throws TemplateException  {
+		if(!data.cfml.forwardIfCurrent("param "))
+			return null;
+		int line=data.cfml.getLine();
+		
+		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"param");
+		TagParam param=new TagParam(line);
+		
+		// type
+		boolean hasType=false;
+		int pos = data.cfml.getPos();
+		String tmp=variableDeclaration(data, true, false);
+		if(!StringUtil.isEmpty(tmp)) {
+			if(tmp.indexOf('.')!=-1) {
+				param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
+				hasType=true;
+			}
+			else data.cfml.setPos(pos);
+		}
+		else data.cfml.setPos(pos);
+		
+		
+		
+		// folgend wird tlt extra nicht Ÿbergeben, sonst findet prŸfung statt
+		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,false,"name",true);
+		checkSemiColonLineFeed(data,true);
+
+		param.setTagLibTag(tlt);
+		param.setScriptBase(true);
+		
+		
+		Attribute attr;
+		
+		// first fill all regular attribute -> name="value"
+		boolean hasDynamic=false;
+		boolean hasName=false;
+		for(int i=attrs.length-1;i>=0;i--){
+			attr=attrs[i];
+			if(!attr.getValue().equals(NULL)){
+				if(attr.getName().equalsIgnoreCase("name")){
+					hasName=true;
+					param.addAttribute(attr);
+				}
+				else if(attr.getName().equalsIgnoreCase("type")){
+					hasType=true;
+					param.addAttribute(attr);
+				}
+				else if(attr.isDynamicType()){
+					hasName=true;
+					if(hasDynamic) throw attrNotSupported(data.cfml,tlt,attr.getName());
+					hasDynamic=true;
+					param.addAttribute(new Attribute(false,"name",LitString.toExprString(attr.getName()),"string"));
+					param.addAttribute(new Attribute(false,"default",attr.getValue(),"any"));
+				}
+				else 
+					param.addAttribute(attr);
+			}
+		}
+		
+		// now fill name named attributes -> attr1 attr2
+		String first=null,second=null;
+		for(int i=0;i<attrs.length;i++){
+			attr=attrs[i];
+			
+			if(attr.getValue().equals(NULL)){
+				// type
+				if(first==null && (!hasName || !hasType)){
+					first=attr.getName();
+				}
+				// name
+				else if(second==null && !hasName && !hasType){
+					second=attr.getName();
+				}
+				// attr with no value
+				else {
+					attr=new Attribute(true,attr.getName(),EMPTY_STRING,"string");
+					param.addAttribute(attr);
+				}
+			}
+		}
+
+		
+		if(first!=null) {
+			if(second!=null){
+				hasName=true;
+				hasType=true;
+				if(hasDynamic) throw attrNotSupported(data.cfml,tlt,first);
+				hasDynamic=true;
+				param.addAttribute(new Attribute(false,"name",LitString.toExprString(second),"string"));
+				param.addAttribute(new Attribute(false,"type",LitString.toExprString(first),"string"));
+			}
+			else {
+				param.addAttribute(new Attribute(false,hasName?"type":"name",LitString.toExprString(first),"string"));
+				hasName=true;
+			}
+		}
+		
+		//if(!hasType)
+		//	param.addAttribute(ANY);
+		
+		if(!hasName)
+			throw new TemplateException(data.cfml,"missing name declaration for param");
+
+		return param;
+	}
+
+
+	private TemplateException attrNotSupported(CFMLString cfml, TagLibTag tag, String id) {
+		String names=tag.getAttributeNames();
+		if(StringUtil.isEmpty(names))
+			return new TemplateException(cfml,"Attribute "+id+" is not allowed for tag "+tag.getFullName());
+		
+		return new TemplateException(cfml,
+			"Attribute "+id+" is not allowed for statement "+tag.getName(),
+			"valid attribute names are ["+names+"]");
+	}
 
 	protected String variableDeclaration(Data data,boolean firstCanBeNumber,boolean upper) {
 		

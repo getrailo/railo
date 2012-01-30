@@ -8637,7 +8637,7 @@ Each type-value pair must start with a hyphen.</description>
 		</script>
 		<description>Tests for a parameter's existence, tests its data type, and provides a default value if one
   is not assigned.</description>
-		<attribute-type>fixed</attribute-type>
+		<attribute-type>mixed</attribute-type>
 		<attribute>
 			<type>string</type>
 			<name>name</name>
