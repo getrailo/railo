@@ -22,6 +22,7 @@ import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
 import railo.runtime.config.Constants;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
@@ -222,13 +223,14 @@ public class ModernAppListener extends AppListenerSupport {
 		ComponentAccess app = (ComponentAccess) apps.get(applicationName);
 		if(app==null || !app.containsKey(ON_APPLICATION_END)) return;
 		
-		PageContextImpl pc=null;
+		PageContextImpl pc=(PageContextImpl) ThreadLocalPageContext.get();
+		boolean createPc=pc==null;
 		try {
-			pc =  createPageContext(factory,app,applicationName,null,ON_APPLICATION_END);
+			if(createPc)pc =  createPageContext(factory,app,applicationName,null,ON_APPLICATION_END);
 			call(app,pc, ON_APPLICATION_END, new Object[]{pc.applicationScope()});
 		}
 		finally {
-			if(pc!=null){
+			if(createPc && pc!=null){
 				factory.releasePageContext(pc);
 			}
 		}

@@ -68,7 +68,7 @@ public final class ScopeContext {
 	private static UUIDGenerator generator = UUIDGenerator.getInstance();
 	private Map cfSessionContextes=new HashTable();
 	private Map cfClientContextes=new HashTable();
-	private Map applicationContextes=new HashTable();
+	private Map<String,Application> applicationContextes=new HashTable();
 
 	private int maxSessionTimeout=0;
 
@@ -873,7 +873,7 @@ public final class ScopeContext {
 		Object[] arrContextes= applicationContextes.keySet().toArray();
 		ApplicationListener listener = jspFactory.getConfig().getApplicationListener();
 		for(int i=0;i<arrContextes.length;i++) {
-            Application application=(Application) applicationContextes.get(arrContextes[i]);
+            Application application=applicationContextes.get(arrContextes[i]);
 			
 			if(application.getLastAccess()+application.getTimeSpan()<now) {
                 //SystemOut .printDate(jspFactory.getConfigWebImpl().getOut(),"Clear application scope:"+arrContextes[i]+"-"+this);
@@ -890,6 +890,30 @@ public final class ScopeContext {
 				}
 				
 			}
+		}
+	}
+	
+
+	public void clearApplication(PageContext pc) throws PageException {
+        
+        if(applicationContextes.size()==0) throw new ApplicationException("there is no application context defined");
+		
+        String name = pc.getApplicationContext().getName();
+        CFMLFactoryImpl jspFactory = (CFMLFactoryImpl)pc.getCFMLFactory();
+		
+        Application application=applicationContextes.get(name);
+        if(application==null) throw new ApplicationException("there is no application context defined with name ["+name+"]");
+        
+        ApplicationListener listener = jspFactory.getConfig().getApplicationListener();
+		
+            
+		application.touch();
+		try {
+			listener.onApplicationEnd(jspFactory,name);
+		} 
+		finally {
+			applicationContextes.remove(name);
+			application.release();
 		}
 	}
 

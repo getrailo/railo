@@ -70,6 +70,15 @@
 			<type>void</type>
 		</return>
 	</function>
+	<!-- ApplicationStop -->
+	<function>
+		<name>ApplicationStop</name>
+		<class>railo.runtime.functions.system.ApplicationStop</class>
+		<description>stops the current application context</description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	<!-- array -->
 	<function>
 		<name>array</name>
