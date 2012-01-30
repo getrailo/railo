@@ -308,6 +308,7 @@ public final class Directory extends TagImpl  {
 		else if(action.equals("delete")) actionDelete(pageContext,directory,recurse,serverPassword);
 		else if(action.equals("forcedelete")) actionDelete(pageContext,directory,true,serverPassword);
 		else if(action.equals("rename")) actionRename(pageContext,directory,strNewdirectory,serverPassword,acl,storage);
+		else if(action.equals("copy")) actionCopy(pageContext,directory,strNewdirectory,serverPassword,acl,storage);
 		else throw new ApplicationException("invalid action ["+action+"] for the tag directory");
 			
 		return SKIP_BODY;
@@ -640,6 +641,41 @@ public final class Directory extends TagImpl  {
 			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
 		try {
 			directory.moveTo(newdirectory);
+		}
+		catch(Throwable t) {
+			throw new ApplicationException(t.getMessage());
+		}
+		
+		// set S3 stuff
+		setS3Attrs(directory,acl,storage);
+	    
+	}
+	
+	
+	public static  void actionCopy(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, Object acl,int storage) throws PageException {
+		// check directory
+		SecurityManager securityManager = pc.getConfig().getSecurityManager();
+	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
+		
+	    
+		if(!directory.exists())
+			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
+		if(!directory.isDirectory())
+			throw new ApplicationException("file ["+directory.toString()+"] exists, but isn't a directory");
+		if(!directory.canRead())
+			throw new ApplicationException("no access to read directory ["+directory.toString()+"]");
+		
+		if(strNewdirectory==null)
+			throw new ApplicationException("attribute newDirectory is not defined");
+		
+		// real to source 
+		Resource newdirectory=toDestination(pc,strNewdirectory,directory);
+		
+	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
+		if(newdirectory.exists())
+			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
+		try {
+			ResourceUtil.copyRecursive(directory, newdirectory);
 		}
 		catch(Throwable t) {
 			throw new ApplicationException(t.getMessage());
