@@ -187,9 +187,9 @@
 	<data key="menu.resources.component">Component</data>
 	<data key="menu.resources.customtags">Custom tags</data>
 	<data key="menu.resources.cfx_tags">CFX tags</data>
-	<data key="menu.development.label">Development</data>
-	<data key="menu.monitor.label">Monitoring</data>
-	<data key="menu.development.debugging">Debugging</data>
+	<data key="menu.debugging.label">Debugging</data>
+	<data key="menu.debugging.logs">Logs</data>
+	<data key="menu.debugging.templates">Templates</data>
 	<data key="menu.security.label">Security</data>
 	<data key="menu.security.access">Access</data>
 	<data key="menu.security.password">Password</data>
@@ -384,6 +384,7 @@
 	<data key="general.minuteerror">The field &quot;minute&quot; must contain a positive integer</data>
 	<data key="general.day">Day</data>
 	<data key="general.hours">Hours</data>
+	<data key="general.wait">Please wait...</data>
 	<data key="general.seconds">Seconds</data>
 	<data key="general.no">No</data>
 	<data key="general.days">Days</data>
@@ -474,6 +475,17 @@
 	<data key="login.m">one Month</data>
 	<data key="login.newpassword">New password</data>
 	<data key="login.language">Language</data>
+	<data key="login.settings">Settings</data>
+	<data key="login.captchaHelp">Security Code</data>
+	<data key="login.captchaHelpDesc">Please enter the word you see in the image above.</data>
+	<data key="login.captchaHelpMiss">Please enter the word you see in the security code image.</data>
+	<data key="login.seconds">seconds</data>
+	<data key="login.useCaptcha">Captcha</data>
+	<data key="login.useCaptchaDesc">Use Captcha in the login to make sure the form is submitted by a human.</data>
+	<data key="login.delay">Delay</data>
+	<data key="login.delayDesc">Sets the delay between login attempts. This is a global setting for all user requests.</data>
+	
+	
 	<data key="login.changepassword">Change password</data>
 	<data key="login.d">one Day</data>
 	<data key="login.changepassworddescription">Change the password for this administrator</data>
@@ -513,6 +525,8 @@
 	<data key="debug.timezone">Please enter a value for the timezone</data>
 	<data key="debug.enabledebugging">Enable debugging</data>
 	<data key="debug.memorylogger">Memory logger</data>
+	<data key="debug.showQueryUsage">Show Query Usage</data>
+	<data key="debug.showQueryUsageDesc">Show the query usage information in debug output.</data>
 	<data key="scopes.sessiontimeoutdescription">Sets the amount of time Railo will keep the session scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client cookies</data>
@@ -618,6 +632,7 @@
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">agree</data>
 	<data key="buttons.submit">submit</data>
+	<data key="buttons.stop">stop</data>
 	<data key="buttons.purge">purge</data>
 	<data key="buttons.ok">OK</data>
 	<data key="buttons.install">install</data>
@@ -985,30 +1000,30 @@
 	<data key="settings.orm.title">Settings</data>
 	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with the struct "ormsettings".</data>
 	<data key="settings.orm.autogenmap">Automatically generate mapping</data>
-	<data key="settings.orm.autogenmapDesc">Specifies whether Railo should automatically generate mapping for the persistent CFCs. If disabled, mapping should be provided in the form of .HBMXML files. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.autogenmap=true]</data>
+	<data key="settings.orm.autogenmapDesc">Specifies whether Railo should automatically generate mapping for the persistent CFCs. If disabled, mapping should be provided in the form of .HBMXML files. This setting can be overwritten in Application.cfc as follows [this.ormsettings.autogenmap=true]</data>
 	<data key="settings.orm.catalog">Catalog</data>
-	<data key="settings.orm.catalogDesc">Specifies the default Catalog that should be used by ORM. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.catalog='db']</data>
+	<data key="settings.orm.catalogDesc">Specifies the default Catalog that should be used by ORM. This setting can be overwritten in Application.cfc as follows [this.ormsettings.catalog='db']</data>
 	<data key="settings.orm.cfclocation">Persistent Component Location</data>
-	<data key="settings.orm.cfclocationDesc">Specifies the directory that should be used to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent Comonents. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.cfclocation='...']</data>
+	<data key="settings.orm.cfclocationDesc">Specifies the directory that should be used to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent Comonents. This setting can be overwritten in Application.cfc as follows [this.ormsettings.cfclocation='...']</data>
 	<data key="settings.orm.dbcreate">Creating Tables behavior</data>
-	<data key="settings.orm.dbcreateDesc">Railo ORM can automatically create the tables for your application in the database when ORM is initialized for the application. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.dbcreate='none']</data>
+	<data key="settings.orm.dbcreateDesc">Railo ORM can automatically create the tables for your application in the database when ORM is initialized for the application. This setting can be overwritten in Application.cfc as follows [this.ormsettings.dbcreate='none']</data>
 	<data key="settings.orm.dbcreateNone">Setting this value does not change anything in the database schema.</data>
 	<data key="settings.orm.dbcreateUpdate">Setting this value creates the table if it does not exist or update the table if it exists.</data>
 	<data key="settings.orm.dbcreateDropcreate"> Setting this value drops the table if it exists and then creates it.</data>
 	<data key="settings.orm.eventHandling">Event Handling</data>
-	<data key="settings.orm.eventHandlingDesc">Specifies whether ORM Event callbacks should be given. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.eventHandling=false]</data>
+	<data key="settings.orm.eventHandlingDesc">Specifies whether ORM Event callbacks should be given. This setting can be overwritten in Application.cfc as follows [this.ormsettings.eventHandling=false]</data>
 	<data key="settings.orm.flushatrequestend">Flush at request end</data>
-	<data key="settings.orm.flushatrequestendDesc">Specifies whether ormflush should be called automatically at request end. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.flushatrequestend=false]</data>
+	<data key="settings.orm.flushatrequestendDesc">Specifies whether ormflush should be called automatically at request end. This setting can be overwritten in Application.cfc as follows [this.ormsettings.flushatrequestend=false]</data>
 	<data key="settings.orm.logSQL">Log SQL</data>
-	<data key="settings.orm.logSQLDesc">Specifies whether the SQL queries that are executed by ORM will be logged. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.logSQL=false]</data>
+	<data key="settings.orm.logSQLDesc">Specifies whether the SQL queries that are executed by ORM will be logged. This setting can be overwritten in Application.cfc as follows [this.ormsettings.logSQL=false]</data>
 	<data key="settings.orm.savemapping">Save Mapping</data>
-	<data key="settings.orm.savemappingDesc">Specifies whether the generated Hibernate mapping file has to be saved to file system. If enabled, the Hibernate mapping XML file is saved with the filename ""CFC name"".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.savemapping=false]</data>
+	<data key="settings.orm.savemappingDesc">Specifies whether the generated Hibernate mapping file has to be saved to file system. If enabled, the Hibernate mapping XML file is saved with the filename ""CFC name"".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting. This setting can be overwritten in Application.cfc as follows [this.ormsettings.savemapping=false]</data>
 	<data key="settings.orm.schema">Schema</data>
-	<data key="settings.orm.schemaDesc">Specifies the default Schema that should be used by ORM. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.schema='sch']</data>
+	<data key="settings.orm.schemaDesc">Specifies the default Schema that should be used by ORM. This setting can be overwritten in Application.cfc as follows [this.ormsettings.schema='sch']</data>
 	<data key="settings.orm.useDBForMapping">Use DB for mapping</data>
-	<data key="settings.orm.useDBForMappingDesc">Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.useDBForMapping=true]</data>
+	<data key="settings.orm.useDBForMappingDesc">Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information. This setting can be overwritten in Application.cfc as follows [this.ormsettings.useDBForMapping=true]</data>
 	<data key="settings.orm.sqlscript">SQL Script</data>
-	<data key="settings.orm.sqlscriptDesc">Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.sqlscript='...']</data>
+	<data key="settings.orm.sqlscriptDesc">Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed. This setting can be overwritten in Application.cfc as follows [this.ormsettings.sqlscript='...']</data>
 	<data key="services.update.provider">Update Provider</data>
 	<data key="services.update.location_www">Stable releases</data>
 	<data key="services.update.location_wwwDesc">Dieser Update Provider (www.getrailo.org) gibt nur stabile Versionen zurück, welche ausführlich getestet wurden, diese Quelle sollte für produktive Systeme verwendet werden.</data>

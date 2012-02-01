@@ -99,6 +99,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="apache-commons-sanselan.jar"/>
 	<classpathentry kind="lib" path="microsoft-sqljdbc.jar"/>
-	<classpathentry kind="lib" path="ESAPI-1.4.5a.jar"/>
+	<classpathentry kind="lib" path="ESAPI.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

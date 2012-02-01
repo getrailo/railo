@@ -2678,8 +2678,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<!-- decodeFromURL -->	
 	<function>
 		<name>decodeFromURL</name>
-		<class>railo.runtime.functions.owasp.decodeFromURL</class>
-		<description>Decodes a string that has been encoded in the URL using the encodeForURL </description>
+		<class>railo.runtime.functions.owasp.DecodeFromURL</class>
+		<status>deprecated</status>
+		<description>Decodes a string that has been encoded in the URL using the encodeForURL.
+		this function is deprecated, use function ESAPIDecode('url',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -2690,6 +2692,33 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	
+	
+	<!-- ESAPIDecode -->	
+	<function>
+		<name>ESAPIDecode</name>
+		<class>railo.runtime.functions.owasp.ESAPIDecode</class>
+		<description>Decodes a string that has been encoded with ESAPIEncode.</description>
+		<argument>
+			<name>decodeFrom</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>given value is encoded as:
+- url
+</description>
+	    </argument>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>string to encode</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	
 	<!-- decrypt -->
 	<function>
@@ -3268,8 +3297,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForHTML -->
 	<function>
 		<name>encodeForHTML</name>
-		<class>railo.runtime.functions.owasp.encodeForHTML</class>
-		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks</description>
+		<class>railo.runtime.functions.owasp.EncodeForHTML</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('html',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3284,8 +3315,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForHTMLAttribute -->
 	<function>
 		<name>encodeForHTMLAttribute</name>
-		<class>railo.runtime.functions.owasp.encodeForHTMLAttribute</class>
-		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks</description>
+		<class>railo.runtime.functions.owasp.EncodeForHTMLAttribute</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('html_attr',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3300,8 +3333,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForCSS -->
 	<function>
 		<name>encodeForCSS</name>
-		<class>railo.runtime.functions.owasp.encodeForCSS</class>
-		<description>Encodes the given string for safe output in CSS to stop Cross Site Scripting attacks</description>
+		<class>railo.runtime.functions.owasp.EncodeForCSS</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in CSS to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('css',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3316,8 +3351,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForJavaScript -->
 	<function>
 		<name>encodeForJavaScript</name>
-		<class>railo.runtime.functions.owasp.encodeForJavaScript</class>
-		<description>Encodes the given string for safe output in JavaScript to stop Cross Site Scripting attacks</description>
+		<class>railo.runtime.functions.owasp.EncodeForJavaScript</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in JavaScript to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('javascript',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3332,8 +3369,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForXML -->
 	<function>
 		<name>encodeForXML</name>
-		<class>railo.runtime.functions.owasp.encodeForXML</class>
-		<description>Encodes the given string for safe output in XML to stop Cross Site Scripting attacks</description>
+		<class>railo.runtime.functions.owasp.EncodeForXML</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in XML to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('xml',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3347,8 +3386,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForXMLAttribute -->
 	<function>
 		<name>encodeForXMLAttribute</name>
-		<class>railo.runtime.functions.owasp.encodeForXMLAttribute</class>
-		<description>Encodes the given string for safe output in XMLAttribute to stop Cross Site Scripting attacks</description>
+		<class>railo.runtime.functions.owasp.EncodeForXMLAttribute</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in XMLAttribute to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('xml_attr',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3362,8 +3403,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForURL -->	
 	<function>
 		<name>encodeForURL</name>
-		<class>railo.runtime.functions.owasp.encodeForURL</class>
-		<description>Encodes the given string for safe output in a URL</description>
+		<class>railo.runtime.functions.owasp.EncodeForURL</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in a URL.
+		this function is deprecated, use function ESAPIEncode('url',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3379,8 +3422,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForLDAP -->	
 	<function>
 		<name>encodeForLDAP</name>
-		<class>railo.runtime.functions.owasp.encodeForLDAP</class>
-		<description>Encodes the given string for safe output in LDAP queries</description>
+		<class>railo.runtime.functions.owasp.EncodeForLDAP</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in LDAP queries.
+		this function is deprecated, use function ESAPIEncode('ldap',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3395,8 +3440,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForDN -->	
 	<function>
 		<name>encodeForDN</name>
-		<class>railo.runtime.functions.owasp.encodeForDN</class>
-		<description>Encodes the given string for safe output in LDAP Distinguished Names</description>
+		<class>railo.runtime.functions.owasp.EncodeForDN</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in LDAP Distinguished Names.
+		this function is deprecated, use function ESAPIEncode('dn',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3411,8 +3458,10 @@ dec: descending (z to a) sort order.
 	<!-- encodeForXPath -->	
 	<function>
 		<name>encodeForXPath</name>
-		<class>railo.runtime.functions.owasp.encodeForXPath</class>
-		<description>Encodes the given string for safe use in an XPath Query</description>
+		<class>railo.runtime.functions.owasp.EncodeForXPath</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe use in an XPath Query.
+		this function is deprecated, use function ESAPIEncode('xpath',...) instead.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
@@ -3424,6 +3473,39 @@ dec: descending (z to a) sort order.
 		</return>
 	</function>
 	
+	<!-- ESAPIEncode -->	
+	<function>
+		<name>ESAPIEncode</name>
+		<class>railo.runtime.functions.owasp.ESAPIEncode</class>
+		<description>Encodes the given string for safe output to stop Cross Site Scripting attacks.</description>
+		<argument>
+			<name>encodeFor</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>encode for what, valid values are:
+- css: for output inside Cascading Style Sheets (CSS)
+- dn: for output in LDAP Distinguished Names
+- html: for output inside HTML
+- html_attr: for output inside HTML Attributes
+- javascript: for output inside Javascript
+- ldap: for output in LDAP queries
+- url: for output in URL
+- vbscript: for output inside vbscript
+- xml: for output inside XML
+- xml_attr: for output inside XML Attributes
+- xpath: for output in XPath
+</description>
+	    </argument>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>string to encode</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 
 
 	
