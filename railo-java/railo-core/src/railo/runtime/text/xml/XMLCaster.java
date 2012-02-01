@@ -562,9 +562,9 @@ public final class XMLCaster {
 	public static void writeTo(Node node,Result res,boolean omitXMLDecl, String publicId,String systemId,String encoding) throws PageException {
 		try {
 			Transformer t = XMLUtil.getTransformerFactory().newTransformer();
-			t.setOutputProperty(OutputKeys.INDENT,"yes");
+			t.setOutputProperty(OutputKeys.INDENT,"no");
 			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,omitXMLDecl?"yes":"no");
-			t.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2"); 
+			//t.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2"); 
 			
 			// optional properties
 			if(!StringUtil.isEmpty(publicId,true))t.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,publicId);

@@ -426,7 +426,7 @@ public class HibernateCaster {
 				}
 			}
 			else 
-				qry=new QueryImpl(new Collection.Key[0],1,"orm");
+				qry=new QueryImpl(new Collection.Key[0],0,"orm");
 		}
 		
 		if(qry==null) {
