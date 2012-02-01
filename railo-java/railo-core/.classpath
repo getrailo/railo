@@ -63,22 +63,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/jta.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/jtds.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/jug.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-apache.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-eclipse.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-hypersonic.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-jacob.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-janino.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-jencrypt.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-jmimemagic.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-joda.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-jtds.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-mssql.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-mysql.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-openamf.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-pd4ml.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-pdfbox.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-sun.txt"/>
-	<classpathentry kind="lib" path="/Railo-Libs/license-tagsoup.txt"/>
 	<classpathentry kind="lib" path="/Railo-Libs/lowagie.itext.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/metadata-extractor.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/microsoft-msbase.jar"/>
@@ -111,12 +95,12 @@
 	<classpathentry kind="lib" path="/Railo-Libs/sun-xml-wsdl4j.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/sun-xml.saaj.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/tagsoup.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/versions"/>
 	<classpathentry kind="lib" path="/Railo-Libs/w3c-dom.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/xdb.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/xmlparserv2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Railo-Libs/apache-commons-sanselan.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/ESAPI-1.4.5a.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

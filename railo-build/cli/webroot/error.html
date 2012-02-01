@@ -1,0 +1,59 @@
+
+<!-- ==start== dump {ts '2011-12-21 16:00:47'} format: html -->
+<div id="x1"><script language="JavaScript" type="text/javascript">
+function dumpOC(name){var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);var s=null;name=name;for(var i=0;i<tds.length;i++) {if(document.all && tds[i].name!=name)continue;s=tds[i].style;if(s.display=='none') s.display='';else s.display='none';}}
+</script>
+<style type="text/css">
+div#x1 table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#000;}
+div#x1 td {border:1px solid #000; vertical-align:top; padding:2px; empty-cells:show;}
+div#x1 td span {font-weight:bold;}
+td.rccf {background-color:#ccf;}
+td.r9c3 {background-color:#9c3;}
+td.rfc9 {background-color:#fc9;}
+td.rcf3 {background-color:#cf3;}
+td.r99f {background-color:#99f;}
+td.rf60 {background-color:#f60;}
+</style>
+<table cellspacing="1"><tr><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" onclick="dumpOC('x2');" colspan="3"><span>Struct</span></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >additional</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="r99f" title="" onclick="dumpOC('x3');" colspan="3"><span>Struct</span></td></tr><tr name="x3"><td class="r99f" >Cause</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >java.lang.NoClassDefFoundError</td></tr></table></td></tr></table></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >Detail</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" ></td></tr></table></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >ErrorCode</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >0</td></tr></table></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >ExtendedInfo</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" ></td></tr></table></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >Message</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >org/apache/xml/serializer/TreeWalker</td></tr></table></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >StackTrace</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >org/apache/xml/serializer/TreeWalker
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:202):202
+	at java.security.AccessController.doPrivileged(Native Method):-2
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:190):190
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:306):306
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:247):247
+	at org.apache.xalan.processor.TransformerFactoryImpl.newTransformer(TransformerFactoryImpl.java:821):821
+	at railo.runtime.text.xml.XMLCaster.writeTo(XMLCaster.java:550):550
+	at railo.runtime.text.xml.XMLCaster.writeTo(XMLCaster.java:487):487
+	at railo.runtime.config.ConfigWebAdmin.store(ConfigWebAdmin.java:350):350
+	at railo.runtime.config.ConfigWebAdmin.store(ConfigWebAdmin.java:331):331
+	at railo.runtime.tag.Admin.store(Admin.java:4003):4003
+	at railo.runtime.tag.Admin.doUpdateMapping(Admin.java:1784):1784
+	at railo.runtime.tag.Admin._doStartTag(Admin.java:575):575
+	at railo.runtime.tag.Admin.doStartTag(Admin.java:298):298
+	at compileadmin_cfm$cf.call(/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:13):13
+	at railo.runtime.PageContextImpl.doInclude(PageContextImpl.java:771):771
+	at railo.runtime.listener.ClassicAppListener._onRequest(ClassicAppListener.java:35):35
+	at railo.runtime.listener.MixedAppListener.onRequest(MixedAppListener.java:24):24
+	at railo.runtime.PageContextImpl.execute(PageContextImpl.java:1997):1997
+	at railo.runtime.PageContextImpl.execute(PageContextImpl.java:1964):1964
+	at railo.runtime.engine.CFMLEngineImpl.serviceCFML(CFMLEngineImpl.java:299):299
+	at railo.runtime.engine.CFMLEngineImpl.cli(CFMLEngineImpl.java:591):591
+	at railo.loader.engine.CFMLEngineWrapper.cli(CFMLEngineWrapper.java:241):241
+	at railo.cli.CLI.main(CLI.java:57):57
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method):-2
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39):39
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25):25
+	at java.lang.reflect.Method.invoke(Method.java:597):597
+	at railo.cli.Main.main(Main.java:42):42
+</td></tr></table></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >TagContext</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="r9c3" title="" onclick="dumpOC('xa');" colspan="3"><span>Array</span></td></tr><tr name="xa"><td class="r9c3" >1</td><td class="rcf3" ><table cellspacing="1"><tr><td class="r99f" title="" onclick="dumpOC('xb');" colspan="3"><span>Struct</span></td></tr><tr name="xb"><td class="r99f" >codePrintHTML</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >11: 		virtual=&amp;quot;/railo-context-compiled&amp;quot;&lt;br&gt;
+12: 		physical=&amp;quot;#url.admin_source#&amp;quot;&lt;br&gt;
+&lt;b&gt;13: 		remoteClients=&amp;quot;&amp;quot;&amp;gt;&lt;/b&gt;&lt;br&gt;
+14: 	&lt;br&gt;
+15: 	&amp;lt;cfadmin &lt;br&gt;
+</td></tr></table></td></tr><tr name="xb"><td class="r99f" >codePrintPlain</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >11: 		virtual=&quot;/railo-context-compiled&quot;
+12: 		physical=&quot;#url.admin_source#&quot;
+13: 		remoteClients=&quot;&quot;&gt;
+14: 	
+15: 	&lt;cfadmin 
+</td></tr></table></td></tr><tr name="xb"><td class="r99f" >column</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >number</td><td class="rfc9" >0</td></tr></table></td></tr><tr name="xb"><td class="r99f" >id</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >??</td></tr></table></td></tr><tr name="xb"><td class="r99f" >line</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >number</td><td class="rfc9" >13</td></tr></table></td></tr><tr name="xb"><td class="r99f" >raw_trace</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >compileadmin_cfm$cf.call(/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:13)</td></tr></table></td></tr><tr name="xb"><td class="r99f" >template</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm</td></tr></table></td></tr><tr name="xb"><td class="r99f" >type</td><td class="rccf" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >cfml</td></tr></table></td></tr></table></td></tr></table></td></tr><tr name="x2"><td class="r99f" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" >type</td><td class="rccf" title="/Users/markdrew/Dropbox/Projects/railo/cybersonic_railo/railo-build/cli/webroot/compileAdmin.cfm:28" ><table cellspacing="1"><tr><td class="rf60" >string</td><td class="rfc9" >java.lang.NoClassDefFoundError</td></tr></table></td></tr></table></div>
+<!--  ==stop== dump -->
+
