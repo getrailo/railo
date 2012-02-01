@@ -8,15 +8,6 @@ function checkTheBox(field) {
 	var box=field.form['row_'+apendix];
 	box.checked=true;
 }
-
-function selectAll(field) {
-	var form=field.form;
-	for(var key in form.elements){
-		if((form.elements[key] && ""+form.elements[key].name).indexOf("row_")==0){
-			form.elements[key].checked=field.checked;
-		}
-	}
-}
 </script>
 <cfoutput>
 
