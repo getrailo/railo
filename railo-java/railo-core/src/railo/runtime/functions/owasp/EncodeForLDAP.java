@@ -1,15 +1,26 @@
 package railo.runtime.functions.owasp;
 
+import java.io.PrintStream;
+
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
+import org.owasp.esapi.errors.EncodingException;
+
+import railo.commons.io.DevNullOutputStream;
 import railo.runtime.PageContext;
-import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
-public class EncodeForLDAP implements Function{
-
-	private static final long serialVersionUID = 946895856040970887L;
-
-	public static String call(PageContext pc , String item) throws PageException  {
-		return ESAPIEncode.encode(item, ESAPIEncode.ENC_LDAP);
+public class encodeForLDAP implements Function{
+	public static String call(PageContext pc , String item) {
+		PrintStream out = System.out;
+		try {
+			 System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+			 Encoder encoder = ESAPI.encoder();
+			 return encoder.encodeForLDAP(item);	
+		}
+		finally {
+			 System.setOut(out);
+		}
 	}
 
 }

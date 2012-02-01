@@ -1,14 +1,25 @@
 package railo.runtime.functions.owasp;
 
+import java.io.PrintStream;
+
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
+import org.owasp.esapi.errors.EncodingException;
+
+import railo.commons.io.DevNullOutputStream;
 import railo.runtime.PageContext;
-import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
-public class DecodeFromURL implements Function{
-
-	private static final long serialVersionUID = -7726736527978825663L;
-
-	public static String call(PageContext pc , String item) throws PageException  {
-		return ESAPIDecode.decode(item, ESAPIDecode.DEC_URL);
+public class decodeFromURL implements Function{
+	public static String call(PageContext pc , String item) throws EncodingException  {
+		PrintStream out = System.out;
+		try {
+			 System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+			 Encoder encoder = ESAPI.encoder();
+			return encoder.decodeFromURL(item);
+		}
+		finally {
+			 System.setOut(out);
+		}
 	}
 }

@@ -1,15 +1,26 @@
 package railo.runtime.functions.owasp;
 
+import java.io.PrintStream;
+
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
+import org.owasp.esapi.errors.EncodingException;
+
+import railo.commons.io.DevNullOutputStream;
 import railo.runtime.PageContext;
-import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
-public class EncodeForXPath implements Function{
-
-	private static final long serialVersionUID = 700921117449046922L;
-
-	public static String call(PageContext pc , String item) throws PageException  {
-		return ESAPIEncode.encode(item, ESAPIEncode.ENC_XPATH);
+public class encodeForXPath implements Function{
+	public static String call(PageContext pc , String item){
+		PrintStream out = System.out;
+		try {
+			 System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+			 Encoder encoder = ESAPI.encoder();
+				return encoder.encodeForXPath(item);
+		}
+		finally {
+			 System.setOut(out);
+		}
 	}
 
 }
