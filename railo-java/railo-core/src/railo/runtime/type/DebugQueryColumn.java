@@ -22,13 +22,11 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
 	}
 	
 
-    public DebugQueryColumn(Object[] data, Key key, QueryImpl query,
-			QueryColumnUtil queryColumnUtil, int size, int type,
+    public DebugQueryColumn(Object[] data, Key key, QueryImpl query,int size, int type,
 			boolean typeChecked) {
 		this.data=data;
 		this.key=key;
 		this.query=query;
-		this.queryColumnUtil=queryColumnUtil;
 		this.size=size;
 		this.type=type;
 		this.typeChecked=typeChecked;
