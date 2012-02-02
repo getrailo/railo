@@ -3463,6 +3463,10 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		throw notSupported();
 	}
 	
+	public void removeRows(int index, int count) throws PageException {
+		QueryUtil.removeRows(this,index,count);
+	}
+	
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
