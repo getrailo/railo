@@ -157,6 +157,22 @@ Error Output--->
 <!--- 
 list all mappings and display necessary edit fields --->
 
+<script language="javascript">
+function selectAll(field) {
+	var form=field.form;
+	var str="";
+	for(var key in form.elements){
+		if(form.elements[key] && (""+form.elements[key].name).indexOf("row_")==0){
+			form.elements[key].checked=field.checked;
+		}
+	}
+}
+function checkTheBox(field) {
+	var apendix=field.name.split('_')[1];
+	var box=field.form['row_'+apendix];
+	box.checked=true;
+}
+</script>
 
 <cfschedule action="list" returnvariable="tasks">
 <cfif len(session.st.sortName) and len(session.st.sortOrder)>

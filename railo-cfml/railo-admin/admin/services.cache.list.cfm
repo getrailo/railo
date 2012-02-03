@@ -100,7 +100,22 @@ Redirtect to entry --->
 <cfset querySort(connections,"default")>
 <cfoutput>
 
+<script>
+function checkTheBox(field) {
+	var apendix=field.name.split('_')[1];
+	var box=field.form['row_'+apendix];
+	box.checked=true;
+}
 
+function selectAll(field) {
+	var form=field.form;
+	for(var key in form.elements){
+		if(form.elements[key] && (""+form.elements[key].name).indexOf("row_")==0){
+			form.elements[key].checked=field.checked;
+		}
+	}
+}
+</script>
 
 	<cfif  access NEQ "yes"><cfset noAccess(stText.Settings.cache.noAccess)></cfif>
 
