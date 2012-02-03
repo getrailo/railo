@@ -3,6 +3,8 @@ package railo.runtime.type.util;
 import java.sql.Clob;
 import java.util.Date;
 
+import org.hibernate.QueryException;
+
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
@@ -168,5 +170,18 @@ public class QueryUtil {
 		
 		//table.appendRow(1, new SimpleDumpData("result"), recs);
 		return recs;
+	}
+
+	public static void removeRows(Query query, int index, int count) throws PageException {
+		if(query.getRecordcount()==0) 
+			throw new QueryException("cannot remove rows, query is empty");
+		if(index<0 || index>=query.getRecordcount()) 
+			throw new QueryException("invalid index ["+index+"], index must be between 0 and "+(query.getRecordcount()-1));
+		if(index+count>query.getRecordcount()) 
+			throw new QueryException("invalid count ["+count+"], count+index ["+(count+index)+"] must less or equal to "+(query.getRecordcount()));
+		
+		for(int row=count;row>=1;row--){
+			query.removeRow(index+row);
+		}
 	}
 }

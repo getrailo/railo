@@ -38,7 +38,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	protected int type;
 	protected int size;
 	protected Object[] data;
-    protected QueryColumnUtil queryColumnUtil;
     
     protected boolean typeChecked=false;
     protected QueryImpl query;
@@ -493,22 +492,15 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     }
     
     private Object reDefineType(Object value) {
-        if(queryColumnUtil==null)
-            queryColumnUtil=new QueryColumnUtil(this);
-        return queryColumnUtil.reDefineType(value);
+        return QueryColumnUtil.reDefineType(this,value);
     }
     
     private synchronized void resetType() {
-        //railo.print.ln("->reset");
-        if(queryColumnUtil==null)
-            queryColumnUtil=new QueryColumnUtil(this);
-        queryColumnUtil.resetType();
+        QueryColumnUtil.resetType(this);
     }
     
     private synchronized void reOrganizeType() {
-        if(queryColumnUtil==null)
-            queryColumnUtil=new QueryColumnUtil(this);
-        queryColumnUtil.reOrganizeType();
+        QueryColumnUtil.reOrganizeType(this);
     }
 
     public Collection.Key getKey() {
@@ -688,7 +680,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         try{
 	        trg.key=src.key;
 	        trg.query=src.query;
-	        trg.queryColumnUtil=src.queryColumnUtil;
 	        trg.size=src.size;
 	        trg.type=src.type;
 	        trg.key=src.key;
@@ -1020,6 +1011,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	@Override
 	public QueryColumnPro toDebugColumn() {
-		return new DebugQueryColumn(data,key,query,queryColumnUtil,size,type,typeChecked);
+		return new DebugQueryColumn(data,key,query,size,type,typeChecked);
 	}
 }

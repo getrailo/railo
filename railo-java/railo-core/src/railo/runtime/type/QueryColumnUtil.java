@@ -12,21 +12,13 @@ import railo.runtime.op.Decision;
  * Helper class for the QueryColumnImpl
  */
 public final class QueryColumnUtil implements Serializable {
-    
-    private QueryColumnImpl column;
 
-    /**
-     * constructor of the class
-     * @param column 
-     */
-    public QueryColumnUtil(QueryColumnImpl column) {
-        this.column=column;
-    }
-    
-    /**
+	private static final long serialVersionUID = 4654833724194716718L;
+
+	/**
      * reset the type of the column
      */
-    protected void resetType() {
+    protected static void resetType(QueryColumnImpl column) {
         column.type=Types.OTHER;
     }
     
@@ -35,97 +27,88 @@ public final class QueryColumnUtil implements Serializable {
      * @param value
 	 * @return redefined type of the value
      */
-    protected Object reDefineType(Object value) {
+    protected static Object reDefineType(QueryColumnImpl column,Object value) {
         column.typeChecked=false;
         if(value==null)return value;
         switch(column.type) {
         	case Types.OTHER:	return value;
         
         // Numeric Values
-			case Types.DOUBLE:	return reDefineDouble(value);
-			case Types.BIGINT:	return reDefineDecimal(value);
-    		case Types.NUMERIC:	return reDefineDouble(value);
-    		case Types.INTEGER:	return reDefineInteger(value);
-    		case Types.TINYINT:	return reDefineTinyInt(value);
-    		case Types.FLOAT:	return reDefineFloat(value);
-    		case Types.DECIMAL:	return reDefineDecimal(value);
-    		case Types.REAL:	return reDefineFloat(value);
-    		case Types.SMALLINT:return reDefineShort(value);
+			case Types.DOUBLE:	return reDefineDouble(column,value);
+			case Types.BIGINT:	return reDefineDecimal(column,value);
+    		case Types.NUMERIC:	return reDefineDouble(column,value);
+    		case Types.INTEGER:	return reDefineInteger(column,value);
+    		case Types.TINYINT:	return reDefineTinyInt(column,value);
+    		case Types.FLOAT:	return reDefineFloat(column,value);
+    		case Types.DECIMAL:	return reDefineDecimal(column,value);
+    		case Types.REAL:	return reDefineFloat(column,value);
+    		case Types.SMALLINT:return reDefineShort(column,value);
     		
     	// DateTime Values
-    		case Types.TIMESTAMP:	return reDefineDateTime(value);
-    		case Types.DATE:		return reDefineDateTime(value);
-    		case Types.TIME:		return reDefineDateTime(value);
+    		case Types.TIMESTAMP:	return reDefineDateTime(column,value);
+    		case Types.DATE:		return reDefineDateTime(column,value);
+    		case Types.TIME:		return reDefineDateTime(column,value);
     	
     	// Char
-    		case Types.CHAR: 		return reDefineString(value);
-    		case Types.VARCHAR: 	return reDefineString(value);
-    		case Types.LONGVARCHAR: return reDefineString(value);
-    		case Types.CLOB:		return reDefineClob(value);
+    		case Types.CHAR: 		return reDefineString(column,value);
+    		case Types.VARCHAR: 	return reDefineString(column,value);
+    		case Types.LONGVARCHAR: return reDefineString(column,value);
+    		case Types.CLOB:		return reDefineClob(column,value);
     	
     	// Boolean
-    		case Types.BOOLEAN:		return reDefineBoolean(value);
-    		case Types.BIT:			return reDefineBoolean(value);	
+    		case Types.BOOLEAN:		return reDefineBoolean(column,value);
+    		case Types.BIT:			return reDefineBoolean(column,value);	
     	
     	// Binary
-    		case Types.BINARY:			return reDefineBinary(value);
-    		case Types.VARBINARY:		return reDefineBinary(value);
-    		case Types.LONGVARBINARY:	return reDefineBinary(value);
-    		case Types.BLOB:			return reDefineBlob(value);
+    		case Types.BINARY:			return reDefineBinary(column,value);
+    		case Types.VARBINARY:		return reDefineBinary(column,value);
+    		case Types.LONGVARBINARY:	return reDefineBinary(column,value);
+    		case Types.BLOB:			return reDefineBlob(column,value);
     		
     	// Others
-    		case Types.ARRAY:				return reDefineOther(value);
-    		case Types.DATALINK:				return reDefineOther(value);
-    		case Types.DISTINCT:				return reDefineOther(value);
-    		case Types.JAVA_OBJECT:				return reDefineOther(value);
-    		case Types.NULL:				return reDefineOther(value);
-    		case Types.STRUCT:				return reDefineOther(value);
-    		case Types.REF:				return reDefineOther(value);
+    		case Types.ARRAY:				return reDefineOther(column,value);
+    		case Types.DATALINK:				return reDefineOther(column,value);
+    		case Types.DISTINCT:				return reDefineOther(column,value);
+    		case Types.JAVA_OBJECT:				return reDefineOther(column,value);
+    		case Types.NULL:				return reDefineOther(column,value);
+    		case Types.STRUCT:				return reDefineOther(column,value);
+    		case Types.REF:				return reDefineOther(column,value);
     		default: return value; 
         }
         
     }
 
-    private Object reDefineBoolean(Object value) {
+    private static Object reDefineBoolean(QueryColumnImpl column,Object value) {
     	if(Decision.isCastableToBoolean(value))
     		return value;
     	
-    	/*Boolean bool = Caster.toBoolean(value,null);
-        if(bool!=null) {                
-            return bool;
-        }*/
-    	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineDouble(Object value) {
+    private static Object reDefineDouble(QueryColumnImpl column,Object value) {
     	if(Decision.isCastableToNumeric(value))
     		return value;
     	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineFloat(Object value) {
+    private static Object reDefineFloat(QueryColumnImpl column,Object value) {
     	if(Decision.isCastableToNumeric(value))
     		return value;
-    	
-    	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineInteger(Object value) {
+    private static Object reDefineInteger(QueryColumnImpl column,Object value) {
     	if(Decision.isCastableToNumeric(value))
     		return value;
-    	
-    	
-        resetType();
+    	resetType(column);
         return value;
     }
 
-    private Object reDefineShort(Object value) {
+    private static Object reDefineShort(QueryColumnImpl column, Object value) {
     	
     	double dbl = Caster.toDoubleValue(value,Double.NaN);
         if(Decision.isValid(dbl)) {  
@@ -135,74 +118,66 @@ public final class QueryColumnUtil implements Serializable {
             column.type=Types.DOUBLE;
             return value;
         }
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineTinyInt(Object value) {
+    private static Object reDefineTinyInt(QueryColumnImpl column,Object value) {
     	if(Decision.isCastableToNumeric(value))
     		return value;
-    	
-    	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineDecimal(Object value) {
+    private static Object reDefineDecimal(QueryColumnImpl column,Object value) {
     	if(Decision.isCastableToNumeric(value))
     		return value;
-    	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineDateTime(Object value) {
+    private static Object reDefineDateTime(QueryColumnImpl column, Object value) {
     	if(Decision.isDateSimple(value,true))
     		return value;
-    	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineString(Object value) {
+    private static Object reDefineString(QueryColumnImpl column, Object value) {
     	if(Decision.isCastableToString(value))
     		return value;
-    	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineClob(Object value) {
+    private static Object reDefineClob(QueryColumnImpl column, Object value) {
     	if(Decision.isCastableToString(value))
     		return value;
-    	
-    	
-        resetType();
+        resetType(column);
         return value;
     }
 
-    private Object reDefineBinary(Object value) {
+    private static Object reDefineBinary(QueryColumnImpl column, Object value) {
     	if(Decision.isCastableToBinary(value,false))
     		return value;
     	
-    	resetType();
+    	resetType(column);
         return value;
     	
     	
     }
 
-    private Object reDefineBlob(Object value) {
+    private static Object reDefineBlob(QueryColumnImpl column,Object value) {
     	if(Decision.isCastableToBinary(value,false))
     		return value;
-    	
-    	resetType();
+    	resetType(column);
         return value;
         
     
     }
     
-    private Object reDefineOther(Object value) {
-        resetType();
+    private static Object reDefineOther(QueryColumnImpl column,Object value) {
+        resetType(column);
         return value;
     }
     
@@ -211,22 +186,21 @@ public final class QueryColumnUtil implements Serializable {
      * reorganize type of a column
      * @param reorganize 
      */
-    protected void reOrganizeType() {
-    	
-        if((column.type==Types.OTHER) && !column.typeChecked) {
+    protected static void reOrganizeType(QueryColumnImpl column) {
+    	if((column.type==Types.OTHER) && !column.typeChecked) {
         	column.typeChecked=true;
         	if(column.size()>0) {
-                checkOther(column.data[0]);
-                
+                checkOther(column,column.data[0]);
+        		
                 // get Type
                 for(int i=1;i<column.size();i++) {
                     switch(column.type) {
-                        case Types.NULL:checkOther(column.data[i]);break;
-                        case Types.TIMESTAMP:checkDate(column.data[i]);break;
+                        case Types.NULL:checkOther(column,column.data[i]);break;
+                        case Types.TIMESTAMP:checkDate(column,column.data[i]);break;
                         //case Types.DATE:checkDate(column.data[i]);break;
-                        case Types.BOOLEAN:checkBoolean(column.data[i]);break;
-                        case Types.DOUBLE:checkDouble(column.data[i]);break;
-                        case Types.VARCHAR:checkBasic(column.data[i]);break;
+                        case Types.BOOLEAN:checkBoolean(column,column.data[i]);break;
+                        case Types.DOUBLE:checkDouble(column,column.data[i]);break;
+                        case Types.VARCHAR:checkBasic(column,column.data[i]);break;
                         default:break;
                     }
                 }
@@ -237,7 +211,7 @@ public final class QueryColumnUtil implements Serializable {
     
     
 
-    private void checkOther(Object value) {
+    private static void checkOther(QueryColumnImpl column, Object value) {
         // NULL
         if(value==null) {
             column.type=Types.NULL;
@@ -266,7 +240,7 @@ public final class QueryColumnUtil implements Serializable {
         }
     }
     
-    private void checkDate(Object value) {
+    private static void checkDate(QueryColumnImpl column,Object value) {
         // NULL
         if(value==null) return;
         // DateTime
@@ -285,7 +259,7 @@ public final class QueryColumnUtil implements Serializable {
         return;
     }
 
-    private void checkBoolean(Object value) {
+    private static void checkBoolean(QueryColumnImpl column, Object value) {
         // NULL
         if(value==null) return;
         // Boolean
@@ -308,7 +282,7 @@ public final class QueryColumnUtil implements Serializable {
         column.type=Types.OTHER;
         return;
     }
-    private void checkDouble(Object value) {
+    private static void checkDouble(QueryColumnImpl column,Object value) {
         // NULL
         if(value==null) return;
         // Double
@@ -327,7 +301,7 @@ public final class QueryColumnUtil implements Serializable {
         return;
     }
     
-    private void checkBasic(Object value) {
+    private static void checkBasic(QueryColumnImpl column,Object value) {
         // NULL
         if(value==null) return;
         // Date
