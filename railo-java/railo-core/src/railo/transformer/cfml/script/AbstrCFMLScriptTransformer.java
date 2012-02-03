@@ -707,7 +707,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				}
 				
 				// argument attributes
-				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,EMPTY_STRING,true,null,false);
+				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,EMPTY_STRING,Boolean.TRUE,null,false);
 				Attribute _attr;
 				if(!ArrayUtil.isEmpty(_attrs)){
 					if(meta==null) meta=new HashMap<String, Attribute>();
@@ -757,7 +757,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,EMPTY_STRING,true,null,false);
+		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,EMPTY_STRING,Boolean.TRUE,null,false);
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -913,7 +913,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		// attributes
 		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,EMPTY_STRING,script.getRtexpr(),null,false);
+		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,EMPTY_STRING,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false);
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -1003,7 +1003,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		
 		// folgend wird tlt extra nicht Ÿbergeben, sonst findet prŸfung statt
-		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,false,"name",true);
+		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true);
 		
 		checkSemiColonLineFeed(data,true);
 
@@ -1124,7 +1124,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		
 		// folgend wird tlt extra nicht Ÿbergeben, sonst findet prŸfung statt
-		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,false,"name",true);
+		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,"name","name",true);
 		checkSemiColonLineFeed(data,true);
 
 		param.setTagLibTag(tlt);
@@ -1630,7 +1630,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	
 	
 	
-	private final Attribute[] attributes(Tag tag,TagLibTag tlt, Data data, EndCondition endCond,Expression defaultValue,boolean allowExpression, 
+	private final Attribute[] attributes(Tag tag,TagLibTag tlt, Data data, EndCondition endCond,Expression defaultValue,Object oAllowExpression, 
 			String ignoreAttrReqFor, boolean allowTwiceAttr) throws TemplateException {
 		ArrayList<Attribute> attrs=new ArrayList<Attribute>();
 		ArrayList<String> ids=new ArrayList<String>();
@@ -1640,7 +1640,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			// if no more attributes break
 			if(endCond.isEnd(data)) break;
 			//if((allowBlock && data.cfml.isCurrent('{')) || data.cfml.isCurrent(';')) break;
-			Attribute attr = attribute(tlt,data,ids,defaultValue,allowExpression, allowTwiceAttr);
+			Attribute attr = attribute(tlt,data,ids,defaultValue,oAllowExpression, allowTwiceAttr);
 			attrs.add(attr);
 		}
 		
@@ -1672,13 +1672,17 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		return false;
 	}
 
-	private final Attribute attribute(TagLibTag tlt, Data data, ArrayList<String> args, Expression defaultValue,boolean allowExpression, boolean allowTwiceAttr) throws TemplateException {
+	private final Attribute attribute(TagLibTag tlt, Data data, ArrayList<String> args, Expression defaultValue,Object oAllowExpression, boolean allowTwiceAttr) throws TemplateException {
 		StringBuffer sbType=new StringBuffer();
     	RefBoolean dynamic=new RefBooleanImpl(false);
     	
 		// Name
     	String name=attributeName(data.cfml,args,tlt,dynamic,sbType, allowTwiceAttr);
-    	Expression value=null;
+    	boolean allowExpression=false;
+    	if(oAllowExpression instanceof Boolean)allowExpression=((Boolean)oAllowExpression).booleanValue();
+    	else if(oAllowExpression instanceof String)allowExpression=((String)oAllowExpression).equalsIgnoreCase(name);
+
+          Expression value=null;
     	
     	CFMLTransformer.comment(data.cfml,true);
     	
