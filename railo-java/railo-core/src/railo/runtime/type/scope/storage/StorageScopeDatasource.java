@@ -19,6 +19,7 @@ import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
+import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -129,7 +130,8 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    finally {
 	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
 	    }
-	    pc.getDebugger().addQueryExecutionTime(datasourceName,"",sqlSelect,query.getRecordcount(),pc.getCurrentPageSource(),query.executionTime());
+	    boolean debugUsage=DebuggerImpl.debugQueryUsage(pc,query);
+	    ((DebuggerImpl)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",sqlSelect,query.getRecordcount(),pc.getCurrentPageSource(),query.executionTime());
 	    boolean _isNew = query.getRecordcount()==0;
 	    
 	    if(_isNew) {

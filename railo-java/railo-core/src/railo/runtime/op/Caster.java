@@ -2741,22 +2741,6 @@ public final class Caster {
 		if(q instanceof QueryPro)return (QueryPro) q;
 		return defaultValue;
 	}
-    
-
-    /* *
-     * cast a query to a QueryImpl Object
-     * @param q query to cast
-     * @return casted Query Object
-     * @throws CasterException 
-     * /
-    public static QueryImpl toQueryImpl(Query q,QueryImpl defaultValue) {
-		while(q instanceof QueryWrap){
-			q=((QueryWrap)q).getQuery();
-		}
-		
-		if(q instanceof QueryImpl)return (QueryImpl) q;
-		return defaultValue;
-	}*/
 
     /**
      * cast a Object to a Query Object
@@ -3152,27 +3136,36 @@ public final class Caster {
                     break;
            }
         }
+        // array
+        if(type.endsWith("[]")) {
+        	Class clazz = cfTypeToClass(type.substring(0,type.length()-2));
+        	clazz=ClassUtil.toArrayClass(clazz);
+        	return clazz;
+        }
         
         // check for argument
-        PageContext pc = ThreadLocalPageContext.get();
+        Class<?> clazz=otherTypeToClass(type);
+        if(clazz!=null) return clazz;
+        throw new ExpressionException("invalid type ["+type+"]");
+    }
+    
+    private static Class<?> otherTypeToClass(String type){
+    	PageContext pc = ThreadLocalPageContext.get();
         if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
         		return ComponentUtil.getServerComponentPropertiesClass(c);
     		} 
-            catch (PageException pe) {
-            	pe.printStackTrace();
-            }
+            catch (PageException pe) {}
         }
         try {
 			return ClassUtil.loadClass(type);
 		} 
-        catch (ClassException e) {
-        	
-        }
+        catch (ClassException e) {}
         
-        throw new ExpressionException("invalid type ["+type+"]");
+        return null;
     }
+    
 
     
     /**
@@ -3345,6 +3338,22 @@ public final class Caster {
                     break;
            }
         }
+        
+        // <type>[]
+        if(type.endsWith("[]")){
+        	String componentType = type.substring(0,type.length()-2);
+        	Object[] src = toNativeArray(o);
+        	Array trg=new ArrayImpl();
+        	for(int i=0;i<src.length;i++){
+        		if(src[i]==null){
+        			continue;
+        		}
+        		trg.setE(i+1,castTo(pc, componentType, src[i],alsoPattern));
+        	}        	
+        	return trg;	
+        }
+        
+        
         if(o instanceof Component) {
             Component comp=((Component)o);
             if(comp.instanceOf(type)) return o;
@@ -4224,6 +4233,18 @@ public final class Caster {
 			return ((ObjectWrap)value).getEmbededObject(defaultValue);
 		}
 		return value;
+	}
+
+	public static CharSequence toCharSequence(Object obj) throws PageException {
+		if(obj instanceof CharSequence) return (CharSequence) obj;
+		return Caster.toString(obj);
+	}
+
+	public static CharSequence toCharSequence(Object obj, CharSequence defaultValue) {
+		if(obj instanceof CharSequence) return (CharSequence) obj;
+		String str = Caster.toString(obj,null);
+		if(str==null) return defaultValue;
+		return str;
 	}
 
 

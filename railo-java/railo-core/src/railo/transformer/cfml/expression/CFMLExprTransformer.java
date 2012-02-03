@@ -41,6 +41,8 @@ import railo.transformer.bytecode.op.OpString;
 import railo.transformer.bytecode.op.OpVariable;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
+import railo.transformer.cfml.script.DocComment;
+import railo.transformer.cfml.script.DocCommentTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
@@ -146,6 +148,9 @@ public class CFMLExprTransformer implements ExprTransformer {
 	public static final short CTX_ZIP = TagLibTagScript.CTX_ZIP;
 	
 	
+	private DocCommentTransformer docCommentTransformer= new DocCommentTransformer();
+	
+	
 	/*private short mode=0;
 	protected CFMLString cfml;
 	protected FunctionLib[] fld;
@@ -166,6 +171,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		public EvaluatorPool ep;
 		public short context=CTX_NONE; 
 		public TagLibTag[] scriptTags;
+		public DocComment docComment;
 		
 		public Data(EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
 			this.ep=ep;
@@ -199,7 +205,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Data data = init(ep,fld, cfml,false);
 
 		// parse the houle Page String
-        comments(data.cfml);
+        comments(data);
 		//Expression expr = assignOp();
 
 		// return the Root Element of the Document	
@@ -218,7 +224,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression el=null;
 		
 		// parse the houle Page String
-        comments(data.cfml);		
+        comments(data);		
 				
 		// String
 			if((el=string(data))!=null) {
@@ -279,7 +285,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = assignOp(data);
 		try{
 			if (data.cfml.forwardIfCurrent(":")) {
-				comments(data.cfml);
+				comments(data);
 	            return new NamedArgument(expr,assignOp(data),type);
 			}
 			else if(expr instanceof DynAssign){
@@ -310,7 +316,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = conditionalOp(data);
         if (data.cfml.forwardIfCurrent('=')) {
         	
-            comments(data.cfml);
+            comments(data);
             if(data.mode==STATIC) expr=new DynAssign(expr,assignOp(data));
 			else {
 				if(expr instanceof Variable)
@@ -326,11 +332,11 @@ public class CFMLExprTransformer implements ExprTransformer {
         
 		Expression expr = impOp(data);
         if (data.cfml.forwardIfCurrent('?')) {
-        	comments(data.cfml);
+        	comments(data);
         	Expression left = assignOp(data);
-        	comments(data.cfml);
+        	comments(data);
         	if(!data.cfml.forwardIfCurrent(':'))throw new TemplateException("invalid conditional operator");
-        	comments(data.cfml); 
+        	comments(data); 
         	Expression right = assignOp(data);
         	
             expr=OpContional.toExpr(expr, left, right);
@@ -349,7 +355,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	protected Expression impOp(Data data) throws TemplateException {
 		Expression expr = eqvOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("imp")) { 
-			comments(data.cfml);
+			comments(data);
             expr=OpBool.toExprBoolean(expr, eqvOp(data), OpBool.IMP);
 		}
 		return expr;
@@ -366,7 +372,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	protected Expression eqvOp(Data data) throws TemplateException {
 		Expression expr = xorOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("eqv")) {
-			comments(data.cfml);
+			comments(data);
             expr=OpBool.toExprBoolean(expr, xorOp(data), OpBool.EQV);
 		}
 		return expr;
@@ -383,7 +389,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	protected Expression xorOp(Data data) throws TemplateException {
 		Expression expr = orOp(data);
 		while(data.cfml.forwardIfCurrentAndNoWordAfter("xor")) {
-			comments(data.cfml);
+			comments(data);
             expr=OpBool.toExprBoolean(expr, orOp(data), OpBool.XOR);
 		}
 		return expr;
@@ -402,7 +408,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = andOp(data);
 		
 		while(data.cfml.forwardIfCurrent("||") || data.cfml.forwardIfCurrentAndNoWordAfter("or")) {
-			comments(data.cfml);
+			comments(data);
             expr=OpBool.toExprBoolean(expr, andOp(data), OpBool.OR);
 		}
 		return expr;
@@ -421,7 +427,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		Expression expr = notOp(data);
 		
 		while(data.cfml.forwardIfCurrent("&&") || data.cfml.forwardIfCurrentAndNoWordAfter("and")) {
-			comments(data.cfml);
+			comments(data);
 	        expr=OpBool.toExprBoolean(expr, notOp(data), OpBool.AND);
 		}
 		return expr;
@@ -441,11 +447,11 @@ public class CFMLExprTransformer implements ExprTransformer {
 		int line=data.cfml.getLine();
 		if (data.cfml.isCurrent('!') && !data.cfml.isCurrent("!=")) {
 			data.cfml.next();
-			comments(data.cfml);
+			comments(data);
 			return OpNegate.toExprBoolean(notOp(data),line);
 		}
 		else if (data.cfml.forwardIfCurrentAndNoWordAfter("not")) {
-			comments(data.cfml);
+			comments(data);
 			return OpNegate.toExprBoolean(notOp(data),line);
 		}
 		return decsionOp(data);
@@ -616,7 +622,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		return expr;
 	}
 	private Expression decisionOpCreate(Data data,int operation, Expression left) throws TemplateException {
-        comments(data.cfml);
+        comments(data);
         return OPDecision.toExprBoolean(left, concatOp(data), operation);
 	}
 
@@ -638,13 +644,13 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// &=
 			if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 				data.cfml.next();
-				comments(data.cfml);
+				comments(data);
 				Expression right = assignOp(data);
 				ExprString res = OpString.toExprString(expr, right);
 				expr=new OpVariable((Variable)expr,res);
 			}
 			else {
-	            comments(data.cfml);
+	            comments(data);
 	            expr=OpString.toExprString(expr, plusMinusOp(data));
 			}
 			
@@ -680,7 +686,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		// +=
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
-			comments(data.cfml);
+			comments(data);
 			Expression right = assignOp(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, right,opr);
 			expr=new OpVariable((Variable)expr,res);
@@ -688,14 +694,14 @@ public class CFMLExprTransformer implements ExprTransformer {
 		/*/ ++
 		else if (data.cfml.isCurrent(opr==OpDouble.PLUS?'+':'-') && expr instanceof Variable) {
 			data.cfml.next();
-			comments(data.cfml);
+			comments(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),opr);
 			expr=new OpVariable((Variable)expr,res);
 			expr=OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D, -1),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
-			//comments(data.cfml);
+			//comments(data);
 		}*/
 		else {
-			comments(data.cfml);
+			comments(data);
             expr=OpDouble.toExprDouble(expr, modOp(data), opr);	
 		}
 		return expr;
@@ -717,7 +723,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		// Modulus Operation
 		while(data.cfml.forwardIfCurrent('%') || data.cfml.forwardIfCurrentAndNoWordAfter("mod")) {
 			expr=_modOp(data,expr);
-			//comments(data.cfml);
+			//comments(data);
             //expr=OpDouble.toExprDouble(expr, divMultiOp(), OpDouble.MODULUS);
 		}
 		return expr;
@@ -726,12 +732,12 @@ public class CFMLExprTransformer implements ExprTransformer {
 	private Expression _modOp(Data data,Expression expr) throws TemplateException {
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
-			comments(data.cfml);
+			comments(data);
 			Expression right = assignOp(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, right,OpDouble.MODULUS);
 			return new OpVariable((Variable)expr,res);
 		}
-        comments(data.cfml);
+        comments(data);
         return OpDouble.toExprDouble(expr, expoOp(data), OpDouble.MODULUS);
 	}
 
@@ -751,21 +757,21 @@ public class CFMLExprTransformer implements ExprTransformer {
 				// Multiply Operation
 				if(data.cfml.forwardIfCurrent('*')) {
 					expr=_divMultiOp(data,expr,OpDouble.MULTIPLY);
-					//comments(data.cfml);
+					//comments(data);
                     //expr=OpDouble.toExprDouble(expr, expoOp(), OpDouble.MULTIPLY);
 				}
 				// Divide Operation
 				else if (data.cfml.isCurrent('/') && (!data.cfml.isCurrent('/','>') )) {
 					data.cfml.next(); 
 					expr=_divMultiOp(data,expr,OpDouble.DIVIDE);
-					//comments(data.cfml);
+					//comments(data);
                     //expr=OpDouble.toExprDouble(expr, expoOp(), OpDouble.DIVIDE);
 				}
 				// Divide Operation
 				else if (data.cfml.isCurrent('\\')) {
 					data.cfml.next(); 
 					expr=_divMultiOp(data,expr,OpDouble.INTDIV);
-					//comments(data.cfml);
+					//comments(data);
                     //expr=OpDouble.toExprDouble(expr, expoOp(), OpDouble.INTDIV);
 				}
 				else {
@@ -779,12 +785,12 @@ public class CFMLExprTransformer implements ExprTransformer {
 	private Expression _divMultiOp(Data data,Expression expr, int iOp) throws TemplateException {
 		if (data.cfml.isCurrent('=') && expr instanceof Variable) {
 			data.cfml.next();
-			comments(data.cfml);
+			comments(data);
 			Expression right = assignOp(data);
 			ExprDouble res = OpDouble.toExprDouble(expr, right,iOp);
 			return new OpVariable((Variable)expr,res);
 		}
-        comments(data.cfml);
+        comments(data);
         return OpDouble.toExprDouble(expr, expoOp(data), iOp);
 	}
 
@@ -802,7 +808,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 
 		// Modulus Operation
 		while(data.cfml.forwardIfCurrent('^') || data.cfml.forwardIfCurrentAndNoWordAfter("exp")) {
-			comments(data.cfml);
+			comments(data);
             expr=OpDouble.toExprDouble(expr, unaryOp(data), OpDouble.EXP);
 		}
 		return expr;
@@ -821,7 +827,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 	}
 	
 	private Expression _unaryOp(Data data,Expression expr,int opr) throws TemplateException {
-		comments(data.cfml);
+		comments(data);
 		ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),opr);
 		expr=new OpVariable((Variable)expr,res);
 		return OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D, -1),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
@@ -840,23 +846,23 @@ public class CFMLExprTransformer implements ExprTransformer {
 		int line=data.cfml.getLine();
 		if (data.cfml.forwardIfCurrent('-')) {
 			if (data.cfml.forwardIfCurrent('-')) {
-				comments(data.cfml);
+				comments(data);
 				Expression expr = clip(data);
 				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),OpDouble.MINUS);
 				return new OpVariable((Variable)expr,res);
 			}
-			comments(data.cfml);
+			comments(data);
 			return OpNegateNumber.toExprDouble(clip(data),OpNegateNumber.MINUS,line);
 			
 		}
 		else if (data.cfml.forwardIfCurrent('+')) {
 			if (data.cfml.forwardIfCurrent('+')) {
-				comments(data.cfml);
+				comments(data);
 				Expression expr = clip(data);
 				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),OpDouble.PLUS);
 				return new OpVariable((Variable)expr,res);
 			}
-			comments(data.cfml);
+			comments(data);
 			return CastDouble.toExprDouble(clip(data));//OpNegateNumber.toExprDouble(clip(),OpNegateNumber.PLUS,line);
 		}
 		return clip(data);
@@ -970,9 +976,9 @@ public class CFMLExprTransformer implements ExprTransformer {
 				// get Content of sharp
 				else {
 					data.cfml.next();
-                    comments(data.cfml);
+                    comments(data);
 					Expression inner=assignOp(data);
-                    comments(data.cfml);
+                    comments(data);
 					if (!data.cfml.isCurrent('#'))
 						throw new TemplateException(data.cfml,"Invalid Syntax Closing [#] not found");
 					
@@ -1018,7 +1024,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		else if(str.length()!=0) {
 			expr = OpString.toExprString(expr, new LitString(str.toString(),line));
 		}
-        comments(data.cfml);
+        comments(data);
 		return expr;
 		
 	}
@@ -1069,7 +1075,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 				rightSite="0";//throw new TemplateException(cfml, "Number can't end with [.]"); // DIFF 23
 			rtn.append(rightSite);
 		}
-        comments(data.cfml);
+        comments(data);
         
 		try {
 			return new LitDouble(Caster.toDoubleValue(rtn.toString()),line);
@@ -1121,28 +1127,28 @@ public class CFMLExprTransformer implements ExprTransformer {
 		if(name == null) {
 		    if (!data.cfml.forwardIfCurrent('(')) return null;
 		    
-            comments(data.cfml);
+            comments(data);
 			Expression expr = assignOp(data);
 
 			if (!data.cfml.forwardIfCurrent(')'))
 				throw new TemplateException(
 					data.cfml,
 					"Invalid Syntax Closing [)] not found");
-            comments(data.cfml);
+            comments(data);
             return expr;//subDynamic(expr);
             
 		}
 			
 		Variable var;
-        comments(data.cfml);
+        comments(data);
 		
 		// Boolean constant 
 		if(name.equals("TRUE"))	{// || name.equals("YES"))	{
-			comments(data.cfml);
+			comments(data);
 			return new LitBoolean(true,line);
 		}
 		else if(name.equals("FALSE"))	{// || name.equals("NO"))	{
-			comments(data.cfml);
+			comments(data);
 			return new LitBoolean(false,line);
 		}
 		
@@ -1167,18 +1173,18 @@ public class CFMLExprTransformer implements ExprTransformer {
 		bif.setReturnType(flf.getReturnTypeAsString());
 		
 		do {
-			comments(data.cfml);
+			comments(data);
 			if (data.cfml.isCurrent(end))break;
 			
 			bif.addArgument(functionArgument(data));
-			comments(data.cfml);
+			comments(data);
 		} 
 		while (data.cfml.forwardIfCurrent(','));
-		comments(data.cfml);
+		comments(data);
 			
 		if (!data.cfml.forwardIfCurrent(end))
 			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+end+"] not found");
-		comments(data.cfml);
+		comments(data);
 		Variable var=new Variable(line);
 		var.addMember(bif);
 		return var;
@@ -1210,12 +1216,12 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// .
 			if (data.cfml.forwardIfCurrent('.')) {
 				// Extract next Var String
-                comments(data.cfml);
+                comments(data);
                 int line=data.cfml.getLine();
 				name = identifier(data,true,false);
 				if(name==null) 
 					throw new TemplateException(data.cfml, "Invalid identifier");
-                comments(data.cfml);
+                comments(data);
 				nameProp=LitString.toExprString(name,line);
 				namePropUC=LitString.toExprString(name.toUpperCase(),line);
 			}
@@ -1234,12 +1240,12 @@ public class CFMLExprTransformer implements ExprTransformer {
 			/* / :
 			else if (data.cfml.forwardIfCurrent(':')) {
 				// Extract next Var String
-                comments(data.cfml);
+                comments(data);
                 int line=data.cfml.getLine();
 				name = identifier(true,true);
 				if(name==null) 
 					throw new TemplateException(cfml, "Invalid identifier");
-                comments(data.cfml);
+                comments(data);
                 
 				nameProp=LitString.toExprString(name,line);
 			}*/
@@ -1248,7 +1254,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 				break;
 			}
 
-            comments(data.cfml);
+            comments(data);
             
             if(expr instanceof Invoker)  {
             	invoker=(Invoker) expr;
@@ -1297,7 +1303,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			// Loop over addional identifier
 			while (data.cfml.isValidIndex()) {
 				if (data.cfml.forwardIfCurrent('.')) {
-					comments(data.cfml);
+					comments(data);
 	                name = identifier(data,true,false);
 					if(name==null) {
 						data.cfml.setPos(start);
@@ -1305,7 +1311,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 					}
 					fullName.append('.');
 					fullName.append(name);
-					comments(data.cfml);
+					comments(data);
 				}
 				else break;
 			}
@@ -1324,14 +1330,14 @@ public class CFMLExprTransformer implements ExprTransformer {
 			}
 		}
 
-        comments(data.cfml);
+        comments(data);
         
         if (data.cfml.isCurrent('(')) {
 			FunctionMember func = getFunctionMember(data,"_createComponent", true, null);
 			func.addArgument(new Argument(exprName,"string"));
 			Variable v=new Variable(expr.getLine());
 			v.addMember(func);
-            comments(data.cfml);
+            comments(data);
 			return v;
 		} 
         data.cfml.setPos(start);
@@ -1365,7 +1371,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			
 			Variable var=new Variable(line);
 			var.addMember(func);
-            comments(data.cfml);
+            comments(data);
 			return var;
 		} 
 		
@@ -1377,7 +1383,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		var=new Variable(line);
 		var.addMember(new DataMember(LitString.toExprString(name, data.cfml.getLine())));
 
-        comments(data.cfml);
+        comments(data);
 		return var;
 		
 	}
@@ -1412,7 +1418,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		else if (idStr.equals("VAR")) {
 			String name=identifier(data,false,true);
 			if(name!=null){
-				comments(data.cfml);
+				comments(data);
 				Variable local = new Variable(ScopeSupport.SCOPE_VAR,line);
 				if(!"LOCAL".equals(name))local.addMember(new DataMember(LitString.toExprString(name, data.cfml.getLine())));
 				else {
@@ -1463,10 +1469,10 @@ public class CFMLExprTransformer implements ExprTransformer {
 	* @throws TemplateException 
 	*/
 	protected Expression structElement(Data data) throws TemplateException {
-        comments(data.cfml);
+        comments(data);
 		Expression name = CastString.toExprString(assignOp(data));
 		if(name instanceof LitString)((LitString)name).fromBracket(true);
-        comments(data.cfml);
+        comments(data);
 		return name;
 	}
 
@@ -1546,7 +1552,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 		int count = 0;
 		do {
 			data.cfml.next();
-            comments(data.cfml);
+            comments(data);
 
 			// finish
 			if (count==0 && data.cfml.isCurrent(')'))
@@ -1589,7 +1595,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 				fm.addArgument(functionArgument(data));
 			}
 
-            comments(data.cfml);
+            comments(data);
 			count++;
 			if (data.cfml.isCurrent(')'))
 				break;
@@ -1613,7 +1619,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			throw te;
 		}
 
-        comments(data.cfml);
+        comments(data);
         
         // evaluator
         if(checkLibrary && flf.hasTteClass()){
@@ -1695,17 +1701,17 @@ public class CFMLExprTransformer implements ExprTransformer {
 		if(!data.cfml.forwardIfCurrent('#'))
 			return null;
 		Expression expr;
-        comments(data.cfml);
+        comments(data);
         boolean old=data.allowLowerThan;
         data.allowLowerThan=true;
 		expr = assignOp(data);
 		data.allowLowerThan=old;
-        comments(data.cfml);
+        comments(data);
 		if (!data.cfml.forwardIfCurrent('#'))
 			throw new TemplateException(
 				data.cfml,
 				"Syntax Error, Invalid Construct "+(data.cfml.length()<30?data.cfml.toString():""));
-        comments(data.cfml);
+        comments(data);
 		return expr;
 	}
 	
@@ -1730,7 +1736,7 @@ public class CFMLExprTransformer implements ExprTransformer {
 			else sb.append(data.cfml.getCurrent());
 			data.cfml.next();
 		}
-        comments(data.cfml);
+        comments(data);
 		
 		return LitString.toExprString(sb.toString(),line);
 	}
@@ -1744,9 +1750,9 @@ public class CFMLExprTransformer implements ExprTransformer {
      * @param data 
      * @throws TemplateException
      */
-    protected void comments(CFMLString cfml) throws TemplateException {
-        cfml.removeSpace();
-        while(comment(cfml)){cfml.removeSpace();}
+    protected void comments(Data data) throws TemplateException {
+        data.cfml.removeSpace();
+        while(comment(data)){data.cfml.removeSpace();}
     }
     
     /**
@@ -1757,8 +1763,8 @@ public class CFMLExprTransformer implements ExprTransformer {
      * @return bool Wurde ein Kommentar entfernt?
      * @throws TemplateException
      */
-    protected boolean comment(CFMLString cfml) throws TemplateException {
-        if(singleLineComment(cfml) || multiLineComment(cfml) || CFMLTransformer.comment(cfml)) return true;
+    protected boolean comment(Data data) throws TemplateException {
+        if(singleLineComment(data.cfml) || multiLineComment(data) || CFMLTransformer.comment(data.cfml)) return true;
         return false;
     }
 
@@ -1770,9 +1776,11 @@ public class CFMLExprTransformer implements ExprTransformer {
      * @return bool Wurde ein Kommentar entfernt?
      * @throws TemplateException
      */
-    private boolean multiLineComment(CFMLString cfml) throws TemplateException {
-        if(!cfml.forwardIfCurrent("/*")) return false;
+    private boolean multiLineComment(Data data) throws TemplateException {
+       CFMLString cfml = data.cfml;
+    	if(!cfml.forwardIfCurrent("/*")) return false;
         int pos=cfml.getPos();
+        boolean isDocComment=cfml.isCurrent('*');
         while(cfml.isValidIndex()) {
             if(cfml.isCurrent("*/")) break;
             cfml.next();
@@ -1780,6 +1788,10 @@ public class CFMLExprTransformer implements ExprTransformer {
         if(!cfml.forwardIfCurrent("*/")){
             cfml.setPos(pos);
             throw new TemplateException(cfml,"comment is not closed");
+        }
+        if(isDocComment) {
+        	String comment = cfml.substring(pos-2,cfml.getPos()-pos);
+        	data.docComment=docCommentTransformer.transform(comment);
         }
         return true;
     }

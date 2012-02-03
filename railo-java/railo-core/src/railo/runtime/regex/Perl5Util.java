@@ -208,7 +208,7 @@ public final class Perl5Util {
 	                        else if('u'==nn) x='u';
 	                        else if('l'==nn) x='l';
 	                        else if('E'==nn) x='E';
-	                        else if('d'==nn) x='d';
+	                        //else if('d'==nn) x='d';
 	                        if(x!=0) {
 	                            sb.append("\\"+x);
 	                            i+=2;

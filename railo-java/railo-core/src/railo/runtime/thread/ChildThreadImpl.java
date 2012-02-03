@@ -18,6 +18,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.Abort;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.HttpUtil;
@@ -174,9 +175,8 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		try {
 			p.threadCall(pc, threadIndex); 
 		}
+		catch(Abort a){}
 		catch (Throwable t) {
-			//t.printStackTrace(pc.getConfig().getErrWriter());
-			//t.printStackTrace();
 			ConfigWeb c = pc.getConfig();
 			if(c instanceof ConfigImpl) {
 				ConfigImpl ci=(ConfigImpl) c;

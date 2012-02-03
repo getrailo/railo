@@ -13,12 +13,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.PropertyFactory;
 
-public class UDFAddProperty extends UDFGSProperty {
+public final class UDFAddProperty extends UDFGSProperty {
 
-	private Property prop;
+	private final Property prop;
 	//private ComponentScope scope;
 	
-	private Key propName;
+	private final Key propName;
 	
 	private static final Object NULL=new Object();
 
@@ -30,9 +30,9 @@ public class UDFAddProperty extends UDFGSProperty {
 
 	private static FunctionArgument[] getFunctionArgument(Property prop) {
 		String t = PropertyFactory.getType(prop);
-		FunctionArgumentImpl value = new FunctionArgumentImpl(PropertyFactory.getSingularName(prop),"any",true);
+		FunctionArgument value = new FunctionArgumentImpl(KeyImpl.init(PropertyFactory.getSingularName(prop)),"any",CFTypes.TYPE_ANY,true);
 		if("struct".equalsIgnoreCase(t)){
-			FunctionArgumentImpl key = new FunctionArgumentImpl("key","string",true);
+			FunctionArgument key = new FunctionArgumentImpl(KeyImpl.KEY,"string",CFTypes.TYPE_STRING,true);
 			return new FunctionArgument[]{key,value};
 		}
 		return new FunctionArgument[]{value};

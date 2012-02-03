@@ -1,26 +1,33 @@
 package railo.runtime.lock;
 
-class ReadLockData implements LockData {
+import railo.commons.lock.Lock;
 
-    private String name;
-    private int id;
+class LockDataImpl implements LockDataPro {
+
+	private final Lock lock;
+    private final String name;
+    private final int id;
+	private final boolean readOnly;
 
     /**
      * constructor of the class
      * @param token 
      * @param name name of the token
      * @param id id of the token
+     * @param readOnly 
      */
-    protected ReadLockData(String name, int id) {
+    protected LockDataImpl(Lock lock,String name, int id, boolean readOnly) {
+    	this.lock=lock;
     	this.name=name.toLowerCase();
         this.id=id;
+        this.readOnly=readOnly;
     }
 
 	/**
      * @see railo.runtime.lock.LockData#isReadOnly()
      */
     public boolean isReadOnly() {
-        return true;
+        return readOnly;
     }
 
     /**
@@ -36,4 +43,11 @@ class ReadLockData implements LockData {
     public String getName() {
         return name;
     }
+    
+	 /**
+	 * @return the lock
+	 */
+	public Lock getLock() {
+		return lock;
+	}
 }

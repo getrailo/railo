@@ -191,7 +191,7 @@ public final class OperationImpl implements Operation {
      * @see railo.runtime.util.Operation#concat(java.lang.String, java.lang.String)
      */
     public String concat(String left, String right) {
-        return Operator.concat(left,right);
+        return left.concat(right);
     }
 
     /**

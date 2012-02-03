@@ -181,6 +181,7 @@ public final class IniFile {
   * @throws IOException
   */
  public void save() throws IOException {
+	 if(!file.exists())file.createFile(true);
      OutputStream out=IOUtil.toBufferedOutputStream(file.getOutputStream());
      Iterator it = sections.keySet().iterator();
      PrintWriter output = new PrintWriter(out);

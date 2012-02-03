@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 
 import railo.aprint;
 import railo.commons.collections.HashTable;
+import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.MD5;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.FileUtil;
@@ -243,7 +244,7 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,servletConfig);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc);
+		load(configServer,configWeb,doc,false);
 		createContextFilesPost(configDir,configWeb,servletConfig,false);
 	    return configWeb;
     }
@@ -292,7 +293,7 @@ public final class ConfigWebFactory {
         createContextFiles(configDir,null);
         config.reset();
         
-		load(config.getConfigServerImpl(),config,doc);
+		load(config.getConfigServerImpl(),config,doc,true);
 		createContextFilesPost(configDir,config,null,false);
     }
     
@@ -311,7 +312,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
@@ -324,7 +325,7 @@ public final class ConfigWebFactory {
     	}
     	
     	loadConstants(configServer,config,doc);
-    	loadTempDirectory(configServer, config, doc);
+    	loadTempDirectory(configServer, config, doc,isReload);
     	loadId(config);
     	loadVersion(config,doc);
     	loadSecurity(configServer,config,doc);
@@ -373,6 +374,7 @@ public final class ConfigWebFactory {
     	loadGatewayEL(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
     	loadMonitors(configServer,config,doc);
+    	loadLogin(configServer, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -511,14 +513,16 @@ public final class ConfigWebFactory {
     
 
 
-	private static Map toArguments(String attributes) {
-		Map map=new HashTable();
+	private static Map<String,String> toArguments(String attributes) {
+		Map<String,String> map=new HashTable();
 		if(attributes==null) return map;
 		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
 		String[] item;
+		int index;
 		for(int i=0;i<arr.length;i++) {
-			item=List.toStringArray(List.listToArray(arr[i], ':'),null);
-			if(item.length>1) map.put(item[0], item[1]);
+			index=arr[i].indexOf(':');
+			if(index==-1)map.put(arr[i].trim(), "");
+			else map.put(arr[i].substring(0,index).trim(), arr[i].substring(index+1).trim());
 		}
 		return map;
 	}
@@ -1715,6 +1719,7 @@ public final class ConfigWebFactory {
             ,DataSource.ALLOW_ALL
             ,false
             ,false
+            ,null
             ,new StructImpl()
 		);
 
@@ -1779,6 +1784,7 @@ public final class ConfigWebFactory {
                         ,toInt(dataSource.getAttribute("allow"),DataSource.ALLOW_ALL)
                         ,toBoolean(dataSource.getAttribute("validate"),false)
                         ,toBoolean(dataSource.getAttribute("storage"),false)
+                        ,dataSource.getAttribute("timezone")
                         ,toStruct(dataSource.getAttribute("custom"))
     				);
 			  	}
@@ -1995,7 +2001,6 @@ public final class ConfigWebFactory {
 
 	private static void loadGateway(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException  {
 		boolean hasCS=configServer!=null;
-        
 		if(!hasCS) return;
 		ConfigWebImpl cw=(ConfigWebImpl) config;
 		
@@ -2111,8 +2116,8 @@ public final class ConfigWebFactory {
             String[] item;
             for(int i=0;i<arr.length;i++) {
                 item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
-                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),URLDecoder.decode(item[1]));
-                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0]).trim()),"");
+                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
+                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),"");
             }   
         }
         catch(PageException ee) {}
@@ -2121,21 +2126,24 @@ public final class ConfigWebFactory {
     }
 
 
-    private static void setDatasource(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
+    private static void setDatasource(ConfigImpl config,Map<String,DataSource> datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) throws ClassException {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,
+            boolean validate,boolean storage,String timezone, Struct custom) throws ClassException {
 		
         
 		datasources.put(datasourceName.toLowerCase(),
-          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,metaCacheTimeout,blob,clob, allow,custom, false,validate,storage));
+          new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,
+        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,TimeZoneUtil.toTimeZone(timezone,null)));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
-            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,boolean storage, Struct custom) {
+            int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,
+            boolean storage,String timezone, Struct custom) {
     	try {
 			setDatasource(config,datasources,datasourceName,className, server, 
-			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, validate,storage,custom);
+			        databasename, port, dsn, user, pass, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, validate,storage,timezone,custom);
 		} catch (Throwable t) {}
     }
     
@@ -2335,7 +2343,7 @@ public final class ConfigWebFactory {
         
     
     
-    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) throws ExpressionException, TagLibException, FunctionLibException {
         Resource configDir=config.getConfigDir();
         boolean hasCS=configServer!=null;
         
@@ -2350,15 +2358,15 @@ public final class ConfigWebFactory {
 	  	if(!StringUtil.isEmpty(strTempDirectory)) {
 		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
 		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config));
+		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
 	  	}
 	  	else if(hasCS) {
-	  		config.setTempDirectory(configServer.getTempDirectory());
+	  		config.setTempDirectory(configServer.getTempDirectory(),!isReload);
 	  	}
 	  	if(config.getTempDirectory()==null) {
 	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
 		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config));
+		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
 	  	}
     }
 
@@ -3206,7 +3214,7 @@ public final class ConfigWebFactory {
         
         
     }
-        
+
     private static void loadConstants(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
         
         boolean hasCS=configServer!=null;
@@ -3227,6 +3235,18 @@ public final class ConfigWebFactory {
         	sct.setEL(KeyImpl.getInstance(name.trim()), elConstants[i].getAttribute("value"));
         }
         config.setConstants(sct);
+    }
+    
+    private static void loadLogin(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
+        // server context
+    	if(config instanceof ConfigServer) {
+        	Element login=getChildByName(doc.getDocumentElement(),"login");
+        	boolean captcha=Caster.toBooleanValue(login.getAttribute("captcha"),false);
+        	int delay=Caster.toIntValue(login.getAttribute("delay"),0);
+        	ConfigServerImpl cs=(ConfigServerImpl) config;
+        	cs.setLoginDelay(delay);
+        	cs.setLoginCaptcha(captcha);
+        }
     }
 	
 
@@ -3444,7 +3464,7 @@ public final class ConfigWebFactory {
      * @param config
      * @param doc
      */
-    private static void loadDebug(ConfigServer configServer, ConfigImpl config, Document doc) {
+    private static void loadDebug(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
         boolean hasCS=configServer!=null;
         
       	Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
@@ -3468,6 +3488,15 @@ public final class ConfigWebFactory {
       	else {
       	    config.setDebugTemplate("/railo-context/templates/debugging/debugging.cfm");
         }	
+      	
+      	// show-usage
+      	Boolean showUsage = Caster.toBoolean(debugging.getAttribute("show-query-usage"),null);
+      	if(showUsage!=null && hasAccess) {
+      	    config.setDebugShowQueryUsage(showUsage.booleanValue());
+      	}
+      	else if(hasCS) {
+      	    config.setDebugShowQueryUsage(configServer.getDebugShowQueryUsage());
+      	}
     }
 
     /**

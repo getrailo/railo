@@ -257,7 +257,7 @@ public final class JSONConverter {
         	ComponentScope scope = cp.getComponentScope();
         	for(int i=0;i<props.length;i++) {
         		if(!ignoreRemotingFetch) {
-        			remotingFetch=Caster.toBoolean(props[i].getMeta().get(REMOTING_FETCH,null),null);
+        			remotingFetch=Caster.toBoolean(props[i].getDynamicAttributes().get(REMOTING_FETCH,null),null);
         			if(remotingFetch==null){
         				if(isPeristent  && HBMCreator.isRelated(props[i])) continue;
         			}

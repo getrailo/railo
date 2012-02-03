@@ -129,6 +129,7 @@ public final class DateCaster {
 					//}catch (ParseException e) {}
 				}
 	    	}
+		    dt=Caster.toDateTime(Locale.US, str, timeZone,defaultValue, false);
 	    }
 	    return dt;
 	}

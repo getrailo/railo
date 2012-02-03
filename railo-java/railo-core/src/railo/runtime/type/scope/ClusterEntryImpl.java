@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import railo.runtime.type.Collection;
 
-public class ClusterEntryImpl  implements ClusterEntry {
+public final class ClusterEntryImpl  implements ClusterEntry {
 
 	private Collection.Key key;
 	private long time;

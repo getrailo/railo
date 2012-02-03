@@ -1,7 +1,6 @@
 package railo.runtime.exp;
 
-import railo.runtime.PageContext;
-import railo.runtime.type.Struct;
+import railo.runtime.config.Config;
 
 /**
  * 
@@ -53,13 +52,9 @@ public final class LockException extends PageExceptionImpl {
 		this.lockOperation=operation;
 		setDetail(detail);
 	}
-	
-	/**
-	 *
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
-	 */
-	public Struct getCatchBlock(PageContext pc) {
-		Struct sct=super.getCatchBlock(pc);
+
+	public CatchBlock getCatchBlock(Config config) {
+		CatchBlock sct=super.getCatchBlock(config);
 		sct.setEL("LockName",lockName);
 		sct.setEL("LockOperation",lockOperation);
 		return sct;

@@ -53,10 +53,7 @@ public class HibernateCaster {
 		return cfc;
 	}*/
 	
-	
-	
-	
-	public static Object toCFML(Object src) throws PageException {
+	public static Object toCFML(Object src) {
 		if(src==null) return null;
 		if(src instanceof Collection) return src;
 		
@@ -69,7 +66,7 @@ public class HibernateCaster {
 		return src;
 	}
 	
-	public static Array toCFML(List src) throws PageException {
+	public static Array toCFML(List src)  {
         int size=src.size();
         
         Array trg = new ArrayImpl();
@@ -216,12 +213,12 @@ public class HibernateCaster {
 		if("clob".equals(type)) return Types.CLOB;
 		if("date".equals(type)) return Types.DATE;
 		if("big_decimal".equals(type)) return Types.DECIMAL;
+		if("big_integer".equals(type)) return Types.NUMERIC;
 		if("double".equals(type)) return Types.DOUBLE;
 		if("float".equals(type)) return Types.FLOAT;
 		if("integer".equals(type)) return Types.INTEGER;
 		if("binary".equals(type)) return Types.VARBINARY;
 		if("string".equals(type)) return Types.VARCHAR;
-		if("big_decimal".equals(type)) return Types.NUMERIC;
 		if("short".equals(type)) return Types.SMALLINT;
 		if("time".equals(type)) return Types.TIME;
 		if("timestamp".equals(type)) return Types.TIMESTAMP;
@@ -451,7 +448,7 @@ public class HibernateCaster {
 				}
 			}
 			else 
-				qry=new QueryImpl(new Collection.Key[0],1,"orm");
+				qry=new QueryImpl(new Collection.Key[0],0,"orm");
 		}
 		
 		if(qry==null) {

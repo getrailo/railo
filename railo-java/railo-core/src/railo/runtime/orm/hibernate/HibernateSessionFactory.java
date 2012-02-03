@@ -28,7 +28,6 @@ import railo.runtime.Component;
 import railo.runtime.ComponentPro;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
@@ -46,6 +45,13 @@ import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 
 public class HibernateSessionFactory {
+	
+	
+	public static final String HIBERNATE_3_PUBLIC_ID = "-//Hibernate/Hibernate Mapping DTD 3.0//EN";
+	public static final String HIBERNATE_3_SYSTEM_ID = "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd";
+	public static final String HIBERNATE_3_ENCODING = "UTF-8";
+	public static final String HIBERNATE_3_DOCTYPE_DEFINITION = "<!DOCTYPE hibernate-mapping PUBLIC \""+HIBERNATE_3_PUBLIC_ID+"\" \""+HIBERNATE_3_SYSTEM_ID+"\">";
+	
 
 	public static Configuration createConfiguration(HibernateORMEngine engine,String mappings, DatasourceConnection dc, ORMConfiguration ormConf) throws SQLException, IOException, PageException {
 		/*
@@ -229,8 +235,8 @@ public class HibernateSessionFactory {
 		
 		Set<String> done=new HashSet<String>();
 		StringBuffer mappings=new StringBuffer();
-		mappings.append("<?xml version=\"1.0\"?>\n");
-		mappings.append("<!DOCTYPE hibernate-mapping PUBLIC \"-//Hibernate/Hibernate Mapping DTD 3.0//EN\" \"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd\">\n");
+		mappings.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		mappings.append(HIBERNATE_3_DOCTYPE_DEFINITION+"\n");
 		mappings.append("<hibernate-mapping>\n");
 		Iterator<Entry<String, CFCInfo>> it = cfcs.entrySet().iterator();
 		Entry<String, CFCInfo> entry;
@@ -330,10 +336,10 @@ public class HibernateSessionFactory {
 					
 					
 					
-					Page p = ps.loadPage(pc.getConfig());
+					//Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);
+					ComponentAccess cfc = ComponentLoader.loadComponent(pc, null, ps, name, true,true);
 					if(cfc.isPersistent()){
 						components.add(cfc);
 					}

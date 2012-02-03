@@ -9,9 +9,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
-public class CollectionStruct extends StructSupport implements ObjectWrap,Struct {
+public final class CollectionStruct extends StructSupport implements ObjectWrap,Struct {
 
-	private Collection coll;
+	private final Collection coll;
 
 	public CollectionStruct(Collection coll) {
 		this.coll=coll;

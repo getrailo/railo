@@ -24,6 +24,8 @@ public class TagBase extends StatementBase implements Tag {
 	Map attributes=new LinkedHashMap();
 	Map missingAttributes=new HashMap();
 	private boolean scriptBase=false;
+	
+	private Map<String, Attribute> metadata;
 
 
 	public TagBase(int startLine,int endLine) {
@@ -192,4 +194,12 @@ public class TagBase extends StatementBase implements Tag {
 		return missingAttributes;
 	}
 	
+	public void addMetaData(Attribute metadata) {
+		if(this.metadata==null) this.metadata=new HashMap<String, Attribute>();
+		this.metadata.put(metadata.getName(), metadata);
+	}
+	
+	public Map<String, Attribute> getMetaData() {
+		return metadata;
+	}
 }

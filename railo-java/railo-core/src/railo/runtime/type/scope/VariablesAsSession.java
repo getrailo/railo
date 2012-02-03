@@ -11,7 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 
-public class VariablesAsSession implements Session {
+public final class VariablesAsSession implements Session {
 	
 	private Session session;
 

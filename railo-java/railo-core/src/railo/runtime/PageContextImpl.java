@@ -83,6 +83,7 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.AppListenerSupport;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
@@ -251,8 +252,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private PageException exception;
     private PageSource base;
 
-    ApplicationContext applicationContext;
-    ApplicationContext defaultApplicationContext;
+    ApplicationContextPro applicationContext;
+    ApplicationContextPro defaultApplicationContext;
 
     private ScopeFactory scopeFactory=new ScopeFactory();
 
@@ -637,10 +638,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void write(String str) throws IOException {
     	writer.write(str);
-		//TODO remove
-		//if(str.equalsIgnoreCase("throw"))throw new R untimeException("throw from write");
 	}
-    
+
     /**
      * @see railo.runtime.PageContext#forceWrite(java.lang.String)
      */
@@ -1481,7 +1480,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public Query getQuery(String key) throws PageException {
 		Object o=VariableInterpreter.getVariable(this,key);
 		if(o instanceof Query) return (Query) o;
-		throw new ExpressionException("["+key+"] is not a query object");
+		throw new CasterException(o,Query.class);///("["+key+"] is not a query object, object is from type ");
 	}
 
 	/**
@@ -2531,7 +2530,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         session=null;
         application=null;
         client=null;
-        this.applicationContext = applicationContext;
+        this.applicationContext = (ApplicationContextPro) applicationContext;
         
         int scriptProtect = applicationContext.getScriptProtect();
         
@@ -2813,7 +2812,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 
 	public DatasourceConnection _getConnection(String datasource, String user,String pass) throws PageException {
-		DataSource ds = config.getDataSource(datasource);
+		return _getConnection(config.getDataSource(datasource),user,pass);
+	}
+	
+	public DatasourceConnection _getConnection(DataSource ds, String user,String pass) throws PageException {
 		
 		String id=DatasourceConnectionPool.createId(ds,user,pass);
 		DatasourceConnection dc=(DatasourceConnection) conns.get(id);
@@ -2866,8 +2868,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		pagesUsed.add(""+page.hashCode());
 	}
 
+	/**
+	 * @param line
+	 * @deprecated no longer supported and ignored
+	 */
 	public void exeLogEndline(int line){
-		execLog.line(line);
+		//execLog.line(line);
+	}
+	public void exeLogStart(int line,String id){
+		if(execLog!=null)execLog.start(line, id);
+	}
+	public void exeLogEnd(int line,String id){
+		if(execLog!=null)execLog.end(line, id);
 	}
 
 	
@@ -2915,5 +2927,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 	public String getServerPassword() {
 		return serverPassword;
+	}
+
+	public short getSessionType() {
+		if(isGatewayContext())return Config.SESSION_TYPE_CFML;
+		return applicationContext.getSessionType();
 	}
 }

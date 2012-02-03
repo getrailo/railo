@@ -54,7 +54,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.media.jai.BorderExtender;
@@ -103,6 +102,8 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructSupport;
 
 public class Image extends StructSupport implements Cloneable,Struct {
+	private static final long serialVersionUID = -2370381932689749657L;
+
 
 	public static final int BORDER_TYPE_CONSTANT=-1;
 
@@ -139,6 +140,9 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	private static final int ANTI_ALIAS_NONE=0;
 	private static final int ANTI_ALIAS_ON=1;
 	private static final int ANTI_ALIAS_OFF=2;
+
+
+	private static final String FORMAT = "javax_imageio_1.0";
 	
 	private BufferedImage _image;
 	private Resource source=null;
@@ -162,8 +166,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
 
 
 	private Composite composite;
-
-
 	private static Object sync=new Object();
 
 	
@@ -296,76 +298,58 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		else sct.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
 
 		
-		metadata(sctInfo);
+		getMetaData(sctInfo);
 		
 		ImageMeta.addInfo(format,source,sctInfo);
 		
 		this.sctInfo=sctInfo;
 		return sctInfo;
 	}
-	
-	private IIOMetadata metadata(String format) {
-		if(StringUtil.isEmpty(format)) return null;
-		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(format);
-		while(it.hasNext()) {
-			ImageReader ir=(ImageReader) it.next();
-			ImageInputStream iis=null;
-			IIOMetadata metadata=null;
-			InputStream is=null;
-			try {
-				if(source instanceof File) { // TODO create ResourceImageInputStream
-					iis=new FileImageInputStream((File) source);
-				}
-				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
-				else if(source==null)iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,true)));
-				//else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,false)));
-				else iis=new MemoryCacheImageInputStream(is=source.getInputStream());
-				ir.setInput(iis);
-				
-				metadata = ir.getImageMetadata(0);
-				ir.reset();
-			} 
-			catch (Throwable t) {}
-			finally {
-				ImageUtil.closeEL(iis);
-				IOUtil.closeEL(is);
+
+	public IIOMetadata getMetaData(Struct parent) {
+        InputStream is=null;
+        javax.imageio.stream.ImageInputStreamImpl iis=null;
+    	try {
+        	
+        	if(source instanceof File) { 
+				iis=new FileImageInputStream((File) source);
 			}
-			if(metadata!=null) return metadata;
-		}
-		return null;
-	}
+			else if(source==null)iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format,true)));
+			else iis=new MemoryCacheImageInputStream(is=source.getInputStream());
+			
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+            if (readers.hasNext()) {
+            	// pick the first available ImageReader
+                ImageReader reader = readers.next();
+                IIOMetadata meta=null;
+                synchronized (sync) {
+	                // attach source to the reader
+	                reader.setInput(iis, true);
 	
-	private void metadata(Struct parent) {
-		if(StringUtil.isEmpty(format)) return;
-		Iterator<ImageReader> it = ImageIO.getImageReadersBySuffix(format);
-		while(it.hasNext()) {
-			ImageReader ir=(ImageReader) it.next();
-			ImageInputStream iis=null;
-			try {
-				IIOMetadata metadata=null;
-				synchronized (sync) {
-					if(source instanceof File) { // TODO create ResourceImageInputStream
-						iis=new FileImageInputStream((File) source);
+	                // read metadata of first image
+	                meta = reader.getImageMetadata(0);
+	                meta.setFromTree(FORMAT, meta.getAsTree(FORMAT));
+	                reader.reset();
+                }
+                // generating dump
+                if(parent!=null){
+	                String[] formatNames = meta.getMetadataFormatNames();
+					for(int i=0;i<formatNames.length;i++) {
+						Node root = meta.getAsTree(formatNames[i]);
+						//print.out(XMLCaster.toString(root));
+						addMetaddata(parent,"metadata",root);
 					}
-					else iis=new MemoryCacheImageInputStream(new ByteArrayInputStream(getImageBytes(format)));
-					ir.setInput(iis);
-					
-					metadata=ir.getImageMetadata(0);
-					ir.reset();
-				}
-				String[] formatNames = metadata.getMetadataFormatNames();
-				for(int i=0;i<formatNames.length;i++) {
-					Node root = metadata.getAsTree(formatNames[i]);
-					//print.out(XMLCaster.toString(root));
-					addMetaddata(parent,"metadata",root);
-				}
-			} 
-			catch (Throwable t) {}
-			finally {
-				ImageUtil.closeEL(iis);
-			}
-		}
-	}
+                }
+                return meta;
+            }
+        }
+        catch (Throwable t) {}
+        finally{
+        	ImageUtil.closeEL(iis);
+			IOUtil.closeEL(is);
+        }
+        return null;
+    }
 
 	private void addMetaddata(Struct parent, String name, Node node) {
 		
@@ -865,7 +849,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
     		JAIUtil.write(getBufferedImage(),destination,format);
     		return;
     	}
-    	
 		OutputStream os=null;
 		ImageOutputStream ios = null;
 		try {
@@ -921,7 +904,10 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		
 		BufferedImage im = image();
 		
-		IIOMetadata meta = noMeta?null:metadata(format);
+		//IIOMetadata meta = noMeta?null:metadata(format);
+		IIOMetadata meta = noMeta?null:getMetaData(null);
+		
+		
 		
 		ImageWriter writer = null;
     	ImageTypeSpecifier type =ImageTypeSpecifier.createFromRenderedImage(im);
@@ -932,7 +918,8 @@ public class Image extends StructSupport implements Cloneable,Struct {
     		writer = (ImageWriter)iter.next();
     	}
     	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
-
+    	
+    	
 		ImageWriteParam iwp=null;
     	if("jpg".equalsIgnoreCase(format)) {
     		ColorModel cm = im.getColorModel();
@@ -942,15 +929,15 @@ public class Image extends StructSupport implements Cloneable,Struct {
     		iwp=jiwp;
     	}
     	else iwp = writer.getDefaultWriteParam();
-
+    	
 		setCompressionModeEL(iwp,ImageWriteParam.MODE_EXPLICIT);
     	setCompressionQualityEL(iwp,quality);
-    	
     	writer.setOutput(ios);
     	try {
-    		writer.write(null, new IIOImage(im, null, meta), iwp);
+    		writer.write(meta, new IIOImage(im, null, meta), iwp);
     		
-    	} finally {
+    	} 
+    	finally {
     		writer.dispose();
     		ios.flush();
     	}

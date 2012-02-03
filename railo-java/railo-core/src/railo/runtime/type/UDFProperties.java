@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.ExternalizableUtil;
 import railo.commons.lang.SizeOf;
 import railo.runtime.Page;
@@ -20,7 +21,7 @@ import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.type.util.ComponentUtil;
 
-public class UDFProperties implements Sizeable,Serializable,Externalizable {
+public final class UDFProperties implements Sizeable,Serializable,Externalizable {
 
 
 	public  String functionName;
@@ -169,6 +170,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		
 	}
 	
+	
 	public UDFProperties(
 	        Page page,
 	        FunctionArgument[] arguments,
@@ -259,7 +261,7 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		this.output = output;
 		this.pageSource = pageSource;
 		
-		this.strReturnType=CFTypes.toString(returnType);
+		this.strReturnType=CFTypes.toString(returnType,"any");
 		this.returnType=returnType;
 		this.strReturnFormat=strReturnFormat;
 		this.returnFormat=UDFImpl.toReturnFormat(strReturnFormat);
@@ -306,14 +308,13 @@ public class UDFProperties implements Sizeable,Serializable,Externalizable {
 		try {
 			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
 			ConfigWebImpl cw = (ConfigWebImpl) ThreadLocalPageContext.getConfig(pc);
-			pageSource=cw.getPageSource(pc,null, ExternalizableUtil.readString(in), false,pc.useSpecialMappings(),true);
+			String path=ExternalizableUtil.readString(in);
+			pageSource=cw.getPageSource(pc,null, path, false,true,true);
 			
 		} 
 		catch (Throwable e) {
 			e.printStackTrace();
-			IOException ioe = new IOException(e.getMessage());
-			ioe.setStackTrace(e.getStackTrace());
-			throw ioe;
+			throw ExceptionUtil.toIOException(e);
 		}
 		
 		arguments=(FunctionArgument[]) in.readObject();

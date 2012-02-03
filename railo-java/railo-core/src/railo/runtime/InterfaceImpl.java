@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import railo.commons.lang.StringUtil;
@@ -42,11 +43,12 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
 	private String dspName;
 	private String callPath;
 	private boolean realPath;
+	private Map meta;
 	
 	private InterfaceImpl[] superInterfaces;
 	
-	private Map udfs=new HashMap();
-	private Map interfacesUDFs;
+	private Map<Collection.Key,UDF> udfs=new HashMap<Collection.Key,UDF>();
+	private Map<Collection.Key,UDF> interfacesUDFs;
 
 	/**
      * Constructor of the Component
@@ -55,18 +57,28 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
      * @param hint 
      * @param dspName 
      */
-	 public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
-	    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs);
-	 }
-	 public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
-	    	this.pageSource=pageSource;
-	    	this.extend=extend;
-	    	this.hint=hint;
-	    	this.dspName=dspName;
-	    	this.callPath=callPath;
-	    	this.realPath=realPath;
-	    	this.interfacesUDFs=interfacesUDFs;
+	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
+    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs,null);
 	}
+	public InterfaceImpl(InterfacePage page,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs, Map meta) {
+    	this(page.getPageSource(),extend, hint, dspName,callPath, realPath,interfacesUDFs,meta);
+	}
+	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs) {
+    	this(pageSource, extend, hint, dspName, callPath, realPath, interfacesUDFs, null);
+	}
+	public InterfaceImpl(PageSource pageSource,String extend, String hint, String dspName,String callPath, boolean realPath,Map interfacesUDFs, Map meta) {
+    	this.pageSource=pageSource;
+    	this.extend=extend;
+    	this.hint=hint;
+    	this.dspName=dspName;
+    	this.callPath=callPath;
+    	this.realPath=realPath;
+    	this.interfacesUDFs=interfacesUDFs;
+    	this.meta=meta;
+}
+	 
+	 
+	 
 	    
 
 	private static void init(PageContext pc,InterfaceImpl icfc) throws PageException {
@@ -79,7 +91,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
 
 
     public static InterfaceImpl[] loadImplements(PageContext pc, String lstExtend, Map interfaceUdfs) throws PageException {
-    	List interfaces=new ArrayList();
+    	List<InterfaceImpl> interfaces=new ArrayList<InterfaceImpl>();
     	loadImplements(pc, lstExtend, interfaces, interfaceUdfs);
     	return (InterfaceImpl[]) interfaces.toArray(new InterfaceImpl[interfaces.size()]);
     	
@@ -88,7 +100,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
     private static void loadImplements(PageContext pc, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
     	
     	Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(lstExtend, ',');
-    	Iterator it = arr.iterator();
+    	Iterator<?> it = arr.iterator();
     	InterfaceImpl ic;
     	String extend;
 
@@ -103,7 +115,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
     	}
 	}
     
-    private void setUDFListener(Map interfacesUDFs) {
+    private void setUDFListener(Map<Collection.Key,UDF> interfacesUDFs) {
 		this.interfacesUDFs=interfacesUDFs;
 	}
 
@@ -209,29 +221,33 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
 	private static Struct _getMetaData(PageContext pc,InterfaceImpl icfc) throws PageException {
 		Struct sct=new StructImpl();
 		ArrayImpl arr=new ArrayImpl();
-        Set set=icfc.udfs.keySet();
-        Iterator it = set.iterator();
-        //Collection.Key name;
-        Object oKey;
-        UDF udf;
-        //String[] keys=comp.keysOnlyThis(access);
-        while(it.hasNext()) {
-        	oKey=it.next();
-        	//name=KeyImpl.toKey(oKey,null);
-        	udf=(UDF)icfc.udfs.get(oKey);
-            arr.append(udf.getMetaData(pc));
-            //}
+        {
+			Iterator<UDF> it = icfc.udfs.values().iterator();
+	        while(it.hasNext()) {
+	        	arr.append(it.next().getMetaData(pc));
+	        }
+		}
+        
+        if(icfc.meta!=null) {
+        	Iterator it = icfc.meta.entrySet().iterator();
+        	Map.Entry entry;
+        	while(it.hasNext()){
+        		entry=(Entry) it.next();
+        		sct.setEL(KeyImpl.toKey(entry.getKey()), entry.getValue());
+        	}
         }
         
         
-        if(!StringUtil.isEmpty(icfc.hint))sct.set("hint",icfc.hint);
-        if(!StringUtil.isEmpty(icfc.dspName))sct.set("displayname",icfc.dspName);
+        if(!StringUtil.isEmpty(icfc.hint,true))sct.set(KeyImpl.HINT,icfc.hint);
+        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(ComponentImpl.DISPLAY_NAME,icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
-        	Struct ex=new StructImpl();
+            Set<String> _set = railo.runtime.type.List.listToSet(icfc.extend,',',true);
+            Struct ex=new StructImpl();
         	sct.set(ComponentImpl.EXTENDS,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
-        		ex.setEL(icfc.superInterfaces[i].getCallPath(),_getMetaData(pc,icfc.superInterfaces[i]));
+        		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
+        		ex.setEL(KeyImpl.init(icfc.superInterfaces[i].getCallPath()),_getMetaData(pc,icfc.superInterfaces[i]));
         	}
         	
         }
@@ -239,7 +255,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
         if(arr.size()!=0)sct.set(ComponentImpl.FUNCTIONS,arr);
         PageSource ps = icfc.pageSource;
         sct.set(KeyImpl.NAME,ps.getComponentName());
-        sct.set("fullname",ps.getComponentName());
+        sct.set(ComponentImpl.FULLNAME,ps.getComponentName());
        
         sct.set(KeyImpl.PATH,ps.getDisplayPath());
         sct.set(KeyImpl.TYPE,"interface");

@@ -11,6 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -95,14 +96,14 @@ public final class Select extends BodyTagImpl {
      * @param name The name to set.
      */
     public void setName(String name) {
-        attributes.setEL("name",name);
+        attributes.setEL(KeyImpl.NAME,name);
         input.setName(name);
     }
     /**
      * @param size The size to set.
      */
     public void setSize(double size) {
-        attributes.setEL("size",Caster.toString(size));
+        attributes.setEL(KeyImpl.SIZE,Caster.toString(size));
     }
     /**
      * @param tabindex The tabindex to set.
@@ -114,7 +115,7 @@ public final class Select extends BodyTagImpl {
      * @param title The title to set.
      */
     public void setTitle(String title) {
-        attributes.setEL("title",title);
+        attributes.setEL(KeyImpl.TITLE,title);
     }
     /**
      * @param title The title to set.
@@ -346,27 +347,27 @@ public final class Select extends BodyTagImpl {
 		}
     	
     	
-        pageContext.write("<select");
+        pageContext.forceWrite("<select");
         
         railo.runtime.type.Collection.Key[] keys = attributes.keys();
         railo.runtime.type.Collection.Key key;
         for(int i=0;i<keys.length;i++) {
             key = keys[i];
-            pageContext.write(" ");
-            pageContext.write(key.getString());
-            pageContext.write("=\"");
-            pageContext.write(enc(Caster.toString(attributes.get(key,null))));
-            pageContext.write("\"");
+            pageContext.forceWrite(" ");
+            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite("=\"");
+            pageContext.forceWrite(enc(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite("\"");
         }
         
         if(passthrough!=null) {
-            pageContext.write(" ");
-            pageContext.write(passthrough);
+            pageContext.forceWrite(" ");
+            pageContext.forceWrite(passthrough);
         }
-        pageContext.write(">\n");
+        pageContext.forceWrite(">\n");
         
 
-        if(bodyContent!=null && queryPosition==QUERY_POSITION_BELOW)pageContext.write(bodyContent.getString());
+        if(bodyContent!=null && queryPosition==QUERY_POSITION_BELOW)pageContext.forceWrite(bodyContent.getString());
         
         // write query options
         if(query!=null) {
@@ -381,18 +382,18 @@ public final class Select extends BodyTagImpl {
                 if(hasGroup) {
                 	tmp=Caster.toString(query.getAt(group,i));
                 	if(currentGroup==null || !Operator.equals(currentGroup,tmp,true)) {
-                		if(currentGroup!=null)pageContext.write("</optgroup>\n");
-                		pageContext.write("<optgroup label=\""+tmp+"\">\n ");
+                		if(currentGroup!=null)pageContext.forceWrite("</optgroup>\n");
+                		pageContext.forceWrite("<optgroup label=\""+tmp+"\">\n ");
                 		currentGroup=tmp;
                 	}
                 }
-                pageContext.write("<option"+selected(v,selected)+" value=\""+v+"\">"+d+"</option>\n");
+                pageContext.forceWrite("<option"+selected(v,selected)+" value=\""+v+"\">"+d+"</option>\n");
             }
-    		if(hasGroup)pageContext.write("</optgroup>\n");
+    		if(hasGroup)pageContext.forceWrite("</optgroup>\n");
         }
         
-        if(bodyContent!=null && queryPosition==QUERY_POSITION_ABOVE)pageContext.write(bodyContent.getString());
-        pageContext.write("</select>");
+        if(bodyContent!=null && queryPosition==QUERY_POSITION_ABOVE)pageContext.forceWrite(bodyContent.getString());
+        pageContext.forceWrite("</select>");
         
         
         

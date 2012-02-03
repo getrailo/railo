@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
@@ -219,7 +220,8 @@ public final class Page extends BodyBase {
 						Types.STRING, // display
 						Types.STRING, // callpath
 						Types.BOOLEAN_VALUE, // realpath
-						Types.MAP 
+						Types.MAP, //interfaceudfs
+						Types.MAP // meta
 					}
     		);
 	
@@ -333,8 +335,9 @@ public final class Page extends BodyBase {
 	public static final byte CF = (byte)207;
 	public static final byte _33 = (byte)51;
 	private static final boolean ADD_C33 = false;
-
-	
+	//private static final String SUB_CALL_UDF = "udfCall";
+	private static final String SUB_CALL_UDF = "_";
+		
     private int version;
     private long lastModifed;
     private String name;
@@ -528,7 +531,7 @@ public final class Page extends BodyBase {
 			        	adapter.visitVarInsn(Opcodes.ALOAD, 1);
 			        	adapter.visitVarInsn(Opcodes.ALOAD, 2);
 			        	adapter.visitVarInsn(Opcodes.ILOAD, 3);
-			        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, name, "udfCall"+(++count), "(Lrailo/runtime/PageContext;Lrailo/runtime/type/UDF;I)Ljava/lang/Object;");
+			        	adapter.visitMethodInsn(Opcodes.INVOKEVIRTUAL, name, createFunctionName(++count), "(Lrailo/runtime/PageContext;Lrailo/runtime/type/UDF;I)Ljava/lang/Object;");
 			        	adapter.visitInsn(Opcodes.ARETURN);//adapter.returnValue();
 		        	cv.visitWhenAfterBody(bc);
 		        }
@@ -541,7 +544,7 @@ public final class Page extends BodyBase {
 	        count=0;
 	        Method innerCall;
 	        for(int i=0;i<functions.length;i+=10) {
-	        	innerCall = new Method("udfCall"+(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT_VALUE});
+	        	innerCall = new Method(createFunctionName(++count),Types.OBJECT,new Type[]{Types.PAGE_CONTEXT, USER_DEFINED_FUNCTION, Types.INT_VALUE});
 	        	
 	        	adapter = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , innerCall, null, new Type[]{Types.THROWABLE}, cw);
 	        	writeOutUdfCallInner(new BytecodeContext(statConstr,constr,externalizer,keys,cw,name,adapter,innerCall,writeLog()), functions, i, i+10>functions.length?functions.length:i+10);
@@ -667,43 +670,44 @@ public final class Page extends BodyBase {
 
 
 
+	private String createFunctionName(int i) {
+		return "_"+Integer.toString(i, Character.MAX_RADIX);
+	}
+
 	private boolean writeLog() {
 		return _writeLog && !isInterface();
 	}
 
-	public static void registerFields(BytecodeContext staticBC, List keys) throws BytecodeException {
-		Iterator it = keys.iterator();
-		//GeneratorAdapter ad = bc.getAdapter();
-		int count=0;
-		String name;
+	public static void registerFields(BytecodeContext bc, List keys) throws BytecodeException {
+		//if(keys.size()==0) return;
+		
+		GeneratorAdapter ga = bc.getAdapter();
+		
+		FieldVisitor fv = bc.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
+				"keys", Types.COLLECTION_KEY_ARRAY.toString(), null, null);
+		fv.visitEnd();
+		
+		
+		int index=0;
 		LitString value;
-		
-		//GeneratorAdapter statcConst = new GeneratorAdapter(Opcodes.ACC_PUBLIC,STATIC_CONSTRUCTOR,null,null,bc.getClassWriter());
-		//BytecodeContext cbw = new BytecodeContext(null,bc.getClassWriter(),bc.getClassName(),statcConst,STATIC_CONSTRUCTOR);
-		//BytecodeContext cbw = bc.getStaticConstructor();
-		GeneratorAdapter statcConst = staticBC.getAdapter();
-		
-		
-		
+		Iterator it = keys.iterator();
+		//ga.visitVarInsn(Opcodes.ALOAD, 0);
+		ga.push(keys.size());
+		ga.newArray(Types.COLLECTION_KEY);
 		while(it.hasNext()) {
-			name="k"+(++count);
 			value=(LitString) it.next();
+			ga.dup();
+			ga.push(index++);
 			
-
-			FieldVisitor fv = staticBC.getClassWriter().visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, 
-					name, "Lrailo/runtime/type/Collection$Key;", null, null);
-			fv.visitEnd();
-			ExpressionUtil.writeOutSilent(value,staticBC, Expression.MODE_REF);
+			ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
 			if(value instanceof Literal)
-				statcConst.invokeStatic(KEY_IMPL, KEY_INTERN);
+				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
 			else 
-				statcConst.invokeStatic(KEY_IMPL, KEY_INIT);
-			
-			statcConst.visitFieldInsn(Opcodes.PUTSTATIC, staticBC.getClassName(), name, "Lrailo/runtime/type/Collection$Key;");
-			
-			
-			
+				ga.invokeStatic(KEY_IMPL, KEY_INIT);
+			ga.visitInsn(Opcodes.AASTORE);
 		}
+		ga.visitFieldInsn(Opcodes.PUTSTATIC, 
+				bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
 
 		//statcConst.returnValue();
 		//statcConst.endMethod();
@@ -1020,6 +1024,8 @@ public final class Page extends BodyBase {
 		adapter.visitVarInsn(Opcodes.ALOAD, 0);
 		adapter.checkCast(Types.COMPONENT_PAGE);
 
+		// !!! also check CFMLScriptTransformer.addMetaData if you do any change here !!!
+		
 		// Output
 		attr = component.removeAttribute("output");
 		if(attr!=null) {
@@ -1089,8 +1095,7 @@ public final class Page extends BodyBase {
 		//ExpressionUtil.writeOutSilent(attr.getValue(),bc, Expression.MODE_VALUE);
 		
 		//adapter.visitVarInsn(Opcodes.ALOAD, 4);
-		
-		createMetaDataStruct(bc,component.getAttributes());
+		createMetaDataStruct(bc,component.getAttributes(),component.getMetaData());
 		
 		adapter.invokeConstructor(Types.COMPONENT_IMPL, CONSTR_COMPONENT_IMPL);
 		
@@ -1166,6 +1171,8 @@ public final class Page extends BodyBase {
 		// interface udfs
 		adapter.visitVarInsn(Opcodes.ALOAD, 3);
 		
+		createMetaDataStruct(bc,interf.getAttributes(),interf.getMetaData());
+		
 		
 		adapter.invokeConstructor(Types.INTERFACE_IMPL, CONSTR_INTERFACE_IMPL);
 		
@@ -1194,9 +1201,11 @@ public final class Page extends BodyBase {
 	
 	
 	
-	public static void createMetaDataStruct(BytecodeContext bc, Map attrs) throws BytecodeException {
+	public static void createMetaDataStruct(BytecodeContext bc, Map attrs, Map meta) throws BytecodeException {
+		
+		
 		GeneratorAdapter adapter = bc.getAdapter();
-		if(attrs==null || attrs.size()==0){
+		if((attrs==null || attrs.size()==0) && (meta==null || meta.size()==0)){
 			ASMConstants.NULL(bc.getAdapter());
 			bc.getAdapter().cast(Types.OBJECT,STRUCT_IMPL);
 			return;
@@ -1207,19 +1216,30 @@ public final class Page extends BodyBase {
 		adapter.dup();
 		adapter.invokeConstructor(STRUCT_IMPL, INIT_STRUCT_IMPL);
 		adapter.storeLocal(sct);
-		if(attrs!=null) {
-			Attribute attr;
-			Iterator it = attrs.entrySet().iterator();
-			while(it.hasNext()){
-				attr=(Attribute) ((Map.Entry)it.next()).getValue();
-				adapter.loadLocal(sct);
-				adapter.push(attr.getName());
-				ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
-				adapter.invokeVirtual(STRUCT_IMPL, SET_EL);
-				adapter.pop();
-			}
+		if(meta!=null) {
+			_createMetaDataStruct(bc,adapter,sct,meta);
 		}
+		if(attrs!=null) {
+			_createMetaDataStruct(bc,adapter,sct,attrs);
+		}
+		
+		
 		adapter.loadLocal(sct);
+	}
+
+	private static void _createMetaDataStruct(BytecodeContext bc, GeneratorAdapter adapter, int sct, Map attrs) throws BytecodeException {
+		Attribute attr;
+		Iterator it = attrs.entrySet().iterator();
+		Entry entry;
+		while(it.hasNext()){
+			entry = (Map.Entry)it.next();
+			attr=(Attribute) entry.getValue();
+			adapter.loadLocal(sct);
+			adapter.push(attr.getName());
+			ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			adapter.invokeVirtual(STRUCT_IMPL, SET_EL);
+			adapter.pop();
+		}
 	}
 
 	private void writeOutCall(BytecodeContext statConstr,BytecodeContext constr,List keys,ClassWriter cw) throws BytecodeException {
@@ -1241,8 +1261,27 @@ public final class Page extends BodyBase {
 
 	private void writeOutCallBody(BytecodeContext bc,Body body, int pageType) throws BytecodeException {
 		// Other
-		writeOutFunctions(bc,body,pageType);
+		List<IFunction> functions=new ArrayList<IFunction>();
+		getFunctions(functions,bc,body,pageType);
 		
+		String className = Types.UDF_PROPERTIES_ARRAY.toString();
+		//FieldVisitor fv = bc.getClassWriter().visitField(Opcodes.ACC_PRIVATE , "udfs",className , null, null);
+		//fv.visitEnd();
+		
+		BytecodeContext constr = bc.getConstructor();
+		GeneratorAdapter cga = constr.getAdapter();
+		
+		cga.visitVarInsn(Opcodes.ALOAD, 0);
+		cga.push(functions.size());
+		//cga.visitTypeInsn(Opcodes.ANEWARRAY, Types.UDF_PROPERTIES.toString());
+		cga.newArray(Types.UDF_PROPERTIES);
+		cga.visitFieldInsn(Opcodes.PUTFIELD, bc.getClassName(), "udfs", className);
+		
+		
+		Iterator<IFunction> it = functions.iterator();
+		while(it.hasNext()){
+			it.next().writeOut(bc, pageType);
+		}
 		
 		if(pageType==IFunction.PAGE_TYPE_COMPONENT) {
 			GeneratorAdapter adapter = bc.getAdapter();
@@ -1287,7 +1326,7 @@ public final class Page extends BodyBase {
 	}
 	
 	
-	private static void writeOutFunctions(BytecodeContext bc, Body body, int pageType) throws BytecodeException {
+	private static void getFunctions(List<IFunction> functions,BytecodeContext bc, Body body, int pageType) throws BytecodeException {
 		//writeOutImports(bc, body, pageType);
 		if(ASMUtil.isEmpty(body)) return;
 		Statement stat;
@@ -1298,16 +1337,17 @@ public final class Page extends BodyBase {
         	
         	// IFunction
         	if(stat instanceof IFunction) {
-        		((IFunction)stat).writeOut(bc,pageType);
+        		functions.add((IFunction)stat);
+        		//((IFunction)stat).writeOut(bc,pageType);
         		stats.remove(i);
         		len--;
         		i--;
         	}
-        	else if(stat instanceof HasBody) writeOutFunctions(bc, ((HasBody)stat).getBody(), pageType);
+        	else if(stat instanceof HasBody) getFunctions(functions,bc, ((HasBody)stat).getBody(), pageType);
         	else if(stat instanceof HasBodies) {
         		Body[] bodies=((HasBodies)stat).getBodies();
         		for(int y=0;y<bodies.length;y++) {
-        			writeOutFunctions(bc,bodies[y] , pageType);
+        			getFunctions(functions,bc,bodies[y] , pageType);
         		}
         		
         	}

@@ -123,7 +123,7 @@ public class Surveillance {
 			// physical classloader
 			size=0;
 			try {
-				size=SizeOf.size(mapping.getClassLoaderForPhysical(false));
+				size=SizeOf.size(mapping.touchPCLCollection());
 			} catch (Exception e) {}
 			sct.set("physicalClassLoader", Caster.toDouble(size));
 			

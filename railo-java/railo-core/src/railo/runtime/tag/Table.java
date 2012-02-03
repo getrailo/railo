@@ -198,27 +198,27 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	}
 	private void _doEndTag() throws IOException	{
 	    if(htmltable) {
-		    pageContext.write("<table colspacing=\""+colspacing+"\"");
+		    pageContext.forceWrite("<table colspacing=\""+colspacing+"\"");
 		    if(border)	{
-		        pageContext.write(" border=\"1\"");
+		        pageContext.forceWrite(" border=\"1\"");
 		    }
-		    pageContext.write(">\n");
+		    pageContext.forceWrite(">\n");
 		    if(header.length()>0) {
-		        pageContext.write("<tr>\n");
-		        pageContext.write(header.toString());
-		        pageContext.write("</tr>\n");
+		        pageContext.forceWrite("<tr>\n");
+		        pageContext.forceWrite(header.toString());
+		        pageContext.forceWrite("</tr>\n");
 		    }
-		    pageContext.write(body.toString());
-		    pageContext.write("</table>");
+		    pageContext.forceWrite(body.toString());
+		    pageContext.forceWrite("</table>");
 		}
 	    else {
-	        pageContext.write("<pre>");
+	        pageContext.forceWrite("<pre>");
 	        if(header.length()>0) {
-		        pageContext.write(header.toString());
-		        pageContext.write(StringUtils.repeat("\n",headerlines-1));
+		        pageContext.forceWrite(header.toString());
+		        pageContext.forceWrite(StringUtils.repeat("\n",headerlines-1));
 		    }
-	        pageContext.write(body.toString());
-	        pageContext.write("</pre>");
+	        pageContext.forceWrite(body.toString());
+	        pageContext.forceWrite("</pre>");
 	    }
 	}
 

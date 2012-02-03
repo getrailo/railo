@@ -1478,14 +1478,14 @@ public final class List {
 		return arr;
 	}
 
-	public static Set listToSet(String list, String delimeter,boolean trim) {
-	    if(list.length()==0) return new HashSet();
+	public static Set<String> listToSet(String list, String delimeter,boolean trim) {
+	    if(list.length()==0) return new HashSet<String>();
 		int len=list.length();
 		int last=0;
 		char[] del=delimeter.toCharArray();
 		char c;
 		
-		HashSet set=new HashSet();
+		HashSet<String> set=new HashSet<String>();
 		for(int i=0;i<len;i++) {
 		    c=list.charAt(i);
 		    for(int y=0;y<del.length;y++) {
@@ -1499,8 +1499,27 @@ public final class List {
 		return set;
 	}
 
-	public static Set toSet(String[] arr) {
-		Set set=new HashSet();
+	public static Set<String> listToSet(String list, char delimeter,boolean trim) {
+	    if(list.length()==0) return new HashSet<String>();
+		int len=list.length();
+		int last=0;
+		char c;
+		
+		HashSet<String> set=new HashSet<String>();
+		for(int i=0;i<len;i++) {
+		    c=list.charAt(i);
+				if(c==delimeter) {
+					set.add(trim?list.substring(last,i).trim():list.substring(last,i));
+					last=i+1;
+				}
+		}
+		if(last<=len)set.add(list.substring(last));
+		return set;
+	}
+
+	
+	public static Set<String> toSet(String[] arr) {
+		Set<String> set=new HashSet<String>();
 		
 		for(int i=0;i<arr.length;i++){
 			set.add(arr[i]);

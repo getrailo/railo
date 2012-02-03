@@ -17,20 +17,19 @@ import railo.runtime.PageContext;
 import railo.runtime.functions.other.CreateUUID;
 import railo.runtime.op.Caster;
 
-public class ResourceExecutionLog implements ExecutionLog {
+public class ResourceExecutionLog extends ExecutionLogSupport {
 	
 	private static int count=1;
 	private Resource file;
 	private StringBuffer content;
-	private long last;
 	private PageContext pc;
-	private int minTime;
 	private StringBuffer header;
 	private ArrayList<String> pathes=new ArrayList<String>();
 	private long start;
+	private Resource dir;
 	
 	
-	public void init(PageContext pc, Map<String, String> arguments) {
+	protected void _init(PageContext pc, Map<String, String> arguments) {
 		this.pc=pc;
 		
 		//header
@@ -50,36 +49,47 @@ public class ResourceExecutionLog implements ExecutionLog {
 				StringUtil.emptyIfNull(req.getServletPath()),"", true));
 		//createHeader(header,"path-translated",pc.getBasePageSource().getDisplayPath());
 		createHeader(header,"query-string",req.getQueryString());
+		createHeader(header,"unit",unitShortToString(unit));
+		createHeader(header,"min-time-nano",min+"");
 		
+		content=new StringBuffer();
 		
-		
-		// min-time
-		String strMinTime=arguments.get("min-time");
-		minTime=Caster.toIntValue(strMinTime,0);
 		
 		// directory
 		String strDirectory=arguments.get("directory");
-		Resource dir=null;
-		content=new StringBuffer();
-		try {
-			dir = ResourceUtil.toResourceNotExisting(pc, strDirectory,false);
-			if(!dir.exists()){
-				dir.createDirectory(true);
+		if(dir==null) {
+			if(StringUtil.isEmpty(strDirectory)) {
+				dir=getTemp(pc);
 			}
-			else if(dir.isFile()){
-				err(pc,"can not create directory ["+dir+"], there is already a file with same name.");
+			else {
+				try {
+					dir = ResourceUtil.toResourceNotExisting(pc, strDirectory,false);
+					if(!dir.exists()){
+						dir.createDirectory(true);
+					}
+					else if(dir.isFile()){
+						err(pc,"can not create directory ["+dir+"], there is already a file with same name.");
+					}
+				} 
+				catch (Throwable t) {
+					err(pc,t);
+					dir=getTemp(pc);
+				}
 			}
-		} 
-		catch (Throwable t) {
-			err(pc,t);
 		}
 		file=dir.getRealResource((pc.getId())+"-"+CreateUUID.call(pc)+".exl");
 		file.createNewFile();
-		last=System.nanoTime();
 		start=System.currentTimeMillis();
 	}
 
-	public void release() {
+	private static Resource getTemp(PageContext pc) {
+		Resource tmp = pc.getConfig().getConfigDir();
+		Resource dir = tmp.getRealResource("execution-log");
+		if(!dir.exists())dir.mkdirs();
+		return dir;
+	}
+
+	protected void _release() {
 		
 		// execution time
 		createHeader(header, "execution-time", Caster.toString(System.currentTimeMillis()-start));
@@ -112,18 +122,24 @@ public class ResourceExecutionLog implements ExecutionLog {
 		sb.append("\n");
 	}
 
-	public void line(int line) {
-		long time=System.nanoTime()-last;
-		if(minTime<=time){
-			content.append(path(pc.getCurrentPageSource().getDisplayPath()));
-			content.append("\t");
-			content.append(line);
-			content.append("\t");
-			content.append(time);
-			content.append("\n");
-		}
-		last=System.nanoTime();
+	
+	
+	@Override
+	protected void _log(int startLine, int endLine, long startTime, long endTime) {
+		long diff=endTime-startTime;
+		if(unit==UNIT_MICRO)diff/=1000;
+		else if(unit==UNIT_MILLI)diff/=1000000;
+		
+		content.append(path(pc.getCurrentPageSource().getDisplayPath()));
+		content.append("\t");
+		content.append(startLine);
+		content.append("\t");
+		content.append(endLine);
+		content.append("\t");
+		content.append(diff);
+		content.append("\n");
 	}
+	
 
 	private int path(String path) {
 		int index= pathes.indexOf(path);

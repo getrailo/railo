@@ -19,7 +19,7 @@ public final class URLDecode implements Function {
 			return java.net.URLDecoder.decode(str,encoding);
 		} catch (Throwable t) {
 			try {
-				return URLDecoder.decode(str,encoding);
+				return URLDecoder.decode(str,encoding,true);
 			} catch (UnsupportedEncodingException uee) {
 				throw new ExpressionException(uee.getMessage());
 			}

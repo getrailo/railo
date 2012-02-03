@@ -29,7 +29,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * Simple standart implementation of a Scope, for standart use.
  */
-public class ScopeSupport extends StructImpl implements Scope,Sizeable {
+public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	
 
 	public static final Key APPLICATION = KeyImpl.intern("application");
@@ -174,8 +174,8 @@ public class ScopeSupport extends StructImpl implements Scope,Sizeable {
             name=raw[i].getName();
             value=raw[i].getValue();
             if(raw[i].isUrlEncoded()) {
-            	name=URLDecoder.decode(name,encoding);
-            	value=URLDecoder.decode(value,encoding);
+            	name=URLDecoder.decode(name,encoding,true);
+            	value=URLDecoder.decode(value,encoding,true);
             }
             // MUST valueStruct
             if(name.indexOf('.')!=-1) {

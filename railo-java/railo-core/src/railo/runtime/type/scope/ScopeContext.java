@@ -18,6 +18,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -317,7 +318,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public int getSessionCount(PageContext pc) {
-		if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
+		if(((PageContextImpl)pc).getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		
 		Iterator it = cfSessionContextes.entrySet().iterator();
 		Map.Entry entry;
@@ -335,7 +336,7 @@ public final class ScopeContext {
 	 */
 	public int getAppContextSessionCount(PageContext pc) {
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext(); 
-		if(appContext.getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
+		if(((PageContextImpl)pc).getSessionType()==Config.SESSION_TYPE_J2EE) return 0;
 		Map context=getSubMap(cfSessionContextes,appContext.getName());
 		return getSessionCount(context);
 	}
@@ -362,7 +363,7 @@ public final class ScopeContext {
 	 * @return
 	 */
 	public Struct getAllSessionScopes(PageContext pc) {
-		return getAllSessionScopes(pc, pc.getApplicationContext().getName());
+		return getAllSessionScopes(pc.getApplicationContext().getName());
 	}
 	
 	public Struct getAllApplicationScopes() {
@@ -397,9 +398,20 @@ public final class ScopeContext {
 	 * @param pc
 	 * @param appName
 	 * @return
+	 * @deprecated use instead getAllSessionScopes(String appName)
 	 */
 	public Struct getAllSessionScopes(PageContext pc, String appName) {
-        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
+        return getAllSessionScopes(appName);
+	}
+	
+	/**
+	 * get all session contexts of given applicaton name
+	 * @param pc
+	 * @param appName
+	 * @return
+	 */
+	public Struct getAllSessionScopes(String appName) {
+        //if(((PageContextImpl)pc).getSessionType()==Config.SESSION_TYPE_J2EE)return new StructImpl();
 		return getAllSessionScopes(getSubMap(cfSessionContextes,appName),appName);
 	}
 	
@@ -424,12 +436,12 @@ public final class ScopeContext {
 	 * @throws PageException
 	 */
 	public SessionPlus getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
-        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
+        if(((PageContextImpl)pc).getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
 		return getJSessionScope(pc,isNew);
 	}
 	
 	public boolean hasExistingSessionScope(PageContext pc) {
-        if(((ApplicationContextPro)pc.getApplicationContext()).getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
+        if(((PageContextImpl)pc).getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
 		return hasExistingJSessionScope(pc);
 	}
 	
@@ -587,7 +599,7 @@ public final class ScopeContext {
 	 * @return j session matching the context
 	 * @throws PageException
 	 */
-	private synchronized SessionPlus getJSessionScope(PageContext pc, RefBoolean isNew) {
+	private synchronized SessionPlus getJSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
         Object session=null;// this is from type object, because it is possible that httpSession return object from prior restart
@@ -599,12 +611,10 @@ public final class ScopeContext {
         	httpSession.setMaxInactiveInterval(maxSessionTimeout);
         	session= httpSession.getAttribute(appContext.getName());
         }
-     // call of listeners
         else {
         	Map context=getSubMap(cfSessionContextes,appContext.getName());
         	session=context.get(pc.getCFID());
         }
-        
         JSession jSession=null;
 		if(session instanceof JSession) {
 			jSession=(JSession) session;
@@ -617,12 +627,18 @@ public final class ScopeContext {
             }
             catch(ClassCastException cce) {
             	error(getLog(), cce);
+            	// if there is no HTTPSession
+    			if(httpSession==null) return getCFSessionScope(pc, isNew);
+    			
                 jSession=new JSession();
                 httpSession.setAttribute(appContext.getName(),jSession);
 				isNew.setValue(true);
             }
 		}
 		else {
+			// if there is no HTTPSession
+			if(httpSession==null) return getCFSessionScope(pc, isNew);
+			
 			info(getLog(), "create new JSession for "+appContext.getName()+"/"+pc.getCFID());
 			jSession=new JSession();
 		    httpSession.setAttribute(appContext.getName(),jSession);

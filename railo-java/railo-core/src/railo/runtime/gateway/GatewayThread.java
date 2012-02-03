@@ -2,7 +2,6 @@ package railo.runtime.gateway;
 
 import org.opencfml.eventgateway.Gateway;
 import org.opencfml.eventgateway.GatewayEngine;
-import org.opencfml.eventgateway.GatewayException;
 
 public class GatewayThread extends Thread {
 
@@ -27,7 +26,7 @@ public class GatewayThread extends Thread {
 			else if(action==STOP) gateway.doStop();
 			else if(action==RESTART) gateway.doRestart();
 			}
-			catch(GatewayException ge){
+			catch(Throwable ge){
 				engine.log(gateway,GatewayEngine.LOGLEVEL_ERROR,ge.getMessage());
 			}
 		}

@@ -202,7 +202,8 @@ public abstract class UDFGSProperty extends UDFImpl {
 	 * @see railo.runtime.type.UDF#getMetaData(railo.runtime.PageContext)
 	 */
 	public Struct getMetaData(PageContext pc) throws PageException {
-		return UDFImpl.getMetaData(pc, this);
+		return super.getMetaData(pc);
+		//return UDFImpl.getMetaData(pc, this);
 	}
 	
 	

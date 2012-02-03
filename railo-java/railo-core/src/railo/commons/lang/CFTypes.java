@@ -89,11 +89,11 @@ public final class CFTypes {
     /**
 	 * Wandelt einen String Datentypen in ein CFML short Typ um.
 	 * @param type
+	 * @param defaultValue
 	 * @return short Data Type
 	 */
-	public static String toString(int type) {
-	    
-		switch(type){
+	public static String toString(int type,String defaultValue) {
+	    switch(type){
 			case TYPE_ANY:return "any";
 			case TYPE_ARRAY:return "array";
 			case TYPE_BASE64:return "base64";
@@ -114,7 +114,7 @@ public final class CFTypes {
 			case TYPE_VOID:return "void";
 			case TYPE_XML:return "xml";
 		}
-		return "any";
+		return defaultValue;
     
 	}
 	

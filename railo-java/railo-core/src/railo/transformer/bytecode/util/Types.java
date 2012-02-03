@@ -35,6 +35,7 @@ import railo.runtime.op.Operator;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
+import railo.runtime.type.Iteratorable;
 import railo.runtime.type.List;
 import railo.runtime.type.Scope;
 import railo.runtime.type.UDF;
@@ -121,8 +122,9 @@ public final class Types {
     public static final Type RESOURCE=Type.getType(Resource.class);
     
 	public static final Type FUNCTION_VALUE = Type.getType(FunctionValue.class);
-    
+
     public static final Type ITERATOR=Type.getType(Iterator.class);
+    public static final Type ITERATORABLE=Type.getType(Iteratorable.class);
 
     public static final Type NODE=Type.getType(org.w3c.dom.Node.class);
 
@@ -183,6 +185,8 @@ public final class Types {
 	public static final Type UDF = Type.getType(UDF.class);
 	public static final Type UDF_PROPERTIES = Type.getType(UDFProperties.class);
 	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
+	public static final Type UDF_PROPERTIES_ARRAY = Type.getType(UDFProperties[].class);
+	public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);
 	public static final Type COLLECTION_KEY = Type.getType(Collection.Key.class);
 	public static final Type COLLECTION_KEY_ARRAY = Type.getType(Collection.Key[].class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);

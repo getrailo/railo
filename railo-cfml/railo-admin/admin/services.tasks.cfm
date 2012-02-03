@@ -305,18 +305,6 @@ Error Output--->
 <cfset types=StructKeyArray(types)>
 </cfsilent>
 
-<script language="javascript">
-function selectAll(field) {
-	var form=field.form;
-	var str="";
-	for(var key in form.elements){
-		if((""+form.elements[key].name).indexOf("row_")==0){
-			form.elements[key].checked=field.checked;
-		}
-	}
-}
-</script>
-
 <table class="tbl" width="600">
 <tr>
 	<td colspan="4"></td>

@@ -171,7 +171,6 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
 	 */
 	public Object setEL(PageContext pc, String propertyName, Object value) {
-		log(propertyName,value);
 		return setEL(pc, KeyImpl.init(propertyName), value);
 		//return TraceObjectSupport.toTraceObject(debugger,setEL(pc, KeyImpl.init(propertyName), value),type,category,text);
 	}
@@ -180,7 +179,6 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
 	 */
 	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
-		log(propertyName,value) ;
 		return set(pc, KeyImpl.init(propertyName), value);
 		//return TraceObjectSupport.toTraceObject(debugger,set(pc, KeyImpl.init(propertyName), value),type,category,text);
 	}
@@ -207,7 +205,6 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
 	 */
 	public Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException {
-		log(key);
 		return callWithNamedValues(pc, KeyImpl.init(key), args);
 	}
 
@@ -215,7 +212,6 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
 	 */
 	public Object call(PageContext pc, String key, Object[] arguments) throws PageException {
-		log(key);
 		return call(pc, KeyImpl.init(key), arguments);
 	}
 	
@@ -231,7 +227,6 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
 	 */
 	public Object get(PageContext pc, String propertyName, Object defaultValue) {
-		log(propertyName);
 		return get(pc, KeyImpl.init(propertyName),defaultValue);
 		//return TraceObjectSupport.toTraceObject(debugger,get(pc, KeyImpl.init(propertyName),defaultValue),type,category,text);
 	}
@@ -240,7 +235,6 @@ public class TOObjects extends TraceObjectSupport implements Objects {
 	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
 	 */
 	public Object get(PageContext pc, String propertyName) throws PageException {
-		log(propertyName);
 		return get(pc, KeyImpl.init(propertyName));
 		//return TraceObjectSupport.toTraceObject(debugger,get(pc, KeyImpl.init(propertyName)),type,category,text);
 	}

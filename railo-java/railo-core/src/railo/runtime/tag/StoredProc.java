@@ -25,7 +25,6 @@ import railo.runtime.db.ProcMetaCollection;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItemImpl;
-import railo.runtime.debug.Debugger;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -544,8 +543,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    res.set(QueryImpl.CACHED,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {
-		    	Debugger debugger = pageContext.getDebugger();
-				debugger.addQueryExecutionTime(datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
+		    	pageContext.getDebugger().addQueryExecutionTime(datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
 			}
 		    
 		    

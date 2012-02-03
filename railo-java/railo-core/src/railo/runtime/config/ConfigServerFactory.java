@@ -63,7 +63,7 @@ public final class ConfigServerFactory {
         Document doc=ConfigWebFactory.loadDocument(configFile);
        
         ConfigServerImpl config=new ConfigServerImpl(engine,initContextes,contextes,configDir,configFile);
-		load(config,doc);
+		load(config,doc,false);
 	    
 		createContextFiles(configDir,config);
 	    return config;
@@ -85,7 +85,7 @@ public final class ConfigServerFactory {
         if(configFile==null) return ;
         if(second(configServer.getLoadTime())>second(configFile.lastModified())) return ;
         
-        load(configServer,ConfigWebFactory.loadDocument(configFile));
+        load(configServer,ConfigWebFactory.loadDocument(configFile),true);
     }
     
     private static long second(long ms) {
@@ -101,8 +101,8 @@ public final class ConfigServerFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    static void load(ConfigServerImpl configServer, Document doc) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
-        ConfigWebFactory.load(null,configServer,doc);
+    static void load(ConfigServerImpl configServer, Document doc, boolean isReload) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
+        ConfigWebFactory.load(null,configServer,doc, isReload);
         loadLabel(configServer,doc);
     }
     

@@ -658,9 +658,9 @@ public final class FileTag extends TagImpl {
 		pageContext.setVariable(variable,sct);
 		
 		// fill data to query
-		sct.setEL("name",file.getName());
-		sct.setEL("size",Long.valueOf(file.length()));
-		sct.setEL("type",file.isDirectory()?"Dir":"File");
+		sct.setEL(KeyImpl.NAME,file.getName());
+		sct.setEL(KeyImpl.SIZE,Long.valueOf(file.length()));
+		sct.setEL(KeyImpl.TYPE,file.isDirectory()?"Dir":"File");
 		sct.setEL("dateLastModified",new DateTimeImpl(pageContext,file.lastModified(),false));
 		sct.setEL("attributes",getFileAttribute(file));
 		if(SystemUtil.isUnix())sct.setEL("mode",new ModeObjectWrap(file));
@@ -1021,7 +1021,7 @@ public final class FileTag extends TagImpl {
 	 * @throws PageException
      */
     private static void setAttributes(Resource file,String attributes) throws PageException {
-        if(StringUtil.isEmpty(attributes)) return;
+        if(!SystemUtil.isWindows() || StringUtil.isEmpty(attributes)) return;
         try {
         	ResourceUtil.setAttribute(file, attributes);
         } 
@@ -1036,7 +1036,7 @@ public final class FileTag extends TagImpl {
 	 * @throws ApplicationException
      */
     private static void setMode(Resource file,int mode) throws ApplicationException {
-        if(mode==-1) return;
+        if(mode==-1 || SystemUtil.isWindows()) return;
         try {
         	file.setMode(mode);
             //FileUtil.setMode(file,mode);

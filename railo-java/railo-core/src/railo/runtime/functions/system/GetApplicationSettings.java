@@ -7,6 +7,7 @@ import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.AppListenerUtil;
@@ -34,7 +35,6 @@ public class GetApplicationSettings {
 		ComponentPro cfc = null;
 		if(ac instanceof ModernApplicationContext)cfc= ((ModernApplicationContext)ac).getComponent();
 		
-
 		Struct sct=new StructImpl();
 		sct.setEL("applicationtimeout", ac.getApplicationTimeout());
 		sct.setEL("clientmanagement", Caster.toBoolean(ac.isSetClientManagement()));
@@ -44,7 +44,7 @@ public class GetApplicationSettings {
 		sct.setEL("datasource", ac.getDefaultDataSource());
 		sct.setEL("loginstorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
 		sct.setEL("mappings", toStruct(ac.getMappings()));
-		sct.setEL("name", ac.getName());
+		sct.setEL(KeyImpl.NAME, ac.getName());
 		sct.setEL("scriptprotect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
 		sct.setEL("securejson", Caster.toBoolean(ac.getSecureJson()));
 		sct.setEL("securejsonprefix", ac.getSecureJsonPrefix());
@@ -53,9 +53,9 @@ public class GetApplicationSettings {
 		sct.setEL("clienttimeout", ac.getClientTimeout());
 		sct.setEL("setclientcookies", Caster.toBoolean(ac.isSetClientCookies()));
 		sct.setEL("setdomaincookies", Caster.toBoolean(ac.isSetDomainCookies()));
-		sct.setEL("name", ac.getName());
+		sct.setEL(KeyImpl.NAME, ac.getName());
 		sct.setEL("localmode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?"always":"update");
-		sct.setEL("sessiontype", ac.getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
+		sct.setEL("sessiontype", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 
 		sct.setEL("clientCluster", Caster.toBoolean(ac.getClientCluster()));

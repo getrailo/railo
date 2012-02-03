@@ -176,8 +176,8 @@ public final class RPCClient implements Objects, Iteratorable{
         try {
             return _callMethod(pc.getConfig(),methodName,null,arguments);
         } 
-        catch (Exception e) {
-        	throw Caster.toPageException(e);
+        catch (Throwable t) {
+        	throw Caster.toPageException(t);
 		} 
     }
 
@@ -623,7 +623,7 @@ public final class RPCClient implements Objects, Iteratorable{
 
 	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
 		QName paramType = Utils.getXSIType(p);
-		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg);
+		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg,null);
         return o;
 	}
 

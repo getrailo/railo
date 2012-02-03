@@ -407,9 +407,9 @@ public class VideoPlayerJW extends BodyTagSupport {
 		write(sb,"</script>");
 		try {
 			if(debug) {
-				pageContext.write("<pre>"+StringUtil.replace(sb.toString(), "<", "&lt;", false)+"</pre>");
+				pageContext.forceWrite("<pre>"+StringUtil.replace(sb.toString(), "<", "&lt;", false)+"</pre>");
 			}
-			pageContext.write(sb.toString());
+			pageContext.forceWrite(sb.toString());
 			
 			
 		} 

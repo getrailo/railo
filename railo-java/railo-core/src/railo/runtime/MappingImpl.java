@@ -10,6 +10,7 @@ import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.ArchiveClassLoader;
+import railo.commons.lang.PCLCollection;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
@@ -23,6 +24,9 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.engine.Controler;
+import railo.runtime.exp.DeprecatedException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 
 /**  
@@ -42,6 +46,7 @@ public final class MappingImpl implements Mapping {
     private final boolean physicalFirst;
     private ArchiveClassLoader archiveClassLoader;
     private PhysicalClassLoader physicalClassLoader;
+    private PCLCollection pclCollection;
     private Resource archive;
     
     private boolean hasArchive;
@@ -61,7 +66,7 @@ public final class MappingImpl implements Mapping {
     //private Resource classRoot;
     private Map<String,Object> customTagPath=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
     //private final Map<String,Object> customTagPath=new HashMap<String, Object>();
-	private int classLoaderMaxElements=100;
+	private int classLoaderMaxElements=1000;
 	/**
 	 * @return the classLoaderMaxElements
 	 */
@@ -104,6 +109,7 @@ public final class MappingImpl implements Mapping {
         this.physicalFirst=physicalFirst;
         this.classLoaderMaxElements=classLoaderMaxElements;
         
+        
         // virtual
         if(virtual.length()==0)virtual="/";
         if(!virtual.equals("/") && virtual.endsWith("/"))this.virtual=virtual.substring(0,virtual.length()-1);
@@ -140,40 +146,34 @@ public final class MappingImpl implements Mapping {
         return archiveClassLoader;
     }
     
-	/**
-     * @see railo.runtime.Mapping#getClassLoaderForPhysical(boolean)
-     */
-	public synchronized ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {//if(reload)print.ds();
-		// first access
-		if(physicalClassLoader==null){
-			physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
-			return physicalClassLoader;
-		}
-		// return existing classloader when not to big
-		if(!reload){//print.o(physicalClassLoader+":"+classLoaderMaxElements+"-"+physicalClassLoader.count());
-			if(classLoaderMaxElements>physicalClassLoader.count()) return physicalClassLoader;
-			
-			getConfigImpl().getMappingLogger().info(getVirtual(), "max size ["+classLoaderMaxElements+"] for classloader reached");
-		}
-		
-		// reset existing classloader
-		config.resetRPCClassLoader();
-		physicalClassLoader=new PhysicalClassLoader(getClassRootDirectory(),getClass().getClassLoader());
-        pageSourcePool.clearPages();
-        return physicalClassLoader;
-	}
-	
-	/**
-	 * returns null when classlader is not created, use getClassLoaderForPhysical(boolean) to touch classloader
-	 * @return
-	 * @throws IOException
-	 */
-	public ClassLoader getClassLoaderForPhysical() throws IOException {
-		return physicalClassLoader;
-	}
-	
-	
+    // FUTURE set to deprecated
+    public synchronized ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
+    	throw new PageRuntimeException(new DeprecatedException("this method is no longer supported"));
+    }
     
+    public synchronized PCLCollection touchPCLCollection() throws IOException {
+    	
+    	if(pclCollection==null){
+    		pclCollection=new PCLCollection(this,getClassRootDirectory(),getClass().getClassLoader(),classLoaderMaxElements);
+		}
+    	Controler.checkPermGenSpace(((ConfigWebImpl)getConfig()).getConfigServerImpl(),true);
+    	return pclCollection;
+    }
+	public synchronized PCLCollection getPCLCollection() {
+		return pclCollection;
+	}
+
+    
+    
+
+	/**
+	 * remove all Page from Pool using this classloader
+	 * @param cl
+	 */
+	public void clearPages(ClassLoader cl){
+		pageSourcePool.clearPages(cl);
+	}
+	
     /**
      * @see railo.runtime.Mapping#getPhysical()
      */

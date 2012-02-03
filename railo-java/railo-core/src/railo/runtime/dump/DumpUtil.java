@@ -80,6 +80,13 @@ public class DumpUtil {
 				dt.setTitle(Caster.toClassName(o));
 			return dt;
 		}
+		// StringBuilder
+		if(o instanceof StringBuilder) {
+			DumpTable dt=(DumpTable)toDumpData(o.toString(), pageContext, maxlevel, props);
+			if(StringUtil.isEmpty(dt.getTitle()))
+				dt.setTitle(Caster.toClassName(o));
+			return dt;
+		}
 		// String
 		if(o instanceof String) {
 			String str=(String) o;

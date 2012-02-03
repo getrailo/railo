@@ -2,10 +2,8 @@ package railo.runtime.exp;
 
 import org.apache.commons.net.ftp.FTPClient;
 
-import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Struct;
 
 public class FTPException extends ApplicationException {
 
@@ -20,21 +18,11 @@ public class FTPException extends ApplicationException {
 		code = client.getReplyCode();
 		msg = client.getReplyString();
 	}
-	
-	/**
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
-	 */
-	public Struct getCatchBlock(PageContext pc) {
-		Struct cb = super.getCatchBlock(pc);
+
+	public CatchBlock getCatchBlock(Config config) {
+		CatchBlock cb = super.getCatchBlock(config);
 		cb.setEL("Cause", msg);
 		cb.setEL("Code", Caster.toDouble(code));
 		return cb;
-	}
-	
-	/**
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock()
-	 */
-	public Struct getCatchBlock() {
-		return getCatchBlock(ThreadLocalPageContext.get());
 	}
 }

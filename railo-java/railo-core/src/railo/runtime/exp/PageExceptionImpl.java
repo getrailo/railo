@@ -171,21 +171,20 @@ public abstract class PageExceptionImpl extends PageException {
 	/**
 	 * @see railo.runtime.exp.IPageException#getCatchBlock()
 	 */
-	public Struct getCatchBlock() {
-		return new CatchBlock(this);
+	public final Struct getCatchBlock() {
+		return getCatchBlock(ThreadLocalPageContext.getConfig());
 	}
 	
 	/**
 	 *
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
-	public Struct getCatchBlock(PageContext pc) {
-		return new CatchBlock(this);
+	public final Struct getCatchBlock(PageContext pc) {
+		return getCatchBlock(ThreadLocalPageContext.getConfig(pc));
 	}
 	
-	/**
-	 * FUTURE
-	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
+	/*
+	 * FUTURE add to interface
 	 */
 	public CatchBlock getCatchBlock(Config config) {
 		return new CatchBlock(this);

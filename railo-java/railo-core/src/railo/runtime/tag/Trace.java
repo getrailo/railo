@@ -225,7 +225,7 @@ public final class Trace extends BodyTagImpl {
 			sb.append("</td>");
 			sb.append("</tr>");
 			sb.append("</table>");
-			pageContext.write(sb.toString());
+			pageContext.forceWrite(sb.toString());
 			
 			if(hasVar)Dump.call(pageContext, value, var);
 			

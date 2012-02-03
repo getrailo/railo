@@ -16,13 +16,17 @@ import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
 
-public class CastableStruct extends StructImpl  {
+public final class CastableStruct extends StructImpl  {
 	
 	private Object value;
 
 	public CastableStruct() { 
 	}
 	public CastableStruct(Object value) {
+		this.value=value;
+	}
+	public CastableStruct(Object value, int type) {
+		super(type);
 		this.value=value;
 	}
 

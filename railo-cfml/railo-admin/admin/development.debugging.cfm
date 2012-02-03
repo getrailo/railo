@@ -40,6 +40,8 @@ Defaults --->
 				password="#session["password"&request.adminType]#"
 				debug="#form.debug#"
 				debugTemplate="#form["debugTemplate_"&form.debugtype]#"
+                debugShowQueryUsage="#isDEfined('form.debugShowQueryUsage') and form.debugShowQueryUsage#"
+                
 				remoteClients="#request.getRemoteClients()#">
 			
 		</cfcase>
@@ -52,7 +54,7 @@ Defaults --->
 				
                 debug=""
 				debugTemplate=""
-                
+                showQueryUsageDesc=""
 				remoteClients="#request.getRemoteClients()#">
 			
 		</cfcase>
@@ -168,6 +170,7 @@ Create Datasource --->
 				<td><input type="text" name="debugTemplate_File" value="#debug.strdebugTemplate#" id="debugTemplate_File" <cfif isFromTemplate>disabled</cfif>
 					style="width:450px"></td>
 			</tr>
+            
 			</table>
 		<cfelse>
 			<b>#debug.debugTemplate#</b>
@@ -175,6 +178,30 @@ Create Datasource --->
 		</cfif>
 	</td>
 </tr>
+
+<!--- Show Query Usage --->
+<tr>
+	<td class="tblHead" width="150">#stText.Debug.showQueryUsage#</td>
+	<td class="tblContent" height="28">
+		
+        <span class="CheckError">
+The "#stText.Debug.showQueryUsage#" Implementation is currently in Beta State.
+If you have any problems while using this Implementation, please post the bugs and errors in our <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
+</span><br />
+        
+        
+		<cfif hasAccess>
+			<input type="checkbox" class="radio" name="debugShowQueryUsage" value="true" <cfif debug.debugShowQueryUsage>checked</cfif>>
+		<cfelse>
+			<b>#yesNoFormat(debug.debugShowQueryUsage)#</b> <input type="hidden" name="debugShowQueryUsage" value="#debug.debugShowQueryUsage#">
+		</cfif>
+		<br />
+		<span class="comment">#stText.Debug.showQueryUsageDesc#</span>
+		
+	</td>
+</tr>
+
+
 <cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>

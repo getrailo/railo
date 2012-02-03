@@ -474,6 +474,17 @@
 	<data key="login.m">one Month</data>
 	<data key="login.newpassword">New password</data>
 	<data key="login.language">Language</data>
+	<data key="login.settings">Settings</data>
+	<data key="login.captchaHelp">Security Code</data>
+	<data key="login.captchaHelpDesc">Please enter the word you see in the image above.</data>
+	<data key="login.captchaHelpMiss">Please enter the word you see in the security code image.</data>
+	<data key="login.seconds">seconds</data>
+	<data key="login.useCaptcha">Captcha</data>
+	<data key="login.useCaptchaDesc">Use Captcha in the login to make sure the form is submitted by a human.</data>
+	<data key="login.delay">Delay</data>
+	<data key="login.delayDesc">Sets the delay between login attempts. This is a global setting for all user requests.</data>
+	
+	
 	<data key="login.changepassword">Change password</data>
 	<data key="login.d">one Day</data>
 	<data key="login.changepassworddescription">Change the password for this administrator</data>
@@ -513,6 +524,8 @@
 	<data key="debug.timezone">Please enter a value for the timezone</data>
 	<data key="debug.enabledebugging">Enable debugging</data>
 	<data key="debug.memorylogger">Memory logger</data>
+	<data key="debug.showQueryUsage">Show Query Usage</data>
+	<data key="debug.showQueryUsageDesc">Show the query usage information in debug output.</data>
 	<data key="scopes.sessiontimeoutdescription">Sets the amount of time Railo will keep the session scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client cookies</data>
@@ -983,7 +996,7 @@
 	<data key="settings.cache.descReadOnly">Readonly cache connections are generated within the ""server administrator"" for all web instances and can not be modified by the ""web administrator"".</data>
 	<data key="settings.cache.Buttons.default">set as default</data>
 	<data key="settings.orm.title">Settings</data>
-	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with struct ""ormsettings""</data>
+	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with the struct "ormsettings".</data>
 	<data key="settings.orm.autogenmap">Automatically generate mapping</data>
 	<data key="settings.orm.autogenmapDesc">Specifies whether Railo should automatically generate mapping for the persistent CFCs. If disabled, mapping should be provided in the form of .HBMXML files. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.autogenmap=true]</data>
 	<data key="settings.orm.catalog">Catalog</data>

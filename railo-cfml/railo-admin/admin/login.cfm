@@ -1,5 +1,16 @@
 <cfoutput>
+<cfscript>
+letters='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
+function createRandomText(string length){
+	var str='';
+	for(var i=0;i<length;i++){
+		str&=mid(letters,RandRange(1,len(letters)),1);
+	}
+	return str;
+	
+}
+</cfscript>
 <script>
 function doFocus() {<cfoutput>
 	document.forms.login.login_password#request.adminType#.focus();
@@ -7,8 +18,10 @@ function doFocus() {<cfoutput>
 }
 
 </script>
-
-
+<cfadmin 
+        action="getLoginSettings"
+        type="#request.adminType#"
+   		returnVariable="loginSettings">
 <cfparam name="cookie.railo_admin_lang" default="en">
 <cfset session.railo_admin_lang = cookie.railo_admin_lang>
 <cfif isDefined('url.action')><cfset self=request.self&"?action="&url.action><cfelse><cfset self=request.self></cfif>
@@ -35,7 +48,25 @@ function doFocus() {<cfoutput>
 		</cfloop>
 		</select></td>
 	</tr>
-	
+    <cfif loginSettings.captcha>
+	<cfset cap=createRandomText(6)>
+    <cfset session.cap=cap>
+    <tr>
+    	<td class="tblHead" width="100" align="right">#stText.login.captchaHelp#</td>
+        
+		<td class="tblContent" width="200">
+        <cfimage action="captcha" width="160" height="30" text="#cap#" difficulty="medium">
+        <a style="font-size : 10px" href="#request.self#<cfif structKeyExists(url,"action")>?action=#url.action#</cfif>">Reload</a><br />
+        
+        
+        <cfinput type="text" name="captcha" value="" passthrough='autocomplete="off"'
+		style="width:200px" required="yes" message="#stText.login.captchaHelpMiss#">
+        <br /><span class="comment">#stText.login.captchaHelpDesc#</span>
+        </td>
+	</tr>
+    <cfelse>
+    	<cfset StructDelete(session,"cap",false)>
+    </cfif>
 	<tr>
 		<td class="tblHead" width="100" align="right">#stText.Login.rememberMe#</td>
 		<td class="tblContent" width="200"><select name="rememberMe">

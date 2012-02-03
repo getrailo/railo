@@ -192,6 +192,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	public UDF duplicate(ComponentImpl c) {
 		UDFImpl udf = new UDFImpl(properties);
 		udf.ownerComponent=c;
+		udf.setAccess(getAccess());
 		return udf;
 	}
 	
@@ -564,13 +565,21 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
 	
 	public Struct getMetaData(PageContext pc) throws PageException {
-		return getMetaData(pc, this);
+		return ComponentUtil.getMetaData(pc, properties);
+		//return getMetaData(pc, this);
 	}
 	
-	public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
+	/*public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
+		StructImpl func=new StructImpl();
+        
+		// TODO func.set("roles", value);
+        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
+        // meta data
+        Struct meta = udf.getMeta();
+        if(meta!=null) StructUtil.copy(meta, func, true);
+        
 		
-        StructImpl func=new StructImpl();
-        func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
+		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
         String hint=udf.getHint();
         if(!StringUtil.isEmpty(hint))func.set(KeyImpl.HINT,hint);
         String displayname=udf.getDisplayName();
@@ -588,19 +597,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
         else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
         else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
-        
-        
-        // TODO func.set("roles", value);
-        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
-        // meta data
-        Struct meta = udf.getMeta();
-        if(meta!=null) {
-        	Key[] keys = meta.keys();
-        	for(int i=0;i<keys.length;i++) {
-        		func.setEL(keys[i],meta.get(keys[i],null));
-        	}
-        }
-        
         
         
         FunctionArgument[] args =  udf.getFunctionArguments();
@@ -623,22 +619,6 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
             else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
             	param.set(KeyImpl.DEFAULT, udf.getDefaultValue(pc,y));
             }
-            /*
-             try {
-                defaultValue = getDefaultValue(pc, y);
-                if(defaultValue!=null) {
-                		if(Decision.isSimpleValue(defaultValue))
-                			param.set(DEFAULT,defaultValue);
-                		else
-                			param.set(DEFAULT,COMPLEX_DEFAULT_TYPE);
-                	
-                }
-            }
-            catch(Throwable e) {e.printStackTrace();
-            	param.set(DEFAULT,COMPLEX_DEFAULT_TYPE);
-            } 
-             */
-            
             
             hint=args[y].getHint();
             if(!StringUtil.isEmpty(hint))param.set(KeyImpl.HINT,hint);
@@ -646,18 +626,13 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
             
             // meta data
             m=args[y].getMetaData();
-            if(m!=null) {
-            	Key[] keys = m.keys();
-            	for(int i=0;i<keys.length;i++) {
-            		param.setEL(keys[i],m.get(keys[i],null));
-            	}
-            }
+            if(m!=null) StructUtil.copy(m, param, true);
                 
             params.append(param);
         }
         func.set(KeyImpl.PARAMETERS,params);
 		return func;
-	}
+	}*/
 
 	public Object getValue() {
 		return this;

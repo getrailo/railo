@@ -21,9 +21,7 @@ import org.hibernate.event.PostInsertEventListener;
 import org.hibernate.event.PostLoadEventListener;
 import org.hibernate.event.PostUpdateEventListener;
 import org.hibernate.event.PreDeleteEventListener;
-import org.hibernate.event.PreInsertEventListener;
 import org.hibernate.event.PreLoadEventListener;
-import org.hibernate.event.PreUpdateEventListener;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,6 +48,7 @@ import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.orm.hibernate.event.AllEventListener;
 import railo.runtime.orm.hibernate.event.EventListener;
+import railo.runtime.orm.hibernate.event.InterceptorImpl;
 import railo.runtime.orm.hibernate.event.PostDeleteEventListenerImpl;
 import railo.runtime.orm.hibernate.event.PostInsertEventListenerImpl;
 import railo.runtime.orm.hibernate.event.PostLoadEventListenerImpl;
@@ -70,7 +69,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ApplicationContext;
@@ -199,11 +197,14 @@ public class HibernateORMEngine implements ORMEngine {
 		
 		//List<Component> arr = null;
 		arr=null;
-		if(init && ormConf.autogenmap()){
-			arr = HibernateSessionFactory.loadComponents(pc, this, ormConf);
-			cfcs.clear();
+		if(init){
+			if(ormConf.autogenmap()){
+				arr = HibernateSessionFactory.loadComponents(pc, this, ormConf);
+				cfcs.clear();
+			}
+			else 
+				throw new HibernateException(this,"orm setting autogenmap=false is not supported yet");
 		}
-		
 		
 		// load entities
 		if(!ArrayUtil.isEmpty(arr)) {
@@ -307,8 +308,9 @@ public class HibernateORMEngine implements ORMEngine {
 		        //config.setInterceptor(listener);
 			//}catch (PageException e) {e.printStackTrace();}
 		}
+		config.setInterceptor(new InterceptorImpl(listener));
         EventListeners listeners = config.getEventListeners();
-		
+        
         // post delete
 		List<EventListener> 
 		list=merge(listener,cfcs,EventListener.POST_DELETE);
@@ -322,7 +324,7 @@ public class HibernateORMEngine implements ORMEngine {
 		list=merge(listener,cfcs,EventListener.POST_UPDATE);
 		listeners.setPostUpdateEventListeners(list.toArray(new PostUpdateEventListener[list.size()]));
 		
-		// post update
+		// post load
 		list=merge(listener,cfcs,EventListener.POST_LOAD);
 		listeners.setPostLoadEventListeners(list.toArray(new PostLoadEventListener[list.size()]));
 		
@@ -331,19 +333,17 @@ public class HibernateORMEngine implements ORMEngine {
 		listeners.setPreDeleteEventListeners(list.toArray(new PreDeleteEventListener[list.size()]));
 		
 		// pre insert
-		list=merge(listener,cfcs,EventListener.PRE_INSERT);
-		listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
+		//list=merge(listener,cfcs,EventListener.PRE_INSERT);
+		//listeners.setPreInsertEventListeners(list.toArray(new PreInsertEventListener[list.size()]));
 		
 		// pre load
 		list=merge(listener,cfcs,EventListener.PRE_LOAD);
 		listeners.setPreLoadEventListeners(list.toArray(new PreLoadEventListener[list.size()]));
 		
 		// pre update
-		list=merge(listener,cfcs,EventListener.PRE_UPDATE);
-		listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
-		
-
-    }
+		//list=merge(listener,cfcs,EventListener.PRE_UPDATE);
+		//listeners.setPreUpdateEventListeners(list.toArray(new PreUpdateEventListener[list.size()]));
+	}
 
 	private static List<EventListener> merge(EventListener listener, Map<String, CFCInfo> cfcs, Collection.Key eventType) {
 		List<EventListener> list=new ArrayList<EventListener>();
@@ -355,7 +355,7 @@ public class HibernateORMEngine implements ORMEngine {
 		while(it.hasNext()){
 			entry = it.next();
 			cfc = entry.getValue().getCFC();
-			if(is(cfc,eventType)) {
+			if(EventListener.hasEventType(cfc,eventType)) {
 				if(EventListener.POST_DELETE.equals(eventType))
 					list.add(new PostDeleteEventListenerImpl(cfc));
 				if(EventListener.POST_INSERT.equals(eventType))
@@ -377,14 +377,10 @@ public class HibernateORMEngine implements ORMEngine {
 		}
 		
 		// general listener
-		if(listener!=null && is(listener.getCFC(),eventType))
+		if(listener!=null && EventListener.hasEventType(listener.getCFC(),eventType))
 			list.add(listener);
 		
 		return list;
-	}
-
-	private static boolean is(Component cfc, Collection.Key eventType) {
-		return cfc.get(eventType,null) instanceof UDF;
 	}
 
 	private Object hash(ApplicationContextPro appContext) {
@@ -448,7 +444,11 @@ public class HibernateORMEngine implements ORMEngine {
 			if(res!=null){
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
-				IOUtil.write(res, XMLCaster.toString(hm), "UTF-8", false);
+				IOUtil.write(res, 
+						XMLCaster.toString(hm,false,
+								HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID,
+								HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
+								HibernateSessionFactory.HIBERNATE_3_ENCODING), HibernateSessionFactory.HIBERNATE_3_ENCODING, false);
 				}
 				catch(Exception e){} 
 			}
@@ -522,7 +522,7 @@ public class HibernateORMEngine implements ORMEngine {
 
 
 	private static Struct checkTableFill(DatabaseMetaData md, String dbName, String tableName) throws SQLException, PageException {
-		Struct rows=new CastableStruct(tableName);
+		Struct rows=new CastableStruct(tableName,Struct.TYPE_LINKED);
 		ResultSet columns = md.getColumns(dbName, null, tableName, null);
 		//print.o(new QueryImpl(columns,""));
 		try{
@@ -697,7 +697,7 @@ public class HibernateORMEngine implements ORMEngine {
 			return unique?(Component)cfc.duplicate(false):cfc;
 		}
 		
-		throw new ORMException(this,"entity ["+name+"] does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
+		throw new ORMException(this,"entity ["+name+"] "+(StringUtil.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
 		
 	}
 	

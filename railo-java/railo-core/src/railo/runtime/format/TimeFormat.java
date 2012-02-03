@@ -14,10 +14,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
-public final class TimeFormat implements Format {
+public final class TimeFormat extends BaseFormat implements Format {
 	
-	private Calendar calendar;
-	private Locale locale;
+	private final Calendar calendar;
 	
 	
 	/**
@@ -25,7 +24,7 @@ public final class TimeFormat implements Format {
 	 * @param locale
 	 */
 	public TimeFormat(Locale locale) {
-		this.locale=locale;
+		super(locale);
 		calendar=JREDateTimeUtil.newInstance(locale); 
 	}
 	
@@ -177,7 +176,7 @@ public final class TimeFormat implements Format {
 						pos++;
 						if(pos-start>4)break;
 					}
-					if(pos-start>2)formated.append(tz.getDisplayName(locale));	
+					if(pos-start>2)formated.append(tz.getDisplayName(getLocale()));	
 					else formated.append(tz.getID());	
 					
 				break;
@@ -194,10 +193,6 @@ public final class TimeFormat implements Format {
 		DateFormat df = DateFormat.getTimeInstance(style,getLocale());
 		df.setTimeZone(tz);
 		return df.format(calendar.getTime());	
-	}
-	
-	private Locale getLocale() {
-		return locale==null?Locale.US:locale;	
 	}
 
 }

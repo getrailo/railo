@@ -28,7 +28,7 @@ public final class ComponentProvider extends RPCProvider {
 		RPCServer server = RPCServer.getInstance(pc.getId(),pc.getServletContext());
 		TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
 		
-		return AxisCaster.toAxisType(tm,c.call(pc,method.getName(),toRailoType(pc,args)));
+		return AxisCaster.toAxisType(tm,c.call(pc,method.getName(),toRailoType(pc,args)),null);
 	}
 
 	private Object[] toRailoType(PageContext pc,Object[] args) throws PageException {

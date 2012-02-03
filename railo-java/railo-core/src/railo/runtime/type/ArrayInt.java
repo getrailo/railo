@@ -11,11 +11,11 @@ import railo.runtime.exp.ExpressionException;
 /**
  * cold fusion array object
  */
-public class ArrayInt implements Sizeable,Serializable {
+public final class ArrayInt implements Sizeable,Serializable {
 	
 	private static final int NULL = 0;
 	private int[] arr;
-	private int cap=32;
+	private final int cap=32;
 	private int size=0;
 	private int offset=0;
 	private int offCount=0;

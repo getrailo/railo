@@ -24,7 +24,7 @@ import railo.runtime.type.util.StructSupport;
 /**
  * cold fusion data type struct
  */
-public class StructImplKey extends StructSupport implements Struct {
+public final class StructImplKey extends StructSupport implements Struct {
 
 	public static final int TYPE_WEAKED=0;
 	public static final int TYPE_LINKED=1;

@@ -1,6 +1,5 @@
 package railo.runtime.listener;
 
-import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
@@ -191,7 +190,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 * @see railo.runtime.util.ApplicationContext#hasName()
 	 */
 	public boolean hasName() {
-		return !StringUtil.isEmpty(getName());
+		return true;//!StringUtil.isEmpty(getName());
 	}
 	
 	/**

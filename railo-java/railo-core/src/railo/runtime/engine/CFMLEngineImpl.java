@@ -393,7 +393,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		            
 		            // Query Cache
 		            try{ cfmlFactory.getQueryCache().clear();}catch(Throwable t){t.printStackTrace();}
-	            
+		            
+		            // Gateway
+		            try{ cfmlFactory.getConfigWebImpl().getGatewayEngine().reset();}catch(Throwable t){t.printStackTrace();}
+		            
 	        	}
 	        	catch(Throwable t){
 	        		t.printStackTrace();

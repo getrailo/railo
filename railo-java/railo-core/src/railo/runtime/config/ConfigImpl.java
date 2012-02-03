@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
-import java.util.WeakHashMap;
 
 import javax.servlet.ServletException;
 
@@ -214,6 +213,7 @@ public abstract class ConfigImpl implements Config {
     private boolean psq=false;
 
     private String debugTemplate;
+    private boolean debugShowUsage;
     private Map errorTemplates=new HashMap();
 
     private String password;
@@ -407,7 +407,7 @@ public abstract class ConfigImpl implements Config {
         clearFunctionCache();
         clearCTCache();
         clearComponentCache();
-        clearComponentMetadata();
+        //clearComponentMetadata();
     }
     
     /**
@@ -832,9 +832,9 @@ public abstract class ConfigImpl implements Config {
         	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
-	        	for(int i=0;i<cmappings.length-1;i++) {
-	                PageSource ps = cmappings[i].getPageSource(realPath);
-	            	if(ps.exists()) return ps;
+	        	for(int i=0;i<cmappings.length;i++) {
+	        		PageSource ps = cmappings[i].getPageSource(realPath);
+	        		if(ps.exists()) return ps;
 	            }
         	}
         }
@@ -1450,8 +1450,8 @@ public abstract class ConfigImpl implements Config {
      * @param strTempDirectory temp directory
      * @throws ExpressionException
      */
-    protected void setTempDirectory(String strTempDirectory) throws ExpressionException {
-        setTempDirectory(resources.getResource(strTempDirectory));
+    protected void setTempDirectory(String strTempDirectory, boolean flush) throws ExpressionException {
+        setTempDirectory(resources.getResource(strTempDirectory),flush);
     }   
     
     /**
@@ -1459,7 +1459,7 @@ public abstract class ConfigImpl implements Config {
      * @param tempDirectory temp directory
      * @throws ExpressionException
      */
-    protected void setTempDirectory(Resource tempDirectory) throws ExpressionException {
+    protected void setTempDirectory(Resource tempDirectory, boolean flush) throws ExpressionException {
         if(!isDirectory(tempDirectory) || !tempDirectory.isWriteable()) {
         	SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable or can not be created, using directory ["+SystemUtil.getTempDirectory()+"] instead");
         	tempDirectory=SystemUtil.getTempDirectory();
@@ -1467,7 +1467,7 @@ public abstract class ConfigImpl implements Config {
         		SystemOut.printDate(getErrWriter(), "temp directory ["+tempDirectory+"] is not writable");
         	}
         }
-        ResourceUtil.removeChildrenEL(tempDirectory);// start with a empty temp directory
+        if(flush)ResourceUtil.removeChildrenEL(tempDirectory);// start with a empty temp directory
         this.tempDirectory=tempDirectory;
     }
 
@@ -1829,6 +1829,15 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setDebugTemplate(String debugTemplate) {
         this.debugTemplate = debugTemplate;
+    }
+    public boolean getDebugShowQueryUsage() {
+        return debugShowUsage;
+    }
+    /**
+     * @param debugTemplate The debugTemplate to set.
+     */
+    protected void setDebugShowQueryUsage(boolean debugShowUsage) {
+        this.debugShowUsage = debugShowUsage;
     }
 
 	/**
@@ -3063,19 +3072,6 @@ public abstract class ConfigImpl implements Config {
 			
 			if(hasError) {
 				// try to load hibernate jars
-				/*if(ormEngineClass.getName().equals("railo.runtime.orm.hibernate.HibernateORMEngine")){
-					try {
-						Resource[] jars = JarLoader.download(pc,new String[]{"antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar"});
-						
-						if(!ArrayUtil.isEmpty(jars))
-							throw new ORMException(
-									"Railo cannot initialize the ORM Engine ["+ormEngineClass.getName()+"], please restart your servlet engine",
-									"Railo has downloaded the following jars ["+ResourceUtil.names(jars)+"] into directory ["+jars[0].getParent()+"]");
-					} 
-					catch (Throwable t) {
-						t.printStackTrace();;
-					}
-				}*/
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
 						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
@@ -3329,7 +3325,7 @@ public abstract class ConfigImpl implements Config {
 		this.componentRootSearch = componentRootSearch;
 	}
 
-	private final Map compressResources=new WeakHashMap();
+	private final Map compressResources= new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	public Compress getCompressInstance(Resource zipFile, int format, boolean caseSensitive) {
 		Compress compress=(Compress) compressResources.get(zipFile.getPath());
 		if(compress==null) {
@@ -3347,31 +3343,11 @@ public abstract class ConfigImpl implements Config {
 		return false;
 	}
 	
-	private Map<String,ComponentMetaData> componentMetaData=null;
-	public ComponentMetaData getComponentMetadata(String key) {
-		if(componentMetaData==null) return null;
-		return componentMetaData.get(key.toLowerCase());
-	}
-	public void putComponentMetadata(String key,ComponentMetaData data) {
-		if(componentMetaData==null) componentMetaData=new HashMap<String, ComponentMetaData>();
-		componentMetaData.put(key.toLowerCase(),data);
-	}
 	
-	public void clearComponentMetadata() {
-		if(componentMetaData==null) return; 
-		componentMetaData.clear();
-	}
+
+	public abstract int getLoginDelay();
 	
-	public static class ComponentMetaData {
+	public abstract boolean getLoginCaptcha();
 
-		public final Struct meta;
-		public final long lastMod;
-
-		public ComponentMetaData(Struct meta, long lastMod) {
-			this.meta=meta;
-			this.lastMod=lastMod;
-		}
-		
-	}
 	
 }

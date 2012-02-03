@@ -15,12 +15,12 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.PropertyFactory;
 
-public class UDFHasProperty extends UDFGSProperty {
+public final class UDFHasProperty extends UDFGSProperty {
 
-	private Property prop;
+	private final Property prop;
 	//private ComponentScope scope;
 	
-	private Key propName;
+	private final Key propName;
 	
 	//private static final String NULL="sdsdsdfsfsfjkln fsdfsa";
 
@@ -34,10 +34,10 @@ public class UDFHasProperty extends UDFGSProperty {
 		String t = PropertyFactory.getType(prop);
 		
 		if("struct".equalsIgnoreCase(t)){
-			FunctionArgumentImpl key = new FunctionArgumentImpl("key","string",false);
+			FunctionArgument key = new FunctionArgumentImpl(KeyImpl.KEY,"string",CFTypes.TYPE_STRING,false);
 			return new FunctionArgument[]{key};
 		}
-		FunctionArgumentImpl value = new FunctionArgumentImpl(PropertyFactory.getSingularName(prop),"any",false);
+		FunctionArgument value = new FunctionArgumentImpl(KeyImpl.init(PropertyFactory.getSingularName(prop)),"any",CFTypes.TYPE_ANY,false);
 		return new FunctionArgument[]{value};
 	}
 	

@@ -81,11 +81,10 @@ public final class ReqRspUtil {
 				// value (is decoded by the servlet engine with iso-8859-1)
 				if(!StringUtil.isAscci(cookie.getValue())) {
 					tmp=encode(cookie.getValue(), "iso-8859-1");
-					cookie.setValue(decode(tmp, charset));
+					cookie.setValue(decode(tmp, charset,false));
 				}
 				
 			}
-			
 		}
 		else {
 			String str = req.getHeader("Cookie");
@@ -96,7 +95,7 @@ public final class ReqRspUtil {
 					for(int i=0;i<arr.length;i++){
 						tmp=List.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
-							list.add(new Cookie(dec(tmp[0],charset), tmp.length>1?dec(tmp[1],charset):""));
+							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
 						}
 					}
 					cookies=list.toArray(new Cookie[list.size()]);
@@ -147,8 +146,9 @@ public final class ReqRspUtil {
 		return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
 	}
 	
-	public static boolean isURLEncoded(String str) {
-		if(StringUtil.isEmpty(str,true) || !StringUtil.isAscci(str)) return false;
+	/*public static boolean isURLEncoded(String str) {
+		if(StringUtil.isEmpty(str,true)) return false;
+		if(!ReqRspUtil.isSubAscci(str,false)) return false;
 		int index,last=0;
 		boolean rtn=false;
 		while((index=str.indexOf('%',last))!=-1){
@@ -158,25 +158,25 @@ public final class ReqRspUtil {
 			rtn=true;
 		}
 		return rtn;
-	}
+	}*/
 
 	private static boolean isHex(char c) {
 		return (c>='0' && c<='9') || (c>='a' && c<='f') || (c>='A' && c<='F');
 	}
 	
 
-	private static String dec(String str, String charset) throws UnsupportedEncodingException {
+	private static String dec(String str, String charset, boolean force) throws UnsupportedEncodingException {
 		str=str.trim();
 		if(StringUtil.startsWith(str, '"') && StringUtil.endsWith(str, '"'))
 			str=str.substring(1,str.length()-1);
 			
-		return decode(str,charset);//java.net.URLDecoder.decode(str.trim(), charset);
+		return decode(str,charset,force);//java.net.URLDecoder.decode(str.trim(), charset);
 	}
 
 
-    public static String decode(String str,String charset) {
+    public static String decode(String str,String charset, boolean force) {
     	try {
-			return URLDecoder.decode(str, charset);
+			return URLDecoder.decode(str, charset,force);
 		} 
 		catch (UnsupportedEncodingException e) {
 			return str;
@@ -190,4 +190,80 @@ public final class ReqRspUtil {
 			return str;
 		}
 	}
+    
+    
+    
+    public static boolean needEncoding(String str, boolean allowPlus){
+    	if(StringUtil.isEmpty(str,false)) return false;
+    	
+    	int len=str.length();
+    	char c;
+    	for(int i=0;i<len;i++){
+    		c=str.charAt(i);
+    		if(c >='0' && c <= '9') continue;
+    		if(c >='a' && c <= 'z') continue;
+    		if(c >='A' && c <= 'Z') continue;
+    		
+    		// _-.*
+    		if(c =='-') continue;
+    		if(c =='_') continue;
+    		if(c =='.') continue;
+    		if(c =='*') continue;
+    		if(c =='/') continue;
+    		if(allowPlus && c =='+') continue;
+    		
+    		if(c =='%') {
+    			if(i+2>=len) return true;
+    			try{
+    				Integer.parseInt(str.substring(i+1,i+3),16);
+    			}
+    			catch(NumberFormatException nfe){
+    				return true;
+    			}
+    			i+=3;
+    			continue;
+    		}
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public static boolean needDecoding(String str){
+    	if(StringUtil.isEmpty(str,false)) return false;
+    	
+    	boolean need=false;
+    	int len=str.length();
+    	char c;
+    	for(int i=0;i<len;i++){
+    		c=str.charAt(i);
+    		if(c >='0' && c <= '9') continue;
+    		if(c >='a' && c <= 'z') continue;
+    		if(c >='A' && c <= 'Z') continue;
+    		
+    		// _-.*
+    		if(c =='-') continue;
+    		if(c =='_') continue;
+    		if(c =='.') continue;
+    		if(c =='*') continue;
+    		if(c =='+') {
+    			need=true;
+    			continue;
+    		}
+    		
+    		if(c =='%') {
+    			if(i+2>=len) return false;
+    			try{
+    				Integer.parseInt(str.substring(i+1,i+3),16);
+    			}
+    			catch(NumberFormatException nfe){
+    				return false;
+    			}
+    			i+=3;
+    			need=true;
+    			continue;
+    		}
+    		return false;
+    	}
+    	return need;
+    }
 }

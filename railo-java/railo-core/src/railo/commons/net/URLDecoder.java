@@ -13,9 +13,9 @@ public class URLDecoder {
 	 * @param string
 	 * @return
 	 */
-	public static String decode(String str) {
+	public static String decode(String str, boolean force) {
 		try {
-			return decode(str,SystemUtil.getCharset());
+			return decode(str,SystemUtil.getCharset(), force);
 		} 
 		catch (UnsupportedEncodingException e) {
 			return str;
@@ -39,12 +39,13 @@ public class URLDecoder {
      * @param enc   The name of a supported 
      *    <a href="../lang/package-summary.html#charenc">character
      *    encoding</a>. 
+     * @param force if set to false Railo only encodes when there is at least one  "%<2-digit-hex-value>" in string, means string with only + inside are not encoded
      * @return the newly decoded <code>String</code>
      * @throws UnsupportedEncodingException 
      * @see URLEncoder#encode(java.lang.String, java.lang.String)
      */
-    public static String decode(String s, String enc) throws UnsupportedEncodingException {
-    	if(!ReqRspUtil.isURLEncoded(s)) return s;
+    public static String decode(String s, String enc, boolean force) throws UnsupportedEncodingException {
+    	if(!force && !ReqRspUtil.needDecoding(s)) return s;
     	//if(true) return java.net.URLDecoder.decode(s, enc);
     	
 	boolean needToChange = false;
