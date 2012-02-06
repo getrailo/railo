@@ -212,9 +212,9 @@ public final class Image extends TagImpl {
 		else if("jpeg".equalsIgnoreCase(format))this.format =  "jpg";
 		else if("png".equalsIgnoreCase(format))	this.format =  "png";
 		else if("tiff".equalsIgnoreCase(format))this.format =  "tiff";
-		else if("bmg".equalsIgnoreCase(format))	this.format =  "bmg";
+		else if("bmp".equalsIgnoreCase(format))	this.format =  "bmp";
 		else throw new ApplicationException("invalid format ["+format+"], " +
-		"valid formats are [gif,jpg,png,tiff,bmg]");
+		"valid formats are [gif,jpg,png,tiff,bmp]");
 	}
 
 

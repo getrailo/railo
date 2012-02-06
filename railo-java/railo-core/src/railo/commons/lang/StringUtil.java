@@ -495,7 +495,12 @@ public final class StringUtil {
         if(rtn.length()<size) return repeatString("0",size-rtn.length())+rtn;
         return rtn;
     }
-    
+
+	public static int indexOf(String haystack, String needle) {
+		if(haystack==null) return -1;
+		return haystack.indexOf(needle);
+	}
+	
 	public static int indexOfIgnoreCase(String haystack, String needle) {
 		if(StringUtil.isEmpty(haystack) || StringUtil.isEmpty(needle)) return -1;
 		needle=needle.toLowerCase();
