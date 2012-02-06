@@ -220,7 +220,7 @@ public final class HSQLDBHandler {
 			try {
 				removeTable(tableName);
 			} catch (DatabaseException e) {
-	               ExceptionHandler.printStackTrace(e);
+	               //ExceptionHandler.printStackTrace(e);
 	        }
 		}
 	}
