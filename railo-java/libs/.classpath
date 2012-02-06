@@ -100,5 +100,9 @@
 	<classpathentry kind="lib" path="apache-commons-sanselan.jar"/>
 	<classpathentry kind="lib" path="microsoft-sqljdbc.jar"/>
 	<classpathentry kind="lib" path="ESAPI.jar"/>
+	<classpathentry kind="lib" path="apache-poi.jar"/>
+	<classpathentry kind="lib" path="apache-poi-ooxml-schemas.jar"/>
+	<classpathentry kind="lib" path="apache-poi-ooxml.jar"/>
+	<classpathentry kind="lib" path="xmlbeans.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

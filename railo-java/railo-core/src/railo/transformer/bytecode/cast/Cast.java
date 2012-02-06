@@ -118,7 +118,11 @@ public final class Cast extends ExpressionBase {
     final public static Method GET_TIMEZONE = new Method("getTimeZone",
     			Types.TIMEZONE,
     			new Type[]{});
-    
+
+    // Excel toExcel (Object)
+    final public static Method TO_EXCEL = new Method("toExcel",
+			Types.EXCEL,
+			new Type[]{Types.OBJECT}); 
     
     /**
      * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
@@ -214,6 +218,13 @@ public final class Cast extends ExpressionBase {
             	rtn=expr.writeOut(bc,MODE_REF);
             	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_DECIMAL[Types.getType(rtn)]);
                 return Types.STRING;
+            }
+        break;
+        case 'e':
+        	if("excel".equals(type)) {
+            	expr.writeOut(bc,MODE_REF);
+                adapter.invokeStatic(Types.EXCEL_UTIL,TO_EXCEL);
+                return Types.EXCEL;
             }
         break;
         case 'f':
@@ -411,7 +422,6 @@ public final class Cast extends ExpressionBase {
         }
         Type t=getType(type);
         
-        
         expr.writeOut(bc,MODE_REF);
         adapter.checkCast(t);
         return t;
@@ -460,7 +470,10 @@ public final class Cast extends ExpressionBase {
             if("decimal".equals(lcType))						return Types.STRING;
             
         break;
-        
+
+        case 'e':
+        	if("excel".equals(lcType)) 							return Types.EXCEL;
+        break;
         case 'f':
         	if("file".equals(lcType)) 							return Types.FILE;
             if("float".equals(type)) 							return Types.FLOAT_VALUE;

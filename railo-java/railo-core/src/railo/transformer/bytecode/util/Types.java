@@ -31,6 +31,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.poi.Excel;
+import railo.runtime.poi.ExcelUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
@@ -116,8 +118,10 @@ public final class Types {
     public static final Type DATE_TIME=Type.getType(railo.runtime.type.dt.DateTime.class);
     
     public static final Type DATE=Type.getType(java.util.Date.class);
-    
+
     public static final Type FILE=Type.getType(java.io.File.class);
+    public static final Type EXCEL=Type.getType(Excel.class);
+    public static final Type EXCEL_UTIL=Type.getType(ExcelUtil.class);
     
     public static final Type RESOURCE=Type.getType(Resource.class);
     
@@ -238,6 +242,9 @@ public final class Types {
             if("decimal".equals(lcType))							return STRING;
             if("double".equals(type)) 								return DOUBLE_VALUE;
             if("double".equals(lcType))								return DOUBLE;
+        break;
+        case 'e':
+            if("excel".equals(lcType)) 								return EXCEL;
         break;
         case 'f':
             if("file".equals(lcType)) 								return FILE;

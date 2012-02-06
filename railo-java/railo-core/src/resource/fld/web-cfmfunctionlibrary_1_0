@@ -13345,6 +13345,100 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	 
+	<!-- SpreadsheetSetCellValue -->
+	<function>
+		<name>SpreadsheetSetCellValue</name>
+		<class>railo.runtime.functions.poi.SpreadsheetSetCellValue</class>
+		<description></description>
+		<argument>
+			<name>spreadSheet</name>
+			<alias>excel</alias>
+			<type>excel</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>value</name>
+			<type>string</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>row</name>
+			<type>number</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>column</name>
+			<alias>col</alias>
+			<type>number</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- SpreadSheetNew -->
+	<function>
+		<name>SpreadSheetNew</name>
+		<class>railo.runtime.functions.poi.SpreadSheetNew</class>
+		<description></description>
+		<argument>
+			<name>sheetName</name>
+			<alias>sheetNameOrXMLFormat</alias>
+			<type>any</type>
+			<required>no</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>xmlFormat</name>
+			<type>any</type>
+			<required>no</required>
+		<description></description>
+    </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- SpreadSheetWrite -->
+	<function>
+		<name>SpreadSheetWrite</name>
+		<class>railo.runtime.functions.poi.SpreadSheetWrite</class>
+		<description></description>
+		<argument>
+			<name>spreadSheet</name>
+			<alias>excel</alias>
+			<type>excel</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>path</name>
+			<type>string</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>password</name>
+			<type>any</type>
+			<required>no</required>
+		<description></description>
+    </argument>
+		<argument>
+			<name>overwrite</name>
+			<type>boolean</type>
+			<required>no</required>
+		<description></description>
+    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- sqr -->
 	<function>
 		<name>sqr</name>

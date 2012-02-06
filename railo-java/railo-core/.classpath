@@ -102,5 +102,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Railo-Libs/apache-commons-sanselan.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/ESAPI.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/apache-poi.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/apache-poi-ooxml-schemas.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/apache-poi-ooxml.jar"/>
+	<classpathentry kind="lib" path="/Railo-Libs/xmlbeans.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
