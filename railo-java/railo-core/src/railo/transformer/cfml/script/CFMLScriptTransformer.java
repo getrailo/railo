@@ -14,7 +14,6 @@ import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
 public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements TagDependentBodyTransformer {
-	
 	/**
 	 * Einstiegsmethode für den CFScript Transformer, 
 	 * die Methode erbt sich von der Transform Methode der data.cfmlExprTransformer Klasse.
