@@ -1254,7 +1254,7 @@ public final class CFMLScriptTransformer extends CFMLExprTransformer implements 
 		
 		
 		// folgend wird tlt extra nicht übergeben, sonst findet prüfung statt
-		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,"name","name",true);
+		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true);
 		checkSemiColonLineFeed(data,true);
 
 		param.setTagLibTag(tlt);
