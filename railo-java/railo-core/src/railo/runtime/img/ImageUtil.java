@@ -94,10 +94,10 @@ public class ImageUtil {
 		if("tiff".equalsIgnoreCase(ext))return "tiff";
 		if("tif".equalsIgnoreCase(ext))return "tiff";
 		if("bmp".equalsIgnoreCase(ext))return "bmp";
-		if("bmg".equalsIgnoreCase(ext))return "bmg";
+		if("bmp".equalsIgnoreCase(ext))return "bmp";
 		if("wbmp".equalsIgnoreCase(ext))return "wbmp";
 		if("ico".equalsIgnoreCase(ext))return "bmp";
-		if("wbmg".equalsIgnoreCase(ext))return "wbmg";
+		if("wbmp".equalsIgnoreCase(ext))return "wbmp";
 		if("psd".equalsIgnoreCase(ext))return "psd";
 		if("fpx".equalsIgnoreCase(ext))return "fpx";
 		
@@ -147,8 +147,8 @@ public class ImageUtil {
 		if("application/tiff".equals(mt)) return "tiff";
 		if("application/x-tiff".equals(mt)) return "tiff";
 		
-		if("image/bmg".equals(mt)) return "bmg";
-		if("image/vnd.wap.wbmp".equals(mt)) return "wbmg";
+		if("image/bmp".equals(mt)) return "bmp";
+		if("image/vnd.wap.wbmp".equals(mt)) return "wbmp";
 		
 		if("image/fpx".equals(mt)) return "fpx";
 		if("image/x-fpx".equals(mt)) return "fpx";
@@ -210,9 +210,8 @@ public class ImageUtil {
 		if("png".equals(mt)) return "image/png";
 		if("tiff".equals(mt)) return "image/tiff";
 		if("tif".equals(mt)) return "image/tiff";
-		if("bmg".equals(mt)) return "image/bmp";
 		if("bmp".equals(mt)) return "image/bmp";
-		if("wbmg".equals(mt)) return "image/vnd.wap.wbmp";
+		if("bmp".equals(mt)) return "image/bmp";
 		if("wbmp".equals(mt)) return "image/vnd.wap.wbmp";
 		if("fpx".equals(mt)) return "image/fpx";
 		

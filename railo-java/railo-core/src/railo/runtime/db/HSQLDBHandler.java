@@ -220,7 +220,7 @@ public final class HSQLDBHandler {
 			try {
 				removeTable(tableName);
 			} catch (DatabaseException e) {
-	               ExceptionHandler.printStackTrace(e);
+	               //ExceptionHandler.printStackTrace(e);
 	        }
 		}
 	}
@@ -320,8 +320,8 @@ public final class HSQLDBHandler {
     	try {
 			return __execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,false);
 		}
-		catch(PageException pe) {
-			if(isUnion){
+    	catch(PageException pe) {
+			if(isUnion || StringUtil.indexOf(pe.getMessage(), "NumberFormatException:")!=-1){
 				return __execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,true);
 			}
 			throw pe;

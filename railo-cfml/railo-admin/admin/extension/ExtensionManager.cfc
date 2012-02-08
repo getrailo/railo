@@ -200,6 +200,11 @@
 			<!--- read group data --->
     		<cfset stepItem=xmlConfig.XmlChildren[stepIndex]>
     		<cfset stepAttrs=xmlConfig.XmlChildren[stepIndex].xmlAttributes>
+	
+			<!--- Ignore the info block in the config --->
+			<cfif stepItem.XMLName EQ "info">
+				<cfcontinue>
+			</cfif>
     
 			<!--- Ignore the info block in the config --->
 			<cfif stepItem.XMLName EQ "info">
