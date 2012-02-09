@@ -510,6 +510,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getDatasources",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasources();
         else if(check("getRemoteClients",       ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClients();
         else if(check("getRemoteClient",       	ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClient();
+        else if(check("hasRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doHasRemoteClientUsage();
         else if(check("getRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClientUsage();
         else if(check("getSpoolerTasks",   		ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
@@ -2158,8 +2159,6 @@ private void doGetMappings() throws PageException {
     			new String[]{"code","displayname"},
     			new String[]{"varchar","varchar"},
     			0,"usage");
-       
-
         Struct usages = config.getRemoteClientUsage();
         Key[] keys = usages.keys();
         for(int i=0;i<keys.length;i++) {
@@ -2169,6 +2168,12 @@ private void doGetMappings() throws PageException {
         	//qry.setAt("description", i+1, usages[i].getDescription());
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+
+    private void doHasRemoteClientUsage() throws PageException {
+        
+        Struct usages = config.getRemoteClientUsage();
+        pageContext.setVariable(getString("admin",action,"returnVariable"),usages.isEmpty()?Boolean.FALSE:Boolean.TRUE);
     }
     
     
