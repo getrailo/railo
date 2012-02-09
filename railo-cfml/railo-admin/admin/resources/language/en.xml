@@ -979,9 +979,9 @@
 	<data key="settings.cache.nameMissing">Cancel</data>
 	<data key="settings.cache.type">Type</data>
 	<data key="settings.cache.defaulttypeObject">Object</data>
-	<data key="settings.cache.defaulttypeObjectDesc">This cache connection is used for all cache operations (cacheGet,cachePut ...)</data>
+	<data key="settings.cache.defaulttypeObjectDesc">This cache connection is used for all object cache operations (cacheGet,cachePut, cfcache action="get|put" ...)</data>
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
-	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for the tag cfcache</data>
+	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for template caching (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
 	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for the caching of the tag cfquery</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>

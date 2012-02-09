@@ -789,9 +789,9 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.nameMissing">Abbrechen</data>
 	<data key="settings.cache.type">Typ</data>
 	<data key="settings.cache.defaulttypeObject">Objekt</data>
-	<data key="settings.cache.defaulttypeObjectDesc">Diese Cache Connection wird für alle Cache operationen verwendet (cacheGet,cachePut ...)</data>
+	<data key="settings.cache.defaulttypeObjectDesc">Diese Cache Connection wird für alle Object Caching operationen verwendet (cacheGet,cachePut, cfcache action="get|put" ...)</data>
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
-	<data key="settings.cache.defaulttypeTemplateDesc">Diese Cache Connection wird für das Tag cfcache verwendet.</data>
+	<data key="settings.cache.defaulttypeTemplateDesc">Diese Cache Connection wird für Template Caching verwendet (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
 	<data key="settings.cache.defaulttypeQueryDesc">Diese Cache Connection wird für für das cache von cfquery Resultsets verwendet.</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>

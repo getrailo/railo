@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.oro.text.regex.MalformedPatternException;
 
@@ -164,13 +165,6 @@ public final class Cache extends BodyTagImpl {
 	}
 	public void setCachedirectory(String directory) throws ExpressionException	{
 		setDirectory(directory);
-	}
-	private Resource getDirectory() throws IOException {
-		if(directory==null) {
-			directory= pageContext.getConfig().getCacheDir();	
-        }
-        if(!directory.exists())directory.createDirectory(true);
-        return directory;
 	}
 	
 
@@ -358,24 +352,23 @@ public final class Cache extends BodyTagImpl {
         // call via cfcache disable debugger output
             pageContext.getDebugger().setOutput(false);
 		
-        HttpServletRequest req = pageContext. getHttpServletRequest();
+        HttpServletResponse rsp = pageContext.getHttpServletResponse();
         
         // generate cache resource matching request object
-        CacheItem ci = generateCacheResource(req,null,false);
-        Resource cacheResource=ci.getResource();
+        CacheItem ci = generateCacheResource(null,false);
         
         // use cached resource
-        if(isOK(cacheResource)){
+        if(ci.isValid(timespan)){ //if(isOK(cacheResource)){
         	if(pageContext. getHttpServletResponse().isCommitted()) return;
         	
-        	InputStream is=null;
         	OutputStream os=null;
         	try {
-                IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
+                ci.writeTo(os=getOutputStream(),rsp.getCharacterEncoding());
+        		//IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
             } 
             finally {
                 IOUtil.flushEL(os);
-                IOUtil.closeEL(is,os);
+                IOUtil.closeEL(os);
                 ((PageContextImpl)pageContext).getRootOut().setClosed(true);
             }
         	throw new Abort(Abort.SCOPE_REQUEST);
@@ -389,18 +382,17 @@ public final class Cache extends BodyTagImpl {
         	
     }
 
-	private boolean isOK(Resource cacheResource) {
+	/*private boolean isOK(Resource cacheResource) {
 		return cacheResource.exists() && (cacheResource.lastModified()+timespan.getMillis()>=System.currentTimeMillis());
-	}
+	}*/
 
-	private int doContentCache() throws IOException {
+	private int doContentCache() throws IOException, PageException {
 
         // file
-        HttpServletRequest req = pageContext. getHttpServletRequest();
-        cacheItem = generateCacheResource(req,key,true);
+        cacheItem = generateCacheResource(key,true);
         // use cache
-        if(isOK(cacheItem.getResource())){
-        	pageContext.write(IOUtil.toString(cacheItem.getResource(),"UTF-8"));
+        if(cacheItem.isValid(timespan)){
+        	pageContext.write(cacheItem.getValue());
         	doCaching=false;
             return SKIP_BODY;
         }
@@ -454,55 +446,27 @@ public final class Cache extends BodyTagImpl {
 			required("cache", "id", id);
 			CacheRemove.call(pageContext, id,throwOnError,cachename);
 		}
-		if(StringUtil.isEmpty(expireurl)) {
-			ResourceUtil.removeChildrenEL(getDirectory());
+		else if(StringUtil.isEmpty(expireurl)) {
+			CacheItem.flushAll(pageContext,directory,cachename);
 		}
 		else {
+			CacheItem.flush(pageContext,directory,cachename,expireurl);
 			
-			Resource dir = getDirectory();
-			List names = MetaData.getInstance(dir).get(expireurl);
-			Iterator it = names.iterator();
-			String name;
-			while(it.hasNext()){
-				name=(String)it.next();
-				//print.out(name);
-				if(dir.getRealResource(name).delete());
-					
-			}
 			//ResourceUtil.removeChildrenEL(getDirectory(),(ResourceNameFilter)new ExpireURLFilter(expireurl));
 		}
     }
 
 
-    private CacheItem generateCacheResource(HttpServletRequest req, String key, boolean useId) throws IOException {
-    	String filename=req.getServletPath();
-        if(!StringUtil.isEmpty(req.getQueryString())) {
-        	filename+="?"+req.getQueryString();
-        	if(useId)filename+="&cfcache_id="+_id;
-        }
-        else {
-        	if(useId)filename+="?cfcache_id="+_id;
-        }
-    	if(useId && !StringUtil.isEmpty(key)) filename=key;
-    	
-    	Resource dir = getDirectory();
-    	CacheItem ci=new CacheItem();
-    	ci.setDirectory(dir);
-    	ci.setRaw(filename);
-        if(!StringUtil.isEmpty(req.getContextPath())) filename=req.getContextPath()+filename;
-        filename=compressFileName(filename)+".cache";
-        ci.setName(filename);
-        ci.setResource(dir.getRealResource(filename));
-        return ci;
+    private CacheItem generateCacheResource(String key, boolean useId) throws IOException {
+    	return CacheItem.getInstance(pageContext,_id,key,useId,directory,cachename,timespan);
 	}
 
-	private String compressFileName(String path) throws IOException {
-		return Md5.getDigestAsString(path);
-	}
+	
 
 	private void writeCacheResource(CacheItem cacheItem, String result) throws IOException {
-		IOUtil.write(cacheItem.getResource(), result,"UTF-8", false); 
-		MetaData.getInstance(cacheItem.getDirectory()).add(cacheItem.getName(), cacheItem.getRaw());
+		cacheItem.store(result);
+		//IOUtil.write(cacheItem.getResource(), result,"UTF-8", false); 
+		//MetaData.getInstance(cacheItem.getDirectory()).add(cacheItem.getName(), cacheItem.getRaw());
 	}
 	
 
