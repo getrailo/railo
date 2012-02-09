@@ -15,7 +15,6 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 
 public class Util {
 

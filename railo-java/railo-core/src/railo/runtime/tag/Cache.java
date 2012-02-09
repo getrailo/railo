@@ -2,12 +2,8 @@ package railo.runtime.tag;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.oro.text.regex.MalformedPatternException;
@@ -16,11 +12,9 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.cache.legacy.CacheItem;
-import railo.runtime.cache.legacy.MetaData;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;

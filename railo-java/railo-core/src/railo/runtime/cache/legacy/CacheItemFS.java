@@ -13,9 +13,7 @@ import org.apache.oro.text.regex.MalformedPatternException;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.Md5;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.type.dt.TimeSpan;
 
