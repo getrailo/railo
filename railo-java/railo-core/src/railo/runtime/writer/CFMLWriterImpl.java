@@ -1,6 +1,5 @@
 package railo.runtime.writer;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -9,11 +8,9 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.cache.legacy.CacheItem;
-import railo.runtime.cache.legacy.MetaData;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
 
@@ -184,6 +181,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      * flushing the stream itself.  This method is non-private only so that it
      * may be invoked by PrintStream.
      * @throws IOException
+     * @throws  
      */
     protected final void flushBuffer(boolean closeConn) throws IOException {
     	if(!flushed && closeConn) {
@@ -194,8 +192,9 @@ public class CFMLWriterImpl extends CFMLWriter {
     	initOut();
     	byte[] barr = _toString(true).getBytes(response.getCharacterEncoding());
         
-    	if(cacheItem!=null && cacheItem.getResource()!=null) {
-        	writeCache(barr,flushed);
+    	if(cacheItem!=null && cacheItem.isValid()) {
+    		cacheItem.store(barr, flushed);
+        	// writeCache(barr,flushed);
         }
         flushed = true;
         out.write(barr);
@@ -261,7 +260,8 @@ public class CFMLWriterImpl extends CFMLWriter {
         	byte[] barr = _toString(true).getBytes(response.getCharacterEncoding());
             
         	if(cacheItem!=null)	{
-        		writeCache(barr,false);
+        		cacheItem.store(barr, false);
+            	// writeCache(barr,false);
         	}
         	
         	if(closeConn)response.setHeader("connection", "close");
@@ -307,10 +307,11 @@ public class CFMLWriterImpl extends CFMLWriter {
     
     
 
-    private void writeCache(byte[] barr,boolean append) throws IOException {
-    	IOUtil.copy(new ByteArrayInputStream(barr), cacheItem.getResource().getOutputStream(append),true,true);
-    	MetaData.getInstance(cacheItem.getDirectory()).add(cacheItem.getName(), cacheItem.getRaw());
-	}
+    /*private void writeCache(byte[] barr,boolean append) throws IOException {
+    	cacheItem.store(barr, append);
+    	//IOUtil.copy(new ByteArrayInputStream(barr), cacheItem.getResource().getOutputStream(append),true,true);
+    	//MetaData.getInstance(cacheItem.getDirectory()).add(cacheItem.getName(), cacheItem.getRaw());
+	}*/
 
     /** 
      * @see javax.servlet.jsp.JspWriter#getRemaining() 
