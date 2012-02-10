@@ -106,10 +106,8 @@ public final class EmailNamePair {
 			if(!StringUtil.isEmpty(pair.getName()))return new InternetAddress(pair.getEmail(),pair.getName());
 			return new InternetAddress(pair.getEmail());
 		}
-		else {
-			InternetAddress[] addresses = toInternetAddresses(emails);
-			if(addresses!=null && addresses.length>0) return addresses[0];
-		}
+		InternetAddress[] addresses = toInternetAddresses(emails);
+		if(addresses!=null && addresses.length>0) return addresses[0];
 		return null;
 	}
 	

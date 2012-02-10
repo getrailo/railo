@@ -123,20 +123,20 @@ public final class HSQLDBHandler {
 						else if(type==DATE) {
 							//print.out(new java.util.Date(new Date(DateCaster.toDateAdvanced(value,pc.getTimeZone()).getTime()).getTime()));
 
-							prepStat.setTimestamp(i+1,(value==null || value.equals(""))?null:new Timestamp(DateCaster.toDateAdvanced(query.getAt(keys[i],y+1),pc.getTimeZone()).getTime()));
+							prepStat.setTimestamp(i+1,(value.equals(""))?null:new Timestamp(DateCaster.toDateAdvanced(query.getAt(keys[i],y+1),pc.getTimeZone()).getTime()));
 							//prepStat.setObject(i+1,Caster.toDate(value,null));
 							//prepStat.setDate(i+1,(value==null || value.equals(""))?null:new Date(DateCaster.toDateAdvanced(value,pc.getTimeZone()).getTime()));
 						}
 						else if(type==TIME)
-							prepStat.setTime(i+1,(value==null || value.equals(""))?null:new Time(DateCaster.toDateAdvanced(query.getAt(keys[i],y+1),pc.getTimeZone()).getTime()));
+							prepStat.setTime(i+1,(value.equals(""))?null:new Time(DateCaster.toDateAdvanced(query.getAt(keys[i],y+1),pc.getTimeZone()).getTime()));
 						else if(type==TIMESTAMP)
-							prepStat.setTimestamp(i+1,(value==null || value.equals(""))?null:new Timestamp(DateCaster.toDateAdvanced(query.getAt(keys[i],y+1),pc.getTimeZone()).getTime()));
+							prepStat.setTimestamp(i+1,(value.equals(""))?null:new Timestamp(DateCaster.toDateAdvanced(query.getAt(keys[i],y+1),pc.getTimeZone()).getTime()));
 						else if(type==DOUBLE)
-							prepStat.setDouble(i+1,(value==null || value.equals(""))?0:Caster.toDoubleValue(query.getAt(keys[i],y+1)));
+							prepStat.setDouble(i+1,(value.equals(""))?0:Caster.toDoubleValue(query.getAt(keys[i],y+1)));
 						else if(type==INT)
-							prepStat.setLong(i+1,(value==null || value.equals(""))?0:Caster.toIntValue(query.getAt(keys[i],y+1)));
+							prepStat.setLong(i+1,(value.equals(""))?0:Caster.toIntValue(query.getAt(keys[i],y+1)));
 						else if(type==STRING)
-							prepStat.setObject(i+1,(value==null)?"":Caster.toString(value));
+							prepStat.setObject(i+1,Caster.toString(value));
 					}
 					
 				}

@@ -587,7 +587,7 @@ public final class CFMLTransformer {
 				if(!data.cfml.forwardIfCurrent("</")) {
 					// MUST this is a patch, do a more proper implementation
 					TemplateException te = new TemplateException(data.cfml,"invalid construct");
-					if(tdbt!=null && tdbt instanceof CFMLScriptTransformer && ASMUtil.containsComponent(tag.getBody())) {
+					if(tdbt instanceof CFMLScriptTransformer && ASMUtil.containsComponent(tag.getBody())) {
 						throw new CFMLScriptTransformer.ComponentTemplateException(te);
 					}
 					throw te;

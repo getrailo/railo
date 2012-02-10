@@ -49,8 +49,8 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
 
-	private static final int VERSION_2=1;
-	private static final int VERSION_3=2;
+	//private static final int VERSION_2=1;
+	//private static final int VERSION_3=2;
 
 	public static final short TYPE_ALL=0;
 	public static final short TYPE_BOOLEAN=1;
@@ -60,10 +60,10 @@ public final class ASMUtil {
 	
 	
 	
-	private static int version=0;
+	//private static int version=0;
 	
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
-	private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
+	//private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
 	/**

@@ -28,7 +28,7 @@ import railo.runtime.type.Struct;
 
 public class FadeFilter extends PointFilter  implements DynFiltering {
 
-	private int width, height;
+	//private int width, height;
 	private float angle = 0.0f;
 	private float fadeStart = 1.0f;
 	private float fadeWidth = 10.0f;
@@ -97,8 +97,8 @@ public class FadeFilter extends PointFilter  implements DynFiltering {
 	}
 
 	public void setDimensions(int width, int height) {
-		this.width = width;
-		this.height = height;
+		//this.width = width;
+		//this.height = height;
 		super.setDimensions(width, height);
 	}
 	

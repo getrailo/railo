@@ -69,10 +69,10 @@ public final class Cache extends BodyTagImpl {
 	private int action=CACHE;
 
 	/** When required for basic authentication, a valid username. */
-	private String username;
+	//private String username;
 
 	/** When required for basic authentication, a valid password. */
-	private String password;
+	//private String password;
     
 	private TimeSpan timespan=TIMESPAN_FAR_AWAY;
 	private TimeSpan idletime=TIMESPAN_0;
@@ -120,8 +120,8 @@ public final class Cache extends BodyTagImpl {
     public void release()   {
         super.release();
         directory=null;
-        username=null;
-        password=null;
+        //username=null;
+        //password=null;
         protocol=null;
         expireurl=null;
         action=CACHE;
@@ -173,12 +173,12 @@ public final class Cache extends BodyTagImpl {
 		this.protocol=protocol.toLowerCase();
 	}
 	
-	private String getProtocol()	{
+	/*private String getProtocol()	{
 		if(StringUtil.isEmpty(protocol)) {
 			return pageContext. getHttpServletRequest().getScheme();
 		}
 		return protocol;
-	}
+	}*/
 
 	/** set the value expireurl
 	*  
@@ -231,7 +231,7 @@ public final class Cache extends BodyTagImpl {
 	* @param username value to set
 	**/
 	public void setUsername(String username)	{
-		this.username=username;
+		//this.username=username;
 	}
 	
 	/** set the value password
@@ -239,7 +239,7 @@ public final class Cache extends BodyTagImpl {
 	* @param password value to set
 	**/
 	public void setPassword(String password)	{
-		this.password=password;
+		//this.password=password;
 	}
 	
 	public void setKey(String key)	{
@@ -381,7 +381,7 @@ public final class Cache extends BodyTagImpl {
 		return cacheResource.exists() && (cacheResource.lastModified()+timespan.getMillis()>=System.currentTimeMillis());
 	}*/
 
-	private int doContentCache() throws IOException, PageException {
+	private int doContentCache() throws IOException {
 
         // file
         cacheItem = generateCacheResource(key,true);

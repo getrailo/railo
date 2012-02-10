@@ -37,12 +37,12 @@ public final class GetBaseTagData implements Function {
                 cfTag=(CFTag)srcTag;
                 if(cfTag instanceof CFTagCore){
                 	CFTagCore tc=(CFTagCore) cfTag;
-                	if(tc!=null && (tc.getName()+"").equalsIgnoreCase(pureName))
+                	if((tc.getName()+"").equalsIgnoreCase(pureName))
                 		return cfTag;
                 	if(StringUtil.startsWithIgnoreCase(pureName,"cf")) {
                         pureName=pureName.substring(2);
                     }
-                	if(tc!=null && (tc.getName()+"").equalsIgnoreCase(pureName))
+                	if((tc.getName()+"").equalsIgnoreCase(pureName))
                 		return cfTag;
                 }
                 else if( cfTag.getAppendix().equalsIgnoreCase(pureName)) {

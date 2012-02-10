@@ -342,13 +342,13 @@ public final class PDFDocument {
     			URL base = new URL("file://"+srcfile);
     			if(!localUrl){
     				//PageContext pc = Thread LocalPageContext.get();
-    				if(pc!=null) {
+    				
 	    				String abs = srcfile.getAbsolutePath();
 	    				String contract = ContractPath.call(pc, abs);
 	    				if(!abs.equals(contract)) {
 	    					base=HTTPUtil.toURL(CGIImpl.getDomain(pc.getHttpServletRequest())+contract);
 	    				}
-    				}
+
     			}
     			
     			//URL base = localUrl?new URL("file://"+srcfile):getBase();

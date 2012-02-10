@@ -118,10 +118,8 @@ public class FileStorageScopeCleaner extends StorageScopeCleanerSupport {
 					if(expires<System.currentTimeMillis()){
 						return true;
 					}
-					else {
-						str=str.substring(index+1);
-						return false;
-					}
+					str=str.substring(index+1);
+					return false;
 				}
 			}
 			// old files not having a timestamp inside

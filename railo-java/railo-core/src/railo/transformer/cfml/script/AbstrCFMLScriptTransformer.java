@@ -1771,7 +1771,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 						"Attribute "+id+" is not allowed for statement "+tag.getName(),
 						"valid attribute names are ["+names+"]");
 				}
-				else dynamic.setValue(true);
+				dynamic.setValue(true);
 				
 			}
 			else {

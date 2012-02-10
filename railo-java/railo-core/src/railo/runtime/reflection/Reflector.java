@@ -294,8 +294,7 @@ public final class Reflector {
 			
 			return trg;
 		}
-		else
-			return _convert(src, trgClass);
+		return _convert(src, trgClass);
 	}
 
 	public static Object _convert(Object src, Class trgClass) throws PageException {
@@ -454,7 +453,7 @@ public final class Reflector {
 				}
 			}
 			// like comparsion
-		    MethodInstance mi=null;
+		    //MethodInstance mi=null;
 		    // print.e("like:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
@@ -469,7 +468,7 @@ public final class Reflector {
 		    
 			// convert comparsion
 		    // print.e("convert:"+methodName);
-		    mi=null;
+		    MethodInstance mi=null;
 		    int _rating=0;
 			outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {

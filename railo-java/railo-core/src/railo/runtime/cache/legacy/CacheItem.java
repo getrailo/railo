@@ -27,7 +27,7 @@ public abstract class CacheItem {
 		return new CacheItemFS(pc, req, id, key, useId, dir);
 	}
 	
-	public CacheItem(PageContext pc, HttpServletRequest req, String id, String key, boolean useId) throws IOException {
+	public CacheItem(PageContext pc, HttpServletRequest req, String id, String key, boolean useId) {
 		
 		//raw
 		String filename=req.getServletPath();

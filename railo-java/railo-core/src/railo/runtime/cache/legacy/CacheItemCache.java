@@ -25,7 +25,7 @@ public class CacheItemCache extends CacheItem {
 	private TimeSpan timespan;
 	private String lcFileName;
 
-	public CacheItemCache(PageContext pc, HttpServletRequest req, String id, String key, boolean useId, Cache cache, TimeSpan timespan) throws IOException {
+	public CacheItemCache(PageContext pc, HttpServletRequest req, String id, String key, boolean useId, Cache cache, TimeSpan timespan)  {
 		super(pc, req, id, key, useId);
 		this.cache=cache;
 		this.timespan=timespan;
@@ -73,11 +73,11 @@ public class CacheItemCache extends CacheItem {
 		store(value);
 	}
 
-	public static void _flushAll(PageContext pc, Cache cache) {
+	public static void _flushAll(PageContext pc, Cache cache) throws IOException {
 		cache.remove(CacheKeyFilterAll.getInstance());
 	}
 
-	public static void _flush(PageContext pc, Cache cache, String expireurl) throws MalformedPatternException {
+	public static void _flush(PageContext pc, Cache cache, String expireurl) throws MalformedPatternException, IOException {
 		cache.remove(new WildCardFilter(expireurl,true));
 	}
 	

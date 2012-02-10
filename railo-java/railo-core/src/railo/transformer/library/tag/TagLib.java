@@ -137,7 +137,7 @@ public class TagLib implements Cloneable {
 				match=tagName;
 			}
 		}
-		return (match==null)?null:getTag(match);
+		return getTag(match);
 	}
 	
 	/**

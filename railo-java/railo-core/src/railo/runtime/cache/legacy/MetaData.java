@@ -33,7 +33,7 @@ public class MetaData implements Serializable {
 	}
 
 	public static MetaData getInstance(Resource directory) {
-		MetaData instance=(MetaData) instances.get(directory.getAbsolutePath());
+		MetaData instance=instances.get(directory.getAbsolutePath());
 		
 		if(instance==null) {
 			Resource file = directory.getRealResource("meta");

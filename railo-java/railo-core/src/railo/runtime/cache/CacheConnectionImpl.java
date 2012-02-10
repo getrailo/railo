@@ -48,8 +48,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 						throw new IOException(
 							"cannot initilaize Cache ["+clazz.getName()+"], make sure you have added all the required jars files. "+
 							"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\".");
-					else 
-						throw new IOException(
+					throw new IOException(
 								"cannot initilaize Cache ["+clazz.getName()+"], make sure you have added all the required jars files. "+
 								"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine.");
 				}

@@ -192,7 +192,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	//if(pc.isPageAlreadyUsed(page)) return page;
     	
     	if((mapping.isTrusted() || 
-    			pc!=null && pci.isTrusted(page)) 
+    			pci.isTrusted(page)) 
         		&& isLoad(LOAD_PHYSICAL)) return page;
 				//&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
         
@@ -252,7 +252,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     				page.setLoadType(LOAD_PHYSICAL);
 
 			}
-			if(pc!=null)pci.setPageUsed(page);
+			pci.setPageUsed(page);
 			return page;
     }
 

@@ -43,29 +43,29 @@ public class ShadeFilter extends WholeImageFilter  implements DynFiltering {
 	private float bumpHeight;
 	private float bumpSoftness;
 	private float viewDistance = 10000.0f;
-	private int colorSource = COLORS_FROM_IMAGE;
+	//private int colorSource = COLORS_FROM_IMAGE;
 	private int bumpSource = BUMPS_FROM_IMAGE;
 	private Function2D bumpFunction;
 	private BufferedImage environmentMap;
 	private int[] envPixels;
 	private int envWidth = 1, envHeight = 1;
-	private Vector3f l;
+	//private Vector3f l;
 	private Vector3f v;
-	private Vector3f n;
-	private Color4f shadedColor;
-	private Color4f diffuse_color;
-	private Color4f specular_color;
+	//private Vector3f n;
+	//private Color4f shadedColor;
+	//private Color4f diffuse_color;
+	//private Color4f specular_color;
 	private Vector3f tmpv, tmpv2;
 
 	public ShadeFilter() {
 		bumpHeight = 1.0f;
 		bumpSoftness = 5.0f;
-		l = new Vector3f();
+		//l = new Vector3f();
 		v = new Vector3f();
-		n = new Vector3f();
-		shadedColor = new Color4f();
-		diffuse_color = new Color4f();
-		specular_color = new Color4f();
+		//n = new Vector3f();
+		//shadedColor = new Color4f();
+		//diffuse_color = new Color4f();
+		//specular_color = new Color4f();
 		tmpv = new Vector3f();
 		tmpv2 = new Vector3f();
 	}

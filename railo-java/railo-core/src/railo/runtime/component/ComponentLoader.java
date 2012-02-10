@@ -261,7 +261,7 @@ public class ComponentLoader {
         		throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath+" or "+rpm);
         	}
     	}
-    	else throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath);
+    	throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath);
     	
 		
     	
@@ -272,7 +272,7 @@ public class ComponentLoader {
 		return str;
 	}
 
-	private static Page getPage(PageContext pc,String path, RefBoolean isRealPath, boolean searchLocal) throws PageException  {
+	/*private static Page getPage(PageContext pc,String path, RefBoolean isRealPath, boolean searchLocal) throws PageException  {
     	Page page=null;
 	    isRealPath.setValue(!StringUtil.startsWith(path,'/'));
 	    PageSource ps;
@@ -295,7 +295,7 @@ public class ComponentLoader {
     	    page=((PageSourceImpl)ps).loadPage(pc,null);
         }
     	return page;
-	}
+	}*/
 
 
 	//
@@ -320,7 +320,7 @@ public class ComponentLoader {
 
 	private static Object load(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, Map interfaceUDFs) throws PageException  {
 		if(interfaceUDFs==null) return loadComponent(pc,page, ps,callPath, isRealPath);
-		else return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
+		return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
 	}
 
 	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {

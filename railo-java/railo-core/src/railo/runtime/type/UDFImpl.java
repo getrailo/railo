@@ -152,13 +152,13 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 				newArgs.set(name,castToAndClone(pageContext,funcArgs[i], value,i+1));
 				continue;
 			}
-			else {
+			
 				value=values.removeEL(ArgumentIntKey.init(i+1)); 
 				if(value!=null) {
 					newArgs.set(name,castToAndClone(pageContext,funcArgs[i], value,i+1));
 					continue;
 				}
-			}
+			
 			
 			// default argument or exception
 			Object defaultValue=getDefaultValue(pageContext,i);//funcArgs[i].getDefaultValue();

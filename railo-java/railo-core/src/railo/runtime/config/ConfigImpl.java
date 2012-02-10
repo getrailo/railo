@@ -341,12 +341,12 @@ public abstract class ConfigImpl implements Config {
 	
 	protected MappingImpl tagMapping;
 	private Resource tagDirectory;
-	private Resource functionDirectory;
+	//private Resource functionDirectory;
 	protected MappingImpl functionMapping;
 	private Map amfCasterArguments;
 	private Class amfCasterClass=ClassicAMFCaster.class;
 	private AMFCaster amfCaster;
-	private String defaultDataSource;
+	//private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
 	private String serial="";
 	private String cacheMD5;
@@ -1139,7 +1139,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     protected void setFunctionDirectory(Resource functionDirectory) {
-    	this.functionDirectory=functionDirectory;
+    	//this.functionDirectory=functionDirectory;
     	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
     	FunctionLib fl=flds[flds.length-1];
         
@@ -2939,7 +2939,7 @@ public abstract class ConfigImpl implements Config {
 		return null;
 	}
 	protected void setDefaultDataSource(String defaultDataSource) {
-		this.defaultDataSource=defaultDataSource;
+		//this.defaultDataSource=defaultDataSource;
 	}
 
 	/**
@@ -3073,8 +3073,7 @@ public abstract class ConfigImpl implements Config {
 					throw new ORMException(
 						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
 						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
-				else 
-					throw new ORMException(
+				throw new ORMException(
 							"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
 							"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine");
 			

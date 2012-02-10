@@ -29,8 +29,6 @@ public class ClassicHTMLDumpWriter implements DumpWriter {
 		}
 		DumpTable table=(DumpTable) data;
 		
-		if(table==null) return;
-
 		String borderColor=table.getHighLightColor();
 		String h1Color=table.getHighLightColor();
 		String h2Color=table.getNormalColor();

@@ -1525,7 +1525,7 @@ public final class ConfigWebFactory {
 	           
 	           
 	           // physical!=null && 
-	           if(virtual!=null && (physical!=null || archive!=null)) { 
+	           if((physical!=null || archive!=null)) { 
 	               boolean trusted=toBoolean(el.getAttribute("trusted"),false);
 	               String primary=el.getAttribute("primary");
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
@@ -2286,7 +2286,7 @@ public final class ConfigWebFactory {
         
 	    if(!hasSet) {
 	        MappingImpl m=new MappingImpl(config,"/0/","{railo-web}/customtags/",null,false,true,false,false,true,false,true);
-	        if(m!=null)config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
+	        config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
         
     }
@@ -3453,8 +3453,7 @@ public final class ConfigWebFactory {
             
             // Init
             se.init(config,
-                    ConfigWebUtil.getFile(configDir,(search==null)?
-                    null:
+                    ConfigWebUtil.getFile(configDir,
                     ConfigWebUtil.translateOldPath(search.getAttribute("directory")), "search",configDir,FileUtil.TYPE_DIR,config),
                     log
             );
@@ -3486,8 +3485,7 @@ public final class ConfigWebFactory {
         LogAndSource log=ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel);
         
         // set scheduler
-        Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),(scheduler==null)?
-                null:
+        Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),
                 scheduler.getAttribute("directory"), "scheduler",configDir,FileUtil.TYPE_DIR,config);
         config.setScheduler(configServer.getCFMLEngine(),file,log);
     }
@@ -3505,14 +3503,12 @@ public final class ConfigWebFactory {
         // Entries
         Element[] entries = getChildren(debugging,"debug-entry");
         Map<String,DebugEntry> list=new HashMap<String,DebugEntry>();
-        Struct sct=null;
         if(hasCS) {
         	 DebugEntry[] _entries = ((ConfigImpl)configServer).getDebugEntries();
         	 for(int i=0;i<_entries.length;i++) {
         		list.put(_entries[i].getId(),_entries[i].duplicate(true)); 
         	 }
         }
-        if(sct==null) sct=new StructImpl();
         Element e;
         String id;
         for(int i=0;i<entries.length;i++) {
@@ -3598,7 +3594,6 @@ public final class ConfigWebFactory {
         	boolean oldStyle=cfxTagsParent.getNodeName().equals("cfx-tags");
         	
         	
-	      	if(cfxTagsParent!=null) {
 	      	    Element[] cfxTags = oldStyle?getChildren(cfxTagsParent,"cfx-tag"):getChildren(cfxTagsParent,"ext-tag");  
 	      	    for(int i=0;i<cfxTags.length; i++) {
 	      	        String type=cfxTags[i].getAttribute("type");
@@ -3624,7 +3619,7 @@ public final class ConfigWebFactory {
 		      	        }
 	      	        }
 	      	    }
-	      	}
+
         }
       	config.setCFXTagPool(map);
     }
@@ -3639,7 +3634,6 @@ public final class ConfigWebFactory {
       		config.setExtensionEnabled(Caster.toBooleanValue(strEnabled,false));
       	}
       	
-      	if(xmlExtParent!=null) {
    // providers
       		Element[] xmlProviders = getChildren(xmlExtParent,"provider");
       		String provider;
@@ -3694,7 +3688,7 @@ public final class ConfigWebFactory {
       	        	);
       	    }
       	    config.setExtensions(extensions);
-      	}
+      	
         
     }
     
@@ -3857,7 +3851,7 @@ public final class ConfigWebFactory {
       	
 	    if(!hasSet) {
 	        MappingImpl m=new MappingImpl(config,"/0","{railo-web}/components/",null,false,true,false,false,true,false,true);
-	        if(m!=null)config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
+	        config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
       	
     }

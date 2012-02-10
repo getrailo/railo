@@ -177,50 +177,6 @@ public final class CompressUtil {
         }
     }
     
-    private static void extractZipOld(Resource zipFile, Resource targetDir) throws IOException {
-        if(!targetDir.exists() || !targetDir.isDirectory())
-            throw new IOException(targetDir+" is not a existing directory");
-        
-        if(!zipFile.exists())
-            throw new IOException(zipFile+" is not a existing file");
-        
-        if(zipFile.isDirectory()) {
-        	Resource[] files = zipFile.listResources(new ExtensionResourceFilter("tar"));
-            if(files==null) 
-                throw new IOException("directory "+zipFile+" is empty");
-            extract(FORMAT_ZIP,files,targetDir);
-            return;
-        }
-        
-//      read the zip file and build a query from its contents
-        TarInputStream tis=null;
-        try {
-	        tis = new TarInputStream( IOUtil.toBufferedInputStream(zipFile.getInputStream()) ) ;     
-	        TarEntry entry;
-	        int mode;
-	        while ( ( entry = tis.getNextEntry()) != null ) {
-	        	//print.ln(entry);
-	        	Resource target=targetDir.getRealResource(entry.getName());
-	            if(entry.isDirectory()) {
-	                target.mkdirs();
-	            }
-	            else {
-	            	Resource parent=target.getParentResource();
-	                if(!parent.exists())parent.mkdirs();
-	                
-	                IOUtil.copy(tis,target,false);
-	            }
-	            target.setLastModified(entry.getModTime().getTime());
-	            mode=entry.getMode();
-	            if(mode>0)target.setMode(mode);
-	            //tis.closeEntry() ;
-	        }
-        }
-        finally {
-        	IOUtil.closeEL(tis);
-        }
-    }
-    
     private static void extractZip(Resource zipFile, Resource targetDir) throws IOException {
     	if(!targetDir.exists() || !targetDir.isDirectory())
             throw new IOException(targetDir+" is not a existing directory");

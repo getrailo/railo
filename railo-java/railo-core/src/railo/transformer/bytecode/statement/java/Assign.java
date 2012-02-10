@@ -87,8 +87,7 @@ public class Assign extends ExpressionBase {
 				}
 				if(((tc==boolean.class && fc!=boolean.class))||(fc==boolean.class && tc!=boolean.class))
 					throw new BytecodeException("cannot cast from ["+fc.getName()+"] to ["+tc.getName()+"]", line);
-				else
-					bc.getAdapter().cast(from, to);
+				bc.getAdapter().cast(from, to);
 			}
 			else {
 				

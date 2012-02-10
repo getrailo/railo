@@ -22,7 +22,6 @@ public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
         char quoter = cfml.getCurrentLower();
         //String str="";
         LStringBuffer str=new LStringBuffer();
-        Ref value=null;
         
         while(cfml.hasNext()) {
             cfml.next();
@@ -108,10 +107,11 @@ public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
         
         cfml.removeSpace();
         mode=STATIC;
+        /*Ref value=null;
         if(value!=null) {
             if(str.isEmpty()) return value;
             return new Concat(pc,value,str);
-        }
+        }*/
         return str;
     }
 

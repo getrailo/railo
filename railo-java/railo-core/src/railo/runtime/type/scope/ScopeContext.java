@@ -497,8 +497,7 @@ public final class ScopeContext {
 					return  SessionCache.hasInstance(storage,appContext.getName(),pc);
 				}
 			}
-			else 
-				return true;
+			return true;
 	}
 	
 	

@@ -494,10 +494,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 					return new VT(LitDouble.ZERO,type,-1);
 				return new VT(null,type,-1);
 			}
-			else {
-				return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
-			}
-			
+			return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
 		UDFUtil.addFunctionDoc(be, flfa.getFunction());

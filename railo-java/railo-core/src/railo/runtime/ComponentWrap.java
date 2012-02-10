@@ -23,7 +23,7 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
    
     private int access;
     private ComponentAccess component;
-    private ComponentImpl ci;
+    //private ComponentImpl ci;
 
     /**
      * constructor of the class

@@ -630,7 +630,7 @@ public final class SystemUtil {
 		}
 	    
 	}
-	private static MemoryUsage getPermGenSpaceSize() {
+	/*private static MemoryUsage getPermGenSpaceSize() {
 		MemoryUsage mu = getPermGenSpaceSize(null);
 		if(mu!=null) return mu;
 		
@@ -645,7 +645,7 @@ public final class SystemUtil {
 			sb.append(bean.getName());
 		}
 		throw new RuntimeException("PermGen Space information not available, available Memory blocks are ["+sb+"]");
-	}
+	}*/
 	
 	private static MemoryUsage getPermGenSpaceSize(MemoryUsage defaultValue) {
 		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();

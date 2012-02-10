@@ -18,13 +18,10 @@ import railo.runtime.type.dt.DateTime;
  * 
  */
 public final class DateDiff implements Function {
-	//private static Calendar calendar;
-	//private static Calendar cLeft;
-	//private static Calendar cRight;
 
-	private static final int DATEPART_S = 0;
-	private static final int DATEPART_N = 1;
-	private static final int DATEPART_H = 2;
+	//private static final int DATEPART_S = 0;
+	//private static final int DATEPART_N = 1;
+	//private static final int DATEPART_H = 2;
 	private static final int DATEPART_D = 3;
 	private static final int DATEPART_Y = DATEPART_D;
 	private static final int DATEPART_YYYY = 10;

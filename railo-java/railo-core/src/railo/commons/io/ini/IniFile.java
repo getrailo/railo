@@ -170,7 +170,7 @@ public final class IniFile {
          // new key
          String key = read.substring(0, read.indexOf("=")).trim().toLowerCase();
          String value = read.substring(read.indexOf("=") + 1).trim();
-         if(section!=null)section.put(key, value);
+         section.put(key, value);
        }
      }
 

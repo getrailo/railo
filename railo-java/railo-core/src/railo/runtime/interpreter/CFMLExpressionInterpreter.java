@@ -1411,20 +1411,20 @@ public class CFMLExpressionInterpreter {
         return sb.toString();//cfml.substringLower(start,cfml.getPos()-start);
     }
 
-    /**
+    /* *
     * Transfomiert ein Collection Element das in eckigen Klammern aufgerufen wird. 
     * <br />
     * EBNF:<br />
     * <code>"[" impOp "]"</code>
     * @return CFXD Element
     * @throws PageException 
-    */
+    * /
     private Ref structElement() throws PageException {
         cfml.removeSpace();
         Ref ref = new Casting(pc,"string",CFTypes.TYPE_STRING,assignOp());
         cfml.removeSpace();
         return ref;
-    }
+    }*/
 
     /**
     * Liest die Argumente eines Funktonsaufruf ein und pr￼ft ob die Funktion 

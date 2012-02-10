@@ -96,7 +96,7 @@ import com.allaire.cfx.CustomTag;
  */
 public final class ConfigWebAdmin {
     
-    private static final Object NULL = new Object();
+    //private static final Object NULL = new Object();
 	private ConfigImpl config;
     private Document doc;
 	private String password;
@@ -3095,9 +3095,7 @@ public final class ConfigWebAdmin {
 		if(Decision.isUUId(id)) {
 			return Hash.invoke(config,id,null,null);
 		}
-		else {
-			return Hash.invoke(config,provider+id,null,null);
-		}
+		return Hash.invoke(config,provider+id,null,null);
 	}
 
 

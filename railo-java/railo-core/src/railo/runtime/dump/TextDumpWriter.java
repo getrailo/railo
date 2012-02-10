@@ -24,9 +24,6 @@ public class TextDumpWriter implements DumpWriter {
 		}
 		DumpTable table=(DumpTable) data;
 		
-		if(table==null) return;
-		
-		
 		DumpRow[] rows = table.getRows();
 		int cols=0;
 		for(int i=0;i<rows.length;i++)if(rows[i].getItems().length>cols)cols=rows[i].getItems().length;

@@ -711,7 +711,7 @@ public final class Http extends BodyTagImpl {
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
                     }
                     catch (UnsupportedEncodingException uee) {
-                    	str = is==null?"":IOUtil.toString(is,null);
+                    	str = IOUtil.toString(is,null);
                     }
                 }
                 catch (IOException ioe) {
@@ -724,7 +724,7 @@ public final class Http extends BodyTagImpl {
                 if(str==null)str="";
 		        if(resolveurl){
 		        	//URI uri = httpMethod.getURI();
-		        	if(e!=null && e.redirectURL!=null)url=e.redirectURL.toExternalForm();
+		        	if(e.redirectURL!=null)url=e.redirectURL.toExternalForm();
 		        	str=new URLResolver().transform(str,new URL(url),false);
 		        }
 		        cfhttp.set(FILE_CONTENT,str);

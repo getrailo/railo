@@ -1944,7 +1944,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public boolean getBoolean(int columnIndex) throws SQLException {
 		Object rtn = getObject(columnIndex);
 		if(rtn==null)return false;
-		if(rtn!=null && Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
+		if(Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
 		throw new SQLException("can't cast value to boolean");
 	}
 	
@@ -1954,7 +1954,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public boolean getBoolean(String columnName) throws SQLException {
 		Object rtn = getObject(columnName);
 		if(rtn==null)return false;
-		if(rtn!=null && Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
+		if(Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
 		throw new SQLException("can't cast value to boolean");
 	}
 	

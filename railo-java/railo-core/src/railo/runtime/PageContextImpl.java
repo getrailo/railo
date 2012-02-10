@@ -2437,7 +2437,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void throwCatch() throws PageException {
         if(exception!=null) throw exception;
-        else throw new ApplicationException("invalid context for tag/script expression rethow");
+        throw new ApplicationException("invalid context for tag/script expression rethow");
     }
 
     /**

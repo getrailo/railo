@@ -40,7 +40,7 @@ import com.lowagie.text.pdf.SimpleBookmark;
 public final class Document extends BodyTagImpl {
 
 	
-	private static final String STYLE_BG_INVISIBLE = "background-color: transparent; background-image: none;";
+	//private static final String STYLE_BG_INVISIBLE = "background-color: transparent; background-image: none;";
 	
 
 	

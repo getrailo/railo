@@ -97,7 +97,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
         if(startTime==null)throw new ScheduleException("start time is required");
         //if(endTime==null)endTime=new Time(23,59,59,999);
 
-        this.task=(task!=null?task.trim():"");
+        this.task=task.trim();
         this.file=file;
         this.startDate=startDate;
         this.startTime=startTime;

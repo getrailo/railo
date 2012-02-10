@@ -60,7 +60,7 @@ public class FBMFilter extends PointFilter implements Cloneable, DynFiltering {
 	private float min;
 	private float max;
 	private Colormap colormap = new Gradient();
-	private boolean ridged;
+	//private boolean ridged;
 	private FBM fBm;
 	protected Random random = new Random();
 	private int basisType = NOISE;
