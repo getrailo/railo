@@ -4,7 +4,7 @@ package railo.runtime.exp;
 /**
  * 
  */
-public class AbortException extends ExpressionException {
+public class AbortException extends ApplicationException {
 
 	/**
 	 * constructor of the class

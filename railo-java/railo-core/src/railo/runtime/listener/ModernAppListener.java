@@ -178,19 +178,20 @@ public class ModernAppListener extends AppListenerSupport {
 				try{
 					pci.doInclude(requestedPage);
 				}
-				catch (Abort abort) {}
 				catch(PageException pe){
-					if(pe instanceof MissingIncludeException){
-						if(((MissingIncludeException) pe).getPageSource().equals(requestedPage)){
-							if(app.contains(pc,ON_MISSING_TEMPLATE)) {
-								if(!Caster.toBooleanValue(call(app,pci, ON_MISSING_TEMPLATE, new Object[]{targetPage}),true))
-									throw pe;
+					if(!Abort.isSilentAbort(pe)) {
+						if(pe instanceof MissingIncludeException){
+							if(((MissingIncludeException) pe).getPageSource().equals(requestedPage)){
+								if(app.contains(pc,ON_MISSING_TEMPLATE)) {
+									if(!Caster.toBooleanValue(call(app,pci, ON_MISSING_TEMPLATE, new Object[]{targetPage}),true))
+										throw pe;
+								}
+								else throw pe;
 							}
 							else throw pe;
 						}
 						else throw pe;
 					}
-					else throw pe;
 				}
 			}
 			
@@ -326,7 +327,7 @@ public class ModernAppListener extends AppListenerSupport {
 	 */
 	public void onError(PageContext pc, PageException pe) {
 		ComponentAccess app = (ComponentAccess) apps.get(pc.getApplicationContext().getName());
-		if(app!=null && app.containsKey(ON_ERROR) && !(pe instanceof Abort)) {
+		if(app!=null && app.containsKey(ON_ERROR) && !Abort.isSilentAbort(pe)) {
 			try {
 				String eventName="";
 				if(pe instanceof ModernAppListenerException) eventName= ((ModernAppListenerException)pe).getEventName();
@@ -347,10 +348,8 @@ public class ModernAppListener extends AppListenerSupport {
 		try {
 			return app.call(pc, eventName, args);
 		} 
-		catch (Abort abort) {
-			return Boolean.FALSE;
-		} 
 		catch (PageException pe) {
+			if(Abort.isSilentAbort(pe)) return Boolean.FALSE;
 			throw new ModernAppListenerException(pe,eventName.getString());
 		}
 	}

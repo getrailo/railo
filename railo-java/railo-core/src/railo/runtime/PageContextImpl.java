@@ -734,9 +734,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
 			catch(Throwable t){
 				PageException pe = Caster.toPageException(t);
-				if(pe instanceof Abort) {
-                    if(((Abort) pe).getScope()==Abort.SCOPE_REQUEST)
-                        throw pe;
+				if(Abort.isAbort(pe,Abort.SCOPE_REQUEST)) {
+                    throw pe;
                 }
                 else {
                 	if(fdEnabled){
@@ -762,9 +761,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
 			catch(Throwable t){
 				PageException pe = Caster.toPageException(t);
-				if(pe instanceof Abort) {
-                    if(((Abort) pe).getScope()==Abort.SCOPE_REQUEST)
-                        throw pe;
+				if(Abort.isAbort(pe,Abort.SCOPE_REQUEST)) {
+                    throw pe;
                 }
                 else    {
                 	pe.addContext(currentPage.getPageSource(),-187,-187, null);
@@ -1730,7 +1728,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see railo.runtime.PageContext#handlePageException(railo.runtime.exp.PageException)
 	 */
 	public void handlePageException(PageException pe) {
-		if(!(pe instanceof Abort)) {
+		if(!Abort.isSilentAbort(pe)) {
 			
 			String charEnc = rsp.getCharacterEncoding();
 	        if(StringUtil.isEmpty(charEnc,true)) {
@@ -1758,7 +1756,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					doInclude(ep.getTemplate());
 					return;
 				} catch (Throwable t) {
-					if(t instanceof Abort) return;
+					if(Abort.isSilentAbort(t)) return;
 					pe=Caster.toPageException(t);
 				}
 				
@@ -1810,7 +1808,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						pe=e;
 					}
 				}
-				if(!(pe instanceof Abort))forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
+				if(!Abort.isSilentAbort(pe))forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
 			catch (Exception e) { 
 			}
@@ -2000,7 +1998,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    }
 	    catch(Throwable t) {
 	    	PageException pe = Caster.toPageException(t);
-	    	if(!(pe instanceof Abort)){
+	    	if(!Abort.isSilentAbort(pe)){
 	    		log(true);
 	    		if(fdEnabled){
 	        		FDSignal.signal(pe, false);
@@ -2019,7 +2017,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					listener.onDebug(this);
 				} 
             	catch (PageException pe) {
-            		if(!(pe instanceof Abort))listener.onError(this,pe);
+            		if(!Abort.isSilentAbort(pe))listener.onError(this,pe);
 				}
             }
             base=null;
