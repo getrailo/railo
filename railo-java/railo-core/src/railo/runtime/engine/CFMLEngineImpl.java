@@ -214,7 +214,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         if(configDir==null) {
             configDir=ResourceUtil.createResource(frp.getResource(strConfig), FileUtil.LEVEL_GRAND_PARENT_FILE,FileUtil.TYPE_DIR);
         }
-        
+        if(configDir==null) throw new PageServletException(new ApplicationException("path ["+strConfig+"] is invalid"));
         if(!configDir.exists()){
         	try {
 				configDir.createDirectory(true);
