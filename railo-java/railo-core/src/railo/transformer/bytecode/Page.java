@@ -1236,7 +1236,11 @@ public final class Page extends BodyBase {
 			attr=(Attribute) entry.getValue();
 			adapter.loadLocal(sct);
 			adapter.push(attr.getName());
-			ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			if(attr.getValue() instanceof Literal)
+				ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			else
+				adapter.push("[runtime expression]");
+			
 			adapter.invokeVirtual(STRUCT_IMPL, SET_EL);
 			adapter.pop();
 		}
