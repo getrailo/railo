@@ -123,4 +123,20 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
 		return SizeOf.size(strSQL)+SizeOf.size(position)+SizeOf.size(items);
 	}
 
+	public static SQL duplicate(SQL sql) {
+		if(!(sql instanceof SQLImpl)) return sql;
+		return ((SQLImpl) sql).duplicate();
+	}
+
+	public SQL duplicate() {
+		SQLImpl rtn=new SQLImpl(strSQL);
+		rtn.position=position;
+		rtn.items=new SQLItem[items.length];
+		for(int i=0;i<items.length;i++){
+			rtn.items[i]=SQLItemImpl.duplicate(items[i]);
+		}
+		
+		return rtn;
+	}
+
 }
