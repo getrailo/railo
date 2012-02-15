@@ -154,7 +154,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
 	 */
-	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys) throws SQLException {
+	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys,boolean allowCaching) throws SQLException {
 		// create key
 		String strSQL=sql.getSQLString();
 		String key=strSQL.trim()+":"+createGeneratedKeys;
@@ -168,7 +168,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 		else ps=getConnection().prepareStatement(strSQL);
 		if(preparedStatements.size()>MAX_PS)
 			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
-		preparedStatements.put(key,ps);
+		if(allowCaching)preparedStatements.put(key,ps);
 		return ps;
 	}
 	

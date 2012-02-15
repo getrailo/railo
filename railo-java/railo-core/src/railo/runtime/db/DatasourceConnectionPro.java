@@ -8,7 +8,7 @@ public interface DatasourceConnectionPro extends DatasourceConnection {
 	
 	public boolean supportsGetGeneratedKeys();
 	
-	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys) throws SQLException;
+	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys, boolean allowCaching) throws SQLException;
 	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException;
 	
 	public void close() throws SQLException;
