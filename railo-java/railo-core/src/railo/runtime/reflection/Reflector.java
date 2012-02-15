@@ -415,7 +415,7 @@ public final class Reflector {
 						}
 					}
 					if(ci==null || rating.toInt()>_rating) {
-						_rating=rating.toInt();
+						if(rating!=null)_rating=rating.toInt();
 						ci=new ConstructorInstance(constructors[i],newArgs);
 					}
 					//return new ConstructorInstance(constructors[i],newArgs);
@@ -484,7 +484,7 @@ public final class Reflector {
 						}
 					}
 					if(mi==null || rating.toInt()>_rating) {
-						_rating=rating.toInt();
+						if(rating!=null)_rating=rating.toInt();
 						mi=new MethodInstance(methods[i],newArgs);
 					}
 					//return new MethodInstance(methods[i],newArgs);
