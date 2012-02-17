@@ -2931,4 +2931,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(isGatewayContext())return Config.SESSION_TYPE_CFML;
 		return applicationContext.getSessionType();
 	}
+	
+	// this is just a wrapper method for ACF
+	public Scope SymTab_findBuiltinScope(String name) throws PageException {
+		return scope(name, null);
+	}
 }
