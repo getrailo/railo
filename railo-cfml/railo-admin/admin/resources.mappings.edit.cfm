@@ -135,7 +135,7 @@ Create Archive --->
 <tr>
 	<td class="tblHead" width="150">#stText.Mappings.archiveSecure#</td>
 	<td class="tblContent" nowrap><input 
-	type="checkbox" class="checkbox" name="secure_#mapping.id#" value="yes"> <span class="comment">#stText.Mappings.archiveSecureDesc#</span></td>
+	type="checkbox" class="checkbox" name="secure_#mapping.id#" value="yes" checked> <span class="comment">#stText.Mappings.archiveSecureDesc#</span></td>
 </tr>
 
 <cfif hasAccess>
