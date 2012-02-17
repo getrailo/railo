@@ -3605,6 +3605,8 @@ private void doGetMappings() throws PageException {
      * 
      */
     private void doUpdateComponent() throws PageException {
+
+    	admin.updateComponentDeepSearch(getBoolObject("admin", action, "deepSearch"));
         admin.updateBaseComponent(getString("admin",action,"baseComponentTemplate"));
         admin.updateComponentDumpTemplate(getString("admin",action,"componentDumpTemplate"));
         admin.updateComponentDataMemberDefaultAccess(getString("admin",action,"componentDataMemberDefaultAccess"));
@@ -3645,6 +3647,7 @@ private void doGetMappings() throws PageException {
         }
         sct.set("strComponentDumpTemplate",config.getComponentDumpTemplate());
 
+        sct.set("deepSearch",Caster.toBoolean(config.doComponentDeepSearch()));
         sct.set("componentDataMemberDefaultAccess",ComponentUtil.toStringAccess(config.getComponentDataMemberDefaultAccess()));
         sct.set("triggerDataMember",Caster.toBoolean(config.getTriggerComponentDataMember()));
         sct.set("useShadow",Caster.toBoolean(config.useComponentShadow()));

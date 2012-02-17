@@ -2087,6 +2087,26 @@ public final class ConfigWebAdmin {
         	scope.setAttribute("base",baseComponent);
     }
     
+    
+
+	public void updateComponentDeepSearch(Boolean deepSearch) throws SecurityException {
+		checkWriteAccess();
+	    boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+	    if(!hasAccess)
+	        throw new SecurityException("no access to update component setting");
+	    //config.resetBaseComponentPage();
+	    Element scope=_getRootElement("component");
+	    //if(baseComponent.trim().length()>0)
+	    if(deepSearch!=null)
+    	scope.setAttribute("deep-search",Caster.toString(deepSearch.booleanValue()));
+	    
+	    else {
+	        if(scope.hasAttribute("deep-search"))
+	        	scope.removeAttribute("deep-search");
+	    }
+		
+	}
+    
 
     public void updateComponentDefaultImport(String componentDefaultImport) throws SecurityException {
     	checkWriteAccess();

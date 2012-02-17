@@ -441,6 +441,9 @@
 	<data key="components.triggerdatamemberdescription">If there is no accessible data member (property, element of the this scope) inside a component, Railo searches for available matching &amp;quot;getters&amp;quot; or &amp;quot;setters&amp;quot; for the requested property. The following example should clarify this behaviour. &amp;quot;somevar = myComponent.properyName&amp;quot;. If &amp;quot;myComponent&amp;quot; has no accessible data member named &amp;quot;propertyName&amp;quot;, Railo searches for a function member (method) named &amp;quot;getPropertyName&amp;quot;.</data>
 	<data key="components.physical">Resource</data>
 	<data key="components.trusted">Trusted</data>
+	<data key="components.componentDeepSearch">Search sub directories</data>
+	<data key="components.componentDeepSearchDesc">
+	Search for CFC in the sub directories of the defined "Addional Resources" below. this is not working for Archives!</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
