@@ -204,7 +204,6 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		boolean createGeneratedKeys=createUpdateData;
         if(createUpdateData){
         	DatasourceConnectionImpl dci=(DatasourceConnectionImpl) dc;
-        	dci.supportsGetGeneratedKeys();
         	if(!dci.supportsGetGeneratedKeys())createGeneratedKeys=false;
         }
 		
