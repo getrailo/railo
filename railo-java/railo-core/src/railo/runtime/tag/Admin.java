@@ -984,7 +984,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Resource srcDir = ResourceUtil.toResourceExisting(pageContext, "zip://"+src.getAbsolutePath());
         String name=ResourceUtil.getName(src.getName());
         if(!PluginFilter.doAccept(srcDir))
-        	throw new ApplicationException("plugin ["+srcDir.getName()+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root");
+        	throw new ApplicationException("plugin ["+strSrc+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.List.arrayToList(srcDir.list(), ", ")+"]");
         
         Resource dir = getPluginDirectory();
         Resource trgDir = dir.getRealResource(name);
