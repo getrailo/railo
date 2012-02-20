@@ -114,7 +114,7 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
         if(items.length==0) return strSQL;
         StringBuffer sb=new StringBuffer(strSQL);
         for(int i=0;i<items.length;i++) {
-            sb.append(items[i].toString());
+            sb.append(';').append(items[i].toString());
         }
         return sb.toString();
     }
