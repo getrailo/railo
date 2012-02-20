@@ -734,8 +734,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
 			catch(Throwable t){
 				PageException pe = Caster.toPageException(t);
-				if(Abort.isAbort(pe,Abort.SCOPE_REQUEST)) {
-                    throw pe;
+				if(Abort.isAbort(pe)) {
+                    if(Abort.isAbort(pe,Abort.SCOPE_REQUEST))throw pe;
                 }
                 else {
                 	if(fdEnabled){
@@ -761,8 +761,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
 			catch(Throwable t){
 				PageException pe = Caster.toPageException(t);
-				if(Abort.isAbort(pe,Abort.SCOPE_REQUEST)) {
-                    throw pe;
+				if(Abort.isAbort(pe)) {
+					if(Abort.isAbort(pe,Abort.SCOPE_REQUEST))throw pe;
                 }
                 else    {
                 	pe.addContext(currentPage.getPageSource(),-187,-187, null);
