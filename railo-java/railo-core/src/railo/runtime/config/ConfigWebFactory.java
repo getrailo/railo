@@ -3724,7 +3724,14 @@ public final class ConfigWebFactory {
       	    }
       	    config.setBaseComponentTemplate(strBase);
       	    
-      	    
+      	    // deep search
+            String strDeepSearch=component.getAttribute("deep-search");
+            if(!StringUtil.isEmpty(strDeepSearch)) {
+            	config.setDoComponentDeepSearch(Caster.toBooleanValue(strDeepSearch.trim(),false));
+            }
+            else if(hasCS) {
+                config.setDoComponentDeepSearch(((ConfigServerImpl)configServer).doComponentDeepSearch());
+            }
       	    
       	    
       	    // Dump-Template

@@ -297,6 +297,7 @@ public abstract class ConfigImpl implements Config {
 	private DatasourceConnectionPool pool=new DatasourceConnectionPool();
 
 	private boolean doCustomTagDeepSearch=false;
+	private boolean doComponentTagDeepSearch=false;
 
 	private double version=1.0D;
 
@@ -2536,6 +2537,15 @@ public abstract class ConfigImpl implements Config {
 		this.doLocalCustomTag= doLocalCustomTag;
 	}
 	
+
+	public boolean doComponentDeepSearch() {
+		return doComponentTagDeepSearch;
+	}
+	
+	protected void setDoComponentDeepSearch(boolean doComponentTagDeepSearch) {
+		this.doComponentTagDeepSearch = doComponentTagDeepSearch;
+	}
+	
 	/**
 	 *
 	 * @see railo.runtime.config.Config#doCustomTagDeepSearch()
@@ -2543,6 +2553,7 @@ public abstract class ConfigImpl implements Config {
 	public boolean doCustomTagDeepSearch() {
 		return doCustomTagDeepSearch;
 	}
+	
 
 	/**
 	 * @param doCustomTagDeepSearch the doCustomTagDeepSearch to set

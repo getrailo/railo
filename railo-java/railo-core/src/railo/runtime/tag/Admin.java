@@ -996,7 +996,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Resource srcDir = ResourceUtil.toResourceExisting(pageContext, "zip://"+src.getAbsolutePath());
         String name=ResourceUtil.getName(src.getName());
         if(!PluginFilter.doAccept(srcDir))
-        	throw new ApplicationException("plugin ["+srcDir.getName()+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root");
+        	throw new ApplicationException("plugin ["+strSrc+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.List.arrayToList(srcDir.list(), ", ")+"]");
         
         Resource dir = getPluginDirectory();
         Resource trgDir = dir.getRealResource(name);
@@ -3689,6 +3689,8 @@ private void doGetMappings() throws PageException {
      * 
      */
     private void doUpdateComponent() throws PageException {
+
+    	admin.updateComponentDeepSearch(getBoolObject("admin", action, "deepSearch"));
         admin.updateBaseComponent(getString("admin",action,"baseComponentTemplate"));
         admin.updateComponentDumpTemplate(getString("admin",action,"componentDumpTemplate"));
         admin.updateComponentDataMemberDefaultAccess(getString("admin",action,"componentDataMemberDefaultAccess"));
@@ -3729,6 +3731,7 @@ private void doGetMappings() throws PageException {
         }
         sct.set("strComponentDumpTemplate",config.getComponentDumpTemplate());
 
+        sct.set("deepSearch",Caster.toBoolean(config.doComponentDeepSearch()));
         sct.set("componentDataMemberDefaultAccess",ComponentUtil.toStringAccess(config.getComponentDataMemberDefaultAccess()));
         sct.set("triggerDataMember",Caster.toBoolean(config.getTriggerComponentDataMember()));
         sct.set("useShadow",Caster.toBoolean(config.useComponentShadow()));

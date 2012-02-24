@@ -132,6 +132,14 @@ public class CFMLWriterImpl extends CFMLWriter {
     	if(flushed) throw new IOException("page already flushed");
         headData=null;
     }
+    
+    /**
+     * just a wrapper function for ACF
+     * @throws IOException 
+     */
+    public void initHeaderBuffer() throws IOException{
+    	resetHTMLHead();
+    }
 
 
     /** 

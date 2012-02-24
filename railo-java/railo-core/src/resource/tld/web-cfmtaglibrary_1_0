@@ -5409,7 +5409,12 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>action</name>
 			<required>no</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Type of file manipulation that the tag performs.</description>
+			<description>possible actions are:
+- append (default): append text to the html head
+- read: return the text already set to html head
+- reset: reset/remove text already set to hrml head
+- write: write text to html head, overwrite already existing text in html head
+			</description>
 		</attribute>
 	</tag>
 	<!-- Http -->

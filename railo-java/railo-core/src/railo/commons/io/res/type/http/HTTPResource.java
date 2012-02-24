@@ -46,7 +46,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 			// TODO Support for proxy
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
 				
-			http = HTTPUtil.invoke(url, data.username, data.password, data.timeout,null, data.userAgent, 
+			http = HTTPUtil.invoke(url, data.username, data.password, _getTimeout(),null, data.userAgent, 
 					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
 					null);
 		}
@@ -57,19 +57,19 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		if(http==null) {
 			URL url = new URL(provider.getProtocol(),data.host,data.port,data.path);
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
-			return HTTPUtil.head(url, data.username, data.password, provider.getSocketTimeout(), 
+			return HTTPUtil.head(url, data.username, data.password, _getTimeout(), 
 					null, data.userAgent, 
 					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
 					null).getStatusCode();
 		}
 		return http.getStatusCode();
 	}
-	
+
 	public ContentType getContentType() throws IOException {
 		if(http==null) {
 			URL url = new URL(provider.getProtocol(),data.host,data.port,data.path);
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
-			return HTTPUtil.getContentType(HTTPUtil.head(url, data.username, data.password, provider.getSocketTimeout(), 
+			return HTTPUtil.getContentType(HTTPUtil.head(url, data.username, data.password, _getTimeout(), 
 					null, data.userAgent, 
 					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
 					null));
@@ -100,7 +100,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 	}
 
 	public InputStream getInputStream() throws IOException {
-		ResourceUtil.checkGetInputStreamOK(this);
+		//ResourceUtil.checkGetInputStreamOK(this);
 		//provider.lock(this);
 		provider.read(this);
 		HttpMethod method = getHttpMethod(true);
@@ -248,4 +248,8 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		data.timeout=timeout;
 	}
 
+	
+	private int _getTimeout() {
+		return data.timeout<provider.getSocketTimeout()?data.timeout:provider.getSocketTimeout();
+	}
 }

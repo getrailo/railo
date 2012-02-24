@@ -282,7 +282,7 @@ function checkTheRadio(field) {
 		<td class="tblHead" nowrap>#stText.CustomTags.Physical#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Archive#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Primary#</td>
-		<td class="tblHead" nowrap>#stText.CustomTags.Trusted#</td>
+		<td class="tblHead" nowrap>#stText.Mappings.TrustedHead#</td>
 	</tr>
 	<cfset count=0>
 
@@ -319,8 +319,16 @@ function checkTheRadio(field) {
 			<option value="archive" <cfif not mappings.physicalFirst>selected</cfif>>#stText.CustomTags.archive#</option>
 		</select></cfif></td>
 		
-		<td class="tblContent" nowrap><cfif mappings.readOnly>#iif(mappings.Trusted,de("Yes"),de("No"))#<cfelse><input type="checkbox" class="checkbox" 
-		name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" value="yes" <cfif mappings.trusted>checked</cfif>></cfif></td>
+		<td class="tblContent" nowrap>
+		<cfif mappings.readOnly>
+            	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
+			<cfelse>
+            <select name="trusted_#mappings.currentrow#" onChange="checkTheBox(this)">
+                <option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+            </cfif>
+        </td>
 	</tr>
 </cfloop>
 <cfif hasAccess>
@@ -342,8 +350,14 @@ function checkTheRadio(field) {
 			<option value="physical" selected>#stText.CustomTags.physical#</option>
 			<option value="archive">#stText.CustomTags.archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap><input onClick="checkTheBox(this)" type="checkbox" class="checkbox" 
-		name="trusted_#mappings.recordcount+1#" value="yes"></td>
+		<td class="tblContent" nowrap>
+        
+        <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+                <option value="true">#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+        
+        </td>
 	</tr>
 </cfif>
 <cfif hasAccess>

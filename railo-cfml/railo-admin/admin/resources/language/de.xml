@@ -441,6 +441,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="components.autoimportdescription">Die folgende package Definition wird für jedes Template automatisch geladen.</data>
 	<data key="components.componentmappingsdesc">Zusätzliche Verzeichnisse, welche Railo nach Komponenten überprüft.</data>
 	<data key="components.componentmappingsearch">Mappings einbeziehen</data>
+	<data key="components.componentDeepSearch">Unterverzeichnisse durchsuchen</data>
+	<data key="components.componentDeepSearchDesc">Wenn dieses Flag gesetzt wird werden auch die Unterverzeichnisse nach CFC durchsucht, sofern die defintion keinen package beinhaltet. Dies gilt nur für die zusätzlichen Resourcen die unterhalb definiert werden. Dies funktioniert nicht für Archive!</data>
 	<data key="components.useshadowdescription">Definiert, ob eine Komponente einen eigenständigen &quot;Variables&quot; Scope parallel zum &quot;this&quot; Scope hat (CFML Standard) oder nicht. Wenn nicht, dann werden alle nicht spezifizierten Variablen in den &quot;this&quot; scope geschrieben.</data>
 	<data key="components.server">Definert Komponenteneinstellungen, die als Standartwert für alle Webs gelten.</data>
 	<data key="components.useshadow">Allow Variable Scope</data>

@@ -18,10 +18,10 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
 public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable {
-	//private static Map<String,Long> keys = new HashMap<String, Long>();//HashTableNotSync();
+	//public static HashMap<String,RefIntegerImpl> log=new HashMap<String,RefIntegerImpl>();
 	
 
-	public static final Key ACTION=KeyImpl.intern("action");
+	public static final Collection.Key ACTION=KeyImpl.intern("action");
 	public static final Key CFID=KeyImpl.intern("cfid");
 	public static final Key CFTOKEN=KeyImpl.intern("cftoken");
 	public static final Key DETAIL=KeyImpl.intern("detail");
@@ -105,10 +105,34 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		//if(intern)lcKey=lcKey.intern();
 	}
 	
+	
 	protected KeyImpl(String key) {
 		this.key=key;
 		this.lcKey=key.toLowerCase();
+		//RefIntegerImpl count=log.get(key);
+		//if(count!=null) count.plus(1);
+		//else log.put(key, new RefIntegerImpl(1));
+		
 	}
+	
+	/*public static void print(){
+		//Iterator<Entry<String, RefIntegerImpl>> it = log.entrySet().iterator();
+		String[] keys = log.keySet().toArray(new String[log.size()]);
+		Arrays.sort(keys);
+		int total=0,big=0;
+		for(int i=0;i<keys.length;i++){
+			RefIntegerImpl value = log.get(keys[i]);
+			if(value.toInt()>10 && keys[i].length()<=10 && keys[i].indexOf('.')==-1 && keys[i].indexOf('-')==-1) {
+				print.e("public static final Key "+keys[i]+"=KeyImpl.intern(\""+keys[i]+"\");");
+				big++;
+			}
+			total++;
+		}
+		print.e("total:"+total);
+		print.e("big:"+big);
+	}*/
+	
+	
 	
 	/*private KeyImpl(String key, boolean intern) {
 		this.key=key;

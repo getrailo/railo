@@ -560,7 +560,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	// abort 
     	try {
-			if(t instanceof railo.runtime.exp.Abort){
+			if(railo.runtime.exp.Abort.isAbort(t)){
 				if(bodyContent!=null){
 					bodyContent.writeOut(bodyContent.getEnclosingWriter());
 					bodyContent.clearBuffer();

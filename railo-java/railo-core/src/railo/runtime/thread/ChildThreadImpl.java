@@ -175,17 +175,18 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		try {
 			p.threadCall(pc, threadIndex); 
 		}
-		catch(Abort a){}
 		catch (Throwable t) {
-			ConfigWeb c = pc.getConfig();
-			if(c instanceof ConfigImpl) {
-				ConfigImpl ci=(ConfigImpl) c;
-				LogAndSource log = ci.getThreadLogger();
-				if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+			if(!Abort.isSilentAbort(t)) {
+				ConfigWeb c = pc.getConfig();
+				if(c instanceof ConfigImpl) {
+					ConfigImpl ci=(ConfigImpl) c;
+					LogAndSource log = ci.getThreadLogger();
+					if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+				}
+				PageException pe = Caster.toPageException(t);
+				if(!serializable)catchBlock=pe.getCatchBlock(pc);
+				return pe;
 			}
-			PageException pe = Caster.toPageException(t);
-			if(!serializable)catchBlock=pe.getCatchBlock(pc);
-			return pe;
 		}
 		finally {
 			completed=true;

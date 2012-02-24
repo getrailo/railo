@@ -112,7 +112,7 @@ public class CustomTagUtil {
 	        }
         }
     	
-        // search application mapping
+        // search application custom tag mapping
         if(actms!=null){
         	for(int i=0;i<filenames.length;i++){
             	ps=getMapping(actms, filenames[i],doCustomTagDeepSearch);
@@ -124,7 +124,7 @@ public class CustomTagUtil {
             }
         }
     	
-        // search config mapping
+        // search custom tag mappings
         for(int i=0;i<filenames.length;i++){
         	ps=getMapping(cctms, filenames[i], doCustomTagDeepSearch);
         	if(ps!=null) {
