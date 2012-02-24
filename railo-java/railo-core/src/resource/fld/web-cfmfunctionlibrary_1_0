@@ -5011,7 +5011,7 @@ if this attribute is not provided all types are returned.</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
-			<required>Yes</required>
+			<required>no</required>
 		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
     </argument>
 		<return>
@@ -5023,7 +5023,6 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequestHeader</class>
-		<status>unimplemeted</status>
 		<description>Obtains a SOAP request header. Call only from within
         a CFC web service function that is processing a request
         as a SOAP web service.</description>
@@ -5051,20 +5050,95 @@ if this attribute is not provided all types are returned.</description>
 		</return>
 	</function>
 	
+	
+	<!-- AddSOAPRequestHeader -->
+	<function>
+		<name>AddSOAPRequestHeader</name>
+		<class>railo.runtime.functions.xml.AddSOAPRequestHeader</class>
+		<status>unimplemeted</status>
+		<description>Adds a SOAP header to a web service request before making the request.</description>
+		<argument>
+			<name>webservice</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>A web service object as returned from the cfobject tag or the CreateObject function.</description>
+	    </argument>
+		<argument>
+			<name>namespace</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the namespace for the header.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the name of the header</description>
+    	</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>the value for the SOAP header; this can be a CFML XML value.</description>
+    	</argument>
+		<argument>
+			<name>mustUnderstand</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>Sets the SOAP mustunderstand value for this header.</description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
+	<!-- addSOAPResponseHeader -->
+	<function>
+		<name>addSOAPResponseHeader</name>
+		<class>railo.runtime.functions.xml.AddSOAPResponseHeader</class>
+		<status>unimplemeted</status>
+		<description>Adds a SOAP response header to a web service response. Call only from within a CFC web service function that is processing a request as a SOAP web service.</description>
+		<argument>
+			<name>namespace</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the namespace for the header.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the name of the header</description>
+    	</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>the value for the SOAP header; this can be a XML value.</description>
+    	</argument>
+		<argument>
+			<name>mustUnderstand</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>Sets the SOAP mustunderstand value for this header.</description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 		
 	<!-- GetSOAPResponse -->
 	<function>
 		<name>getSOAPResponse</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponse</class>
-		<status>unimplemeted</status>
 		<description>Returns an XML object that contains the entire
         SOAP response after invoking a web service.</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
-    </argument>
+			<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
+    	</argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5074,7 +5148,6 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponseHeader</class>
-		<status>unimplemeted</status>
 		<description>Returns a SOAP response header. Call this function
         from within code that is invoking a web service after
         making a web service request.</description>

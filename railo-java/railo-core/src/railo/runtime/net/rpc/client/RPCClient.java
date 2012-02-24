@@ -26,6 +26,7 @@ import org.apache.axis.configuration.EngineConfigurationFactoryFinder;
 import org.apache.axis.configuration.SimpleProvider;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.axis.transport.http.CommonsHTTPSender;
 import org.apache.axis.wsdl.gen.Parser;
 import org.apache.axis.wsdl.symbolTable.BindingEntry;
@@ -91,6 +92,8 @@ public final class RPCClient implements Objects, Iteratorable{
 	private ProxyData proxyData;
 	private String username;
 	private String password;
+	private Call last;
+	private List<SOAPHeaderElement> headers;
 	
 	static {
 		EngineConfiguration engine = EngineConfigurationFactoryFinder.newFactory().getClientEngineConfig();
@@ -202,16 +205,12 @@ public final class RPCClient implements Objects, Iteratorable{
         
 		javax.wsdl.Service service = getWSDLService();
 		
-		
 		Service axisService = null;
 		axisService = new Service(parser, service.getQName());
 		axisService.getTypeMappingRegistry().getDefaultTypeMapping().register(QueryBean.class, 
                 RPCConstants.QUERY_QNAME,
                 new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
                 new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
-		
-		
-		
 		
 		
 		Port port = getWSDLPort(service);
@@ -242,6 +241,9 @@ public final class RPCClient implements Objects, Iteratorable{
         	call.setUsername(username);
 	        call.setPassword(password);
         }
+        
+        
+        
         /*/ Array
         call.registerTypeMapping(
                 ArrayBean.class, 
@@ -372,11 +374,20 @@ public final class RPCClient implements Objects, Iteratorable{
         }
         
         Object ret=null;
+        
+     // add header
+        if(headers!=null && !headers.isEmpty()) {
+        	Iterator<SOAPHeaderElement> it = headers.iterator();
+        	while(it.hasNext()){
+        		call.addHeader(it.next());
+        	}
+        }
+        
         if(proxyData!=null && !StringUtil.isEmpty(proxyData.getServer(),true)) {
         	try {
 	        	Proxy.start(proxyData);
-	    		//print.out("err:"+call.getSOAPActionURI());
 	    		ret = call.invoke(inputs);
+	    		//ret = invoke(call,inputs);
 	        	
 	        }
 	        finally {
@@ -384,10 +395,11 @@ public final class RPCClient implements Objects, Iteratorable{
 	        }
         }
         else {
-        	//print.out(call.getUsername());
         	ret = call.invoke(inputs);
+        	//ret = invoke(call,inputs);
         	
         }
+		last=call;
 		
 		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
@@ -407,6 +419,44 @@ public final class RPCClient implements Objects, Iteratorable{
 		}
 		return sct;
 	}
+    
+    
+    /*public Object invoke(Call call,Object[] params) throws java.rmi.RemoteException {
+        MessageContext msgContext = call.getMessageContext();
+
+        QName operationName = call.getOperationName();
+        if ( operationName == null ) {
+            throw new AxisFault( Messages.getMessage("noOperation00") );
+        }
+
+        SOAPEnvelope env = new SOAPEnvelope(msgContext.getSOAPConstants(),msgContext.getSchemaVersion());
+        
+        // add header
+        if(headers!=null && !headers.isEmpty()) {
+        	Iterator<SOAPHeaderElement> it = headers.iterator();
+        	while(it.hasNext()){
+        		print.e("add-header");
+        		env.addHeader(it.next());
+        	}
+        }
+        Message msg = new Message( env );
+        call.setRequestMessage(msg);
+        
+        try {
+            Object res=call.invoke(operationName.getNamespaceURI(),operationName.getLocalPart(), params);
+            return res;
+        }
+        catch( AxisFault af) {
+            if(af.detail != null && af.detail instanceof RemoteException) {
+                throw ((RemoteException)af.detail);
+            }
+            throw af;
+        }
+        catch( Exception exp ) {
+            throw AxisFault.makeFault(exp);
+        }
+    }*/
+    
     
 	private void map(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
 		Vector els = type.getContainedElements();
@@ -933,5 +983,14 @@ public final class RPCClient implements Objects, Iteratorable{
 	 */
 	public Iterator valueIterator() {
 		return new ObjectsIterator(keyIterator(),this);
+	}
+
+	public Call getLastCall() {
+		return last;
+	}
+
+	public void addHeader(SOAPHeaderElement header) {
+		if(headers==null)headers=new ArrayList<SOAPHeaderElement>();
+		headers.add(header);
 	}
 }
