@@ -12,7 +12,7 @@ public final class IsSOAPRequest implements Function {
 	
 	private static final long serialVersionUID = 5616044662863702066L;
 
-	public static boolean call(PageContext pc) throws ExpressionException {
+	public static boolean call(PageContext pc) {
 		return AxisUtil.isSOAPRequest();
 	}
 }

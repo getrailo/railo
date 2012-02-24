@@ -239,7 +239,7 @@ public class ComponentLoader {
     			String _path=getPagePath(pc, m.getPhysical(), null,pathWithCFC,DirectoryResourceFilter.FILTER);
     			if(_path!=null) {
     				ps=m.getPageSource(_path);
-        			page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+        			page=((PageSourceImpl)ps).loadPage(pc,null);
         			doCache=false;// do not cache this, it could be ambigous
     			}
     		}

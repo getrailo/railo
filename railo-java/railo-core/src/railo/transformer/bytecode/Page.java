@@ -33,7 +33,6 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.extern.StringExternalizerWriter;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Argument;
-import railo.transformer.bytecode.statement.Function;
 import railo.transformer.bytecode.statement.HasBodies;
 import railo.transformer.bytecode.statement.HasBody;
 import railo.transformer.bytecode.statement.IFunction;
@@ -701,22 +700,15 @@ public final class Page extends BodyBase {
 			ga.push(index++);
 			
 			//ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-			if(value instanceof Literal) {
-				String str = ((Literal)value).getString();
-				
-				
-				if(KeyConstants.hasConstant(str)) {
-					ga.getStatic(KEY_CONSTANTS, "_"+str, Types.COLLECTION_KEY);
-				}
-				else {
-					ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-					ga.invokeStatic(KEY_IMPL, KEY_INTERN);
-				}
+			String str = value.getString();
+			if(KeyConstants.hasConstant(str)) {
+				ga.getStatic(KEY_CONSTANTS, "_"+str, Types.COLLECTION_KEY);
 			}
 			else {
 				ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-				ga.invokeStatic(KEY_IMPL, KEY_INIT);
+				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
 			}
+			
 			ga.visitInsn(Opcodes.AASTORE);
 		}
 		ga.visitFieldInsn(Opcodes.PUTSTATIC, 

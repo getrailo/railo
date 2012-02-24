@@ -63,7 +63,7 @@ public class AxisUtil {
         env.addHeader(header);
     }
 
-	public static void addSOAPRequestHeader(RPCClient client, String namespace, String name, Object value, boolean mustUnderstand) throws AxisFault {
+	public static void addSOAPRequestHeader(RPCClient client, String namespace, String name, Object value, boolean mustUnderstand)  {
     	SOAPHeaderElement header=toSOAPHeaderElement(namespace,name,value);
         header.setMustUnderstand(mustUnderstand);
         client.addHeader(header);
@@ -73,7 +73,7 @@ public class AxisUtil {
 	private static SOAPHeaderElement toSOAPHeaderElement(String namespace, String name, Object value) {
 		Element el=XMLCaster.toRawElement(value,null);
         if(el!=null) return new SOAPHeaderElement(el);
-        else return new SOAPHeaderElement(namespace, name, value);
+        return new SOAPHeaderElement(namespace, name, value);
 	}
 
 
