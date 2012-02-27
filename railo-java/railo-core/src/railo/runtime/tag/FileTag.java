@@ -19,6 +19,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
+import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.functions.list.ListFirst;
 import railo.runtime.functions.list.ListLast;
@@ -47,19 +48,32 @@ import railo.runtime.type.util.ArrayUtil;
 *
 *
 **/
-public final class FileTag extends TagImpl {
+public final class FileTag extends BodyTagImpl {
 
 	public static final int NAMECONFLICT_UNDEFINED=0;
 	public static final int NAMECONFLICT_ERROR=1;
 	public static final int NAMECONFLICT_SKIP=2;
 	public static final int NAMECONFLICT_OVERWRITE=3;
 	public static final int NAMECONFLICT_MAKEUNIQUE=4;
+
+	private static final int ACTION_UNDEFINED = 0;
+	private static final int ACTION_MOVE = 1;
+	private static final int ACTION_WRITE = 2;
+	private static final int ACTION_APPEND = 3;
+	private static final int ACTION_READ = 4;
+	private static final int ACTION_UPLOAD = 5;
+	private static final int ACTION_UPLOAD_ALL = 6;
+	private static final int ACTION_COPY = 7;
+	private static final int ACTION_INFO = 8;
+	private static final int ACTION_TOUCH = 9;
+	private static final int ACTION_DELETE = 10;
+	private static final int ACTION_READ_BINARY = 11;
 	//private static final Key SET_ACL = KeyImpl.intern("setACL");
     
     //private static final String DEFAULT_ENCODING=Charset.getDefault();
 
 	/** Type of file manipulation that the tag performs. */
-	private String action;
+	private int action;
 
 	/** Absolute pathname of directory or file on web server. */
 	private String strDestination;
@@ -114,7 +128,7 @@ public final class FileTag extends TagImpl {
 	public void release()	{
 		super.release();
 		acl=null;
-		action=null;
+		action=ACTION_UNDEFINED;
 		strDestination=null;
 		output=null;
 		file=null;
@@ -137,8 +151,21 @@ public final class FileTag extends TagImpl {
 	*  Type of file manipulation that the tag performs.
 	* @param action value to set
 	**/	
-	public void setAction(String action)	{
-		this.action=action.toLowerCase();
+	public void setAction(String strAction) throws ApplicationException	{
+		strAction=strAction.toLowerCase();
+		if(strAction.equals("move") || strAction.equals("rename")) action=ACTION_MOVE;
+		else if(strAction.equals("copy")) action=ACTION_COPY;
+		else if(strAction.equals("delete")) action=ACTION_DELETE;
+		else if(strAction.equals("read")) action=ACTION_READ;
+		else if(strAction.equals("readbinary")) action=ACTION_READ_BINARY;
+		else if(strAction.equals("write")) action=ACTION_WRITE;
+		else if(strAction.equals("append")) action=ACTION_APPEND;
+		else if(strAction.equals("upload")) action=ACTION_UPLOAD;
+		else if(strAction.equals("uploadall")) action=ACTION_UPLOAD_ALL;
+        else if(strAction.equals("info")) action=ACTION_INFO;
+        else if(strAction.equals("touch")) action=ACTION_TOUCH;
+        else 
+			throw new ApplicationException("invalid value ["+strAction+"] for attribute action","values for attribute action are:info,move,rename,copy,delete,read,readbinary,write,append,upload,uploadall,touch");
 	}
 
 	/** set the value destination
@@ -307,31 +334,67 @@ public final class FileTag extends TagImpl {
 	public int doStartTag() throws PageException	{
 		
 		if(StringUtil.isEmpty(charset)) charset=pageContext.getConfig().getResourceCharset();
+		securityManager = pageContext.getConfig().getSecurityManager();
 		
-	    securityManager = pageContext.getConfig().getSecurityManager();
-		if(action.equals("move")) actionMove();
-		else if(action.equals("rename")) actionMove();
-		else if(action.equals("copy")) actionCopy();
-		else if(action.equals("delete")) actionDelete();
-		else if(action.equals("read")) actionRead();
-		else if(action.equals("readbinary")) actionReadBinary();
-		else if(action.equals("write")) actionWrite();
-		else if(action.equals("append")) actionAppend();
-		else if(action.equals("upload")) actionUpload();
-		else if(action.equals("uploadall")) actionUploadAll();
-        else if(action.equals("info")) actionInfo();
-        else if(action.equals("touch")) actionTouch();
-        else 
-			throw new ApplicationException("invalid value ["+action+"] for attribute action","values for attribute action are:info,move,rename,copy,delete,read,readbinary,write,append,upload,uploadall");
-				
+		switch(action){
+		case ACTION_MOVE: actionMove();
+		break;
+		case ACTION_COPY: actionCopy();
+		break;
+		case ACTION_DELETE: actionDelete();
+		break;
+		case ACTION_READ: actionRead();
+		break;
+		case ACTION_READ_BINARY: actionReadBinary();
+		break;
+		case ACTION_UPLOAD: actionUpload();
+		break;
+		case ACTION_UPLOAD_ALL: actionUploadAll();
+		break;
+		case ACTION_INFO: actionInfo();
+		break;
+		case ACTION_TOUCH: actionTouch();
+		break;
+		case ACTION_UNDEFINED: throw new ApplicationException("missing attribute action"); // should never happens
+		
+		// write and append
+		default:
+			return EVAL_BODY_BUFFERED;
+		}
+		return SKIP_BODY;
+	}
+	
+	/**
+	 * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
+	*/
+	public int doAfterBody() throws ApplicationException	{
+		if(action==ACTION_APPEND || action==ACTION_WRITE) {
+			String body = bodyContent.getString();
+			if(!StringUtil.isEmpty(body)){
+				if(!StringUtil.isEmpty(output))
+					throw new ApplicationException("if a body is defined for the tag, the attribute [output] is not allowed");
+				output=body;
+			}
+		}
 		return SKIP_BODY;
 	}
 
 	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
+	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
-	public int doEndTag()	{
+	public int doEndTag() throws PageException	{
+		switch(action){
+		case ACTION_APPEND: actionAppend();
+		break;
+		case ACTION_WRITE: actionWrite();
+		break;
+		}
+		
 		return EVAL_PAGE;
+	}
+	
+	public void hasBody(boolean hasBody) {
+		if(output==null && hasBody) output="";
 	}
 
 	/**

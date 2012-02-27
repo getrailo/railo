@@ -3061,7 +3061,7 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<name>File</name>
 		<tag-class>railo.runtime.tag.FileTag</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.File</tte-class>
-		<body-content>empty</body-content>
+		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
 			<type>multiple</type>
