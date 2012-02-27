@@ -39,7 +39,7 @@ import railo.runtime.util.ArrayIterator;
 /**
  * 
  */
-public  class XMLNodeStruct extends StructSupport implements XMLStruct {
+public class XMLNodeStruct extends StructSupport implements XMLStruct {
 	
 	private Node node;
 	protected boolean caseSensitive;
@@ -59,7 +59,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
 	 */
 	public Object remove(String key) throws PageException {
-        Object o= XMLUtil.removeProperty(node,KeyImpl.init(key),caseSensitive);
+		Object o= XMLUtil.removeProperty(node,KeyImpl.init(key),caseSensitive);
         if(o!=null)return o;           
         throw new ExpressionException("node has no child with name ["+key+"]");
 	}
@@ -382,7 +382,7 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	/**
 	 * @see railo.runtime.text.xml.struct.XMLStruct#toNode()
 	 */
-	public Node toNode() {
+	public final Node toNode() {
 		return node;
 	}
 	
@@ -637,5 +637,14 @@ public  class XMLNodeStruct extends StructSupport implements XMLStruct {
 	public boolean isCaseSensitive() {
 		return caseSensitive;
 	}
+	
+	public boolean equals(Object obj) {
+		if(!(obj instanceof XMLNodeStruct)) 
+			return super.equals(obj);
+		XMLNodeStruct other = ((XMLNodeStruct)obj);
+		return other.caseSensitive=caseSensitive && other.node.equals(node);
+	}
+	
+	
 
 }

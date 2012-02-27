@@ -83,12 +83,12 @@ public final class JSConverter {
 			return;
 		}
 		
-		if(done.contains(object)){
+		Object raw = LazyConverter.toRaw(object);
+		if(done.contains(raw)){
 			sb.append(NULL+";");
 			return;
 		}
-		
-		done.add(object);
+		done.add(raw);
 		try {
 			// Struct
 			if(object instanceof Struct) {
@@ -117,7 +117,7 @@ public final class JSConverter {
 			}
 		}
 		finally {
-			done.remove(object);
+			done.remove(raw);
 		}
 		
 		throw new ConverterException("can't serialize Object of type ["+Caster.toClassName(object)+"] to a js representation");
