@@ -42,7 +42,7 @@
 	<function>
 		<name>AjaxLink</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxLink</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Causes an HTML href attribute to display link results in the current Ajax container.</description>
 		<argument>
 			<name>url</name>
@@ -58,7 +58,7 @@
 	<function>
 		<name>AjaxOnLoad</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxOnLoad</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Causes the specified JavaScript function to run when the page loads.</description>
 		<argument>
 			<name>functionName</name>
@@ -5459,7 +5459,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPRequest</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequest</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Returns an XML object that contains the entire SOAP
         request. Usually called from within a web service CFC.</description>
 		<argument>
@@ -5509,7 +5509,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>AddSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.AddSOAPRequestHeader</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Adds a SOAP header to a web service request before making the request.</description>
 		<argument>
 			<name>webservice</name>
@@ -5550,7 +5550,7 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>addSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.AddSOAPResponseHeader</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Adds a SOAP response header to a web service response. Call only from within a CFC web service function that is processing a request as a SOAP web service.</description>
 		<argument>
 			<name>namespace</name>
@@ -9846,7 +9846,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>IsSOAPRequest</name>
 		<class>railo.runtime.functions.decision.IsSOAPRequest</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Determines whether a CFC is being called as a web service.</description>
 		<return>
 			<type>boolean</type>
@@ -11796,6 +11796,30 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>returns null</description>
 		<return>
 			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- ObjectEquals -->
+	<function>
+		<name>ObjectEquals</name>
+		<class>railo.runtime.functions.other.ObjectEquals</class>
+		<description>compares simply and complex objects for equality, attention string comparsion is case sensitive</description>
+		<argument>
+			<name>left</name>
+			<alias>param1</alias>
+			<type>any</type>
+			<required>yes</required>
+			<description>left operant</description>
+   		</argument>
+		<argument>
+			<name>right</name>
+			<alias>param2</alias>
+			<type>any</type>
+			<required>yes</required>
+			<description>right operant</description>
+   		</argument>
+		<return>
+			<type>boolean</type>
 		</return>
 	</function>
 	
