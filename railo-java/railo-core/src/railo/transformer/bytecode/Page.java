@@ -701,22 +701,13 @@ public final class Page extends BodyBase {
 			ga.dup();
 			ga.push(index++);
 			
-			//ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-			if(value instanceof Literal) {
-				String str = ((Literal)value).getString();
-				
-				
-				if(KeyConstants.hasConstant(str)) {
-					ga.getStatic(KEY_CONSTANTS, "_"+str, Types.COLLECTION_KEY);
-				}
-				else {
-					ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-					ga.invokeStatic(KEY_IMPL, KEY_INTERN);
-				}
+			String str = value.getString();
+			if(KeyConstants.hasConstant(str)) {
+				ga.getStatic(KEY_CONSTANTS, "_"+str, Types.COLLECTION_KEY);
 			}
 			else {
 				ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-				ga.invokeStatic(KEY_IMPL, KEY_INIT);
+				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
 			}
 			ga.visitInsn(Opcodes.AASTORE);
 		}
