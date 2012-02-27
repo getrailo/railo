@@ -12427,11 +12427,12 @@ dWord: creates a value of 0 (zero)</description>
 			<name>action</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>&lt;ul&gt;
-            &lt;li&gt;begin: the start of the block of code to execute&lt;/li&gt;
-            &lt;li&gt;commit: commits a pending transaction&lt;/li&gt;
-            &lt;li&gt;rollback: rolls back a pending transaction&lt;/li&gt;
-            &lt;/ul&gt;</description>
+<description>
+- begin: The start of the block of code to execute.
+- commit: Commits a pending transaction.
+- rollback: Rolls back a pending transaction.
+- setsavepoint: Saves a specific state within a transaction
+</description>
     </attribute>
 		<attribute>
 			<type>string</type>

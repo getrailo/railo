@@ -2564,6 +2564,9 @@ public final class ConfigWebFactory {
     		
             f = dir.getRealResource("transactionRollback.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionRollback.cfm",f);
+            
+            f = dir.getRealResource("transactionSetsavepoint.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionSetsavepoint.cfm",f);
     		
             f = dir.getRealResource("writeLog.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeLog.cfm",f);
