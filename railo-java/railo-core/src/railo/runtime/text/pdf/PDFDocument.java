@@ -1,5 +1,6 @@
 package railo.runtime.text.pdf;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import railo.runtime.type.util.StructSupport;
 
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfWriter;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 
 public class PDFDocument extends StructSupport implements Struct {
 
@@ -378,11 +378,11 @@ public class PDFDocument extends StructSupport implements Struct {
 	public PDDocument toPDDocument() throws CryptographyException, InvalidPasswordException, IOException {
 		PDDocument doc;
 		if(barr!=null) 
-			doc= PDDocument.load(new ByteInputStream(barr,0,barr.length));
+			doc= PDDocument.load(new ByteArrayInputStream(barr,0,barr.length));
 		else if(resource instanceof FileResource)
 			doc= PDDocument.load((File)resource);
 		else 
-			doc= PDDocument.load(new ByteInputStream(IOUtil.toBytes(resource),0,barr.length));
+			doc= PDDocument.load(new ByteArrayInputStream(IOUtil.toBytes(resource),0,barr.length));
 		
 		if(password!=null)doc.decrypt(password);
 		
