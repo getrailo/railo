@@ -4764,10 +4764,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>struct</type>
 		</return>
 	</function>
-	<!-- ApplicationGetMetaData -->
+	<!-- GetApplicationMetadata -->
 	<function>
-		<name>ApplicationGetMetaData</name>
-		<class>railo.runtime.functions.system.ApplicationGetMetaData</class>
+		<name>GetApplicationMetadata</name>
+		<class>railo.runtime.functions.system.GetApplicationMetadata</class>
 		<description>return all data from this scope, when using a application.cfc or all setting defined in tag cfapplication</description>
 		<return>
 			<type>struct</type>
