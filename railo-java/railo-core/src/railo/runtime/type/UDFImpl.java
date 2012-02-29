@@ -701,8 +701,44 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		
 		// properties
 		out.writeObject(properties);
+	}
+	
+
+	public boolean equals(Object obj){
+		if(!(obj instanceof UDF)) return false;
+		return equals(this,(UDF)obj);
+	}
+	public static boolean equals(UDF left, UDF right){
+		if(
+			!left.getPageSource().equals(right.getPageSource())
+			|| !_eq(left.getFunctionName(),right.getFunctionName())
+			|| left.getAccess()!=right.getAccess()
+			|| !_eq(left.getFunctionName(),right.getFunctionName())
+			|| left.getOutput()!=right.getOutput()
+			|| left.getReturnFormat()!=right.getReturnFormat()
+			|| left.getReturnType()!=right.getReturnType()
+			|| !_eq(left.getReturnTypeAsString(),right.getReturnTypeAsString())
+			|| !_eq(left.getSecureJson(),right.getSecureJson())
+			|| !_eq(left.getVerifyClient(),right.getVerifyClient())
+		) return false;
+
+		// Arguments
+		FunctionArgument[] largs = left.getFunctionArguments();
+		FunctionArgument[] rargs = right.getFunctionArguments();
+		if(largs.length!=rargs.length) return false;
+		for(int i=0;i<largs.length;i++){
+			if(!largs[i].equals(rargs[i]))return false;
+		}
 		
 		
+		
+		
+		return true;
+	}
+
+	private static boolean _eq(Object left, Object right) {
+		if(left==null) return right==null;
+		return left.equals(right);
 	}
 
 	

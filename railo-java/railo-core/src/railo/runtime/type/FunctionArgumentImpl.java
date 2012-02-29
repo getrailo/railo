@@ -225,4 +225,30 @@ public final class FunctionArgumentImpl implements FunctionArgument,Externalizab
 		out.writeInt(defaultType);
 		out.writeBoolean(passByReference);
 	}
+	
+
+	public boolean equals(Object obj){
+		if(!(obj instanceof FunctionArgument)) return false;
+		return equals(this,(FunctionArgument)obj);
+	}
+	
+	public static boolean equals(FunctionArgument left, FunctionArgument right) {
+		if(
+				left.getDefaultType()!=right.getDefaultType()
+				|| left.getType()!=right.getType()
+				|| !_eq(left.getName(), right.getName())
+				|| !_eq(left.getTypeAsString(), right.getTypeAsString())
+				|| left.isPassByReference()!=right.isPassByReference()
+				|| left.isRequired()!=right.isRequired()
+		)
+			return false;
+		
+		
+		return true;
+	}
+	
+	private static boolean _eq(Object left, Object right) {
+		if(left==null) return right==null;
+		return left.equals(right);
+	}
 }
