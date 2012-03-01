@@ -63,6 +63,10 @@ public final class ASMUtil {
 	//private static int version=0;
 	
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
+	private static final Method _SRC_NAME = new Method("_srcName",
+        			Types.STRING,
+        			new Type[]{}
+            		);;
 	//private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
@@ -464,15 +468,10 @@ public final class ASMUtil {
         
         // complexType src
         if(!StringUtil.isEmpty(srcName)) {
-	        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "_srcName", "()Ljava/lang/String;", null, null);
-	        mv.visitCode();
-	        Label l0 = new Label();
-	        mv.visitLabel(l0);
-	        mv.visitLineNumber(4, l0);
-	        mv.visitLdcInsn(srcName);
-	        mv.visitInsn(Opcodes.ARETURN);
-	        //mv.visitMaxs(0, 0);//visitMaxs(1, 0);// hansx
-	        mv.visitEnd();
+        	GeneratorAdapter _adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL+ Opcodes.ACC_STATIC , _SRC_NAME, null, null, cw);
+        	_adapter.push(srcName);
+        	_adapter.returnValue();
+        	_adapter.endMethod();
         }
         
         cw.visitEnd();
@@ -500,13 +499,13 @@ public final class ASMUtil {
             adapter.visitVarInsn(Opcodes.ALOAD, 0);
 			adapter.visitFieldInsn(Opcodes.GETFIELD, classType, name, type.toString());
 			adapter.returnValue();
+			
 			Label end = new Label();
 			adapter.visitLabel(end);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
-			//adapter.visitMaxs(0, 0);//visitMaxs(sizeOf, 1);// hansx
 			adapter.visitEnd();
 			
-			
+			adapter.endMethod();
 			
 			
 			
@@ -531,7 +530,7 @@ public final class ASMUtil {
 			//adapter.visitMaxs(0, 0);//.visitMaxs(sizeOf+1, sizeOf+1);// hansx
 			adapter.visitEnd();
         
-			
+			adapter.endMethod();
 			
 			
 			
