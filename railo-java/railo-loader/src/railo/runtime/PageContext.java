@@ -779,6 +779,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract void execute(String realPath, boolean throwException) throws PageException;
     
+    public abstract void executeRest(String realPath, boolean throwException) throws PageException;
+    
     /**
      * Flush Content of buffer to the response stream of the Socket.
      */

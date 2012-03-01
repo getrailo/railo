@@ -38,11 +38,13 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
+import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -1975,6 +1977,53 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public Debugger getDebugger() {
 		return debugger;
 	}
+    
+    public void executeRest(String realPath, boolean throwExcpetion) throws PageException  {
+    	try{
+    	String pathInfo = req.getPathInfo();
+    	
+    	// Service mapping
+    	if(StringUtil.isEmpty(pathInfo) || pathInfo.equals("/")) {// ToDo
+    		// list available services (if enabled in admin)
+    		try {
+				write("Available sevice mappings are:<ul>");
+				railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+				for(int i=0;i<mappings.length;i++){
+					write("<li>"+mappings[i].getVirtual()+"</li>");
+				}
+				write("</ul>");
+				return;
+				
+			} catch (IOException e) {
+				throw Caster.toPageException(e);
+			}
+    	}	
+    	
+    	railo.runtime.rest.Source source = null;//config.getRestSource(pathInfo, null);
+    	railo.runtime.rest.Mapping[] restMappings = config.getRestMappings();
+    	railo.runtime.rest.Mapping mapping;
+    	if(restMappings!=null)for(int i=0;i<restMappings.length;i++) {
+            mapping = restMappings[i];
+            print.e(pathInfo+"=="+mapping.getVirtualWithSlash()+"="+pathInfo.startsWith(mapping.getVirtualWithSlash(),0));
+            if(pathInfo.startsWith(mapping.getVirtualWithSlash(),0)) {
+            	source = mapping.getSource(this,pathInfo.substring(mapping.getVirtual().length()),null);
+            	break;
+            }
+        }
+    	
+
+    	if(source!=null){
+    		print.e("pagesource:"+source.getPageSource());
+    		print.e("physical:"+source.getMapping().getPhysical());
+    		print.e("path:"+source.getPath());
+    		doInclude(source.getPageSource());
+    	}
+    	}
+    	catch(Throwable t){
+    		t.printStackTrace();
+    	}
+    }
+    
 	
     /**
      * @throws PageException 

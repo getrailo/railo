@@ -62,9 +62,18 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
         engine.serviceAMF(servlet,req,rsp);
     }
     
+    /**
+     * @see railo.loader.engine.CFMLEngine#serviceFile(javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     public void serviceFile(HttpServlet servlet, HttpServletRequest req,
             HttpServletResponse rsp) throws ServletException, IOException {
         engine.serviceFile(servlet,req,rsp);
+    }
+    
+
+    public void serviceRest(HttpServlet servlet, HttpServletRequest req,
+            HttpServletResponse rsp) throws ServletException, IOException {
+        engine.serviceRest(servlet,req,rsp);
     }
 
     /**

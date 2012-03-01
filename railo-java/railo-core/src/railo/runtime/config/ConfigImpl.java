@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -90,6 +91,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
+import railo.runtime.rest.Source;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
@@ -233,6 +235,7 @@ public abstract class ConfigImpl implements Config {
     
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
+    private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
     private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
     
     private LogAndSource requestTimeoutLogger=null;
@@ -368,6 +371,7 @@ public abstract class ConfigImpl implements Config {
 	private boolean useCTPathCache=true;
 	private int amfConfigType=AMF_CONFIG_TYPE_XML;
 	private LogAndSource scopeLogger;
+	private railo.runtime.rest.Mapping[] restMappings;
 	
 	
 	
@@ -692,6 +696,12 @@ public abstract class ConfigImpl implements Config {
     	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return mailLogger;
     }
+    
+
+    public LogAndSource getRestLogger() {
+    	if(restLogger==null)restLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return restLogger;
+    }
 
     /**
      * @see railo.runtime.config.Config#getMailLogger()
@@ -775,6 +785,14 @@ public abstract class ConfigImpl implements Config {
      */
     public Mapping[] getMappings() {
         return mappings;
+    }
+    
+    public railo.runtime.rest.Mapping[] getRestMappings() {
+        return restMappings;
+    }
+  
+    protected void setRestMappings(railo.runtime.rest.Mapping[] restMappings) {
+        this.restMappings= restMappings;
     }
 
 
@@ -1698,6 +1716,10 @@ public abstract class ConfigImpl implements Config {
 
     protected void setMappingLogger(LogAndSource mappingLogger) {
         this.mappingLogger=mappingLogger;
+    }
+    
+    protected void setRestLogger(LogAndSource restLogger) {
+        this.restLogger=restLogger;
     }
 
     public LogAndSource getMappingLogger() {

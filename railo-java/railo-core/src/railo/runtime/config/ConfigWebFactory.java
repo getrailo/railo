@@ -344,6 +344,7 @@ public final class ConfigWebFactory {
     	loadResourceProvider(cs,config,doc);
         loadCharset(configServer,config,doc);
         loadMappings(configServer,config,doc);
+        loadRest(configServer,config,doc);
         loadExtensions(configServer,config,doc);
         loadPagePool(configServer,config,doc);
         loadDataSources(configServer,config,doc);
@@ -1554,6 +1555,60 @@ public final class ConfigWebFactory {
         }
         config.setMappings(arrMapping);
         //config.setMappings((Mapping[]) mappings.toArray(new Mapping[mappings.size()]));
+    }
+    
+    private static void loadRest(ConfigServerImpl configServer, ConfigImpl config,Document doc) throws IOException {
+        boolean hasAccess= true;//MUST ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        Element el= getChildByName(doc.getDocumentElement(),"rest");
+        
+        // Log
+        String strLogger=el.getAttribute("log");
+        int logLevel=LogUtil.toIntType(el.getAttribute("log-level"),Log.LEVEL_ERROR);
+        if(StringUtil.isEmpty(strLogger)){
+        	if(configServer!=null){
+        		LogAndSource log = configServer.getRestLogger();
+        		strLogger=log.getSource();
+        		logLevel=log.getLogLevel();
+        	}
+        	else strLogger="{railo-config}/logs/rest.log";
+        }
+        config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+        
+        
+        
+        Element[] _mappings=getChildren(el,"mapping");
+        
+        // first get mapping defined in server admin (read-only)
+        Map<String,railo.runtime.rest.Mapping> mappings=new HashMap<String, railo.runtime.rest.Mapping>();
+        railo.runtime.rest.Mapping tmp;
+        if(configServer!=null && config instanceof ConfigWeb) {
+            railo.runtime.rest.Mapping[] sm=configServer.getRestMappings();
+            for(int i=0;i<sm.length;i++) {
+            
+                if(!sm[i].isHidden()) {
+                    tmp = sm[i].duplicate(config,Boolean.TRUE);
+                    mappings.put(tmp.getVirtual(),tmp);   
+                }
+            }
+        }
+        
+        // get current mappings
+        if(hasAccess) {
+	        for(int i=0;i<_mappings.length;i++) {
+	           el=_mappings[i];
+	           String physical=el.getAttribute("physical");
+	           String virtual=el.getAttribute("virtual");
+	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
+	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
+	           if(physical!=null) { 
+	               tmp=new railo.runtime.rest.Mapping(config,virtual,physical,hidden,readonly);
+	               mappings.put(tmp.getVirtual(),tmp);
+	           }
+	        }
+        }
+        
+        
+        config.setRestMappings(mappings.values().toArray(new railo.runtime.rest.Mapping[mappings.size()]));
     }
     
     
