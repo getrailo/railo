@@ -63,7 +63,10 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 * @param objects Objects array data to fill
 	 */
 	public ArrayImpl(Object[] objects) {
-		arr=objects;
+		arr=new Object[objects.length];
+		for(int i=0;i<arr.length;i++){
+			arr[i]=objects[i];
+		}
 		size=arr.length;
 		offset=0;
 	}
