@@ -799,6 +799,14 @@
 	<data key="settings.dbdatabasedesc">Name of the database to connect</data>
 	<data key="settings.dbuserdesc">The username for the database</data>
 	<data key="settings.datasourcedescriptionupdate">Update datasource connection</data>
+	
+	<data key="settings.dbtimezone">Timezone</data>
+	
+	<data key="settings.dbtimezoneDesc">
+When you define a date as a string (not with cfqueryparam) inside cfquery, there is normally no timezone information with it and the date string is based on the locale timezone. Therefore the database will interpret this date string based on it's own timezone.
+If the timezone of your Railo instance and your database is different, this can lead to problems. Because of that Railo now allows you to define a timezone for a specific datasource defintion. Be aware that you should only define a specific timezone, if you are a 100% sure that this timezone is used on the database server and it is different from the timezone of the Railo instance. This setting can be overwritten by the cfquery attribute "timezone".</data>
+	<data key="settings.dbtimezoneSame">Same as Railo Instance</data>
+	
 	<data key="settings.dbblobdesc">Enable binary large object retrieval (&lt;abbr title=&quot;binary large object&quot;&gt;BLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbpass">Password</data>
