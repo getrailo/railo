@@ -12,6 +12,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
@@ -31,7 +32,9 @@ import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.rest.RestUtil;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
@@ -71,7 +74,6 @@ public abstract class ComponentPage extends Page  {
 	 * @see railo.runtime.Page#call(railo.runtime.PageContext)
 	 */
 	public void call(PageContext pc) throws PageException {
-		
 		// remote persistent (only type server is supported)
 		String strRemotePersisId = Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT_ID,null),null);
 		if(!StringUtil.isEmpty(strRemotePersisId,true)) {
@@ -85,6 +87,7 @@ public abstract class ComponentPage extends Page  {
 		// call type (invocation, store-only)
 		String callType = Caster.toString(req.getAttribute("call-type"),null);
 		boolean fromGateway="railo-gateway-1-0".equals(client);
+		boolean fromRest="railo-rest-1-0".equals(client);
 		Component component;
         try {
             pc.setSilent();
@@ -124,11 +127,18 @@ public abstract class ComponentPage extends Page  {
 			String qs=ReqRspUtil.getQueryString(pc.getHttpServletRequest());
             if(pc.getBasePageSource()==this.getPageSource())
             	pc.getDebugger().setOutput(false);
-            boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
-            Object method;
+            boolean isPost=pc.getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             
             boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
             if(suppressContent)pc.clear();
+            Object method;
+            
+            if(fromRest){ 
+            	callRest(pc,component,suppressContent);
+            	return;
+            }
+            
+            
             
             // POST
             if(isPost) {
@@ -140,7 +150,7 @@ public abstract class ComponentPage extends Page  {
             	}
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method),suppressContent);
+                    callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
             		//close(pc);
                     return;
                 }
@@ -157,7 +167,7 @@ public abstract class ComponentPage extends Page  {
                 } 
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method),suppressContent);
+                    callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
                     //close(pc); 
                     return;
                 } 
@@ -204,6 +214,17 @@ public abstract class ComponentPage extends Page  {
 		//pc.close();
 	}*/
 
+	private void callRest(PageContext pc, Component component, boolean suppressContent) throws PageException, IOException, ConverterException {
+		//String method = pc.getHttpServletRequest().getMethod();
+		//component
+		Pair<Key, UDF> info = RestUtil.getUDFNameFor(pc, component, "", null);
+		
+		
+		
+		if(info!=null)
+		callWDDX(pc, component, info.getName(), suppressContent);
+	}
+
 	public static  boolean isSoap(PageContext pc) {
 		HttpServletRequest req = pc.getHttpServletRequest();
 		InputStream is=null;
@@ -225,7 +246,7 @@ public abstract class ComponentPage extends Page  {
 	}
 	
 	
-    private void callWDDX(PageContext pc, Component component, String methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
+    private void callWDDX(PageContext pc, Component component, Collection.Key methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
     	Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
 
         // define args
@@ -240,7 +261,7 @@ public abstract class ComponentPage extends Page  {
         }
         
       //content-type
-        Object o = component.get(KeyImpl.init(methodName),null);
+        Object o = component.get(methodName,null);
         Props props = getProps(pc, o, returnFormat);
         HttpServletResponse rsp = pc.getHttpServletResponse();
         if(!props.output) {
@@ -270,7 +291,7 @@ public abstract class ComponentPage extends Page  {
         
 	        
 	        if(args==null){
-	        	url=translate(component,methodName,url);
+	        	url=translate(component,methodName.getString(),url);
 	        	rtn = component.callWithNamedValues(pc, methodName, url);
 	        }
 	        else if(args instanceof String){
