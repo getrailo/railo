@@ -239,7 +239,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		DeprecatedUtil.tagAttribute("query", "cachename");
+		DeprecatedUtil.tagAttribute(pageContext,"query", "cachename");
 		//this.cachename=cachename;
 	}
 
@@ -263,7 +263,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setProviderdsn(String providerdsn) throws ApplicationException	{
-	    throw new ApplicationException("attribute providerdsn (with value ["+providerdsn+"]) is Deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "providerdsn");
 	}
 
 	/** set the value connectstring
@@ -271,7 +271,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setConnectstring(String connectstring) throws ApplicationException	{
-	    throw new ApplicationException("attribute connectstring (with value ["+connectstring+"]) is Deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "connectstring");
 	}
 	
 
@@ -312,8 +312,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param dbname value to set
 	 * @throws ApplicationException
 	**/
-	public void setDbname(String dbname) throws ApplicationException	{
-	    throw new ApplicationException("attribute dbname (with value ["+dbname+"]) is Deprecated");
+	public void setDbname(String dbname) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "dbname");
 	}
 
 	/** set the value maxrows
@@ -338,8 +338,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param provider value to set
 	 * @throws ApplicationException
 	**/
-	public void setProvider(String provider) throws ApplicationException	{
-	    throw new ApplicationException("attribute provider (with value ["+provider+"]) is Deprecated");
+	public void setProvider(String provider) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "provider");
 	}
 
 	/** set the value dbserver
@@ -348,8 +348,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param dbserver value to set
 	 * @throws ApplicationException
 	**/
-	public void setDbserver(String dbserver) throws ApplicationException	{
-	    throw new ApplicationException("attribute dbserver (with value ["+dbserver+"]) is Deprecated");
+	public void setDbserver(String dbserver) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "dbserver");
 	}
 
 	/** set the value name

@@ -1,6 +1,7 @@
 package railo.runtime.text.feed;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.CastableArray;
@@ -204,7 +205,7 @@ public class FeedQuery {
 	};
 	
 	
-	public static Query toQuery(Struct data,boolean hasDC) {
+	public static Query toQuery(Struct data,boolean hasDC) throws DatabaseException {
 		Query qry=new QueryImpl(hasDC?COLUMNS_WITH_DC:COLUMNS,0,"");
 		
 		String version=Caster.toString(data.get(VERSION,""),"");

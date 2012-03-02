@@ -134,7 +134,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		DeprecatedUtil.tagAttribute("StoredProc", "cachename");
+		DeprecatedUtil.tagAttribute(pageContext,"StoredProc", "cachename");
 	}
 
 	/** set the value cachedwithin

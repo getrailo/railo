@@ -12,6 +12,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.net.ldap.LDAPClient;
 import railo.runtime.op.Caster;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.util.ArrayUtil;
@@ -93,8 +94,8 @@ public final class Ldap extends TagImpl {
      * @param filterfile The filterfile to set.
      * @throws ApplicationException 
      */
-    public void setFilterfile(String filterfile) throws ApplicationException {
-        throw new ApplicationException("the attribute filterfile with value ["+filterfile+"] is deprecated");
+    public void setFilterfile(String filterfile) {
+		DeprecatedUtil.tagAttribute(pageContext,"LDAP", "filterfile");
     }
     
     /** Specifies the character that cfldap uses to separate multiple 
