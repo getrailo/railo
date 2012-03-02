@@ -19,7 +19,9 @@ import railo.runtime.type.List;
 
 public final class ReqRspUtil {
 
-	public static String get(Pair[] items, String name) {
+	
+	
+	public static String get(Pair<String,Object>[] items, String name) {
 		for(int i=0;i<items.length;i++) {
 			if(items[i].getName().equalsIgnoreCase(name)) 
 				return Caster.toString(items[i].getValue(),null);
@@ -27,19 +29,19 @@ public final class ReqRspUtil {
 		return null;
 	}
 	
-	public static Pair[] add(Pair[] items, String name, Object value) {
-		Pair[] tmp = new Pair[items.length+1];
+	public static Pair<String,Object>[] add(Pair<String,Object>[] items, String name, Object value) {
+		Pair<String,Object>[] tmp = new Pair[items.length+1];
 		for(int i=0;i<items.length;i++) {
 			tmp[i]=items[i];
 		}
-		tmp[items.length]=new Pair(name,value);
+		tmp[items.length]=new Pair<String,Object>(name,value);
 		return tmp;
 	}
 	
-	public static Pair[] set(Pair[] items, String name, Object value) {
+	public static Pair<String,Object>[] set(Pair<String,Object>[] items, String name, Object value) {
 		for(int i=0;i<items.length;i++) {
 			if(items[i].getName().equalsIgnoreCase(name)) {
-				items[i]=new Pair(name,value);
+				items[i]=new Pair<String,Object>(name,value);
 				return items;
 			}
 		}

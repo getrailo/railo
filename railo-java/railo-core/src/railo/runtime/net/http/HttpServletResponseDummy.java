@@ -23,7 +23,7 @@ import railo.runtime.type.dt.DateTimeImpl;
 public final class HttpServletResponseDummy implements HttpServletResponse,Serializable {
 	
 	private Cookie[] cookies=new Cookie[0];
-	private Pair[] headers=new Pair[0];
+	private Pair<String,Object>[] headers=new Pair[0];
 	private int status=200;
 	private String statusCode="OK";
 	private String charset="ISO-8859-1";
@@ -291,7 +291,7 @@ public final class HttpServletResponseDummy implements HttpServletResponse,Seria
 	/**
 	 * @return the headers
 	 */
-	public Pair[] getHeaders() {
+	public Pair<String,Object>[] getHeaders() {
 		return headers;
 	}
 

@@ -2016,6 +2016,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		print.e("pagesource:"+source.getPageSource());
     		print.e("physical:"+source.getMapping().getPhysical());
     		print.e("path:"+source.getPath());
+    		base=source.getPageSource();
+    		req.setAttribute("client", "railo-rest-1-0");
+    		
+    		
     		doInclude(source.getPageSource());
     	}
     	}

@@ -199,7 +199,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	            HttpServletResponseDummy rsp=(HttpServletResponseDummy) pc.getHttpServletResponse();
 	            pc.flush();
 	            contentType=rsp.getContentType();
-	            Pair[] _headers = rsp.getHeaders();
+	            Pair<String,Object>[] _headers = rsp.getHeaders();
 	            if(_headers!=null)for(int i=0;i<_headers.length;i++){
 	            	if(_headers[i].getName().equalsIgnoreCase("Content-Encoding"))
 	            		contentEncoding=Caster.toString(_headers[i].getValue(),null);

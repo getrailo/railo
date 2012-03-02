@@ -41,8 +41,8 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	private Cookie[] cookies;
 	
 	private String authType;
-	private Pair[] headers=new Pair[0];
-	private Pair[] parameters=new Pair[0];
+	private Pair<String,Object>[] headers=new Pair[0];
+	private Pair<String,Object>[] parameters=new Pair[0];
 	private Struct attributes=new StructImpl();
 	private String method="GET";
 	private String pathInfo;
