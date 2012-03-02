@@ -30,6 +30,7 @@ import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.dateTime.GetHttpTimeString;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -148,7 +149,7 @@ public final class Cache extends BodyTagImpl {
 	 * @throws DeprecatedException
 	 */
 	public void setTimeout(Object obj) throws DeprecatedException {
-		throw new DeprecatedException("Cache","timeout");
+		DeprecatedUtil.tagAttribute(pageContext,"Cache","timeout");
 	}
 
 	/** set the value directory

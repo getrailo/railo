@@ -6,9 +6,9 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +21,7 @@ import javax.servlet.jsp.tagext.Tag;
 import org.opencfml.eventgateway.Gateway;
 
 import railo.commons.collections.HashTable;
+import railo.commons.db.DBUtil;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
@@ -2304,6 +2305,7 @@ private void doGetMappings() throws PageException {
         String username=getString("admin",action,"dbusername");
         String password=getString("admin",action,"dbpassword");
         String host=getString("host","");
+        String timezone=getString("timezone","");
         String database=getString("database","");
         int port=getInt("port",-1);
         int connLimit=getInt("connectionLimit",-1);
@@ -2345,6 +2347,7 @@ private void doGetMappings() throws PageException {
                 allow,
                 validate,
                 storage,
+                timezone,
                 custom
                 
         );
@@ -2590,13 +2593,7 @@ private void doGetMappings() throws PageException {
     private Connection getConnection(String dsn, String user, String pass) throws DatabaseException  {
         Connection conn=null;
         try {
-            if(dsn.indexOf('?')==-1) {
-                conn = DriverManager.getConnection(dsn, user, pass);
-            }
-            else{
-                String connStr=dsn+"&user="+user+"&password="+pass;
-                conn = DriverManager.getConnection(connStr, user, pass);
-            }
+        	conn = DBUtil.getConnection(dsn, user, pass);
             conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
@@ -3174,6 +3171,7 @@ private void doGetMappings() throws PageException {
                 sct.setEL("database",d.getDatabase());
                 sct.setEL("port",d.getPort()<1?"":Caster.toString(d.getPort()));
                 sct.setEL("dsnTranslated",d.getDsnTranslated());
+                sct.setEL("timezone",toStringTimeZone(d.getTimeZone()));
                 sct.setEL("password",d.getPassword());
                 sct.setEL("username",d.getUsername());
                 sct.setEL("readonly",Caster.toBoolean(d.isReadOnly()));
@@ -3202,7 +3200,12 @@ private void doGetMappings() throws PageException {
         }
         throw new ApplicationException("there is no datasource with name ["+name+"]");
     }
-    private void doGetRemoteClient() throws PageException {
+    private Object toStringTimeZone(TimeZone timeZone) {
+		if(timeZone==null) return "";
+		return timeZone.getID();
+	}
+
+	private void doGetRemoteClient() throws PageException {
         
         String url=getString("admin",action,"url");
         RemoteClient[] clients = config.getRemoteClients();
@@ -3397,7 +3400,7 @@ private void doGetMappings() throws PageException {
         Map ds = config.getDataSourcesAsMap();
         Iterator it = ds.keySet().iterator();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
-                "username","password","readonly"
+                "timezone","username","password","readonly"
                 ,"grant","drop","create","revoke","alter","select","delete","update","insert"
                 ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings"},ds.size(),"query");
         
@@ -3415,6 +3418,7 @@ private void doGetMappings() throws PageException {
             qry.setAt("database",row,d.getDatabase());
             qry.setAt("port",row,d.getPort()<1?"":Caster.toString(d.getPort()));
             qry.setAt("dsnTranslated",row,d.getDsnTranslated());
+            qry.setAt("timezone",row,toStringTimeZone(d.getTimeZone()));
             qry.setAt("password",row,d.getPassword());
             qry.setAt("username",row,d.getUsername());
             qry.setAt("readonly",row,Caster.toBoolean(d.isReadOnly()));
@@ -4061,7 +4065,7 @@ private void doGetMappings() throws PageException {
         
         String[] timeZones = TimeZone.getAvailableIDs();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"id","display"},new String[]{"varchar","varchar"},timeZones.length,"timezones");
-        
+        Arrays.sort(timeZones);
         TimeZone timeZone;
         for(int i=0;i<timeZones.length;i++) {
             timeZone=TimeZone.getTimeZone(timeZones[i]);
@@ -4113,7 +4117,7 @@ private void doGetMappings() throws PageException {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         sct.set("locale",Caster.toString(config.getLocale()));
-        sct.set("timezone",pageContext.getTimeZone().getID());
+        sct.set("timezone",toStringTimeZone(pageContext.getTimeZone()));
         sct.set("timeserver",config.getTimeServer());
         sct.set("usetimeserver",config.getUseTimeServer());
 		// replaced with encoding outputsct.set("defaultencoding", config.get DefaultEncoding());

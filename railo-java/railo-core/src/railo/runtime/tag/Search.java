@@ -16,6 +16,7 @@ import railo.runtime.search.SearchDataImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.search.SearchException;
 import railo.runtime.search.SuggestionItem;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
@@ -156,8 +157,7 @@ public final class Search extends TagImpl {
 	* @param language value to set
 	**/
 	public void setLanguage(String language)	{
-		//this.language=language;
-		// deprecated and ignored
+		DeprecatedUtil.tagAttribute(pageContext,"Search", "language");
 	}
 
 	/** set the value external
@@ -165,7 +165,7 @@ public final class Search extends TagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setExternal(boolean external) throws ApplicationException	{
-		throw new ApplicationException("attribute external ["+external+"] in tag search is deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Search", "external");
 	}
 
 	/** set the value name

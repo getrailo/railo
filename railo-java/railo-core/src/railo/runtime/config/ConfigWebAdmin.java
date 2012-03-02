@@ -1076,7 +1076,7 @@ public final class ConfigWebAdmin {
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,boolean validate,boolean storage, Struct custom) throws ExpressionException, SecurityException {
+            boolean blob,boolean clob,int allow,boolean validate,boolean storage,String timezone, Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1132,6 +1132,8 @@ public final class ConfigWebAdmin {
 	      		el.setAttribute("password",ConfigWebFactory.encrypt(password));
 
                 el.setAttribute("host",host);
+                if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
+                else if(el.hasAttribute("timezone")) el.removeAttribute("timezone");
                 el.setAttribute("database",database);
                 el.setAttribute("port",Caster.toString(port));
                 el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
@@ -1164,6 +1166,7 @@ public final class ConfigWebAdmin {
   		if(password.length()>0)el.setAttribute("password",ConfigWebFactory.encrypt(password));
         
         el.setAttribute("host",host);
+        if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
         el.setAttribute("database",database);
         if(port>-1)el.setAttribute("port",Caster.toString(port));
         if(connectionLimit>-1)el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
