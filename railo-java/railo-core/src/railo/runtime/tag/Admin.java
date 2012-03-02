@@ -6,7 +6,6 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;

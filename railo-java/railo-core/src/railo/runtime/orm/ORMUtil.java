@@ -17,7 +17,6 @@ import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
 import railo.runtime.type.util.ComponentUtil;
 
 public class ORMUtil {
