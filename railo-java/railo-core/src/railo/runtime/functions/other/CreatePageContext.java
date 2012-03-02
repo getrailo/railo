@@ -61,14 +61,14 @@ public final class CreatePageContext implements Function {
 		return sct;
 	}
 
-	private static Pair[] toPair(Struct sct, boolean doStringCast) throws PageException {
+	private static Pair<String,Object>[] toPair(Struct sct, boolean doStringCast) throws PageException {
 		Key[] keys = sct.keys();
 		Object value;
-		Pair[] pairs=new Pair[keys.length];
+		Pair<String,Object>[] pairs=new Pair[keys.length];
 		for(int i=0;i<keys.length;i++){
 			value= sct.get(keys[i]);
 			if(doStringCast)value=Caster.toString(value);
-			pairs[i]=new Pair(keys[i].getString(),value);
+			pairs[i]=new Pair<String,Object>(keys[i].getString(),value);
 		}
 		return pairs;
 	}

@@ -247,25 +247,25 @@ public final class CreationImpl implements Creation {
 			Cookie[] cookies, Map<String,Object> headers, Map<String, String> parameters, Map<String,Object> attributes, HttpSession session) {
 
 		// header
-		Pair[] _headers=new Pair[headers.size()];
+		Pair<String,Object>[] _headers=new Pair[headers.size()];
 		{
 			int index=0;
 			Iterator<Entry<String, Object>> it = headers.entrySet().iterator();
 			Entry<String, Object> entry;
 			while(it.hasNext()){
 				entry = it.next();
-				_headers[index++]=new Pair(entry.getKey(), entry.getValue());
+				_headers[index++]=new Pair<String,Object>(entry.getKey(), entry.getValue());
 			}
 		}
 		// parameters
-		Pair[] _parameters=new Pair[headers.size()];
+		Pair<String,Object>[] _parameters=new Pair[headers.size()];
 		{
 			int index=0;
 			Iterator<Entry<String, String>> it = parameters.entrySet().iterator();
 			Entry<String, String> entry;
 			while(it.hasNext()){
 				entry = it.next();
-				_parameters[index++]=new Pair(entry.getKey(), entry.getValue());
+				_parameters[index++]=new Pair<String,Object>(entry.getKey(), entry.getValue());
 			}
 		}
 		
