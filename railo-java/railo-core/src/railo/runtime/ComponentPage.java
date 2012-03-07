@@ -134,7 +134,8 @@ public abstract class ComponentPage extends Page  {
             Object method;
             
             if(fromRest){ 
-            	callRest(pc,component,suppressContent);
+            	
+            	callRest(pc,component,Caster.toString(req.getAttribute("rest-path"),""),suppressContent);
             	return;
             }
             
@@ -214,10 +215,10 @@ public abstract class ComponentPage extends Page  {
 		//pc.close();
 	}*/
 
-	private void callRest(PageContext pc, Component component, boolean suppressContent) throws PageException, IOException, ConverterException {
+	private void callRest(PageContext pc, Component component, String path, boolean suppressContent) throws PageException, IOException, ConverterException {
 		//String method = pc.getHttpServletRequest().getMethod();
 		//component
-		Pair<Key, UDF> info = RestUtil.getUDFNameFor(pc, component, "", null);
+		Pair<Key, UDF> info = RestUtil.getUDFNameFor(pc, component, path, null);
 		
 		
 		
@@ -263,27 +264,8 @@ public abstract class ComponentPage extends Page  {
       //content-type
         Object o = component.get(methodName,null);
         Props props = getProps(pc, o, returnFormat);
-        HttpServletResponse rsp = pc.getHttpServletResponse();
-        if(!props.output) {
-	        switch(props.format){
-	        case UDF.RETURN_FORMAT_WDDX:
-	        	rsp.setContentType("text/xml; charset=UTF-8");
-	        	rsp.setHeader("Return-Format", "wddx");
-	        break;
-	        case UDF.RETURN_FORMAT_JSON:
-	        	rsp.setContentType("application/json");
-	        	rsp.setHeader("Return-Format", "json");
-	        break;
-	        case UDF.RETURN_FORMAT_PLAIN:
-	        	rsp.setContentType("text/plain; charset=UTF-8");
-	        	rsp.setHeader("Return-Format", "plain");
-	        break;
-	        case UDF.RETURN_FORMAT_SERIALIZE:
-	        	rsp.setContentType("text/plain; charset=UTF-8");
-	        	rsp.setHeader("Return-Format", "serialize");
-	        break;
-	        }
-        }
+        if(!props.output) setFormat(pc.getHttpServletResponse(),props.format);
+        	
         
         Object rtn=null;
         try{
@@ -323,17 +305,36 @@ public abstract class ComponentPage extends Page  {
         if(rtn!=null){
         	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
         		pc.variablesScope().setEL("AMF-Forward", rtn);
-        		//ThreadLocalWDDXResult.set(rtn);
         	}
         	else {
         		pc.forceWrite(convertResult(pc, props, queryFormat, rtn));
         	}
         }
-        //pc.setSilent();
         
     }
     
-    private static Props getProps(PageContext pc, Object o,Object returnFormat) throws PageException {
+    private void setFormat(HttpServletResponse rsp, int format) {
+    	switch(format){
+        case UDF.RETURN_FORMAT_WDDX:
+        	rsp.setContentType("text/xml; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "wddx");
+        break;
+        case UDF.RETURN_FORMAT_JSON:
+        	rsp.setContentType("application/json");
+        	rsp.setHeader("Return-Format", "json");
+        break;
+        case UDF.RETURN_FORMAT_PLAIN:
+        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "plain");
+        break;
+        case UDF.RETURN_FORMAT_SERIALIZE:
+        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "serialize");
+        break;
+        }
+	}
+
+	private static Props getProps(PageContext pc, Object o,Object returnFormat) throws PageException {
     	Props props = new Props();
     	
 		props.strType="any";

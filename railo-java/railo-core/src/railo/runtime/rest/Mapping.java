@@ -51,6 +51,7 @@ public class Mapping {
 	private String strPhysical;
 	private boolean hidden;
 	private boolean readonly;
+	private boolean _default;
 
 
 	private Config config;
@@ -58,7 +59,7 @@ public class Mapping {
 
 	private Map<String, PageSource> sources;
 
-	public Mapping(Config config, String virtual, String physical, boolean hidden, boolean readonly) {
+	public Mapping(Config config, String virtual, String physical, boolean hidden, boolean readonly, boolean _default) {
 		this.config=config;
 		if(!virtual.startsWith("/"))this.virtual="/"+virtual;
 		if(virtual.endsWith("/"))this.virtual=virtual.substring(0,virtual.length()-1);
@@ -67,6 +68,7 @@ public class Mapping {
 		this.strPhysical=physical;
 		this.hidden=hidden;
 		this.readonly=readonly;
+		this._default=_default;
 		
 
         if(!(config instanceof ConfigWebImpl)) return;
@@ -99,7 +101,7 @@ public class Mapping {
 
 
 	public railo.runtime.rest.Mapping duplicate(Config config,Boolean readOnly) {
-		return new Mapping(config, virtual, strPhysical, hidden, readOnly==null?this.readonly:readOnly.booleanValue()); 
+		return new Mapping(config, virtual, strPhysical, hidden, readOnly==null?this.readonly:readOnly.booleanValue(),_default); 
 	}
 	
 	/**
@@ -144,25 +146,34 @@ public class Mapping {
 		return readonly;
 	}
 
+	public boolean isDefault() {
+		return _default;
+	}
+
 
 	public Source getSource(PageContext pc,String path, Source defaultValue) throws PageException {
 		init(pc);
 		if(!path.startsWith("/")) path="/"+path;
 		Iterator<Entry<String, PageSource>> it = sources.entrySet().iterator();
 		Entry<String, PageSource> entry;
-		String _path;
+		String cfcPath;
 		while(it.hasNext()){
 			entry = it.next();
-			_path=entry.getKey();
-			if(!_path.startsWith("/")) _path="/"+_path;
-			print.e(path+" -> "+_path);
+			cfcPath=entry.getKey();
+			if(!cfcPath.startsWith("/")) cfcPath="/"+cfcPath;
+			print.e(path+" -> "+cfcPath);
 			
-			if(path.startsWith(_path)){
-				return new Source(this,entry.getValue(),path.substring(_path.length()));
+			RestUtil.matchPath(path,cfcPath);
+            if(path.startsWith(cfcPath)){
+				return new Source(this,entry.getValue(),path.substring(cfcPath.length()));
 			}	
 		}
 		
 		return defaultValue;
 	}
 
+
+	public void setDefault(boolean _default) {
+		this._default=_default;
+	}
 }

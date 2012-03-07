@@ -120,6 +120,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.remote.clients">Clients</data>
 	<data key="menu.resources.label">Archive &amp; Ressourcen</data>
 	<data key="menu.resources.mappings">Mappings</data>
+	<data key="menu.resources.rest">Rest</data>
 	<data key="menu.resources.component">Komponenten</data>
 	<data key="menu.resources.customtags">Custom Tags</data>
 	<data key="menu.resources.cfx_tags">CFX Tags</data>

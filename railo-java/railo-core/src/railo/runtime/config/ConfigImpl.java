@@ -792,6 +792,18 @@ public abstract class ConfigImpl implements Config {
     }
   
     protected void setRestMappings(railo.runtime.rest.Mapping[] restMappings) {
+    	
+    	// make sure only one is default
+    	boolean hasDefault=false;
+    	railo.runtime.rest.Mapping m;
+    	for(int i=0;i<restMappings.length;i++){
+    		m=restMappings[i];
+    		if(m.isDefault()) {
+    			if(hasDefault) m.setDefault(false);
+    			hasDefault=true;
+    		}
+    	}
+    	
         this.restMappings= restMappings;
     }
 

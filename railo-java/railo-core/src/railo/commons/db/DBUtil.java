@@ -86,7 +86,7 @@ public final class DBUtil {
                 String connStr=dsn+"&user="+user+"&password="+pass;
                 return DriverManager.getConnection(connStr);
             }
-        	else throw e;
+        	throw e;
         }
 	}
 

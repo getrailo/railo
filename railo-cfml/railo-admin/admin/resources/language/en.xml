@@ -184,6 +184,7 @@
 	<data key="menu.remote.clients">Clients</data>
 	<data key="menu.resources.label">Archives &amp;amp; Resources</data>
 	<data key="menu.resources.mappings">Mappings</data>
+	<data key="menu.resources.rest">Rest</data>
 	<data key="menu.resources.component">Component</data>
 	<data key="menu.resources.customtags">Custom tags</data>
 	<data key="menu.resources.cfx_tags">CFX tags</data>

@@ -555,6 +555,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getMailServers",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetMailServers();
         else if(check("getMapping",             ACCESS_FREE) && check2(ACCESS_READ  )) doGetMapping();
         else if(check("getMappings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetMappings();
+        else if(check("getRestMappings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRestMappings();
         else if(check("getExtensions",			ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensions();
         else if(check("getExtensionProviders",	ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensionProviders();
         else if(check("getExtensionInfo",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensionInfo();
@@ -1926,7 +1927,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     
     
-private void doGetMappings() throws PageException {
+    private void doGetMappings() throws PageException {
         
 
         Mapping[] mappings = config.getMappings();
@@ -1946,6 +1947,26 @@ private void doGetMappings() throws PageException {
             qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
             qry.setAt("trusted",row,Caster.toBoolean(m.isTrusted()));
             qry.setAt("toplevel",row,Caster.toBoolean(m.isTopLevel()));
+        }
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+    
+    private void doGetRestMappings() throws PageException {
+        
+
+        railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"physical","strphysical","virtual","hidden","readonly","default"},mappings.length,"query");
+        
+        railo.runtime.rest.Mapping m;
+        for(int i=0;i<mappings.length;i++) {
+            m=mappings[i];
+            int row=i+1;
+            qry.setAt("physical",row,m.getPhysical());
+            qry.setAt("strphysical",row,m.getStrPhysical());
+            qry.setAt("virtual",row,m.getVirtual());
+            qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
+            qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
+            qry.setAt("default",row,Caster.toBoolean(m.isDefault()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
     }

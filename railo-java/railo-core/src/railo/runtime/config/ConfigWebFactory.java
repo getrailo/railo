@@ -1600,8 +1600,9 @@ public final class ConfigWebFactory {
 	           String virtual=el.getAttribute("virtual");
 	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
+	           boolean _default=toBoolean(el.getAttribute("default"),false);
 	           if(physical!=null) { 
-	               tmp=new railo.runtime.rest.Mapping(config,virtual,physical,hidden,readonly);
+	               tmp=new railo.runtime.rest.Mapping(config,virtual,physical,hidden,readonly,_default);
 	               mappings.put(tmp.getVirtual(),tmp);
 	           }
 	        }
