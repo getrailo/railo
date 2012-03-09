@@ -581,8 +581,10 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		Set<String> testMap=new HashSet<String>();
 		for(int i=0	;i<columnNames.length;i++) {
 			
-			if(!Decision.isSimpleVariableName(columnNames[i]))
-				throw new DatabaseException("invalid column name ["+columnNames[i]+"] for query", "column names must start with a letter and can be followed by letters numbers and underscores [_]. RegExp:[a-zA-Z][a-zA-Z0-9_]*",null,null,null);
+			// Only allow column names that are valid variable name
+			//if(!Decision.isSimpleVariableName(columnNames[i]))
+			//	throw new DatabaseException("invalid column name ["+columnNames[i]+"] for query", "column names must start with a letter and can be followed by letters numbers and underscores [_]. RegExp:[a-zA-Z][a-zA-Z0-9_]*",null,null,null);
+			
 			if(testMap.contains(columnNames[i].getLowerString()))
 				throw new DatabaseException("invalid parameter for query, ambiguous column name "+columnNames[i],"columnNames: "+List.arrayToListTrim( _toStringKeys(columnNames),","),null,null,null);
 			testMap.add(columnNames[i].getLowerString());
