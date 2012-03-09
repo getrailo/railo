@@ -2,7 +2,7 @@
 
 Welcome to the Railo CFML Engine repostory
 
-Building from source modified
+Building from source
 --------------------
 
 ### 1. Before you get started
