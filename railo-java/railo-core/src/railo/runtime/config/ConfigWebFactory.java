@@ -445,7 +445,7 @@ public final class ConfigWebFactory {
         		}
             }
         	
-        	// adding https when not exists
+        	// adding https when not exist
         	if(!hasHTTPs && httpClass!=null){
         		config.addResourceProvider("https",httpClass,httpArgs);
         	}
@@ -838,7 +838,7 @@ public final class ConfigWebFactory {
     }
 	
 	/**
-	 * creates the Config File, if File not exists
+	 * creates the Config File, if File not exist
 	 * @param xmlName
 	 * @param configFile 
 	 * @throws IOException

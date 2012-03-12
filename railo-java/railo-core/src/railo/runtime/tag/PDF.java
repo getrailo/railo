@@ -726,7 +726,7 @@ public class PDF extends BodyTagImpl  {
 		if(!StringUtil.isEmpty(position)) {
 			int index=position.indexOf(',');
 			if(index==-1)
-				throw new ApplicationException("attribute [position] has a invalid value ["+position+"]," +
+				throw new ApplicationException("attribute [position] has an invalid value ["+position+"]," +
 						"value should follow one of the following pattern [40,50], [40,] or [,50]");
 			String strX = position.substring(0,index).trim();
 			String strY = position.substring(index+1).trim();

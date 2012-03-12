@@ -858,7 +858,7 @@ public final class FileTag extends BodyTagImpl {
 	    Resource parentDestination=destination.getParentResource();
 	    
 	    if(!parentDestination.exists())
-	    	throw new ApplicationException("attribute destination has a invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
+	    	throw new ApplicationException("attribute destination has an invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
 	    else if(!parentDestination.canWrite())
 	    	throw new ApplicationException("can't write to desination directory ["+parentDestination+"], no access to write");
 	    
@@ -1057,7 +1057,7 @@ public final class FileTag extends BodyTagImpl {
 			if(create) {
 				Resource parent=file.getParentResource();
 				if(parent!=null && !parent.exists())
-					throw new ApplicationException("parent directory for ["+file+"] doesn't exists");
+					throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
 				try {
 					file.createFile(false);
 				} catch (IOException e) {

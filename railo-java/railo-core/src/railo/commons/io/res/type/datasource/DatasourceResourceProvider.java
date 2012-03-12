@@ -369,7 +369,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	public void delete(ConnectionData data, int fullPathHash,String path, String name) throws IOException {
 		
 		Attr attr = getAttr(data, fullPathHash,path, name);
-		if(attr==null) throw new IOException("can't delete resource "+path+name+", resource does not exists");
+		if(attr==null) throw new IOException("can't delete resource "+path+name+", resource does not exist");
 		
 		DatasourceConnection dc=null;
 		try {		
@@ -391,7 +391,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 
 	public InputStream getInputStream(ConnectionData data, int fullPathHash, String path,String name) throws IOException {
 		Attr attr = getAttr(data, fullPathHash,path, name);
-		if(attr==null) throw new IOException("file ["+path+name+"] does not exists");
+		if(attr==null) throw new IOException("file ["+path+name+"] does not exist");
 		DatasourceConnection dc=null;
 		try {		
 			dc = getDatasourceConnection(data);

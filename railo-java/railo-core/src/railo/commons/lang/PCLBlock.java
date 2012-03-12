@@ -146,7 +146,7 @@ public final class PCLBlock extends ClassLoader implements Sizeable  {
             IOUtil.copy(res,baos,false);
         } 
         catch (IOException e) {
-            throw new ClassNotFoundException("class "+name+" is invalid or doesn't exists");
+            throw new ClassNotFoundException("class "+name+" is invalid or doesn't exist");
         }
         
         byte[] barr=baos.toByteArray();

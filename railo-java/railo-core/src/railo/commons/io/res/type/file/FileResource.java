@@ -265,7 +265,7 @@ public final class FileResource extends File implements Resource {
 		provider.lock(this);
 		try {
 			if(!super.delete()) {
-				if(!super.exists())throw new IOException("can't delete file "+this+", file does not exists");
+				if(!super.exists())throw new IOException("can't delete file "+this+", file does not exist");
 				if(!super.canWrite())throw new IOException("can't delete file "+this+", no access");
 				throw new IOException("can't delete file "+this);
 			}

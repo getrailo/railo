@@ -126,7 +126,7 @@ public final class IniFile {
 
  }
  /**
-  * Gets the KeyValue attribute of the IniFile object, if not exists return null
+  * Gets the KeyValue attribute of the IniFile object, if not exist return null
   *
   * @param strSection  section to get
   * @param key      key to get

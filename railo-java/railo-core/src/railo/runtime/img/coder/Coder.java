@@ -16,7 +16,7 @@ public abstract class Coder {
 		if(instance==null){
 			instance = new JRECoder();
 			
-			// try to load Sanselan, does not load when lib not exists
+			// try to load Sanselan, does not load when lib not exist
 			try{
 				SanselanCoder sanselan = new SanselanCoder();
 				instance=new DoubleCoder(sanselan, instance);

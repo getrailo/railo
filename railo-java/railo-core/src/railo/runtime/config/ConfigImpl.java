@@ -1619,7 +1619,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     /**
-     * is file a directory or not, touch if not exists
+     * is file a directory or not, touch if not exist
      * @param directory
      * @return true if existing directory or has created new one
      */
@@ -3104,11 +3104,11 @@ public abstract class ConfigImpl implements Config {
 				// try to load hibernate jars
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
-						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
+						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
+						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
 				throw new ORMException(
-							"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-							"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine");
+							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
+							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
 			
 			}
 				ormengines.put(name,engine);

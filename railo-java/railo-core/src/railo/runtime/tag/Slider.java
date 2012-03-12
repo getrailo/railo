@@ -125,7 +125,7 @@ public final class Slider extends TagImpl {
      * @throws PageException
      */
     public void setRange(String range) throws PageException {
-        String errMessage="attribute range has a invalid value ["+range+"], must be string list with numbers";
+        String errMessage="attribute range has an invalid value ["+range+"], must be string list with numbers";
         String errDetail="Example: [number_from,number_to], [number_from], [number_from,], [,number_to]";
         
         Array arr=List.listToArray(range,',');

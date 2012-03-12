@@ -91,7 +91,7 @@ public final class Invoker {
 			if(i!=0) parameter+=", ";
 			parameter+=parameterClasses[i].getName();
 		}
-		throw new NoSuchMethodException("class constructor "+clazz.getName()+"("+parameter+") doesn't exists");
+		throw new NoSuchMethodException("class constructor "+clazz.getName()+"("+parameter+") doesn't exist");
 	}
 	
 	
@@ -190,7 +190,7 @@ public final class Invoker {
 				if(i!=0) parameter+=", ";
 				parameter+=parameterClasses[i].getName();
 			}
-			throw new NoSuchMethodException("method "+methodName+"("+parameter+") doesn't exists in class "+objectClass.getName());
+			throw new NoSuchMethodException("method "+methodName+"("+parameter+") doesn't exist in class "+objectClass.getName());
 		
 	}
 	

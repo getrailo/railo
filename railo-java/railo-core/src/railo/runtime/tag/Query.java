@@ -172,7 +172,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
 		    //mail.setType(railo.runtime.mail.Mail.TYPE_TEXT);
 		else
-			throw new ApplicationException("attribute returntype of tag query has a invalid value","valid values are [query,array-of-entity] but value is now ["+strReturntype+"]");
+			throw new ApplicationException("attribute returntype of tag query has an invalid value","valid values are [query,array-of-entity] but value is now ["+strReturntype+"]");
 	}
 
 

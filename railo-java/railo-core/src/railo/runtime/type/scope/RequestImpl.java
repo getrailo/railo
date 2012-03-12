@@ -122,7 +122,7 @@ public final class RequestImpl extends StructSupport implements Request {
 	public Object remove(Key key) throws PageException {
 		Object value = removeEL(key);
 		if(value!=null)return value;
-		throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
+		throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 	}
 
 	/**

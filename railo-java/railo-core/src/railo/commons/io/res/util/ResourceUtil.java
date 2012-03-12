@@ -700,7 +700,7 @@ public final class ResourceUtil {
     
 
     /**
-     * similat to linux bash fuction toch, create file if not exists oherwise change last modified date
+     * similat to linux bash fuction toch, create file if not exist oherwise change last modified date
      * @param res
      * @throws IOException
      */
@@ -1109,7 +1109,7 @@ public final class ResourceUtil {
 
 	/**
 	 * return if Resource is empty, means is directory and has no children or a empty file,
-	 * if not exists return false.
+	 * if not exist return false.
 	 * @param res
 	 * @return
 	 */
@@ -1199,7 +1199,7 @@ public final class ResourceUtil {
 		}
 		
 		Resource parent = resource.getParentResource();
-		// when there is a parent but the parent does not exists
+		// when there is a parent but the parent does not exist
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
@@ -1227,7 +1227,7 @@ public final class ResourceUtil {
 		}
 		
 		Resource parent = resource.getParentResource();
-		// when there is a parent but the parent does not exists
+		// when there is a parent but the parent does not exist
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
@@ -1249,7 +1249,7 @@ public final class ResourceUtil {
 		if(!source.isFile()) {
 			if(source.isDirectory())
 				throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], source is a directory");
-			throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exists");
+			throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exist");
 		}
 		else if(target.isDirectory()) {
 			throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], target is a directory");
@@ -1264,7 +1264,7 @@ public final class ResourceUtil {
 	 */
 	public static void checkMoveToOK(Resource source, Resource target) throws IOException {
 		if(!source.exists()) {
-			throw new IOException("can't move ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exists");
+			throw new IOException("can't move ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exist");
 		}
 		if(source.isDirectory() && target.isFile())
 			throw new IOException("can't move ["+source.getPath()+"] directory to ["+target.getPath()+"], target is a file");
@@ -1279,7 +1279,7 @@ public final class ResourceUtil {
 	 */
 	public static void checkGetInputStreamOK(Resource resource) throws IOException {
 		if(!resource.exists())
-			throw new IOException("file ["+resource.getPath()+"] does not exists");
+			throw new IOException("file ["+resource.getPath()+"] does not exist");
 		
 		if(resource.isDirectory())
 			throw new IOException("can't read directory ["+resource.getPath()+"] as a file");
@@ -1307,7 +1307,7 @@ public final class ResourceUtil {
 	 * @throws IOException
 	 */
 	public static void checkRemoveOK(Resource resource) throws IOException {
-		if(!resource.exists())throw new IOException("can't delete resource "+resource+", resource does not exists");
+		if(!resource.exists())throw new IOException("can't delete resource "+resource+", resource does not exist");
 		if(!resource.canWrite())throw new IOException("can't delete resource "+resource+", no access");
 		
 	}
