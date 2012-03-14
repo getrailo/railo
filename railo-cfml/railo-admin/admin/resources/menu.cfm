@@ -52,7 +52,7 @@
 			action:"resources",label:stMenu.resources.label,
 			children:array(
 				struct(action:"mappings",label:stMenu.resources.mappings),
-				struct(action:"rest",label:stMenu.resources.rest),
+				struct(action:"rest",label:isDefined('stMenu.resources.rest')?stMenu.resources.rest:'Rest'),
 				struct(action:"component",label:stMenu.resources.component),
 				struct(action:"customtags",label:stMenu.resources.customtags),
 				struct(action:"cfx_tags",label:stMenu.resources.cfx_tags)
