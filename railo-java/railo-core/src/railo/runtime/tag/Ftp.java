@@ -165,7 +165,7 @@ public final class Ftp extends TagImpl {
 			    
 			     
 			    else throw new ApplicationException(
-			            "attribute action has a invalid value ["+action+"]",
+			            "attribute action has an invalid value ["+action+"]",
 			            "valid values are [open,close,listDir,createDir,removeDir,changeDir,getCurrentDir," +
 			            "getCurrentURL,existsFile,existsDir,exists,getFile,putFile,rename,remove]");
 

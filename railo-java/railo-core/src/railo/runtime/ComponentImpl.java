@@ -189,7 +189,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	this.pageSource=componentPage.getPageSource();
     	
     	if(!StringUtil.isEmpty(style) && !"rpc".equals(style))
-    		throw new ApplicationException("style ["+style+"] is not supported, only the following styles are supported [rpc]");
+    		throw new ApplicationException("style ["+style+"] is not supported, only the following styles are supported: [rpc]");
     }
     
 
@@ -487,7 +487,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	private String _getErrorMessage(UDFImpl cUdf,UDFImpl iUdf) {
 		return "function ["+cUdf.toString().toLowerCase()+"] of component " +
 			 "["+pageSource.getComponentName()+"]" +
-			 " does not match the function declarition ["+iUdf.toString().toLowerCase()+"] of the interface " +
+			 " does not match the function declaration ["+iUdf.toString().toLowerCase()+"] of the interface " +
 			 "["+iUdf.getPageSource().getComponentName()+"]";
 	}
 
@@ -1159,7 +1159,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @deprecated use instead getPageSource()
      */
     public Page getPage() {
-        throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use instead getPageSource():PageSource"));
+        throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use getPageSource():PageSource instead"));
         //return properties.page;
     }
     
@@ -1200,7 +1200,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		}
 		
 		
-		throw ExceptionUtil.addHint(new ExpressionException("Can't cast Component ["+getName()+"] to String"),"Add a User-Defined-Function to Component with the following pattern [_toString():String] to cast it to a String or use Build-In-Function \"serialize(Component):String\" to convert it to a serialized String");
+		throw ExceptionUtil.addHint(new ExpressionException("Can't cast Component ["+getName()+"] to String"),"Add a User-Defined-Function to Component with the following pattern [_toString():String] to cast it to a String or use Built-In-Function \"serialize(Component):String\" to convert it to a serialized String");
         
     }
     

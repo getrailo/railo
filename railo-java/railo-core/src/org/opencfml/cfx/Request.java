@@ -27,7 +27,7 @@ public interface Request {
 	/**
 	 * returns attribute matching key
 	 * @param key key to get
-	 * @param defaultValue return this value if key not exists
+	 * @param defaultValue return this value if key not exist
 	 * @return value to key
 	 */
 	public String getAttribute(String key, String defaultValue);
@@ -49,7 +49,7 @@ public interface Request {
 	/**
 	 * returns attribute as int matching key
 	 * @param key key to get
-	 * @param defaultValue return this value if key not exists
+	 * @param defaultValue return this value if key not exist
 	 * @return value to key
 	 */
 	public int getIntAttribute(String key, int defaultValue);

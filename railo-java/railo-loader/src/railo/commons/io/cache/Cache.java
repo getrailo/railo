@@ -19,7 +19,7 @@ public interface Cache {
 	public void init(Config config,String cacheName,Struct arguments) throws IOException;
 	
 	/**
-	 * return cache entry that match the key, throws a CacheException when entry does not exists or is stale
+	 * return cache entry that match the key, throws a CacheException when entry does not exist or is stale
 	 * @param key key of the cache entry to get
 	 * @return cache entry
 	 * @throws CacheException
@@ -27,7 +27,7 @@ public interface Cache {
 	public CacheEntry getCacheEntry(String key) throws IOException;
 	
 	/**
-	 * return value that match the key, throws a CacheException when entry does not exists or is stale
+	 * return value that match the key, throws a CacheException when entry does not exist or is stale
 	 * @param key key of the value to get
 	 * @return value
 	 * @throws CacheException

@@ -105,7 +105,7 @@ public final class Search extends TagImpl {
 	    if(type.equals("simple"))this.type=SearchCollection.SEARCH_TYPE_SIMPLE;
 	    else if(type.equals("explicit"))this.type=SearchCollection.SEARCH_TYPE_EXPLICIT;
 	    else 
-	        throw new ApplicationException("attribute type of tag search has a invalid value, valid values are [simple,explicit] now is ["+type+"]");
+	        throw new ApplicationException("attribute type of tag search has an invalid value, valid values are [simple,explicit] now is ["+type+"]");
 
 	}
 
@@ -266,7 +266,7 @@ public final class Search extends TagImpl {
 			this.suggestions=Caster.toIntValue(suggestions);
 		}
 		else	
-			throw new ApplicationException("attribute suggestions has a invalid value ["+suggestions+"], valid values are [always,never,<positive numeric value>]");
+			throw new ApplicationException("attribute suggestions has an invalid value ["+suggestions+"], valid values are [always,never,<positive numeric value>]");
 		
 		
 	}

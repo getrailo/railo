@@ -527,7 +527,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	    	    else if("italicbold".equals(strStyle)) style=Font.BOLD+Font.ITALIC;
 	    	    else if("italic,bold".equals(strStyle)) style=Font.BOLD+Font.ITALIC;
 	    	    else throw new ExpressionException(
-	    	    		"key style of argument attributeCollection has a invalid value ["+strStyle+"], valid values are [plain,bold,italic,bolditalic]");
+	    	    		"key style of argument attributeCollection has an invalid value ["+strStyle+"], valid values are [plain,bold,italic,bolditalic]");
     	    }
 
     	 // strikethrough
@@ -578,7 +578,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	if("square".equals(strEndcaps))		endcaps = BasicStroke.CAP_SQUARE;
     	else if("butt".equals(strEndcaps))	endcaps = BasicStroke.CAP_BUTT;
     	else if("round".equals(strEndcaps))	endcaps = BasicStroke.CAP_ROUND;
-    	else throw new ExpressionException("key [endcaps] has a invalid value ["+strEndcaps+"], valid values are [square,round,butt]");
+    	else throw new ExpressionException("key [endcaps] has an invalid value ["+strEndcaps+"], valid values are [square,round,butt]");
     	
     	// linejoins
     	String strLinejoins=Caster.toString(attr.get("linejoins","miter"));
@@ -587,7 +587,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	if("bevel".equals(strLinejoins))		linejoins = BasicStroke.JOIN_BEVEL;
     	else if("miter".equals(strLinejoins))	linejoins = BasicStroke.JOIN_MITER;
     	else if("round".equals(strLinejoins))	linejoins = BasicStroke.JOIN_ROUND;
-    	else throw new ExpressionException("key [linejoins] has a invalid value ["+strLinejoins+"], valid values are [bevel,miter,round]");
+    	else throw new ExpressionException("key [linejoins] has an invalid value ["+strLinejoins+"], valid values are [bevel,miter,round]");
     	
     	// miterlimit
     	float miterlimit = 10.0F;
@@ -898,7 +898,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	
 	private void _writeOut(ImageOutputStream ios, String format,float quality,boolean noMeta) throws IOException, ExpressionException {
 		if(quality<0 || quality>1)
-			throw new IOException("quality has a invalid value ["+quality+"], value has to be between 0 and 1");
+			throw new IOException("quality has an invalid value ["+quality+"], value has to be between 0 and 1");
 		if(StringUtil.isEmpty(format))	format=this.format;
 		if(StringUtil.isEmpty(format))	throw new IOException("missing format");
 		

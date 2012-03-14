@@ -264,7 +264,7 @@ public final class Select extends BodyTagImpl {
     		attributes.setEL("dataformatas",dataformatas);
     	}
     	else 
-    		throw new ApplicationException("attribute dataformatas for tag input has a invalid value ["+dataformatas+"], valid values are [plaintext, html");
+    		throw new ApplicationException("attribute dataformatas for tag input has an invalid value ["+dataformatas+"], valid values are [plaintext, html");
     }
     
     public void setDatafld(String datafld) {
@@ -467,7 +467,7 @@ public final class Select extends BodyTagImpl {
 		if( "above".equals(strQueryPosition)) queryPosition=QUERY_POSITION_ABOVE;
 		else if( "below".equals(strQueryPosition)) queryPosition=QUERY_POSITION_BELOW;
     	else 
-    		throw new ApplicationException("attribute queryPosition for tag select has a invalid value ["+strQueryPosition+"], " +
+    		throw new ApplicationException("attribute queryPosition for tag select has an invalid value ["+strQueryPosition+"], " +
     				"valid values are [above, below]");
     
 	}

@@ -548,7 +548,7 @@ public final class Document extends BodyTagImpl {
 	    else  {
 	    	HttpServletResponse rsp = pageContext. getHttpServletResponse();
 		    if(rsp.isCommitted())
-	            throw new ApplicationException("content ist already flushed","you can't rewrite head of response after the page is flushed");
+	            throw new ApplicationException("content is already flushed","you can't rewrite head of response after part of the page is flushed");
 	        rsp.setContentType("application/pdf");
 	    
 	    	

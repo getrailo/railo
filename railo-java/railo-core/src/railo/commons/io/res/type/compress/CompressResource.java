@@ -190,7 +190,7 @@ public final class CompressResource extends ResourceSupport {
 			throw new IOException("can't remove root resource ["+getPath()+"]");
 		
 		if(!rr.exists())
-			throw new IOException("can't remove resource ["+getPath()+"],resource does not exists");
+			throw new IOException("can't remove resource ["+getPath()+"],resource does not exist");
 		
 		Resource[] children = listResources();
 		if(children!=null && children.length>0) {

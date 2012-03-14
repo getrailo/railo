@@ -233,7 +233,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
     /**
      * remove column matching to key
      * @param key key to remove
-     * @return QueryColumn object removed or null if column not exists
+     * @return QueryColumn object removed or null if column not exist
      * @deprecated use instead <code>{@link #removeColumnEL(railo.runtime.type.Collection.Key)}</code>
 	*/
     public QueryColumn removeColumnEL(String key);
@@ -242,7 +242,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
     /**
      * remove column matching to key
      * @param key key to remove
-     * @return QueryColumn object removed or null if column not exists
+     * @return QueryColumn object removed or null if column not exist
      */
     public QueryColumn removeColumnEL(Collection.Key key);
 
