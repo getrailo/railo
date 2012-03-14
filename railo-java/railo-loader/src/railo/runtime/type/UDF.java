@@ -18,6 +18,7 @@ public interface UDF extends Function,Dumpable,Member,Cloneable {
 	public static final int RETURN_FORMAT_JSON=1;
 	public static final int RETURN_FORMAT_PLAIN=2;
 	public static final int RETURN_FORMAT_SERIALIZE=3;
+	public static final int RETURN_FORMAT_XML=4;
 	
 
     /**

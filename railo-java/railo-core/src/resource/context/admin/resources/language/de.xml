@@ -120,6 +120,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.remote.clients">Clients</data>
 	<data key="menu.resources.label">Archive &amp; Ressourcen</data>
 	<data key="menu.resources.mappings">Mappings</data>
+	<data key="menu.resources.rest">Rest</data>
 	<data key="menu.resources.component">Komponenten</data>
 	<data key="menu.resources.customtags">Custom Tags</data>
 	<data key="menu.resources.cfx_tags">CFX Tags</data>
@@ -907,6 +908,9 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="overview.installedtls">Installierte Tag Bibliotheken</data>
 	<data key="overview.bugreport">Fehlerreport</data>
 	<data key="overview.issuetracker">Issue Tracker</data>
+	<data key="overview.issuetrackerDesc">If you think you've found a bug, please take the time to report it via our bug tracking system (JIRA on the JBoss community site).</data>
+	<data key="overview.book">Book (Railo 3 Beginner's Guide)</data>
+	<data key="overview.bookDesc">A complete guide to developing an application with Railo from start to finish.</data>
 	<data key="overview.datetime">Railo Datum/Zeit</data>
 	<data key="overview.forum">Forum</data>
 	<data key="overview.featurerequestmail">features@railo.ch</data>
@@ -919,9 +923,14 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="overview.licencedevelopmore">mehr</data>
 	<data key="overview.licencedevelop">Develop</data>
 	<data key="overview.server_name">Host Name</data>
+	<data key="overview.twitter">Twitter</data>
+	<data key="overview.twitterDesc">Follow us on Twitter.</data>
 	<data key="overview.blog">Blog</data>
-	<data key="overview.mailinglist_en">Mailinglist (englisch)</data>
+	<data key="overview.blogDesc"> The latest news from Railo is always posted on our blog.</data>
+	<data key="overview.mailinglist">Mailinglist</data>
+	<data key="overview.mailinglistDesc">The mailing list is the focus of our community support program - help for users by users. </data>
 	<data key="overview.professional">Professional support</data>
+	<data key="overview.professionalDesc">For many organizations and individuals, the security of a formal paid support contract is a necessity and we're pleased to offer four standard packages as well as the flexibility to create a custom package should your needs go beyond our standard offerings.</data>
 	<data key="overview.licencedevelopdesc">Die Develop Version ist eine Version, welche die Entwickler addressiert, also gedacht ist um damit CFML Applikation zu erstellen. Diese Version darf jedoch nicht produktiv eingesetzt werden.</data>
 	<data key="overview.releasedate">Release Datum</data>
 	<data key="overview.contexts.webroot">Webroot</data>

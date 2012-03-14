@@ -1,17 +1,18 @@
 package railo.runtime.rest;
 
 import railo.runtime.PageSource;
+import railo.runtime.rest.path.Path;
 
 public class Source {
 
 	private Mapping mapping;
-	private String path;
+	private Path[] path;
 	private PageSource pageSource;
 
 	public Source(Mapping mapping, PageSource pageSource, String path) {
 		this.mapping=mapping;
 		this.pageSource=pageSource;
-		this.path=path; 
+		this.path=Path.init(path); 
 	}
 
 	/**
@@ -31,7 +32,7 @@ public class Source {
 	/**
 	 * @return the path
 	 */
-	public String getPath() {
+	public Path[] getPath() {
 		return path;
 	}
 

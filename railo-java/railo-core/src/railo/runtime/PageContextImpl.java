@@ -99,6 +99,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.query.QueryCache;
+import railo.runtime.rest.Result;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.tag.Login;
@@ -1999,26 +2000,56 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			}
     	}	
     	
-    	railo.runtime.rest.Source source = null;//config.getRestSource(pathInfo, null);
+    	// check for format extension
+    	int format = UDF.RETURN_FORMAT_JSON;
+    	if(StringUtil.endsWithIgnoreCase(pathInfo, ".json")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".wddx")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
+    		format = UDF.RETURN_FORMAT_WDDX;
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".serialize")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-10);
+    		format = UDF.RETURN_FORMAT_SERIALIZE;
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".xml")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-4);
+    		format = UDF.RETURN_FORMAT_XML;
+    	}
+    	
+    	
+    	railo.runtime.rest.Result result = null;//config.getRestSource(pathInfo, null);
     	railo.runtime.rest.Mapping[] restMappings = config.getRestMappings();
     	railo.runtime.rest.Mapping mapping;
+    	String callerPath=null;
     	if(restMappings!=null)for(int i=0;i<restMappings.length;i++) {
             mapping = restMappings[i];
             print.e(pathInfo+"=="+mapping.getVirtualWithSlash()+"="+pathInfo.startsWith(mapping.getVirtualWithSlash(),0));
             if(pathInfo.startsWith(mapping.getVirtualWithSlash(),0)) {
-            	source = mapping.getSource(this,pathInfo.substring(mapping.getVirtual().length()),null);
+            	result = mapping.getResult(this,callerPath=pathInfo.substring(mapping.getVirtual().length()),format,null);
             	break;
             }
         }
     	
 
-    	if(source!=null){
+    	if(result!=null){
+    		railo.runtime.rest.Source source=result.getSource();
+    		/*print.e("path:");
+    		print.e(result.getPath());
+    		print.e("vars:");
+    		print.e(result.getVariables());
+    		
+    		
+    		
     		print.e("pagesource:"+source.getPageSource());
     		print.e("physical:"+source.getMapping().getPhysical());
     		print.e("path:"+source.getPath());
+    		print.e("caller-path:"+callerPath);*/
     		base=source.getPageSource();
     		req.setAttribute("client", "railo-rest-1-0");
-    		req.setAttribute("rest-path", source.getPath());
+    		req.setAttribute("rest-path", callerPath);
+    		req.setAttribute("rest-result", result);
     		
     		
     		doInclude(source.getPageSource());

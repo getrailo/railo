@@ -1,9 +1,12 @@
 package railo.runtime.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import railo.print;
 import railo.commons.io.FileUtil;
@@ -26,6 +29,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 
 public class Mapping {
@@ -41,9 +45,6 @@ public class Mapping {
 	});
 
 
-	private static final Collection.Key REST = KeyImpl.getInstance("rest");
-	private static final Collection.Key RESTPATH = KeyImpl.getInstance("restpath");
-	
 	
 	private Resource physical;
 	private String virtual;
@@ -57,7 +58,7 @@ public class Mapping {
 	private Config config;
 
 
-	private Map<String, PageSource> sources;
+	private List<Source> sources;
 
 	public Mapping(Config config, String virtual, String physical, boolean hidden, boolean readonly, boolean _default) {
 		this.config=config;
@@ -85,15 +86,15 @@ public class Mapping {
 		print.e("physical:"+physical);
 		if(this.physical!=null && this.physical.isDirectory()) {
 			Resource[] children = this.physical.listResources(FILTER);
-			sources = new HashMap<String, PageSource>(); 
+			sources = new ArrayList<Source>(); 
 			for(int i=0;i<children.length;i++){
 				//ps=config.toPageSource(null, children[i],null);
 				PageSource ps = pc.toPageSource(children[i],null);
 				ComponentAccess cfc = ComponentLoader.loadComponent(pc, null, ps, children[i].getName(), true,true);
 				Struct meta = cfc.getMetaData(pc);
-				if(Caster.toBooleanValue(meta.get(REST,null),false)){
-					String path = Caster.toString(meta.get(RESTPATH,null),null);
-					sources.put(path, cfc.getPageSource());
+				if(Caster.toBooleanValue(meta.get(RestUtil.REST,null),false)){
+					String path = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
+					sources.add(new Source(this, cfc.getPageSource(), path));
 				}
 			}
 		}
@@ -151,21 +152,22 @@ public class Mapping {
 	}
 
 
-	public Source getSource(PageContext pc,String path, Source defaultValue) throws PageException {
+	public Result getResult(PageContext pc,String path,int format, Result defaultValue) throws PageException {
 		init(pc);
-		if(!path.startsWith("/")) path="/"+path;
-		Iterator<Entry<String, PageSource>> it = sources.entrySet().iterator();
-		Entry<String, PageSource> entry;
-		String cfcPath;
+		//if(!path.startsWith("/")) path="/"+path;
+		Iterator<Source> it = sources.iterator();
+		Source src;
+		String[] arrPath,subPath;
+		int index;
 		while(it.hasNext()){
-			entry = it.next();
-			cfcPath=entry.getKey();
-			if(!cfcPath.startsWith("/")) cfcPath="/"+cfcPath;
-			print.e(path+" -> "+cfcPath);
-			
-			RestUtil.matchPath(path,cfcPath);
-            if(path.startsWith(cfcPath)){
-				return new Source(this,entry.getValue(),path.substring(cfcPath.length()));
+			src = it.next();
+			Struct variables=new StructImpl();
+			arrPath = RestUtil.splitPath(path);
+			index=RestUtil.matchPath(variables,src.getPath(),arrPath);
+			if(index!=-1){
+            	subPath=new String[(arrPath.length-1)-index];
+            	System.arraycopy(arrPath, index+1, subPath, 0, subPath.length);
+				return new Result(src,variables,subPath, format);
 			}	
 		}
 		
