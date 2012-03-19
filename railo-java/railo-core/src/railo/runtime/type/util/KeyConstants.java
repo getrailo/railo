@@ -603,11 +603,26 @@ public class KeyConstants {
 	public static final Key _xfa=KeyImpl.intern("xfa");
 	public static final Key _xml=KeyImpl.intern("xml");
 	public static final Key _xtags=KeyImpl.intern("xtags");
+
+	public static Key _returnFormat=KeyImpl.intern("returnFormat");
+	public static Key _s3=KeyImpl.intern("s3");
+	public static Key _super=KeyImpl.intern("super");
+	public static Key _argumentCollection=KeyImpl.intern("argumentCollection");
+	public static Key _returntype=KeyImpl.intern("returntype");
+	public static Key _description=KeyImpl.intern("description");
+	public static Key _displayname=KeyImpl.intern("displayname");
+	public static Key _arguments=KeyImpl.intern("arguments");
+	public static Key _variables=KeyImpl.intern("variables");
+	public static Key _fieldnames=KeyImpl.intern("fieldnames");
+	public static Key _local=KeyImpl.intern("local");
+	public static Key _exceptions=KeyImpl.intern("exceptions");
+	
+	
+	
 	
 	private static HashSet<String> _____keys;
 	
-	
-	public static boolean hasConstant(String key) {
+	public static String getFieldName(String key) {
 		if(_____keys==null) {
 			Field[] fields = KeyConstants.class.getFields();
 			_____keys=new HashSet<String>();
@@ -616,6 +631,7 @@ public class KeyConstants {
 				_____keys.add(fields[i].getName());
 			}
 		}
-		return _____keys.contains("_"+key);
+		key="_"+key;
+		return _____keys.contains(key)?key:null;
 	}
 }
