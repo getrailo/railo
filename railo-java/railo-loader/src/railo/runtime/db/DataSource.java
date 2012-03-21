@@ -144,7 +144,7 @@ public interface DataSource extends Cloneable {
 
     /**
      * @param key 
-     * @return Returns matching custom value or null if not exists.
+     * @return Returns matching custom value or null if not exist.
      */
     public abstract String getCustomValue(String key);
 

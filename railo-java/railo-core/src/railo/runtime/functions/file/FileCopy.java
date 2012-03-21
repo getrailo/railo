@@ -20,7 +20,7 @@ public class FileCopy {
         
 		if(!src.exists()) 
 			throw new FunctionException(pc,"FileCopy",1,"source",
-					"source file ["+src+"] does not exists");
+					"source file ["+src+"] does not exist");
 		try {
 			IOUtil.copy(src, trg);
 		} catch (IOException e) {

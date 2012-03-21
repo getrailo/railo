@@ -97,7 +97,7 @@ public final class ObjectCache extends TagImpl {
 		else if(action.equalsIgnoreCase("size")) {
 			pageContext.setVariable(result, Caster.toDouble(qc.size()));
 		}
-		else throw new ApplicationException("attribute action has a invalid value ["+action+"], valid is only [clear,size]");
+		else throw new ApplicationException("attribute action has an invalid value ["+action+"], valid is only [clear,size]");
 		
 	    
 		

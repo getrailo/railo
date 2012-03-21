@@ -29,7 +29,7 @@ public class RailoAdapter extends ServiceAdapter implements EngineChangeListener
 		super.initialize(id, properties);
         this.properties=properties;
         try{
-	        // we call this because otherwse they does not exists (bug in BlazeDS)
+	        // we call this because otherwse they does not exist (bug in BlazeDS)
 	        ConfigMap propertyCases = properties.getPropertyAsMap("property-case", null);
 	        if(propertyCases!=null){
 	            propertyCases.getPropertyAsBoolean("force-cfc-lowercase", false);

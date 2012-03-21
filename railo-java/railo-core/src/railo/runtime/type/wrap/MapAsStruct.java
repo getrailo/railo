@@ -97,7 +97,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
         		if(csKey!=null)obj= map.remove(csKey);
         		if(obj!=null)return obj;
         	}
-        	throw new ExpressionException("can't remove key ["+key.getString()+"] from map, key doesn't exists");
+        	throw new ExpressionException("can't remove key ["+key.getString()+"] from map, key doesn't exist");
         }
         return obj;
     }
@@ -132,7 +132,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
         		if(csKey!=null)o= map.get(csKey);
         		if(o!=null) return o;
         	}
-        	throw new ExpressionException("key "+key.getString()+" doesn't exists in "+Caster.toClassName(map));
+        	throw new ExpressionException("key "+key.getString()+" doesn't exist in "+Caster.toClassName(map));
         }
         return o;
     }

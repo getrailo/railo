@@ -150,7 +150,7 @@ public final class Content extends BodyTagImpl {
 	    
         // check commited
         if(rsp.isCommitted())
-            throw new ApplicationException("content ist already flushed","you can't rewrite head of response after the page is flushed");
+            throw new ApplicationException("content is already flushed","you can't rewrite head of response after part of the page is flushed");
         
         // set type
         setContentType(rsp);

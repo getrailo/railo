@@ -99,7 +99,7 @@ public final class Registry extends TagImpl {
 	    else if(action.equals("get")) this.action=ACTION_GET;
 	    else if(action.equals("set")) this.action=ACTION_SET;
 	    else if(action.equals("delete")) this.action=ACTION_DELETE;
-	    else throw new ApplicationException("attribute action of the tag registry has a invalid value ["+action+"], valid values are [getAll, get, set, delete]");
+	    else throw new ApplicationException("attribute action of the tag registry has an invalid value ["+action+"], valid values are [getAll, get, set, delete]");
 	}
 
 	/** set the value sort
@@ -128,7 +128,7 @@ public final class Registry extends TagImpl {
 	    else if(type.equals("dword")) this.type=RegistryEntry.TYPE_DWORD;
 	    else if(type.equals("key")) this.type=RegistryEntry.TYPE_KEY;
 	    else if(type.equals("any")) this.type=RegistryEntry.TYPE_ANY;
-	    else throw new ApplicationException("attribute type of the tag registry has a invalid value ["+type+"], valid values are [string, dword]");
+	    else throw new ApplicationException("attribute type of the tag registry has an invalid value ["+type+"], valid values are [string, dword]");
 	}
 
 	/** set the value branch

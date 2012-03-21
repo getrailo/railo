@@ -82,7 +82,7 @@ public class JarLoader {
 				}
 				if(!jar.delete()) throw new IOException("cannot update jar ["+jar+"], jar is locked or write protected, stop the servlet engine and delete this jar manually."); 
 			}
-			else throw new IOException("jar ["+jar+"] already exists"); 
+			else throw new IOException("jar ["+jar+"] exists already"); 
 		}
 		
 		

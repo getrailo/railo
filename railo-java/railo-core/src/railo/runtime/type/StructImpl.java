@@ -170,7 +170,7 @@ public class StructImpl extends StructSupport {
 	 */
 	public Object remove(String key) throws PageException {
 		Object obj= map.remove(KeyImpl.init(key));
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
+		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
 	}
 
@@ -179,7 +179,7 @@ public class StructImpl extends StructSupport {
 	 */
 	public Object remove(Collection.Key key) throws PageException {
 		Object obj= map.remove(key);
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
+		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
 	}
 	
