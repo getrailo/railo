@@ -1,6 +1,5 @@
 package railo.runtime.poi;
 
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 
 public class ExcelUtil {

@@ -28,7 +28,6 @@ import railo.runtime.functions.cache.CachePut;
 import railo.runtime.functions.cache.CacheRemove;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.dateTime.GetHttpTimeString;
-import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.StructImpl;

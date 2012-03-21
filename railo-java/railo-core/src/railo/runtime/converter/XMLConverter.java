@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import javax.xml.parsers.FactoryConfigurationError;
@@ -22,7 +20,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import railo.commons.date.TimeZoneConstants;
 import railo.commons.lang.NumberUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;

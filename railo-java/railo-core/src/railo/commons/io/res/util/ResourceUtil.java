@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicMatch;
-
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;

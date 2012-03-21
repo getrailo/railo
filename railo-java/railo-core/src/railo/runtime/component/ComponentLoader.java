@@ -10,7 +10,6 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPage;

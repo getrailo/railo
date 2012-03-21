@@ -1,38 +1,23 @@
 package railo.runtime.poi;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.poi.POIXMLProperties;
 import org.apache.poi.hpsf.DocumentSummaryInformation;
-import org.apache.poi.hpsf.MarkUnsupportedException;
-import org.apache.poi.hpsf.NoPropertySetStreamException;
-import org.apache.poi.hpsf.PropertySet;
-import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hpsf.SummaryInformation;
-import org.apache.poi.hpsf.UnexpectedPropertySetTypeException;
-import org.apache.poi.hpsf.WritingNotSupportedException;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.opc.internal.PackagePropertiesPart;
-import org.apache.poi.poifs.filesystem.DirectoryEntry;
-import org.apache.poi.poifs.filesystem.DocumentEntry;
-import org.apache.poi.poifs.filesystem.DocumentInputStream;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openxmlformats.schemas.officeDocument.x2006.extendedProperties.CTProperties;
 
-import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
@@ -40,14 +25,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
-import railo.runtime.type.util.StructUtil;
 
 public class Excel extends StructSupport implements Cloneable,Struct {
 

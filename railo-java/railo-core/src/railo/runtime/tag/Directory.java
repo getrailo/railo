@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.oro.text.regex.MalformedPatternException;
-
 import railo.commons.io.ModeUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceMetaData;
@@ -23,7 +21,6 @@ import railo.commons.io.res.util.ModeObjectWrap;
 import railo.commons.io.res.util.ResourceAndResourceNameFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.io.res.util.UDFFilter;
-import railo.commons.io.res.util.WildCardFilter;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
@@ -36,7 +33,6 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.UDFUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
