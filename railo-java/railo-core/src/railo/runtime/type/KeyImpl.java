@@ -55,28 +55,6 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public static final Key DISPLAY_NAME = KeyConstants._displayname;
 	public static final Key PARAMETERS = 	KeyConstants._parameters;
 
-	public static final Key VALUE = KeyImpl.intern("value");
-	public static final Key PATH = KeyImpl.intern("path");
-	public static final Key ENTRY = KeyImpl.intern("entry");
-	public static final Key KEY = KeyImpl.intern("key");
-	public static final Key LINE = KeyImpl.intern("line");
-	public static final Key COLUMN = KeyImpl.intern("column");
-	public static final Key ARGUMENTS = KeyImpl.intern("arguments");
-	public static final Key STATUS = KeyImpl.intern("status");
-	public static final Key THREAD = KeyImpl.intern("thread");
-	public static final Key VARIABLES = KeyImpl.intern("variables");
-	public static final Key FIELD_NAMES = KeyImpl.intern("fieldnames");
-	public static final Key LOCAL = KeyImpl.intern("local");
-	public static final Key SERVER = KeyImpl.intern("server");
-	public static final Key EXCEPTIONS = KeyImpl.intern("exceptions");
-	public static final Key BODY = KeyImpl.intern("body");
-	public static final Key TITLE = KeyImpl.intern("title");
-	public static final Key URL = KeyImpl.intern("url");
-	public static final Key LABEL = KeyImpl.intern("label");
-	public static final Key TOTAL = KeyImpl.intern("total");
-	public static final Key CLOSURE = KeyImpl.intern("closure");
-	public static final Key FUNCTION = KeyImpl.intern("function");
-
 	public static final Key VALUE = KeyConstants._value;
 	public static final Key PATH = KeyConstants._path;
 	public static final Key ENTRY = KeyConstants._entry;
@@ -97,10 +75,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public static final Key LABEL = KeyConstants._label;
 	public static final Key TOTAL = KeyConstants._total;
 
-	
-	
-	
-	
+	public static final Key CLOSURE = KeyConstants._closure;
+	public static final Key FUNCTION = KeyConstants._function;
+
 	//private boolean intern;
 	private String key;
 	private String lcKey;
