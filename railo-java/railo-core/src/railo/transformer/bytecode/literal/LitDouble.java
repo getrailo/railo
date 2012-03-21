@@ -3,7 +3,9 @@ package railo.transformer.bytecode.literal;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.commons.color.ConstantsDouble;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.expression.ExprDouble;
@@ -15,7 +17,8 @@ import railo.transformer.bytecode.util.Types;
  * Literal Double Value
  */
 public final class LitDouble extends ExpressionBase implements Literal,ExprDouble {
-    
+
+	private static final Type CONSTANTS_DOUBLE = Type.getType(ConstantsDouble.class);
 	public static final LitDouble ZERO=new LitDouble(0,-1);
 	
     private double d;
@@ -75,11 +78,20 @@ public final class LitDouble extends ExpressionBase implements Literal,ExprDoubl
      */
     public Type _writeOut(BytecodeContext bc, int mode) {
     	GeneratorAdapter adapter = bc.getAdapter();
-        adapter.push(d);
         if(mode==MODE_REF) {
-            adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_DOUBLE_FROM_DOUBLE);
+        	String str=ConstantsDouble.getFieldName(d);
+        	if(str!=null) {
+				bc.getAdapter().getStatic(CONSTANTS_DOUBLE, str, Types.DOUBLE);
+			}
+			else {
+				adapter.push(d);
+		        adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_DOUBLE_FROM_DOUBLE);
+			}
             return Types.DOUBLE;
         }
+        else 
+        	adapter.push(d);
+        
         return Types.DOUBLE_VALUE;
     }
 
