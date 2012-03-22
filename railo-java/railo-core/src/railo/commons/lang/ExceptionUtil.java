@@ -25,6 +25,24 @@ public final class ExceptionUtil {
 		return st;
 		
 	}
+	
+
+	public static String getMessage(Throwable t) {
+		String msg=t.getMessage();
+		if(StringUtil.isEmpty(msg,true)) msg=t.getClass().getName();
+		
+		StringBuilder sb=new StringBuilder(msg);
+		
+		if(t instanceof PageException){
+			PageException pe=(PageException)t;
+			String detail = pe.getDetail();
+			if(!StringUtil.isEmpty(detail,true)) {
+				sb.append('\n');
+				sb.append(detail);
+			}
+		}
+		return sb.toString();
+	}
 
 	public static PageException addHint(PageExceptionImpl pe,String hint) {
 		pe.setAdditional("Hint", hint);
