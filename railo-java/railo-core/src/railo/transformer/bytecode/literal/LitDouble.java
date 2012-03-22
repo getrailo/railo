@@ -88,8 +88,7 @@ public final class LitDouble extends ExpressionBase implements Literal,ExprDoubl
 			}
             return Types.DOUBLE;
         }
-        else 
-        	adapter.push(d);
+        adapter.push(d);
         
         return Types.DOUBLE_VALUE;
     }
