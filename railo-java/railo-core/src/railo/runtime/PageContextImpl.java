@@ -38,7 +38,6 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
-import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -92,12 +91,14 @@ import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HTTPServletRequestWrap;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.query.QueryCache;
+import railo.runtime.rest.RestUtil;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.tag.Login;
@@ -1984,19 +1985,42 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	// Service mapping
     	if(StringUtil.isEmpty(pathInfo) || pathInfo.equals("/")) {// ToDo
     		// list available services (if enabled in admin)
-    		try {
-				write("Available sevice mappings are:<ul>");
-				railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
-				for(int i=0;i<mappings.length;i++){
-					write("<li>"+mappings[i].getVirtual()+"</li>");
+    		if(config.getRestList()) {
+	    		try {
+					HttpServletRequest _req = getHttpServletRequest();
+	    			write("Available sevice mappings are:<ul>");
+					railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+					String path;
+					for(int i=0;i<mappings.length;i++){
+						path=_req.getContextPath()+ReqRspUtil.getScriptName(_req)+mappings[i].getVirtual();
+						write("<li>"+path+"</li>");
+						
+						
+					}
+					write("</ul>");
+					
+				} catch (IOException e) {
+					throw Caster.toPageException(e);
 				}
-				write("</ul>");
-				return;
-				
-			} catch (IOException e) {
-				throw Caster.toPageException(e);
-			}
+    		}
+    		else 
+    			RestUtil.setStatus(this, 404, null);
+			return;
     	}	
+    	
+    	// check for matrix
+    	int index;
+    	String entry;
+    	Struct matrix=new StructImpl();
+    	while((index=pathInfo.lastIndexOf(';'))!=-1){
+    		entry=pathInfo.substring(index+1);
+    		pathInfo=pathInfo.substring(0,index);
+    		if(StringUtil.isEmpty(entry,true)) continue;
+    		
+    		index=entry.indexOf('=');
+    		if(index!=-1)matrix.setEL(entry.substring(0,index).trim(), entry.substring(index+1).trim());
+    		else matrix.setEL(entry.trim(), "");
+    	}
     	
     	// check for format extension
     	int format = UDF.RETURN_FORMAT_JSON;
@@ -2016,47 +2040,50 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		format = UDF.RETURN_FORMAT_XML;
     	}
     	
-    	
+    	// loop all mappings
     	railo.runtime.rest.Result result = null;//config.getRestSource(pathInfo, null);
     	railo.runtime.rest.Mapping[] restMappings = config.getRestMappings();
-    	railo.runtime.rest.Mapping mapping;
+    	railo.runtime.rest.Mapping m,mapping=null,defaultMapping=null;
     	String callerPath=null;
     	if(restMappings!=null)for(int i=0;i<restMappings.length;i++) {
-            mapping = restMappings[i];
-            print.e(pathInfo+"=="+mapping.getVirtualWithSlash()+"="+pathInfo.startsWith(mapping.getVirtualWithSlash(),0));
-            if(pathInfo.startsWith(mapping.getVirtualWithSlash(),0)) {
-            	result = mapping.getResult(this,callerPath=pathInfo.substring(mapping.getVirtual().length()),format,null);
+            m = restMappings[i];
+            if(m.isDefault())defaultMapping=m;
+            if(pathInfo.startsWith(m.getVirtualWithSlash(),0)) {
+            	mapping=m;
+            	result = m.getResult(this,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
             	break;
             }
         }
     	
+    	// default mapping
+    	if(mapping==null && defaultMapping!=null) {
+    		mapping=defaultMapping;
+            result = mapping.getResult(this,callerPath=pathInfo,format,matrix,null);
+    	}
+    	
+    	
 
     	if(result!=null){
     		railo.runtime.rest.Source source=result.getSource();
-    		/*print.e("path:");
-    		print.e(result.getPath());
-    		print.e("vars:");
-    		print.e(result.getVariables());
-    		
-    		
-    		
-    		print.e("pagesource:"+source.getPageSource());
-    		print.e("physical:"+source.getMapping().getPhysical());
-    		print.e("path:"+source.getPath());
-    		print.e("caller-path:"+callerPath);*/
     		base=source.getPageSource();
     		req.setAttribute("client", "railo-rest-1-0");
     		req.setAttribute("rest-path", callerPath);
     		req.setAttribute("rest-result", result);
     		
-    		
     		doInclude(source.getPageSource());
     	}
+    	else {
+    		if(mapping==null)RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
+    		else RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found in mapping ["+mapping.getVirtual()+"]");
+    	}
+    	
+    	
     	}
     	catch(Throwable t){
     		t.printStackTrace();
     	}
     }
+    
     
 	
     /**

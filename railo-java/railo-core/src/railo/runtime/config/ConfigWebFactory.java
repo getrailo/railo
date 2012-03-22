@@ -1559,7 +1559,8 @@ public final class ConfigWebFactory {
     
     private static void loadRest(ConfigServerImpl configServer, ConfigImpl config,Document doc) throws IOException {
         boolean hasAccess= true;//MUST ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
-        Element el= getChildByName(doc.getDocumentElement(),"rest");
+        boolean hasCS=configServer!=null;
+      	Element el= getChildByName(doc.getDocumentElement(),"rest");
         
         // Log
         String strLogger=el.getAttribute("log");
@@ -1574,6 +1575,14 @@ public final class ConfigWebFactory {
         }
         config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
         
+        // list
+        Boolean list=Caster.toBoolean(el.getAttribute("list"),null);
+        if(list!=null){
+            config.setRestList(list.booleanValue());
+        }
+        else if(hasCS){
+        	config.setRestList(configServer.getRestList());
+        }
         
         
         Element[] _mappings=getChildren(el,"mapping");

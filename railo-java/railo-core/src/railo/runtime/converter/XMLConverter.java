@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -97,10 +96,14 @@ public final class XMLConverter {
 	 * @throws ConverterException
 	 */
 	private String _serializeDateTime(DateTime dateTime) {
+		/* ACF FORMAT
 		String strDate = new railo.runtime.format.DateFormat(Locale.US).format(dateTime,"mmmm, dd yyyy");
 		String strTime = new railo.runtime.format.TimeFormat(Locale.US).format(dateTime,"HH:mm:ss");
-			
 		return goIn()+strDate+" "+strTime;
+		*/
+		return goIn()+JSONDateFormat.format(dateTime,null);
+		
+		// HTTP TIME STRING return goIn()+GetHttpTimeString.invoke(dateTime);
 	}
 
 	/**

@@ -8,11 +8,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
@@ -49,6 +49,7 @@ import railo.runtime.type.UDFImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -216,21 +217,16 @@ public abstract class ComponentPage extends Page  {
 		}
 	}
 	
-	/*private void close(PageContext pc) {
-		//pc.close();
-	}*/
-
 	private void callRest(PageContext pc, Component component, String path, Result result, boolean suppressContent) throws IOException, ConverterException {
-		print.e("+++++++++++++++++");
-		print.e(path+":"+component.getAbsName());
 		String method = pc.getHttpServletRequest().getMethod();
 		String[] subPath = result.getPath();
-		//String[] arrPath=StringUtil.isEmpty(path)?new String[0]:List.listToStringArray(path, '/');
+		
 		Key[] keys = component.keys();
 		Object value;
 		UDF udf;
 		//FunctionArgument[] args;
 		Struct meta;
+		boolean hasFunction=false;
 		for(int i=0;i<keys.length;i++){
 			value=component.get(keys[i],null);
 			if(value instanceof UDF){
@@ -241,61 +237,35 @@ public abstract class ComponentPage extends Page  {
 					if(StringUtil.isEmpty(httpMethod) || !httpMethod.equalsIgnoreCase(method)) continue;
 					
 					String restPath = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
-					print.e("- "+keys[i]);
 					
 					// no rest path
 					if(StringUtil.isEmpty(restPath)){
 						if(ArrayUtil.isEmpty(subPath)) {
-							_callRest(pc, component, udf, path, result.getVariables(),result.getFormat(), suppressContent,keys[i]);
+							hasFunction=true;
+							_callRest(pc, component, udf, path, result.getVariables(),result, suppressContent,keys[i]);
 							break;
 						}
 					}
 					else {
 						Struct var = result.getVariables();
-						print.e("x "+restPath);
 						int index=RestUtil.matchPath(var, Path.init(restPath)/*TODO cache this*/, result.getPath());
-						print.e("- "+index+":"+result.getPath().length);
-						if(index+1==result.getPath().length) {
-							_callRest(pc, component, udf, path, var,result.getFormat(), suppressContent,keys[i]);
+						if(index>=0 && index+1==result.getPath().length) {
+							hasFunction=true;
+							_callRest(pc, component, udf, path, var,result, suppressContent,keys[i]);
 							break;
 						}
 					}
-					
-					/*
-					 
-					args = udf.getFunctionArguments();
-					if(args.length==0 || arrPath.length==0){
-						return new Pair<Collection.Key,UDF>(keys[i], udf);
-					}*/
 				} 
 				catch (PageException e) {}
-				
 			}
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		//String method = pc.getHttpServletRequest().getMethod();
-		//component
-		/*Pair<Key, UDF> info = RestUtil.getUDFNameFor(pc, component, path, null);
-		print.e(result);
-		result.get
-		
-		if(info!=null)
-		callWDDX(pc, component, info.getName(), suppressContent);*/
+		if(!hasFunction)
+			RestUtil.setStatus(pc,404,"no rest service for ["+path+"] found");
+    	
 	}
 
-	private void _callRest(PageContext pc, Component component, UDF udf,String path, Struct variables, int format, boolean suppressContent, Key methodName) throws PageException, IOException, ConverterException {
+	private void _callRest(PageContext pc, Component component, UDF udf,String path, Struct variables, Result result, boolean suppressContent, Key methodName) throws PageException, IOException, ConverterException {
 		FunctionArgument[] fa=udf.getFunctionArguments();
 		Struct args=new StructImpl();
 		Key name;
@@ -308,40 +278,67 @@ public abstract class ComponentPage extends Page  {
 			if("query".equalsIgnoreCase(restArgSource) || "url".equalsIgnoreCase(restArgSource))
 				args.setEL(name, pc.urlScope().get(name,null));
 			if("form".equalsIgnoreCase(restArgSource))
-				args.setEL(name, pc.urlScope().get(name,null));
+				args.setEL(name, pc.formScope().get(name,null));
 			if("cookie".equalsIgnoreCase(restArgSource))
 				args.setEL(name, pc.cookieScope().get(name,null));
-			//if("header".equalsIgnoreCase(restArgSource))
-			//	args.set(name, pc.cookieScope().get(name,null));
+			if("header".equalsIgnoreCase(restArgSource) || "head".equalsIgnoreCase(restArgSource))
+				args.setEL(name, ReqRspUtil.getHeaderIgnoreCase(pc, name.getString(), null));
+			if("matrix".equalsIgnoreCase(restArgSource))
+				args.setEL(name, result.getMatrix().get(name,null));
 			
 			// TODO matrix, header, else
 		}
 		Object rtn=null;
 		try{
     		if(suppressContent)pc.setSilent();
-		
 			rtn = component.callWithNamedValues(pc, methodName, args);
-			
 		} 
 		catch (PageException e) {
-			e.printStackTrace();
+			RestUtil.setStatus(pc, 500, ExceptionUtil.getMessage(e));
 		}
     	finally {
     		if(suppressContent)pc.unsetSilent();
     	}
-		
+    	
+    	// custom response
+		Struct sct = result.getCustomResponse();
+    	if(sct!=null){
+			HttpServletResponse rsp = pc.getHttpServletResponse();
+    		// status
+    		int status = Caster.toIntValue(sct.get(KeyConstants._status,null),200);
+    		rsp.setStatus(status);
+			
+    		// content
+    		String content=Caster.toString(sct.get(KeyConstants._content,null),null);
+    		if(content!=null) {
+				try {
+					pc.forceWrite(content);
+				} 
+				catch (IOException e) {}
+    		}
+    		
+    		// headers
+    		Struct headers=Caster.toStruct(sct.get(KeyConstants._headers,null),null);
+    		if(headers!=null){
+    			Key[] keys = headers.keys();
+    			String n,v;
+    			Object tmp;
+    			for(int i=0;i<keys.length;i++){
+    				n=keys[i].getString();
+    				tmp=headers.get(keys[i]);
+    				v=Caster.toString(tmp,null);
+    				if(tmp!=null && v==null) v=tmp.toString();
+    				rsp.setHeader(n, v);
+    			}	
+    		}
+		}
     	// convert result
-        if(rtn!=null){
+		else if(rtn!=null){
         	Props props = new Props();
-        	props.format=format;
+        	props.format=result.getFormat();
         	
         	pc.forceWrite(convertResult(pc, props, null, rtn));
         }
-		
-		/*print.e("---------------");
-		print.e(methodName+":"+component.getAbsName());
-		print.e(variables);
-		print.e(args);*/
 		
 	}
 
@@ -489,22 +486,6 @@ public abstract class ComponentPage extends Page  {
     
     private static String convertResult(PageContext pc,Props props,Object queryFormat,Object rtn) throws ConverterException, PageException {
 
-    	/*Object o = component.get(methodName,null);
-		int format=UDF.RETURN_FORMAT_WDDX;
-		int type=CFTypes.TYPE_ANY;
-		String strType="any";
-		boolean secureJson=pc.getApplicationContext().getSecureJson();
-		if(o instanceof UDF) {
-			UDF udf = ((UDF)o);
-			format=udf.getReturnFormat();
-			type=udf.getReturnType();
-			strType=udf.getReturnTypeAsString();
-			if(udf.getSecureJson()!=null)secureJson=udf.getSecureJson().booleanValue();
-		}
-		if(!StringUtil.isEmpty(returnFormat)){
-			format=UDFImpl.toReturnFormat(Caster.toString(returnFormat));
-		}*/
-    	
     	
 		// return type XML ignore WDDX
 		if(props.type==CFTypes.TYPE_XML) {

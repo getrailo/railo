@@ -9,12 +9,15 @@ public class Result {
 	private String[] path;
 	private Struct variables;
 	private int format;
+	private Struct matrix;
+	private Struct rsp;
 
-	public Result(Source source, Struct variables, String[] path, int format) {
+	public Result(Source source, Struct variables, String[] path, int format, Struct matrix) {
 		this.source=source;
 		this.variables=variables;
 		this.path=path;
 		this.format=format;
+		this.matrix=matrix;
 	}
 
 	/**
@@ -43,6 +46,20 @@ public class Result {
 	 */
 	public int getFormat() {
 		return format;
+	}
+
+	/**
+	 * @return the matrix
+	 */
+	public Struct getMatrix() {
+		return matrix;
+	}
+
+	public void setCustomResponse(Struct rsp) {
+		this.rsp=rsp;
+	}
+	public Struct getCustomResponse() {
+		return rsp;
 	}
 
 }

@@ -1,25 +1,115 @@
 <cfset hasAccess=true>
 <cfset newRecord="sd812jvjv23uif2u32d">
+<cfparam name="form.mainAction" default="none">
+<cfparam name="form.subAction" default="none">
+<cfset error={message:"",detail:""}>
 
 
-<cfadmin 
-	action="getMappings"
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
-	returnVariable="rest">
+<cftry>
+	<cfset stVeritfyMessages = StructNew()>
+	<cfswitch expression="#form.mainAction#">
+	<!--- UPDATE/settings --->
+		<cfcase value="#stText.Buttons.Update#">
+            <cfadmin 
+                action="updateRestSettings"
+                type="#request.adminType#"
+                password="#session["password"&request.adminType]#"
+                remoteClients="#request.getRemoteClients()#"
+                
+                list="#structKeyExists(form,'list') and form.list#">				
+		</cfcase>
+        <!--- reset/settings --->
+		<cfcase value="#stText.Buttons.resetServerAdmin#">
+            <cfadmin 
+                action="updateRestSettings"
+                type="#request.adminType#"
+                password="#session["password"&request.adminType]#"
+                remoteClients="#request.getRemoteClients()#"
+                
+                list="">				
+		</cfcase>
+        <!--- save/mapping --->
+		<cfcase value="#stText.Buttons.save#">
+        	
+			<cfset data.physicals=toArrayFromForm("physical")>
+            <cfset data.virtuals=toArrayFromForm("virtual")>
+            <cfset data.rows=toArrayFromForm("row")>
+            
+            
+            <cfloop index="idx" from="1" to="#arrayLen(data.virtuals)#">
+            	<cfset _default=StructKeyExists(form,'default') and form.default EQ idx>
+				<cfif isDefined("data.rows[#idx#]") and data.virtuals[idx] NEQ "">aaa
+                <cfadmin 
+                    action="updateRestMapping"
+                    type="#request.adminType#"
+                    password="#session["password"&request.adminType]#"
+                    
+                    virtual="#data.virtuals[idx]#"
+                    physical="#data.physicals[idx]#"
+                    default="#_default#"
+                    
+        remoteClients="#request.getRemoteClients()#">
+                </cfif>
+            </cfloop>
+		</cfcase>
+        
+        <!--- delete/mapping --->
+		<cfcase value="#stText.Buttons.delete#">
+        	
+			<cfset data.virtuals=toArrayFromForm("virtual")>
+            <cfset data.rows=toArrayFromForm("row")>
+            
+            <cfloop index="idx" from="1" to="#arrayLen(data.virtuals)#">
+            	<cfset _default=StructKeyExists(form,'default') and form.default EQ idx>
+				<cfif isDefined("data.rows[#idx#]") and data.virtuals[idx] NEQ "">aaa
+                <cfadmin 
+                    action="removeRestMapping"
+                    type="#request.adminType#"
+                    password="#session["password"&request.adminType]#"
+                    
+                    virtual="#data.virtuals[idx]#"
+                    
+        remoteClients="#request.getRemoteClients()#">
+                </cfif>
+            </cfloop>
+		</cfcase>
+        
+        
+	</cfswitch>
+	<cfcatch><cfrethrow>
+		<cfset error.message=cfcatch.message>
+		<cfset error.detail=cfcatch.Detail>
+	</cfcatch>
+</cftry>
+
+<!--- 
+Redirtect to entry --->
+<cfif cgi.request_method EQ "POST" and error.message EQ "">
+	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
+</cfif>
+
+<!--- 
+Error Output --->
+<cfset printError(error)>
+
 
 <cfadmin 
 	action="getRestMappings"
 	type="#request.adminType#"
 	password="#session["password"&request.adminType]#"
 	returnVariable="rest">
+<cfadmin 
+	action="getRestSettings"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="settings">
 
 
-
-
-
-
-
+<cfset stText.rest.setting="Settings">
+<cfset stText.rest.list="List">
+<cfset stText.rest.listDesc="List Services when ""/rest/"" is called ">
+<cfset stText.rest.mapping="Mappings">
+<cfset stText.rest.mappingDesc="Mappings ...">
 
 
 <cfset stText.rest.desc="Rest is ...">
@@ -58,7 +148,43 @@ function changeDefault(field) {
 
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
-#stText.rest.desc#
+
+#stText.rest.desc#<br /><br />
+
+<!--- 
+Settings --->
+<h2>#stText.rest.setting#</h2>
+<table class="tbl" width="540">
+<colgroup>
+    <col width="150">
+    <col width="390">
+</colgroup>
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+<tr>
+	<td class="tblHead" width="150">#stText.rest.list#</td>
+	<td class="tblContent">
+	<cfif hasAccess NEQ 0><input type="checkbox" class="checkbox" name="list" value="yes" <cfif settings.list>checked</cfif>><cfelse><b>#yesNoFormat(settings.list)#</b></cfif>
+	<span class="comment">#stText.rest.listDesc#</span></td>
+	
+</tr>
+<cfif hasAccess NEQ 0>
+<cfmodule template="remoteclients.cfm" colspan="2">
+<tr>
+	<td colspan="2">
+		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+	</td>
+</tr></cfif>
+</cfform>
+</table>
+
+<br><br>
+
+<!--- 
+Mappings --->
+<h2>#stText.rest.mapping#</h2>
+#stText.rest.mappingDesc#
 <table class="tbl" width="100%" border="0">
  	<colgroup>
         <col width="10">
@@ -134,7 +260,7 @@ function changeDefault(field) {
 			name="physical_#rest.recordcount+1#" value="" required="no"  style="width:100%"></td>
 		
 		<td class="tblContent" nowrap>
-        	<input type="radio" name="default" value="#rest.recordcount+1#" onchange="changeDefault(this)" <cfif rest.default>checked="checked"</cfif>/>
+        	<input type="radio" name="default" value="#rest.recordcount+1#" onchange="changeDefault(this)"/>
 		</td>
 	</tr>
 </cfif>
@@ -152,11 +278,9 @@ function changeDefault(field) {
 			<td></td>
 			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="54" height="1"></td>
 			<td>&nbsp;
-			<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.save#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.compileAll#">
+			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

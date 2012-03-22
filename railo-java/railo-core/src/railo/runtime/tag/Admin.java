@@ -102,6 +102,7 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.rest.RestUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.ExecutionPlan;
@@ -556,6 +557,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getMapping",             ACCESS_FREE) && check2(ACCESS_READ  )) doGetMapping();
         else if(check("getMappings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetMappings();
         else if(check("getRestMappings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRestMappings();
+        else if(check("getRestSettings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRestSettings();
         else if(check("getExtensions",			ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensions();
         else if(check("getExtensionProviders",	ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensionProviders();
         else if(check("getExtensionInfo",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensionInfo();
@@ -589,6 +591,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateCharset",         ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCharset();
         else if(check("updatecomponent",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateComponent();
         else if(check("updatescope",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateScope();
+        else if(check("updateRestSettings",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRestSettings();
+        else if(check("updateRestMapping",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRestMapping();
+        else if(check("removeRestMapping",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRestMapping();
         else if(check("updateApplicationSetting",ACCESS_FREE) && check2(ACCESS_WRITE  ))doUpdateApplicationSettings();
         else if(check("updateOutputSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  ))doUpdateOutputSettings();
         else if(check("updatepsq",              ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePSQ();
@@ -1802,6 +1807,27 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * @throws PageException
      * 
      */
+    private void doUpdateRestMapping() throws PageException {
+        admin.updateRestMapping(
+                getString("admin",action,"virtual"),
+                getString("admin",action,"physical"),
+                getBool("admin",action,"default")
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+        
+        RestUtil.release(config.getRestMappings());
+    }
+    
+    private void doRemoveRestMapping() throws PageException {
+        admin.removeRestMapping(
+                getString("admin",action,"virtual")
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+        RestUtil.release(config.getRestMappings());
+    }
+    
     private void doUpdateMapping() throws PageException {
         admin.updateMapping(
                 getString("admin",action,"virtual"),
@@ -1969,6 +1995,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("default",row,Caster.toBoolean(m.isDefault()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+    
+    private void doGetRestSettings() throws PageException {
+		Struct sct=new StructImpl();
+		sct.set("list", Caster.toBoolean(config.getRestList()));
+		pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        
     }
 
 	private void doGetResourceProviders() throws PageException {
@@ -3486,6 +3519,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         admin.updateApplicationTimeout(getTimespan("admin",action,"applicationTimeout"));
         admin.updateSessionType(getString("admin",action,"sessionType"));
         admin.updateLocalMode(getString("admin",action,"localMode"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+    
+
+    private void doUpdateRestSettings() throws PageException {
+    	
+        admin.updateRestList(getBool("list", null));
         store();
         adminSync.broadcast(attributes, config);
     }

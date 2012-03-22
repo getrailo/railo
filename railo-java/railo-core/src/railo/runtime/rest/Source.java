@@ -7,12 +7,14 @@ public class Source {
 
 	private Mapping mapping;
 	private Path[] path;
+	private String rawPath;
 	private PageSource pageSource;
 
 	public Source(Mapping mapping, PageSource pageSource, String path) {
 		this.mapping=mapping;
 		this.pageSource=pageSource;
 		this.path=Path.init(path); 
+		this.rawPath=path;
 	}
 
 	/**
@@ -34,6 +36,9 @@ public class Source {
 	 */
 	public Path[] getPath() {
 		return path;
+	}
+	public String getRawPath() {
+		return rawPath;
 	}
 
 }

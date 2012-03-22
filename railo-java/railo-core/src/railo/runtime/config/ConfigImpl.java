@@ -230,7 +230,7 @@ public abstract class ConfigImpl implements Config {
     private PageSource baseComponentPageSource;
     //private Page baseComponentPage;
     private String baseComponentTemplate;
-    
+    private boolean restList=false;
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
     private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
@@ -1731,6 +1731,17 @@ public abstract class ConfigImpl implements Config {
     protected void setRestLogger(LogAndSource restLogger) {
         this.restLogger=restLogger;
     }
+    
+
+    protected void setRestList(boolean restList) {
+        this.restList=restList;
+    }
+
+    public boolean getRestList() {
+        return restList;
+    }
+    
+    
 
     public LogAndSource getMappingLogger() {
     	if(mappingLogger==null)

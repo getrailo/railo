@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.AndResourceFilter;
@@ -68,13 +67,11 @@ public class Mapping {
 		
 		this.physical=ConfigWebUtil.getExistingResource(cw.getServletContext(),physical,null,cw.getConfigDir(),FileUtil.TYPE_DIR,cw);
 		
-		//init((ConfigImpl) config);
-		
 	}
 
 
-	private void init(PageContext pc) throws PageException {
-		print.e("physical:"+physical);
+	private void init(PageContext pc, boolean reset) throws PageException {
+		if(!reset && sources!=null) return;
 		if(this.physical!=null && this.physical.isDirectory()) {
 			Resource[] children = this.physical.listResources(FILTER);
 			sources = new ArrayList<Source>(); 
@@ -143,14 +140,13 @@ public class Mapping {
 	}
 
 
-	public Result getResult(PageContext pc,String path,int format, Result defaultValue) throws PageException {
-		init(pc);
-		//if(!path.startsWith("/")) path="/"+path;
+	public Result getResult(PageContext pc,String path,int format,Struct matrix, Result defaultValue) throws PageException {
+		init(pc,false);
 		Iterator<Source> it = sources.iterator();
 		Source src;
 		String[] arrPath,subPath;
 		int index;
-		while(it.hasNext()){
+		while(it.hasNext()) {
 			src = it.next();
 			Struct variables=new StructImpl();
 			arrPath = RestUtil.splitPath(path);
@@ -158,7 +154,7 @@ public class Mapping {
 			if(index!=-1){
             	subPath=new String[(arrPath.length-1)-index];
             	System.arraycopy(arrPath, index+1, subPath, 0, subPath.length);
-				return new Result(src,variables,subPath, format);
+				return new Result(src,variables,subPath, format,matrix);
 			}	
 		}
 		
@@ -168,5 +164,15 @@ public class Mapping {
 
 	public void setDefault(boolean _default) {
 		this._default=_default;
+	}
+
+
+	public void reset(PageContext pc) throws PageException {
+		init(pc, true);
+	}
+
+
+	public void release() {
+		sources = null; 
 	}
 }
