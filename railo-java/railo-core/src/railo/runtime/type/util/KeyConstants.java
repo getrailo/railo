@@ -371,6 +371,7 @@ public class KeyConstants {
 	public static final Key _hasNext=KeyImpl.intern("hasNext");
 	public static final Key _hashCode=KeyImpl.intern("hashCode");
 	public static final Key _header=KeyImpl.intern("header");
+	public static final Key _headers=KeyImpl.intern("headers");
 	public static final Key _height=KeyImpl.intern("height");
 	public static final Key _hide=KeyImpl.intern("hide");
 	public static final Key _highlight=KeyImpl.intern("highlight");
@@ -604,20 +605,20 @@ public class KeyConstants {
 	public static final Key _xml=KeyImpl.intern("xml");
 	public static final Key _xtags=KeyImpl.intern("xtags");
 
-	public static Key _returnFormat=KeyImpl.intern("returnFormat");
-	public static Key _s3=KeyImpl.intern("s3");
-	public static Key _super=KeyImpl.intern("super");
-	public static Key _argumentCollection=KeyImpl.intern("argumentCollection");
-	public static Key _returntype=KeyImpl.intern("returntype");
-	public static Key _description=KeyImpl.intern("description");
-	public static Key _displayname=KeyImpl.intern("displayname");
-	public static Key _arguments=KeyImpl.intern("arguments");
-	public static Key _variables=KeyImpl.intern("variables");
-	public static Key _fieldnames=KeyImpl.intern("fieldnames");
-	public static Key _local=KeyImpl.intern("local");
-	public static Key _exceptions=KeyImpl.intern("exceptions");
-	public static Key _closure=KeyImpl.intern("closure");
-	public static Key _function=KeyImpl.intern("function");
+	public static final Key _returnFormat=KeyImpl.intern("returnFormat");
+	public static final Key _s3=KeyImpl.intern("s3");
+	public static final Key _super=KeyImpl.intern("super");
+	public static final Key _argumentCollection=KeyImpl.intern("argumentCollection");
+	public static final Key _returntype=KeyImpl.intern("returntype");
+	public static final Key _description=KeyImpl.intern("description");
+	public static final Key _displayname=KeyImpl.intern("displayname");
+	public static final Key _arguments=KeyImpl.intern("arguments");
+	public static final Key _variables=KeyImpl.intern("variables");
+	public static final Key _fieldnames=KeyImpl.intern("fieldnames");
+	public static final Key _local=KeyImpl.intern("local");
+	public static final Key _exceptions=KeyImpl.intern("exceptions");
+	public static final Key _closure=KeyImpl.intern("closure");
+	public static final Key _function=KeyImpl.intern("function");
 	
 	
 	
