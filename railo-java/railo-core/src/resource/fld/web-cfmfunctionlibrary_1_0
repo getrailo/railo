@@ -2694,6 +2694,29 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
+	<!-- Empty -->
+	<function>
+		<name>Empty</name>
+		<class>railo.runtime.functions.system.Empty</class>
+		<description>return true if a function exists and is not "empty". 
+The following things are considered to be empty:
+- string:"" (an empty string) or "0"
+- number:0
+- boolean: return always false
+- array: [] (an empty array)
+- struct: {} (an empty struct)
+		 </description>
+		<argument>
+			<name>mixed</name>
+			<alias></alias>
+			<type>variable_string</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	
 	<!-- ESAPIDecode -->	
 	<function>
