@@ -17,8 +17,6 @@ import railo.runtime.orm.hibernate.HibernateCaster;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.orm.hibernate.HibernateORMSession;
 import railo.runtime.orm.hibernate.HibernateRuntimeException;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 
 public class CFCInstantiator implements Instantiator {
 	

@@ -48,7 +48,7 @@ public final class Argument extends EvaluatorSupport {
 				LitString lit = (LitString)expr;
 				String passBy = lit.getString().toLowerCase().trim();
 				if(!"value".equals(passBy) && !"ref".equals(passBy) && !"reference".equals(passBy))
-					throw new EvaluatorException("Attribute passby of the Tag Argument has a invalid value ["+passBy+"], valid values are [reference,value]");
+					throw new EvaluatorException("Attribute passby of the Tag Argument has an invalid value ["+passBy+"], valid values are [reference,value]");
 			}
 				
 			// check if tag is direct inside function

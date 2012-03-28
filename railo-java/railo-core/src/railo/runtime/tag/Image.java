@@ -562,11 +562,11 @@ public final class Image extends TagImpl {
 						dimension.substring(0,dimension.length()-1).trim(),
 						-1);
 			if(pro<0 || pro>100) 
-				throw new ExpressionException("attribute ["+label+"] value has a invalid percent definition ["+dimension+"]"); 
+				throw new ExpressionException("attribute ["+label+"] value has an invalid percent definition ["+dimension+"]"); 
 			pro/=100F;
 			return (int)(Caster.toFloatValue(info.getStruct().get(label))*pro);
 		}
-		throw new ExpressionException("attribute ["+label+"] value has a invalid definition ["+dimension+"]"); 
+		throw new ExpressionException("attribute ["+label+"] value has an invalid definition ["+dimension+"]"); 
 		
 	}
 

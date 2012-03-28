@@ -21,7 +21,6 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -91,7 +90,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
-import railo.runtime.rest.Source;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
@@ -232,7 +230,7 @@ public abstract class ConfigImpl implements Config {
     private PageSource baseComponentPageSource;
     //private Page baseComponentPage;
     private String baseComponentTemplate;
-    
+    private boolean restList=false;
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
     private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
@@ -792,6 +790,18 @@ public abstract class ConfigImpl implements Config {
     }
   
     protected void setRestMappings(railo.runtime.rest.Mapping[] restMappings) {
+    	
+    	// make sure only one is default
+    	boolean hasDefault=false;
+    	railo.runtime.rest.Mapping m;
+    	for(int i=0;i<restMappings.length;i++){
+    		m=restMappings[i];
+    		if(m.isDefault()) {
+    			if(hasDefault) m.setDefault(false);
+    			hasDefault=true;
+    		}
+    	}
+    	
         this.restMappings= restMappings;
     }
 
@@ -1619,7 +1629,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     /**
-     * is file a directory or not, touch if not exists
+     * is file a directory or not, touch if not exist
      * @param directory
      * @return true if existing directory or has created new one
      */
@@ -1721,6 +1731,17 @@ public abstract class ConfigImpl implements Config {
     protected void setRestLogger(LogAndSource restLogger) {
         this.restLogger=restLogger;
     }
+    
+
+    protected void setRestList(boolean restList) {
+        this.restList=restList;
+    }
+
+    public boolean getRestList() {
+        return restList;
+    }
+    
+    
 
     public LogAndSource getMappingLogger() {
     	if(mappingLogger==null)
@@ -3104,11 +3125,11 @@ public abstract class ConfigImpl implements Config {
 				// try to load hibernate jars
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
-						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
+						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
+						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
 				throw new ORMException(
-							"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-							"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine");
+							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
+							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
 			
 			}
 				ormengines.put(name,engine);

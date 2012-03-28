@@ -1,31 +1,25 @@
 package railo.runtime.rest;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
-import railo.print;
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.AndResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
-import railo.commons.io.res.filter.NotResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.Constants;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 
 public class Mapping {
@@ -41,9 +35,6 @@ public class Mapping {
 	});
 
 
-	private static final Collection.Key REST = KeyImpl.getInstance("rest");
-	private static final Collection.Key RESTPATH = KeyImpl.getInstance("restpath");
-	
 	
 	private Resource physical;
 	private String virtual;
@@ -51,14 +42,15 @@ public class Mapping {
 	private String strPhysical;
 	private boolean hidden;
 	private boolean readonly;
+	private boolean _default;
 
 
 	private Config config;
 
 
-	private Map<String, PageSource> sources;
+	private List<Source> sources;
 
-	public Mapping(Config config, String virtual, String physical, boolean hidden, boolean readonly) {
+	public Mapping(Config config, String virtual, String physical, boolean hidden, boolean readonly, boolean _default) {
 		this.config=config;
 		if(!virtual.startsWith("/"))this.virtual="/"+virtual;
 		if(virtual.endsWith("/"))this.virtual=virtual.substring(0,virtual.length()-1);
@@ -67,6 +59,7 @@ public class Mapping {
 		this.strPhysical=physical;
 		this.hidden=hidden;
 		this.readonly=readonly;
+		this._default=_default;
 		
 
         if(!(config instanceof ConfigWebImpl)) return;
@@ -74,24 +67,22 @@ public class Mapping {
 		
 		this.physical=ConfigWebUtil.getExistingResource(cw.getServletContext(),physical,null,cw.getConfigDir(),FileUtil.TYPE_DIR,cw);
 		
-		//init((ConfigImpl) config);
-		
 	}
 
 
-	private void init(PageContext pc) throws PageException {
-		print.e("physical:"+physical);
+	private void init(PageContext pc, boolean reset) throws PageException {
+		if(!reset && sources!=null) return;
 		if(this.physical!=null && this.physical.isDirectory()) {
 			Resource[] children = this.physical.listResources(FILTER);
-			sources = new HashMap<String, PageSource>(); 
+			sources = new ArrayList<Source>(); 
 			for(int i=0;i<children.length;i++){
 				//ps=config.toPageSource(null, children[i],null);
 				PageSource ps = pc.toPageSource(children[i],null);
 				ComponentAccess cfc = ComponentLoader.loadComponent(pc, null, ps, children[i].getName(), true,true);
 				Struct meta = cfc.getMetaData(pc);
-				if(Caster.toBooleanValue(meta.get(REST,null),false)){
-					String path = Caster.toString(meta.get(RESTPATH,null),null);
-					sources.put(path, cfc.getPageSource());
+				if(Caster.toBooleanValue(meta.get(RestUtil.REST,null),false)){
+					String path = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
+					sources.add(new Source(this, cfc.getPageSource(), path));
 				}
 			}
 		}
@@ -99,7 +90,7 @@ public class Mapping {
 
 
 	public railo.runtime.rest.Mapping duplicate(Config config,Boolean readOnly) {
-		return new Mapping(config, virtual, strPhysical, hidden, readOnly==null?this.readonly:readOnly.booleanValue()); 
+		return new Mapping(config, virtual, strPhysical, hidden, readOnly==null?this.readonly:readOnly.booleanValue(),_default); 
 	}
 	
 	/**
@@ -144,25 +135,44 @@ public class Mapping {
 		return readonly;
 	}
 
+	public boolean isDefault() {
+		return _default;
+	}
 
-	public Source getSource(PageContext pc,String path, Source defaultValue) throws PageException {
-		init(pc);
-		if(!path.startsWith("/")) path="/"+path;
-		Iterator<Entry<String, PageSource>> it = sources.entrySet().iterator();
-		Entry<String, PageSource> entry;
-		String _path;
-		while(it.hasNext()){
-			entry = it.next();
-			_path=entry.getKey();
-			if(!_path.startsWith("/")) _path="/"+_path;
-			print.e(path+" -> "+_path);
-			
-			if(path.startsWith(_path)){
-				return new Source(this,entry.getValue(),path.substring(_path.length()));
+
+	public Result getResult(PageContext pc,String path,int format,Struct matrix, Result defaultValue) throws PageException {
+		init(pc,false);
+		Iterator<Source> it = sources.iterator();
+		Source src;
+		String[] arrPath,subPath;
+		int index;
+		while(it.hasNext()) {
+			src = it.next();
+			Struct variables=new StructImpl();
+			arrPath = RestUtil.splitPath(path);
+			index=RestUtil.matchPath(variables,src.getPath(),arrPath);
+			if(index!=-1){
+            	subPath=new String[(arrPath.length-1)-index];
+            	System.arraycopy(arrPath, index+1, subPath, 0, subPath.length);
+				return new Result(src,variables,subPath, format,matrix);
 			}	
 		}
 		
 		return defaultValue;
 	}
 
+
+	public void setDefault(boolean _default) {
+		this._default=_default;
+	}
+
+
+	public void reset(PageContext pc) throws PageException {
+		init(pc, true);
+	}
+
+
+	public void release() {
+		sources = null; 
+	}
 }

@@ -14,6 +14,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
@@ -37,6 +38,7 @@ import railo.transformer.library.function.FunctionLibFunctionArg;
 public class Variable extends ExpressionBase implements Invoker {
 	 
 
+	private static final Type KEY_CONSTANTS = Type.getType(KeyConstants.class);
 
 	// java.lang.Object get(java.lang.String)
 	final static Method METHOD_SCOPE_GET_KEY = new Method("get",
@@ -232,7 +234,11 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 				lit=lit.duplicate();
 				lit.upperCase();
 			}
-			
+			String key=KeyConstants.getFieldName(lit.getString());
+			if(key!=null){
+				bc.getAdapter().getStatic(KEY_CONSTANTS, key, Types.COLLECTION_KEY);
+				return true;
+			}
 			int index=bc.registerKey(lit);
 			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, 
 					bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());

@@ -139,7 +139,7 @@ public class CharBuffer {
 
 	/**
 	* method to writeout content of the char buffer in a writer,
-	* this ist faster than get char array with (toCharArray()) and write this
+	* this is faster than get char array with (toCharArray()) and write this
 	in writer.
 	* @param writer writer to write inside
 	* @throws IOException

@@ -1,7 +1,6 @@
 package railo.runtime.functions.decision;
 
 import railo.runtime.PageContext;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.net.rpc.AxisUtil;
 

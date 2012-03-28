@@ -112,7 +112,7 @@ You can use this code in order to write the structs into an XML file correspondi
 		<cftry>
 			<cfset setStructElement(stRet, el.XMLAttributes.key, el.XMLText)>
             <cfif doCreate>
-				<cfset application.notTranslated[el.XMLAttributes.key]=el.XMLText>
+				<!--- <cfset application.notTranslated[el.XMLAttributes.key]=el.XMLText>--->
             <cfelse>
             	<cfset StructDelete(application.notTranslated,el.XMLAttributes.key,false)>
 			</cfif>

@@ -170,11 +170,11 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public Object remove(Collection.Key key) throws PageException {
 		if(key.equalsIgnoreCase(KeyImpl.THIS) || key.equalsIgnoreCase(KeyImpl.SUPER))
-			throw new ExpressionException("key ["+key.getString()+"] is part from component and can't be removed");
+			throw new ExpressionException("key ["+key.getString()+"] is part of the component and can't be removed");
 		
 		Object o=shadow.remove(key);
 		if(o!=null) return o;
-		throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exists ");
+		throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exist");
 	}
 
 

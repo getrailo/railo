@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
@@ -147,6 +149,20 @@ public final class ReqRspUtil {
 		catch(Throwable t){
 			return defaultValue;
 		}
+	}
+
+	public static String getHeaderIgnoreCase(PageContext pc, String name,String defaultValue) {
+		String charset = pc.getConfig().getWebCharset();
+		HttpServletRequest req = pc.getHttpServletRequest();
+		Enumeration e = req.getHeaderNames();
+		String keyDecoded,key;
+		while(e.hasMoreElements()) {
+			key=e.nextElement().toString();
+			keyDecoded=ReqRspUtil.decode(key, charset,false);
+			if(name.equalsIgnoreCase(key) || name.equalsIgnoreCase(keyDecoded))
+				return ReqRspUtil.decode(req.getHeader(key),charset,false);
+		}
+		return defaultValue;
 	}
 
 	public static String getScriptName(HttpServletRequest req) {

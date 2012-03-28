@@ -59,7 +59,7 @@ public class ImageNew {
 			else if("argb".equals(strImageType)) imageType=BufferedImage.TYPE_INT_ARGB;
 			else if("gray".equals(strImageType)) imageType=BufferedImage.TYPE_BYTE_GRAY;
 			else if("grayscale".equals(strImageType)) imageType=BufferedImage.TYPE_BYTE_GRAY;
-			else throw new FunctionException(pc,"ImageNew",4,"imageType","imageType has a invalid value ["+strImageType+"]," +
+			else throw new FunctionException(pc,"ImageNew",4,"imageType","imageType has an invalid value ["+strImageType+"]," +
 				"valid values are [rgb,argb,grayscale]");
 		}
 		// canvas color

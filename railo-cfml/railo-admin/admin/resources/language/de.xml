@@ -120,6 +120,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.remote.clients">Clients</data>
 	<data key="menu.resources.label">Archive &amp; Ressourcen</data>
 	<data key="menu.resources.mappings">Mappings</data>
+	<data key="menu.resources.rest">Rest</data>
 	<data key="menu.resources.component">Komponenten</data>
 	<data key="menu.resources.customtags">Custom Tags</data>
 	<data key="menu.resources.cfx_tags">CFX Tags</data>
@@ -830,6 +831,10 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.dbdatabasedesc">Name der Datenbank, welche verbunden werden soll.</data>
 	<data key="settings.dbuserdesc">Benutzername für den Zugriff auf die Datenbank</data>
 	<data key="settings.datasourcedescriptionupdate">Datenquelle aktualisieren</data>
+	
+	<data key="settings.dbtimezone">Zeitzone</data>
+	<data key="settings.dbtimezoneDesc">Wenn Sie ein Datum als String definieren, also nicht mit cfqueryparam, enthält dies normalerweise keine Zeitzoneninformation und basiert auf der lokalen Zeit. Die Datenbak interpretiert dann dieses Datum basierent auf seiner eigenen Zeitzone. Wenn sich nun die Zeitzone der Datenbank und von Railo unterscheidet, kann dies zu Problemen führen. Railo erlaubt es hier, dass Sie für eine Datasource eine spezifische Zeitzone definieren können, um diese Problem zu umgehen. Definieren Sie nur eine spezifische Zeitzone wenn Sie sicher sind, dass diese Zeitzone in der Database auch verwendet wird! Dieses setting wird durch das Attribute "timezone" des Tag query überschrieben.</data>
+	<data key="settings.dbtimezoneSame">Gleiche wie in Railo Instanz</data>
 	<data key="settings.dbblobdesc">Erlaubt das einbeziehen von BLOBs</data>
 	<data key="settings.dbclobdesc">Erlaubt das einbeziehen von CLOBs</data>
 	<data key="settings.dbpass">Passwort</data>

@@ -167,6 +167,7 @@ public final class VariableInterpreter {
 	 * @param pc Page Context
 	 * @param var variable string to get value to
 	 * @return the value
+	 * @deprecated use instead <code>getVariableEL(PageContext pc,String var, Object defaultValue)</code>
 	 */
 	public static Object getVariableEL(PageContext pc,String var) {
         StringList list = parse(pc,new ParserString(var),false);
@@ -191,6 +192,40 @@ public final class VariableInterpreter {
 		while(list.hasNext()) {
 			coll=pc.getVariableUtil().get(pc,coll,list.next(),null);
 			if(coll==null) return null;
+		}
+		return coll;
+    }
+	
+	/**
+	 * get a variable from page context
+	 * @param pc Page Context
+	 * @param var variable string to get value to
+	 * @param defaultValue value returnded if variable was not found
+	 * @return the value or default value if not found
+	 */
+	public static Object getVariableEL(PageContext pc,String var, Object defaultValue) {
+        StringList list = parse(pc,new ParserString(var),false);
+        if(list==null) return defaultValue;
+        
+		int scope=scopeString2Int(list.next());
+		Object coll =null; 
+		if(scope==Scope.SCOPE_UNDEFINED) {
+		    coll=pc.undefinedScope().get(list.current(),null);
+		    if(coll==null) return defaultValue;
+		}
+		else {
+		    try {
+                coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+		    	//coll=pc.scope(scope);
+            } 
+		    catch (PageException e) {
+                return defaultValue;
+            }
+		}
+		
+		while(list.hasNext()) {
+			coll=pc.getVariableUtil().get(pc,coll,list.next(),null);
+			if(coll==null) return defaultValue;
 		}
 		return coll;
     }

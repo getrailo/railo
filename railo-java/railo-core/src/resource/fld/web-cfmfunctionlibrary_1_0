@@ -2694,6 +2694,29 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
+	<!-- Empty -->
+	<function>
+		<name>Empty</name>
+		<class>railo.runtime.functions.system.Empty</class>
+		<description>return true if a function exists and is not "empty". 
+The following things are considered to be empty:
+- string:"" (an empty string)
+- number:return always false
+- boolean: return always false
+- array: [] (an empty array)
+- struct: {} (an empty struct)
+		 </description>
+		<argument>
+			<name>variable</name>
+			<alias>variableName,object</alias>
+			<type>variable_string</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	
 	<!-- ESAPIDecode -->	
 	<function>
@@ -13059,6 +13082,51 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- RestInitApplication -->
+	<function>
+		<name>RestInitApplication</name>
+		<class>railo.runtime.functions.rest.RestInitApplication</class>
+		<description>Registers the directory path with the service mapping provided. 
+		If no service mapping is provided, the application name is used. 
+		If the rest application is already registered, it is refreshed.</description>
+		<argument>
+			<name>dirPath</name>
+			<alias>dir,directory,path</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path to the directory to be registered or reseted.</description>
+	    </argument>
+		<argument>
+			<name>serviceMapping</name>
+			<alias>mapping</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>Alternate string to be used for application name while calling the REST service.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	
+	<!-- RestSetResponse -->
+	<function>
+		<name>RestSetResponse</name>
+		<class>railo.runtime.functions.rest.RestSetResponse</class>
+		<description>Sets the custom responses.</description>
+		<argument>
+			<name>response</name>
+			<alias>rsp</alias>
+			<type>struct</type>
+			<required>yes</required>
+			<description>A struct that contains the response details.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- reverse -->
 	<function>
 		<name>reverse</name>

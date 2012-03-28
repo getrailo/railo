@@ -1,11 +1,11 @@
 package railo.runtime.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
@@ -67,17 +67,8 @@ public class DatasourceConnectionPool {
         Connection conn=null;
         String dsn = ds.getDsnTranslated();
         try {
-        	try {
-        		conn = DriverManager.getConnection(dsn, user, pass);
-            } 
-            catch (SQLException e) {
-            	if(dsn.indexOf('?')!=-1) {
-                    String connStr=dsn+"&user="+user+"&password="+pass;
-                    conn = DriverManager.getConnection(connStr);
-                }
-            	else throw e;
-            }
-            conn.setAutoCommit(true);
+        	conn = DBUtil.getConnection(dsn, user, pass);
+        	conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
         	throw new DatabaseException("can't connect to datasource ["+ds.getName()+"]",e,null,null);

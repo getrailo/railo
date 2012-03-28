@@ -3,7 +3,6 @@ package railo.runtime.functions.poi;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;

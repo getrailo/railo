@@ -371,6 +371,7 @@ public class KeyConstants {
 	public static final Key _hasNext=KeyImpl.intern("hasNext");
 	public static final Key _hashCode=KeyImpl.intern("hashCode");
 	public static final Key _header=KeyImpl.intern("header");
+	public static final Key _headers=KeyImpl.intern("headers");
 	public static final Key _height=KeyImpl.intern("height");
 	public static final Key _hide=KeyImpl.intern("hide");
 	public static final Key _highlight=KeyImpl.intern("highlight");
@@ -603,11 +604,28 @@ public class KeyConstants {
 	public static final Key _xfa=KeyImpl.intern("xfa");
 	public static final Key _xml=KeyImpl.intern("xml");
 	public static final Key _xtags=KeyImpl.intern("xtags");
+
+	public static final Key _returnFormat=KeyImpl.intern("returnFormat");
+	public static final Key _s3=KeyImpl.intern("s3");
+	public static final Key _super=KeyImpl.intern("super");
+	public static final Key _argumentCollection=KeyImpl.intern("argumentCollection");
+	public static final Key _returntype=KeyImpl.intern("returntype");
+	public static final Key _description=KeyImpl.intern("description");
+	public static final Key _displayname=KeyImpl.intern("displayname");
+	public static final Key _arguments=KeyImpl.intern("arguments");
+	public static final Key _variables=KeyImpl.intern("variables");
+	public static final Key _fieldnames=KeyImpl.intern("fieldnames");
+	public static final Key _local=KeyImpl.intern("local");
+	public static final Key _exceptions=KeyImpl.intern("exceptions");
+	public static final Key _closure=KeyImpl.intern("closure");
+	public static final Key _function=KeyImpl.intern("function");
+	
+	
+	
 	
 	private static HashSet<String> _____keys;
 	
-	
-	public static boolean hasConstant(String key) {
+	public static String getFieldName(String key) {
 		if(_____keys==null) {
 			Field[] fields = KeyConstants.class.getFields();
 			_____keys=new HashSet<String>();
@@ -616,6 +634,7 @@ public class KeyConstants {
 				_____keys.add(fields[i].getName());
 			}
 		}
-		return _____keys.contains("_"+key);
+		key="_"+key;
+		return _____keys.contains(key)?key:null;
 	}
 }

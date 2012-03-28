@@ -4,7 +4,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.op.Decision;
 import railo.runtime.poi.Excel;
 import railo.runtime.poi.ExcelUtil;

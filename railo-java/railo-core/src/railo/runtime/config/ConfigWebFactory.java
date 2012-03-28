@@ -445,7 +445,7 @@ public final class ConfigWebFactory {
         		}
             }
         	
-        	// adding https when not exists
+        	// adding https when not exist
         	if(!hasHTTPs && httpClass!=null){
         		config.addResourceProvider("https",httpClass,httpArgs);
         	}
@@ -838,7 +838,7 @@ public final class ConfigWebFactory {
     }
 	
 	/**
-	 * creates the Config File, if File not exists
+	 * creates the Config File, if File not exist
 	 * @param xmlName
 	 * @param configFile 
 	 * @throws IOException
@@ -1559,7 +1559,8 @@ public final class ConfigWebFactory {
     
     private static void loadRest(ConfigServerImpl configServer, ConfigImpl config,Document doc) throws IOException {
         boolean hasAccess= true;//MUST ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
-        Element el= getChildByName(doc.getDocumentElement(),"rest");
+        boolean hasCS=configServer!=null;
+      	Element el= getChildByName(doc.getDocumentElement(),"rest");
         
         // Log
         String strLogger=el.getAttribute("log");
@@ -1574,6 +1575,14 @@ public final class ConfigWebFactory {
         }
         config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
         
+        // list
+        Boolean list=Caster.toBoolean(el.getAttribute("list"),null);
+        if(list!=null){
+            config.setRestList(list.booleanValue());
+        }
+        else if(hasCS){
+        	config.setRestList(configServer.getRestList());
+        }
         
         
         Element[] _mappings=getChildren(el,"mapping");
@@ -1600,8 +1609,9 @@ public final class ConfigWebFactory {
 	           String virtual=el.getAttribute("virtual");
 	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
 	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
+	           boolean _default=toBoolean(el.getAttribute("default"),false);
 	           if(physical!=null) { 
-	               tmp=new railo.runtime.rest.Mapping(config,virtual,physical,hidden,readonly);
+	               tmp=new railo.runtime.rest.Mapping(config,virtual,physical,hidden,readonly,_default);
 	               mappings.put(tmp.getVirtual(),tmp);
 	           }
 	        }
@@ -2207,7 +2217,7 @@ public final class ConfigWebFactory {
         
 		datasources.put(datasourceName.toLowerCase(),
           new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,
-        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,TimeZoneUtil.toTimeZone(timezone,null)));
+        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,StringUtil.isEmpty(timezone,true)?null:TimeZoneUtil.toTimeZone(timezone,null)));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 

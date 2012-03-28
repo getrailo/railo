@@ -216,7 +216,7 @@ function RailoForms(form,onError) {
 				if(func(f,i,value));
 				else {
 					if(el.message && el.message.length>0)prv.addError(el,el.message);
-					else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid value');
+					else prv.addError(el,'value ('+value+') of field '+el.name+' has an invalid value');
 					
 				}
 			}
@@ -424,7 +424,7 @@ function RailoForms(form,onError) {
 		else {
 			if(el.rangeMin && el.rangeMin>nbr || el.rangeMax && el.rangeMax<nbr) {
 				if(el.message && el.message.length>0)prv.addError(el,el.message);
-				else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
+				else prv.addError(el,'value ('+value+') of field '+el.name+' has an invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
 			}
 		}
 	}
@@ -443,7 +443,7 @@ function RailoForms(form,onError) {
 		else {
 			if(el.rangeMin && el.rangeMin>nbr || el.rangeMax && el.rangeMax<nbr) {
 				if(el.message && el.message.length>0)prv.addError(el,el.message);
-				else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
+				else prv.addError(el,'value ('+value+') of field '+el.name+' has an invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
 			}
 		}
 	}

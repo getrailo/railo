@@ -5,7 +5,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.literal.LStringBuffer;
-import railo.runtime.interpreter.ref.op.Concat;
 
 public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
 	public JSONExpressionInterpreter(){

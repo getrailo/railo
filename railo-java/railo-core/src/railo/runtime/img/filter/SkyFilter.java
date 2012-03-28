@@ -23,8 +23,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
-import railo.runtime.img.math.FBM;
-import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.Noise;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;

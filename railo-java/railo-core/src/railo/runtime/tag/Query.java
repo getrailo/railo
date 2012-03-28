@@ -6,6 +6,7 @@ import java.util.TimeZone;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
@@ -21,7 +22,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.config.Constants;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
@@ -172,7 +172,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
 		    //mail.setType(railo.runtime.mail.Mail.TYPE_TEXT);
 		else
-			throw new ApplicationException("attribute returntype of tag query has a invalid value","valid values are [query,array-of-entity] but value is now ["+strReturntype+"]");
+			throw new ApplicationException("attribute returntype of tag query has an invalid value","valid values are [query,array-of-entity] but value is now ["+strReturntype+"]");
 	}
 
 
@@ -238,7 +238,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		DeprecatedUtil.tagAttribute("query", "cachename");
+		DeprecatedUtil.tagAttribute(pageContext,"query", "cachename");
 		//this.cachename=cachename;
 	}
 
@@ -262,7 +262,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setProviderdsn(String providerdsn) throws ApplicationException	{
-	    throw new ApplicationException("attribute providerdsn (with value ["+providerdsn+"]) is Deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "providerdsn");
 	}
 
 	/** set the value connectstring
@@ -270,7 +270,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setConnectstring(String connectstring) throws ApplicationException	{
-	    throw new ApplicationException("attribute connectstring (with value ["+connectstring+"]) is Deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "connectstring");
 	}
 	
 
@@ -311,8 +311,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param dbname value to set
 	 * @throws ApplicationException
 	**/
-	public void setDbname(String dbname) throws ApplicationException	{
-	    throw new ApplicationException("attribute dbname (with value ["+dbname+"]) is Deprecated");
+	public void setDbname(String dbname) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "dbname");
 	}
 
 	/** set the value maxrows
@@ -337,8 +337,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param provider value to set
 	 * @throws ApplicationException
 	**/
-	public void setProvider(String provider) throws ApplicationException	{
-	    throw new ApplicationException("attribute provider (with value ["+provider+"]) is Deprecated");
+	public void setProvider(String provider) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "provider");
 	}
 
 	/** set the value dbserver
@@ -347,8 +347,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param dbserver value to set
 	 * @throws ApplicationException
 	**/
-	public void setDbserver(String dbserver) throws ApplicationException	{
-	    throw new ApplicationException("attribute dbserver (with value ["+dbserver+"]) is Deprecated");
+	public void setDbserver(String dbserver) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "dbserver");
 	}
 
 	/** set the value name

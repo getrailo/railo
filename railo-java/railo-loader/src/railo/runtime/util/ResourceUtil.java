@@ -187,7 +187,7 @@ public interface ResourceUtil {
 
 		/**
 		 * return if Resource is empty, means is directory and has no children or a empty file,
-		 * if not exists return false.
+		 * if not exist return false.
 		 * @param res
 		 */
 		public boolean isEmpty(Resource res);

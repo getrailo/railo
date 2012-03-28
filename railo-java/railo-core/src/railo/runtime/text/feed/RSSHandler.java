@@ -15,6 +15,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
@@ -96,8 +97,9 @@ public final class RSSHandler extends DefaultHandler {
 	 * @param res
 	 * @throws IOException
 	 * @throws SAXException 
+	 * @throws DatabaseException 
 	 */
-	public RSSHandler(Resource res) throws IOException, SAXException {
+	public RSSHandler(Resource res) throws IOException, SAXException, DatabaseException {
 		InputStream is=null;
 		try {
 			InputSource source=new InputSource(is=res.getInputStream());
@@ -114,13 +116,14 @@ public final class RSSHandler extends DefaultHandler {
 	 * @param stream
 	 * @throws IOException
 	 * @throws SAXException 
+	 * @throws DatabaseException 
 	 */
-	public RSSHandler(InputStream stream) throws IOException, SAXException {
+	public RSSHandler(InputStream stream) throws IOException, SAXException, DatabaseException {
 		InputSource is=new InputSource(IOUtil.getReader(stream, SystemUtil.getCharset()));
 		init(DEFAULT_SAX_PARSER,is);
 	}
 	
-	private void init(String saxParser,InputSource is) throws SAXException, IOException	{
+	private void init(String saxParser,InputSource is) throws SAXException, IOException, DatabaseException	{
 		properties=new StructImpl();
 		items=new QueryImpl(COLUMNS,0,"query");
 		xmlReader=XMLUtil.createXMLReader(saxParser);

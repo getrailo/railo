@@ -161,7 +161,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 
     /**
      * cluster scope
-     * @param create return null when false and scope does not exists
+     * @param create return null when false and scope does not exist
      * @return cluster scope or null
      * @throws PageException
      */
@@ -424,7 +424,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * 
      * @param coll Collection to get value
      * @param key key of the value
-     * @return return value of a Collection, return null if value not exists
+     * @return return value of a Collection, return null if value not exist
      * @deprecated use instead <code>{@link #get(Object, railo.runtime.type.Collection.Key, Object)}</code>
 	 */
     public abstract Object get(Object coll, String key, Object defaultValue);
@@ -433,7 +433,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * 
      * @param coll Collection to get value
      * @param key key of the value
-     * @return return value of a Collection, return null if value not exists
+     * @return return value of a Collection, return null if value not exist
      */
     public abstract Object get(Object coll, Collection.Key key, Object defaultValue);
 
@@ -474,7 +474,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract Object removeVariable(String var) throws PageException;
 
     /**
-     * get variable from string definition and cast ist to a Query Object
+     * get variable from string definition and cast it to a Query Object
      * @param key Variable Name to get
      * @return Query
      * @throws PageException
@@ -829,7 +829,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract Object getFunctionWithNamedValues(Object coll, Collection.Key key, Object[] args) throws PageException;
 
     /**
-     * get variable from string definition and cast ist to a Iterator Object
+     * get variable from string definition and cast it to a Iterator Object
      * @param key Variable Name to get
      * @return Iterator
      * @throws PageException

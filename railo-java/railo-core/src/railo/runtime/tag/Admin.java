@@ -6,9 +6,9 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +21,7 @@ import javax.servlet.jsp.tagext.Tag;
 import org.opencfml.eventgateway.Gateway;
 
 import railo.commons.collections.HashTable;
+import railo.commons.db.DBUtil;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
@@ -101,6 +102,7 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.rest.RestUtil;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.ExecutionPlan;
@@ -554,6 +556,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getMailServers",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetMailServers();
         else if(check("getMapping",             ACCESS_FREE) && check2(ACCESS_READ  )) doGetMapping();
         else if(check("getMappings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetMappings();
+        else if(check("getRestMappings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRestMappings();
+        else if(check("getRestSettings",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRestSettings();
         else if(check("getExtensions",			ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensions();
         else if(check("getExtensionProviders",	ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensionProviders();
         else if(check("getExtensionInfo",		ACCESS_FREE) && check2(ACCESS_READ  )) doGetExtensionInfo();
@@ -587,6 +591,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateCharset",         ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCharset();
         else if(check("updatecomponent",        ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateComponent();
         else if(check("updatescope",            ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateScope();
+        else if(check("updateRestSettings",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRestSettings();
+        else if(check("updateRestMapping",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateRestMapping();
+        else if(check("removeRestMapping",      ACCESS_FREE) && check2(ACCESS_WRITE  )) doRemoveRestMapping();
         else if(check("updateApplicationSetting",ACCESS_FREE) && check2(ACCESS_WRITE  ))doUpdateApplicationSettings();
         else if(check("updateOutputSetting",	ACCESS_FREE) && check2(ACCESS_WRITE  ))doUpdateOutputSettings();
         else if(check("updatepsq",              ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePSQ();
@@ -1800,6 +1807,27 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * @throws PageException
      * 
      */
+    private void doUpdateRestMapping() throws PageException {
+        admin.updateRestMapping(
+                getString("admin",action,"virtual"),
+                getString("admin",action,"physical"),
+                getBool("admin",action,"default")
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+        
+        RestUtil.release(config.getRestMappings());
+    }
+    
+    private void doRemoveRestMapping() throws PageException {
+        admin.removeRestMapping(
+                getString("admin",action,"virtual")
+        );
+        store();
+        adminSync.broadcast(attributes, config);
+        RestUtil.release(config.getRestMappings());
+    }
+    
     private void doUpdateMapping() throws PageException {
         admin.updateMapping(
                 getString("admin",action,"virtual"),
@@ -1925,7 +1953,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     
     
-private void doGetMappings() throws PageException {
+    private void doGetMappings() throws PageException {
         
 
         Mapping[] mappings = config.getMappings();
@@ -1947,6 +1975,33 @@ private void doGetMappings() throws PageException {
             qry.setAt("toplevel",row,Caster.toBoolean(m.isTopLevel()));
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+    
+    private void doGetRestMappings() throws PageException {
+        
+
+        railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+        railo.runtime.type.Query qry=new QueryImpl(new String[]{"physical","strphysical","virtual","hidden","readonly","default"},mappings.length,"query");
+        
+        railo.runtime.rest.Mapping m;
+        for(int i=0;i<mappings.length;i++) {
+            m=mappings[i];
+            int row=i+1;
+            qry.setAt("physical",row,m.getPhysical());
+            qry.setAt("strphysical",row,m.getStrPhysical());
+            qry.setAt("virtual",row,m.getVirtual());
+            qry.setAt("hidden",row,Caster.toBoolean(m.isHidden()));
+            qry.setAt("readonly",row,Caster.toBoolean(m.isReadonly()));
+            qry.setAt("default",row,Caster.toBoolean(m.isDefault()));
+        }
+        pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+    
+    private void doGetRestSettings() throws PageException {
+		Struct sct=new StructImpl();
+		sct.set("list", Caster.toBoolean(config.getRestList()));
+		pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        
     }
 
 	private void doGetResourceProviders() throws PageException {
@@ -2304,6 +2359,7 @@ private void doGetMappings() throws PageException {
         String username=getString("admin",action,"dbusername");
         String password=getString("admin",action,"dbpassword");
         String host=getString("host","");
+        String timezone=getString("timezone","");
         String database=getString("database","");
         int port=getInt("port",-1);
         int connLimit=getInt("connectionLimit",-1);
@@ -2345,6 +2401,7 @@ private void doGetMappings() throws PageException {
                 allow,
                 validate,
                 storage,
+                timezone,
                 custom
                 
         );
@@ -2590,13 +2647,7 @@ private void doGetMappings() throws PageException {
     private Connection getConnection(String dsn, String user, String pass) throws DatabaseException  {
         Connection conn=null;
         try {
-            if(dsn.indexOf('?')==-1) {
-                conn = DriverManager.getConnection(dsn, user, pass);
-            }
-            else{
-                String connStr=dsn+"&user="+user+"&password="+pass;
-                conn = DriverManager.getConnection(connStr, user, pass);
-            }
+        	conn = DBUtil.getConnection(dsn, user, pass);
             conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
@@ -3174,6 +3225,7 @@ private void doGetMappings() throws PageException {
                 sct.setEL("database",d.getDatabase());
                 sct.setEL("port",d.getPort()<1?"":Caster.toString(d.getPort()));
                 sct.setEL("dsnTranslated",d.getDsnTranslated());
+                sct.setEL("timezone",toStringTimeZone(d.getTimeZone()));
                 sct.setEL("password",d.getPassword());
                 sct.setEL("username",d.getUsername());
                 sct.setEL("readonly",Caster.toBoolean(d.isReadOnly()));
@@ -3202,7 +3254,12 @@ private void doGetMappings() throws PageException {
         }
         throw new ApplicationException("there is no datasource with name ["+name+"]");
     }
-    private void doGetRemoteClient() throws PageException {
+    private Object toStringTimeZone(TimeZone timeZone) {
+		if(timeZone==null) return "";
+		return timeZone.getID();
+	}
+
+	private void doGetRemoteClient() throws PageException {
         
         String url=getString("admin",action,"url");
         RemoteClient[] clients = config.getRemoteClients();
@@ -3397,7 +3454,7 @@ private void doGetMappings() throws PageException {
         Map ds = config.getDataSourcesAsMap();
         Iterator it = ds.keySet().iterator();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
-                "username","password","readonly"
+                "timezone","username","password","readonly"
                 ,"grant","drop","create","revoke","alter","select","delete","update","insert"
                 ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings"},ds.size(),"query");
         
@@ -3415,6 +3472,7 @@ private void doGetMappings() throws PageException {
             qry.setAt("database",row,d.getDatabase());
             qry.setAt("port",row,d.getPort()<1?"":Caster.toString(d.getPort()));
             qry.setAt("dsnTranslated",row,d.getDsnTranslated());
+            qry.setAt("timezone",row,toStringTimeZone(d.getTimeZone()));
             qry.setAt("password",row,d.getPassword());
             qry.setAt("username",row,d.getUsername());
             qry.setAt("readonly",row,Caster.toBoolean(d.isReadOnly()));
@@ -3461,6 +3519,14 @@ private void doGetMappings() throws PageException {
         admin.updateApplicationTimeout(getTimespan("admin",action,"applicationTimeout"));
         admin.updateSessionType(getString("admin",action,"sessionType"));
         admin.updateLocalMode(getString("admin",action,"localMode"));
+        store();
+        adminSync.broadcast(attributes, config);
+    }
+    
+
+    private void doUpdateRestSettings() throws PageException {
+    	
+        admin.updateRestList(getBool("list", null));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -4061,7 +4127,7 @@ private void doGetMappings() throws PageException {
         
         String[] timeZones = TimeZone.getAvailableIDs();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"id","display"},new String[]{"varchar","varchar"},timeZones.length,"timezones");
-        
+        Arrays.sort(timeZones);
         TimeZone timeZone;
         for(int i=0;i<timeZones.length;i++) {
             timeZone=TimeZone.getTimeZone(timeZones[i]);
@@ -4113,7 +4179,7 @@ private void doGetMappings() throws PageException {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         sct.set("locale",Caster.toString(config.getLocale()));
-        sct.set("timezone",pageContext.getTimeZone().getID());
+        sct.set("timezone",toStringTimeZone(pageContext.getTimeZone()));
         sct.set("timeserver",config.getTimeServer());
         sct.set("usetimeserver",config.getUseTimeServer());
 		// replaced with encoding outputsct.set("defaultencoding", config.get DefaultEncoding());

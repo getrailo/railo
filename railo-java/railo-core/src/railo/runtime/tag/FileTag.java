@@ -20,7 +20,6 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
-import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.functions.list.ListFirst;
 import railo.runtime.functions.list.ListLast;
 import railo.runtime.functions.s3.StoreSetACL;
@@ -29,7 +28,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -687,7 +685,7 @@ public final class FileTag extends BodyTagImpl {
             if(!file.exists()) file.createNewFile();
             String content=Caster.toString(output);
             if(fixnewline)content=doFixNewLine(content);
-    		if(addnewline) content+="\n";
+    		if(addnewline) content+=SystemUtil.getOSSpecificLineSeparator();
             IOUtil.write(file,content,charset,true);
         	
         } 
@@ -858,7 +856,7 @@ public final class FileTag extends BodyTagImpl {
 	    Resource parentDestination=destination.getParentResource();
 	    
 	    if(!parentDestination.exists())
-	    	throw new ApplicationException("attribute destination has a invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
+	    	throw new ApplicationException("attribute destination has an invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
 	    else if(!parentDestination.canWrite())
 	    	throw new ApplicationException("can't write to desination directory ["+parentDestination+"], no access to write");
 	    
@@ -1057,7 +1055,7 @@ public final class FileTag extends BodyTagImpl {
 			if(create) {
 				Resource parent=file.getParentResource();
 				if(parent!=null && !parent.exists())
-					throw new ApplicationException("parent directory for ["+file+"] doesn't exists");
+					throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
 				try {
 					file.createFile(false);
 				} catch (IOException e) {

@@ -91,7 +91,7 @@ public final class MailPart extends BodyTagImpl {
 			
 			getMail().setParam(type, null, "susi", part.getBody(), "inline", null);
 		}*/
-		// throw new ApplicationException("attribute type of tag mailpart has a invalid values","valid values are [plain,text,html] but value is now ["+type+"]");
+		// throw new ApplicationException("attribute type of tag mailpart has an invalid values","valid values are [plain,text,html] but value is now ["+type+"]");
 		
 		
 		

@@ -16,7 +16,7 @@ public class FileDelete {
         pc.getConfig().getSecurityManager().checkFileLocation(src);
 		if(!src.exists()) 
 			throw new FunctionException(pc,"FileDelete",1,"source",
-					"source file ["+src+"] does not exists");
+					"source file ["+src+"] does not exist");
 		try {
 			src.remove(false);
 		} catch (IOException e) {

@@ -16,6 +16,7 @@ import javax.servlet.jsp.JspException;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
@@ -30,7 +31,6 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallySupport;
 import railo.runtime.op.Caster;
-import railo.runtime.config.Constants;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -134,7 +134,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		DeprecatedUtil.tagAttribute("StoredProc", "cachename");
+		DeprecatedUtil.tagAttribute(pageContext,"StoredProc", "cachename");
 	}
 
 	/** set the value cachedwithin

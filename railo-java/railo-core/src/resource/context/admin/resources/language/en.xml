@@ -184,6 +184,7 @@
 	<data key="menu.remote.clients">Clients</data>
 	<data key="menu.resources.label">Archives &amp;amp; Resources</data>
 	<data key="menu.resources.mappings">Mappings</data>
+	<data key="menu.resources.rest">Rest</data>
 	<data key="menu.resources.component">Component</data>
 	<data key="menu.resources.customtags">Custom tags</data>
 	<data key="menu.resources.cfx_tags">CFX tags</data>
@@ -801,6 +802,14 @@
 	<data key="settings.dbdatabasedesc">Name of the database to connect</data>
 	<data key="settings.dbuserdesc">The username for the database</data>
 	<data key="settings.datasourcedescriptionupdate">Update datasource connection</data>
+	
+	<data key="settings.dbtimezone">Timezone</data>
+	
+	<data key="settings.dbtimezoneDesc">
+When you define a date as a string (not with cfqueryparam) inside cfquery, there is normally no timezone information with it and the date string is based on the locale timezone. Therefore the database will interpret this date string based on it's own timezone.
+If the timezone of your Railo instance and your database is different, this can lead to problems. Because of that Railo now allows you to define a timezone for a specific datasource defintion. Be aware that you should only define a specific timezone, if you are a 100% sure that this timezone is used on the database server and it is different from the timezone of the Railo instance. This setting can be overwritten by the cfquery attribute "timezone".</data>
+	<data key="settings.dbtimezoneSame">Same as Railo Instance</data>
+	
 	<data key="settings.dbblobdesc">Enable binary large object retrieval (&lt;abbr title=&quot;binary large object&quot;&gt;BLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbpass">Password</data>
@@ -839,6 +848,9 @@
 	<data key="overview.installedtls">Installed tag&lt;br/&gt; libraries</data>
 	<data key="overview.bugreport">Bug report</data>
 	<data key="overview.issuetracker">Issue Tracker</data>
+	<data key="overview.issuetrackerDesc">If you think you've found a bug, please take the time to report it via our bug tracking system (JIRA on the JBoss community site).</data>
+	<data key="overview.book">Book (Railo 3 Beginner's Guide)</data>
+	<data key="overview.bookDesc">A complete guide to developing an application with Railo from start to finish.</data>
 	<data key="overview.datetime">Railo date/time</data>
 	<data key="overview.forum">Forum</data>
 	<data key="overview.featurerequestmail">features@railo.ch</data>
@@ -851,9 +863,21 @@
 	<data key="overview.licencedevelopmore">more</data>
 	<data key="overview.licencedevelop">Develop</data>
 	<data key="overview.server_name">Host Name</data>
+	<data key="overview.twitter">Twitter</data>
+	<data key="overview.twitterDesc">Follow us on Twitter.</data>
 	<data key="overview.blog">Blog</data>
-	<data key="overview.mailinglist_en">Mailinglist (english)</data>
+	<data key="overview.blogDesc"> The latest news from Railo is always posted on our blog.</data>
+	<data key="overview.mailinglist">Mailing list</data>
+	<data key="overview.mailinglistDesc">The mailing list is the focus of our community support program - help for users by users. </data>
+	
+	
+	
 	<data key="overview.professional">Professional Support</data>
+	<data key="overview.professionalDesc">For many organizations and individuals, the security of a formal paid support contract is a necessity and we're pleased to offer four standard packages as well as the flexibility to create a custom package should your needs go beyond our standard offerings.</data>
+	
+	
+	
+	
 	<data key="overview.licencedevelopdesc">The Develop Version is a version, addressing those users who are most likely to apply it in order for assembling CFML application . The version though is prohibited to be used commercially.</data>
 	<data key="overview.releasedate">Release date</data>
 	<data key="overview.contexts.webroot">Webroot</data>
@@ -1045,8 +1069,8 @@
 	<data key="services.update.location_devDesc">This Update Provider (dev.getrailo.org) returns ""Bleeding Edge"" versions. Usually only a small amount of testing has been performed on these versions. This source should NOT be used for production environments.</data>
 	<data key="services.update.location_custom">Custom</data>
 	<data key="services.update.location_customDesc">Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""</data>
-		<data key="services.update.lib">Update JAR's</data>
-	<data key="services.update.libDesc">Your JAR's are out of date. In order to update your JAR's, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JAR's from our download section and update the JAR's manually. You have to restart your Servlet engine, so that the changes take effect.</data>
+		<data key="services.update.lib">Update JARs</data>
+	<data key="services.update.libDesc">Your JARs are out of date. In order to update your JARs, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JARs from our download section and update the JARs manually. You have to restart your Servlet engine, so that the changes take effect.</data>
 	<data key="settings.gateway.ListenerCfcPath">Listener CFC Path</data>
 	<data key="settings.gateway.startupMode">Startup Mode</data>
 	<data key="settings.gateway.startupModeAutomatic">Automatic</data>

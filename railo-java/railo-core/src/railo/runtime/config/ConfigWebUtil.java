@@ -241,7 +241,7 @@ public final class ConfigWebUtil {
     }*/
     
     /**
-     * checks if file is a directory or not, if directory dosent exists, it will be created
+     * checks if file is a directory or not, if directory doesn't exist, it will be created
      * @param directory
      * @return is directory or not
      */
@@ -251,7 +251,7 @@ public final class ConfigWebUtil {
     }
     
     /**
-     * checks if file is a file or not, if file dosent exists, it will be created
+     * checks if file is a file or not, if file doesn't exist, it will be created
      * @param file
      * @return is file or not
      */

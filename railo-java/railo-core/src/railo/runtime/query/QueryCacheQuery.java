@@ -41,7 +41,7 @@ public class QueryCacheQuery extends QueryImpl {
 	private boolean isCloned=false;
 	private Map _columns=new HashMap();
 
-	public QueryCacheQuery(QueryImpl query) {
+	public QueryCacheQuery(QueryImpl query) throws DatabaseException {
 		super(query.keys(),0,query.getName());
 		this.query=query;
 	}

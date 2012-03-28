@@ -7,7 +7,6 @@ import java.util.List;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -67,7 +66,7 @@ public final class ASMUtil {
         			Types.STRING,
         			new Type[]{}
             		);;
-	//private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
+	//private static final String VERSION_MESSAGE = "you use an invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
 	/**

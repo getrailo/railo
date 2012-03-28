@@ -699,14 +699,14 @@ public final class Page extends BodyBase {
 			ga.dup();
 			ga.push(index++);
 			
-			String str = value.getString();
+			/*String str = value.getString();
 			if(KeyConstants.hasConstant(str)) {
 				ga.getStatic(KEY_CONSTANTS, "_"+str, Types.COLLECTION_KEY);
 			}
-			else {
+			else {*/
 				ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
 				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
-			}
+			//}
 			ga.visitInsn(Opcodes.AASTORE);
 		}
 		ga.visitFieldInsn(Opcodes.PUTSTATIC, 
