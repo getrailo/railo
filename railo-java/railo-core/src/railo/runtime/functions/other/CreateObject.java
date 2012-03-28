@@ -142,6 +142,11 @@ public final class CreateObject implements Function {
     
     public static Object doWebService(PageContext pc,String wsdlUrl,String username,String password, ProxyData proxy) throws PageException {
     	// TODO CF8 impl. alle neuen attribute für wsdl
+    	try{
     	return new RPCClient(wsdlUrl,username,password,proxy);
+    	}
+    	catch(Throwable t){
+    		throw Caster.toPageException(t);
+    	}
     } 
 }
