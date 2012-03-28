@@ -16,11 +16,11 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+
+import org.apache.commons.compress.archivers.tar.TarEntry;
+import org.apache.commons.compress.archivers.tar.TarInputStream;
+import org.apache.commons.compress.archivers.tar.TarOutputStream;
+import org.apache.commons.compress.bzip2.CBZip2OutputStream;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -151,12 +151,12 @@ public final class CompressUtil {
         }
         
 //      read the zip file and build a query from its contents
-        TarArchiveInputStream tis=null;
+        TarInputStream tis=null;
         try {
-	        tis = new TarArchiveInputStream( IOUtil.toBufferedInputStream(tarFile.getInputStream()) ) ;     
-	        TarArchiveEntry entry;
+	        tis = new TarInputStream( IOUtil.toBufferedInputStream(tarFile.getInputStream()) ) ;     
+	        TarEntry entry;
 	        int mode;
-	        while ( ( entry = tis.getNextTarEntry()) != null ) {
+	        while ( ( entry = tis.getNextEntry()) != null ) {
 	        	//print.ln(entry);
 	        	Resource target=targetDir.getRealResource(entry.getName());
 	            if(entry.isDirectory()) {
@@ -434,7 +434,7 @@ public final class CompressUtil {
     private static void _compressBZip2(InputStream source, OutputStream target) throws IOException {
         
         InputStream is = IOUtil.toBufferedInputStream(source);
-        OutputStream os = new BZip2CompressorOutputStream(IOUtil.toBufferedOutputStream(target));
+        OutputStream os = new CBZip2OutputStream(IOUtil.toBufferedOutputStream(target));
         IOUtil.copy(is,os,true,true);
     }
     
@@ -510,12 +510,12 @@ public final class CompressUtil {
     }
     
     public static void compressTar(Resource[] sources,OutputStream target, int mode) throws IOException {
-        if(target instanceof TarArchiveOutputStream){
-            compressTar("",sources,(TarArchiveOutputStream)target,mode);
+        if(target instanceof TarOutputStream){
+            compressTar("",sources,(TarOutputStream)target,mode);
             return;
         }
-        TarArchiveOutputStream tos=new TarArchiveOutputStream(target);
-        tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+        TarOutputStream tos=new TarOutputStream(target);
+        tos.setLongFileMode(TarOutputStream.LONGFILE_GNU);
         try {
             compressTar("",sources, tos,mode);
         }
@@ -524,7 +524,7 @@ public final class CompressUtil {
         }
     }
     
-    public static void compressTar(String parent, Resource[] sources, TarArchiveOutputStream tos, int mode) throws IOException {
+    public static void compressTar(String parent, Resource[] sources, TarOutputStream tos, int mode) throws IOException {
 
         if(parent.length()>0)parent+="/";
         for(int i=0;i<sources.length;i++) { 
@@ -532,10 +532,10 @@ public final class CompressUtil {
         }
     }
     
-    private static void compressTar(String parent, Resource source,TarArchiveOutputStream tos, int mode) throws IOException {
+    private static void compressTar(String parent, Resource source,TarOutputStream tos, int mode) throws IOException {
     	if(source.isFile()) {
     		//TarEntry entry = (source instanceof FileResource)?new TarEntry((FileResource)source):new TarEntry(parent);
-    		TarArchiveEntry entry = new TarArchiveEntry(parent);
+    		TarEntry entry = new TarEntry(parent);
             
             entry.setName(parent);
             
@@ -546,12 +546,12 @@ public final class CompressUtil {
             
             entry.setSize(source.length());
             entry.setModTime(source.lastModified());
-            tos.putArchiveEntry(entry);
+            tos.putNextEntry(entry);
             try {
             	IOUtil.copy(source,tos,false);
             } 
             finally {
-        		tos.closeArchiveEntry();
+        		tos.closeEntry();
             }
         }
         else if(source.isDirectory()) {

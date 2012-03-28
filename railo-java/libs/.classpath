@@ -10,7 +10,6 @@
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-httpclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-io.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-lang.jar"/>
-	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-logging-adapters.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-logging-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-logging.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-net-ftp.jar"/>
