@@ -12,8 +12,6 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -21,11 +19,14 @@ import org.xml.sax.SAXException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
+import railo.commons.io.res.ContentType;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.HTMLEntities;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
 import railo.runtime.Info;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWeb;
@@ -33,6 +34,8 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.system.ContractPath;
 import railo.runtime.functions.system.GetDirectoryFromPath;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
@@ -366,31 +369,24 @@ public final class PDFDocument {
 			
 			// set Proxy
 			if(StringUtil.isEmpty(proxyserver) && config.isProxyEnableFor(url.getHost())) {
-				proxyserver=config.getProxyServer();
-				proxyport=config.getProxyPort();
-				proxyuser=config.getProxyUsername();
-				proxypassword=config.getProxyPassword();
+				ProxyData pd = config.getProxyData();
+				proxyserver=pd==null?null:pd.getServer();
+				proxyport=pd==null?0:pd.getPort();
+				proxyuser=pd==null?null:pd.getUsername();
+				proxypassword=pd==null?null:pd.getPassword();
 			}
 			
-			HttpMethod method = HTTPUtil.invoke(url, authUser, authPassword, -1, null, userAgent,
-					proxyserver, 
-					proxyport, 
-					proxyuser, 
-					proxypassword,null);
+			HTTPResponse method = HTTPEngine.get(url, authUser, authPassword, -1,HTTPEngine.MAX_REDIRECT, null, userAgent,
+					ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword),null);
 			
 			// mimetype
 			if(StringUtil.isEmpty(strMimetype)) {
-				Header[] headers = method.getResponseHeaders();
-				for(int i=0;i<headers.length;i++) {
-					if(headers[i].getName().equalsIgnoreCase("Content-type") && !StringUtil.isEmpty(headers[i].getValue())) {
-						setMimetype(headers[i].getValue());
-						break;
-					}
-				}
+				ContentType ct = method.getContentType();
+				if(ct!=null)
+					setMimetype(ct.toString());
+				
 			}
-			InputStream is = 
-				new ByteArrayInputStream(method.getResponseBody());
-				//method.getResponseBodyAsStream();
+			InputStream is = new ByteArrayInputStream(method.getContentAsByteArray());
 			try {
 				
 				render(pd4ml, is, os,url);

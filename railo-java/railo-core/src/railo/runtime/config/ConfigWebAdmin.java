@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -36,6 +35,8 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.IPRange;
 import railo.commons.net.URLEncoder;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
@@ -3332,10 +3333,10 @@ public final class ConfigWebAdmin {
 	}
 	
 	public void verifyExtensionProvider(String strUrl) throws PageException {
-		HttpMethod method=null;
+		HTTPResponse method=null;
 		try {
 			URL url = HTTPUtil.toURL(strUrl+"?wsdl");
-			method = HTTPUtil.invoke(url, null, null, 2000, null, null, null, -1, null, null, null);
+			method = HTTPEngine.get(url, null, null, 2000,HTTPEngine.MAX_REDIRECT, null, null, null, null);
 		} 
 		catch (MalformedURLException e) {
 			throw new ApplicationException("url defintion ["+strUrl+"] is invalid");
@@ -3344,8 +3345,10 @@ public final class ConfigWebAdmin {
 			throw new ApplicationException("can't invoke ["+strUrl+"]",e.getMessage());
 		}
 		
-		if(method.getStatusCode()!=200){
-			throw new HTTPException(method);
+		if(method.getStatusCode()!=200){int code=method.getStatusCode();
+    	String text=method.getStatusText();
+    	String msg=code+" "+text;
+    	throw new HTTPException(msg,null,code,text,method.getURL());
 		}
 		//Object o = 
 			CreateObject.doWebService(null, strUrl+"?wsdl");

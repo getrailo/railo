@@ -4239,11 +4239,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetProxy() throws PageException  {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+        ProxyData pd = config.getProxyData();
+        String port=pd==null || pd.getPort()<=0?"":Caster.toString(pd.getPort());
+        
         //sct.set("enabled",Caster.toBoolean(config.isProxyEnable()));
-        sct.set("port",Caster.toString(config.getProxyPort()));
-        sct.set("server",emptyIfNull(config.getProxyServer()));
-        sct.set("username",emptyIfNull(config.getProxyUsername()));
-        sct.set("password",emptyIfNull(config.getProxyPassword()));
+        sct.set("port",port);
+        sct.set("server",pd==null?"":emptyIfNull(pd.getServer()));
+        sct.set("username",pd==null?"":emptyIfNull(pd.getUsername()));
+        sct.set("password",pd==null?"":emptyIfNull(pd.getPassword()));
     }
     
 

@@ -13,10 +13,13 @@ import org.xml.sax.SAXException;
 
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.config.Config;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 
 /**
@@ -142,9 +145,11 @@ public final class SchedulerImpl implements Scheduler {
                     su.toString(el,"interval"),
                     timeout,
                     su.toCredentials(el,"username","password"),
-                    su.toString(el,"proxyHost"),
-                    su.toInt(el,"proxyPort",80),
-                    su.toCredentials(el,"proxyUser","proxyPassword"),
+                    ProxyDataImpl.getInstance(
+                    		su.toString(el,"proxyHost"),
+                    		su.toInt(el,"proxyPort",80),
+                    		su.toString(el,"proxyUser"),
+                    		su.toString(el,"proxyPassword")),
                     su.toBoolean(el,"resolveUrl"),
                     su.toBoolean(el,"publish"),
                     su.toBoolean(el,"hidden",false),
@@ -202,9 +207,11 @@ public final class SchedulerImpl implements Scheduler {
         su.setString(el,"interval",task.getIntervalAsString());
         su.setInt(el,"timeout",(int)task.getTimeout());
         su.setCredentials(el,"username","password",task.getCredentials());
-        su.setString(el,"proxyHost",task.getProxyHost());
-        su.setInt(el,"proxyPort",task.getProxyPort());
-        su.setCredentials(el,"proxyUser","proxyPassword",task.getProxyCredentials());
+        ProxyData pd = task.getProxyData();
+        su.setString(el,"proxyHost",StringUtil.emptyIfNull(pd==null?"":pd.getServer()));
+        su.setString(el,"proxyUser",StringUtil.emptyIfNull(pd==null?"":pd.getUsername()));
+        su.setString(el,"proxyPassword",StringUtil.emptyIfNull(pd==null?"":pd.getPassword()));
+        su.setInt(el,"proxyPort",pd==null?0:pd.getPort());
         su.setBoolean(el,"resolveUrl",task.isResolveURL());  
         su.setBoolean(el,"publish",task.isPublish());   
         su.setBoolean(el,"hidden",((ScheduleTaskImpl)task).isHidden());  

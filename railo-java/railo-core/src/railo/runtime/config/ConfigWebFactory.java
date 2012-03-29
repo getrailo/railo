@@ -3947,25 +3947,14 @@ public final class ConfigWebFactory {
         
         // proxy server
         String server=proxy.getAttribute("server");
-        if(hasAccess && !StringUtil.isEmpty(server)) config.setProxyServer(server);
-        else if(hasCS) config.setProxyServer(configServer.getProxyServer());
-
-        // proxy username
         String username=proxy.getAttribute("username");
-        if(hasAccess && !StringUtil.isEmpty(username)) config.setProxyUsername(username);
-        else if(hasCS) config.setProxyUsername(configServer.getProxyUsername());
-
-        // proxy password
         String password=proxy.getAttribute("password");
-        if(hasAccess && !StringUtil.isEmpty(password)) config.setProxyPassword(password);
-        else if(hasCS) config.setProxyPassword(configServer.getProxyPassword());
-
-        // proxy port
         int port=toInt(proxy.getAttribute("port"),-1);
-        if(hasAccess && port!=-1) config.setProxyPort(port);
-        else if(hasCS) config.setProxyPort(configServer.getProxyPort());
-
         
+        if(hasAccess && !StringUtil.isEmpty(server)) {
+        	config.setProxyData(ProxyDataImpl.getInstance(server, port, username, password));
+        }
+        else if(hasCS) config.setProxyData(configServer.getProxyData());
     }
     
     

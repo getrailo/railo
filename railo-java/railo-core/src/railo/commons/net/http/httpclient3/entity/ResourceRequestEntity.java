@@ -1,4 +1,4 @@
-package railo.commons.net;
+package railo.commons.net.http.httpclient3.entity;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,7 +11,7 @@ import railo.commons.io.res.Resource;
 /**
  * A RequestEntity that represents a Resource.
  */
-public class ResourceRequestEntity implements RequestEntity {
+public class ResourceRequestEntity implements RequestEntity, Entity3 {
 
     final Resource res;
     final String contentType;
@@ -34,6 +34,15 @@ public class ResourceRequestEntity implements RequestEntity {
 
     public void writeRequest(final OutputStream out) throws IOException {
        IOUtil.copy(res.getInputStream(), out,true,false);
-    }    
+    }  
+	@Override
+	public long contentLength() {
+		return getContentLength();
+	}
+
+	@Override
+	public String contentType() {
+		return getContentType();
+	}  
     
 }

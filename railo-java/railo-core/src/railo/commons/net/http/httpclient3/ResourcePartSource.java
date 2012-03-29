@@ -1,4 +1,4 @@
-package railo.commons.net;
+package railo.commons.net.http.httpclient3;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

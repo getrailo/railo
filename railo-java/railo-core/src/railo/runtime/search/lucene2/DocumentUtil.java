@@ -6,16 +6,15 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.res.ContentType;
 import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.StringUtil;
+import railo.commons.net.http.HTTPResponse;
 import railo.runtime.op.Caster;
 import railo.runtime.search.lucene2.docs.FieldUtil;
 import railo.runtime.search.lucene2.docs.FileDocument;
@@ -28,25 +27,15 @@ import railo.runtime.search.lucene2.docs.WordDocument;
  */
 public final class DocumentUtil {
 
-	public static Document toDocument(StringBuffer content,String root,URL url, HttpMethod method) throws IOException {
+	public static Document toDocument(StringBuffer content,String root,URL url, HTTPResponse method) throws IOException {
         if(method.getStatusCode()!=200)return null;
         
 		// get type and charset
 		Document doc=null;
-		String type=getContentType(method);
-		long len=getContentLength(method);
-		String charset="iso-8859-1";
-        if(!StringUtil.isEmpty(type)){
-        	String[] types=type.split(";");
-        	type=types[0];
-        	if(types.length>1) {
-                String tmp=types[types.length-1];
-                int index=tmp.indexOf("charset=");
-                if(index!=-1) {
-                	charset=StringUtil.removeQuotes(tmp.substring(index+8),true);
-                }
-            }
-        }
+		ContentType ct = method.getContentType();
+		long len=method.getContentLength();
+		String charset=ct==null?"iso-8859-1":ct.getCharset();
+        
         Runtime rt = Runtime.getRuntime();
         if(len>rt.freeMemory()){
         	Runtime.getRuntime().gc();
@@ -55,12 +44,12 @@ public final class DocumentUtil {
         	
         //print.err("url:"+url+";chr:"+charset+";type:"+type);
         
-        if(type==null)  {}
+        if(ct==null || ct.getMimeType()==null)  {}
         // HTML
-        else if(type.indexOf("text/html")!=-1) {
+        else if(ct.getMimeType().indexOf("text/html")!=-1) {
         	Reader r=null;
         	try{
-        		r = IOUtil.getReader(method.getResponseBodyAsStream(), charset);
+        		r = IOUtil.getReader(method.getContentAsStream(), charset);
         		doc= HTMLDocument.getDocument(content,r);
         	}
         	finally{
@@ -68,10 +57,10 @@ public final class DocumentUtil {
         	}
         }
         // PDF
-        else if(type.indexOf("application/pdf")!=-1) {
+        else if(ct.getMimeType().indexOf("application/pdf")!=-1) {
         	InputStream is=null;
         	try{
-        		is=IOUtil.toBufferedInputStream(method.getResponseBodyAsStream());
+        		is=IOUtil.toBufferedInputStream(method.getContentAsStream());
         		doc= PDFDocument.getDocument(content,is);
         	}
         	finally {
@@ -79,10 +68,10 @@ public final class DocumentUtil {
         	}
         }
         // DOC
-        else if(type.equals("application/msword")) {
+        else if(ct.getMimeType().equals("application/msword")) {
         	InputStream is=null;
         	try{
-        		is=IOUtil.toBufferedInputStream(method.getResponseBodyAsStream());
+        		is=IOUtil.toBufferedInputStream(method.getContentAsStream());
         		doc= WordDocument.getDocument(content,is);
         	}
         	finally {
@@ -91,10 +80,10 @@ public final class DocumentUtil {
             
         }
         // Plain
-        else if(type.indexOf("text/plain")!=-1) {
+        else if(ct.getMimeType().indexOf("text/plain")!=-1) {
         	Reader r=null;
         	try{
-        		r=IOUtil.toBufferedReader(IOUtil.getReader(method.getResponseBodyAsStream(), charset));
+        		r=IOUtil.toBufferedReader(IOUtil.getReader(method.getContentAsStream(), charset));
         		doc= FileDocument.getDocument(content,r);
         	}
         	finally {
@@ -115,35 +104,6 @@ public final class DocumentUtil {
         return doc;
         
     }
-
-	private static String getContentType(HttpMethod method) {
-		Header ct = method.getResponseHeader("Content-Type");
-		if(!StringUtil.isEmpty(ct)) return ct.getValue().toLowerCase();
-		Header[] headers = method.getResponseHeaders();
-		for(int i=0;i<headers.length;i++){
-			if("Content-Type".equalsIgnoreCase(headers[i].getName())){
-				if(!StringUtil.isEmpty(headers[i].getValue()))return headers[i].getValue().toLowerCase();
-				return null;
-			}
-		}
-    	return null;
-	}
-
-	private static long getContentLength(HttpMethod method) {
-		Header ct = method.getResponseHeader("Content-Length");
-		if(!StringUtil.isEmpty(ct)) return Caster.toLongValue(ct.getValue(),-1);
-		Header[] headers = method.getResponseHeaders();
-		for(int i=0;i<headers.length;i++){
-			if("Content-Length".equalsIgnoreCase(headers[i].getName())){
-				if(!StringUtil.isEmpty(headers[i].getValue()))return Caster.toLongValue(headers[i].getValue(),-1);
-				return -1;
-			}
-		}
-    	return -1;
-	}
-	
-	
-	
 	
     /**
      * translate the file to a Document Object

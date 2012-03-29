@@ -1,24 +1,20 @@
-package railo.commons.io.res.type.s3;
+package railo.commons.net.http.httpclient3.entity;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.httpclient.methods.RequestEntity;
 
-import railo.loader.util.Util;
 
+public class EmptyRequestEntity implements RequestEntity,Entity3 {
 
-public class TemporaryStreamRequestEntity implements RequestEntity {
-
-	private final TemporaryStream ts;
 	private final String contentType;
-
-	public TemporaryStreamRequestEntity(TemporaryStream ts) {
-		this(ts,"application");
-	}
-	public TemporaryStreamRequestEntity(TemporaryStream ts,String contentType) {
-		this.ts=ts;
+	
+	/**
+	 * Constructor of the class
+	 * @param contentType
+	 */
+	public EmptyRequestEntity(String contentType) {
 		this.contentType=contentType;
 	}
 	
@@ -26,7 +22,7 @@ public class TemporaryStreamRequestEntity implements RequestEntity {
 	 * @see org.apache.commons.httpclient.methods.RequestEntity#getContentLength()
 	 */
 	public long getContentLength() {
-		return ts.length();
+		return 0;
 	}
 
 	/**
@@ -40,21 +36,20 @@ public class TemporaryStreamRequestEntity implements RequestEntity {
 	 * @see org.apache.commons.httpclient.methods.RequestEntity#isRepeatable()
 	 */
 	public boolean isRepeatable() {
-		return false;
+		return true;
 	}
 
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#writeRequest(java.io.OutputStream)
-	 */
 	public void writeRequest(OutputStream os) throws IOException {
-		InputStream is=null;
-		try{
-			Util.copy(is=ts.getInputStream(), os);
-		}
-		finally{
-			Util.closeEL(is);
-		}
-		
+		// do nothing
+	}
+	
+	@Override
+	public long contentLength() {
+		return getContentLength();
 	}
 
+	@Override
+	public String contentType() {
+		return getContentType();
+	}
 }

@@ -23,6 +23,7 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.mail.Server;
+import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
@@ -478,25 +479,7 @@ public interface Config {
 	 * return default proxy setting password
 	 * @return the password for proxy
 	 */
-	public String getProxyPassword();
-
-	/**
-	 * return default proxy setting port (default 80)
-	 * @return the port for proxy
-	 */
-	public int getProxyPort();
-
-	/**
-	 * return default proxy setting server
-	 * @return the server for proxy
-	 */
-	public String getProxyServer();
-
-	/**
-	 * return default proxy setting username
-	 * @return the username for proxy
-	 */
-	public String getProxyUsername();
+	public ProxyData getProxyData();
 	
 	/**
 	 * return if proxy is enabled or not

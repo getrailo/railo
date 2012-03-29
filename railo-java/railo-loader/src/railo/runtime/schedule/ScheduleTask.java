@@ -2,10 +2,10 @@ package railo.runtime.schedule;
 
 import java.net.URL;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import railo.commons.io.res.Resource;
+import railo.commons.security.Credentials;
+import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.type.dt.Date;
 import railo.runtime.type.dt.Time;
 
@@ -50,10 +50,6 @@ public interface ScheduleTask {
      */
     public abstract boolean hasCredentials();
 
-    /**
-     * @return Returns the credentials.
-     */
-    public abstract UsernamePasswordCredentials getUPCredentials();
 
     /**
      * @return Returns the file.
@@ -73,27 +69,8 @@ public interface ScheduleTask {
     /**
      * @return Returns the proxyHost.
      */
-    public abstract String getProxyHost();
+    public abstract ProxyData getProxyData();
 
-    /**
-     * @return Returns the proxyPort.
-     */
-    public abstract int getProxyPort();
-
-    /**
-     * @return Returns has proxyCredentials.
-     */
-    public abstract boolean hasProxyCredentials();
-
-    /**
-     * @return Returns the proxyCredentials.
-     */
-    public abstract Credentials getProxyCredentials();
-
-    /**
-     * @return Returns the proxyCredentials.
-     */
-    public abstract UsernamePasswordCredentials getUPProxyCredentials();
 
     /**
      * @return Returns the resolveURL.

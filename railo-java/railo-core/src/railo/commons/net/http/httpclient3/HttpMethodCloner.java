@@ -1,4 +1,4 @@
-package railo.runtime.net.http;
+package railo.commons.net.http.httpclient3;
  
  import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;

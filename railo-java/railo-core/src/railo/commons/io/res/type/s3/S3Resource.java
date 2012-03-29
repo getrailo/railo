@@ -17,6 +17,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.http.HTTPEngine;
 import railo.loader.util.Util;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
@@ -95,7 +96,7 @@ public final class S3Resource extends ResourceSupport {
 			if(isBucket()) {
 				s3.putBuckets(bucketName, acl,storage);
 			}
-			else s3.put(bucketName, objectName+"/", acl, new EmptyRequestEntity());	
+			else s3.put(bucketName, objectName+"/", acl, HTTPEngine.getEmptyEntity("application"));	
 		}
 		catch (IOException ioe) {
 			throw ioe;
@@ -115,7 +116,7 @@ public final class S3Resource extends ResourceSupport {
 		if(isBucket()) throw new IOException("can't create file ["+getPath()+"], on this level (Bucket Level) you can only create directories");
 		try {
 			provider.lock(this);
-			s3.put(bucketName, objectName, acl, new EmptyRequestEntity());
+			s3.put(bucketName, objectName, acl, HTTPEngine.getEmptyEntity("application"));
 		} 
 		catch (Exception e) {
 			throw new IOException(e.getMessage());

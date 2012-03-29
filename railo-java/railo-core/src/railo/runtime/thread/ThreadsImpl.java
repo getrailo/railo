@@ -16,7 +16,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
-import railo.runtime.tag.Http;
+import railo.runtime.tag.Http3;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
@@ -145,7 +145,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		if(ct.output==null)return "";
 
 		InputStream is = new ByteArrayInputStream(ct.output.toByteArray());
-		return Http.getOutput(is, ct.contentType, ct.contentEncoding,true);
+		return Http3.getOutput(is, ct.contentType, ct.contentEncoding,true);
 		
 	}
 

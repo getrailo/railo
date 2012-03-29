@@ -9,11 +9,11 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import railo.commons.io.IOUtil;
+import railo.commons.net.HTTPUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.tag.Http;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -44,7 +44,7 @@ public final class GetHTTPRequestData implements Function {
         Object obj = "";
         
         boolean isBinary =!(
-        		contentType == null || Http.isText(contentType) ||
+        		contentType == null || HTTPUtil.isTextMimeType(contentType) ||
         		 
         		contentType.toLowerCase().startsWith("application/x-www-form-urlencoded"));
         //print.err("err:"+contentType+":"+charEncoding);

@@ -86,6 +86,7 @@ import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.ntp.NtpClient;
+import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
@@ -274,10 +275,7 @@ public abstract class ConfigImpl implements Config {
 	private int scriptProtect=ApplicationContext.SCRIPT_PROTECT_ALL;
 
 	//private boolean proxyEnable=false;
-	private String 	proxyServer=null;
-	private int 	proxyPort=80;
-	private String 	proxyUsername=null;
-	private String 	proxyPassword=null;
+	private ProxyData proxy =null;
 
 
 	private Resource clientScopeDir;
@@ -2247,57 +2245,15 @@ public abstract class ConfigImpl implements Config {
 	/**
 	 * @return the proxyPassword
 	 */
-	public String getProxyPassword() {
-		return proxyPassword;
+	public ProxyData getProxyData() {
+		return proxy;
 	}
 
 	/**
 	 * @param proxyPassword the proxyPassword to set
 	 */
-	protected void setProxyPassword(String proxyPassword) {
-		this.proxyPassword = proxyPassword;
-	}
-
-	/**
-	 * @return the proxyPort
-	 */
-	public int getProxyPort() {
-		return proxyPort;
-	}
-
-	/**
-	 * @param proxyPort the proxyPort to set
-	 */
-	protected void setProxyPort(int proxyPort) {
-		this.proxyPort = proxyPort;
-	}
-
-	/**
-	 * @return the proxyServer
-	 */
-	public String getProxyServer() {
-		return proxyServer;
-	}
-
-	/**
-	 * @param proxyServer the proxyServer to set
-	 */
-	protected void setProxyServer(String proxyServer) {
-		this.proxyServer = proxyServer;
-	}
-
-	/**
-	 * @return the proxyUsername
-	 */
-	public String getProxyUsername() {
-		return proxyUsername;
-	}
-
-	/**
-	 * @param proxyUsername the proxyUsername to set
-	 */
-	protected void setProxyUsername(String proxyUsername) {
-		this.proxyUsername = proxyUsername;
+	protected void setProxyData(ProxyData proxy) {
+		this.proxy = proxy;
 	}
 
 	/**

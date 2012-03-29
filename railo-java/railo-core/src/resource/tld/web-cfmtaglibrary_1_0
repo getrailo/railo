@@ -5420,7 +5420,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 	<!-- Http -->
 	<tag>
 		<name>http</name>
-		<tag-class>railo.runtime.tag.Http</tag-class>
+		<tag-class>railo.runtime.tag.Http4</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>

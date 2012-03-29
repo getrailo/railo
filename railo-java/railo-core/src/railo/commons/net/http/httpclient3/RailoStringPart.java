@@ -1,9 +1,10 @@
-package railo.commons.net;
+package railo.commons.net.http.httpclient3;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+
 
 public class RailoStringPart extends StringPart {
 

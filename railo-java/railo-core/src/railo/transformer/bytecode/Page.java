@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -18,6 +18,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
@@ -1430,7 +1431,7 @@ public final class Page extends BodyBase {
 	public static byte[] setSourceLastModified(byte[] barr,  long lastModified) {
 		ClassReader cr = new ClassReader(barr);
 		ClassWriter cw = ASMUtil.getClassWriter();
-		ClassAdapter ca = new SourceLastModifiedClassAdapter(cw,lastModified);
+		ClassVisitor ca = new SourceLastModifiedClassAdapter(cw,lastModified);
 		cr.accept(ca, ClassReader.SKIP_DEBUG);
 		return cw.toByteArray();
 	}
@@ -1438,11 +1439,11 @@ public final class Page extends BodyBase {
 
 
 }
-	class SourceLastModifiedClassAdapter extends ClassAdapter {
+	class SourceLastModifiedClassAdapter extends ClassVisitor {
 
 		private long lastModified;
 		public SourceLastModifiedClassAdapter(ClassWriter cw, long lastModified) {
-			super(cw);
+			super(Opcodes.ASM4,cw);
 			this.lastModified=lastModified;
 		}
 		public MethodVisitor visitMethod(int access,String name, String desc,  String signature, String[] exceptions) {

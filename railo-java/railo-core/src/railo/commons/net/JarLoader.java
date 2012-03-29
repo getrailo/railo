@@ -150,7 +150,7 @@ public class JarLoader {
 			boolean changed=res.length()!=HTTPUtil.length(dataUrl);
 			
 			return changed;
-		} catch (MalformedURLException e) {
+		} catch (IOException e) {
 			return false;
 		}
     }
