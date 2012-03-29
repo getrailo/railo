@@ -1069,8 +1069,8 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="services.update.location_devDesc">This Update Provider (dev.getrailo.org) returns ""Bleeding Edge"" versions. Usually only a small amount of testing has been performed on these versions. This source should NOT be used for production environments.</data>
 	<data key="services.update.location_custom">Custom</data>
 	<data key="services.update.location_customDesc">Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""</data>
-		<data key="services.update.lib">Update JARs</data>
-	<data key="services.update.libDesc">Your JARs are out of date. In order to update your JARs, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JARs from our download section and update the JARs manually. You have to restart your Servlet engine, so that the changes take effect.</data>
+		<data key="services.update.lib">Update JAR's</data>
+	<data key="services.update.libDesc">Your JAR's are out of date. In order to update your JAR's, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JAR's from our download section and update the JAR's manually. You have to restart your Servlet engine, so that the changes take effect.</data>
 	<data key="settings.gateway.ListenerCfcPath">Listener CFC Path</data>
 	<data key="settings.gateway.startupMode">Startup Mode</data>
 	<data key="settings.gateway.startupModeAutomatic">Automatic</data>
