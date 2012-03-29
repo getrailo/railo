@@ -67,6 +67,7 @@ import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.engine.ExecutionLog;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.err.ErrorPagePool;
@@ -1981,6 +1982,20 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public void executeRest(String realPath, boolean throwExcpetion) throws PageException  {
     	try{
     	String pathInfo = req.getPathInfo();
+    	
+    	// charset
+    	try{
+    	String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType())[1];
+    	if(StringUtil.isEmpty(charset))charset=ThreadLocalPageContext.getConfig().getWebCharset();
+	    	java.net.URL reqURL = new java.net.URL(req.getRequestURL().toString());
+	    	String path=ReqRspUtil.decode(reqURL.getPath(),charset,true);
+	    	String srvPath=req.getServletPath();
+	    	if(path.startsWith(srvPath)) {
+	    		pathInfo=path.substring(srvPath.length());
+	    	}
+    	}
+    	catch (Exception e){}
+    	
     	
     	// Service mapping
     	if(StringUtil.isEmpty(pathInfo) || pathInfo.equals("/")) {// ToDo
