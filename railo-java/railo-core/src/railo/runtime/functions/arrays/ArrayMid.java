@@ -19,7 +19,7 @@ public final class ArrayMid implements Function {
 		int s=(int) start;
 		int c=(int) count;
 		
-		if(s<1) throw new FunctionException(pc, "ArrayMid", 2, "start", "Parameter which is now ["+1+"] must be a positive integer");
+		if(s<1) throw new FunctionException(pc, "ArrayMid", 2, "start", "Parameter which is now ["+s+"] must be a positive integer");
 		if(c==-1) c=arr.size();
 		else if(c<-1) throw new FunctionException(pc, "ArrayMid", 3, "count", "Parameter which is now ["+c+"] must be a non-negative integer or -1 (for string length)");
 		c+=s-1;
