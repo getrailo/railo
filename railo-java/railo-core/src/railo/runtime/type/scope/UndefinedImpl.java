@@ -73,15 +73,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Variables variablesScope() {
 		return (Variables) variable;
 	}
-
-	/*
-     * @see railo.runtime.type.scope.Undefined#check Arguments(boolean)
-     * /
-	public boolean check Arguments(boolean b) {
-		boolean old=this.check Arguments;
-		this.check Arguments=b;
-		return old;
-	}*/
 	
 	/**
 	 * @see railo.runtime.type.scope.Undefined#setMode(int)
