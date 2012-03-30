@@ -530,6 +530,33 @@ Remember CFML arrays start at 1 not 0.</description>
 			<type>number</type>
 		</return>
 	</function>
+	<!-- arrayMid -->
+	<function>
+		<name>arrayMid</name>
+		<class>railo.runtime.functions.arrays.ArrayMid</class>
+		<description>Extracts a sub array from a array.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to substract data from</description>
+	    </argument>
+		<argument>
+			<name>start</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>The position of the first element to retrieve. </description>
+	    </argument>
+		<argument>
+			<name>count</name>
+			<type>number</type>
+			<required>no</required>
+			<description>The number of elements to retrieve. If not set, all elements until the end of the array will be returned. </description>
+	    </argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- arrayMin -->
 	<function>
 		<name>arrayMin</name>
