@@ -24,17 +24,11 @@ public final class ArrayMid implements Function {
 		else if(c<-1) throw new FunctionException(pc, "ArrayMid", 3, "count", "Parameter which is now ["+c+"] must be a non-negative integer or -1 (for string length)");
 		c+=s-1;
 		if(s>arr.size()) return new ArrayImpl();
-		else if(c>=arr.size())return mid(arr,s,c);
-		else {
-			return mid(arr,s,c);
-		}
-	}
-
-	private static Array mid(Array arr,int start, int count) {
+		
 		ArrayImpl rtn = new ArrayImpl();
 		int len = arr.size();
 		Object value;
-		for(int i=start;i<=count && i<=len ;i++){
+		for(int i=s;i<=c && i<=len ;i++){
 			value=arr.get(i, null);
 			rtn.appendEL(value);
 		}
