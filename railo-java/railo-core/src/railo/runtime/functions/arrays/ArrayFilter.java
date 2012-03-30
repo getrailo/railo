@@ -38,7 +38,7 @@ public final class ArrayFilter implements Function {
 		for(int i=0;i<keys.length;i++){
 			value=array.get(keys[i]);
 			if(Caster.toBooleanValue(filter.call(pc, new Object[]{value}, true)))
-				rtn.set(keys[i], value);
+				rtn.append(value);
 		}
 		return rtn;
 	}
