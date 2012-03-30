@@ -1,5 +1,6 @@
 package railo.runtime.type.util;
 
+import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -17,8 +18,19 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ArraySupport implements Array,List,Sizeable {
+public abstract class ArraySupport extends AbstractList implements Array,List,Sizeable {
 
+	
+	public static final short TYPE_OBJECT = 0;
+	public static final short TYPE_BOOLEAN = 1;
+	public static final short TYPE_BYTE = 2;
+	public static final short TYPE_SHORT = 3;
+	public static final short TYPE_INT = 4;
+	public static final short TYPE_LONG = 5;
+	public static final short TYPE_FLOAT = 6;
+	public static final short TYPE_DOUBLE = 7;
+	public static final short TYPE_CHARACTER = 8;
+	public static final short TYPE_STRING = 9;
 	
 	/**
 	 * @see java.util.List#add(int, E)
@@ -42,95 +54,7 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 		}
 		return true;
 	}
-
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
-	public final boolean addAll(int index, java.util.Collection c) {
-		Iterator it = c.iterator();
-		while(it.hasNext()) {
-			add(index++,it.next());
-		}
-		return !c.isEmpty();
-	}
 	
-	/**
-     * adds a value and return this array
-     * @param o
-     * @return this Array
-     */
-    public synchronized boolean add(Object o) {
-    	appendEL(o);
-        return true;
-    }
-
-	/**
-	 * @see java.util.List#contains(java.lang.Object)
-	 */
-	public final boolean contains(Object o) {
-		return indexOf(o)!=-1;
-	}
-
-	/**
-	 * @see java.util.List#containsAll(java.util.Collection)
-	 */
-	public final boolean containsAll(java.util.Collection c) {
-		Iterator it = c.iterator();
-		while(it.hasNext()) {
-			if(!contains(it.next()))return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
-	public final int indexOf(Object o) {
-		Iterator it=iterator();
-		int index=0;
-		while(it.hasNext()) {
-			if(it.next().equals(o))return index;
-			index++;
-		}
-		return -1;
-	}
-
-	/**
-	 * @see java.util.List#isEmpty()
-	 */
-	public final boolean isEmpty() {
-		return size()==0;
-	}
-
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
-	public final int lastIndexOf(Object o) {
-		Iterator it=iterator();
-		int index=0;
-		int rtn=-1;
-		while(it.hasNext()) {
-			if(it.next().equals(o))rtn=index;
-			index++;
-		}
-		return rtn;
-	}
-
-	/**
-	 * @see java.util.List#listIterator()
-	 */
-	public final ListIterator listIterator() {
-		return new ListIteratorImpl(this,0);
-	}
-
-	/**
-	 * @see java.util.List#listIterator(int)
-	 */
-	public final ListIterator listIterator(int index) {
-		return new ListIteratorImpl(this,index);
-		//return toArrayList().listIterator(index);
-	}
-
 	/**
 	 * @see java.util.List#remove(java.lang.Object)
 	 */
@@ -172,25 +96,6 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 		}
 		return modified;
 	}
-
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
-	public final List subList(int fromIndex, int toIndex) {
-		throw new RuntimeException("method subList is not supported");
-	}
-	
-
-	public static final short TYPE_OBJECT = 0;
-	public static final short TYPE_BOOLEAN = 1;
-	public static final short TYPE_BYTE = 2;
-	public static final short TYPE_SHORT = 3;
-	public static final short TYPE_INT = 4;
-	public static final short TYPE_LONG = 5;
-	public static final short TYPE_FLOAT = 6;
-	public static final short TYPE_DOUBLE = 7;
-	public static final short TYPE_CHARACTER = 8;
-	public static final short TYPE_STRING = 9;
 
 	/**
 	 * @see java.util.List#toArray(T[])
