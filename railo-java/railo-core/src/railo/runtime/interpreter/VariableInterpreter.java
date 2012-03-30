@@ -39,9 +39,9 @@ public final class VariableInterpreter {
         if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
         
         while(list.hasNextNext()) {
-            collection=Caster.toCollection(collection.get(list.next()));
+            collection=Caster.toCollection(collection.get(KeyImpl.init(list.next())));
         }
-        return collection.get(list.next());
+        return collection.get(KeyImpl.init(list.next()));
 	}
 	
 	public static String scopeInt2String(int type) {

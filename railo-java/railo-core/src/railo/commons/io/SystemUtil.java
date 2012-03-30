@@ -730,7 +730,7 @@ public final class SystemUtil {
 			if(type==MEMORY_TYPE_NON_HEAP && _type!=MemoryType.NON_HEAP)continue;
 				
 			double d=((int)(100D/usage.getMax()*usage.getUsed()))/100D;
-			sct.setEL(bean.getName(), Caster.toDouble(d));
+			sct.setEL(KeyImpl.init(bean.getName()), Caster.toDouble(d));
 			
 		}
 		return sct;

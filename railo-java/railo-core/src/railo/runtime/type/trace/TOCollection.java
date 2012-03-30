@@ -8,6 +8,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
 
 abstract class TOCollection extends TOObjects implements Collection {
@@ -202,7 +203,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object get(String key) throws PageException {
 		log(key);
-		return coll.get(key);
+		return coll.get(KeyImpl.init(key));
 		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key),type,category,text);
 	}
 

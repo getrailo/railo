@@ -9,6 +9,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.dt.DateTime;
@@ -210,7 +211,7 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	 * @see railo.runtime.type.Collection#get(java.lang.String)
 	 */
 	public Object get(String key) throws PageException {
-		return column.get(key);
+		return get(KeyImpl.init(key));
 	}
 
 	/**
