@@ -1960,6 +1960,24 @@ public final class Caster {
     public static String toString(boolean b) {
         return b?"true":"false";
     }
+
+    public static UDF toFunction(Object o) throws PageException {
+    	if(o instanceof UDF) return (UDF)o;
+    	
+        else if(o instanceof ObjectWrap) {
+            return toFunction(((ObjectWrap)o).getEmbededObject());
+        }
+        throw new CasterException(o,"function");
+    }
+
+    public static UDF toFunction(Object o, UDF defaultValue) {
+    	if(o instanceof UDF) return (UDF)o;
+    	
+        else if(o instanceof ObjectWrap) {
+            return toFunction(((ObjectWrap)o).getEmbededObject(defaultValue),defaultValue);
+        }
+        return defaultValue;
+    }
     
     /**
      * cast a Object to a Array Object
@@ -3448,6 +3466,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VARIABLE_NAME)  return toVariableName(o);
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
+        else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
 
         if(o instanceof Component) {
             Component comp=((Component)o);
@@ -3480,6 +3499,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_UUID)           return toUUId(o);
         else if(type==CFTypes.TYPE_VARIABLE_NAME)  return toVariableName(o);
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
+        else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
 
         if(type==CFTypes.TYPE_UNDEFINED)

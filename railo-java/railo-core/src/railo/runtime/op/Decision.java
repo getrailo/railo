@@ -39,6 +39,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
+import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
@@ -680,6 +681,22 @@ public final class Decision {
 		return false;
 	}
 
+	public static boolean isFunction(Object obj) {
+		if(obj instanceof UDF)return true;
+		else if(obj instanceof ObjectWrap) {
+            return isFunction(((ObjectWrap)obj).getEmbededObject(null));
+        }
+        return false;
+	}
+
+	public static boolean isClosure(Object obj) {
+		if(obj instanceof Closure)return true;
+		else if(obj instanceof ObjectWrap) {
+            return isClosure(((ObjectWrap)obj).getEmbededObject(null));
+        }
+        return false;
+	}
+
 	/**
 	 * @param string
 	 * @return returns if string represent a variable name
@@ -922,6 +939,7 @@ public final class Decision {
         break;
         case 'f':
         	if("float".equals(type))		return isNumeric(value,true);
+        	if("function".equals(type))		return isFunction(value);
         break;
         case 'g':
         	if("guid".equals(type))			return isGUId(value);
@@ -1031,6 +1049,9 @@ public final class Decision {
                 case 'f':
                     if(type.equals("float")) {
                     	return isCastableToNumeric(o);
+                    }
+                    if(type.equals("function")) {
+                    	return isFunction(o);
                     }
                     break;
                 case 'g':
@@ -1179,6 +1200,7 @@ public final class Decision {
         case CFTypes.TYPE_UUID:         return isUUId(o);
         case CFTypes.TYPE_GUID:         return isGUId(o);
         case CFTypes.TYPE_VARIABLE_NAME:return isVariableName(o);
+        case CFTypes.TYPE_FUNCTION:		return isFunction(o);
         case CFTypes.TYPE_XML:          return isXML(o);
 		}
 		
