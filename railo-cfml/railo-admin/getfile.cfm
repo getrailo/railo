@@ -52,5 +52,5 @@ img/bla.png --->
 
 <cffunction name="getFileDateLastModified" access="private" returntype="string" output="no">
 	<cfargument name="path" type="string" required="true" />
-	<cfreturn createObject("java", "java.io.File").init(arguments.path).lastModified() />
+	<cfreturn createObject("java", "java.io.File").init(expandPath(arguments.path)).lastModified() />
 </cffunction>
