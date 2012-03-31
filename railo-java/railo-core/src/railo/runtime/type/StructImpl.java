@@ -165,14 +165,14 @@ public class StructImpl extends StructSupport {
 		}
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
-		Object obj= map.remove(KeyImpl.init(key));
+	 * /
+	public Object remove (String key) throws PageException {
+		Object obj= map.remove (KeyImpl.init(key));
 		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)

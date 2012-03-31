@@ -37,12 +37,12 @@ public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable 
 		// for the custer wrap this method is not invoked, but it is part of the interface
 	}
 
-	/**
+	/*  *
 	 * @see railo.runtime.type.StructImpl#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
+	 * /
+	public Object remove (String key) throws PageException {
 		return remove(KeyImpl.init(key));
-	}
+	}*/
 
 	
 	

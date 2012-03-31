@@ -617,13 +617,13 @@ public class QueryCacheQuery extends QueryImpl {
 		return query.next(pid);
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.QueryImpl#remove(java.lang.String)
-	 */
-	public synchronized Object remove(String key) throws PageException {
+	 * /
+	public synchronized Object remove (String key) throws PageException {
 		disconnectCache();
 		return query.remove(key);
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#remove(railo.runtime.type.Collection.Key)
@@ -665,13 +665,13 @@ public class QueryCacheQuery extends QueryImpl {
 		return query.removeColumnEL(key);
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.QueryImpl#removeEL(java.lang.String)
-	 */
-	public synchronized Object removeEL(String key) {
+	 * /
+	public synchronized Object removeEL (String key) {
 		disconnectCache();
 		return query.removeEL(key);
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeEL(railo.runtime.type.Collection.Key)

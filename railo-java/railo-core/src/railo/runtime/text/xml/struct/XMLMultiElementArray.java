@@ -266,12 +266,12 @@ public class XMLMultiElementArray extends ArraySupport {
 		return struct.getInnerArray().keysAsString();
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
+	 * /
+	public Object remove (String key) throws PageException {
 		return struct.remove(key);
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)

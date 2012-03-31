@@ -119,14 +119,14 @@ public final class StructImplString extends StructImpl implements Struct {
 		//return (String[])map.keySet().toArray(new String[map.size()]);
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
-		Object obj= map.remove(StringUtil.toLowerCase(key));
+	 * /
+	public Object remove (String key) throws PageException {
+		Object obj= map.remove (StringUtil.toLowerCase(key));
 		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)

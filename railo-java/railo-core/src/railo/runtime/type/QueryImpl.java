@@ -693,17 +693,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return QueryUtil.toStringArray(columnNames);
 	}
 
-	
-
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#removeEL(java.lang.String)
-	 */
-	public synchronized Object removeEL(String key) {
+	 * /
+	public synchronized Object removeEL (String key) {
 		return setEL(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) _removeEL(index);
-		return null;*/
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
@@ -712,12 +707,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return setEL(key,null);
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public synchronized Object remove(String key) throws PageException {
+	 * /
+	public synchronized Object remove (String key) throws PageException {
 		return set(key,null);
-	}
+	}*/
 
 	
 	

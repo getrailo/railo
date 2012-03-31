@@ -55,14 +55,14 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		this.caseSensitive=caseSensitive;
 	}
 	
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
+	 * /
+	public Object remove (String key) throws PageException {
 		Object o= XMLUtil.removeProperty(node,KeyImpl.init(key),caseSensitive);
         if(o!=null)return o;           
         throw new ExpressionException("node has no child with name ["+key+"]");
-	}
+	}*/
 
 	/**
 	 *

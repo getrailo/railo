@@ -77,14 +77,14 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 	}
 	
     
-    /**
+    /* *
      * @see railo.runtime.type.Collection#remove(java.lang.String)
-     */
-    public Object remove(String key) throws PageException {
+     * /
+    public Object remove (String key) throws PageException {
         int index=Caster.toIntValue(key,Integer.MIN_VALUE);
         if(index==Integer.MIN_VALUE)return super.remove (KeyImpl.init(key));
         return remove(index);
-    }
+    }*/
 
     /**
      * @see railo.runtime.text.xml.struct.XMLNodeStruct#remove(railo.runtime.type.Collection.Key)
