@@ -5,6 +5,8 @@
 <cfsavecontent variable="extraCSS"><cfoutput>
 	<style type="text/css">
 		/* new layout; Paul K */
+		img, a img { border:0; }
+		form, div { margin:0; padding:0; }
 		.clear { clear:both }
 		div.error, div.warning, div.message {
 			border:2px solid red;
