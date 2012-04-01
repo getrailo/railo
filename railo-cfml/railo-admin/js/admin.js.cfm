@@ -1,3 +1,17 @@
+/* init functions */
+$(function(){
+	scrollToEl('div.error,div.warning');
+});
+
+function scrollToEl(selector)
+{
+	var intoview = $(selector).eq(0).css('opacity',.1);
+	if (intoview.length)
+	{
+		$('html,body').animate({scrollTop: intoview.offset().top-50}, 500, function(){ intoview.animate({opacity:1}, 1000) });
+	}
+}
+
 function initMenu() {
 	$('#menu ul').show();
 	$('#menu li a').click(

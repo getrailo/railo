@@ -1,9 +1,11 @@
 body {background-image:url('getfile.cfm?file=img/web-back.png');background-repeat:repeat-x;background-color:#f7f7f7;margin-top:0px;margin-left:0px;}
-body, tr, td,div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:#3c3e40;}
+body, th, td, div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:#3c3e40;}
 .box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:#007bb7;}
 h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:#007bb7;}
-h2 {height:6pt;font-size : 12pt;font-weight:normal;color:#007bb7;}
-a{color:#007bb7;}
+h2 {font-size:12pt;font-weight:normal;color:#007bb7; margin:0; padding: 0 0 10px 0;}
+a{color:#007bb7; text-decoration:underline}
+img, a img { border:0; }
+form, div { margin:0; padding:0; }
 
 .comment{font-size : 10px;color:#787a7d;text-decoration:none;}
 .commentHead{font-size : 10px;color:#DFE9F6;}
@@ -30,14 +32,21 @@ td.tabtop {border-style:solid;border-color:#e0e0e0;border-width:0px 0px 1px 0px 
 .CheckOk{font-weight:bold;color:#009933;font-size : 12px;}
 .CheckError{font-weight:bold;color:#cc0000;font-size : 12px;}
 
-input{
+input {
 	background: url('getfile.cfm?file=img/input-shadow.png') repeat-x 0 0;
 	background-color:white;
-	padding-left:3px;padding-right:2px;padding-top:3px;padding-bottom:3px;margin:3px 1px 3px 1px;color:#3c3e40;border-style:solid;border-width:1px;border-color:#e0e0e0;
+	padding:3px 2px 3px 3px;
+	margin:3px 1px 3px 1px;
+	color:#3c3e40;
+	border:1px solid #e0e0e0;
 }
 .button,.submit,.reset {
 	background: url('getfile.cfm?file=img/input-button.png') repeat-x 0 0;
-	background-color:#f2f2f2;color:#3c3e40;font-weight:bold;padding-left:10px;padding-right:10px;margin:0px;
+	background-color:#f2f2f2;
+	color:#3c3e40;
+	font-weight:bold;
+	padding:3px 10px;
+	margin:0px;
 }
 select {font-size : 11px;color:#3c3e40;margin:3px 0px 3px 0px;}
 .checkbox,.radio {border:0px;}
@@ -87,4 +96,122 @@ ul#menu li ul li a.menu_active {
 /* server admin */
 body.server {background-image:url('getfile.cfm?file=img/server-back.png')}
 body.server .box, body.server h1, body.server h2, body.server a, body.server ul#menu li ul li a
-, body.server ul#menu li ul li a:hover, body.server ul#menu li ul li a.menu_active {color:#9c0000}
+, body.server ul#menu li ul li a:hover, body.server ul#menu li ul li a.menu_active, body.server .extensionthumb a:hover {color:#9c0000}
+
+/* new layout; Paul K */
+.clear { clear:both }
+div.error, div.warning, div.message {
+	border:2px solid red;
+	padding:5px;
+	margin:10px 0px;
+	font-weight:bold;
+	color:red;
+}
+div.warning {
+	border-color: #FC6;
+	color:#000;
+}
+div.message {
+	border-color: #0C0;
+	color:#000;
+}
+.right { text-align:right; }
+.left { text-align:left; }
+.center { text-align:center }
+
+/* tables */
+.maintbl {
+	width:100%;
+	border-collapse:separate;
+}
+.maintbl td, .maintbl th {
+	padding: 2px 5px;
+	text-align:left;
+	font-weight:normal;
+}
+.maintbl tbody td, .maintbl tbody th {/* like .tblContent */
+	border:1px solid #e0e0e0;
+}
+.maintbl tbody th {/* like .tblHead */
+	background-color:#f2f2f2;
+	color:#3c3e40;
+	width: 30%;
+}
+.maintbl tfoot td {
+	border:none;
+}
+
+.optionslist {border:0; border-collapse:collapse; width:auto;}
+.optionslist td, .optionslist th { padding:3px; vertical-align:top;}
+.contentlayout { border-collapse:collapse; width:100%; }
+.contentlayout td, .contentlayout th { border:0; }
+
+/* page header with H2 and other content */
+.modheader {
+	margin-top: 20px;
+}
+
+/* filter form */
+.filterform {
+	padding:5px;
+	margin:10px 0px;
+	border:1px solid #e0e0e0;
+	background-color:#f2f2f2;
+	color:#3c3e40
+}
+.filterform ul {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+.filterform li {
+	width: auto;
+	float:left;
+	padding-right: 10px;
+}
+.filterform label {
+	width: 200px;
+	height:18px;
+	display:block;
+}
+.filterform input.txt, .filterform select {
+	width: 200px;
+}
+.filterform input.submit {
+	margin-top: 20px;
+}
+
+/* extensions overview */
+.extensionlist {
+	margin-bottom: 20px;
+}
+.extensionthumb {
+	width:140px;
+	height:100px;
+	overflow: hidden;
+	margin:5px 5px 0px 0px;
+	float:left;
+	text-align:center;
+}
+.extensionthumb a {
+	display:block;
+	padding:2px;
+	height: 94px;
+	text-decoration:none !important;
+	border: 1px solid #E0E0E0;
+}
+.extensionthumb a:hover {
+	background-color:#f8f8f8;
+	border-color: #007bb7;
+}
+.extimg {
+	height:50px;
+}
+textarea.licensetext {
+	height:200px;
+	width:100%;
+	font-family:Courier New;
+	font-size : 8pt;
+	color:##595F73;
+	border: 1px solid #666;
+}
