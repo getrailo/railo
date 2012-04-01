@@ -19,6 +19,7 @@
 	<cfset session.extFilter2.provider="">
 </cfif>
 
+<!--- get providers --->
 <cfadmin 
 	action="getExtensionProviders"
 	type="#request.adminType#"
@@ -26,7 +27,7 @@
 	returnVariable="providers">
 <cfset request.providers=providers>
     
-
+<!--- get already installed extensions --->
 <cfadmin 
     action="getExtensions"
     type="#request.adminType#"
@@ -35,6 +36,7 @@
  
 <cfparam name="err" default="#struct(message:"",detail:"")#">
 
+<!--- get all extensions from all providers --->
 <cfset data="">
 <cfloop query="providers">
 	<cftry>
@@ -46,7 +48,7 @@
         	<cfset data=queryNew(_apps.columnlist&",provider,info,uid")>
         </cfif>
         
-        <!--- check if all column exists --->
+        <!--- check if all columns exist --->
         <cfloop list="#_apps.columnlist#" index="col">
 			<cfif not queryColumnExists(data,col)><cfset QueryAddColumn(data,col,array())></cfif>
         </cfloop>
@@ -64,9 +66,9 @@
         
     	<cfcatch>
         	<cfif len(err.message)>
-        		<cfset err.message&="<br>can't load provider [#providers.url#]">
+        		<cfset err.message&="<br>Can't load provider [#providers.url#]; error: [#cfcatch.message#]">
             <cfelse>
-        		<cfset err.message="can't load provider [#providers.url#]">
+        		<cfset err.message="Can't load provider [#providers.url#]; error: [#cfcatch.message#]">
             </cfif>
         </cfcatch>
     </cftry>
@@ -74,15 +76,12 @@
 <cfif isQuery(data)><cfset querySort(query:data,names:"name,uid,category")></cfif>
 
 
-
-
-
 <!--- Action --->
-<cfparam name="error" default="#struct(message:"",detail:"")#">
-<cftry>
+<cfparam name="variables.error" default="#struct(message:"",detail:"")#" />
 
+<cftry>
 	<cfswitch expression="#form.mainAction#">
-	<!--- Filter --->
+		<!--- Filter --->
 		<cfcase value="#stText.Buttons.filter#">
         	<cfif StructKeyExists(form,"filter")>
 				<cfset session.extFilter.filter=trim(form.filter)>
@@ -108,18 +107,20 @@
         	<cflocation url="#request.self#?action=#url.action#&action2=install1&uid=#form.uid#" addtoken="no">
 		</cfcase>
 	</cfswitch>
-<cfinclude template="#url.action#.#url.action2#.cfm"/>
+	
+	<cfinclude template="#url.action#.#url.action2#.cfm" />
+	
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
 </cftry>
 
-
-
-
 <cfsetting enablecfoutputonly="no">
-<!--- 
-Error Output --->
-<cfset printError(err)>
-<cfset printError(error)>
+<!--- Error Output --->
+<cfif err.message neq "">
+	<cfset printError(err)>
+</cfif>
+<cfif error.message neq "">
+	<cfset printError(error)>
+</cfif>
