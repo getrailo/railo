@@ -1,6 +1,130 @@
 <cfsetting enablecfoutputonly="yes">
 <cfinclude template="extension.functions.cfm">
 
+<!--- if pull request 35 s a fact, then this can be removed --->
+<cfsavecontent variable="extraCSS"><cfoutput>
+	<style type="text/css">
+		/* new layout; Paul K */
+		.clear { clear:both }
+		div.error, div.warning, div.message {
+			border:2px solid red;
+			padding:5px;
+			margin:10px 0px;
+			font-weight:bold;
+			color:red;
+		}
+		div.warning {
+			border-color: ##FC6;
+			color:##000;
+		}
+		div.message {
+			border-color: ##0C0;
+			color:##000;
+		}
+		.right { text-align:right; }
+		.left { text-align:left; }
+		.center { text-align:center }
+		
+		/* tables */
+		.maintbl {
+			width:100%;
+			border-collapse:separate;
+		}
+		.maintbl td, .maintbl th {
+			padding: 2px 5px;
+			text-align:left;
+			font-weight:normal;
+		}
+		.maintbl tbody td, .maintbl tbody th {/* like .tblContent */
+			border:1px solid ##e0e0e0;
+		}
+		.maintbl tbody th {/* like .tblHead */
+			background-color:##f2f2f2;
+			color:##3c3e40;
+			width: 30%;
+		}
+		.maintbl tfoot td {
+			border:none;
+		}
+		
+		.optionslist {border:0; border-collapse:collapse; width:auto;}
+		.optionslist td, .optionslist th { padding:3px; vertical-align:top;}
+		.contentlayout { border-collapse:collapse; width:100%; }
+		.contentlayout td, .contentlayout th { border:0; }
+		
+		/* page header with H2 and other content */
+		.modheader {
+			margin-top: 20px;
+		}
+		
+		/* filter form */
+		.filterform {
+			padding:5px;
+			margin:10px 0px;
+			border:1px solid ##e0e0e0;
+			background-color:##f2f2f2;
+			color:##3c3e40
+		}
+		.filterform ul {
+			list-style:none;
+			margin:0;
+			padding:0;
+		}
+		.filterform li {
+			width: auto;
+			float:left;
+			padding-right: 10px;
+		}
+		.filterform label {
+			width: 200px;
+			height:18px;
+			display:block;
+		}
+		.filterform input.txt, .filterform select {
+			width: 200px;
+		}
+		.filterform input.submit {
+			margin-top: 20px;
+		}
+		
+		/* extensions overview */
+		.extensionlist {
+			margin-bottom: 20px;
+		}
+		.extensionthumb {
+			width:140px;
+			height:100px;
+			overflow: hidden;
+			margin:5px 5px 0px 0px;
+			float:left;
+			text-align:center;
+		}
+		.extensionthumb a {
+			display:block;
+			padding:2px;
+			height: 94px;
+			text-decoration:none !important;
+			border: 1px solid ##E0E0E0;
+		}
+		.extensionthumb a:hover {
+			background-color:##f8f8f8;
+			border-color: ##007bb7;
+		}
+		.extimg {
+			height:50px;
+		}
+		textarea.licensetext {
+			height:200px;
+			width:100%;
+			font-family:Courier New;
+			font-size : 8pt;
+			color:##595F73;
+			border: 1px solid ##666;
+		}	
+	</style>
+</cfoutput></cfsavecontent>
+<cfhtmlhead text="#extraCSS#" />
+
 
 <cfif StructKeyExists(form,'action2')>
 	<cfset url.action2="install3">
