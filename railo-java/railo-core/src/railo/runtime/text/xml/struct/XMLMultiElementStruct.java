@@ -9,7 +9,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 
 /**
  * Element that can contain more than one Element

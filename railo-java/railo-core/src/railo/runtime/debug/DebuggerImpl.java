@@ -44,7 +44,6 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.util.KeyConstants;
 
 

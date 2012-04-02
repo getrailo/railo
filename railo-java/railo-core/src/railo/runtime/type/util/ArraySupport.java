@@ -3,7 +3,6 @@ package railo.runtime.type.util;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.poi.ss.formula.functions.T;
 

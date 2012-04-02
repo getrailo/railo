@@ -3,7 +3,6 @@ package railo.runtime.type.trace;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.debug.Debugger;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;

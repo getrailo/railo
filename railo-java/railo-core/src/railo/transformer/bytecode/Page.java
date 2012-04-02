@@ -18,7 +18,6 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;

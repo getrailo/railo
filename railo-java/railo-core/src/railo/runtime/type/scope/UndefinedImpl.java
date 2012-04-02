@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import railo.commons.io.SystemUtil;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -14,9 +13,6 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.system.GetCurrentContext;
-import railo.runtime.functions.system.GetCurrentTemplatePath;
-import railo.runtime.functions.system.GetFunctionCalledName;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
