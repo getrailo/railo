@@ -35,7 +35,7 @@
 			<cfset variables._filter = cleanExtensions(variables.config.extensions) />
 
 			<cflog text="start" type="information" file="#variables.logFileName#">
-			<cfset var funcNames={add:config.addFunction, change:config.changeFunction, delete:config.deleteFunction}>
+			<cfset var funcNames={add:variables.config.addFunction, change:variables.config.changeFunction, delete:variables.config.deleteFunction}>
 
 			<!--- check if the directory actually exists --->
 			<cfif not DirectoryExists(variables.config.directory)>
@@ -54,7 +54,7 @@
 		<!--- first execution --->
 		<cfwhile variables.state EQ "running">
 			<cftry>
-				<cfset var coll=compareFiles(files,funcNames,config.directory, config.recurse, variables._filter)>
+				<cfset var coll=compareFiles(files,funcNames,variables.config.directory, variables.config.recurse, variables._filter)>
 				<cfset files=coll.data>
 				<cfset var name="">
 				<cfset var funcName="">
