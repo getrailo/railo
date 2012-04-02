@@ -33,6 +33,7 @@
 		,field("Tracing","tracing",true,false,"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.","checkbox")
 		
 		,field("Timer","timer",true,false,"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. ","checkbox")
+		,field("Implicit variable Access","accessScope",true,false,"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). ","checkbox")
 		
 		
 		,group("Output Format","Define details to the fomrat of the debug output",3)
@@ -101,6 +102,8 @@ private function isColumnEmpty(string columnName){
 <cfset timers=debugging.timers>
 <cfset traces=debugging.traces>
 <cfset querySort(pages,"avg","desc")>
+<cfset accessScope=debugging.accessScope>
+<cfset querySort(accessScope,"count","desc")>
 
 <cfparam name="custom.unit" default="millisecond">
 <cfparam name="custom.color" default="black">
@@ -273,6 +276,31 @@ millisecond:"ms"
  </table>
 </cfif>
 
+<!--- Access Scope --->
+<cfif structKeyExists(custom,"accessScope") and custom.accessScope and accessScope.recordcount>
+	<cfset hasAction=!isColumnEmpty('traces.action')>
+	<cfset hasCategory=!isColumnEmpty('traces.category')>
+	<p class="cfdebug"><hr/><b class="cfdebuglge">Acceses Scope via cascading</b></p>
+		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
+		<tr>
+			<td class="cfdebug"><b>Scope</b></td>
+			<td class="cfdebug"><b>Template</b></td>
+			<td class="cfdebug"><b>Line</b></td>
+			<td class="cfdebug"><b>Var</b></td>
+			<td class="cfdebug"><b>Count</b></td>
+		</tr>
+<cfset total=0>
+<cfloop query="accessScope">
+		<tr>
+			<td align="left" class="cfdebug" nowrap>#accessScope.scope#</td>
+			<td align="left" class="cfdebug" nowrap>#accessScope.template#</td>
+			<td align="left" class="cfdebug" nowrap>#accessScope.line#</td>
+			<td align="left" class="cfdebug" nowrap>#accessScope.name#</td>
+			<td align="left" class="cfdebug" nowrap>#accessScope.count#</td>
+		</tr>
+</cfloop>                
+ </table>
+</cfif> 
 
 <!--- Traces --->
 <cfif structKeyExists(custom,"tracing") and custom.tracing and traces.recordcount>
