@@ -757,4 +757,43 @@ public final class SystemUtil {
 	public static long microTime() {
 		return System.nanoTime()/1000L;
 	}
+	
+	public static TemplateLine getCurrentContext() {
+		return _getCurrentContext(new Exception("Stack trace"));
+	}
+	private static TemplateLine _getCurrentContext(Throwable t) {
+		
+		//Throwable root = t.getRootCause();
+		Throwable cause = t.getCause(); 
+		if(cause!=null)_getCurrentContext(cause);
+		StackTraceElement[] traces = t.getStackTrace();
+		
+		
+        int line=0;
+		String template;
+		
+		StackTraceElement trace=null;
+		for(int i=0;i<traces.length;i++) {
+			trace=traces[i];
+			template=trace.getFileName();
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
+			line=trace.getLineNumber();
+			return new TemplateLine(template,line);
+		}
+		return null;
+	}
+	
+	public static class TemplateLine {
+
+		public final String template;
+		public final int line;
+
+		public TemplateLine(String template, int line) {
+			this.template=template;
+			this.line=line;
+		}
+		public String toString(){
+			return template+":"+line;
+		}
+	}
 }

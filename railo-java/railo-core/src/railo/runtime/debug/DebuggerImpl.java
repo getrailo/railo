@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
@@ -43,6 +44,8 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.scope.ScopeFactory;
+import railo.runtime.type.util.KeyConstants;
 
 
 /**
@@ -51,23 +54,16 @@ import railo.runtime.type.dt.DateTimeImpl;
 public final class DebuggerImpl implements Dumpable, Debugger {
 	private static final long serialVersionUID = 3957043879267494311L;
 	
-	private static final Collection.Key PAGES = KeyImpl.intern("pages");
+	
 	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
-	private static final Collection.Key TIMERS = KeyImpl.intern("timers");
-	private static final Collection.Key TRACES = KeyImpl.intern("traces");
-	private static final Collection.Key HISTORY = KeyImpl.intern("history");
-	private static final Collection.Key CGI = KeyImpl.intern("cgi");
-	private static final Collection.Key SQL = KeyImpl.intern("sql");
-	private static final Collection.Key SRC = KeyImpl.intern("src");
-	private static final Collection.Key COUNT = KeyImpl.intern("count");
-	private static final Collection.Key DATASOURCE = KeyImpl.intern("datasource");
-	private static final Collection.Key USAGE = KeyImpl.intern("usage");
+	private static final Collection.Key ACCESS_SCOPE = KeyImpl.intern("accessScope");
 	
 	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
 	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
 	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
+	private Map<String,DebugAccessScopeImpl> accessScopes=new HashMap<String,DebugAccessScopeImpl>();
 	
 	private boolean output=true;
 	private long lastEntry;
@@ -75,7 +71,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	private Array historyId=new ArrayImpl();
 	private Array historyLevel=new ArrayImpl();
 
-	private DateTimeImpl starttime; 
+	private DateTimeImpl starttime;
+ 
 	
 	
 	
@@ -85,6 +82,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	public void reset() {
 		pages.clear();
 		queries.clear();
+		accessScopes.clear();
 		timers.clear();
 		traces.clear();
 		exceptions.clear();
@@ -383,7 +381,6 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		queries.add(new QueryEntryImpl(null,datasource,name,sql,recordcount,src.getDisplayPath(),time));
 	}
 	
-	// FUTURE add to interface
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
 		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
 	}
@@ -474,15 +471,15 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		    while(qryIt.hasNext()) {
 		        row++;
 		        QueryEntry qe=qryIt.next();
-				qryQueries.setAt(KeyImpl.NAME,row,qe.getName()==null?"":qe.getName());
-		        qryQueries.setAt(KeyImpl.TIME,row,Integer.valueOf(qe.getExe()));
-		        qryQueries.setAt(SQL,row,qe.getSQL().toString());
-				qryQueries.setAt(SRC,row,qe.getSrc());
-                qryQueries.setAt(COUNT,row,Integer.valueOf(qe.getRecordcount()));
-                qryQueries.setAt(DATASOURCE,row,qe.getDatasource());
+				qryQueries.setAt(KeyConstants._name,row,qe.getName()==null?"":qe.getName());
+		        qryQueries.setAt(KeyConstants._time,row,Integer.valueOf(qe.getExe()));
+		        qryQueries.setAt(KeyConstants._sql,row,qe.getSQL().toString());
+				qryQueries.setAt(KeyConstants._src,row,qe.getSrc());
+                qryQueries.setAt(KeyConstants._count,row,Integer.valueOf(qe.getRecordcount()));
+                qryQueries.setAt(KeyConstants._datasource,row,qe.getDatasource());
                 
                 Struct usage = getUsage(qe);
-                if(usage!=null) qryQueries.setAt(USAGE,row,usage);
+                if(usage!=null) qryQueries.setAt(KeyConstants._usage,row,usage);
                 
                 
                 
@@ -586,28 +583,65 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 			}
 			catch(PageException dbe) {}
         }
+        
+
+
+		// scope access
+		len=accessScopes==null?0:accessScopes.size();
+        Query qryAccessScopes=new QueryImpl(
+                new String[]{"template","line","scope","count","name"},
+                len,"accessScope");
+        if(len>0) {
+        	try {
+	        	Iterator<DebugAccessScopeImpl> it = accessScopes.values().iterator();
+	        	DebugAccessScopeImpl das;
+	        	row=0;
+	        	while(it.hasNext()) {
+	        		das= it.next();
+	        		row++;
+	        		qryAccessScopes.setAt(KeyConstants._template,row,das.getTemplate()); 
+	        		qryAccessScopes.setAt(KeyConstants._line,row,new Double(das.getLine()));
+	        		qryAccessScopes.setAt(KeyConstants._scope,row,das.getScope()); 
+	        		qryAccessScopes.setAt(KeyConstants._count,row,new Double(das.getCount())); 
+	        		qryAccessScopes.setAt(KeyConstants._name,row,das.getName());  
+	        		
+	        	}
+			}
+			catch(PageException dbe) {}
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
 		
         Query history=new QueryImpl(new String[]{},0,"history");
         try {
-			history.addColumn(KeyImpl.ID, historyId);
-	        history.addColumn("level", historyLevel);
+			history.addColumn(KeyConstants._id, historyId);
+	        history.addColumn(KeyConstants._level, historyLevel);
 		} catch (PageException e) {
 		}
 		
 		if(addAddionalInfo) {
-			debugging.setEL(CGI,pc.cgiScope());
+			debugging.setEL(KeyConstants._cgi,pc.cgiScope());
 			debugging.setEL("starttime",starttime);
 			
 			
 			
 		}
 		
-		debugging.setEL(PAGES,qryPage);
+		debugging.setEL(KeyConstants._pages,qryPage);
 		debugging.setEL(QUERIES,qryQueries);
-		debugging.setEL(TIMERS,qryTimers);
-		debugging.setEL(TRACES,qryTraces);
-		debugging.setEL(HISTORY,history);
-		debugging.setEL(KeyImpl.EXCEPTIONS,arrExceptions);
+		debugging.setEL(KeyConstants._timers,qryTimers);
+		debugging.setEL(KeyConstants._traces,qryTraces);
+		debugging.setEL(ACCESS_SCOPE,qryAccessScopes);
+		
+		debugging.setEL(KeyImpl.intern("history"),history);
+		debugging.setEL(KeyConstants._exceptions,arrExceptions);
 		
 		return debugging;
     }
@@ -738,6 +772,29 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 
 	public void init(Config config) {
 		this.starttime=new DateTimeImpl(config);
+	}
+
+	public void getScopes() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addAccessScope(String scope, String name) {
+		if(accessScopes.size()>1000) return;
+		try {
+			SystemUtil.TemplateLine tl = SystemUtil.getCurrentContext(); 
+			String key=tl+":"+scope+":"+name;
+			DebugAccessScopeImpl dsc = accessScopes.get(key);
+			if(dsc!=null)
+				dsc.inc();
+			else 
+				accessScopes.put(key,new DebugAccessScopeImpl(scope,name,tl.template,tl.line));
+		}
+		catch(Throwable t){}
+	}
+
+	public DebugAccessScope[] getAccessScopes(int scope, String name) {
+		return accessScopes.values().toArray(new DebugAccessScopeImpl[accessScopes.size()]);
 	}
 
 }

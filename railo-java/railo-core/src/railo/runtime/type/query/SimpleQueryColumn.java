@@ -21,9 +21,11 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Undefined;
 
 public class SimpleQueryColumn implements QueryColumn {
+
+	private static final long serialVersionUID = 288731277532671308L;
 
 	private SimpleQuery qry;
 	private Key key;
@@ -107,7 +109,7 @@ public class SimpleQueryColumn implements QueryColumn {
     	// get it from undefined scope
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
-			UndefinedImpl undefined = ((UndefinedImpl)pc.undefinedScope());
+			Undefined undefined = pc.undefinedScope();
 			boolean old = undefined.setAllowImplicidQueryCall(false);
 			Object sister = undefined.get(this.key,null);
 			undefined.setAllowImplicidQueryCall(old);

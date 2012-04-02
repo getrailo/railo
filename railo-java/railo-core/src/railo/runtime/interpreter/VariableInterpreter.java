@@ -16,7 +16,7 @@ import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
-import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 
 /**
@@ -134,9 +134,9 @@ public final class VariableInterpreter {
 			}
 			
 			// Undefined Scope
-			else if(scope instanceof UndefinedImpl) {
+			else if(scope instanceof Undefined) {
 				PageContextImpl pci=(PageContextImpl) pc;
-				UndefinedImpl undefined=(UndefinedImpl) scope;
+				Undefined undefined=(Undefined) scope;
 				
 				boolean check=undefined.getCheckArguments();
 				Variables orgVar=pc.variablesScope();

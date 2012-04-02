@@ -153,6 +153,10 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      */
     public abstract Client clientScope() throws PageException;
+    
+
+    public abstract Client clientScopeEL();
+    
     /**
      * @return cluster scope
      * @throws PageException

@@ -21,7 +21,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.Scope;
-import railo.runtime.type.scope.UndefinedImpl;
 
 import com.intergral.fusiondebug.server.FDLanguageException;
 import com.intergral.fusiondebug.server.IFDStackFrame;
@@ -127,15 +126,15 @@ public class FDStackFrameImpl implements IFDStackFrame {
 	/**
 	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getScopeNames()
 	 */
-	public List getScopeNames() {
-		List implScopes = ((UndefinedImpl) pc.undefinedScope()).getScopeNames();
+	public List<String> getScopeNames() {
+		List<String> implScopes = pc.undefinedScope().getScopeNames();
 		for(int i=0;i<SCOPES_AS_INT.length;i++){
 			if(!implScopes.contains(SCOPES_AS_STRING[i]) && enabled(pc,SCOPES_AS_INT[i]))
 				implScopes.add(SCOPES_AS_STRING[i]);
 		}
 		return implScopes;
 	}
-	public static List testScopeNames(PageContextImpl pc) {
+	public static List<String> testScopeNames(PageContextImpl pc) {
 		return new FDStackFrameImpl(null,pc,null,null).getScopeNames();
 	}
 	

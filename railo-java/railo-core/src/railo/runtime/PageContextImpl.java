@@ -199,7 +199,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private ScopeContext scopeContext;
     private Variables variablesRoot=new VariablesImpl();//ScopeSupport(false,"variables",Scope.SCOPE_VARIABLES);
     private Variables variables=variablesRoot;//new ScopeSupport("variables",Scope.SCOPE_VARIABLES);
-    private UndefinedImpl undefined;
+    private Undefined undefined;
 	
     private URLImpl _url=new URLImpl();
 	private FormImpl _form=new FormImpl();

@@ -619,6 +619,7 @@ public class KeyConstants {
 	public static final Key _exceptions=KeyImpl.intern("exceptions");
 	public static final Key _closure=KeyImpl.intern("closure");
 	public static final Key _function=KeyImpl.intern("function");
+	public static final Key _cgi = KeyImpl.intern("cgi");
 	
 	
 	

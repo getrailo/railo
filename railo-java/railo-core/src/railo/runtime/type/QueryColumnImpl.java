@@ -26,7 +26,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.MethodInstance;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyIterator;
-import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.util.ArrayIterator;
 
@@ -219,7 +219,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     	// get it from undefined scope
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
-			UndefinedImpl undefined = ((UndefinedImpl)pc.undefinedScope());
+			Undefined undefined = pc.undefinedScope();
 			boolean old = undefined.setAllowImplicidQueryCall(false);
 			Object sister = undefined.get(this.key,null);
 			undefined.setAllowImplicidQueryCall(old);
@@ -242,7 +242,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     	// get it from undefined scope
 		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
-			UndefinedImpl undefined = ((UndefinedImpl)pc.undefinedScope());
+			Undefined undefined = pc.undefinedScope();
 			boolean old = undefined.setAllowImplicidQueryCall(false);
 			Object sister = undefined.get(this.key,null);
 			undefined.setAllowImplicidQueryCall(old);

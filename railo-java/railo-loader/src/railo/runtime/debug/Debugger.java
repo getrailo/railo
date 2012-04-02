@@ -10,6 +10,7 @@ import railo.runtime.db.SQL;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 
 /**
@@ -43,9 +44,13 @@ public interface Debugger extends Dumpable {
      * @param recordcount
      * @param src
      * @param time 
+     * @deprecated  use <code>addQueryExecutionTime(String datasource, String name, SQL sql, int recordcount, PageSource src, int time)</code> instead
      */
     public abstract void addQueryExecutionTime(String datasource, String name, SQL sql, int recordcount, PageSource src, int time);
 
+
+	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
+    
     /**
      * sets if toHTML print html output info or not
      * @param output The output to set.
@@ -99,9 +104,17 @@ public interface Debugger extends Dumpable {
 	 * @return debug trace object
 	 */
 	public abstract DebugTrace addTrace(int type, String category, String text, PageSource page, String varName, String varValue);
+	
+	public abstract DebugTrace addTrace(int type, String category, String text, String template,int line,String action,String varName,String varValue);
+		
 
 	public abstract DebugTrace[] getTraces();
 
 	public abstract void addException(Config config,PageException pe);
 	public CatchBlock[] getExceptions();
+	
+	public void addAccessScope(String scope, String name);
+
+	public DebugAccessScope[] getAccessScopes(int scope, String name);
+	
 }

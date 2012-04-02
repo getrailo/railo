@@ -1,8 +1,12 @@
 package railo.runtime.type.scope;
 
+import java.util.List;
+
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
+import railo.runtime.type.Struct;
 import railo.runtime.util.QueryStack;
 
 /**
@@ -96,6 +100,9 @@ public interface Undefined extends Scope {
 	 */
     public abstract Object getCollection(String key) throws PageException;
 
+
+	public List<String> getScopeNames();
+	
     /**
      * return value matching key, if value is from Query return a QueryColumn
      * @param key
@@ -123,5 +130,16 @@ public interface Undefined extends Scope {
      * change the variable scope
      * @param scope
      */
-    public abstract void setVariableScope(Scope scope);
+    public abstract void setVariableScope(Variables scope);
+
+	/**
+	 * @return if check for arguments and local scope values
+	 */
+	public boolean getCheckArguments();
+	
+	public Struct getScope(Collection.Key key);
+	
+	public boolean setAllowImplicidQueryCall(boolean allowImplicidQueryCall);
+	
+	public void reinitialize(PageContext pc) ;
 }

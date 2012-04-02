@@ -35,7 +35,6 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Caller;
 import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
@@ -380,10 +379,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     }
     
     private static void setCaller(PageContext pageContext, Struct args) throws PageException {
-    	UndefinedImpl undefined=(UndefinedImpl) pageContext.undefinedScope();
-    	args.set(CALLER, undefined.duplicate(false));
-    	//args.set(CALLER, pageContext.variablesScope());
-    	
+    	args.set(CALLER, pageContext.undefinedScope().duplicate(false));
 	}
 
 	private static void validateAttributes(Component cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
