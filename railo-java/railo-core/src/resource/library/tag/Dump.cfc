@@ -71,9 +71,9 @@ component {
 		attrib['format'] = trim(attrib.format);
 
 		if(len(attrib.format) EQ 0) {
-			if(attrib.output EQ "console")      attrib['format'] = default.console;
-			else if(attrib.output EQ "browser") attrib['format'] = default.browser;
-			else                                attrib['format'] = default.console;
+			if(attrib.output EQ "console")      attrib['format'] = variables.default.console;
+			else if(attrib.output EQ "browser") attrib['format'] = variables.default.browser;
+			else                                attrib['format'] = variables.default.console;
 		}
 		else if(not arrayFindNoCase(supportedFormats, attrib.format)){
 			throw message="format [#attrib.format#] is not supported, supported formats are [#arrayToList(supportedFormats)#]";
@@ -94,9 +94,9 @@ component {
 
 		// output
 		if(attrib.output EQ "browser") {
-			echo(NEWLINE & '<!-- ==start== dump #now()# format: #attrib.format# -->' & NEWLINE);
-			echo('<div id="#dumpID#">#result#</div>' & NEWLINE);
-			echo('<!--  ==stop== dump -->' & NEWLINE);
+			echo(variables.NEWLINE & '<!-- ==start== dump #now()# format: #attrib.format# -->' & variables.NEWLINE);
+			echo('<div id="#dumpID#">#result#</div>' & variables.NEWLINE);
+			echo('<!--  ==stop== dump -->' & variables.NEWLINE);
 		}
 		else if(attrib.output EQ "console") {
 			systemOutput(result);
@@ -122,14 +122,14 @@ component {
 						  required string level ,
 						  required string dumpID,
 						  struct cssColors={}) {
-
+		var NEWLINE=variables.NEWLINE;
 		var id = createId();
 		var rtn = "";
 		var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 		var title = !arguments.level ? 'title="#arguments.context#" ' : '';
 		var width = structKeyExists(arguments.meta,'width') ? ' width="' & arguments.meta.width & '"' : '';
 		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
-		var indent = repeatString(TAB, arguments.level);
+		var indent = repeatString(variables.TAB, arguments.level);
 
 			
 
@@ -183,7 +183,7 @@ component {
 			// Header
 			if(arguments.level EQ 0){
 				// javascript
-				head=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
+				var head=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
 				head&=("function dumpOC(name){");
 				head&=( "var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);" );
 				head&=("var s=null;" );
@@ -202,7 +202,7 @@ component {
 				head&=( 'div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#;}' & NEWLINE);
 				head&=('div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
 				head&=('div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
-				loop collection="#cssColors#" item="key" {
+				loop collection="#cssColors#" item="local.key" {
 					head&="td.#key# {background-color:#cssColors[key]#;}"& NEWLINE;
 				}
 				head&=('</style>' & NEWLINE);
