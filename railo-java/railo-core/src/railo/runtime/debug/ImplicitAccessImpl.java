@@ -1,6 +1,6 @@
 package railo.runtime.debug;
 
-public class DebugAccessScopeImpl implements DebugAccessScope {
+public class ImplicitAccessImpl implements ImplicitAccess {
 
 	private int count=1;
 	private String scope;
@@ -8,7 +8,7 @@ public class DebugAccessScopeImpl implements DebugAccessScope {
 	private int line;
 	private String name;
 
-	public DebugAccessScopeImpl(String scope, String name, String template, int line) {
+	public ImplicitAccessImpl(String scope, String name, String template, int line) {
 		this.scope=scope;
 		this.name=name;
 		this.template=template;

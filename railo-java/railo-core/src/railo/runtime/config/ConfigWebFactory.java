@@ -1194,8 +1194,8 @@ public final class ConfigWebFactory {
             f=debug.getRealResource("Classic.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc",f);
             
-            //f=debug.getRealResource("Modern.cfc");
-            //if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Modern.cfc",f);
+            f=debug.getRealResource("Modern.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Modern.cfc",f);
             
             f=debug.getRealResource("Comment.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Comment.cfc",f);

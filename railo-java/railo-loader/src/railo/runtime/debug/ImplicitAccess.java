@@ -1,6 +1,6 @@
 package railo.runtime.debug;
 
-public interface DebugAccessScope {
+public interface ImplicitAccess {
 
 	public void inc();
 

@@ -113,8 +113,8 @@ public interface Debugger extends Dumpable {
 	public abstract void addException(Config config,PageException pe);
 	public CatchBlock[] getExceptions();
 	
-	public void addAccessScope(String scope, String name);
+	public void addImplicitAccess(String scope, String name);
 
-	public DebugAccessScope[] getAccessScopes(int scope, String name);
+	public ImplicitAccess[] getImplicitAccesses(int scope, String name);
 	
 }

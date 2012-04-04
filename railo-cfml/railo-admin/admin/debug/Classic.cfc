@@ -33,7 +33,7 @@
 		,field("Tracing","tracing",true,false,"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.","checkbox")
 		
 		,field("Timer","timer",true,false,"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. ","checkbox")
-		,field("Implicit variable Access","accessScope",true,false,"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). ","checkbox")
+		,field("Implicit variable Access","implicitAccess",true,false,"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). ","checkbox")
 		
 		
 		,group("Output Format","Define details to the fomrat of the debug output",3)
@@ -102,8 +102,8 @@ private function isColumnEmpty(string columnName){
 <cfset timers=debugging.timers>
 <cfset traces=debugging.traces>
 <cfset querySort(pages,"avg","desc")>
-<cfset accessScope=debugging.accessScope>
-<cfset querySort(accessScope,"count","desc")>
+<cfset implicitAccess=debugging.implicitAccess>
+<cfset querySort(implicitAccess,"template,line,count","asc,asc,desc")>
 
 <cfparam name="custom.unit" default="millisecond">
 <cfparam name="custom.color" default="black">
@@ -277,10 +277,8 @@ millisecond:"ms"
 </cfif>
 
 <!--- Access Scope --->
-<cfif structKeyExists(custom,"accessScope") and custom.accessScope and accessScope.recordcount>
-	<cfset hasAction=!isColumnEmpty('traces.action')>
-	<cfset hasCategory=!isColumnEmpty('traces.category')>
-	<p class="cfdebug"><hr/><b class="cfdebuglge">Acceses Scope via cascading</b></p>
+<cfif structKeyExists(custom,"implicitAccess") and custom.implicitAccess and implicitAccess.recordcount>
+	<p class="cfdebug"><hr/><b class="cfdebuglge">Implicit variable Access</b></p>
 		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
 		<tr>
 			<td class="cfdebug"><b>Scope</b></td>
@@ -290,13 +288,13 @@ millisecond:"ms"
 			<td class="cfdebug"><b>Count</b></td>
 		</tr>
 <cfset total=0>
-<cfloop query="accessScope">
+<cfloop query="implicitAccess">
 		<tr>
-			<td align="left" class="cfdebug" nowrap>#accessScope.scope#</td>
-			<td align="left" class="cfdebug" nowrap>#accessScope.template#</td>
-			<td align="left" class="cfdebug" nowrap>#accessScope.line#</td>
-			<td align="left" class="cfdebug" nowrap>#accessScope.name#</td>
-			<td align="left" class="cfdebug" nowrap>#accessScope.count#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.scope#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.template#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.line#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.name#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.count#</td>
 		</tr>
 </cfloop>                
  </table>

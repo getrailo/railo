@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.print;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -18,6 +19,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
@@ -236,7 +238,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		// variable
 		rtn=variable.get(key,null);
 		if(rtn!=null) {
-			if(debug && checkArguments) debugCascadedAccess(variable, key);
+			if(debug && checkArguments) debugCascadedAccess(variable,rtn, key);
 			return rtn;
 	    }
 		
@@ -260,13 +262,19 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		throw new ExpressionException("variable ["+key.getString()+"] doesn't exist");
 	}
 	
-	private void debugCascadedAccess(Variables var, Collection.Key key) {
-		if(var instanceof ComponentScope && (key.equals(KeyConstants._THIS) || key.equals(KeyConstants._SUPER))) return;
+	private void debugCascadedAccess(Variables var, Object value, Collection.Key key) {
+		if(var instanceof ComponentScope){
+			if(key.equals(KeyConstants._THIS) || key.equals(KeyConstants._SUPER)) return;
+			if(value instanceof UDF) {
+				return;
+			}
+		}
+		
 		debugCascadedAccess("variables", key);
 	}
 	
 	private void debugCascadedAccess(String name, Collection.Key key) {
-		((DebuggerImpl)pc.getDebugger()).addAccessScope(name,key.getString());
+		((DebuggerImpl)pc.getDebugger()).addImplicitAccess(name,key.getString());
 		
 	}
 	
@@ -368,7 +376,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		// variable
 		rtn=variable.get(key,null);
 		if(rtn!=null) {
-			if(debug && checkArguments) debugCascadedAccess(variable, key);
+			if(debug && checkArguments) debugCascadedAccess(variable,rtn, key);
 			return rtn;
 		}
 		
@@ -417,7 +425,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
         // variable
         rtn=variable.get(key,null);
         if(rtn!=null) {
-        	if(debug && checkArguments) debugCascadedAccess(variable, key);
+        	if(debug && checkArguments) debugCascadedAccess(variable, rtn, key);
 			return rtn;
         }
 		
@@ -473,10 +481,14 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Object setEL(Collection.Key key, Object value) {
 		if(checkArguments) {
             if(localAlways || local.containsKey(key))     return local.setEL(key,value);
-            if(argument.containsFunctionArgumentKey(key))  return argument.setEL(key,value);
+            if(argument.containsFunctionArgumentKey(key))  {
+            	if(debug)debugCascadedAccess(argument.getTypeAsString(), key);
+            	return argument.setEL(key,value);
+            }
         }
 			
-		return variable.setEL(key,value);
+		if(debug && checkArguments)debugCascadedAccess(variable.getTypeAsString(), key);
+    	return variable.setEL(key,value);
 	}
 
 	/**
@@ -486,10 +498,14 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Object set(Collection.Key key, Object value) throws PageException {
 		if(checkArguments) {
         	if(localAlways || local.containsKey(key))     return local.set(key,value);
-            if(argument.containsFunctionArgumentKey(key))  return argument.set(key,value);
+            if(argument.containsFunctionArgumentKey(key))  {
+            	if(debug)debugCascadedAccess(argument.getTypeAsString(), key);
+            	return argument.set(key,value);
+            }
             
         }
-		return variable.set(key,value);
+		if(debug && checkArguments)debugCascadedAccess(variable.getTypeAsString(), key);
+    	return variable.set(key,value);
 	}
 	
 	/**

@@ -55,14 +55,14 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	
 	
 	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
-	private static final Collection.Key ACCESS_SCOPE = KeyImpl.intern("accessScope");
+	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
 	
 	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
 	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
 	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
-	private Map<String,DebugAccessScopeImpl> accessScopes=new HashMap<String,DebugAccessScopeImpl>();
+	private Map<String,ImplicitAccessImpl> implicitAccesses=new HashMap<String,ImplicitAccessImpl>();
 	
 	private boolean output=true;
 	private long lastEntry;
@@ -81,7 +81,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	public void reset() {
 		pages.clear();
 		queries.clear();
-		accessScopes.clear();
+		implicitAccesses.clear();
 		timers.clear();
 		traces.clear();
 		exceptions.clear();
@@ -586,23 +586,23 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 
 
 		// scope access
-		len=accessScopes==null?0:accessScopes.size();
-        Query qryAccessScopes=new QueryImpl(
+		len=implicitAccesses==null?0:implicitAccesses.size();
+        Query qryImplicitAccesseses=new QueryImpl(
                 new String[]{"template","line","scope","count","name"},
-                len,"accessScope");
+                len,"implicitAccess");
         if(len>0) {
         	try {
-	        	Iterator<DebugAccessScopeImpl> it = accessScopes.values().iterator();
-	        	DebugAccessScopeImpl das;
+	        	Iterator<ImplicitAccessImpl> it = implicitAccesses.values().iterator();
+	        	ImplicitAccessImpl das;
 	        	row=0;
 	        	while(it.hasNext()) {
 	        		das= it.next();
 	        		row++;
-	        		qryAccessScopes.setAt(KeyConstants._template,row,das.getTemplate()); 
-	        		qryAccessScopes.setAt(KeyConstants._line,row,new Double(das.getLine()));
-	        		qryAccessScopes.setAt(KeyConstants._scope,row,das.getScope()); 
-	        		qryAccessScopes.setAt(KeyConstants._count,row,new Double(das.getCount())); 
-	        		qryAccessScopes.setAt(KeyConstants._name,row,das.getName());  
+	        		qryImplicitAccesseses.setAt(KeyConstants._template,row,das.getTemplate()); 
+	        		qryImplicitAccesseses.setAt(KeyConstants._line,row,new Double(das.getLine()));
+	        		qryImplicitAccesseses.setAt(KeyConstants._scope,row,das.getScope()); 
+	        		qryImplicitAccesseses.setAt(KeyConstants._count,row,new Double(das.getCount())); 
+	        		qryImplicitAccesseses.setAt(KeyConstants._name,row,das.getName());  
 	        		
 	        	}
 			}
@@ -637,7 +637,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		debugging.setEL(QUERIES,qryQueries);
 		debugging.setEL(KeyConstants._timers,qryTimers);
 		debugging.setEL(KeyConstants._traces,qryTraces);
-		debugging.setEL(ACCESS_SCOPE,qryAccessScopes);
+		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
 		
 		debugging.setEL(KeyImpl.intern("history"),history);
 		debugging.setEL(KeyConstants._exceptions,arrExceptions);
@@ -778,22 +778,22 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		
 	}
 
-	public void addAccessScope(String scope, String name) {
-		if(accessScopes.size()>1000) return;
+	public void addImplicitAccess(String scope, String name) {
+		if(implicitAccesses.size()>1000) return;
 		try {
 			SystemUtil.TemplateLine tl = SystemUtil.getCurrentContext(); 
 			String key=tl+":"+scope+":"+name;
-			DebugAccessScopeImpl dsc = accessScopes.get(key);
+			ImplicitAccessImpl dsc = implicitAccesses.get(key);
 			if(dsc!=null)
 				dsc.inc();
 			else 
-				accessScopes.put(key,new DebugAccessScopeImpl(scope,name,tl.template,tl.line));
+				implicitAccesses.put(key,new ImplicitAccessImpl(scope,name,tl.template,tl.line));
 		}
 		catch(Throwable t){}
 	}
 
-	public DebugAccessScope[] getAccessScopes(int scope, String name) {
-		return accessScopes.values().toArray(new DebugAccessScopeImpl[accessScopes.size()]);
+	public ImplicitAccess[] getImplicitAccesses(int scope, String name) {
+		return implicitAccesses.values().toArray(new ImplicitAccessImpl[implicitAccesses.size()]);
 	}
 
 }
