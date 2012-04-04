@@ -34,17 +34,17 @@ function oc(id) {
 </script>
 <cfscript>
 function convertST(st){
-	st=replace(HTMLEditFormat(st),"
+	arguments.st=replace(HTMLEditFormat(arguments.st),"
 ","<br>","all");
 
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"	","&nbsp;&nbsp;&nbsp;","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"	","&nbsp;&nbsp;&nbsp;","all");
 	
-return st;
+return arguments.st;
 
 }
 </cfscript>
