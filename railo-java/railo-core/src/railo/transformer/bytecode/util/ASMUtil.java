@@ -907,5 +907,22 @@ public final class ASMUtil {
 		bc.getAdapter().visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "nanoTime", "()J");
 		bc.getAdapter().visitInsn(Opcodes.POP2);
 	}
+
+
+	/**
+	 * convert a clas array to a type array
+	 * @param classes
+	 * @return
+	 */
+	public static Type[] toTypes(Class<?>[] classes) {
+		if(classes==null || classes.length==0) 
+			return new Type[0];
+		
+		Type[] types=new Type[classes.length];
+		for(int i=0;i<classes.length;i++)	{
+			types[i]=Type.getType(classes[i]);
+		}
+		return types;
+	}
 	
 }

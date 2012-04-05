@@ -1881,6 +1881,32 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	
+	<!-- CreateDynamicProxy -->
+	<function>
+		<name>CreateDynamicProxy</name>
+		<class>railo.runtime.functions.other.CreateDynamicProxy</class>
+		<status>hidden</status>
+		<description>wrap the given component with a java class that implements the given interfaces.</description>
+		<argument>
+			<name>cfc</name>
+			<alias>cfcName,component,componentName</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>component or component name</description>
+	    </argument>
+		<argument>
+			<name>interfaces</name>
+			<alias>interface</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>array of strings containg interface pathes or a string list of interface pathes.</description>
+	    </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
 	<!-- createObject -->
 	<function>
 		<name>createObject</name>

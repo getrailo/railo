@@ -205,7 +205,7 @@ public final class Reflector {
 	 * @param clazzArgs arguments to display
 	 * @return list
 	 */
-	public static String getDspMethods(Class[] clazzArgs) {
+	public static String getDspMethods(Class... clazzArgs) {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<clazzArgs.length;i++) {
 			if(i>0)sb.append(", ");
