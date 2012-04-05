@@ -70,7 +70,7 @@ public final class NamedArgument extends Argument {
 	            for(int y=0;y<arr.length;y++){
 	    			av.visitBeginItem(adapter, y);
 	    				adapter.push(arr[y]);
-	    			av.visitEndItem(bc);
+	    			av.visitEndItem(bc.getAdapter());
 	            }
 	            av.visitEnd();
 			}
