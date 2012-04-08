@@ -1,4 +1,31 @@
-body {background-image:url('getfile.cfm?file=img/web-back.png');background-repeat:repeat-x;background-color:#f7f7f7;margin-top:0px;margin-left:0px;}
+<cfsetting showdebugoutput="no">
+<cfsilent>
+	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
+	<cfif not structKeyExists(application, "oHTTPCaching")>
+		<cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
+	</cfif>
+	
+	<!--- create a string to be used as an Etag - in the response header --->
+	<cfset filepath = getCurrentTemplatePath() />
+	<cfset lastModified = application.oHTTPCaching.getFileDateLastModified(filepath) />
+	<cfset etag = lastModified & '-' & hash(filepath) />
+	<cfset mimetype = "text/css" />
+	
+	<!--- check if the content was cached on the browser, and set the ETag header.
+	No expires header is set, because this file might get updated after a Railo update. --->
+	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype)>
+		<cfexit method="exittemplate" />
+	</cfif>
+	
+	<!--- file was not cached; send the data --->
+	<cfcontent reset="yes" type="#mimetype#" />
+	
+	<!--- PK: this style tag is here, so my editor color-codes the content underneath. (it won't get outputted) --->
+	<style type="text/css">
+	
+</cfsilent><!---
+
+--->body {background-image:url('../img/web-back.png.cfm');background-repeat:repeat-x;background-color:#f7f7f7;margin-top:0px;margin-left:0px;}
 body, th, td, div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:#3c3e40;}
 .box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:#007bb7;}
 h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:#007bb7;}
@@ -33,7 +60,7 @@ td.tabtop {border-style:solid;border-color:#e0e0e0;border-width:0px 0px 1px 0px 
 .CheckError{font-weight:bold;color:#cc0000;font-size : 12px;}
 
 input {
-	background: url('getfile.cfm?file=img/input-shadow.png') repeat-x 0 0;
+	background: url('../img/input-shadow.png.cfm') repeat-x 0 0;
 	background-color:white;
 	padding:3px 2px 3px 3px;
 	margin:3px 1px 3px 1px;
@@ -41,7 +68,7 @@ input {
 	border:1px solid #e0e0e0;
 }
 .button,.submit,.reset {
-	background: url('getfile.cfm?file=img/input-button.png') repeat-x 0 0;
+	background: url('../img/input-button.png.cfm') repeat-x 0 0;
 	background-color:#f2f2f2;
 	color:#3c3e40;
 	font-weight:bold;
@@ -72,21 +99,21 @@ ul#menu li ul li a {
 margin-top:0px;margin-bottom:0px;font-weight:normal;
  text-decoration:none;color:#007bb7;font-size : 8pt;
   padding-left: 10px;
-  background-image:url('getfile.cfm?file=img/arrow.gif');background-repeat:no-repeat;
+  background-image:url('../img/arrow.gif.cfm');background-repeat:no-repeat;
 }
 
 ul#menu li ul li a:hover, ul#menu li ul li a.menu_active {
 margin-top:0px;margin-bottom:0px;font-weight:normal;
  text-decoration:none;color:#007bb7;font-size : 8pt;
   padding-left: 10px;
-  background-image:url('getfile.cfm?file=img/arrow-active.gif');background-repeat:no-repeat;
+  background-image:url('../img/arrow-active.gif.cfm');background-repeat:no-repeat;
 }
 ul#menu li ul li a.menu_active {
 	font-weight:bold;
 }
 
 .commentError{font-size : 10px;color:#cc0000;text-decoration:none;}
-.InputError{background: url('getfile.cfm?file=img/input-shadow-error.png') repeat-x 0 0;background-color:#fae2e2;}
+.InputError{background: url('../img/input-shadow-error.png.cfm') repeat-x 0 0;background-color:#fae2e2;}
 		
 /*
 .darker{background-color:#e0e0e0;}
@@ -94,7 +121,7 @@ ul#menu li ul li a.menu_active {
 */
 
 /* server admin */
-body.server {background-image:url('getfile.cfm?file=img/server-back.png')}
+body.server {background-image:url('../img/server-back.png.cfm')}
 body.server .box, body.server h1, body.server h2, body.server a, body.server ul#menu li ul li a
 , body.server ul#menu li ul li a:hover, body.server ul#menu li ul li a.menu_active, body.server .extensionthumb a:hover {color:#9c0000}
 

@@ -202,7 +202,7 @@ Error Output--->
                     <span class="CheckOk">#stVeritfyMessages[jtags.name].label#</span>
                 <cfelse>
                     <span class="CheckError" title="#stVeritfyMessages[jtags.name].message##Chr(13)#">#stVeritfyMessages[jtags.name].label#</span>
-                    &nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
+                    &nbsp;<img src="resources/img/red-info.gif.cfm" 
                         width="9" 
                         height="9" 
                         border="0" 
@@ -240,12 +240,12 @@ Error Output--->
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
+			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
+			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="type_#idx#" value="java">
 			<input type="hidden" name="mainAction" value="updateJava">
@@ -341,7 +341,7 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
                     <span class="CheckOk">#stVeritfyMessages[ctags.name].label#</span>
                 <cfelse>
                     <span class="CheckError" title="#stVeritfyMessages[ctags.name].message##Chr(13)#">#stVeritfyMessages[ctags.name].label#</span>
-                    &nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
+                    &nbsp;<img src="resources/img/red-info.gif.cfm" 
                         width="9" 
                         height="9" 
                         border="0" 
@@ -405,12 +405,12 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
+			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
+			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="type_#idx#" value="cpp">
 			<input type="hidden" name="mainAction" value="updateJava">

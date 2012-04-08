@@ -179,7 +179,7 @@ Error Output--->
 						<span class="CheckOk">#stVeritfyMessages[srcGlobal.id].label#</span>
 					<cfelse>
 						<span class="CheckError" title="#stVeritfyMessages[srcGlobal.id].message##Chr(13)#">#stVeritfyMessages[srcGlobal.id].label#</span>
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
+						&nbsp;<img src="resources/img/red-info.gif.cfm" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -195,13 +195,13 @@ Error Output--->
 		<td colspan="5">
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
-			<td><cfmodule template="img.cfm" src="tp.gif" width="8" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="20"></td>
+			<td><img src="resources/img/tp.gif.cfm" width="8" height="1"></td>		
+			<td><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="20"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="36" height="1"></td>
+			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.verify#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
@@ -246,7 +246,7 @@ Error Output--->
 			</td>
             <td>
             <a href="#request.self#?action=#url.action#&action2=create&id=#Hash(srcLocal.id)#">
-			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a>
+			<img src="resources/img/edit.png.cfm" hspace="2" border="0"></a>
             </td>
 		</tr>
 		</table>
@@ -260,7 +260,7 @@ Error Output--->
 						<span class="CheckOk">#stVeritfyMessages[srcLocal.id].label#</span>
 					<cfelse>
 						<span class="CheckError" title="#stVeritfyMessages[srcLocal.id].message##Chr(13)#">#stVeritfyMessages[srcLocal.id].label#</span>
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
+						&nbsp;<img src="resources/img/red-info.gif.cfm" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -276,13 +276,13 @@ Error Output--->
 		<td colspan="5">
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
-			<td><cfmodule template="img.cfm" src="tp.gif" width="8" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="20"></td>
+			<td><img src="resources/img/tp.gif.cfm" width="8" height="1"></td>		
+			<td><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="20"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="36" height="1"></td>
+			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.refresh#">
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">

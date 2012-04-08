@@ -26,7 +26,7 @@
 	 <table border="0" cellpadding="0" cellspacing="0">
 	 <tr>
 		<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-		<td><cfmodule template="img.cfm" src="#caller.ad#-bgcolor.gif" width="1" height="10"></td>
+		<td><img src="resources/img/#caller.ad#-bgcolor.gif.cfm" width="1" height="10"></td>
 		<td></td>
 	 </tr>
 	 </table>
@@ -65,7 +65,7 @@
         
 		<table>
 		<tr>
-			<td valign="top"><cfmodule template="img.cfm" src="plus.png" style="margin:2px 2px 0px 0px;" name="__btn_remoteclient#request.recount#"/></td>
+			<td valign="top"><img src="resources/img/plus.png.cfm" style="margin:2px 2px 0px 0px;" name="__btn_remoteclient#request.recount#"/></td>
 			<td>#caller.stText.remote.sync.title#<br />
 		<span class="comment">#caller.stText.remote.sync.desc# <cfif len(attributes.attention)><br /><br /><span style="color:red">#attributes.attention#</span></cfif></span></td>
 		</tr>

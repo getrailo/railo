@@ -1,3 +1,28 @@
+<cfsetting showdebugoutput="no">
+<cfsilent>
+	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
+	<cfif not structKeyExists(application, "oHTTPCaching")>
+		<cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
+	</cfif>
+	
+	<!--- create a string to be used as an Etag - in the response header --->
+	<cfset filepath = getCurrentTemplatePath() />
+	<cfset lastModified = application.oHTTPCaching.getFileDateLastModified(filepath) />
+	<cfset etag = lastModified & '-' & hash(filepath) />
+	<cfset mimetype = "text/javascript" />
+	
+	<!--- check if the content was cached on the browser, and set the ETag header.
+	No expires header is set, because this file might get updated after a Railo update. --->
+	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype)>
+		<cfexit method="exittemplate" />
+	</cfif>
+	
+	<!--- file was not cached; send the data --->
+	<cfcontent reset="yes" type="#mimetype#" />
+	
+	<!--- PK: this tag is here, so my editor color-codes the content underneath. (it won't get outputted) --->
+	<script type="text/ecmascript">
+//</cfsilent>
 /* init functions */
 $(function(){
 	scrollToEl('div.error,div.warning');

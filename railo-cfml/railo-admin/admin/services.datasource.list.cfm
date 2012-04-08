@@ -223,7 +223,7 @@ list all mappings and display necessary edit fields --->
 				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
 					#stVeritfyMessages[srcGlobal.name].label#
 					<cfif stVeritfyMessages[srcGlobal.name].label neq "OK">
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
+						&nbsp;<img src="resources/img/red-info.gif.cfm" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -240,12 +240,12 @@ list all mappings and display necessary edit fields --->
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="6" height="1"></td>		
-				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
+				<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="20"></td>
 				<td></td>
 			 </tr>
 			 <tr>
 				<td></td>
-				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
+				<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 				<td>&nbsp;
 				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
@@ -288,7 +288,7 @@ list all mappings and display necessary edit fields --->
 				<input type="hidden" name="username_#srcLocal.currentrow#" value="#srcLocal.Username#">
 				<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
 				</td>
-				<td><a href="#link#"><cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
+				<td><a href="#link#"><img src="resources/img/edit.png.cfm" hspace="2" border="0"></a></td>
 			</tr>
 			</table>
 			</td>
@@ -302,7 +302,7 @@ list all mappings and display necessary edit fields --->
 						<span class="CheckOk">#stVeritfyMessages[srcLocal.name].label#</span>
 					<cfelse>
 						<span class="CheckError" title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">#stVeritfyMessages[srcLocal.name].label#</span>
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
+						&nbsp;<img src="resources/img/red-info.gif.cfm" 
 							width="9" 
 							height="9" 
 							border="0" 
@@ -321,12 +321,12 @@ list all mappings and display necessary edit fields --->
 			 <table border="0" cellpadding="0" cellspacing="0">
 			 <tr>
 				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
+				<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
 				<td></td>
 			 </tr>
 			 <tr>
 				<td></td>
-				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
+				<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 				<td>&nbsp;
 				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">

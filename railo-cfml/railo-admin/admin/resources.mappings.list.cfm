@@ -46,7 +46,7 @@ function checkTheBox(field) {
 		
 		<!--- edit --->
 		<td><cfif not mappings.readOnly><a href="#request.self#?action=#url.action#&action2=create&virtual=#mappings.virtual#">
-		<cfmodule template="img.cfm" src="edit.png" border="0"></a></cfif></td>
+		<img src="resources/img/edit.png.cfm" border="0"></a></cfif></td>
 		
 		
 		
@@ -70,7 +70,7 @@ function checkTheBox(field) {
 			style="width:100%" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<!--- primary --->
-		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
+		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 			<option value="physical" <cfif mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Physical#</option>
 			<option value="archive" <cfif not mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
 		</select></cfif></td>
@@ -80,7 +80,7 @@ function checkTheBox(field) {
 			<cfif mappings.readOnly>
             	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
 			<cfelse>
-            <select name="trusted_#mappings.currentrow#" onChange="checkTheBox(this)">
+            <select name="trusted_#mappings.currentrow#" onchange="checkTheBox(this)">
                 <option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
                 <option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
             </select>
@@ -108,13 +108,13 @@ function checkTheBox(field) {
 			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:100%"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:100%" ></td>
-		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
 			<option value="physical" selected>#stText.Mappings.Physical#</option>
 			<option value="archive">#stText.Mappings.Archive#</option>
 		</select></td>
 		<td class="tblContent" nowrap>
         
-         <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+         <select name="trusted_#mappings.recordcount+1#" onchange="checkTheBox(this)">
                 <option value="true">#stText.setting.inspecttemplateneverShort#</option>
                 <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
             </select>
@@ -131,12 +131,12 @@ function checkTheBox(field) {
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="8" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
+			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="54" height="1"></td>
+			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="54" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
 			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
