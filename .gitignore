@@ -29,3 +29,4 @@ va specific
 *.DS_Store
 *.swp
 *.out
+/WEB-INF/
