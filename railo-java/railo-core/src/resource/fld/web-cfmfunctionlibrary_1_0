@@ -2895,6 +2895,46 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<type>boolean</type>
 		</return>
 	</function>
+	<!-- DirectoryCopy -->
+	<function>
+		<name>DirectoryCopy</name>
+		<class>railo.runtime.functions.file.DirectoryCopy</class>
+		<description>Copies the contents of a directory to a destination directory.</description>
+		<argument>
+			<name>source</name>
+			<alias>directory</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Pathname of directory from which you copy content.</description>
+		</argument>
+		<argument>
+			<name>destination</name>
+			<alias>newDirectory</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path of the destination directory. If not an absolute path, it is relative to the source directory.</description>
+		</argument>
+		<argument>
+			<name>recurse</name>
+			<alias>recursive</alias>
+			<type>boolean</type>
+			<required>no</required>
+			<default>false</default>
+			<description>If true, copies the subdirectories, otherwise only the files in the source directory.</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>any</type>
+			<required>no</required>
+			<description>
+Filter to be used to filter the data copied:
+- A string that uses "*" as a wildcard, for example, "*.cfm"
+- a UDF (User defined Function) using the following pattern "functioname(String path):boolean", the function is run for every single file, if the function returns true, then the file is will be added to the list otherwise it will be omitted</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	<!-- DirectoryCreate -->
 	<function>
 		<name>DirectoryCreate</name>
@@ -2930,6 +2970,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 		</argument>
 		<argument>
 			<name>recurse</name>
+			<alias>recursive</alias>
 			<type>boolean</type>
 			<required>no</required>
 			<description>delete content of the directory</description>

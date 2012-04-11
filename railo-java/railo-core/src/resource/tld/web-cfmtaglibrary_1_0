@@ -2105,6 +2105,13 @@ Example:
 		specified in the directory attribute.</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>destination</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Required for action = "copy". Ignored by all other actions. Path of the destination directory. If not an absolute path, it is relative to the source directory.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>recurse</name>
 			<required>false</required>

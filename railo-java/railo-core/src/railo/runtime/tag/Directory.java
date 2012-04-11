@@ -10,6 +10,8 @@ import railo.commons.io.res.ResourceMetaData;
 import railo.commons.io.res.filter.AndResourceFilter;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.FileResourceFilter;
+import railo.commons.io.res.filter.NotResourceFilter;
+import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.file.FileResource;
@@ -104,7 +106,8 @@ public final class Directory extends TagImpl  {
 	private int listInfo=LIST_INFO_QUERY_ALL;
 	//private int acl=S3Constants.ACL_UNKNOW;
 	private Object acl=null;
-	private int storage=S3Constants.STORAGE_UNKNOW; 
+	private int storage=S3Constants.STORAGE_UNKNOW;
+	private String destination; 
 
 
 
@@ -120,6 +123,7 @@ public final class Directory extends TagImpl  {
 		type=TYPE_ALL; 
 		filter=null;
 		nameFilter=null;
+		destination=null;
 		directory=null;
 		action="list";
 		sort=null;
@@ -272,6 +276,9 @@ public final class Directory extends TagImpl  {
 		//this.newdirectory=ResourceUtil.toResourceNotExisting(pageContext ,newdirectory);
 		this.strNewdirectory=newdirectory;
 	}
+	public void setDestination(String destination)	{
+		this.destination=destination;
+	}
 
 	/** set the value name
 	*  Required for action = "list". Ignored by all other actions. Name of output query for directory 
@@ -304,7 +311,12 @@ public final class Directory extends TagImpl  {
 		else if(action.equals("delete")) actionDelete(pageContext,directory,recurse,serverPassword);
 		else if(action.equals("forcedelete")) actionDelete(pageContext,directory,true,serverPassword);
 		else if(action.equals("rename")) actionRename(pageContext,directory,strNewdirectory,serverPassword,acl,storage);
-		else if(action.equals("copy")) actionCopy(pageContext,directory,strNewdirectory,serverPassword,acl,storage);
+		else if(action.equals("copy")) {
+			if(StringUtil.isEmpty(destination,true) && !StringUtil.isEmpty(strNewdirectory,true)) {
+				destination=strNewdirectory.trim();
+			}
+			actionCopy(pageContext,directory,destination,serverPassword,acl,storage,filter,recurse);
+		}
 		else throw new ApplicationException("invalid action ["+action+"] for the tag directory");
 			
 		return SKIP_BODY;
@@ -648,7 +660,7 @@ public final class Directory extends TagImpl  {
 	}
 	
 	
-	public static  void actionCopy(PageContext pc,Resource directory,String strNewdirectory,String serverPassword, Object acl,int storage) throws PageException {
+	public static  void actionCopy(PageContext pc,Resource directory,String strDestination,String serverPassword, Object acl,int storage, ResourceFilter filter, boolean recurse) throws PageException {
 		// check directory
 		SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
@@ -661,17 +673,26 @@ public final class Directory extends TagImpl  {
 		if(!directory.canRead())
 			throw new ApplicationException("no access to read directory ["+directory.toString()+"]");
 		
-		if(strNewdirectory==null)
-			throw new ApplicationException("attribute newDirectory is not defined");
+		if(StringUtil.isEmpty(strDestination))
+			throw new ApplicationException("attribute destination is not defined");
 		
 		// real to source 
-		Resource newdirectory=toDestination(pc,strNewdirectory,directory);
+		Resource newdirectory=toDestination(pc,strDestination,directory);
 		
 	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
 		if(newdirectory.exists())
 			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
 		try {
-			ResourceUtil.copyRecursive(directory, newdirectory);
+			// has already a filter
+			if(filter!=null) {
+				if(recurse) filter=new OrResourceFilter(new ResourceFilter[]{
+						filter,DirectoryResourceFilter.FILTER
+				});
+			}
+			else {
+				if(!recurse)filter=new NotResourceFilter(DirectoryResourceFilter.FILTER);
+			}
+			ResourceUtil.copyRecursive(directory, newdirectory,filter);
 		}
 		catch(Throwable t) {
 			throw new ApplicationException(t.getMessage());
