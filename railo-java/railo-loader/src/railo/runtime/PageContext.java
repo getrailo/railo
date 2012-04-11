@@ -709,16 +709,35 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
+     * @Deprecated used <code> doInclude(PageSource source, boolean runOnce)</code> instead.
      */
     public abstract void doInclude(PageSource source) throws  PageException;
+
+    /**  
+     * includes a path from a absolute path
+     * @param source absolute path as file object
+     * @param runOnce include only once per request
+     * @throws ServletException
+     */
+    public abstract void doInclude(PageSource source, boolean runOnce) throws  PageException;
     
     
     /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
+     * @Deprecated used <code> doInclude(String source, boolean runOnce)</code> instead.
      */
     public abstract void doInclude(String source) throws  PageException;
+    
+    
+    /**  
+     * includes a path from a absolute path
+     * @param source absolute path as file object
+     * @param runOnce include only once per request
+     * @throws ServletException
+     */
+    public abstract void doInclude(String source, boolean runOnce) throws  PageException;
     
     
     /**

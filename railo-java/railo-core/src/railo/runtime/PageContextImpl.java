@@ -176,6 +176,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private LinkedList<UDF> udfs=new LinkedList<UDF>();
     private LinkedList<PageSource> pathList=new LinkedList<PageSource>();
     private LinkedList<PageSource> includePathList=new LinkedList<PageSource>();
+    private Set<PageSource> includeOnce=new HashSet<PageSource>();
 	
 	/**
 	 * Field <code>executionTime</code>
@@ -637,6 +638,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	gatewayContext=false;
     	
     	manager.release();
+    	includeOnce.clear();
 	}
 
 	
@@ -735,17 +737,24 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return config.toPageSource(applicationContext.getMappings(),res, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.PageContext#doInclude(java.lang.String)
-	 */
+	@Override
 	public void doInclude(String realPath) throws PageException {
-		doInclude(getRelativePageSource(realPath));
+		doInclude(getRelativePageSource(realPath),false);
+	}
+	
+	@Override
+	public void doInclude(String realPath, boolean runOnce) throws PageException {
+		doInclude(getRelativePageSource(realPath),runOnce);
 	}
 
-	/**
-	 * @see railo.runtime.PageContext#doInclude(railo.runtime.PageSource)
-	 */
+	@Override
 	public void doInclude(PageSource source) throws PageException {
+		doInclude(source,false);
+	}
+
+	@Override
+	public void doInclude(PageSource source, boolean runOnce) throws PageException {
+		if(runOnce && includeOnce.contains(source)) return;
     	// debug
 		if(!gatewayContext && config.debug()) {
 			DebugEntry debugEntry=debugger.getEntry(this,source);
@@ -774,6 +783,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
                 }
 			}
 			finally {
+				includeOnce.add(source);
 				int diff= ((int)(System.nanoTime()-exeTime)-(executionTime-currTime));
 			    executionTime+=(int)(System.nanoTime()-time);
 				debugEntry.updateExeTime(diff);
@@ -798,6 +808,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
                 }
 			}
 			finally {
+				includeOnce.add(source);
 				removeLastPageSource(true);
 			}	
 		}

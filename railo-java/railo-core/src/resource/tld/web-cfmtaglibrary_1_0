@@ -6141,6 +6141,16 @@ both functions must have the same attributes; otherwise
 			<script-support>required</script-support>
 			<description>A logical path to an existing page.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>runOnce</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<script-support>optional</script-support>
+			<description>
+			if set to true, the given template is only included once within the current request.
+			</description>
+		</attribute>
 	</tag>
 	<!-- Index -->
 	<tag>

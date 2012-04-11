@@ -6,13 +6,18 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.Types;
 
 public final class TagInclude extends TagBase {
 
-
-	private final static Method DO_INCLUDE = new Method("doInclude",Type.VOID_TYPE,new Type[]{Types.STRING});
+	private final static Method DO_INCLUDE_RUN_ONCE = new Method(
+			"doInclude",
+			Type.VOID_TYPE,
+			new Type[]{Types.STRING,Types.BOOLEAN_VALUE});
 	
 
 	/**
@@ -32,7 +37,17 @@ public final class TagInclude extends TagBase {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
+		
+		// template
 		getAttribute("template").getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT,DO_INCLUDE);
+		
+		// run Once
+		Attribute attr = getAttribute("runonce");
+		ExprBoolean expr = (attr==null)?
+				LitBoolean.FALSE:
+				CastBoolean.toExprBoolean(attr.getValue());
+		expr.writeOut(bc, Expression.MODE_VALUE);
+		
+		adapter.invokeVirtual(Types.PAGE_CONTEXT,DO_INCLUDE_RUN_ONCE);
 	}
 }
