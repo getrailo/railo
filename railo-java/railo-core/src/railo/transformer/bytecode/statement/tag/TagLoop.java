@@ -14,8 +14,10 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.util.ASMConstants;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.AndVisitor;
@@ -161,7 +163,11 @@ public final class TagLoop extends TagBase implements FlowControl {
 
 
 	// Query getQuery(String key)
-	private static final Method GET_QUERY = new Method(
+	public static final Method GET_QUERY_OBJ = new Method(
+			"getQuery",
+			Types.QUERY,
+			new Type[]{Types.OBJECT});
+	public static final Method GET_QUERY_STRING = new Method(
 			"getQuery",
 			Types.QUERY,
 			new Type[]{Types.STRING});
@@ -754,8 +760,12 @@ public final class TagLoop extends TagBase implements FlowControl {
 		// railo.runtime.type.Query query=pc.getQuery(@query);
 		final int query=adapter.newLocal(Types.QUERY);
 		adapter.loadArg(0);
-		getAttribute("query").getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_QUERY);
+		Expression val = getAttribute("query").getValue();
+		val.writeOut(bc, Expression.MODE_REF);
+		if(val instanceof LitString)
+			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_QUERY_STRING);
+		else
+			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_QUERY_OBJ);
 		//adapter.dup();
 		adapter.storeLocal(query);
 		

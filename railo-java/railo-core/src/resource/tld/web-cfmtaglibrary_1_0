@@ -7765,7 +7765,13 @@ Valid only for cfinput type="text".</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The type or severity of the message.</description>
+			<description>
+			Type (severity) of the message:
+- information (default)
+- warning
+- error
+- fatal 
+			</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -7852,11 +7858,11 @@ Valid only for cfinput type="text".</description>
 			<description>Condition that controls the loop.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>query</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Query that controls the loop.  </description>
+			<description>Query that controls the loop. this can be a variable name or the query itself.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -8611,11 +8617,11 @@ Each type-value pair must start with a hyphen.</description>
 		<description>Displays the results of a database query or other operation. To nest cfoutput tags, see the "Usage" section. </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>query</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The name of the cfquery from which to draw data for the output section.</description>
+			<description>The name of the cfquery from which to draw data for the output section or the query itself.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>

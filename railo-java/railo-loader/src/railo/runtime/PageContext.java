@@ -485,6 +485,9 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract Query getQuery(String key) throws PageException;
 
+
+    public abstract Query getQuery(Object value) throws PageException;
+    
     /**
      * write a value to the header of the response
      * @param name name of the value to set

@@ -1516,9 +1516,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see PageContext#getQuery(java.lang.String)
      */
     public Query getQuery(String key) throws PageException {
-		Object o=VariableInterpreter.getVariable(this,key);
-		if(o instanceof Query) return (Query) o;
-		throw new CasterException(o,Query.class);///("["+key+"] is not a query object, object is from type ");
+		Object value=VariableInterpreter.getVariable(this,key);
+		if(Decision.isQuery(value)) return Caster.toQuery(value);
+    	throw new CasterException(value,Query.class);///("["+key+"] is not a query object, object is from type ");
+	}
+    
+    @Override
+    public Query getQuery(Object value) throws PageException {
+    	if(Decision.isQuery(value)) return Caster.toQuery(value);
+    	value=VariableInterpreter.getVariable(this,Caster.toString(value));
+    	if(Decision.isQuery(value)) return Caster.toQuery(value);
+    	throw new CasterException(value,Query.class);
 	}
 
 	/**

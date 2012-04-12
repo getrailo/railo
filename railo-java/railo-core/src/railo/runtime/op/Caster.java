@@ -2735,10 +2735,10 @@ public final class Caster {
      */
     public static Query toQuery(Object o) throws PageException {
     	if(o instanceof Query) return (Query)o;
-    	if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
-        else if(o instanceof ObjectWrap) {
+    	if(o instanceof ObjectWrap) {
             return toQuery(((ObjectWrap)o).getEmbededObject());
         }
+        if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
         throw new CasterException(o,"query");
     }
 
