@@ -13,6 +13,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 import railo.transformer.bytecode.visitor.NotVisitor;
@@ -55,13 +56,6 @@ public final class TagOutput extends TagBase {
 			Types.VOID,
 			new Type[]{});
 
-	
-
-	// Query getQuery(String key)
-	public static final Method GET_QUERY = new Method(
-			"getQuery",
-			Types.QUERY,
-			new Type[]{Types.STRING});
 	
 	// int getRecordcount()
 	public static final Method GET_RECORDCOUNT = new Method(
@@ -505,8 +499,13 @@ public final class TagOutput extends TagBase {
 		// Query query=pc.getQuery(@query);
 		query =adapter.newLocal(Types.QUERY);
 		adapter.loadArg(0);
-		getAttribute("query").getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.GET_QUERY);
+		Expression val = getAttribute("query").getValue();
+		val.writeOut(bc, Expression.MODE_REF);
+		if(val instanceof LitString)
+			adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_QUERY_STRING);
+		else
+			adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_QUERY_OBJ);
+		
 		//adapter.dup();
 		adapter.storeLocal(query);
 		
