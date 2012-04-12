@@ -1,7 +1,7 @@
 <cffunction name="writeLog" output="no" returntype="void" hint="Writes a message to a log file."><cfargument 
 	name="text" type="string" required="yes" hint="Message text to log."><cfargument 
     name="type" type="string" required="no" default="Information" hint="Type (severity) of the message:
-- information
+- information (default)
 - warning
 - error
 - fatal"><cfargument 
