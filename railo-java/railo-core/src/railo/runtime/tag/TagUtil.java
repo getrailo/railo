@@ -24,6 +24,10 @@ import railo.transformer.library.tag.TagLibTag;
 
 public class TagUtil {
 	
+	public static final short ORIGINAL_CASE = 0;
+	public static final short UPPER_CASE = 1;
+	public static final short LOWER_CASE = 2;
+
 	//private static final String "invalid call of the function ["+tlt.getName()+", you can not mix named on regular arguments]" = "invalid argument for function, only named arguments are allowed like struct(name:\"value\",name2:\"value2\")";
 
 	public static void setAttributeCollection(PageContext pc,Tag tag, MissingAttribute[] missingAttrs, Struct attrs, int attrType) throws PageException {
@@ -83,8 +87,9 @@ public class TagUtil {
 	 * @param name
 	 * @param value
 	 */
-	public static void setDynamicAttribute(StructImpl attributes,String name, Object value) {
-        name=StringUtil.toLowerCase(name);
+	public static void setDynamicAttribute(StructImpl attributes,String name, Object value, short caseType) {
+		if(LOWER_CASE==caseType)name=StringUtil.toLowerCase(name);
+		else if(UPPER_CASE==caseType)name=StringUtil.toUpperCase(name);
         if(name.equals("attributecollection")) {
             if(value instanceof railo.runtime.type.Collection) {
             	railo.runtime.type.Collection coll=(railo.runtime.type.Collection)value;
@@ -113,7 +118,6 @@ public class TagUtil {
                 return;
             }
         }
-        
         attributes.setEL(KeyImpl.getInstance(name), value);
 	}
 
