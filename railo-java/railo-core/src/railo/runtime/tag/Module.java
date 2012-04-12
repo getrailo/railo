@@ -30,8 +30,8 @@ public final class Module extends CFTag {
 	    Object objName =attributesScope.get(KeyImpl.NAME,null);
 	    source=null;
 	    if(objTemplate!=null) {
+			attributesScope.removeEL(KeyImpl.TEMPLATE);
 		    String template=objTemplate.toString();
-			
 
             if(StringUtil.startsWith(template,'/'))  source=new InitFile(pageContext.getPageSource(template),template,template.endsWith('.'+pageContext.getConfig().getCFCExtension()));
             else source=new InitFile(pageContext.getCurrentPageSource().getRealPage(template),template,StringUtil.endsWithIgnoreCase(template,'.'+pageContext.getConfig().getCFCExtension()));
@@ -42,6 +42,7 @@ public final class Module extends CFTag {
 			setAppendix(source.getPageSource());
 	    }
 	    else if(objName!=null) {
+			attributesScope.removeEL(KeyImpl.NAME);
 	        String[] filenames = toRealPath(config,objName.toString());
 	        boolean exist=false;
 	        
