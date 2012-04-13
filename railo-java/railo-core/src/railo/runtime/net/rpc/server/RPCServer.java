@@ -50,6 +50,8 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.Component;
+import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageServletException;
 import railo.runtime.net.rpc.RPCConstants;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ComponentUtil;
@@ -127,7 +129,8 @@ public final class RPCServer{
         catch (Throwable e) {
         	if(e instanceof InvocationTargetException)
         		e= ((InvocationTargetException)e).getTargetException();
-        	e.printStackTrace();
+        	if(e instanceof PageException)
+            	throw new PageServletException((PageException)e);
         	throw new ServletException(e);
 		}
     }
