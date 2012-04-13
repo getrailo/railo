@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.axis.AxisFault;
 import org.objectweb.asm.ClassWriter;
@@ -65,6 +66,7 @@ public final class ComponentUtil {
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldtype");
+	private static HashMap<String,String> classComponentMappings = new HashMap<String,String>();
 	
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
@@ -85,7 +87,7 @@ public final class ComponentUtil {
     private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
-    	String className=getClassname(component).concat("_wrap");
+    	String className="DefaultNamespace.".concat(getClassname(component));
     	String real=className.replace('.','/');
     	String realOriginal=classNameOriginal.replace('.','/');
     	Mapping mapping = component.getPageSource().getMapping();
@@ -354,6 +356,15 @@ public final class ComponentUtil {
 
 	}
 
+    /**
+     * 
+     * @param className the underlying class name a component uses
+     * @return the component Path that can be used by loadComponent() to get the component
+     */
+	public static String getComponentPathFromClass(String className)  {
+		return classComponentMappings.get(className);
+	}
+    
 	
     
 	public static Class getServerComponentPropertiesClass(Component component) throws PageException {
@@ -366,6 +377,8 @@ public final class ComponentUtil {
     }
     
     public static Class _getServerComponentPropertiesClass(Component component) throws PageException, IOException, ClassNotFoundException {
+    	
+    	//If coming from axiscastor on a request to a top-level mapping the className is the c_116.absolute.path.to.cfc class, other wise it is relative.
     	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
     	
@@ -380,6 +393,9 @@ public final class ComponentUtil {
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
 		
+		// keep track of classes and what component they map to, for AxisCastor to accurately convert a
+		// class to the appropriate component
+		classComponentMappings.put(className, cp.getPageSource().getComponentName());
 		
 		// load existing class
 		if(classFile.lastModified()>=classFileOriginal.lastModified()) {

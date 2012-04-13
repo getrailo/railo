@@ -52,6 +52,7 @@ import railo.commons.lang.ClassUtil;
 import railo.runtime.Component;
 import railo.runtime.net.rpc.RPCConstants;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ComponentUtil;
 import coldfusion.xml.rpc.QueryBean;
 
 /**
@@ -341,6 +342,8 @@ public final class RPCServer{
                     ((org.apache.axis.SOAPPart) responseMsg.getSOAPPart()).
                             getMessage().setMessageContext(msgContext);
                 }
+                System.err.println("SOAPERROR: " + responseMsg.getSOAPPartAsString());
+                fault.printStackTrace();
             } catch (Throwable t) {
             	if(t instanceof InvocationTargetException)
             		t=((InvocationTargetException)t).getTargetException();
@@ -816,7 +819,12 @@ public final class RPCServer{
 
 
 	public void registerTypeMapping(Class clazz) {
-		String fullname = clazz.getName();//,name,packages;
+		String className = clazz.getName();//,name,packages;
+		String fullname = ComponentUtil.getComponentPathFromClass(className);
+		if (fullname == null) {
+			fullname=className;
+		} 
+		fullname = fullname.substring(fullname.lastIndexOf('.')+1);
 		/*int index=fullname.lastIndexOf('.');
 		if(index==-1) {
 			name=fullname;

@@ -536,7 +536,17 @@ public final class AxisCaster {
     	pc=ThreadLocalPageContext.get(pc);
     	if(pc!=null && value instanceof Pojo) {
     		try{
-    			ComponentAccess c = ComponentUtil.toComponentAccess(pc.loadComponent(value.getClass().getName()));
+    			
+    			// get the path of the component 
+    			String className = value.getClass().getName();
+    			String componentPath = ComponentUtil.getComponentPathFromClass(className);
+    			if (componentPath == null) {
+    				componentPath = className; //this is not precise, but it is what it did before.
+    			}
+    			Component comp = pc.loadComponent(componentPath);
+
+    			ComponentAccess c = ComponentUtil.toComponentAccess(comp);
+    			
     			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
     		
     			// delete this scope data members
