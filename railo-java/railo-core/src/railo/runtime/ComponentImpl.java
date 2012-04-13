@@ -1957,30 +1957,31 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
 		
-		
+		Property[] props;
 		// for faster execution we have this
 		if(!onlyPeristent) {
 			int index=0;
 			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
-			Property[] props=new Property[top.properties.properties.size()];
+			props=new Property[top.properties.properties.size()];
 			while(it.hasNext())	{
 				props[index++]=it.next().getValue();
 			}
 		}
+		else {
 		
-		
-		// collect with filter
-		Property p;
-		java.util.List<Property> props=new ArrayList<Property>();
-		Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
-		while(it.hasNext())	{
-			p = it.next().getValue();
-			if(p.isPeristent()) {
-				props.add(p);
+			// collect with filter
+			Property p;
+			java.util.List<Property> propsList=new ArrayList<Property>();
+			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
+			while(it.hasNext())	{
+				p = it.next().getValue();
+				if(p.isPeristent()) {
+					propsList.add(p);
+				}
 			}
+			props = propsList.toArray(new Property[propsList.size()]);
 		}
-		
-		return props.toArray(new Property[props.size()]);
+		return props;
 	}
 
 	public ComponentScope getComponentScope() {
