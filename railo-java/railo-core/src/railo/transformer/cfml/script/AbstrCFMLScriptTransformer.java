@@ -549,31 +549,39 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		}
 		
 		String rtnType=null;
-		
 		if(strAccess.equalsIgnoreCase("FUNCTION")){
 			strAccess=null;
+			comments(data);
+			// only happens when return type is function
+			if(data.cfml.forwardIfCurrent("function ")){
+				rtnType="function";
+				comments(data);
+			}
 		}
 		else{
 			comments(data);
 			rtnType=variableDec(data, false);
-			
 			if(rtnType==null){
 				data.cfml.setPos(pos);
 				return null;
 			}
 			if(rtnType.equalsIgnoreCase("FUNCTION")){
-				rtnType=null;
+				comments(data);
+				// only happens when return type is function
+				if(data.cfml.forwardIfCurrent("function ")){
+					comments(data);
+				}
+				else rtnType=null;
 			}
 			comments(data);
 			
-			if(rtnType!=null && !data.cfml.forwardIfCurrent("function ")){
+			if(rtnType!=null && !data.cfml.forwardIfCurrent("function ") && !rtnType.equalsIgnoreCase("FUNCTION")){
 				data.cfml.setPos(pos);
 				return null;
 			}
 			comments(data);
 		}
-		
-		
+
 		// check access returntype
 		int access=Component.ACCESS_PUBLIC;
 		if(strAccess!=null && rtnType!=null){
