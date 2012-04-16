@@ -3414,5 +3414,14 @@ public abstract class ConfigImpl implements Config {
 	
 	public abstract boolean getLoginCaptcha();
 
+	private boolean dotNotationUpperCase=true;
+	protected void setDotNotationUpperCase(boolean dotNotationUpperCase) {
+		this.dotNotationUpperCase=dotNotationUpperCase;
+	}
+
+	public boolean getDotNotationUpperCase() {
+		return dotNotationUpperCase;
+	}
+
 	
 }

@@ -95,6 +95,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.label">Einstellungen</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regionales</data>
+	<data key="menu.server.compiler">Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
 	<data key="menu.server.application">Applikation</data>
@@ -537,6 +538,21 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="debug.memorylogger">Memory Logger</data>
 	<data key="debug.showQueryUsage">Query Zugriffe anzeigen</data>
 	<data key="debug.showQueryUsageDesc">Wenn engeschaltete werden die Zugriff auf die Queries die innerhalb eines request gezogen wurden angezeigt.</data>
+	
+		
+	<data key="setting.compiler">Railo Compiler Einstellungen, dies beeinflusst wie der Railo Compiler den Source Code übersetzt. Das ändern dieser Einstellungen löscht alle existierenden Class Files.</data>
+	<data key="setting.dotNotation">Dot Notation</data>
+	<data key="setting.dotNotationDesc">Konvertiert Struct Keys definiert mit "Dot Notation" als grossgeschrieben (CFML Standard) oder lässt diese wie sie sind (wie "Bracked Notation").
+Übersetzt zu grossgeschrieben:
+sct.dotNotation --> keyname: "DOTNOTATION"
+sct[""bracketNotation""] --> keyname: "bracketNotation"
+
+Behält die Keys wie sie sind:
+sct.dotNotation --> keyname: "dotNotation"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
+	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
+	
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Template Cache leeren</data>
 	<data key="setting.querycache">Query Cache</data>

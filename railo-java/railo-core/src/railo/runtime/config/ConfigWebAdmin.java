@@ -3752,4 +3752,19 @@ public final class ConfigWebAdmin {
         login.setAttribute("delay",Caster.toString(delay));
 		
 	}
+
+
+	public void updateCompilerSettings(Boolean dotNotationUpperCase) throws PageException {
+		
+		Element element = _getRootElement("compiler");
+		
+    	checkWriteAccess();
+    	if(dotNotationUpperCase==null){
+			if(element.hasAttribute("dot-notation-upper-case"))
+				element.removeAttribute("dot-notation-upper-case");
+		}
+    	else {
+    		element.setAttribute("dot-notation-upper-case", Caster.toString(dotNotationUpperCase));
+    	}
+	}
 }

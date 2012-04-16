@@ -132,6 +132,7 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.video.VideoExecuter;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
@@ -355,6 +356,7 @@ public final class ConfigWebFactory {
     	loadFilesystem(cs,config,doc); // load tlds
     	loadTag(cs,config,doc); // load tlds
         loadRegional(configServer,config,doc);
+        loadCompiler(configServer,config,doc);
     	loadScope(configServer,config,doc);
     	loadMail(configServer,config,doc);
         loadSearch(configServer,config,doc);
@@ -1414,12 +1416,21 @@ public final class ConfigWebFactory {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
+		
+		// charset
 		StringBuffer sb=new StringBuffer(config.getTemplateCharset());
+		sb.append(';');
 
+		// dot notation upper case
+		sb.append(config.getDotNotationUpperCase());
+		sb.append(';');
+		
+		// tld
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
 		}
 
+		// fld
 		for(int i=0;i<flds.length;i++){
 			sb.append(flds[i].getHash());
 		}
@@ -4005,7 +4016,24 @@ public final class ConfigWebFactory {
       	
       	
     }
-    
+
+    private static void loadCompiler(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+        boolean hasCS=configServer!=null;
+        
+    	
+        Element compiler=getChildByName(doc.getDocumentElement(),"compiler");
+      	
+
+        // Scope Logger
+        String _case=compiler.getAttribute("dot-notation-upper-case");
+        if(!StringUtil.isEmpty(_case,true)){
+        	config.setDotNotationUpperCase(Caster.toBooleanValue(_case,true));
+        }
+        else if(hasCS){
+        	config.setDotNotationUpperCase(configServer.getDotNotationUpperCase());
+        }
+    }
+
 
     /**
      * @param configServer 

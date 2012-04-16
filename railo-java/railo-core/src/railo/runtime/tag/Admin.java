@@ -523,7 +523,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
         else if(check("getLogSetting", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSetting();
         else if(check("getLogSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetLogSettings();
+        else if(check("getCompilerSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetCompilerSettings();
         else if(check("updatePerformanceSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdatePerformanceSettings();
+        else if(check("updateCompilerSettings",ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateCompilerSettings();
         else if(check("getGatewayentries",    ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGetGatewayEntries();
         else if(check("getGatewayentry",     ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGetGatewayEntry();
         else if(check("getRunningThreads",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetRunningThreads();
@@ -2814,6 +2816,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
 	}
     
+
+    private void doUpdateCompilerSettings() throws SecurityException, PageException {
+    	admin.updateCompilerSettings(getBoolObject("admin", "UpdateCompilerSettings", "dotNotationUpperCase"));
+        store();
+        adminSync.broadcast(attributes, config);
+	}
+    
     private void doGetLogSetting() throws PageException {
     	String name=getString("admin", "GetLogSetting", "name");
     	name=name.trim().toLowerCase();
@@ -2841,6 +2850,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	throw new ApplicationException("invalig log name ["+name+"]");
     	
 	}
+    
+    private void doGetCompilerSettings() throws  PageException {
+    	String returnVariable=getString("admin",action,"returnVariable");
+    	Struct sct=new StructImpl();
+    	pageContext.setVariable(returnVariable,sct);
+    	
+    	sct.set("DotNotationUpperCase", config.getDotNotationUpperCase()?Boolean.TRUE:Boolean.FALSE);
+    }
     
     private void doGetLogSettings() throws  PageException {
     	String returnVariable=getString("admin",action,"returnVariable");

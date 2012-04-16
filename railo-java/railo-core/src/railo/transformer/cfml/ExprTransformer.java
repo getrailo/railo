@@ -34,7 +34,7 @@ public interface ExprTransformer {
 	 * @throws railo.runtime.exp.TemplateException 
 	 * @throws TemplateException
 	 */
-	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml) throws TemplateException;
+	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml, TransfomerSettings settings) throws TemplateException;
 	
 	/**
 	* Wird aufgerufen um aus dem übergebenen CFMLString einen Ausdruck auszulesen 
@@ -51,5 +51,5 @@ public interface ExprTransformer {
 	 * @return Element CFXD Element
 	 * @throws TemplateException
 	 */
-	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml, boolean allowLowerThan) throws TemplateException;
+	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld,CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException;
 }

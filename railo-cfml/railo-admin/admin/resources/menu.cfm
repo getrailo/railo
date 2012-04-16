@@ -13,6 +13,7 @@
 				struct(action:"scope",label:stMenu.server.scope),
 				struct(action:"application",label:stMenu.server.application),
 				struct(action:"output",label:stMenu.server.output),
+				struct(action:"compiler",label:stMenu.server.compiler),
 				struct(action:"error",label:stMenu.server.error)
 			)
 		),
