@@ -34,6 +34,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
@@ -923,6 +924,17 @@ public final class ASMUtil {
 			types[i]=Type.getType(classes[i]);
 		}
 		return types;
+	}
+
+
+	public static String display(ExprString name) {
+		if(name instanceof Literal) {
+			if(name instanceof Identifier) 
+				return ((Identifier)name).getRaw();
+			return ((Literal)name).getString();
+			
+		}
+		return name.toString();
 	}
 	
 }

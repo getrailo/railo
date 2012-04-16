@@ -4,7 +4,9 @@ package railo.transformer.cfml.expression;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import railo.print;
 import railo.runtime.Component;
+import railo.runtime.config.Config;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.other.CreateUniqueId;
@@ -13,6 +15,7 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.UDFUtil;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
@@ -32,6 +35,7 @@ import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.NamedArgument;
 import railo.transformer.bytecode.expression.var.UDF;
 import railo.transformer.bytecode.expression.var.Variable;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
@@ -46,6 +50,8 @@ import railo.transformer.bytecode.op.OpVariable;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.udf.Closure;
 import railo.transformer.bytecode.statement.udf.Function;
+import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.script.DocComment;
 import railo.transformer.cfml.script.DocCommentTransformer;
@@ -196,26 +202,28 @@ public abstract class AbstrCFMLExprTransformer {
 	public class Data {
 		
 		private short mode=0;
-		public CFMLString cfml;
-		public FunctionLib[] fld;
+		public final CFMLString cfml;
+		public final FunctionLib[] fld;
 		private boolean ignoreScopes=false;
 		private boolean allowLowerThan;
 		public boolean insideFunction;
 		public String tagName;
 		public boolean isCFC;
 		public boolean isInterface;
-		public EvaluatorPool ep;
+		public final EvaluatorPool ep;
 		public short context=CTX_NONE; 
 		public TagLibTag[] scriptTags;
 		public DocComment docComment;
-		public Page page;
+		public final Page page;
+		public final TransfomerSettings settings; 
 		
-		public Data(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld,boolean allowLowerThan) {
+		public Data(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld, TransfomerSettings settings,boolean allowLowerThan) {
 			this.page=page;
 			this.ep=ep;
 			this.cfml=cfml;
 			this.fld=fld;
 			this.allowLowerThan=allowLowerThan;
+			this.settings=settings;
 		}
 	}
 	
@@ -247,8 +255,8 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @param doc XML Document des aktuellen CFXD
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
-	protected Data init(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) {
-		Data data = new Data(page,ep,cfml,fld,allowLowerThan);
+	protected Data init(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
+		Data data = new Data(page,ep,cfml,fld,settings,allowLowerThan);
 		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
 		return data;
@@ -1131,8 +1139,8 @@ public abstract class AbstrCFMLExprTransformer {
 	    
 		// get First Element of the Variable
 		int line=data.cfml.getLine();
-		String name = identifier(data,false,true);
-		if(name == null) {
+		Identifier id = identifier(data,false,true);
+		if(id == null) {
 		    if (!data.cfml.forwardIfCurrent('(')) return null;
 		    
             comments(data);
@@ -1151,11 +1159,11 @@ public abstract class AbstrCFMLExprTransformer {
         comments(data);
 		
 		// Boolean constant 
-		if(name.equals("TRUE"))	{// || name.equals("YES"))	{
+		if(id.getString().equalsIgnoreCase("TRUE"))	{// || name.equals("YES"))	{
 			comments(data);
 			return new LitBoolean(true,line);
 		}
-		else if(name.equals("FALSE"))	{// || name.equals("NO"))	{
+		else if(id.getString().equalsIgnoreCase("FALSE"))	{// || name.equals("NO"))	{
 			comments(data);
 			return new LitBoolean(false,line);
 		}
@@ -1163,7 +1171,7 @@ public abstract class AbstrCFMLExprTransformer {
 		// Extract Scope from the Variable
 		//int c=data.cfml.getColumn();
 		int l=data.cfml.getLine();
-		var = startElement(data,name,line);
+		var = startElement(data,id,line);
 		var.setLine(l);
 		
 		return var;
@@ -1226,18 +1234,18 @@ public abstract class AbstrCFMLExprTransformer {
 	    Invoker invoker=null;
 		// Loop over nested Variables
 		while (data.cfml.isValidIndex()) {
-			Expression nameProp = null,namePropUC = null;
+			ExprString nameProp = null,namePropUC = null;
 			// .
 			if (data.cfml.forwardIfCurrent('.')) {
 				// Extract next Var String
                 comments(data);
                 int line=data.cfml.getLine();
-				name = identifier(data,true,false);
+                name = identifier(data,true);
 				if(name==null) 
 					throw new TemplateException(data.cfml, "Invalid identifier");
                 comments(data);
-				nameProp=LitString.toExprString(name,line);
-				namePropUC=LitString.toExprString(name.toUpperCase(),line);
+				nameProp=Identifier.toIdentifier(name,line);
+				namePropUC=Identifier.toIdentifier(name,data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL,line);
 			}
 			// []
 			else if (data.cfml.forwardIfCurrent('[')) {
@@ -1278,7 +1286,10 @@ public abstract class AbstrCFMLExprTransformer {
             	expr=invoker;
             }
 			// Method
-			if (data.cfml.isCurrent('(')) invoker.addMember(getFunctionMember(data,name, false, nameProp));
+			if (data.cfml.isCurrent('(')) {
+				if(nameProp==null && name!=null)nameProp=Identifier.toIdentifier(name, Identifier.CASE_ORIGNAL,-1);// properly this is never used
+				invoker.addMember(getFunctionMember(data,nameProp, false));
+			}
 			
 			// property
 			else invoker.addMember(new DataMember(namePropUC));
@@ -1307,7 +1318,7 @@ public abstract class AbstrCFMLExprTransformer {
 	    
 	    
 	    // first identifier
-	    name = identifier(data,true,false);
+	    name = identifier(data,true);
 	    
 		
 		ExprString exprName;
@@ -1318,7 +1329,7 @@ public abstract class AbstrCFMLExprTransformer {
 			while (data.cfml.isValidIndex()) {
 				if (data.cfml.forwardIfCurrent('.')) {
 					comments(data);
-	                name = identifier(data,true,false);
+	                name = identifier(data,true);
 					if(name==null) {
 						data.cfml.setPos(start);
 						return expr;//throw new TemplateException(data.cfml,"invalid Component declaration ");
@@ -1347,7 +1358,7 @@ public abstract class AbstrCFMLExprTransformer {
         comments(data);
         
         if (data.cfml.isCurrent('(')) {
-			FunctionMember func = getFunctionMember(data,"_createComponent", true, null);
+			FunctionMember func = getFunctionMember(data,Identifier.toIdentifier("_createComponent",Identifier.CASE_ORIGNAL,-1), true);
 			func.addArgument(new Argument(exprName,"string"));
 			Variable v=new Variable(expr.getLine());
 			v.addMember(func);
@@ -1373,15 +1384,14 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Variable startElement(Data data,String name, int line) throws TemplateException {
+	private Variable startElement(Data data,Identifier name, int line) throws TemplateException {
 		
 		
 		
-		String lc = name;
 		
 		// check function
 		if (data.cfml.isCurrent('(')) {
-			FunctionMember func = getFunctionMember(data,lc, true, null);
+			FunctionMember func = getFunctionMember(data,name, true);
 			
 			Variable var=new Variable(line);
 			var.addMember(func);
@@ -1390,12 +1400,12 @@ public abstract class AbstrCFMLExprTransformer {
 		} 
 		
 		//check scope
-		Variable var = scope(data,lc,line);
+		Variable var = scope(data,name,line);
 		if(var!=null) return var;
 		
 		// undefined variable
 		var=new Variable(line);
-		var.addMember(new DataMember(LitString.toExprString(name, data.cfml.getLine())));
+		var.addMember(new DataMember(name));
 
         comments(data);
 		return var;
@@ -1414,7 +1424,8 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @return CFXD Variable Element oder null
 	 * @throws TemplateException 
 	*/
-	private Variable scope(Data data,String idStr, int line) throws TemplateException {
+	private Variable scope(Data data,Identifier id, int line) throws TemplateException {
+		String idStr=id.getUpper();
 		if(data.ignoreScopes)return null;
 		if (idStr.equals("CGI")) 				return new Variable(Scope.SCOPE_CGI,line);
 		else if (idStr.equals("ARGUMENTS"))  	return new Variable(Scope.SCOPE_ARGUMENTS,line);
@@ -1430,11 +1441,11 @@ public abstract class AbstrCFMLExprTransformer {
 		else if (idStr.equals("CLUSTER"))		return new Variable(Scope.SCOPE_CLUSTER,line);
 		else if (idStr.equals("LOCAL"))			return new Variable(Scope.SCOPE_LOCAL,line);
 		else if (idStr.equals("VAR")) {
-			String name=identifier(data,false,true);
-			if(name!=null){
+			Identifier _id = identifier(data,false,true);
+			if(_id!=null){
 				comments(data);
 				Variable local = new Variable(ScopeSupport.SCOPE_VAR,line);
-				if(!"LOCAL".equals(name))local.addMember(new DataMember(LitString.toExprString(name, data.cfml.getLine())));
+				if(!"LOCAL".equalsIgnoreCase(_id.getString()))local.addMember(new DataMember(_id));
 				else {
 					local.ignoredFirstMember(true);
 				}
@@ -1453,7 +1464,7 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @param lowerCase 
 	* @return Identifier.
 	*/
-	protected String identifier(Data data,boolean firstCanBeNumber,boolean upper) {
+	protected Identifier identifier(Data data,boolean firstCanBeNumber,boolean upper) {
 		int start = data.cfml.getPos();
 		if(!data.cfml.isCurrentLetter() && !data.cfml.isCurrentSpecial() ) {
 		    if(!firstCanBeNumber) return null;
@@ -1468,9 +1479,25 @@ public abstract class AbstrCFMLExprTransformer {
 				}
 		}
 		while (data.cfml.isValidIndex());
-		if(upper)
-			return data.cfml.substring(start,data.cfml.getPos()-start).toUpperCase();
-		
+		return Identifier.toIdentifier(data.cfml.substring(start,data.cfml.getPos()-start), 
+				upper && data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL, start);
+	}
+	
+	protected String identifier(Data data,boolean firstCanBeNumber) {
+		int start = data.cfml.getPos();
+		if(!data.cfml.isCurrentLetter() && !data.cfml.isCurrentSpecial() ) {
+		    if(!firstCanBeNumber) return null;
+            else if(!data.cfml.isCurrentBetween('0','9'))return null;
+        }
+		do {
+			data.cfml.next();
+			if(!(data.cfml.isCurrentLetter()
+				|| data.cfml.isCurrentBetween('0','9')
+				|| data.cfml.isCurrentSpecial())) {
+					break;
+				}
+		}
+		while (data.cfml.isValidIndex());
 		return data.cfml.substring(start,data.cfml.getPos()-start);
 	}
 
@@ -1482,9 +1509,9 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Expression structElement(Data data) throws TemplateException {
+	private ExprString structElement(Data data) throws TemplateException {
         comments(data);
-		Expression name = CastString.toExprString(assignOp(data));
+        ExprString name = CastString.toExprString(assignOp(data));
 		if(name instanceof LitString)((LitString)name).fromBracket(true);
         comments(data);
 		return name;
@@ -1505,9 +1532,8 @@ public abstract class AbstrCFMLExprTransformer {
 	* @throws TemplateException 
 	*/
 	private FunctionMember getFunctionMember(Data data,
-		String name,
-		boolean checkLibrary,
-		Expression exprName)
+			ExprString name,
+		boolean checkLibrary)
 		throws TemplateException {
 
 		// get Function Library
@@ -1515,7 +1541,10 @@ public abstract class AbstrCFMLExprTransformer {
 		FunctionLibFunction flf = null;
 		if (checkLibrary) {
 			for (int i = 0; i < data.fld.length; i++) {
-				flf = data.fld[i].getFunction(name);
+				if(!(name instanceof Literal))
+					throw new TemplateException(data.cfml,"syntax error"); // should never happen!
+				
+				flf = data.fld[i].getFunction(((Literal)name).getString());
 				if (flf != null)
 					break;
 			}
@@ -1549,8 +1578,7 @@ public abstract class AbstrCFMLExprTransformer {
 			}
 		}
 		else {
-			if(exprName==null)fm = new UDF(name);
-			else fm = new UDF(exprName);
+			fm = new UDF(name);
 		}
 		
 		
@@ -1583,7 +1611,7 @@ public abstract class AbstrCFMLExprTransformer {
 					if(max!=-1 && max <= count)
 						throw new TemplateException(
 							data.cfml,
-							"too many Attributes in function [" + name + "]");
+							"too many Attributes in function [" + ASMUtil.display(name) + "]");
 				}
 			// Fix
 				else {
@@ -1591,7 +1619,7 @@ public abstract class AbstrCFMLExprTransformer {
 						
 						TemplateException te = new TemplateException(
 							data.cfml,
-							"too many Attributes in function call [" + name + "]");
+							"too many Attributes in function call [" + ASMUtil.display(name) + "]");
 						UDFUtil.addFunctionDoc(te, flf);
 						throw te;
 					}
@@ -1621,14 +1649,14 @@ public abstract class AbstrCFMLExprTransformer {
 			throw new TemplateException(
 				data.cfml,
 				"Invalid Syntax Closing [)] for function ["
-					+ name
+					+ ASMUtil.display(name)
 					+ "] not found");
 
 		// check min attributes
 		if (checkLibrary && flf.getArgMin() > count){
 			TemplateException te = new TemplateException(
 				data.cfml,
-				"too few attributes in function [" + name + "]");
+				"too few attributes in function [" + ASMUtil.display(name) + "]");
 			if(flf.getArgType()==FunctionLibFunction.ARG_FIX) UDFUtil.addFunctionDoc(te, flf);
 			throw te;
 		}

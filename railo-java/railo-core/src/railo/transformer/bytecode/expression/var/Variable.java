@@ -24,6 +24,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.Invoker;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
@@ -540,7 +541,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	 * @return
 	 * @throws BytecodeException
 	 */
-	private static  boolean isNamed(String funcName,Argument[] args) throws BytecodeException {
+	private static  boolean isNamed(Object funcName,Argument[] args) throws BytecodeException {
 		if(ArrayUtil.isEmpty(args)) return false;
 		boolean named=false;
 		for(int i=0;i<args.length;i++){

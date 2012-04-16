@@ -30,6 +30,7 @@ import railo.transformer.bytecode.expression.ClosureAsExpression;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Condition;
@@ -541,7 +542,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		int pos=data.cfml.getPos();
 		
 		// access modifier
-		String strAccess=variableDeclaration(data, false, false);
+		String strAccess=variableDec(data, false);
 		if(strAccess==null) {
 			data.cfml.setPos(pos);
 			return null;
@@ -554,7 +555,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		}
 		else{
 			comments(data);
-			rtnType=variableDeclaration(data, false, false);
+			rtnType=variableDec(data, false);
 			
 			if(rtnType==null){
 				data.cfml.setPos(pos);
@@ -596,7 +597,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		comments(data);
 		
 		// Name
-			String id=identifier(data,false,false);
+			String id=identifier(data,false);
 			
 			
 			if(id==null) {
@@ -642,11 +643,11 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				//String idName=identifier(data,false,true);
 				boolean required=false;
 				
-				String idName=variableDeclaration(data, false, false);
+				String idName = variableDec(data, false);
 				// required
 				if("required".equalsIgnoreCase(idName)){
 					comments(data);
-					String idName2=variableDeclaration(data, false, false);
+					String idName2=variableDec(data, false);
 					if(idName2!=null){
 						idName=idName2;
 						required=true;
@@ -659,7 +660,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				comments(data);
 				if(!data.cfml.isCurrent(')') && !data.cfml.isCurrent('=') && !data.cfml.isCurrent(':') && !data.cfml.isCurrent(',')) {
 					typeName=idName.toLowerCase();
-					idName=identifier(data,false,true);
+					idName=identifier(data,false); // MUST was upper case before, is this a problem?
 				}
 				else if(idName.indexOf('.')!=-1 || idName.indexOf('[')!=-1) {
 					throw new TemplateException(data.cfml,"invalid argument name ["+idName+"] definition");
@@ -988,7 +989,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		// print.o("name:"+t.getClass().getName());
 		
 		int pos = data.cfml.getPos();
-		String tmp=variableDeclaration(data, true, false);
+		String tmp=variableDec(data, true);
 		if(!StringUtil.isEmpty(tmp)) {
 			if(tmp.indexOf('.')!=-1) {
 				property.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
@@ -1111,7 +1112,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		// type
 		boolean hasType=false;
 		int pos = data.cfml.getPos();
-		String tmp=variableDeclaration(data, true, false);
+		String tmp=variableDec(data, true);
 		if(!StringUtil.isEmpty(tmp)) {
 			if(tmp.indexOf('.')!=-1) {
 				param.addAttribute(new Attribute(false,"type",LitString.toExprString(tmp),"string"));
@@ -1219,9 +1220,9 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 
 
 
-	private final String variableDeclaration(Data data,boolean firstCanBeNumber,boolean upper) {
+	private final String variableDec(Data data,boolean firstCanBeNumber) {
 		
-		String id=identifier(data, firstCanBeNumber, upper);
+		String id=identifier(data, firstCanBeNumber);
 		if(id==null) return null;
 		
 		StringBuffer rtn=new StringBuffer(id);
@@ -1230,7 +1231,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		while(data.cfml.forwardIfCurrent('.')){
 			data.cfml.removeSpace();
 			rtn.append('.');
-			id=identifier(data, firstCanBeNumber, upper);
+			id=identifier(data, firstCanBeNumber);
 			if(id==null)return null;
 			rtn.append(id);
 			data.cfml.removeSpace();
@@ -1518,11 +1519,11 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			Expression name = null,type = null;
 			
 			StringBuffer sbType=new StringBuffer();
-            String tmp;
+            String id;
             while(true) {
-                tmp=identifier(data,false,false);
-                if(tmp==null)break;
-                sbType.append(tmp);
+            	id=identifier(data,false);
+                if(id==null)break;
+                sbType.append(id);
                 data.cfml.removeSpace();
                 if(!data.cfml.forwardIfCurrent('.'))break;
                 sbType.append('.');
