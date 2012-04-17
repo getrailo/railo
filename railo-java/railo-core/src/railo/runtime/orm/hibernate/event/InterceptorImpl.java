@@ -75,16 +75,17 @@ public class InterceptorImpl extends EmptyInterceptor {
 		Object before,current;
         for(int i = 0; i < propertyNames.length; i++)	{
             prop = propertyNames[i];
-            before = state[i];
-            current = ORMUtil.getPropertyValue(cfc, prop,null);
-            
-            if(before != current && (current == null || !Operator.equalsEL(before, current, false, true))) {
-            	try {
-					state[i] = HibernateCaster.toSQL(null, types[i], current);
-				} catch (PageException e) {
-					state[i] = current;
-				}
-				rtn = true;
+            before = state[i]; //this is what the values were before the update handler was called
+            current = ORMUtil.getPropertyValue(cfc, prop,null); //this is what it is now.
+            if(!types[i].isCollectionType()) {
+	            if(before != current && (current == null || !Operator.equalsEL(before, current, false, true))) {
+	            	try {
+						state[i] = HibernateCaster.toSQL(null, types[i], current);
+					} catch (PageException e) {
+						state[i] = current;
+					}
+					rtn = true;
+	            }
             }
         }
         return rtn;	

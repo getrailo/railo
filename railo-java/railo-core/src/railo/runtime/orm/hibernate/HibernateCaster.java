@@ -447,8 +447,9 @@ public class HibernateCaster {
 					qry=toQuery(pc,session,ComponentUtil.toComponentPro(HibernateCaster.toComponent(it.next())),name,qry,len,row++);
 				}
 			}
-			else 
-				qry=new QueryImpl(new Collection.Key[0],0,"orm");
+			else { 
+				qry=new QueryImpl(new String[]{""},0,"orm");
+			}
 		}
 		
 		if(qry==null) {
