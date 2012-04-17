@@ -1,8 +1,9 @@
 package railo.runtime.net.http;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.servlet.http.Cookie;
@@ -11,9 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.config.Config;
+import railo.runtime.functions.decision.IsLocalHost;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 
@@ -74,7 +77,7 @@ public final class ReqRspUtil {
 		String charset = config.getWebCharset();
 		
 		if(cookies!=null) {
-			Cookie cookie,c;
+			Cookie cookie;
 			String tmp;
 			for(int i=0;i<cookies.length;i++){
 				cookie=cookies[i];	
@@ -112,25 +115,8 @@ public final class ReqRspUtil {
 		try {
 			Method setCharacterEncoding = rsp.getClass().getMethod("setCharacterEncoding", new Class[0]);
 			setCharacterEncoding.invoke(rsp, new Object[0]);
-			
-			
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		} 
+		catch (Throwable t) {}
 	}
 
 	public static String getHeader(HttpServletRequest request, String name,String defaultValue) {
@@ -146,25 +132,6 @@ public final class ReqRspUtil {
 		return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
 	}
 	
-	/*public static boolean isURLEncoded(String str) {
-		if(StringUtil.isEmpty(str,true)) return false;
-		if(!ReqRspUtil.isSubAscci(str,false)) return false;
-		int index,last=0;
-		boolean rtn=false;
-		while((index=str.indexOf('%',last))!=-1){
-			if(index+2>=str.length()) return false;
-			if(!isHex(str.charAt(index+1)) || !isHex(str.charAt(index+2))) return false;
-			last=index+1;
-			rtn=true;
-		}
-		return rtn;
-	}*/
-
-	private static boolean isHex(char c) {
-		return (c>='0' && c<='9') || (c>='a' && c<='f') || (c>='A' && c<='F');
-	}
-	
-
 	private static String dec(String str, String charset, boolean force) throws UnsupportedEncodingException {
 		str=str.trim();
 		if(StringUtil.startsWith(str, '"') && StringUtil.endsWith(str, '"'))
@@ -266,4 +233,42 @@ public final class ReqRspUtil {
     	}
     	return need;
     }
+
+	public static boolean isThis(HttpServletRequest req, String url) { 
+		try {
+			return isThis(req, HTTPUtil.toURL(url));
+		} 
+		catch (Throwable t) {
+			return false;
+		}
+	}
+
+	public static boolean isThis(HttpServletRequest req, URL url) { 
+		try {
+			// Port
+			int reqPort=req.getServerPort();
+			int urlPort=url.getPort();
+			if(urlPort<=0) urlPort=HTTPUtil.isSecure(url)?443:80;
+			if(reqPort<=0) reqPort=req.isSecure()?443:80;
+			if(reqPort!=urlPort) return false;
+			
+			// host
+			String reqHost = req.getServerName();
+			String urlHost = url.getHost();
+			if(reqHost.equalsIgnoreCase(urlHost)) return true;
+			if(IsLocalHost.invoke(reqHost) && IsLocalHost.invoke(reqHost)) return true;
+			
+			InetAddress urlAddr = InetAddress.getByName(urlHost);
+			
+			InetAddress reqAddr = InetAddress.getByName(reqHost);
+			if(reqAddr.getHostName().equalsIgnoreCase(urlAddr.getHostName())) return true;
+			if(reqAddr.getHostAddress().equalsIgnoreCase(urlAddr.getHostAddress())) return true;
+			
+			reqAddr = InetAddress.getByName(req.getRemoteAddr());
+			if(reqAddr.getHostName().equalsIgnoreCase(urlAddr.getHostName())) return true;
+			if(reqAddr.getHostAddress().equalsIgnoreCase(urlAddr.getHostAddress())) return true;
+		}
+		catch(Throwable t){}
+		return false;
+	}
 }
