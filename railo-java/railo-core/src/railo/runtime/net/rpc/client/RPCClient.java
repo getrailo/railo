@@ -75,7 +75,6 @@ import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ArrayIterator;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMPropertyImpl;
-import railo.transformer.bytecode.util.ASMUtil;
 
 /**
  * Wrapper for a Webservice
