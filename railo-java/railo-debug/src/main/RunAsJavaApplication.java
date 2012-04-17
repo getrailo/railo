@@ -18,6 +18,8 @@ import org.mortbay.util.MultiException;
  * Runs Railo as a Java Application
  */
 public class RunAsJavaApplication {
+	
+	private static String port = "8888"; 
         
     public static void addContext(HttpServer server, String strContext,String host,String path, String appDir,String webContextDir, String adminContextDir) {
         
@@ -111,7 +113,7 @@ public static void _main (String[] args)
     throws Exception { 
     // Create the server
     HttpServer server=new HttpServer();
-    String portArg = "8080";
+    String portArg = port;
     String appDir = "./web";
     String webContextDir = appDir+"/WEB-INF/railo";
     String serverContextDir = appDir+"/WEB-INF/lib/railo";

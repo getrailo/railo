@@ -1,5 +1,5 @@
 TEST Functions!
-
+<!--- 
 <cfset stringToEnc = "<script>alert('Evlis');</script>">
 <cfoutput>
 	<pre>
@@ -18,7 +18,7 @@ TEST Functions!
 	</pre>
    
    
-<!---  
+<!---   --->
 	/*  	
 	
 
@@ -35,4 +35,6 @@ TEST Functions!
 	decodeFromBase64(stringToEnc) throws java.io.IOException;
 	*/
 --->
-</cfoutput>
+<!--- </cfoutput> --->
+<cfvideo action="info" source="sample.mov" result="vidInfo">
+<cfdump var="#vidInfo#">
