@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -18,7 +19,6 @@ import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.config.Constants;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -169,7 +169,7 @@ public final class Insert extends TagImpl {
 				
 				if(pageContext.getConfig().debug()) {
 					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
+					pageContext.getDebugger().addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
 				}
 			}
 			return EVAL_PAGE;

@@ -192,7 +192,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	//if(pc.isPageAlreadyUsed(page)) return page;
     	
     	if((mapping.isTrusted() || 
-    			pc!=null && pci.isTrusted(page)) 
+    			pci.isTrusted(page)) 
         		&& isLoad(LOAD_PHYSICAL)) return page;
 				//&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
         
@@ -252,7 +252,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     				page.setLoadType(LOAD_PHYSICAL);
 
 			}
-			if(pc!=null)pci.setPageUsed(page);
+			pci.setPageUsed(page);
 			return page;
     }
 
@@ -264,6 +264,13 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 	private synchronized Page compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws PageException {
 		try {
 			return _compile(config, classRootDir, resetCL);
+        }
+        catch(ClassFormatError e) {
+        	String msg=StringUtil.emptyIfNull(e.getMessage());
+        	if(StringUtil.indexOfIgnoreCase(msg, "Invalid method Code length")!=-1) {
+        		throw new TemplateException("There is to much code inside the template ["+getDisplayPath()+"], Railo was not able to break it into pieces, move parts of your code to an include or a extrenal component/function",msg);
+        	}
+        	throw Caster.toPageException(e);
         }
         catch(Throwable t) {
         	throw Caster.toPageException(t);

@@ -68,7 +68,7 @@ public interface Reference {
     public abstract Object removeEL(PageContext pc);
 
     /**
-     * create it when not exists
+     * create it when not exist
      * @param pc 
      * @return removed Object
      * @throws PageException
@@ -76,7 +76,7 @@ public interface Reference {
     public abstract Object touch(PageContext pc) throws PageException;
 
     /**
-     * create it when not exists
+     * create it when not exist
      * @param pc 
      * @return removed Object
      * @throws PageException

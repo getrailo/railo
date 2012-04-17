@@ -93,10 +93,8 @@ public final class LitBoolean extends ExpressionBase implements Literal,ExprBool
     		adapter.getStatic(Types.BOOLEAN, b?"TRUE":"FALSE", Types.BOOLEAN);
     		return Types.BOOLEAN;
     	}
-    	else {
-    		adapter.visitInsn(b?Opcodes.ICONST_1:Opcodes.ICONST_0);
-    		return Types.BOOLEAN_VALUE;
-    	}
+    	adapter.visitInsn(b?Opcodes.ICONST_1:Opcodes.ICONST_0);
+    	return Types.BOOLEAN_VALUE;
     }
 
     /**

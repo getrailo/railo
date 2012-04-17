@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.ContentType;
 import railo.commons.io.res.Resource;
@@ -14,7 +11,9 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ReadOnlyResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.commons.net.HTTPUtil;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
+import railo.commons.net.http.Header;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
@@ -26,7 +25,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 	private final HTTPConnectionData data;
 	private final String path;
 	private final String name;
-	private HttpMethod http;
+	private HTTPResponse http;
 	
 
 	public HTTPResource(HTTPResourceProvider provider, HTTPConnectionData data) {
@@ -39,15 +38,15 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 
 	}
 
-	private HttpMethod getHttpMethod(boolean create) throws IOException {
+	private HTTPResponse getHTTPResponse(boolean create) throws IOException {
 		if(create || http==null) {
 			//URL url = HTTPUtil.toURL("http://"+data.host+":"+data.port+"/"+data.path);
 			URL url = new URL(provider.getProtocol(),data.host,data.port,data.path);
 			// TODO Support for proxy
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
 				
-			http = HTTPUtil.invoke(url, data.username, data.password, data.timeout,null, data.userAgent, 
-					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
+			http = HTTPEngine.get(url, data.username, data.password, _getTimeout(),HTTPEngine.MAX_REDIRECT,null, data.userAgent, 
+					pd,
 					null);
 		}
 		return http;
@@ -57,24 +56,24 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		if(http==null) {
 			URL url = new URL(provider.getProtocol(),data.host,data.port,data.path);
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
-			return HTTPUtil.head(url, data.username, data.password, provider.getSocketTimeout(), 
+			return HTTPEngine.head(url, data.username, data.password, _getTimeout(),HTTPEngine.MAX_REDIRECT, 
 					null, data.userAgent, 
-					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
+					pd,
 					null).getStatusCode();
 		}
 		return http.getStatusCode();
 	}
-	
+
 	public ContentType getContentType() throws IOException {
 		if(http==null) {
 			URL url = new URL(provider.getProtocol(),data.host,data.port,data.path);
 			ProxyData pd=data.hasProxyData()?data.proxyData:ProxyDataImpl.NO_PROXY;
-			return HTTPUtil.getContentType(HTTPUtil.head(url, data.username, data.password, provider.getSocketTimeout(), 
+			return HTTPEngine.head(url, data.username, data.password, _getTimeout(),HTTPEngine.MAX_REDIRECT, 
 					null, data.userAgent, 
-					pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),
-					null));
+					pd,
+					null).getContentType();
 		}
-		return HTTPUtil.getContentType(http);
+		return http.getContentType();
 	}
 	
 	
@@ -93,19 +92,19 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 	public int statusCode() {
 		try {
 			provider.read(this);
-			return getHttpMethod(false).getStatusCode();
+			return getHTTPResponse(false).getStatusCode();
 		} catch (IOException e) {
 			return 0;
 		}
 	}
 
 	public InputStream getInputStream() throws IOException {
-		ResourceUtil.checkGetInputStreamOK(this);
+		//ResourceUtil.checkGetInputStreamOK(this);
 		//provider.lock(this);
 		provider.read(this);
-		HttpMethod method = getHttpMethod(true);
+		HTTPResponse method = getHTTPResponse(true);
 		try {
-			return IOUtil.toBufferedInputStream(method.getResponseBodyAsStream());
+			return IOUtil.toBufferedInputStream(method.getContentAsStream());
 		} 
 		catch (IOException e) {
 			//provider.unlock(this);
@@ -195,7 +194,7 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 	public long lastModified() {
 		int last=0;
 		try {
-			Header cl=getHttpMethod(false).getResponseHeader("last-modified");
+			Header cl=getHTTPResponse(false).getLastHeaderIgnoreCase("last-modified");
 			if(cl!=null && exists()) last=Caster.toIntValue(cl.getValue(),0);
 		}
 		catch (IOException e) {}
@@ -205,26 +204,9 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 	public long length() {
 		try {
 			if(!exists()) return 0;
-			//Header content length
-			Header cl=getHttpMethod(false).getResponseHeader("content-length");
-			if(cl!=null)	{
-				int length=Caster.toIntValue(cl.getValue(),-1);
-				if(length!=-1) return length;
-			}
-			
-			provider.read(this);
-			HttpMethod method = getHttpMethod(true);
-			InputStream is = method.getResponseBodyAsStream();
-			byte[] buffer = new byte[1024];
-	        int len;
-	        int length=0;
-	        while((len = is.read(buffer)) !=-1){
-	          length+=len;
-	        }
-			return length;
-			
-			
-		} catch (IOException e) {
+			return getHTTPResponse(false).getContentLength();	
+		}
+		catch (IOException e) {
 			return 0;
 		}
 	}
@@ -248,4 +230,8 @@ public class HTTPResource extends ReadOnlyResourceSupport {
 		data.timeout=timeout;
 	}
 
+	
+	private int _getTimeout() {
+		return data.timeout<provider.getSocketTimeout()?data.timeout:provider.getSocketTimeout();
+	}
 }

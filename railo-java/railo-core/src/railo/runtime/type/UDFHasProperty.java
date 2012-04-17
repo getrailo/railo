@@ -94,7 +94,7 @@ public final class UDFHasProperty extends UDFGSProperty {
 			}
 			return false;
 		}
-		else {
+		
 			//Object o;
 			if(propValue instanceof Array) {
 				Array arr = ((Array)propValue);
@@ -105,7 +105,7 @@ public final class UDFHasProperty extends UDFGSProperty {
 				return ((java.util.List)propValue).size()>0;
 			}
 			return propValue instanceof Component;
-		}
+		
 	}
 	
 	private boolean has(PageContext pageContext, Object value) throws PageException {
@@ -124,7 +124,7 @@ public final class UDFHasProperty extends UDFGSProperty {
 			}
 			return false;
 		}
-		else {
+		
 			Object o;
 			
 			if(propValue instanceof Array) {
@@ -143,7 +143,7 @@ public final class UDFHasProperty extends UDFGSProperty {
 				}
 			}
 			return false;
-		}
+		
 	}
 
 	/**

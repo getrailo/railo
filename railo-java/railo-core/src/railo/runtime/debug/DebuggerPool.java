@@ -13,12 +13,12 @@ import railo.runtime.type.Struct;
 
 public class DebuggerPool {
 
-	private Resource storage;
+	//private Resource storage;
 	private LinkedList<Struct> queue=new LinkedList<Struct>();
 	//private List<Debugger> list=new ArrayList<Debugger>();
 	
 	public DebuggerPool(Resource storage) {
-		this.storage=storage;
+		//this.storage=storage;
 	}
 	
 	public synchronized void store(PageContext pc,Debugger debugger) {

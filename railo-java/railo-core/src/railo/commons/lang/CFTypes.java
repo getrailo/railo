@@ -85,6 +85,8 @@ public final class CFTypes {
     public static final short TYPE_SIZE = 21;
 
     public static final short TYPE_GUID = 22;
+
+    public static final short TYPE_FUNCTION = 23;
     
     /**
 	 * Wandelt einen String Datentypen in ein CFML short Typ um.
@@ -113,6 +115,7 @@ public final class CFTypes {
 			case TYPE_VARIABLE_STRING:return "variablestring";
 			case TYPE_VOID:return "void";
 			case TYPE_XML:return "xml";
+			case TYPE_FUNCTION:return "function";
 		}
 		return defaultValue;
     
@@ -134,6 +137,8 @@ public final class CFTypes {
 	        	break;	           	
 	        	case 'd':
 	                if(type.equals("date") || type.equals("datetime"))	return TYPE_DATETIME;
+	        	case 'f':
+	                if(type.equals("function"))	return TYPE_FUNCTION;
 	        	break; 
 	        	case 'g':
 	                if("guid".equals(type)) 							return TYPE_GUID;
@@ -206,6 +211,7 @@ public final class CFTypes {
 	            break;
 	            case 'f':
 	                if("float".equals(type)) 							return TYPE_NUMERIC;
+	                if("function".equals(type)) 							return TYPE_FUNCTION;
 	            break;
 	            case 'g':
 	                if("guid".equals(type)) 							return TYPE_GUID;

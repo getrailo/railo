@@ -48,19 +48,19 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 		return null;
 	}
 	
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws ExpressionException {
+	 * /
+	public Object remove (String key) throws ExpressionException {
 	    throw new ExpressionException(NOT_SUPPORTED);
-	}
+	}*/
 	
 	/**
 	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
-		return remove(key.getString());
+	    throw new ExpressionException(NOT_SUPPORTED);
 	}
 	
 	/**

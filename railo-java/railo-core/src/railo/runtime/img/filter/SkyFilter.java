@@ -23,8 +23,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
-import railo.runtime.img.math.FBM;
-import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.Noise;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -42,12 +40,12 @@ public class SkyFilter extends PointFilter  implements DynFiltering {
 	private float gain = 1.0f;
 	private float bias = 0.6f;
 	private int operation;
-	private float min;
-	private float max;
-	private boolean ridged;
-	private FBM fBm;
+	//private float min;
+	//private float max;
+	//private boolean ridged;
+	//private FBM fBm;
 	protected Random random = new Random();
-	private Function2D basis;
+	//private Function2D basis;
 
 	private float cloudCover = 0.5f;
 	private float cloudSharpness = 0.5f;
@@ -56,7 +54,7 @@ public class SkyFilter extends PointFilter  implements DynFiltering {
 	private float glowFalloff = 0.5f;
 	private float haziness = 0.96f;
 	private float t = 0.0f;
-	private float sunRadius = 10f;
+	//private float sunRadius = 10f;
 	private int sunColor = 0xffffffff;
 	private float sunR, sunG, sunB;
 	private float sunAzimuth = 0.5f;
@@ -70,7 +68,7 @@ public class SkyFilter extends PointFilter  implements DynFiltering {
 	private float[] exponents;
 	private float[] tan;
 	private BufferedImage skyColors;
-	private int[] skyPixels;
+	//private int[] skyPixels;
 	
 	private final static float r255 = 1.0f/255.0f;
 
@@ -290,8 +288,8 @@ mx = -10000;
 			frequency *= lacunarity;
 		}
 
-		min = -1;
-		max = 1;
+		//min = -1;
+		//max = 1;
 
 //min = -1.2f;
 //max = 1.2f;

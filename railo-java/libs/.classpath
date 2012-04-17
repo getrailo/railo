@@ -10,7 +10,6 @@
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-httpclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-io.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-lang.jar"/>
-	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-logging-adapters.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-logging-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-logging.jar"/>
 	<classpathentry exported="true" kind="lib" path="apache-jakarta-commons-net-ftp.jar"/>
@@ -63,9 +62,7 @@
 	<classpathentry exported="true" kind="lib" path="jug.jar"/>
 	<classpathentry exported="true" kind="lib" path="lowagie.itext.jar"/>
 	<classpathentry exported="true" kind="lib" path="metadata-extractor.jar"/>
-	<classpathentry exported="true" kind="lib" path="microsoft-msbase.jar"/>
 	<classpathentry exported="true" kind="lib" path="microsoft-mssqlserver.jar"/>
-	<classpathentry exported="true" kind="lib" path="microsoft-msutil.jar"/>
 	<classpathentry exported="true" kind="lib" path="mysql-connector-java-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="objectweb-asm-all.jar"/>
 	<classpathentry exported="true" kind="lib" path="ojdbc14.jar"/>
@@ -103,6 +100,10 @@
 	<classpathentry kind="lib" path="apache-poi.jar"/>
 	<classpathentry kind="lib" path="apache-poi-ooxml-schemas.jar"/>
 	<classpathentry kind="lib" path="apache-poi-ooxml.jar"/>
+	<classpathentry kind="lib" path="apache-jakarta-commons-logging-adapters.jar"/>
+	<classpathentry kind="lib" path="apache-commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="apache-commons-httpcore.jar"/>
+	<classpathentry kind="lib" path="apache-commons-httpmime.jar"/>
 	<classpathentry kind="lib" path="xmlbeans.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

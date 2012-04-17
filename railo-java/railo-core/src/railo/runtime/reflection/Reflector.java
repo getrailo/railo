@@ -18,6 +18,8 @@ import java.util.Vector;
 
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefInteger;
+import railo.commons.lang.types.RefIntegerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
@@ -25,6 +27,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Operator;
 import railo.runtime.reflection.pairs.ConstructorInstance;
 import railo.runtime.reflection.pairs.MethodInstance;
 import railo.runtime.reflection.storage.WeakConstructorStorage;
@@ -202,7 +205,7 @@ public final class Reflector {
 	 * @param clazzArgs arguments to display
 	 * @return list
 	 */
-	public static String getDspMethods(Class[] clazzArgs) {
+	public static String getDspMethods(Class... clazzArgs) {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<clazzArgs.length;i++) {
 			if(i>0)sb.append(", ");
@@ -230,7 +233,71 @@ public final class Reflector {
 	 * @return converted Object
 	 * @throws PageException 
 	 */
-	public static Object convert(Object src, Class trgClass) throws PageException {
+	public static Object convert(Object src, Class trgClass, RefInteger rating) throws PageException {
+		if(rating!=null) {
+			Object trg = _convert(src, trgClass);
+			if(src==trg) {
+				rating.plus(10);
+				return trg;
+			}
+			if(src==null || trg==null) {
+				rating.plus(0);
+				return trg;
+			}
+			if(isInstaneOf(src.getClass(), trg.getClass())) {
+				rating.plus(9);
+				return trg;
+			}
+			if(src.equals(trg)) {
+				rating.plus(8);
+				return trg;
+			}
+			
+			// different number
+			boolean bothNumbers=src instanceof Number && trg instanceof Number;
+			if(bothNumbers && ((Number)src).doubleValue()==((Number)trg).doubleValue()) {
+				rating.plus(7);
+				return trg;
+			}
+			
+			
+			
+			String sSrc=Caster.toString(src,null);
+			String sTrg=Caster.toString(trg,null);
+			if(sSrc!=null && sTrg!=null) {
+				
+				// different number types
+				if(src instanceof Number && trg instanceof Number && sSrc.equals(sTrg)) {
+					rating.plus(6);
+					return trg;
+				}
+				
+				// looks the same
+				if(sSrc.equals(sTrg)) {
+					rating.plus(5);
+					return trg;
+				}
+				if(sSrc.equalsIgnoreCase(sTrg)) {
+					rating.plus(4);
+					return trg;
+				}
+			}
+			
+			// CF Equal
+			try {
+				if(Operator.equals(src, trg, false, true)) {
+					rating.plus(3);
+					return trg;
+				}
+			} catch (Throwable t) {}
+			
+			
+			return trg;
+		}
+		return _convert(src, trgClass);
+	}
+
+	public static Object _convert(Object src, Class trgClass) throws PageException {
 		if(src==null) {
 			if(trgClass.isPrimitive())
 				throw new ApplicationException("can't convert [null] to ["+trgClass.getName()+"]");
@@ -242,7 +309,7 @@ public final class Reflector {
 
 		if(src instanceof ObjectWrap) {
 			src = ((ObjectWrap) src).getEmbededObject();
-			return convert(src, trgClass);
+			return _convert(src, trgClass);
 		}
 		if(className.startsWith("java.lang.")){
 			if(trgClass==Boolean.class)		return Caster.toBoolean(src);
@@ -285,11 +352,10 @@ public final class Reflector {
 		else if(trgClass==Locale.class && Decision.isString(src)) return Caster.toLocale(Caster.toString(src));
 		if(trgClass.isPrimitive()) {
 			//return convert(src,srcClass,toReferenceClass(trgClass));
-			return convert(src,toReferenceClass(trgClass));
+			return _convert(src,toReferenceClass(trgClass));
 		}
 		throw new ApplicationException("can't convert ["+Caster.toClassName(src)+"] to ["+Caster.toClassName(trgClass)+"]");
 	}
-
 
 	/**
 	 * gets Constructor Instance matching given parameter
@@ -333,23 +399,28 @@ public final class Reflector {
 				}
 			}	
 			// convert comparsion
+			ConstructorInstance ci=null;
+		    int _rating=0;
 			outer:for(int i=0;i<constructors.length;i++) {
 				if(constructors[i]!=null) {
+					RefInteger rating=(constructors.length>1)?new RefIntegerImpl(0):null;
 					Class[] parameterTypes = constructors[i].getParameterTypes();
 					Object[] newArgs = new Object[args.length];
 					for(int y=0;y<parameterTypes.length;y++) {
-						//newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]));
-						//if(newArgs[y]==null) continue outer;
 						try {
-							//newArgs[y]=convert(args[y],clazzArgs[y],toReferenceClass(parameterTypes[y]));
-							newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]));
+							newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]),rating);
 						} catch (PageException e) {
 							continue outer;
 						}
 					}
-					return new ConstructorInstance(constructors[i],newArgs);
+					if(ci==null || rating.toInt()>_rating) {
+						if(rating!=null)_rating=rating.toInt();
+						ci=new ConstructorInstance(constructors[i],newArgs);
+					}
+					//return new ConstructorInstance(constructors[i],newArgs);
 				}
 			}
+		    return ci;
 		}
 		return defaultValue;
 		//throw new NoSuchMethodException("No matching Constructor for "+clazz.getName()+"("+getDspMethods(getClasses(args))+") found");
@@ -382,7 +453,7 @@ public final class Reflector {
 				}
 			}
 			// like comparsion
-		    MethodInstance mi=null;
+		    //MethodInstance mi=null;
 		    // print.e("like:"+methodName);
 		    outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
@@ -390,38 +461,39 @@ public final class Reflector {
 					for(int y=0;y<parameterTypes.length;y++) {
 						if(!like(clazzArgs[y],toReferenceClass(parameterTypes[y]))) continue outer;
 					}
-					mi=create(mi,methods[i],args);
+					return new MethodInstance(methods[i],args);
 				}
 			}
-		    if(mi!=null) return mi;
 		    
 		    
 			// convert comparsion
 		    // print.e("convert:"+methodName);
-		    mi=null;
+		    MethodInstance mi=null;
+		    int _rating=0;
 			outer:for(int i=0;i<methods.length;i++) {
 				if(methods[i]!=null) {
+					RefInteger rating=(methods.length>1)?new RefIntegerImpl(0):null;
 					Class[] parameterTypes = methods[i].getParameterTypes();
 					Object[] newArgs = new Object[args.length];
 					for(int y=0;y<parameterTypes.length;y++) {
 						try {
-							//newArgs[y]=convert(args[y],clazzArgs[y],toReferenceClass(parameterTypes[y]));
-							newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]));
+							newArgs[y]=convert(args[y],toReferenceClass(parameterTypes[y]),rating);
 						} catch (PageException e) {
 							continue outer;
 						}
-						//if(newArgs[y]==null) continue outer;
 					}
-					mi=create(mi,methods[i],newArgs);
+					if(mi==null || rating.toInt()>_rating) {
+						if(rating!=null)_rating=rating.toInt();
+						mi=new MethodInstance(methods[i],newArgs);
+					}
 					//return new MethodInstance(methods[i],newArgs);
 				}
-			}
-		    if(mi!=null) return mi;
+			}return mi;
 		}
 		return null;
 	}
 
-    private static MethodInstance create(MethodInstance existing, Method method, Object[] args) {
+    /*private static MethodInstance create(MethodInstance existing, Method method, Object[] args) {
 		if(existing==null) return new MethodInstance(method,args);
     	Class[] exTypes = existing.getMethod().getParameterTypes();
     	Class[] nwTypes = method.getParameterTypes();
@@ -435,7 +507,7 @@ public final class Reflector {
 			}
 		}
     	return existing;
-	}
+	}*/
     
 
 	/**
@@ -888,7 +960,7 @@ public final class Reflector {
 			// convert comparsion
 			for(int i=0;i<fields.length;i++) {	
 				try {
-					fields[i].set(obj,convert(value,toReferenceClass(fields[i].getType())));
+					fields[i].set(obj,convert(value,toReferenceClass(fields[i].getType()),null));
 					return true;
 				} catch (PageException e) {}
 			}
@@ -1029,7 +1101,7 @@ public final class Reflector {
 		Object rtn = java.lang.reflect.Array.newInstance(trgClass, objs.length);
 		for(int i=0;i<objs.length;i++) {
 			//java.lang.reflect.Array.set(rtn, i, convert(objs[i], srcClass, trgClass));
-			java.lang.reflect.Array.set(rtn, i, convert(objs[i], trgClass));
+			java.lang.reflect.Array.set(rtn, i, convert(objs[i], trgClass,null));
 		}
 		return rtn;
 	}

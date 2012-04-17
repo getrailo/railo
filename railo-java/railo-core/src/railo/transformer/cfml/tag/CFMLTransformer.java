@@ -32,6 +32,7 @@ import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.ExprTransformer;
+import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
@@ -111,8 +112,8 @@ public final class CFMLTransformer {
 		private CFMLString cfml;
 		private EvaluatorPool ep=new EvaluatorPool();
 		private SimpleExprTransformer set;
-	    private Config config;
-		private Page page;
+	    private final Config config;
+		private final Page page;
 	 
 	    public Data(TagLib[][] tlibs, FunctionLib[] flibs, CFMLString cfml,Config config,Page page) {
 			super();
@@ -429,7 +430,7 @@ public final class CFMLTransformer {
 							text=new StringBuffer();
 						}
                         int line=data.cfml.getLine();
-						parent.addStatement(new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.cfml),line));
+						parent.addStatement(new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.cfml,TransfomerSettings.toSetting(data.config)),line));
 							
 						if(!data.cfml.isCurrent('#'))
 							throw new TemplateException(data.cfml,"missing terminating [#] for expression");
@@ -581,13 +582,13 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
-				tdbt.transform(data.config,data.page,this,data.ep,data.flibs,tag,tagLibTag,data.cfml);
+				tdbt.transform(data.config,data.page,this,data.ep,data.flibs,tag,tagLibTag,data.cfml,TransfomerSettings.toSetting(data.config));
 				
 				//	get TagLib of end Tag
 				if(!data.cfml.forwardIfCurrent("</")) {
 					// MUST this is a patch, do a more proper implementation
 					TemplateException te = new TemplateException(data.cfml,"invalid construct");
-					if(tdbt!=null && tdbt instanceof CFMLScriptTransformer && ASMUtil.containsComponent(tag.getBody())) {
+					if(tdbt instanceof CFMLScriptTransformer && ASMUtil.containsComponent(tag.getBody())) {
 						throw new CFMLScriptTransformer.ComponentTemplateException(te);
 					}
 					throw te;
@@ -1028,14 +1029,14 @@ public final class CFMLTransformer {
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.cfml);
+			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.cfml,TransfomerSettings.toSetting(data.config));
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;
 			       else throw ete;
 			    }
 			}
-			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.cfml,true);
+			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.cfml,TransfomerSettings.toSetting(data.config),true);
 			if(type.length()>0) {
 				expr=Cast.toExpression(expr, type);
 			}

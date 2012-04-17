@@ -43,6 +43,7 @@ ACTIONS --->
 			host="#form.host#"
 			database="#form.database#"
 			port="#form.port#"
+			timezone="#form.timezone#"
 			dbusername="#form.username#"
 			dbpassword="#form.password#"
 			
@@ -120,6 +121,7 @@ Error Output--->
 	<cfset datasource.host=driver.getValue('host')>
 	<cfset datasource.database=driver.getValue('database')>
 	<cfset datasource.port=driver.getValue('port')>
+	<cfset datasource.timezone="">
 	<cfset datasource.username=driver.getValue('username')>
 	<cfset datasource.password=driver.getValue('password')>
 	<cfset datasource.ConnectionLimit=driver.getValue('ConnectionLimit')>
@@ -149,6 +151,12 @@ Error Output--->
 </cfloop>
 <cfset driver.init(datasource)>
 <cfset fields=driver.getFields()>
+
+
+<cfadmin 
+	action="getTimeZones"
+	locale="#stText.locale#"
+	returnVariable="timezones">
 
 
 </cfsilent>
@@ -240,6 +248,32 @@ Port --->
 </cfif>
 <!--- 
 
+Timezone --->
+<tr>
+	<td class="tblHead" width="150">#stText.Settings.dbtimezone#</td>
+	<td class="tblContent" width="300">
+		<span class="comment">#stText.Settings.dbtimezoneDesc#</span><br>
+       <select name="timezone">
+        	<option value=""> ---- #stText.Settings.dbtimezoneSame# ---- </option>
+			<cfoutput query="timezones">
+				<option value="#timezones.id#"
+				<cfif timezones.id EQ datasource.timezone>selected</cfif>>
+				#timezones.id# - #timezones.display#</option>
+			</cfoutput>
+		</select>
+        
+        <br /><span class="CheckError">
+This feature is currently in Beta State.
+If you have any problems while using this Implementation, please post the bugs and errors in our <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
+</span>
+        
+        </td>
+</tr>
+
+
+
+<!--- 
+
 Username --->
 <cfif typeUsername NEQ TYPE_HIDDEN>
 <tr>
@@ -250,6 +284,8 @@ Username --->
 		value="#datasource.username#" style="width:300px" required="#typeUsername EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
+
+
 <!--- 
 
 Password --->

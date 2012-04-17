@@ -360,7 +360,7 @@ public final class LDAPClient {
             }
         }
         finally {
-            if(context!=null)context.close();
+            context.close();
         }
         
         return qry;

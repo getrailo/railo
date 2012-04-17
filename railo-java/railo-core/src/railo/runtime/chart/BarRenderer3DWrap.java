@@ -4,12 +4,12 @@ import org.jfree.chart.renderer.category.BarRenderer3D;
 
 public class BarRenderer3DWrap extends BarRenderer3D {
 
-	private BarRenderer3D renderer;
+	//private BarRenderer3D renderer;
 	private double xoffset;
 	private double yoffset;
 
 	public BarRenderer3DWrap(BarRenderer3D renderer, double xoffset, double yoffset) {
-		this.renderer=renderer;
+		//this.renderer=renderer;
 		this.xoffset=xoffset;
 		this.yoffset=yoffset;
 	}

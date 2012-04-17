@@ -14,6 +14,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
@@ -23,6 +24,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.Invoker;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
@@ -37,6 +39,7 @@ import railo.transformer.library.function.FunctionLibFunctionArg;
 public class Variable extends ExpressionBase implements Invoker {
 	 
 
+	private static final Type KEY_CONSTANTS = Type.getType(KeyConstants.class);
 
 	// java.lang.Object get(java.lang.String)
 	final static Method METHOD_SCOPE_GET_KEY = new Method("get",
@@ -232,7 +235,11 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 				lit=lit.duplicate();
 				lit.upperCase();
 			}
-			
+			String key=KeyConstants.getFieldName(lit.getString());
+			if(key!=null){
+				bc.getAdapter().getStatic(KEY_CONSTANTS, key, Types.COLLECTION_KEY);
+				return true;
+			}
 			int index=bc.registerKey(lit);
 			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, 
 					bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
@@ -494,10 +501,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 					return new VT(LitDouble.ZERO,type,-1);
 				return new VT(null,type,-1);
 			}
-			else {
-				return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
-			}
-			
+			return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
 		UDFUtil.addFunctionDoc(be, flfa.getFunction());
@@ -537,7 +541,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	 * @return
 	 * @throws BytecodeException
 	 */
-	private static  boolean isNamed(String funcName,Argument[] args) throws BytecodeException {
+	private static  boolean isNamed(Object funcName,Argument[] args) throws BytecodeException {
 		if(ArrayUtil.isEmpty(args)) return false;
 		boolean named=false;
 		for(int i=0;i<args.length;i++){

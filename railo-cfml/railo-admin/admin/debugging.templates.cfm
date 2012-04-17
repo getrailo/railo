@@ -58,8 +58,7 @@ You can define IPv4 or IPv6 IPs, a IPv4 can not be converted to a IPv6 and visa 
         </cfif>
     	<cfset tmp=createObject('component','debug/#ReplaceNoCase(dir.name,'.cfc','')#')>
         <cfset drivers[trim(tmp.getId())]=tmp>
-    </cfloop>
-
+    </cfloop>	
 <!--- 
 <span class="CheckError">
 The Gateway Implementation is currently in Beta State. Its functionality can change before it's final release.

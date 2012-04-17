@@ -14,6 +14,7 @@ import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
@@ -168,7 +169,7 @@ public abstract class ComponentProxy implements Component {
 	 * @see railo.runtime.type.Collection#get(java.lang.String)
 	 */
 	public Object get(String key) throws PageException {
-		return getComponent().get(key);
+		return get(KeyImpl.init(key));
 	}
 
 	/**

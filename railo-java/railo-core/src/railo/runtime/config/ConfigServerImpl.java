@@ -27,7 +27,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	private final CFMLEngineImpl engine;
     private Map initContextes;
-    private Map contextes;
+    //private Map contextes;
     private SecurityManager defaultSecurityManager;
     private Map managers=new HashTable();
     private String defaultPassword;
@@ -54,7 +54,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     	super(null,configDir, configFile);
     	this.engine=engine;
         this.initContextes=initContextes;
-        this.contextes=contextes;
+        //this.contextes=contextes;
         this.rootDir=configDir;
         instance=this;
     }

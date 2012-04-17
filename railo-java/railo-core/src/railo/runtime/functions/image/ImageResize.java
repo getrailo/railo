@@ -45,6 +45,6 @@ public class ImageResize implements Function {
 		// int value
 		int i=Caster.toIntValue(dimension,-1);
 		if(i>-1) return i;
-		throw new ExpressionException("attribute ["+label+"] value has a invalid value ["+dimension+"]"); 
+		throw new ExpressionException("attribute ["+label+"] value has an invalid value ["+dimension+"]"); 
 	}*/
 }

@@ -30,14 +30,14 @@ public class RequestDispatcherWrap implements RequestDispatcher {
 		}
 		
 		
-		if(pc!=null)realPath=HTTPUtil.optimizeRealPath(pc,realPath);
+		realPath=HTTPUtil.optimizeRealPath(pc,realPath);
 		
 		try{
 			RequestDispatcher disp = this.req.getOriginalRequestDispatcher(realPath);
 			disp.forward(req,rsp);
 		}
 		finally{
-	        if(pc!=null)ThreadLocalPageContext.register(pc);
+	        ThreadLocalPageContext.register(pc);
 		}
 	}
 

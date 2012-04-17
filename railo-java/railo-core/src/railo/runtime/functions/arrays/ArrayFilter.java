@@ -11,8 +11,8 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.UDF;
 
 
@@ -38,7 +38,7 @@ public final class ArrayFilter implements Function {
 		for(int i=0;i<keys.length;i++){
 			value=array.get(keys[i]);
 			if(Caster.toBooleanValue(filter.call(pc, new Object[]{value}, true)))
-				rtn.set(keys[i], value);
+				rtn.append(value);
 		}
 		return rtn;
 	}

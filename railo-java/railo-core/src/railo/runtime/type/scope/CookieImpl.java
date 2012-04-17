@@ -82,12 +82,12 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
         }
     }
 
-    /**
+    /* *
      * @see railo.runtime.type.Collection#remove(java.lang.String)
-     */
-    public Object remove(String key) throws PageException {
+     * /
+    public Object remove (String key) throws PageException {
     	return remove(KeyImpl.init(key), true);
-    }
+    }*/
 
     public Object remove(Collection.Key key) throws PageException {
     	raw.remove(key.getLowerString());

@@ -161,7 +161,6 @@ public final class ComponentUtil {
         catch(Throwable t) {
         	throw Caster.toPageException(t);
         }
-        
     }
 
     private static railo.transformer.bytecode.Page getPage(BytecodeContext bc1, BytecodeContext bc2) {
@@ -283,7 +282,7 @@ public final class ComponentUtil {
 		registerTypeMapping(server,clazz);
 	}
 
-	private static String getClassname(Component component) {
+	public static String getClassname(Component component) {
     	PageSource ps = component.getPageSource();
     	//ps.getRealpath()
     	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
@@ -439,7 +438,7 @@ public final class ComponentUtil {
             for(int y=0;y<types.length;y++){
     			av.visitBeginItem(adapter, y);
     				adapter.loadArg(y);
-    			av.visitEndItem(bc);
+    			av.visitEndItem(bc.getAdapter());
             }
             av.visitEnd();
             adapter.invokeStatic(COMPONENT_CONTROLLER, INVOKE);

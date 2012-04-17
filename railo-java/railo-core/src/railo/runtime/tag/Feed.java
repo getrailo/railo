@@ -383,62 +383,62 @@ public final class Feed extends TagImpl	{
 			append(xml,1,"<entry>");
 
 			tag(xml,2,
-					new Pair("title",query.getAt(FeedQuery.TITLE, row, null)),
+					new Pair<String,Object>("title",query.getAt(FeedQuery.TITLE, row, null)),
 					new Pair[]{
-						new Pair("type",query.getAt(FeedQuery.TITLETYPE, row, null))
+						new Pair<String,Object>("type",query.getAt(FeedQuery.TITLETYPE, row, null))
 					},false,splitString
 			);
 			tag(xml,2,
-					new Pair("link",null),
+					new Pair<String,Object>("link",null),
 					new Pair[]{
-						new Pair("href",query.getAt(FeedQuery.LINKHREF, row, null)),
-						new Pair("hreflang",query.getAt(FeedQuery.LINKHREFLANG, row, null)),
-						new Pair("length",query.getAt(FeedQuery.LINKLENGTH, row, null)),
-						new Pair("rel",query.getAt(FeedQuery.LINKREL, row, null)),
-						new Pair("title",query.getAt(FeedQuery.LINKTITLE, row, null)),
-						new Pair("type",query.getAt(FeedQuery.LINKTYPE, row, null))
+						new Pair<String,Object>("href",query.getAt(FeedQuery.LINKHREF, row, null)),
+						new Pair<String,Object>("hreflang",query.getAt(FeedQuery.LINKHREFLANG, row, null)),
+						new Pair<String,Object>("length",query.getAt(FeedQuery.LINKLENGTH, row, null)),
+						new Pair<String,Object>("rel",query.getAt(FeedQuery.LINKREL, row, null)),
+						new Pair<String,Object>("title",query.getAt(FeedQuery.LINKTITLE, row, null)),
+						new Pair<String,Object>("type",query.getAt(FeedQuery.LINKTYPE, row, null))
 					},false,splitString
 			);
-			tag(xml,2,new Pair("id",query.getAt(FeedQuery.ID, row, null)),null,true,false);
-			tag(xml,2,new Pair("updated",query.getAt(FeedQuery.UPDATEDDATE, row, null)),null,true,false);
-			tag(xml,2,new Pair("published",query.getAt(FeedQuery.PUBLISHEDDATE, row, null)),null,true,false);
+			tag(xml,2,new Pair<String,Object>("id",query.getAt(FeedQuery.ID, row, null)),null,true,false);
+			tag(xml,2,new Pair<String,Object>("updated",query.getAt(FeedQuery.UPDATEDDATE, row, null)),null,true,false);
+			tag(xml,2,new Pair<String,Object>("published",query.getAt(FeedQuery.PUBLISHEDDATE, row, null)),null,true,false);
 			tag(xml,2,
-					new Pair("author",null),
+					new Pair<String,Object>("author",null),
 					new Pair[]{
-						new Pair("email",query.getAt(FeedQuery.AUTHOREMAIL, row, null)),
-						new Pair("name",query.getAt(FeedQuery.AUTHORNAME, row, null)),
-						new Pair("uri",query.getAt(FeedQuery.AUTHORURI, row, null))
-					},false,splitString
-			);
-			tag(xml,2,
-					new Pair("category",null),
-					new Pair[]{
-						new Pair("label",query.getAt(FeedQuery.CATEGORYLABEL, row, null)),
-						new Pair("scheme",query.getAt(FeedQuery.CATEGORYSCHEME, row, null)),
-						new Pair("term",query.getAt(FeedQuery.CATEGORYTERM, row, null)),
+						new Pair<String,Object>("email",query.getAt(FeedQuery.AUTHOREMAIL, row, null)),
+						new Pair<String,Object>("name",query.getAt(FeedQuery.AUTHORNAME, row, null)),
+						new Pair<String,Object>("uri",query.getAt(FeedQuery.AUTHORURI, row, null))
 					},false,splitString
 			);
 			tag(xml,2,
-					new Pair("contributor",null),
+					new Pair<String,Object>("category",null),
 					new Pair[]{
-						new Pair("email",query.getAt(FeedQuery.CONTRIBUTOREMAIL, row, null)),
-						new Pair("name",query.getAt(FeedQuery.CONTRIBUTORNAME, row, null)),
-						new Pair("uri",query.getAt(FeedQuery.CONTRIBUTORURI, row, null))
+						new Pair<String,Object>("label",query.getAt(FeedQuery.CATEGORYLABEL, row, null)),
+						new Pair<String,Object>("scheme",query.getAt(FeedQuery.CATEGORYSCHEME, row, null)),
+						new Pair<String,Object>("term",query.getAt(FeedQuery.CATEGORYTERM, row, null)),
 					},false,splitString
 			);
 			tag(xml,2,
-					new Pair("content",query.getAt(FeedQuery.CONTENT, row, null)),
+					new Pair<String,Object>("contributor",null),
 					new Pair[]{
-						new Pair("src",query.getAt(FeedQuery.CONTENTSRC, row, null)),
-						new Pair("type",query.getAt(FeedQuery.CONTENTTYPE, row, null)),
-						new Pair("type",query.getAt(FeedQuery.CONTENTTYPE, row, null))
+						new Pair<String,Object>("email",query.getAt(FeedQuery.CONTRIBUTOREMAIL, row, null)),
+						new Pair<String,Object>("name",query.getAt(FeedQuery.CONTRIBUTORNAME, row, null)),
+						new Pair<String,Object>("uri",query.getAt(FeedQuery.CONTRIBUTORURI, row, null))
 					},false,splitString
 			);
-			tag(xml,2,new Pair("rights",query.getAt(FeedQuery.RIGHTS, row, null)),null,true,false);
 			tag(xml,2,
-					new Pair("summary",query.getAt(FeedQuery.SUMMARY, row, null)),
+					new Pair<String,Object>("content",query.getAt(FeedQuery.CONTENT, row, null)),
 					new Pair[]{
-						new Pair("type",query.getAt(FeedQuery.SUMMARYTYPE, row, null))
+						new Pair<String,Object>("src",query.getAt(FeedQuery.CONTENTSRC, row, null)),
+						new Pair<String,Object>("type",query.getAt(FeedQuery.CONTENTTYPE, row, null)),
+						new Pair<String,Object>("type",query.getAt(FeedQuery.CONTENTTYPE, row, null))
+					},false,splitString
+			);
+			tag(xml,2,new Pair<String,Object>("rights",query.getAt(FeedQuery.RIGHTS, row, null)),null,true,false);
+			tag(xml,2,
+					new Pair<String,Object>("summary",query.getAt(FeedQuery.SUMMARY, row, null)),
+					new Pair[]{
+						new Pair<String,Object>("type",query.getAt(FeedQuery.SUMMARYTYPE, row, null))
 					},false,splitString
 			);
 			
@@ -509,36 +509,36 @@ public final class Feed extends TagImpl	{
 		for(int row=1;row<=rows;row++) {
 			append(xml,2,"<item>");
 			
-			tag(xml,3,new Pair("title",(query.getAt(FeedQuery.TITLE, row, null))),null,true,false);
-			tag(xml,3,new Pair("description",(query.getAt(FeedQuery.CONTENT, row, null))),null,true,false);
-			tag(xml,3,new Pair("link",query.getAt(FeedQuery.RSSLINK, row, null)),null,false,false);
-			tag(xml,3,new Pair("author",query.getAt(FeedQuery.AUTHOREMAIL, row, null)),null,false,false);
+			tag(xml,3,new Pair<String,Object>("title",(query.getAt(FeedQuery.TITLE, row, null))),null,true,false);
+			tag(xml,3,new Pair<String,Object>("description",(query.getAt(FeedQuery.CONTENT, row, null))),null,true,false);
+			tag(xml,3,new Pair<String,Object>("link",query.getAt(FeedQuery.RSSLINK, row, null)),null,false,false);
+			tag(xml,3,new Pair<String,Object>("author",query.getAt(FeedQuery.AUTHOREMAIL, row, null)),null,false,false);
 			tag(xml,3,
-					new Pair("category",query.getAt(FeedQuery.CATEGORYLABEL, row, null)),
+					new Pair<String,Object>("category",query.getAt(FeedQuery.CATEGORYLABEL, row, null)),
 					new Pair[]{
-						new Pair("domain",query.getAt(FeedQuery.CATEGORYSCHEME, row, null))
+						new Pair<String,Object>("domain",query.getAt(FeedQuery.CATEGORYSCHEME, row, null))
 					},false,splitString
 			);
-			tag(xml,3,new Pair("comments",query.getAt(FeedQuery.COMMENTS, row, null)),null,false,false);
+			tag(xml,3,new Pair<String,Object>("comments",query.getAt(FeedQuery.COMMENTS, row, null)),null,false,false);
 			tag(xml,3,
-					new Pair("enclosure",null),
+					new Pair<String,Object>("enclosure",null),
 					new Pair[]{
-						new Pair("url",query.getAt(FeedQuery.LINKHREF, row, null)),
-						new Pair("length",query.getAt(FeedQuery.LINKLENGTH, row, null)),
-						new Pair("type",query.getAt(FeedQuery.LINKTYPE, row, null))
+						new Pair<String,Object>("url",query.getAt(FeedQuery.LINKHREF, row, null)),
+						new Pair<String,Object>("length",query.getAt(FeedQuery.LINKLENGTH, row, null)),
+						new Pair<String,Object>("type",query.getAt(FeedQuery.LINKTYPE, row, null))
 					},false,splitString
 			);
 			tag(xml,3,
-					new Pair("guid",query.getAt(FeedQuery.ID, row, null)),
+					new Pair<String,Object>("guid",query.getAt(FeedQuery.ID, row, null)),
 					new Pair[]{
-						new Pair("isPermaLink",query.getAt(FeedQuery.IDPERMALINK, row, null))
+						new Pair<String,Object>("isPermaLink",query.getAt(FeedQuery.IDPERMALINK, row, null))
 					},false,splitString
 			);
-			tag(xml,3,new Pair("pubDate",query.getAt(FeedQuery.PUBLISHEDDATE, row, null)),null,false,splitString);
+			tag(xml,3,new Pair<String,Object>("pubDate",query.getAt(FeedQuery.PUBLISHEDDATE, row, null)),null,false,splitString);
 			tag(xml,3,
-					new Pair("source",query.getAt(FeedQuery.SOURCE, row, null)),
+					new Pair<String,Object>("source",query.getAt(FeedQuery.SOURCE, row, null)),
 					new Pair[]{
-						new Pair("url",query.getAt(FeedQuery.SOURCEURL, row, null))
+						new Pair<String,Object>("url",query.getAt(FeedQuery.SOURCEURL, row, null))
 					},false,false
 			);
 			
@@ -589,23 +589,23 @@ public final class Feed extends TagImpl	{
 				for(int i=0;i<attrNames.length;i++) {
 					attrValue=sct.get(attrNames[i][0], null);
 					if(attrValue!=null) {
-						al.add(new Pair(attrNames[i][1],attrValue));
+						al.add(new Pair<String,Object>(attrNames[i][1],attrValue));
 					}
 				}
 				attrs=(Pair[]) al.toArray(new Pair[al.size()]);
 			}
 			else attrs=null;
-			tag(xml,count,new Pair(trgName,FeedQuery.getValue(value)),attrs,false,false,childrenAsTag);
+			tag(xml,count,new Pair<String,Object>(trgName,FeedQuery.getValue(value)),attrs,false,false,childrenAsTag);
 			return true;
 		}
 		return false;
 		
 	}
-	private void tag(StringBuffer xml, int count, Pair tag, Pair[] attrs,boolean required,boolean splitString) throws PageException {
+	private void tag(StringBuffer xml, int count, Pair<String,Object> tag, Pair<String,Object>[] attrs,boolean required,boolean splitString) throws PageException {
 		tag(xml, count, tag, attrs, required, splitString,false);
 	}
 	
-	private void tag(StringBuffer xml, int count, Pair tag, Pair[] attrs,boolean required,boolean splitString, boolean childrenAsTag) throws PageException {
+	private void tag(StringBuffer xml, int count, Pair<String,Object> tag, Pair<String,Object>[] attrs,boolean required,boolean splitString, boolean childrenAsTag) throws PageException {
 		if(!required && StringUtil.isEmpty(tag.getValue())){
 			if(attrs==null || attrs.length==0)return;
 			int c=0;
@@ -641,7 +641,7 @@ public final class Feed extends TagImpl	{
 		
 	}
 	
-	private void _tag(StringBuffer xml, String tagName,Object tagValue, Pair[] attrs,int count, int index, boolean splitString, boolean childrenAsTag) throws PageException {
+	private void _tag(StringBuffer xml, String tagName,Object tagValue, Pair<String,Object>[] attrs,int count, int index, boolean splitString, boolean childrenAsTag) throws PageException {
 		for(int i=0;i<count;i++)xml.append("\t");
 		xml.append('<');
 		xml.append(tagName);

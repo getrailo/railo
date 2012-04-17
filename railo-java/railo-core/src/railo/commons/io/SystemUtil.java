@@ -29,6 +29,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -630,7 +631,7 @@ public final class SystemUtil {
 		}
 	    
 	}
-	private static MemoryUsage getPermGenSpaceSize() {
+	/*private static MemoryUsage getPermGenSpaceSize() {
 		MemoryUsage mu = getPermGenSpaceSize(null);
 		if(mu!=null) return mu;
 		
@@ -645,7 +646,7 @@ public final class SystemUtil {
 			sb.append(bean.getName());
 		}
 		throw new RuntimeException("PermGen Space information not available, available Memory blocks are ["+sb+"]");
-	}
+	}*/
 	
 	private static MemoryUsage getPermGenSpaceSize(MemoryUsage defaultValue) {
 		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();
@@ -677,7 +678,7 @@ public final class SystemUtil {
 		return (int)(1000L-(1000L*used/max));
 	}
 	
-	public static Query getMemoryUsage(int type) {
+	public static Query getMemoryUsage(int type) throws DatabaseException {
 		
 		
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
@@ -729,7 +730,7 @@ public final class SystemUtil {
 			if(type==MEMORY_TYPE_NON_HEAP && _type!=MemoryType.NON_HEAP)continue;
 				
 			double d=((int)(100D/usage.getMax()*usage.getUsed()))/100D;
-			sct.setEL(bean.getName(), Caster.toDouble(d));
+			sct.setEL(KeyImpl.init(bean.getName()), Caster.toDouble(d));
 			
 		}
 		return sct;
@@ -755,5 +756,44 @@ public final class SystemUtil {
 	}
 	public static long microTime() {
 		return System.nanoTime()/1000L;
+	}
+	
+	public static TemplateLine getCurrentContext() {
+		return _getCurrentContext(new Exception("Stack trace"));
+	}
+	private static TemplateLine _getCurrentContext(Throwable t) {
+		
+		//Throwable root = t.getRootCause();
+		Throwable cause = t.getCause(); 
+		if(cause!=null)_getCurrentContext(cause);
+		StackTraceElement[] traces = t.getStackTrace();
+		
+		
+        int line=0;
+		String template;
+		
+		StackTraceElement trace=null;
+		for(int i=0;i<traces.length;i++) {
+			trace=traces[i];
+			template=trace.getFileName();
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
+			line=trace.getLineNumber();
+			return new TemplateLine(template,line);
+		}
+		return null;
+	}
+	
+	public static class TemplateLine {
+
+		public final String template;
+		public final int line;
+
+		public TemplateLine(String template, int line) {
+			this.template=template;
+			this.line=line;
+		}
+		public String toString(){
+			return template+":"+line;
+		}
 	}
 }

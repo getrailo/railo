@@ -229,7 +229,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         if(configDir==null) {
             configDir=ResourceUtil.createResource(frp.getResource(strConfig), FileUtil.LEVEL_GRAND_PARENT_FILE,FileUtil.TYPE_DIR);
         }
-        
+        if(configDir==null) throw new PageServletException(new ApplicationException("path ["+strConfig+"] is invalid"));
         if(!configDir.exists()){
         	try {
 				configDir.createDirectory(true);
@@ -337,6 +337,29 @@ public final class CFMLEngineImpl implements CFMLEngine {
     		if(!StringUtil.isEmpty(mt))rsp.setContentType(mt);
     		IOUtil.copy(res, rsp.getOutputStream(), true);
     	}
+	}
+	
+
+	public void serviceRest(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
+		req=new HTTPServletRequestWrap(req);
+		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
+        
+		PageContext pc = factory.getRailoPageContext(servlet,req,rsp,null,false,-1,false);
+        ThreadQueue queue = factory.getConfig().getThreadQueue();
+        queue.enter(pc);
+        try {
+        	pc.executeRest(pc.getHttpServletRequest().getServletPath(),false);
+        } 
+        catch (PageException pe) {
+			throw new PageServletException(pe);
+		}
+        finally {
+        	queue.exit(pc);
+            factory.releaseRailoPageContext(pc);
+            FDControllerFactory.notifyPageComplete();
+        }
+		
+		
 	}
     
 

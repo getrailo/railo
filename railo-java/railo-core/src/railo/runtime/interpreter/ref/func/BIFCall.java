@@ -155,9 +155,7 @@ public final class BIFCall extends RefSupport implements Ref {
 					return new VT(Constants.DOUBLE_ZERO,type,-1);
 				return new VT(null,type,-1);
 			}
-			else {
-				return new VT(defaultValue,type,-1);
-			}
+			return new VT(defaultValue,type,-1);
 			
 		}
 		ExpressionException ee = new ExpressionException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]");

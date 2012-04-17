@@ -119,21 +119,21 @@ public final class StructImplString extends StructImpl implements Struct {
 		//return (String[])map.keySet().toArray(new String[map.size()]);
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
-		Object obj= map.remove(StringUtil.toLowerCase(key));
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
+	 * /
+	public Object remove (String key) throws PageException {
+		Object obj= map.remove (StringUtil.toLowerCase(key));
+		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Collection.Key key) throws PageException {
 		Object obj= map.remove(key.getLowerString());
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
+		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
 	}
 	
@@ -174,7 +174,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	/**
 	 * throw exception for invalid key
 	 * @param key Invalid key
-	 * @return returns a invalid key Exception
+	 * @return returns an invalid key Exception
 	 */
 	protected ExpressionException invalidKey(String key) {
 		return new ExpressionException("key ["+key+"] doesn't exist in struct");

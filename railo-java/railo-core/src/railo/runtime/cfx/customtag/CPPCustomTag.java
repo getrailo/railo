@@ -31,8 +31,8 @@ public class CPPCustomTag implements CustomTag {
 				
 
 				throw new CFXTagException(
-					"cannot initilaize C++ Custom tag library, make sure you have added all the required jars files. "+
-					"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
+					"cannot initialize C++ Custom tag library, make sure you have added all the required jar files. "+
+					"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
 				
 			}
 			try {

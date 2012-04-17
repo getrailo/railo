@@ -68,7 +68,24 @@
 Redirtect to entry --->
 <cfif cgi.request_method EQ "POST" and error.message EQ "">
 	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
-</cfif>    
+</cfif>
+
+<cffunction name="formatUnit" output="no" returntype="string">
+	<cfargument name="time" type="numeric" required="yes">
+    
+    <cfif time GTE 100000000><!--- 1000ms --->
+    	<cfreturn int(time/1000000)&" ms">
+    <cfelseif time GTE 10000000><!--- 100ms --->
+    	<cfreturn (int(time/100000)/10)&" ms">
+    <cfelseif time GTE 1000000><!--- 10ms --->
+    	<cfreturn (int(time/10000)/100)&" ms">
+    <cfelse><!--- 0ms --->
+    	<cfreturn (int(time/1000)/1000)&" ms">
+    </cfif>
+    
+    
+    <cfreturn (time/1000000)&" ms">
+</cffunction> 
     
     
 
@@ -227,9 +244,9 @@ Redirtect to entry --->
 <tr>
 	<td class="tblContent"><a href="#request.self#?action=#url.action#">#el.cgi.SCRIPT_NAME##len(el.cgi.QUERY_STRING)?"?"& el.cgi.QUERY_STRING:""#</a></td>
 	<td class="tblContent">#LSDateFormat(el.starttime)# #LSTimeFormat(el.starttime)#</td>
-	<td class="tblContent">#_query#</td>
-	<td class="tblContent">#_app#</td>
-	<td class="tblContent">#_total#</td>
+	<td class="tblContent" nowrap="nowrap">#formatUnit(_query)#</td>
+	<td class="tblContent" nowrap="nowrap">#formatUnit(_app)#</td>
+	<td class="tblContent" nowrap="nowrap">#formatUnit(_total)#</td>
 </tr>
 </cfloop>
 

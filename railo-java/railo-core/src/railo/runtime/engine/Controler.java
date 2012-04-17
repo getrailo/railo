@@ -120,11 +120,9 @@ public final class Controler extends Thread {
 				ConfigWeb config = null;
 				
 				if(firstRun) {
-					if(config==null) {
-						config = cfmlFactory.getConfig();
-						ThreadLocalConfig.register(config);
-						
-					}
+					config = cfmlFactory.getConfig();
+					ThreadLocalConfig.register(config);
+					
 					config.reloadTimeServerOffset();
 					checkOldClientFile(config);
 					
@@ -356,10 +354,8 @@ public final class Controler extends Thread {
 					if(expires<System.currentTimeMillis()){
 						return true;
 					}
-					else {
-						str=str.substring(index+1);
-						return false;
-					}
+					str=str.substring(index+1);
+					return false;
 				}
 			}
 			// old files not having a timestamp inside

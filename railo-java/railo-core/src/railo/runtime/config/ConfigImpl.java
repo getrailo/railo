@@ -86,6 +86,7 @@ import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.ntp.NtpClient;
+import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
@@ -230,9 +231,10 @@ public abstract class ConfigImpl implements Config {
     private PageSource baseComponentPageSource;
     //private Page baseComponentPage;
     private String baseComponentTemplate;
-    
+    private boolean restList=false;
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
+    private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
     private LogAndSource threadLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
     
     private LogAndSource requestTimeoutLogger=null;
@@ -273,10 +275,7 @@ public abstract class ConfigImpl implements Config {
 	private int scriptProtect=ApplicationContext.SCRIPT_PROTECT_ALL;
 
 	//private boolean proxyEnable=false;
-	private String 	proxyServer=null;
-	private int 	proxyPort=80;
-	private String 	proxyUsername=null;
-	private String 	proxyPassword=null;
+	private ProxyData proxy =null;
 
 
 	private Resource clientScopeDir;
@@ -297,6 +296,7 @@ public abstract class ConfigImpl implements Config {
 	private DatasourceConnectionPool pool=new DatasourceConnectionPool();
 
 	private boolean doCustomTagDeepSearch=false;
+	private boolean doComponentTagDeepSearch=false;
 
 	private double version=1.0D;
 
@@ -341,12 +341,12 @@ public abstract class ConfigImpl implements Config {
 	
 	protected MappingImpl tagMapping;
 	private Resource tagDirectory;
-	private Resource functionDirectory;
+	//private Resource functionDirectory;
 	protected MappingImpl functionMapping;
 	private Map amfCasterArguments;
 	private Class amfCasterClass=ClassicAMFCaster.class;
 	private AMFCaster amfCaster;
-	private String defaultDataSource;
+	//private String defaultDataSource;
 	private short inspectTemplate=INSPECT_ONCE;
 	private String serial="";
 	private String cacheMD5;
@@ -367,6 +367,7 @@ public abstract class ConfigImpl implements Config {
 	private boolean useCTPathCache=true;
 	private int amfConfigType=AMF_CONFIG_TYPE_XML;
 	private LogAndSource scopeLogger;
+	private railo.runtime.rest.Mapping[] restMappings;
 	
 	
 	
@@ -691,6 +692,12 @@ public abstract class ConfigImpl implements Config {
     	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return mailLogger;
     }
+    
+
+    public LogAndSource getRestLogger() {
+    	if(restLogger==null)restLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
+		return restLogger;
+    }
 
     /**
      * @see railo.runtime.config.Config#getMailLogger()
@@ -774,6 +781,26 @@ public abstract class ConfigImpl implements Config {
      */
     public Mapping[] getMappings() {
         return mappings;
+    }
+    
+    public railo.runtime.rest.Mapping[] getRestMappings() {
+        return restMappings;
+    }
+  
+    protected void setRestMappings(railo.runtime.rest.Mapping[] restMappings) {
+    	
+    	// make sure only one is default
+    	boolean hasDefault=false;
+    	railo.runtime.rest.Mapping m;
+    	for(int i=0;i<restMappings.length;i++){
+    		m=restMappings[i];
+    		if(m.isDefault()) {
+    			if(hasDefault) m.setDefault(false);
+    			hasDefault=true;
+    		}
+    	}
+    	
+        this.restMappings= restMappings;
     }
 
 
@@ -1139,7 +1166,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     protected void setFunctionDirectory(Resource functionDirectory) {
-    	this.functionDirectory=functionDirectory;
+    	//this.functionDirectory=functionDirectory;
     	this.functionMapping= new MappingImpl(this,"/mapping-function/",functionDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
     	FunctionLib fl=flds[flds.length-1];
         
@@ -1600,7 +1627,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     /**
-     * is file a directory or not, touch if not exists
+     * is file a directory or not, touch if not exist
      * @param directory
      * @return true if existing directory or has created new one
      */
@@ -1698,6 +1725,21 @@ public abstract class ConfigImpl implements Config {
     protected void setMappingLogger(LogAndSource mappingLogger) {
         this.mappingLogger=mappingLogger;
     }
+    
+    protected void setRestLogger(LogAndSource restLogger) {
+        this.restLogger=restLogger;
+    }
+    
+
+    protected void setRestList(boolean restList) {
+        this.restList=restList;
+    }
+
+    public boolean getRestList() {
+        return restList;
+    }
+    
+    
 
     public LogAndSource getMappingLogger() {
     	if(mappingLogger==null)
@@ -2203,57 +2245,15 @@ public abstract class ConfigImpl implements Config {
 	/**
 	 * @return the proxyPassword
 	 */
-	public String getProxyPassword() {
-		return proxyPassword;
+	public ProxyData getProxyData() {
+		return proxy;
 	}
 
 	/**
 	 * @param proxyPassword the proxyPassword to set
 	 */
-	protected void setProxyPassword(String proxyPassword) {
-		this.proxyPassword = proxyPassword;
-	}
-
-	/**
-	 * @return the proxyPort
-	 */
-	public int getProxyPort() {
-		return proxyPort;
-	}
-
-	/**
-	 * @param proxyPort the proxyPort to set
-	 */
-	protected void setProxyPort(int proxyPort) {
-		this.proxyPort = proxyPort;
-	}
-
-	/**
-	 * @return the proxyServer
-	 */
-	public String getProxyServer() {
-		return proxyServer;
-	}
-
-	/**
-	 * @param proxyServer the proxyServer to set
-	 */
-	protected void setProxyServer(String proxyServer) {
-		this.proxyServer = proxyServer;
-	}
-
-	/**
-	 * @return the proxyUsername
-	 */
-	public String getProxyUsername() {
-		return proxyUsername;
-	}
-
-	/**
-	 * @param proxyUsername the proxyUsername to set
-	 */
-	protected void setProxyUsername(String proxyUsername) {
-		this.proxyUsername = proxyUsername;
+	protected void setProxyData(ProxyData proxy) {
+		this.proxy = proxy;
 	}
 
 	/**
@@ -2536,6 +2536,15 @@ public abstract class ConfigImpl implements Config {
 		this.doLocalCustomTag= doLocalCustomTag;
 	}
 	
+
+	public boolean doComponentDeepSearch() {
+		return doComponentTagDeepSearch;
+	}
+	
+	protected void setDoComponentDeepSearch(boolean doComponentTagDeepSearch) {
+		this.doComponentTagDeepSearch = doComponentTagDeepSearch;
+	}
+	
 	/**
 	 *
 	 * @see railo.runtime.config.Config#doCustomTagDeepSearch()
@@ -2543,6 +2552,7 @@ public abstract class ConfigImpl implements Config {
 	public boolean doCustomTagDeepSearch() {
 		return doCustomTagDeepSearch;
 	}
+	
 
 	/**
 	 * @param doCustomTagDeepSearch the doCustomTagDeepSearch to set
@@ -2939,7 +2949,7 @@ public abstract class ConfigImpl implements Config {
 		return null;
 	}
 	protected void setDefaultDataSource(String defaultDataSource) {
-		this.defaultDataSource=defaultDataSource;
+		//this.defaultDataSource=defaultDataSource;
 	}
 
 	/**
@@ -3071,12 +3081,11 @@ public abstract class ConfigImpl implements Config {
 				// try to load hibernate jars
 				if(JarLoader.changed(pc.getConfig(), Admin.ORM_JARS))
 					throw new ORMException(
-						"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JAR's\"");
-				else 
-					throw new ORMException(
-							"cannot initilaize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jars files",
-							"if you have updated the JAR's in the Railo Administrator, please restart your Servlet Engine");
+						"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
+						"GO to the Railo Server Administrator and on the page Services/Update, click on \"Update JARs\"");
+				throw new ORMException(
+							"cannot initialize ORM Engine ["+ormEngineClass.getName()+"], make sure you have added all the required jar files",
+							"if you have updated the JARs in the Railo Administrator, please restart your Servlet Engine");
 			
 			}
 				ormengines.put(name,engine);
@@ -3404,6 +3413,15 @@ public abstract class ConfigImpl implements Config {
 	public abstract int getLoginDelay();
 	
 	public abstract boolean getLoginCaptcha();
+
+	private boolean dotNotationUpperCase=true;
+	protected void setDotNotationUpperCase(boolean dotNotationUpperCase) {
+		this.dotNotationUpperCase=dotNotationUpperCase;
+	}
+
+	public boolean getDotNotationUpperCase() {
+		return dotNotationUpperCase;
+	}
 
 	
 }

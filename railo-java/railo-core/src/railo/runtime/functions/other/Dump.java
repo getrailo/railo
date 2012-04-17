@@ -30,8 +30,8 @@ public final class Dump implements Function {
 	private static final int OUTPUT_TYPE_CONSOLE = 2;
 	private static final int OUTPUT_TYPE_RESOURCE = 3;
 	 
-	private static final int FORMAT_TYPE_HTML = 0;
-	private static final int FORMAT_TYPE_TEXT = 1;
+	//private static final int FORMAT_TYPE_HTML = 0;
+	//private static final int FORMAT_TYPE_TEXT = 1;
 
 	public static String call(PageContext pc , Object object) throws PageException {
 		return call(pc, object,null,true,9999,null,null,null,null,9999,true,true);

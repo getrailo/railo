@@ -204,7 +204,7 @@ public final class TagOther {
 		    				Variable.registerKey(bc, LitString.toExprString((String)entry.getKey()));
 			    			adapter.push((String)entry.getValue());
 		    				adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX);
-		    			av.visitEndItem(bc);
+		    			av.visitEndItem(bc.getAdapter());
 		            }
 		            av.visitEnd();
 				}

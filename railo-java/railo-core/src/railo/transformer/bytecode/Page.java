@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -28,6 +28,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.extern.StringExternalizerWriter;
 import railo.transformer.bytecode.literal.LitString;
@@ -63,6 +64,7 @@ public final class Page extends BodyBase {
 	}
 
 	private static final Type KEY_IMPL = Type.getType(KeyImpl.class);
+	private static final Type KEY_CONSTANTS = Type.getType(KeyConstants.class);
 	private static final Method KEY_INIT = new Method(
 			"init",
 			Types.COLLECTION_KEY,
@@ -697,8 +699,14 @@ public final class Page extends BodyBase {
 			ga.dup();
 			ga.push(index++);
 			
-			ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-			ga.invokeStatic(KEY_IMPL, KEY_INTERN);
+			/*String str = value.getString();
+			if(KeyConstants.hasConstant(str)) {
+				ga.getStatic(KEY_CONSTANTS, "_"+str, Types.COLLECTION_KEY);
+			}
+			else {*/
+				ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
+				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
+			//}
 			ga.visitInsn(Opcodes.AASTORE);
 		}
 		ga.visitFieldInsn(Opcodes.PUTSTATIC, 
@@ -1230,7 +1238,11 @@ public final class Page extends BodyBase {
 			attr=(Attribute) entry.getValue();
 			adapter.loadLocal(sct);
 			adapter.push(attr.getName());
-			ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			if(attr.getValue() instanceof Literal)
+				ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			else
+				adapter.push("[runtime expression]");
+			
 			adapter.invokeVirtual(STRUCT_IMPL, SET_EL);
 			adapter.pop();
 		}
@@ -1418,7 +1430,7 @@ public final class Page extends BodyBase {
 	public static byte[] setSourceLastModified(byte[] barr,  long lastModified) {
 		ClassReader cr = new ClassReader(barr);
 		ClassWriter cw = ASMUtil.getClassWriter();
-		ClassAdapter ca = new SourceLastModifiedClassAdapter(cw,lastModified);
+		ClassVisitor ca = new SourceLastModifiedClassAdapter(cw,lastModified);
 		cr.accept(ca, ClassReader.SKIP_DEBUG);
 		return cw.toByteArray();
 	}
@@ -1426,11 +1438,11 @@ public final class Page extends BodyBase {
 
 
 }
-	class SourceLastModifiedClassAdapter extends ClassAdapter {
+	class SourceLastModifiedClassAdapter extends ClassVisitor {
 
 		private long lastModified;
 		public SourceLastModifiedClassAdapter(ClassWriter cw, long lastModified) {
-			super(cw);
+			super(Opcodes.ASM4,cw);
 			this.lastModified=lastModified;
 		}
 		public MethodVisitor visitMethod(int access,String name, String desc,  String signature, String[] exceptions) {

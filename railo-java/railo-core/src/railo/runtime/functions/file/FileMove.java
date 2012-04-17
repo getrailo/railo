@@ -19,7 +19,7 @@ public class FileMove {
         
 		if(!src.exists()) 
 			throw new FunctionException(pc,"FileMove",1,"source",
-					"source file ["+src+"] does not exists");
+					"source file ["+src+"] does not exist");
 		try {
 			src.moveTo(trg);
 		} catch (IOException e) {

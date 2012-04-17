@@ -13,7 +13,7 @@ public final class Concat extends RefSupport implements Ref {
     
     private Ref right;
     private Ref left;
-	private PageContext pc;
+	//private PageContext pc;
 
     /**
      * constructor of the class
@@ -21,7 +21,7 @@ public final class Concat extends RefSupport implements Ref {
      * @param right
      */
     public Concat(PageContext pc,Ref left, Ref right) {
-    	this.pc=pc;
+    	//this.pc=pc;
         this.left=left;
         this.right=right;
     }

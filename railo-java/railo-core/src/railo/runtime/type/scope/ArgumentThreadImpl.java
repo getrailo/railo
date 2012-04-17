@@ -146,7 +146,7 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	 * @see railo.runtime.type.Collection#get(java.lang.String)
 	 */
 	public Object get(String key) throws PageException {
-		return sct.get(key);
+		return get(KeyImpl.init(key));
 	}
 
 	/**

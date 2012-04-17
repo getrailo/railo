@@ -25,11 +25,7 @@ public class SimpleHTMLDumpWriter implements DumpWriter {
 			return;
 		}
 		DumpTable table=(DumpTable) data;
-		
-		if(table==null) return;
-
-		
-		
+				
 		// prepare data
 		DumpRow[] rows = table.getRows();
 		int cols=0;

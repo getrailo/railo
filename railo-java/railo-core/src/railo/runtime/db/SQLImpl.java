@@ -114,13 +114,29 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
         if(items.length==0) return strSQL;
         StringBuffer sb=new StringBuffer(strSQL);
         for(int i=0;i<items.length;i++) {
-            sb.append(items[i].toString());
+            sb.append(';').append(items[i].toString());
         }
         return sb.toString();
     }
 
 	public long sizeOf() {
 		return SizeOf.size(strSQL)+SizeOf.size(position)+SizeOf.size(items);
+	}
+
+	public static SQL duplicate(SQL sql) {
+		if(!(sql instanceof SQLImpl)) return sql;
+		return ((SQLImpl) sql).duplicate();
+	}
+
+	public SQL duplicate() {
+		SQLImpl rtn=new SQLImpl(strSQL);
+		rtn.position=position;
+		rtn.items=new SQLItem[items.length];
+		for(int i=0;i<items.length;i++){
+			rtn.items[i]=SQLItemImpl.duplicate(items[i]);
+		}
+		
+		return rtn;
 	}
 
 }

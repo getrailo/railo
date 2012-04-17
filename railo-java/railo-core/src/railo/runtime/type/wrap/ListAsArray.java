@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;

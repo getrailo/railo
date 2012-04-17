@@ -175,17 +175,18 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		try {
 			p.threadCall(pc, threadIndex); 
 		}
-		catch(Abort a){}
 		catch (Throwable t) {
-			ConfigWeb c = pc.getConfig();
-			if(c instanceof ConfigImpl) {
-				ConfigImpl ci=(ConfigImpl) c;
-				LogAndSource log = ci.getThreadLogger();
-				if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+			if(!Abort.isSilentAbort(t)) {
+				ConfigWeb c = pc.getConfig();
+				if(c instanceof ConfigImpl) {
+					ConfigImpl ci=(ConfigImpl) c;
+					LogAndSource log = ci.getThreadLogger();
+					if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+				}
+				PageException pe = Caster.toPageException(t);
+				if(!serializable)catchBlock=pe.getCatchBlock(pc);
+				return pe;
 			}
-			PageException pe = Caster.toPageException(t);
-			if(!serializable)catchBlock=pe.getCatchBlock(pc);
-			return pe;
 		}
 		finally {
 			completed=true;
@@ -198,7 +199,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	            HttpServletResponseDummy rsp=(HttpServletResponseDummy) pc.getHttpServletResponse();
 	            pc.flush();
 	            contentType=rsp.getContentType();
-	            Pair[] _headers = rsp.getHeaders();
+	            Pair<String,Object>[] _headers = rsp.getHeaders();
 	            if(_headers!=null)for(int i=0;i<_headers.length;i++){
 	            	if(_headers[i].getName().equalsIgnoreCase("Content-Encoding"))
 	            		contentEncoding=Caster.toString(_headers[i].getValue(),null);

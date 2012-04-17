@@ -141,12 +141,12 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
         return parent.keysAsString();
     }
 
-    /**
+    /* *
      * @see railo.runtime.type.Collection#remove(java.lang.String)
-     */
-    public Object remove(String key) throws PageException {
+     * /
+    public Object remove (String key) throws PageException {
         return parent.remove(key);
-    }
+    }*/
 
 
     /**

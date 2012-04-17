@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.apache.axis.AxisFault;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -1960,6 +1961,24 @@ public final class Caster {
     public static String toString(boolean b) {
         return b?"true":"false";
     }
+
+    public static UDF toFunction(Object o) throws PageException {
+    	if(o instanceof UDF) return (UDF)o;
+    	
+        else if(o instanceof ObjectWrap) {
+            return toFunction(((ObjectWrap)o).getEmbededObject());
+        }
+        throw new CasterException(o,"function");
+    }
+
+    public static UDF toFunction(Object o, UDF defaultValue) {
+    	if(o instanceof UDF) return (UDF)o;
+    	
+        else if(o instanceof ObjectWrap) {
+            return toFunction(((ObjectWrap)o).getEmbededObject(defaultValue),defaultValue);
+        }
+        return defaultValue;
+    }
     
     /**
      * cast a Object to a Array Object
@@ -2717,10 +2736,10 @@ public final class Caster {
      */
     public static Query toQuery(Object o) throws PageException {
     	if(o instanceof Query) return (Query)o;
-    	if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
-        else if(o instanceof ObjectWrap) {
+    	if(o instanceof ObjectWrap) {
             return toQuery(((ObjectWrap)o).getEmbededObject());
         }
+        if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
         throw new CasterException(o,"query");
     }
 
@@ -3124,28 +3143,38 @@ public final class Caster {
         	clazz=ClassUtil.toArrayClass(clazz);
         	return clazz;
         }
-        
         // check for argument
-        Class<?> clazz=otherTypeToClass(type);
-        if(clazz!=null) return clazz;
-        throw new ExpressionException("invalid type ["+type+"]");
+        Class<?> clazz;
+		try {
+			clazz = otherTypeToClass(type);
+		} 
+		catch (ClassException e) {
+			throw Caster.toPageException(e);
+		}
+        return clazz;
     }
     
-    private static Class<?> otherTypeToClass(String type){
+    private static Class<?> otherTypeToClass(String type) throws PageException, ClassException{
     	PageContext pc = ThreadLocalPageContext.get();
-        if(pc!=null)	{
+    	PageException pe=null;
+        // try to load as cfc
+    	if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
         		return ComponentUtil.getServerComponentPropertiesClass(c);
     		} 
-            catch (PageException pe) {}
+            catch (PageException e) {
+            	pe=e;
+            }
         }
+        // try to load as class
         try {
 			return ClassUtil.loadClass(type);
 		} 
-        catch (ClassException e) {}
-        
-        return null;
+        catch (ClassException ce) {
+        	if(pe!=null) throw pe;
+        	throw ce;
+        }
     }
     
 
@@ -3343,7 +3372,6 @@ public final class Caster {
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+type+"]");
         }
         throw new CasterException(o,type);
-        //throw new ExpressionException("invalid type ["+type+"]");
     }
 
 	public static String toZip(Object o) throws PageException {
@@ -3448,6 +3476,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VARIABLE_NAME)  return toVariableName(o);
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
+        else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
 
         if(o instanceof Component) {
             Component comp=((Component)o);
@@ -3480,6 +3509,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_UUID)           return toUUId(o);
         else if(type==CFTypes.TYPE_VARIABLE_NAME)  return toVariableName(o);
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
+        else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
 
         if(type==CFTypes.TYPE_UNDEFINED)

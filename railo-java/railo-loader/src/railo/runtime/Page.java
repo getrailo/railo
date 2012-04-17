@@ -103,5 +103,5 @@ public abstract class Page implements Serializable{
 
 	public SoftReference<Struct> metaData;
 	
-	protected UDFProperties[] udfs;
+	public UDFProperties[] udfs;
 }

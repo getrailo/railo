@@ -4,8 +4,12 @@ import java.util.Map;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.filter.DirectoryResourceFilter;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.filter.OrResourceFilter;
+import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentImpl;
 import railo.runtime.ComponentPage;
@@ -29,7 +33,9 @@ import railo.runtime.writer.BodyContentUtil;
 public class ComponentLoader {
 	
 
-    public static ComponentImpl loadComponent(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    private static final ResourceFilter DIR_OR_EXT=new OrResourceFilter(new ResourceFilter[]{DirectoryResourceFilter.FILTER,new ExtensionResourceFilter(".cfc")});
+
+	public static ComponentImpl loadComponent(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
     	return (ComponentImpl)load(pc, rawPath, searchLocal, searchRoot,null,false);
     }
 
@@ -227,6 +233,16 @@ public class ComponentLoader {
     		ps=m.getPageSource(p);
     		page=((PageSourceImpl)ps).loadPage(pc,null);
     		
+    		// recursive search
+    		if(page==null && config.doComponentDeepSearch() && m.hasPhysical() && path.indexOf('/')==-1) {
+    			String _path=getPagePath(pc, m.getPhysical(), null,pathWithCFC,DirectoryResourceFilter.FILTER);
+    			if(_path!=null) {
+    				ps=m.getPageSource(_path);
+        			page=((PageSourceImpl)ps).loadPage(pc,null);
+        			doCache=false;// do not cache this, it could be ambigous
+    			}
+    		}
+    		
     		if(page!=null){
     			if(doCache)config.putCachedPageSource(pathWithCFC, page.getPageSource());
     			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
@@ -261,18 +277,40 @@ public class ComponentLoader {
         		throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath+" or "+rpm);
         	}
     	}
-    	else throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath);
+    	throw new ExpressionException("invalid "+(interfaceUDFs==null?"component":"interface")+" definition, can't find "+rawPath);
     	
 		
     	
 	}
-    
-    private static String trim(String str) {
+
+    private static String getPagePath(PageContext pc, Resource res, String dir,String name, ResourceFilter filter) {
+		if(res.isFile()) {
+			if(res.getName().equalsIgnoreCase(name)) {
+				return dir+res.getName();
+			}
+		}
+		else if(res.isDirectory()) {
+			Resource[] _dir = res.listResources(filter);
+			if(_dir!=null){
+				if(dir==null) dir="/";
+				else dir=dir+res.getName()+"/";
+				String path;
+				for(int i=0;i<_dir.length;i++){
+					path=getPagePath(pc, _dir[i],dir, name,DIR_OR_EXT);
+					if(path!=null) return path;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	private static String trim(String str) {
     	if(StringUtil.startsWith(str, '.'))str=str.substring(1);
 		return str;
 	}
 
-	private static Page getPage(PageContext pc,String path, RefBoolean isRealPath, boolean searchLocal) throws PageException  {
+	/*private static Page getPage(PageContext pc,String path, RefBoolean isRealPath, boolean searchLocal) throws PageException  {
     	Page page=null;
 	    isRealPath.setValue(!StringUtil.startsWith(path,'/'));
 	    PageSource ps;
@@ -295,7 +333,7 @@ public class ComponentLoader {
     	    page=((PageSourceImpl)ps).loadPage(pc,null);
         }
     	return page;
-	}
+	}*/
 
 
 	//
@@ -320,7 +358,7 @@ public class ComponentLoader {
 
 	private static Object load(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, Map interfaceUDFs) throws PageException  {
 		if(interfaceUDFs==null) return loadComponent(pc,page, ps,callPath, isRealPath);
-		else return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
+		return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
 	}
 
 	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {

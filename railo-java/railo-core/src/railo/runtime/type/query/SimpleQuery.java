@@ -231,12 +231,12 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		return QueryUtil.toStringArray(keys());
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.QueryImpl#removeEL(java.lang.String)
-	 */
+	 * /
 	public synchronized Object removeEL(String key) {
 		throw notSupported();
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeEL(railo.runtime.type.Collection.Key)
@@ -246,13 +246,12 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		throw notSupported();
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.QueryImpl#remove(java.lang.String)
-	 */
-	
-	public synchronized Object remove(String key) {
+	 * /
+	public synchronized Object remove (String key) {
 		throw notSupported();
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#remove(railo.runtime.type.Collection.Key)

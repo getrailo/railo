@@ -92,18 +92,17 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	protected static Struct _loadData(PageContext pc, String datasourceName,String strType,int type, Log log, boolean mxStyle) throws PageException	{
 		DatasourceConnection dc=null;
 		Query query=null;
-	    
 	    // select
 	    SQL sqlSelect=mxStyle?
 				new SQLImpl("mx"):
-				new SQLImpl("select data from "+PREFIX+"_"+strType+"_data where cfid=? and name=?"
+				new SQLImpl("select data from "+PREFIX+"_"+strType+"_data where cfid=? and name=? and expires > ?"
 						,new SQLItem[]{
 			 		new SQLItemImpl(pc.getCFID(),Types.VARCHAR),
-					new SQLItemImpl(pc.getApplicationContext().getName(),Types.VARCHAR)
+					new SQLItemImpl(pc.getApplicationContext().getName(),Types.VARCHAR),
+					new SQLItemImpl(now(pc.getConfig()),Types.VARCHAR)
 				});
 		
 		ConfigImpl config = (ConfigImpl)pc.getConfig();
-		//int pid=1000;
 		DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
 		try {
 			dc=pool.getDatasourceConnection(pc,config.getDataSource(datasourceName),null,null);
@@ -131,7 +130,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
 	    }
 	    boolean debugUsage=DebuggerImpl.debugQueryUsage(pc,query);
-	    ((DebuggerImpl)pc.getDebugger()).addQuery(debugUsage?query:null,datasourceName,"",sqlSelect,query.getRecordcount(),pc.getCurrentPageSource(),query.executionTime());
+	    pc.getDebugger().addQuery(debugUsage?query:null,datasourceName,"",sqlSelect,query.getRecordcount(),pc.getCurrentPageSource(),query.executionTime());
 	    boolean _isNew = query.getRecordcount()==0;
 	    
 	    if(_isNew) {
@@ -139,10 +138,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 			return null;
 	    }
 	    String str=Caster.toString(query.get(KeyImpl.DATA));
-	    //long expires=Caster.toLongValue(query.get(EXPIRES));
 	    if(mxStyle) return null;
-	    //if(checkExpires && expires<=System.currentTimeMillis()) return null;
-	    
 	    Struct s = (Struct)pc.evaluate(str);
 	    ScopeContext.info(log,"load existing data from ["+datasourceName+"."+PREFIX+"_"+strType+"_data] to create "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID());
 		
@@ -223,6 +219,10 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 
 	private static String createExpires(long timespan,Config config) {
 		return Caster.toString(timespan+new DateTimeImpl(config).getTime());
+	}
+	
+	private static String now(Config config) {
+		return Caster.toString(new DateTimeImpl(config).getTime());
 	}
 
 	private static int execute(Connection conn, SQLImpl sql) throws SQLException, PageException {

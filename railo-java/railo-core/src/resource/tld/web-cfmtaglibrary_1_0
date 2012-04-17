@@ -2105,6 +2105,13 @@ Example:
 		specified in the directory attribute.</description>
 		</attribute>
 		<attribute>
+			<type>string</type>
+			<name>destination</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Required for action = "copy". Ignored by all other actions. Path of the destination directory. If not an absolute path, it is relative to the source directory.</description>
+		</attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>recurse</name>
 			<required>false</required>
@@ -3061,7 +3068,7 @@ If you specify a structure element that doesn't exist, Railo ignores it and does
 		<name>File</name>
 		<tag-class>railo.runtime.tag.FileTag</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.File</tte-class>
-		<body-content>empty</body-content>
+		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
 			<type>multiple</type>
@@ -5409,13 +5416,18 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<name>action</name>
 			<required>no</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Type of file manipulation that the tag performs.</description>
+			<description>possible actions are:
+- append (default): append text to the html head
+- read: return the text already set to html head
+- reset: reset/remove text already set to hrml head
+- write: write text to html head, overwrite already existing text in html head
+			</description>
 		</attribute>
 	</tag>
 	<!-- Http -->
 	<tag>
 		<name>http</name>
-		<tag-class>railo.runtime.tag.Http</tag-class>
+		<tag-class>railo.runtime.tag.Http4</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
@@ -6135,6 +6147,16 @@ both functions must have the same attributes; otherwise
 			<rtexprvalue>true</rtexprvalue>
 			<script-support>required</script-support>
 			<description>A logical path to an existing page.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>runOnce</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<script-support>optional</script-support>
+			<description>
+			if set to true, the given template is only included once within the current request.
+			</description>
 		</attribute>
 	</tag>
 	<!-- Index -->
@@ -7743,7 +7765,13 @@ Valid only for cfinput type="text".</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The type or severity of the message.</description>
+			<description>
+			Type (severity) of the message:
+- information (default)
+- warning
+- error
+- fatal 
+			</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -7830,11 +7858,11 @@ Valid only for cfinput type="text".</description>
 			<description>Condition that controls the loop.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>query</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Query that controls the loop.  </description>
+			<description>Query that controls the loop. this can be a variable name or the query itself.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -8589,11 +8617,11 @@ Each type-value pair must start with a hyphen.</description>
 		<description>Displays the results of a database query or other operation. To nest cfoutput tags, see the "Usage" section. </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>query</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The name of the cfquery from which to draw data for the output section.</description>
+			<description>The name of the cfquery from which to draw data for the output section or the query itself.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -12422,11 +12450,12 @@ dWord: creates a value of 0 (zero)</description>
 			<name>action</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>&lt;ul&gt;
-            &lt;li&gt;begin: the start of the block of code to execute&lt;/li&gt;
-            &lt;li&gt;commit: commits a pending transaction&lt;/li&gt;
-            &lt;li&gt;rollback: rolls back a pending transaction&lt;/li&gt;
-            &lt;/ul&gt;</description>
+<description>
+- begin: The start of the block of code to execute.
+- commit: Commits a pending transaction.
+- rollback: Rolls back a pending transaction.
+- setsavepoint: Saves a specific state within a transaction
+</description>
     </attribute>
 		<attribute>
 			<type>string</type>

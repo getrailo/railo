@@ -153,6 +153,10 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      */
     public abstract Client clientScope() throws PageException;
+    
+
+    public abstract Client clientScopeEL();
+    
     /**
      * @return cluster scope
      * @throws PageException
@@ -161,7 +165,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 
     /**
      * cluster scope
-     * @param create return null when false and scope does not exists
+     * @param create return null when false and scope does not exist
      * @return cluster scope or null
      * @throws PageException
      */
@@ -424,7 +428,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * 
      * @param coll Collection to get value
      * @param key key of the value
-     * @return return value of a Collection, return null if value not exists
+     * @return return value of a Collection, return null if value not exist
      * @deprecated use instead <code>{@link #get(Object, railo.runtime.type.Collection.Key, Object)}</code>
 	 */
     public abstract Object get(Object coll, String key, Object defaultValue);
@@ -433,7 +437,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * 
      * @param coll Collection to get value
      * @param key key of the value
-     * @return return value of a Collection, return null if value not exists
+     * @return return value of a Collection, return null if value not exist
      */
     public abstract Object get(Object coll, Collection.Key key, Object defaultValue);
 
@@ -474,13 +478,16 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract Object removeVariable(String var) throws PageException;
 
     /**
-     * get variable from string definition and cast ist to a Query Object
+     * get variable from string definition and cast it to a Query Object
      * @param key Variable Name to get
      * @return Query
      * @throws PageException
      */
     public abstract Query getQuery(String key) throws PageException;
 
+
+    public abstract Query getQuery(Object value) throws PageException;
+    
     /**
      * write a value to the header of the response
      * @param name name of the value to set
@@ -705,16 +712,35 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
+     * @Deprecated used <code> doInclude(PageSource source, boolean runOnce)</code> instead.
      */
     public abstract void doInclude(PageSource source) throws  PageException;
+
+    /**  
+     * includes a path from a absolute path
+     * @param source absolute path as file object
+     * @param runOnce include only once per request
+     * @throws ServletException
+     */
+    public abstract void doInclude(PageSource source, boolean runOnce) throws  PageException;
     
     
     /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
+     * @Deprecated used <code> doInclude(String source, boolean runOnce)</code> instead.
      */
     public abstract void doInclude(String source) throws  PageException;
+    
+    
+    /**  
+     * includes a path from a absolute path
+     * @param source absolute path as file object
+     * @param runOnce include only once per request
+     * @throws ServletException
+     */
+    public abstract void doInclude(String source, boolean runOnce) throws  PageException;
     
     
     /**
@@ -779,6 +805,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract void execute(String realPath, boolean throwException) throws PageException;
     
+    public abstract void executeRest(String realPath, boolean throwException) throws PageException;
+    
     /**
      * Flush Content of buffer to the response stream of the Socket.
      */
@@ -827,7 +855,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract Object getFunctionWithNamedValues(Object coll, Collection.Key key, Object[] args) throws PageException;
 
     /**
-     * get variable from string definition and cast ist to a Iterator Object
+     * get variable from string definition and cast it to a Iterator Object
      * @param key Variable Name to get
      * @return Iterator
      * @throws PageException

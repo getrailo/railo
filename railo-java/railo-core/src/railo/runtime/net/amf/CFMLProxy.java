@@ -165,8 +165,8 @@ public class CFMLProxy {
         }
         
         // header
-        Pair[] headers = hsrd.getHeaders();
-        Pair header ;
+        Pair<String,Object>[] headers = hsrd.getHeaders();
+        Pair<String,Object> header ;
         Object value;
         if(headers!=null) {
         	for(int i=0;i<headers.length;i++) {

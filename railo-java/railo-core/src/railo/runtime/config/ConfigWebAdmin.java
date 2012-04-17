@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -36,6 +35,8 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.IPRange;
 import railo.commons.net.URLEncoder;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
@@ -96,7 +97,7 @@ import com.allaire.cfx.CustomTag;
  */
 public final class ConfigWebAdmin {
     
-    private static final Object NULL = new Object();
+    //private static final Object NULL = new Object();
 	private ConfigImpl config;
     private Document doc;
 	private String password;
@@ -555,7 +556,7 @@ public final class ConfigWebAdmin {
         
         // check virtual
             if(virtual==null || virtual.length()==0)
-                throw new ExpressionException("virtual path can be a empty value");
+                throw new ExpressionException("virtual path cannot be a empty value");
             virtual=virtual.replace('\\','/');
             
             if(!virtual.equals("/") && virtual.endsWith("/"))
@@ -633,6 +634,65 @@ public final class ConfigWebAdmin {
       	}
   		
     }
+    
+    public void updateRestMapping(String virtual, String physical,boolean _default) throws ExpressionException, SecurityException {
+    	checkWriteAccess();
+    	boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        
+        virtual=virtual.trim(); 
+        physical=physical.trim();
+        if(!hasAccess)
+            throw new SecurityException("no access to update REST mapping");
+        
+        // check virtual
+            if(virtual==null || virtual.length()==0)
+                throw new ExpressionException("virtual path cannot be a empty value");
+            virtual=virtual.replace('\\','/');
+            if(virtual.equals("/"))
+                throw new ExpressionException("virtual path cannot be /");
+        
+            
+            if(virtual.endsWith("/"))
+    	            virtual=virtual.substring(0,virtual.length()-1);
+            
+            if(virtual.charAt(0)!='/') virtual="/"+virtual;
+        
+        if((physical.length())==0)
+        	throw new ExpressionException("physical path cannot be a empty value");
+        
+        Element rest=_getRootElement("rest");
+        Element[] children = ConfigWebFactory.getChildren(rest,"mapping");
+        
+        // remove existing default
+        if(_default) {
+        	for(int i=0;i<children.length;i++) {
+          	    if(Caster.toBooleanValue(children[i].getAttribute("default"),false))
+          	    	children[i].setAttribute("default", "false");
+          	}
+        }
+        
+        // Update
+        String v;
+        Element el=null;
+      	for(int i=0;i<children.length;i++) {
+      	    v=children[i].getAttribute("virtual");
+      	    if(v!=null && v.equals(virtual)) {
+      	        el=children[i];
+      	    }
+      	}
+      	
+      	
+      	// Insert
+      	if(el==null) {
+      		el=doc.createElement("mapping");
+      		rest.appendChild(el);
+      	}
+      	
+      	el.setAttribute("virtual",virtual);
+      	el.setAttribute("physical",physical);
+  		el.setAttribute("default",Caster.toString(_default));
+  		  		
+    }
 
 
     /**
@@ -645,7 +705,7 @@ public final class ConfigWebAdmin {
     	checkWriteAccess();
     	// check parameters
         if(virtual==null || virtual.length()==0)
-            throw new ExpressionException("virtual path can be a empty value");
+            throw new ExpressionException("virtual path cannot be a empty value");
         virtual=virtual.replace('\\','/');
         
         if(!virtual.equals("/") && virtual.endsWith("/"))
@@ -655,6 +715,37 @@ public final class ConfigWebAdmin {
         
         
         Element mappings=_getRootElement("mappings");
+
+        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
+      	for(int i=0;i<children.length;i++) {
+      	    String v=children[i].getAttribute("virtual");
+      	    if(v!=null) {
+      	        if(!v.equals("/") && v.endsWith("/"))
+      	            v=v.substring(0,v.length()-1);
+	  	    	if(v!=null && v.equals(virtual)) {
+		      		Element el=children[i];
+		      		mappings.removeChild(el);
+	  			}
+      	    }
+      	}
+    }
+    
+
+    public void removeRestMapping(String virtual) throws ExpressionException, SecurityException {
+    	checkWriteAccess();
+    	// check parameters
+        if(virtual==null || virtual.length()==0)
+            throw new ExpressionException("virtual path cannot be a empty value");
+        virtual=virtual.replace('\\','/');
+        if(virtual.equals("/"))
+            throw new ExpressionException("virtual path cannot be /");
+        
+        if(virtual.endsWith("/")) virtual=virtual.substring(0,virtual.length()-1);
+        if(virtual.charAt(0)!='/') virtual="/"+virtual;
+        
+        
+        
+        Element mappings=_getRootElement("rest");
 
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
       	for(int i=0;i<children.length;i++) {
@@ -1076,7 +1167,7 @@ public final class ConfigWebAdmin {
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,boolean validate,boolean storage, Struct custom) throws ExpressionException, SecurityException {
+            boolean blob,boolean clob,int allow,boolean validate,boolean storage,String timezone, Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1132,6 +1223,8 @@ public final class ConfigWebAdmin {
 	      		el.setAttribute("password",ConfigWebFactory.encrypt(password));
 
                 el.setAttribute("host",host);
+                if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
+                else if(el.hasAttribute("timezone")) el.removeAttribute("timezone");
                 el.setAttribute("database",database);
                 el.setAttribute("port",Caster.toString(port));
                 el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
@@ -1164,6 +1257,7 @@ public final class ConfigWebAdmin {
   		if(password.length()>0)el.setAttribute("password",ConfigWebFactory.encrypt(password));
         
         el.setAttribute("host",host);
+        if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
         el.setAttribute("database",database);
         if(port>-1)el.setAttribute("port",Caster.toString(port));
         if(connectionLimit>-1)el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
@@ -2085,6 +2179,26 @@ public final class ConfigWebAdmin {
         	scope.setAttribute("base",baseComponent);
     }
     
+    
+
+	public void updateComponentDeepSearch(Boolean deepSearch) throws SecurityException {
+		checkWriteAccess();
+	    boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+	    if(!hasAccess)
+	        throw new SecurityException("no access to update component setting");
+	    //config.resetBaseComponentPage();
+	    Element scope=_getRootElement("component");
+	    //if(baseComponent.trim().length()>0)
+	    if(deepSearch!=null)
+    	scope.setAttribute("deep-search",Caster.toString(deepSearch.booleanValue()));
+	    
+	    else {
+	        if(scope.hasAttribute("deep-search"))
+	        	scope.removeAttribute("deep-search");
+	    }
+		
+	}
+    
 
     public void updateComponentDefaultImport(String componentDefaultImport) throws SecurityException {
     	checkWriteAccess();
@@ -2534,6 +2648,22 @@ public final class ConfigWebAdmin {
         Element scope=_getRootElement("scope");
         scope.setAttribute("local-mode",mode);
     }
+    
+
+
+
+	public void updateRestList(Boolean list) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        if(!hasAccess) throw new SecurityException("no access to update rest setting");
+        
+        
+        Element rest=_getRootElement("rest");
+        if(list==null) {
+        	if(rest.hasAttribute("list"))rest.removeAttribute("list");
+        }
+        else rest.setAttribute("list", Caster.toString(list.booleanValue()));
+	}
 
 
     /**
@@ -3095,9 +3225,7 @@ public final class ConfigWebAdmin {
 		if(Decision.isUUId(id)) {
 			return Hash.invoke(config,id,null,null);
 		}
-		else {
-			return Hash.invoke(config,provider+id,null,null);
-		}
+		return Hash.invoke(config,provider+id,null,null);
 	}
 
 
@@ -3205,10 +3333,10 @@ public final class ConfigWebAdmin {
 	}
 	
 	public void verifyExtensionProvider(String strUrl) throws PageException {
-		HttpMethod method=null;
+		HTTPResponse method=null;
 		try {
 			URL url = HTTPUtil.toURL(strUrl+"?wsdl");
-			method = HTTPUtil.invoke(url, null, null, 2000, null, null, null, -1, null, null, null);
+			method = HTTPEngine.get(url, null, null, 2000,HTTPEngine.MAX_REDIRECT, null, null, null, null);
 		} 
 		catch (MalformedURLException e) {
 			throw new ApplicationException("url defintion ["+strUrl+"] is invalid");
@@ -3217,8 +3345,10 @@ public final class ConfigWebAdmin {
 			throw new ApplicationException("can't invoke ["+strUrl+"]",e.getMessage());
 		}
 		
-		if(method.getStatusCode()!=200){
-			throw new HTTPException(method);
+		if(method.getStatusCode()!=200){int code=method.getStatusCode();
+    	String text=method.getStatusText();
+    	String msg=code+" "+text;
+    	throw new HTTPException(msg,null,code,text,method.getURL());
 		}
 		//Object o = 
 			CreateObject.doWebService(null, strUrl+"?wsdl");
@@ -3621,5 +3751,20 @@ public final class ConfigWebAdmin {
         login.setAttribute("captcha",Caster.toString(captcha));
         login.setAttribute("delay",Caster.toString(delay));
 		
+	}
+
+
+	public void updateCompilerSettings(Boolean dotNotationUpperCase) throws PageException {
+		
+		Element element = _getRootElement("compiler");
+		
+    	checkWriteAccess();
+    	if(dotNotationUpperCase==null){
+			if(element.hasAttribute("dot-notation-upper-case"))
+				element.removeAttribute("dot-notation-upper-case");
+		}
+    	else {
+    		element.setAttribute("dot-notation-upper-case", Caster.toString(dotNotationUpperCase));
+    	}
 	}
 }

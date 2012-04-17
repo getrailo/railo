@@ -124,4 +124,9 @@ public final class FunctionArgumentLight implements FunctionArgument,Externaliza
 		out.writeShort(type);
 		ExternalizableUtil.writeString(out, strType);
 	}
+	
+	public boolean equals(Object obj){
+		if(!(obj instanceof FunctionArgument)) return false;
+		return FunctionArgumentImpl.equals(this,(FunctionArgument)obj);
+	}
 }

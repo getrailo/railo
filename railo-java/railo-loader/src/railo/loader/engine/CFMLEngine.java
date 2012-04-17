@@ -81,7 +81,7 @@ public interface CFMLEngine {
      * @param message
      * @return
      * /
-    //public Object executeFlex(ServiceAdapter serviceAdapter, Message message);
+    //public Object executeFlex(ServiceAdapter serviceAdapter, Message message);*/
     
     
 
@@ -94,6 +94,16 @@ public interface CFMLEngine {
      * @throws IOException
      */
     public void serviceFile(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException; 
+    
+    /**
+     * method to invoke the engine for a Rest Requests
+     * @param servlet
+     * @param req
+     * @param rsp
+     * @throws ServletException
+     * @throws IOException
+     */
+    public abstract void serviceRest(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException; 
     
     
     /**
@@ -205,4 +215,6 @@ public interface CFMLEngine {
 	public ZipUtil getZipUtil();
 
 	public abstract void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException, JspException, ServletException;
+
+	
 }

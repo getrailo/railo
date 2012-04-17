@@ -487,7 +487,7 @@ public final class ClassUtil {
 		while(true){
 			tmp=clazz.getComponentType();
 			if(tmp==null) break;
-			else clazz=tmp;
+			clazz=tmp;
 		}
 		return clazz;
 	}

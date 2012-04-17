@@ -1325,8 +1325,8 @@ public final class List {
 	 * @return list len
 	 */
 	public static int len(String list, char delimeter,boolean ignoreEmpty) {
-		int len=list.length();
-		if(list==null || len==0) return 0;
+		int len=StringUtil.length(list);
+		if(len==0) return 0;
 
 		int count=0;
 		int last=0;
@@ -1350,8 +1350,8 @@ public final class List {
 	public static int len(String list, String delimeter, boolean ignoreEmpty) {
 	    if(delimeter.length()==1)return len(list, delimeter.charAt(0),ignoreEmpty);
 		char[] del=delimeter.toCharArray();
-	    int len=list.length();
-		if(list==null || len==0) return 0;
+	    int len=StringUtil.length(list);
+		if(len==0) return 0;
 		
 		int count=0;
 		int last=0;

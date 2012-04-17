@@ -13,6 +13,7 @@
 				struct(action:"scope",label:stMenu.server.scope),
 				struct(action:"application",label:stMenu.server.application),
 				struct(action:"output",label:stMenu.server.output),
+				struct(action:"compiler",label:stMenu.server.compiler),
 				struct(action:"error",label:stMenu.server.error)
 			)
 		),
@@ -43,8 +44,8 @@
 		struct(
 			action:"remote",label:stMenu.remote.label,
 			children:array(
-				struct(action:"securityKey",label:stMenu.remote.securityKey,display:true),
-				struct(action:"clients",label:stMenu.remote.clients,hidden:  server.ColdFusion.ProductLevel eq "community" or server.ColdFusion.ProductLevel eq "professional")
+				struct(action:"securityKey",label:stMenu.remote.securityKey,hidden:!request.hasRemoteClientUsage),
+				struct(action:"clients",label:stMenu.remote.clients,hidden:!request.hasRemoteClientUsage)
 			)
 		),
 		
@@ -52,6 +53,7 @@
 			action:"resources",label:stMenu.resources.label,
 			children:array(
 				struct(action:"mappings",label:stMenu.resources.mappings),
+				struct(action:"rest",label:isDefined('stMenu.resources.rest')?stMenu.resources.rest:'Rest'),
 				struct(action:"component",label:stMenu.resources.component),
 				struct(action:"customtags",label:stMenu.resources.customtags),
 				struct(action:"cfx_tags",label:stMenu.resources.cfx_tags)

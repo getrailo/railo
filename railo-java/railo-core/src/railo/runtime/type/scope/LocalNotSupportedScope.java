@@ -57,19 +57,19 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 		return null;
 	}
 	
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws ExpressionException {
+	 *  /
+	public Object remove (String key) throws ExpressionException {
 	    throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key+", Local Scope can only invoked inside a Function");
-	}
+	}*/
 	
 	/**
 	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
-		return remove(key.getString());
+	    throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key+", Local Scope can only invoked inside a Function");
 	}
 	
 	/**

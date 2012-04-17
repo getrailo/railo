@@ -56,7 +56,7 @@ public class ClassicAMFCaster implements AMFCaster {
 	
 	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 
-	private static ClassicAMFCaster singelton;
+	//private static ClassicAMFCaster singelton;
 	
 	protected boolean forceCFCLower;
 	protected boolean forceStructLower;
@@ -256,7 +256,7 @@ public class ClassicAMFCaster implements AMFCaster {
 		if(!StringUtil.isEmpty(aso.getType())){
 			PageContext pc = ThreadLocalPageContext.get();
 			ConfigWeb config = pc.getConfig();
-			if(pc!=null){
+			
 				String name="/"+aso.getType().replace('.', '/')+".cfc";
 				PageSourceImpl ps = (PageSourceImpl) pc.getPageSource(name);
 				Page p=ps.loadPage(pc,null);
@@ -272,7 +272,7 @@ public class ClassicAMFCaster implements AMFCaster {
 					cw.set(KeyImpl.toKey(entry.getKey()), toCFMLObject(entry.getValue()));
 				}
 				return cfc;
-			}
+			
 			
 		}
 		return toCFMLObject((Map)aso);

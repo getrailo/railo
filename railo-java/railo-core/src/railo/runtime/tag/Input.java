@@ -99,7 +99,7 @@ public class Input extends TagImpl {
         else if(validate.equals("maxlength"))	input.setValidate(VALIDATE_MAXLENGTH);
         else if(validate.equals("noblanks"))	input.setValidate(VALIDATE_NOBLANKS);
         
-        else throw new ApplicationException("attribute validate has a invalid value ["+validate+"]",
+        else throw new ApplicationException("attribute validate has an invalid value ["+validate+"]",
                 "valid values for attribute validate are [creditcard, date, eurodate, float, integer, regular, social_security_number, telephone, time, zipcode]");
         
     }
@@ -234,7 +234,7 @@ public class Input extends TagImpl {
     	//if( "ltr".equals(lcDir) || "rtl".equals(lcDir)) 
     		attributes.setEL("dir",dir);
     	
-    	//else throw new ApplicationException("attribute dir for tag input has a invalid value ["+dir+"], valid values are [ltr, rtl]");
+    	//else throw new ApplicationException("attribute dir for tag input has an invalid value ["+dir+"], valid values are [ltr, rtl]");
     }
     
     public void setDataformatas(String dataformatas) {
@@ -243,7 +243,7 @@ public class Input extends TagImpl {
     	//if( "plaintext".equals(lcDataformatas) || "html".equals(lcDataformatas)) 
     		attributes.setEL("dataformatas",dataformatas);
     	
-    	//else throw new ApplicationException("attribute dataformatas for tag input has a invalid value ["+dataformatas+"], valid values are [plaintext, html");
+    	//else throw new ApplicationException("attribute dataformatas for tag input has an invalid value ["+dataformatas+"], valid values are [plaintext, html");
     }
 
     public void setDisabled(String disabled) {
@@ -488,7 +488,7 @@ public class Input extends TagImpl {
         else if("submit".equals(type))		input.setType(TYPE_SUBMIT);
         else if("datefield".equals(type))	input.setType(TYPE_DATEFIELD);
         
-        else throw new ApplicationException("attribute type has a invalid value ["+type+"]","valid values for attribute type are " +
+        else throw new ApplicationException("attribute type has an invalid value ["+type+"]","valid values for attribute type are " +
         		"[checkbox, password, text, radio, button, file, hidden, image, reset, submit, datefield]");
 
         attributes.setEL("type",type);
@@ -536,7 +536,7 @@ public class Input extends TagImpl {
      * @throws PageException
      */
     public void setRange(String range) throws PageException {
-        String errMessage="attribute range has a invalid value ["+range+"], must be string list with numbers";
+        String errMessage="attribute range has an invalid value ["+range+"], must be string list with numbers";
         String errDetail="Example: [number_from,number_to], [number_from], [number_from,], [,number_to]";
         
         Array arr=List.listToArray(range,',');

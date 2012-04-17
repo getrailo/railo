@@ -3,7 +3,6 @@ package railo.runtime.type.trace;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.debug.Debugger;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
@@ -30,9 +29,6 @@ public class TraceObjectSupport implements TraceObject {
 		this.category=category;
 		this.text=text;
 		this.debugger=debugger;
-		//((DebuggerImpl)debugger).addObjectTrace(this);
-		
-		
 	}
 	
 	
@@ -98,7 +94,7 @@ public class TraceObjectSupport implements TraceObject {
 		qry.setAtEL(PARAMS, row, addional);
 		*/
 		String action=type(traces[2].getMethodName());
-		((DebuggerImpl)debugger).addTrace(type, category, text, template,line,action, varName, varValue);
+		debugger.addTrace(type, category, text, template,line,action, varName, varValue);
 			
 	}	
 	

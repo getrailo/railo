@@ -78,9 +78,9 @@ public class ORMDatasourceConnection implements DatasourceConnection {
 		return supportsGetGeneratedKeys.booleanValue();
 	}
 
-	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys) throws SQLException {
+	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys, boolean allowCaching) throws SQLException {
 		if(createGeneratedKeys)	return getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS);
-		else return getConnection().prepareStatement(sql.getSQLString());
+		return getConnection().prepareStatement(sql.getSQLString());
 	}
 
 	@Override

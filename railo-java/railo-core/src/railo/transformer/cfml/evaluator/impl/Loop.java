@@ -1,5 +1,6 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -7,6 +8,7 @@ import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagLoop;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.ExprTransformer;
+import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
 import railo.transformer.library.function.FunctionLib;
@@ -65,7 +67,7 @@ public final class Loop extends EvaluatorSupport {
 
 			try {
 				transformer = tagLib.getExprTransfomer();
-				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,new CFMLString(text,"UTF-8"));
+				Expression expr=transformer.transform(ASMUtil.getAncestorPage(tag),null,flibs,new CFMLString(text,"UTF-8"),TransfomerSettings.toSetting(ThreadLocalPageContext.getConfig()));
 				tag.addAttribute(new Attribute(false,"condition",CastBoolean.toExprBoolean(expr),"boolean"));
 			}
 			catch (Exception e) {

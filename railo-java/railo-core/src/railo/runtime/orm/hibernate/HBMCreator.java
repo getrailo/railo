@@ -735,12 +735,12 @@ public class HBMCreator {
 								if(!StringUtil.isEmpty(type) && (!type.equalsIgnoreCase("any") && !type.equalsIgnoreCase("object"))){
 									return type;
 								}
-								else {
+								
 									String g=Caster.toString(meta.get(GENERATOR,null));
 									if(!StringUtil.isEmpty(g)){
 										return getDefaultTypeForGenerator(engine,g,foreignCFC);
 									}
-								}
+								
 							}
 						}
 					}

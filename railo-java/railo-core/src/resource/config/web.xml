@@ -187,8 +187,8 @@ Path placeholders:
 		trace-log="{railo-web}/logs/trace.log"
 		trace-log-level="info"
 		application-log="{railo-web}/logs/application.log"
-		application-log-level="error"
+		application-log-level="info"
 		exception-log="{railo-web}/logs/exception.log"
-		exception-log-level="error"/>
+		exception-log-level="info"/>
 	
 </railo-configuration>

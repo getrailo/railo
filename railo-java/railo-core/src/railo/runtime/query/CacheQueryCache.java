@@ -99,14 +99,8 @@ import railo.runtime.type.Query;
 	}
 
 	private Cache getCache() {
-		try {
-			Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
-			return c;
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
+		return c;
 	}
 
     private String key(SQL sql, String datasource, String username,String password) {

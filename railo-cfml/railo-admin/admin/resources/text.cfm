@@ -21,6 +21,18 @@
         <cffile action="READ" file="language/#session.railo_admin_lang#.xml" variable="sXML">
         <cfset application.stText[session.railo_admin_lang] = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren,stText)>
 	</cfif>
+    <cftry>
+        <cfadmin 
+        action="hasRemoteClientUsage"
+        type="#request.adminType#"
+        password="#session["password"&request.adminType]#"
+        
+        returnVariable="request.hasRemoteClientUsage">	
+    	<cfcatch>
+        	<cfset request.hasRemoteClientUsage=true>
+        </cfcatch>
+    </cftry>
+    
     <cfset stText.menuStruct.web = createMenu(stText.menu,"web")>
 	<cfset stText.menuStruct.server = createMenu(stText.menu, "server")>
     
@@ -100,7 +112,7 @@ You can use this code in order to write the structs into an XML file correspondi
 		<cftry>
 			<cfset setStructElement(stRet, el.XMLAttributes.key, el.XMLText)>
             <cfif doCreate>
-				<cfset application.notTranslated[el.XMLAttributes.key]=el.XMLText>
+				<!--- <cfset application.notTranslated[el.XMLAttributes.key]=el.XMLText>--->
             <cfelse>
             	<cfset StructDelete(application.notTranslated,el.XMLAttributes.key,false)>
 			</cfif>

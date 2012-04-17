@@ -12,6 +12,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
+import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
@@ -20,6 +21,7 @@ import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.converter.WDDXConverter;
+import railo.runtime.converter.XMLConverter;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -31,16 +33,23 @@ import railo.runtime.net.rpc.server.ComponentController;
 import railo.runtime.net.rpc.server.RPCServer;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.rest.RestUtil;
+import railo.runtime.rest.Result;
+import railo.runtime.rest.path.Path;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -71,7 +80,6 @@ public abstract class ComponentPage extends Page  {
 	 * @see railo.runtime.Page#call(railo.runtime.PageContext)
 	 */
 	public void call(PageContext pc) throws PageException {
-		
 		// remote persistent (only type server is supported)
 		String strRemotePersisId = Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT_ID,null),null);
 		if(!StringUtil.isEmpty(strRemotePersisId,true)) {
@@ -85,6 +93,7 @@ public abstract class ComponentPage extends Page  {
 		// call type (invocation, store-only)
 		String callType = Caster.toString(req.getAttribute("call-type"),null);
 		boolean fromGateway="railo-gateway-1-0".equals(client);
+		boolean fromRest="railo-rest-1-0".equals(client);
 		Component component;
         try {
             pc.setSilent();
@@ -124,11 +133,19 @@ public abstract class ComponentPage extends Page  {
 			String qs=ReqRspUtil.getQueryString(pc.getHttpServletRequest());
             if(pc.getBasePageSource()==this.getPageSource())
             	pc.getDebugger().setOutput(false);
-            boolean isPost=pc. getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
-            Object method;
+            boolean isPost=pc.getHttpServletRequest().getMethod().equalsIgnoreCase("POST");
             
             boolean suppressContent = ((ConfigImpl)pc.getConfig()).isSuppressContent();
             if(suppressContent)pc.clear();
+            Object method;
+            
+            if(fromRest){ 
+            	
+            	callRest(pc,component,Caster.toString(req.getAttribute("rest-path"),""),(Result)req.getAttribute("rest-result"),suppressContent);
+            	return;
+            }
+            
+            
             
             // POST
             if(isPost) {
@@ -140,7 +157,7 @@ public abstract class ComponentPage extends Page  {
             	}
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method),suppressContent);
+                    callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
             		//close(pc);
                     return;
                 }
@@ -157,7 +174,7 @@ public abstract class ComponentPage extends Page  {
                 } 
     			// WDDX
                 else if((method=pc.urlFormScope().get("method",null))!=null) {
-                    callWDDX(pc,component,Caster.toString(method),suppressContent);
+                    callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
                     //close(pc); 
                     return;
                 } 
@@ -200,9 +217,130 @@ public abstract class ComponentPage extends Page  {
 		}
 	}
 	
-	/*private void close(PageContext pc) {
-		//pc.close();
-	}*/
+	private void callRest(PageContext pc, Component component, String path, Result result, boolean suppressContent) throws IOException, ConverterException {
+		String method = pc.getHttpServletRequest().getMethod();
+		String[] subPath = result.getPath();
+		
+		Key[] keys = component.keys();
+		Object value;
+		UDF udf;
+		//FunctionArgument[] args;
+		Struct meta;
+		boolean hasFunction=false;
+		for(int i=0;i<keys.length;i++){
+			value=component.get(keys[i],null);
+			if(value instanceof UDF){
+				udf=(UDF)value;
+				try {
+					meta = udf.getMetaData(pc);
+					String httpMethod = Caster.toString(meta.get(RestUtil.HTTP_METHOD,null),null);
+					if(StringUtil.isEmpty(httpMethod) || !httpMethod.equalsIgnoreCase(method)) continue;
+					
+					String restPath = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
+					
+					// no rest path
+					if(StringUtil.isEmpty(restPath)){
+						if(ArrayUtil.isEmpty(subPath)) {
+							hasFunction=true;
+							_callRest(pc, component, udf, path, result.getVariables(),result, suppressContent,keys[i]);
+							break;
+						}
+					}
+					else {
+						Struct var = result.getVariables();
+						int index=RestUtil.matchPath(var, Path.init(restPath)/*TODO cache this*/, result.getPath());
+						if(index>=0 && index+1==result.getPath().length) {
+							hasFunction=true;
+							_callRest(pc, component, udf, path, var,result, suppressContent,keys[i]);
+							break;
+						}
+					}
+				} 
+				catch (PageException e) {}
+			}
+		}
+		
+		if(!hasFunction)
+			RestUtil.setStatus(pc,404,"no rest service for ["+path+"] found");
+    	
+	}
+
+	private void _callRest(PageContext pc, Component component, UDF udf,String path, Struct variables, Result result, boolean suppressContent, Key methodName) throws PageException, IOException, ConverterException {
+		FunctionArgument[] fa=udf.getFunctionArguments();
+		Struct args=new StructImpl();
+		Key name;
+		String restArgSource;
+		for(int i=0;i<fa.length;i++){
+			name = fa[i].getName();
+			restArgSource=Caster.toString(fa[i].getMetaData().get(RestUtil.REST_ARG_SOURCE,""),"");
+			if("path".equalsIgnoreCase(restArgSource))
+				args.setEL(name, variables.get(name,null));
+			if("query".equalsIgnoreCase(restArgSource) || "url".equalsIgnoreCase(restArgSource))
+				args.setEL(name, pc.urlScope().get(name,null));
+			if("form".equalsIgnoreCase(restArgSource))
+				args.setEL(name, pc.formScope().get(name,null));
+			if("cookie".equalsIgnoreCase(restArgSource))
+				args.setEL(name, pc.cookieScope().get(name,null));
+			if("header".equalsIgnoreCase(restArgSource) || "head".equalsIgnoreCase(restArgSource))
+				args.setEL(name, ReqRspUtil.getHeaderIgnoreCase(pc, name.getString(), null));
+			if("matrix".equalsIgnoreCase(restArgSource))
+				args.setEL(name, result.getMatrix().get(name,null));
+			
+			// TODO matrix, header, else
+		}
+		Object rtn=null;
+		try{
+    		if(suppressContent)pc.setSilent();
+			rtn = component.callWithNamedValues(pc, methodName, args);
+		} 
+		catch (PageException e) {
+			RestUtil.setStatus(pc, 500, ExceptionUtil.getMessage(e));
+		}
+    	finally {
+    		if(suppressContent)pc.unsetSilent();
+    	}
+    	
+    	// custom response
+		Struct sct = result.getCustomResponse();
+    	if(sct!=null){
+			HttpServletResponse rsp = pc.getHttpServletResponse();
+    		// status
+    		int status = Caster.toIntValue(sct.get(KeyConstants._status,null),200);
+    		rsp.setStatus(status);
+			
+    		// content
+    		String content=Caster.toString(sct.get(KeyConstants._content,null),null);
+    		if(content!=null) {
+				try {
+					pc.forceWrite(content);
+				} 
+				catch (IOException e) {}
+    		}
+    		
+    		// headers
+    		Struct headers=Caster.toStruct(sct.get(KeyConstants._headers,null),null);
+    		if(headers!=null){
+    			Key[] keys = headers.keys();
+    			String n,v;
+    			Object tmp;
+    			for(int i=0;i<keys.length;i++){
+    				n=keys[i].getString();
+    				tmp=headers.get(keys[i]);
+    				v=Caster.toString(tmp,null);
+    				if(tmp!=null && v==null) v=tmp.toString();
+    				rsp.setHeader(n, v);
+    			}	
+    		}
+		}
+    	// convert result
+		else if(rtn!=null){
+        	Props props = new Props();
+        	props.format=result.getFormat();
+        	
+        	pc.forceWrite(convertResult(pc, props, null, rtn));
+        }
+		
+	}
 
 	public static  boolean isSoap(PageContext pc) {
 		HttpServletRequest req = pc.getHttpServletRequest();
@@ -225,7 +363,7 @@ public abstract class ComponentPage extends Page  {
 	}
 	
 	
-    private void callWDDX(PageContext pc, Component component, String methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
+    private void callWDDX(PageContext pc, Component component, Collection.Key methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
     	Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
 
         // define args
@@ -240,29 +378,10 @@ public abstract class ComponentPage extends Page  {
         }
         
       //content-type
-        Object o = component.get(KeyImpl.init(methodName),null);
+        Object o = component.get(methodName,null);
         Props props = getProps(pc, o, returnFormat);
-        HttpServletResponse rsp = pc.getHttpServletResponse();
-        if(!props.output) {
-	        switch(props.format){
-	        case UDF.RETURN_FORMAT_WDDX:
-	        	rsp.setContentType("text/xml; charset=UTF-8");
-	        	rsp.setHeader("Return-Format", "wddx");
-	        break;
-	        case UDF.RETURN_FORMAT_JSON:
-	        	rsp.setContentType("application/json");
-	        	rsp.setHeader("Return-Format", "json");
-	        break;
-	        case UDF.RETURN_FORMAT_PLAIN:
-	        	rsp.setContentType("text/plain; charset=UTF-8");
-	        	rsp.setHeader("Return-Format", "plain");
-	        break;
-	        case UDF.RETURN_FORMAT_SERIALIZE:
-	        	rsp.setContentType("text/plain; charset=UTF-8");
-	        	rsp.setHeader("Return-Format", "serialize");
-	        break;
-	        }
-        }
+        if(!props.output) setFormat(pc.getHttpServletResponse(),props.format);
+        	
         
         Object rtn=null;
         try{
@@ -270,7 +389,7 @@ public abstract class ComponentPage extends Page  {
         
 	        
 	        if(args==null){
-	        	url=translate(component,methodName,url);
+	        	url=translate(component,methodName.getString(),url);
 	        	rtn = component.callWithNamedValues(pc, methodName, url);
 	        }
 	        else if(args instanceof String){
@@ -302,17 +421,36 @@ public abstract class ComponentPage extends Page  {
         if(rtn!=null){
         	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
         		pc.variablesScope().setEL("AMF-Forward", rtn);
-        		//ThreadLocalWDDXResult.set(rtn);
         	}
         	else {
         		pc.forceWrite(convertResult(pc, props, queryFormat, rtn));
         	}
         }
-        //pc.setSilent();
         
     }
     
-    private static Props getProps(PageContext pc, Object o,Object returnFormat) throws PageException {
+    private void setFormat(HttpServletResponse rsp, int format) {
+    	switch(format){
+        case UDF.RETURN_FORMAT_WDDX:
+        	rsp.setContentType("text/xml; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "wddx");
+        break;
+        case UDF.RETURN_FORMAT_JSON:
+        	rsp.setContentType("application/json");
+        	rsp.setHeader("Return-Format", "json");
+        break;
+        case UDF.RETURN_FORMAT_PLAIN:
+        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "plain");
+        break;
+        case UDF.RETURN_FORMAT_SERIALIZE:
+        	rsp.setContentType("text/plain; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "serialize");
+        break;
+        }
+	}
+
+	private static Props getProps(PageContext pc, Object o,Object returnFormat) throws PageException {
     	Props props = new Props();
     	
 		props.strType="any";
@@ -348,22 +486,6 @@ public abstract class ComponentPage extends Page  {
     
     private static String convertResult(PageContext pc,Props props,Object queryFormat,Object rtn) throws ConverterException, PageException {
 
-    	/*Object o = component.get(methodName,null);
-		int format=UDF.RETURN_FORMAT_WDDX;
-		int type=CFTypes.TYPE_ANY;
-		String strType="any";
-		boolean secureJson=pc.getApplicationContext().getSecureJson();
-		if(o instanceof UDF) {
-			UDF udf = ((UDF)o);
-			format=udf.getReturnFormat();
-			type=udf.getReturnType();
-			strType=udf.getReturnTypeAsString();
-			if(udf.getSecureJson()!=null)secureJson=udf.getSecureJson().booleanValue();
-		}
-		if(!StringUtil.isEmpty(returnFormat)){
-			format=UDFImpl.toReturnFormat(Caster.toString(returnFormat));
-		}*/
-    	
     	
 		// return type XML ignore WDDX
 		if(props.type==CFTypes.TYPE_XML) {
@@ -400,6 +522,12 @@ public abstract class ComponentPage extends Page  {
 		else if(UDF.RETURN_FORMAT_SERIALIZE==props.format) {
 			ScriptConverter converter = new ScriptConverter(false);
 			return converter.serialize(rtn);
+		}
+    	// XML
+		if(UDF.RETURN_FORMAT_XML==props.format) {
+			XMLConverter converter = new XMLConverter(pc.getTimeZone(),false);
+            converter.setTimeZone(pc.getTimeZone());
+    		return converter.serialize(rtn);
 		}
 		// Plain
 		else if(UDF.RETURN_FORMAT_PLAIN==props.format) {

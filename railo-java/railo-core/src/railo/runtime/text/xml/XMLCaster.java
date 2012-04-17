@@ -2,6 +2,7 @@ package railo.runtime.text.xml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.transform.OutputKeys;
@@ -20,6 +21,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -699,5 +701,18 @@ public final class XMLCaster {
 	    return XMLStructFactory.newInstance(node,caseSensitive);
 	}
 	
-	
+	public static Element toRawElement(Object value, Element defaultValue) {
+		if(value instanceof Node) {
+			Node node=XMLCaster.toRawNode((Node) value);
+			if(node instanceof Document) return ((Document) node).getDocumentElement();
+			if(node instanceof Element) return (Element) node;
+			return defaultValue;
+		}
+		try {
+			return XMLUtil.parse(new InputSource(new StringReader(Caster.toString(value))),null,false).getDocumentElement();
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -35,6 +34,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
@@ -49,8 +49,8 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
 
-	private static final int VERSION_2=1;
-	private static final int VERSION_3=2;
+	//private static final int VERSION_2=1;
+	//private static final int VERSION_3=2;
 
 	public static final short TYPE_ALL=0;
 	public static final short TYPE_BOOLEAN=1;
@@ -60,10 +60,14 @@ public final class ASMUtil {
 	
 	
 	
-	private static int version=0;
+	//private static int version=0;
 	
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
-	private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
+	private static final Method _SRC_NAME = new Method("_srcName",
+        			Types.STRING,
+        			new Type[]{}
+            		);;
+	//private static final String VERSION_MESSAGE = "you use an invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
 	/**
@@ -464,15 +468,10 @@ public final class ASMUtil {
         
         // complexType src
         if(!StringUtil.isEmpty(srcName)) {
-	        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "_srcName", "()Ljava/lang/String;", null, null);
-	        mv.visitCode();
-	        Label l0 = new Label();
-	        mv.visitLabel(l0);
-	        mv.visitLineNumber(4, l0);
-	        mv.visitLdcInsn(srcName);
-	        mv.visitInsn(Opcodes.ARETURN);
-	        //mv.visitMaxs(0, 0);//visitMaxs(1, 0);// hansx
-	        mv.visitEnd();
+        	GeneratorAdapter _adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL+ Opcodes.ACC_STATIC , _SRC_NAME, null, null, cw);
+        	_adapter.push(srcName);
+        	_adapter.returnValue();
+        	_adapter.endMethod();
         }
         
         cw.visitEnd();
@@ -500,13 +499,13 @@ public final class ASMUtil {
             adapter.visitVarInsn(Opcodes.ALOAD, 0);
 			adapter.visitFieldInsn(Opcodes.GETFIELD, classType, name, type.toString());
 			adapter.returnValue();
+			
 			Label end = new Label();
 			adapter.visitLabel(end);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
-			//adapter.visitMaxs(0, 0);//visitMaxs(sizeOf, 1);// hansx
 			adapter.visitEnd();
 			
-			
+			adapter.endMethod();
 			
 			
 			
@@ -531,7 +530,7 @@ public final class ASMUtil {
 			//adapter.visitMaxs(0, 0);//.visitMaxs(sizeOf+1, sizeOf+1);// hansx
 			adapter.visitEnd();
         
-			
+			adapter.endMethod();
 			
 			
 			
@@ -908,6 +907,34 @@ public final class ASMUtil {
 	public static void dummy2(BytecodeContext bc) {
 		bc.getAdapter().visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "nanoTime", "()J");
 		bc.getAdapter().visitInsn(Opcodes.POP2);
+	}
+
+
+	/**
+	 * convert a clas array to a type array
+	 * @param classes
+	 * @return
+	 */
+	public static Type[] toTypes(Class<?>[] classes) {
+		if(classes==null || classes.length==0) 
+			return new Type[0];
+		
+		Type[] types=new Type[classes.length];
+		for(int i=0;i<classes.length;i++)	{
+			types[i]=Type.getType(classes[i]);
+		}
+		return types;
+	}
+
+
+	public static String display(ExprString name) {
+		if(name instanceof Literal) {
+			if(name instanceof Identifier) 
+				return ((Identifier)name).getRaw();
+			return ((Literal)name).getString();
+			
+		}
+		return name.toString();
 	}
 	
 }

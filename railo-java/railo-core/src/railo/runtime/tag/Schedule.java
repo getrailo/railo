@@ -2,17 +2,18 @@ package railo.runtime.tag;
 
 import java.net.URL;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.security.Credentials;
+import railo.commons.security.CredentialsImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.schedule.ScheduleTask;
@@ -401,13 +402,7 @@ public final class Schedule extends TagImpl {
         
         // username/password
         Credentials cr=null;
-        if(username!=null) cr=new UsernamePasswordCredentials(username,password);
-        
-        // Proxy
-        Credentials pcr=null;
-        if(proxyserver!=null) {
-            if(proxyuser!=null) pcr=new UsernamePasswordCredentials(proxyuser,proxypassword);
-        }
+        if(username!=null) cr=CredentialsImpl.toCredentials(username,password);
         
        try {
            
@@ -423,9 +418,7 @@ public final class Schedule extends TagImpl {
                    interval,
                    requesttimeout,
                    cr,
-                   proxyserver,
-                   proxyport,
-                   pcr,
+                   ProxyDataImpl.getInstance(proxyserver,proxyport,proxyuser,proxypassword),
                    resolveurl,
                    publish,
                    hidden,
@@ -501,14 +494,17 @@ public final class Schedule extends TagImpl {
 	            query.setAt("timeout",row,Caster.toString(task.getTimeout()/1000));
 	            query.setAt("valid",row,Caster.toString(task.isValid()));
 	            if(task.hasCredentials()) {
-	                query.setAt("username",row,task.getUPCredentials().getUserName());
-	                query.setAt("password",row,task.getUPCredentials().getPassword());
+	                query.setAt("username",row,task.getCredentials().getUsername());
+	                query.setAt("password",row,task.getCredentials().getPassword());
 	            }
-	            query.setAt("proxyserver",row,task.getProxyHost());
-	            if(task.getProxyPort()>0)query.setAt("proxyport",row,Caster.toString(task.getProxyPort()));
-	            if(task.hasProxyCredentials()) {
-	                query.setAt("proxyuser",row,task.getUPProxyCredentials().getUserName());
-	                query.setAt("proxypassword",row,task.getUPProxyCredentials().getPassword());
+	            ProxyData pd = task.getProxyData();
+	            if(ProxyDataImpl.isValid(pd)){
+		            query.setAt("proxyserver",row,pd.getServer());
+		            if(pd.getPort()>0)query.setAt("proxyport",row,Caster.toString(pd.getPort()));
+		            if(ProxyDataImpl.hasCredentials(pd)) {
+		                query.setAt("proxyuser",row,pd.getUsername());
+		                query.setAt("proxypassword",row,pd.getPassword());
+		            }
 	            }
 	            query.setAt("resolveurl",row,Caster.toString(task.isResolveURL()));
 

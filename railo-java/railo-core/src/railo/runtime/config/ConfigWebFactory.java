@@ -132,6 +132,7 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.video.VideoExecuter;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
@@ -344,6 +345,7 @@ public final class ConfigWebFactory {
     	loadResourceProvider(cs,config,doc);
         loadCharset(configServer,config,doc);
         loadMappings(configServer,config,doc);
+        loadRest(configServer,config,doc);
         loadExtensions(configServer,config,doc);
         loadPagePool(configServer,config,doc);
         loadDataSources(configServer,config,doc);
@@ -354,6 +356,7 @@ public final class ConfigWebFactory {
     	loadFilesystem(cs,config,doc); // load tlds
     	loadTag(cs,config,doc); // load tlds
         loadRegional(configServer,config,doc);
+        loadCompiler(configServer,config,doc);
     	loadScope(configServer,config,doc);
     	loadMail(configServer,config,doc);
         loadSearch(configServer,config,doc);
@@ -444,7 +447,7 @@ public final class ConfigWebFactory {
         		}
             }
         	
-        	// adding https when not exists
+        	// adding https when not exist
         	if(!hasHTTPs && httpClass!=null){
         		config.addResourceProvider("https",httpClass,httpArgs);
         	}
@@ -837,7 +840,7 @@ public final class ConfigWebFactory {
     }
 	
 	/**
-	 * creates the Config File, if File not exists
+	 * creates the Config File, if File not exist
 	 * @param xmlName
 	 * @param configFile 
 	 * @throws IOException
@@ -1193,6 +1196,9 @@ public final class ConfigWebFactory {
             f=debug.getRealResource("Classic.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc",f);
             
+            f=debug.getRealResource("Modern.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Modern.cfc",f);
+            
             f=debug.getRealResource("Comment.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Comment.cfc",f);
             
@@ -1410,12 +1416,21 @@ public final class ConfigWebFactory {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
+		
+		// charset
 		StringBuffer sb=new StringBuffer(config.getTemplateCharset());
+		sb.append(';');
 
+		// dot notation upper case
+		sb.append(config.getDotNotationUpperCase());
+		sb.append(';');
+		
+		// tld
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
 		}
 
+		// fld
 		for(int i=0;i<flds.length;i++){
 			sb.append(flds[i].getHash());
 		}
@@ -1525,7 +1540,7 @@ public final class ConfigWebFactory {
 	           
 	           
 	           // physical!=null && 
-	           if(virtual!=null && (physical!=null || archive!=null)) { 
+	           if((physical!=null || archive!=null)) { 
 	               boolean trusted=toBoolean(el.getAttribute("trusted"),false);
 	               String primary=el.getAttribute("primary");
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
@@ -1554,6 +1569,70 @@ public final class ConfigWebFactory {
         }
         config.setMappings(arrMapping);
         //config.setMappings((Mapping[]) mappings.toArray(new Mapping[mappings.size()]));
+    }
+    
+    private static void loadRest(ConfigServerImpl configServer, ConfigImpl config,Document doc) throws IOException {
+        boolean hasAccess= true;//MUST ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        boolean hasCS=configServer!=null;
+      	Element el= getChildByName(doc.getDocumentElement(),"rest");
+        
+        // Log
+        String strLogger=el.getAttribute("log");
+        int logLevel=LogUtil.toIntType(el.getAttribute("log-level"),Log.LEVEL_ERROR);
+        if(StringUtil.isEmpty(strLogger)){
+        	if(configServer!=null){
+        		LogAndSource log = configServer.getRestLogger();
+        		strLogger=log.getSource();
+        		logLevel=log.getLogLevel();
+        	}
+        	else strLogger="{railo-config}/logs/rest.log";
+        }
+        config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+        
+        // list
+        Boolean list=Caster.toBoolean(el.getAttribute("list"),null);
+        if(list!=null){
+            config.setRestList(list.booleanValue());
+        }
+        else if(hasCS){
+        	config.setRestList(configServer.getRestList());
+        }
+        
+        
+        Element[] _mappings=getChildren(el,"mapping");
+        
+        // first get mapping defined in server admin (read-only)
+        Map<String,railo.runtime.rest.Mapping> mappings=new HashMap<String, railo.runtime.rest.Mapping>();
+        railo.runtime.rest.Mapping tmp;
+        if(configServer!=null && config instanceof ConfigWeb) {
+            railo.runtime.rest.Mapping[] sm=configServer.getRestMappings();
+            for(int i=0;i<sm.length;i++) {
+            
+                if(!sm[i].isHidden()) {
+                    tmp = sm[i].duplicate(config,Boolean.TRUE);
+                    mappings.put(tmp.getVirtual(),tmp);   
+                }
+            }
+        }
+        
+        // get current mappings
+        if(hasAccess) {
+	        for(int i=0;i<_mappings.length;i++) {
+	           el=_mappings[i];
+	           String physical=el.getAttribute("physical");
+	           String virtual=el.getAttribute("virtual");
+	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
+	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
+	           boolean _default=toBoolean(el.getAttribute("default"),false);
+	           if(physical!=null) { 
+	               tmp=new railo.runtime.rest.Mapping(config,virtual,physical,hidden,readonly,_default);
+	               mappings.put(tmp.getVirtual(),tmp);
+	           }
+	        }
+        }
+        
+        
+        config.setRestMappings(mappings.values().toArray(new railo.runtime.rest.Mapping[mappings.size()]));
     }
     
     
@@ -2152,7 +2231,7 @@ public final class ConfigWebFactory {
         
 		datasources.put(datasourceName.toLowerCase(),
           new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,
-        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,TimeZoneUtil.toTimeZone(timezone,null)));
+        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,StringUtil.isEmpty(timezone,true)?null:TimeZoneUtil.toTimeZone(timezone,null)));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
@@ -2286,7 +2365,7 @@ public final class ConfigWebFactory {
         
 	    if(!hasSet) {
 	        MappingImpl m=new MappingImpl(config,"/0/","{railo-web}/customtags/",null,false,true,false,false,true,false,true);
-	        if(m!=null)config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
+	        config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
         
     }
@@ -2564,6 +2643,9 @@ public final class ConfigWebFactory {
     		
             f = dir.getRealResource("transactionRollback.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionRollback.cfm",f);
+            
+            f = dir.getRealResource("transactionSetsavepoint.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionSetsavepoint.cfm",f);
     		
             f = dir.getRealResource("writeLog.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeLog.cfm",f);
@@ -3453,8 +3535,7 @@ public final class ConfigWebFactory {
             
             // Init
             se.init(config,
-                    ConfigWebUtil.getFile(configDir,(search==null)?
-                    null:
+                    ConfigWebUtil.getFile(configDir,
                     ConfigWebUtil.translateOldPath(search.getAttribute("directory")), "search",configDir,FileUtil.TYPE_DIR,config),
                     log
             );
@@ -3486,8 +3567,7 @@ public final class ConfigWebFactory {
         LogAndSource log=ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel);
         
         // set scheduler
-        Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),(scheduler==null)?
-                null:
+        Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),
                 scheduler.getAttribute("directory"), "scheduler",configDir,FileUtil.TYPE_DIR,config);
         config.setScheduler(configServer.getCFMLEngine(),file,log);
     }
@@ -3505,14 +3585,12 @@ public final class ConfigWebFactory {
         // Entries
         Element[] entries = getChildren(debugging,"debug-entry");
         Map<String,DebugEntry> list=new HashMap<String,DebugEntry>();
-        Struct sct=null;
         if(hasCS) {
         	 DebugEntry[] _entries = ((ConfigImpl)configServer).getDebugEntries();
         	 for(int i=0;i<_entries.length;i++) {
         		list.put(_entries[i].getId(),_entries[i].duplicate(true)); 
         	 }
         }
-        if(sct==null) sct=new StructImpl();
         Element e;
         String id;
         for(int i=0;i<entries.length;i++) {
@@ -3598,7 +3676,6 @@ public final class ConfigWebFactory {
         	boolean oldStyle=cfxTagsParent.getNodeName().equals("cfx-tags");
         	
         	
-	      	if(cfxTagsParent!=null) {
 	      	    Element[] cfxTags = oldStyle?getChildren(cfxTagsParent,"cfx-tag"):getChildren(cfxTagsParent,"ext-tag");  
 	      	    for(int i=0;i<cfxTags.length; i++) {
 	      	        String type=cfxTags[i].getAttribute("type");
@@ -3624,7 +3701,7 @@ public final class ConfigWebFactory {
 		      	        }
 	      	        }
 	      	    }
-	      	}
+
         }
       	config.setCFXTagPool(map);
     }
@@ -3639,7 +3716,6 @@ public final class ConfigWebFactory {
       		config.setExtensionEnabled(Caster.toBooleanValue(strEnabled,false));
       	}
       	
-      	if(xmlExtParent!=null) {
    // providers
       		Element[] xmlProviders = getChildren(xmlExtParent,"provider");
       		String provider;
@@ -3694,7 +3770,7 @@ public final class ConfigWebFactory {
       	        	);
       	    }
       	    config.setExtensions(extensions);
-      	}
+      	
         
     }
     
@@ -3730,7 +3806,14 @@ public final class ConfigWebFactory {
       	    }
       	    config.setBaseComponentTemplate(strBase);
       	    
-      	    
+      	    // deep search
+            String strDeepSearch=component.getAttribute("deep-search");
+            if(!StringUtil.isEmpty(strDeepSearch)) {
+            	config.setDoComponentDeepSearch(Caster.toBooleanValue(strDeepSearch.trim(),false));
+            }
+            else if(hasCS) {
+                config.setDoComponentDeepSearch(((ConfigServerImpl)configServer).doComponentDeepSearch());
+            }
       	    
       	    
       	    // Dump-Template
@@ -3857,7 +3940,7 @@ public final class ConfigWebFactory {
       	
 	    if(!hasSet) {
 	        MappingImpl m=new MappingImpl(config,"/0","{railo-web}/components/",null,false,true,false,false,true,false,true);
-	        if(m!=null)config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
+	        config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
       	
     }
@@ -3878,25 +3961,14 @@ public final class ConfigWebFactory {
         
         // proxy server
         String server=proxy.getAttribute("server");
-        if(hasAccess && !StringUtil.isEmpty(server)) config.setProxyServer(server);
-        else if(hasCS) config.setProxyServer(configServer.getProxyServer());
-
-        // proxy username
         String username=proxy.getAttribute("username");
-        if(hasAccess && !StringUtil.isEmpty(username)) config.setProxyUsername(username);
-        else if(hasCS) config.setProxyUsername(configServer.getProxyUsername());
-
-        // proxy password
         String password=proxy.getAttribute("password");
-        if(hasAccess && !StringUtil.isEmpty(password)) config.setProxyPassword(password);
-        else if(hasCS) config.setProxyPassword(configServer.getProxyPassword());
-
-        // proxy port
         int port=toInt(proxy.getAttribute("port"),-1);
-        if(hasAccess && port!=-1) config.setProxyPort(port);
-        else if(hasCS) config.setProxyPort(configServer.getProxyPort());
-
         
+        if(hasAccess && !StringUtil.isEmpty(server)) {
+        	config.setProxyData(ProxyDataImpl.getInstance(server, port, username, password));
+        }
+        else if(hasCS) config.setProxyData(configServer.getProxyData());
     }
     
     
@@ -3944,7 +4016,24 @@ public final class ConfigWebFactory {
       	
       	
     }
-    
+
+    private static void loadCompiler(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+        boolean hasCS=configServer!=null;
+        
+    	
+        Element compiler=getChildByName(doc.getDocumentElement(),"compiler");
+      	
+
+        // Scope Logger
+        String _case=compiler.getAttribute("dot-notation-upper-case");
+        if(!StringUtil.isEmpty(_case,true)){
+        	config.setDotNotationUpperCase(Caster.toBooleanValue(_case,true));
+        }
+        else if(hasCS){
+        	config.setDotNotationUpperCase(configServer.getDotNotationUpperCase());
+        }
+    }
+
 
     /**
      * @param configServer 

@@ -204,6 +204,7 @@ public final class Types {
 	public static final Type IMPORT_DEFINITIONS = Type.getType(ImportDefintion.class);
 	public static final Type IMPORT_DEFINITIONS_IMPL = Type.getType(ImportDefintionImpl.class);
 	public static final Type IMPORT_DEFINITIONS_ARRAY = Type.getType(ImportDefintion[].class);
+	public static final Type CLASS = Type.getType(Class.class);
 	 
 
 	/**

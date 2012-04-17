@@ -389,7 +389,7 @@ public class CFMLEngineFactory {
             Util.copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
         }
         else {
-            tlog("File for new Version already exists, dont copy new one");
+            tlog("File for new Version already exists, won't copy new one");
             return false;
         }
         try {
@@ -563,7 +563,7 @@ public class CFMLEngineFactory {
         throw new IOException("can't create/write to directory ["+dir+"], set \"init-param\" \"railo-server-directory\" with path to writable directory");
     }
     /**
-     * returns the path where the classloader ist located
+     * returns the path where the classloader is located
      * @param cl ClassLoader
      * @return file of the classloader root
      */

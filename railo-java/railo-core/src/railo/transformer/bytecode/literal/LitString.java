@@ -14,7 +14,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * A Literal String
  */
-public final class LitString extends ExpressionBase implements Literal,ExprString {
+public class LitString extends ExpressionBase implements Literal,ExprString {
     
 	public static final int MAX_SIZE = 65535;
 	public static final int TYPE_ORIGINAL = 0;

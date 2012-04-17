@@ -159,6 +159,7 @@
 	<data key="menu.server.label">Settings</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regional</data>
+	<data key="menu.server.compiler">Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
 	<data key="menu.server.application">Application</data>
@@ -184,6 +185,7 @@
 	<data key="menu.remote.clients">Clients</data>
 	<data key="menu.resources.label">Archives &amp;amp; Resources</data>
 	<data key="menu.resources.mappings">Mappings</data>
+	<data key="menu.resources.rest">Rest</data>
 	<data key="menu.resources.component">Component</data>
 	<data key="menu.resources.customtags">Custom tags</data>
 	<data key="menu.resources.cfx_tags">CFX tags</data>
@@ -442,6 +444,9 @@
 	<data key="components.triggerdatamemberdescription">If there is no accessible data member (property, element of the this scope) inside a component, Railo searches for available matching &amp;quot;getters&amp;quot; or &amp;quot;setters&amp;quot; for the requested property. The following example should clarify this behaviour. &amp;quot;somevar = myComponent.properyName&amp;quot;. If &amp;quot;myComponent&amp;quot; has no accessible data member named &amp;quot;propertyName&amp;quot;, Railo searches for a function member (method) named &amp;quot;getPropertyName&amp;quot;.</data>
 	<data key="components.physical">Resource</data>
 	<data key="components.trusted">Trusted</data>
+	<data key="components.componentDeepSearch">Search sub directories</data>
+	<data key="components.componentDeepSearchDesc">
+	Search for CFC in the sub directories of the defined "Addional Resources" below. this is not working for Archives!</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
@@ -565,6 +570,27 @@
 	<data key="scopes.standard">standard (CFML Default)</data>
 	<data key="scopes.domaincookiesdescription">Enable or disable domain cookies. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.applicationtimeout">Application timeout</data>
+	
+
+	
+	<data key="setting.compiler">Railo compiler settings, this affects how the Railo Compiler parses the source code. Changing this settings flushes all existing class files and triggers a recompilation.</data>
+<data key="setting.dotNotation">Dot notation</data>
+<data key="setting.dotNotationDesc">Convert all struct keys defined with "dot notation" to upper case (CFML Default) 
+or keep them in original case (according to the "bracket notation").
+Example:
+Convert to upper case:
+sct.dotNotation --> keyname: "DOTNOTATION"
+sct[""bracketNotation""] --> keyname: "bracketNotation"
+
+Keep original case:
+sct.dotNotation --> keyname: "dotNotation"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
+<data key="setting.dotNotationOriginalCase">Keep original case</data>
+	
+	
+
+	
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Clear template cache</data>
 	<data key="setting.querycache">Query Cache</data>
@@ -798,6 +824,14 @@
 	<data key="settings.dbdatabasedesc">Name of the database to connect</data>
 	<data key="settings.dbuserdesc">The username for the database</data>
 	<data key="settings.datasourcedescriptionupdate">Update datasource connection</data>
+	
+	<data key="settings.dbtimezone">Timezone</data>
+	
+	<data key="settings.dbtimezoneDesc">
+When you define a date as a string (not with cfqueryparam) inside cfquery, there is normally no timezone information with it and the date string is based on the locale timezone. Therefore the database will interpret this date string based on it's own timezone.
+If the timezone of your Railo instance and your database is different, this can lead to problems. Because of that Railo now allows you to define a timezone for a specific datasource defintion. Be aware that you should only define a specific timezone, if you are a 100% sure that this timezone is used on the database server and it is different from the timezone of the Railo instance. This setting can be overwritten by the cfquery attribute "timezone".</data>
+	<data key="settings.dbtimezoneSame">Same as Railo Instance</data>
+	
 	<data key="settings.dbblobdesc">Enable binary large object retrieval (&lt;abbr title=&quot;binary large object&quot;&gt;BLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbpass">Password</data>
@@ -996,9 +1030,9 @@
 	<data key="settings.cache.nameMissing">Cancel</data>
 	<data key="settings.cache.type">Type</data>
 	<data key="settings.cache.defaulttypeObject">Object</data>
-	<data key="settings.cache.defaulttypeObjectDesc">This cache connection is used for all cache operations (cacheGet,cachePut ...)</data>
+	<data key="settings.cache.defaulttypeObjectDesc">This cache connection is used for all object cache operations (cacheGet,cachePut, cfcache action="get|put" ...)</data>
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
-	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for the tag cfcache</data>
+	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for template caching (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
 	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for the caching of the tag cfquery</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>

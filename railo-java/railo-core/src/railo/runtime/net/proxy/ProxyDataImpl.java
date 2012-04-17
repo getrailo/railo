@@ -1,8 +1,10 @@
 package railo.runtime.net.proxy;
 
+import java.io.Serializable;
+
 import railo.commons.lang.StringUtil;
 
-public class ProxyDataImpl implements ProxyData {
+public class ProxyDataImpl implements ProxyData,Serializable {
 	
 	public static final ProxyData NO_PROXY = new ProxyDataImpl();
 	
@@ -19,7 +21,7 @@ public class ProxyDataImpl implements ProxyData {
 		if(!StringUtil.isEmpty(password,true))this.password = password;
 	}
 	public ProxyDataImpl() {}
-
+	
 	public void release() {
 		server=null;
 		port=-1;
@@ -74,5 +76,36 @@ public class ProxyDataImpl implements ProxyData {
 	 */
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	public boolean equals(Object obj){
+		if(obj==this) return true;
+		if(!(obj instanceof ProxyData)) return false;
+		
+		ProxyData other=(ProxyData) obj;
+		
+		return _eq(other.getServer(),server) && _eq(other.getUsername(),username) && _eq(other.getPassword(),password) && other.getPort()==port;
+		
+	}
+	
+	private boolean _eq(String left, String right) {
+		if(left==null) return right==null;
+		return left.equals(right);
+	}
+	
+	public static boolean isValid(ProxyData pd){
+		if(pd==null || pd.equals(NO_PROXY)) return false;
+		return true;
+	}
+	public static boolean hasCredentials(ProxyData data) {
+		return StringUtil.isEmpty(data.getUsername(),true);
+	}
+	public static ProxyData getInstance(String proxyserver, int proxyport, String proxyuser, String proxypassword) {
+		if(StringUtil.isEmpty(proxyserver,true)) return null;
+		return new ProxyDataImpl(proxyserver,proxyport,proxyuser,proxypassword);
+	}
+	
+	public String toString(){
+		return "server:"+server+";port:"+port+";user:"+username+";pass:"+password;
 	}
 }

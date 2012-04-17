@@ -3,6 +3,7 @@ package railo.runtime.functions.cache;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Iterator;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntryFilter;
@@ -13,6 +14,7 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.op.Caster;
 
 public class Util {
 
@@ -31,11 +33,15 @@ public class Util {
 		return cc.getInstance(config);
 	}
 	
-	public static Cache getDefault(Config config, int type,Cache defaultValue) throws IOException {
+	public static Cache getDefault(Config config, int type,Cache defaultValue) {
 		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
 		
 		if(cc==null) return defaultValue;
-		return cc.getInstance(config);
+		try {
+			return cc.getInstance(config);
+		} catch (IOException e) {
+			return defaultValue;
+		}
 	}
 	
 
@@ -52,6 +58,13 @@ public class Util {
 		}
 		return getCache(config, cacheName);
 	}
+
+	public static Cache getCache(Config config,String cacheName, int type, Cache defaultValue)  {
+		if(StringUtil.isEmpty(cacheName)){
+			return getDefault(config, type,defaultValue);
+		}
+		return getCache(config, cacheName,defaultValue);
+	}
 	
 	/**
 	 * @param pc
@@ -62,9 +75,6 @@ public class Util {
 	 * @deprecated use <code>getCache(Config config,String cacheName, int type)</code> instead
 	 */
 	public static Cache getCache(PageContext pc,String cacheName, int type) throws IOException {
-		if(StringUtil.isEmpty(cacheName)){
-			return getDefault(pc.getConfig(), type);
-		}
 		return getCache(pc.getConfig(), cacheName);
 	}
 	/**
@@ -79,14 +89,37 @@ public class Util {
 	}
 	public static Cache getCache(Config config,String cacheName) throws IOException {
 		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
-		if(cc==null) throw new CacheException("there is no cache defined with name ["+cacheName+"]");
+		if(cc==null) throw noCache(config,cacheName);
 		return cc.getInstance(config);	
+	}
+	public static Cache getCache(Config config,String cacheName, Cache defaultValue) {
+		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		if(cc==null) return defaultValue;
+		try {
+			return cc.getInstance(config);
+		} catch (IOException e) {
+			return defaultValue;
+		}	
 	}
 	public static CacheConnection getCacheConnection(Config config,String cacheName) throws IOException {
 		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
-		if(cc==null) throw new CacheException("there is no cache defined with name ["+cacheName+"]");
+		if(cc==null) throw noCache(config,cacheName);
 		return cc;	
 	}
+	private static CacheException noCache(Config config, String cacheName) {
+		StringBuilder sb=new StringBuilder("there is no cache defined with name [").append(cacheName).append("], available caches are [");
+		Iterator it = ((ConfigImpl)config).getCacheConnections().keySet().iterator();
+		if(it.hasNext()){
+			sb.append(Caster.toString(it.next(),""));
+		}
+		while(it.hasNext()){
+			sb.append(", ").append(Caster.toString(it.next(),""));
+		}
+		sb.append("]");
+		
+		return new CacheException(sb.toString());
+	}
+
 	public static CacheConnection getCacheConnection(Config config,String cacheName, CacheConnection defaultValue) {
 		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) return defaultValue;

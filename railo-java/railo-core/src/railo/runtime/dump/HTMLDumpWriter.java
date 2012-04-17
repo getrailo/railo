@@ -26,7 +26,6 @@ public class HTMLDumpWriter implements DumpWriter {
 		}
 		DumpTable table=(DumpTable) data;
 		
-		if(table==null) return;
 		String id="_dump"+(count++);
 		// prepare data
 		DumpRow[] rows = table.getRows();

@@ -29,8 +29,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
@@ -180,15 +182,15 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @throws PageException
 	 */	
     public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name) throws PageException {
-    	this(dc, sql, maxrow, fetchsize, timeout, name,null,false);
+    	this(dc, sql, maxrow, fetchsize, timeout, name,null,false,true);
     }
     
 
     public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template) throws PageException {
-    	this(dc, sql, maxrow, fetchsize, timeout, name,template,false);
+    	this(dc, sql, maxrow, fetchsize, timeout, name,template,false,true);
     }
     
-	public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,boolean createUpdateData) throws PageException {
+	public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,boolean createUpdateData, boolean allowToCachePreperadeStatement) throws PageException {
 		this.name=name;
 		this.template=template;
         this.sql=sql;
@@ -203,7 +205,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		boolean createGeneratedKeys=createUpdateData;
         if(createUpdateData){
         	DatasourceConnectionImpl dci=(DatasourceConnectionImpl) dc;
-        	dci.supportsGetGeneratedKeys();
         	if(!dci.supportsGetGeneratedKeys())createGeneratedKeys=false;
         }
 		
@@ -221,7 +222,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = dc.getPreparedStatement(sql, createGeneratedKeys);
+	        	PreparedStatement preStat = dc.getPreparedStatement(sql, createGeneratedKeys,allowToCachePreperadeStatement);
 	        	closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
@@ -467,7 +468,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @param rowNumber count of rows to generate (empty fields)
 	 * @param name 
 	 */
-	public QueryImpl(Collection.Key[] columnKeys, int rowNumber,String name) {
+	public QueryImpl(Collection.Key[] columnKeys, int rowNumber,String name) throws DatabaseException {
 		this.name=name;
         columncount=columnKeys.length;
 		recordcount=rowNumber;
@@ -477,6 +478,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			columnNames[i]=columnKeys[i];
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
 		}
+		validateColumnNames(columnNames);
 	}
 	
 	/**
@@ -518,6 +520,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		for(int i=0;i<columnNames.length;i++) {
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
 		}
+		validateColumnNames(columnNames);
 	}
 	
 	/**
@@ -525,8 +528,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @param arrColumns columns for the resultset
 	 * @param rowNumber count of rows to generate (empty fields)
 	 * @param name 
+	 * @throws DatabaseException 
 	 */
-	public QueryImpl(Array arrColumns, int rowNumber, String name) {
+	public QueryImpl(Array arrColumns, int rowNumber, String name) throws DatabaseException {
         this.name=name;
         columncount=arrColumns.size();
 		recordcount=rowNumber;
@@ -536,8 +540,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
 		}
+		validateColumnNames(columnNames);
 	}
-	
+
 	/**
 	 * constructor of the class, to generate a empty resultset (no database execution)
 	 * @param arrColumns columns for the resultset
@@ -557,6 +562,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
 		}
+		validateColumnNames(columnNames);
 	}
 
 	/**
@@ -569,7 +575,20 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	public QueryImpl(String[] strColumnNames, Array[] arrColumns, String name) throws DatabaseException {
 		this(_toKeys(strColumnNames),arrColumns,name);		
-		
+	}	
+	
+	private static void validateColumnNames(Key[] columnNames) throws DatabaseException {
+		Set<String> testMap=new HashSet<String>();
+		for(int i=0	;i<columnNames.length;i++) {
+			
+			// Only allow column names that are valid variable name
+			//if(!Decision.isSimpleVariableName(columnNames[i]))
+			//	throw new DatabaseException("invalid column name ["+columnNames[i]+"] for query", "column names must start with a letter and can be followed by letters numbers and underscores [_]. RegExp:[a-zA-Z][a-zA-Z0-9_]*",null,null,null);
+			
+			if(testMap.contains(columnNames[i].getLowerString()))
+				throw new DatabaseException("invalid parameter for query, ambiguous column name "+columnNames[i],"columnNames: "+List.arrayToListTrim( _toStringKeys(columnNames),","),null,null,null);
+			testMap.add(columnNames[i].getLowerString());
+		}
 	}
 	
 
@@ -617,15 +636,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 				columns[i]=new QueryColumnImpl(this,columnNames[i],arrColumns[i],Types.OTHER);
 			}
 		// test keys
-			Map testMap=new HashMap();
-			for(int i=0	;i<columnNames.length;i++) {
-				
-				if(!Decision.isSimpleVariableName(columnNames[i]))
-					throw new DatabaseException("invalid column name ["+columnNames[i]+"] for query", "column names must start with a letter and can be followed by letters numbers and underscores [_]. RegExp:[a-zA-Z][a-zA-Z0-9_]*",null,null,null);
-				if(testMap.containsKey(columnNames[i].getLowerString()))
-					throw new DatabaseException("invalid parameter for query, ambiguous column name "+columnNames[i],"columnNames: "+List.arrayToListTrim( _toStringKeys(columnNames),","),null,null,null);
-				testMap.put(columnNames[i].getLowerString(),"set");
-			}
+			validateColumnNames(columnNames);
 		}
 		
 		columncount=columns.length;
@@ -638,8 +649,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
      * @param columnList
      * @param data
      * @param name 
+     * @throws DatabaseException 
      */
-    public QueryImpl(String[] strColumnList, Object[][] data,String name) {
+    public QueryImpl(String[] strColumnList, Object[][] data,String name) throws DatabaseException {
     	
         this(toCollKeyArr(strColumnList),data.length,name);
         
@@ -681,17 +693,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return QueryUtil.toStringArray(columnNames);
 	}
 
-	
-
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#removeEL(java.lang.String)
-	 */
-	public synchronized Object removeEL(String key) {
+	 * /
+	public synchronized Object removeEL (String key) {
 		return setEL(key,null);
-        /*int index=getIndexFromKey(key);
-		if(index!=-1) _removeEL(index);
-		return null;*/
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
@@ -700,12 +707,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return setEL(key,null);
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public synchronized Object remove(String key) throws PageException {
+	 * /
+	public synchronized Object remove (String key) throws PageException {
 		return set(key,null);
-	}
+	}*/
 
 	
 	
@@ -1944,7 +1951,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public boolean getBoolean(int columnIndex) throws SQLException {
 		Object rtn = getObject(columnIndex);
 		if(rtn==null)return false;
-		if(rtn!=null && Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
+		if(Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
 		throw new SQLException("can't cast value to boolean");
 	}
 	
@@ -1954,7 +1961,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public boolean getBoolean(String columnName) throws SQLException {
 		Object rtn = getObject(columnName);
 		if(rtn==null)return false;
-		if(rtn!=null && Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
+		if(Decision.isCastableToBoolean(rtn)) return Caster.toBooleanValue(rtn,false);
 		throw new SQLException("can't cast value to boolean");
 	}
 	

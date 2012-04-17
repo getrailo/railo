@@ -307,7 +307,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
             throw new SecurityException(createExceptionMessage(res,true),"access is prohibited by security manager");
         }
         // None
-        if( res == null || isValid(config,serverPassword)) return;
+        if(isValid(config,serverPassword)) return;
         
         // custom
         if(!ArrayUtil.isEmpty(customFileAccess)){

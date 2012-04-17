@@ -81,7 +81,7 @@ public class RESTClient {
     	return null;
 	}	
 
-	private Object listCachesRaw() throws IOException {
+	/*private Object listCachesRaw() throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		Object obj;
         conn.setRequestMethod("GET");
@@ -92,9 +92,9 @@ public class RESTClient {
         	disconnectEL(conn);
         }
         return obj;
-	}
+	}*/
 	
-	private Object featuresRaw() throws IOException {
+	/*private Object featuresRaw() throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		Object obj;
         conn.setRequestMethod("OPTIONS");
@@ -105,15 +105,15 @@ public class RESTClient {
         	disconnectEL(conn);
         }
         return obj;
-	}
+	}*/
 	
-	private void createCache(String cacheName) throws IOException {
+	/*private void createCache(String cacheName) throws IOException {
 		HttpURLConnection urlConnection = (HttpURLConnection) toURL(cacheName).openConnection();
         urlConnection.setRequestMethod("PUT");
 
         urlConnection.getResponseCode();
         urlConnection.disconnect();
-	}
+	}*/
 	
 	private void createEntry(String cacheName,String key, String value) throws IOException {
 
@@ -130,10 +130,10 @@ public class RESTClient {
 	      oos.writeObject(value);
 	      oos.flush();
 	      
-	    if (connection != null) connection.disconnect();
+	    connection.disconnect();
 	}
 
-	private void removeEntry(String cacheName,String key) throws IOException {
+	/*private void removeEntry(String cacheName,String key) throws IOException {
 		
 	    HttpURLConnection connection = (HttpURLConnection) toURL(cacheName,key).openConnection();
 	    connection.setRequestProperty("Content-Type", "application/x-java-serialized-object");
@@ -143,7 +143,7 @@ public class RESTClient {
 	    
 	    disconnectEL(connection);
 	    
-	}
+	}*/
 
 	
 

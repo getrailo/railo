@@ -311,12 +311,12 @@ public final class VariableUtilImpl implements VariableUtil {
     public Object get(PageContext pc, Object coll, String key) throws PageException {
         // Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).get(pc,key);
+            return ((Objects)coll).get(pc,KeyImpl.init(key));
         }
         // Collection
         else if(coll instanceof Collection) {
             
-			return ((Collection)coll).get(key);
+			return ((Collection)coll).get(KeyImpl.init(key));
 		} 
 		// Map
 		else if(coll instanceof Map) {

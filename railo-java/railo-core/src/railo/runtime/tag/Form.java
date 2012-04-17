@@ -16,6 +16,7 @@ import railo.runtime.functions.string.JSStringFormat;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -98,8 +99,8 @@ public final class Form extends BodyTagImpl {
      * @param enablecab The enablecab to set.
      * @throws ApplicationException
      */
-    public void setEnablecab(boolean enablecab) throws ApplicationException {
-        if(enablecab)throw new ApplicationException("the attribute enableCAB has been deprecated and is non-functional");
+    public void setEnablecab(boolean enablecab) {
+		DeprecatedUtil.tagAttribute(pageContext,"Form", "enablecab");
         
     }
     /**

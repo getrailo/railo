@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -20,6 +18,8 @@ import org.xml.sax.SAXException;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.security.Credentials;
+import railo.commons.security.CredentialsImpl;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -321,7 +321,7 @@ public final class StorageUtil {
         String pass = el.getAttribute(attributePassword);
         if(user==null) return null;
         if(pass==null)pass="";
-        return new UsernamePasswordCredentials(user,pass);
+        return CredentialsImpl.toCredentials(user,pass);
     }
 
     /**
@@ -337,7 +337,7 @@ public final class StorageUtil {
         String pass = el.getAttribute(attributePassword);
         if(user==null) return defaultCredentials;
         if(pass==null)pass="";
-        return new UsernamePasswordCredentials(user,pass);
+        return CredentialsImpl.toCredentials(user,pass);
     }
 
     /**
@@ -410,10 +410,9 @@ public final class StorageUtil {
      * @param password
      * @param credentials
      */
-    public void setCredentials(Element el, String username, String password, Credentials credentials) {
-        if(credentials==null) return;
-        UsernamePasswordCredentials upc=(UsernamePasswordCredentials) credentials;
-        if(upc.getUserName()!=null)el.setAttribute(username,upc.getUserName());
-        if(upc.getPassword()!=null)el.setAttribute(password,upc.getPassword());
+    public void setCredentials(Element el, String username, String password, Credentials c) {
+        if(c==null) return;
+        if(c.getUsername()!=null)el.setAttribute(username,c.getUsername());
+        if(c.getPassword()!=null)el.setAttribute(password,c.getPassword());
     }
 }

@@ -11,7 +11,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.PCLCollection;
-import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -33,18 +32,16 @@ import railo.runtime.op.Caster;
  */
 public final class MappingImpl implements Mapping {
 
-    
-
-
-
-	private static final Object NULL = new Object();
+	private static final long serialVersionUID = 6431380676262041196L;
+	
+	//private static final Object NULL = new Object();
 	private String virtual;
     private String lcVirtual;
     private boolean topLevel;
     private boolean trusted;
     private final boolean physicalFirst;
     private ArchiveClassLoader archiveClassLoader;
-    private PhysicalClassLoader physicalClassLoader;
+    //private PhysicalClassLoader physicalClassLoader;
     private PCLCollection pclCollection;
     private Resource archive;
     

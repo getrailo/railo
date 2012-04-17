@@ -23,11 +23,11 @@ public final class LogDataSource implements Log {
     private static final SQL SELECT = new SQLImpl("select for checking if table exists");//TODO
     private static final String INSERT = "insert into cflog(application,message,created) values(?,?,?)";//TODO
     private static final SQL CREATE = new SQLImpl("create table");//TODO
-	private ConfigImpl config;
+	//private ConfigImpl config;
     private DataSource datasource;
     private String username;
     private String password;
-    private String table;
+    //private String table;
     private int logLevel;
 	private DatasourceConnectionPool pool;
 	private LogConsole console;
@@ -43,11 +43,11 @@ public final class LogDataSource implements Log {
      */
     public LogDataSource(PageContext pc,int logLevel,ConfigImpl config, DataSource datasource, String username, String password, String table) {
         this.logLevel=logLevel;
-        this.config=config;
+        //this.config=config;
         this.datasource=datasource;
         this.username=username;
         this.password=password;
-        this.table=table;
+        //this.table=table;
         pool = config.getDatasourceConnectionPool();
         console=LogConsole.getInstance(config,logLevel);
         

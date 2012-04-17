@@ -30,15 +30,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	*/
 	public String[] keysAsString();
 	
-	/* *
-	 * removes value from collection and return it when it exists, otherwise returns null
-     * @param key key of the collection
-	 * @return removed Object
-	 * @throws PageException
-     * @deprecated use instead <code>{@link #remove(railo.runtime.type.Collection.Key)()}</code>
-	 */
-   //public object remove(String key) throws PageException;
-	
 	/**
 	 * removes value from collection and return it when it exists, otherwise throws a exception
 	 * @param key key of the collection
@@ -46,16 +37,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	 * @throws PageException
      */
     public Object remove(Collection.Key key) throws PageException;
-	
-
-	/* *
-	 * removes value from collection and return it when it exists, otherwise returns null
-     * @param key key of the collection
-	 * @return removed Object
-     * @deprecated use instead <code>{@link #removeEL(railo.runtime.type.Collection.Key)()}</code>
-	 */
-    // public int removeEL(String key);
-	
 
 	/**
 	 * removes value from collection and return it when it exists, otherwise returns null

@@ -2,8 +2,7 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
-
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
@@ -215,7 +214,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	        pageContext.forceWrite("<pre>");
 	        if(header.length()>0) {
 		        pageContext.forceWrite(header.toString());
-		        pageContext.forceWrite(StringUtils.repeat("\n",headerlines-1));
+		        pageContext.forceWrite(StringUtil.repeatString("\n",headerlines-1));
 		    }
 	        pageContext.forceWrite(body.toString());
 	        pageContext.forceWrite("</pre>");

@@ -42,7 +42,7 @@
 	<function>
 		<name>AjaxLink</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxLink</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Causes an HTML href attribute to display link results in the current Ajax container.</description>
 		<argument>
 			<name>url</name>
@@ -58,7 +58,7 @@
 	<function>
 		<name>AjaxOnLoad</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxOnLoad</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Causes the specified JavaScript function to run when the page loads.</description>
 		<argument>
 			<name>functionName</name>
@@ -116,6 +116,14 @@
 			<type>any</type>
 			<required>Yes</required>
 			<description>The element to append. Can be any type.</description>
+		</argument>
+		<argument>
+			<name>merge</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>This argument only applies when the value is an array.
+			If set to true appends array elements individually to the source array. 
+			If false (default) the complete array is added as one element at the end, in the source array.</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -528,6 +536,33 @@ Remember CFML arrays start at 1 not 0.</description>
     </argument>
 		<return>
 			<type>number</type>
+		</return>
+	</function>
+	<!-- arrayMid -->
+	<function>
+		<name>arrayMid</name>
+		<class>railo.runtime.functions.arrays.ArrayMid</class>
+		<description>Extracts a sub array from a array.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to substract data from</description>
+	    </argument>
+		<argument>
+			<name>start</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>The position of the first element to retrieve. </description>
+	    </argument>
+		<argument>
+			<name>count</name>
+			<type>number</type>
+			<required>no</required>
+			<description>The number of elements to retrieve. If not set, all elements until the end of the array will be returned. </description>
+	    </argument>
+		<return>
+			<type>array</type>
 		</return>
 	</function>
 	<!-- arrayMin -->
@@ -1854,6 +1889,32 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	
+	<!-- CreateDynamicProxy -->
+	<function>
+		<name>CreateDynamicProxy</name>
+		<class>railo.runtime.functions.other.CreateDynamicProxy</class>
+		<status>hidden</status>
+		<description>wrap the given component with a java class that implements the given interfaces.</description>
+		<argument>
+			<name>cfc</name>
+			<alias>cfcName,component,componentName</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>component or component name</description>
+	    </argument>
+		<argument>
+			<name>interfaces</name>
+			<alias>interface</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>array of strings containg interface pathes or a string list of interface pathes.</description>
+	    </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
 	<!-- createObject -->
 	<function>
 		<name>createObject</name>
@@ -2694,6 +2755,29 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	</function>
 	
 	
+	<!-- Empty -->
+	<function>
+		<name>Empty</name>
+		<class>railo.runtime.functions.system.Empty</class>
+		<description>return true if a function exists and is not "empty". 
+The following things are considered to be empty:
+- string:"" (an empty string)
+- number:return always false
+- boolean: return always false
+- array: [] (an empty array)
+- struct: {} (an empty struct)
+		 </description>
+		<argument>
+			<name>variable</name>
+			<alias>variableName,object</alias>
+			<type>variable_string</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	
 	<!-- ESAPIDecode -->	
 	<function>
@@ -2819,6 +2903,46 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<type>boolean</type>
 		</return>
 	</function>
+	<!-- DirectoryCopy -->
+	<function>
+		<name>DirectoryCopy</name>
+		<class>railo.runtime.functions.file.DirectoryCopy</class>
+		<description>Copies the contents of a directory to a destination directory.</description>
+		<argument>
+			<name>source</name>
+			<alias>directory</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Pathname of directory from which you copy content.</description>
+		</argument>
+		<argument>
+			<name>destination</name>
+			<alias>newDirectory</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path of the destination directory. If not an absolute path, it is relative to the source directory.</description>
+		</argument>
+		<argument>
+			<name>recurse</name>
+			<alias>recursive</alias>
+			<type>boolean</type>
+			<required>no</required>
+			<default>false</default>
+			<description>If true, copies the subdirectories, otherwise only the files in the source directory.</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>any</type>
+			<required>no</required>
+			<description>
+Filter to be used to filter the data copied:
+- A string that uses "*" as a wildcard, for example, "*.cfm"
+- a UDF (User defined Function) using the following pattern "functioname(String path):boolean", the function is run for every single file, if the function returns true, then the file is will be added to the list otherwise it will be omitted</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	<!-- DirectoryCreate -->
 	<function>
 		<name>DirectoryCreate</name>
@@ -2854,6 +2978,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 		</argument>
 		<argument>
 			<name>recurse</name>
+			<alias>recursive</alias>
 			<type>boolean</type>
 			<required>no</required>
 			<description>delete content of the directory</description>
@@ -4764,10 +4889,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>struct</type>
 		</return>
 	</function>
-	<!-- ApplicationGetMetaData -->
+	<!-- GetApplicationMetadata -->
 	<function>
-		<name>ApplicationGetMetaData</name>
-		<class>railo.runtime.functions.system.ApplicationGetMetaData</class>
+		<name>GetApplicationMetadata</name>
+		<class>railo.runtime.functions.system.GetApplicationMetadata</class>
 		<description>return all data from this scope, when using a application.cfc or all setting defined in tag cfapplication</description>
 		<return>
 			<type>struct</type>
@@ -5459,13 +5584,13 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPRequest</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequest</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Returns an XML object that contains the entire SOAP
         request. Usually called from within a web service CFC.</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
-			<required>Yes</required>
+			<required>no</required>
 		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
     </argument>
 		<return>
@@ -5477,7 +5602,6 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequestHeader</class>
-		<status>unimplemeted</status>
 		<description>Obtains a SOAP request header. Call only from within
         a CFC web service function that is processing a request
         as a SOAP web service.</description>
@@ -5505,20 +5629,95 @@ if this attribute is not provided all types are returned.</description>
 		</return>
 	</function>
 	
+	
+	<!-- AddSOAPRequestHeader -->
+	<function>
+		<name>AddSOAPRequestHeader</name>
+		<class>railo.runtime.functions.xml.AddSOAPRequestHeader</class>
+		<status>implemeted</status>
+		<description>Adds a SOAP header to a web service request before making the request.</description>
+		<argument>
+			<name>webservice</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>A web service object as returned from the cfobject tag or the CreateObject function.</description>
+	    </argument>
+		<argument>
+			<name>namespace</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the namespace for the header.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the name of the header</description>
+    	</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>the value for the SOAP header; this can be a CFML XML value.</description>
+    	</argument>
+		<argument>
+			<name>mustUnderstand</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>Sets the SOAP mustunderstand value for this header.</description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
+	<!-- addSOAPResponseHeader -->
+	<function>
+		<name>addSOAPResponseHeader</name>
+		<class>railo.runtime.functions.xml.AddSOAPResponseHeader</class>
+		<status>implemeted</status>
+		<description>Adds a SOAP response header to a web service response. Call only from within a CFC web service function that is processing a request as a SOAP web service.</description>
+		<argument>
+			<name>namespace</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the namespace for the header.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the name of the header</description>
+    	</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>the value for the SOAP header; this can be a XML value.</description>
+    	</argument>
+		<argument>
+			<name>mustUnderstand</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>Sets the SOAP mustunderstand value for this header.</description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 		
 	<!-- GetSOAPResponse -->
 	<function>
 		<name>getSOAPResponse</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponse</class>
-		<status>unimplemeted</status>
 		<description>Returns an XML object that contains the entire
         SOAP response after invoking a web service.</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
-    </argument>
+			<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
+    	</argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5528,7 +5727,6 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponseHeader</class>
-		<status>unimplemeted</status>
 		<description>Returns a SOAP response header. Call this function
         from within code that is invoking a web service after
         making a web service request.</description>
@@ -9773,7 +9971,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>IsSOAPRequest</name>
 		<class>railo.runtime.functions.decision.IsSOAPRequest</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Determines whether a CFC is being called as a web service.</description>
 		<return>
 			<type>boolean</type>
@@ -11726,6 +11924,30 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- ObjectEquals -->
+	<function>
+		<name>ObjectEquals</name>
+		<class>railo.runtime.functions.other.ObjectEquals</class>
+		<description>compares simply and complex objects for equality, attention string comparsion is case sensitive</description>
+		<argument>
+			<name>left</name>
+			<alias>param1</alias>
+			<type>any</type>
+			<required>yes</required>
+			<description>left operant</description>
+   		</argument>
+		<argument>
+			<name>right</name>
+			<alias>param2</alias>
+			<type>any</type>
+			<required>yes</required>
+			<description>right operant</description>
+   		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
 	<!-- ObjectLoad -->
 	<function>
 		<name>ObjectLoad</name>
@@ -12962,6 +13184,51 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- RestInitApplication -->
+	<function>
+		<name>RestInitApplication</name>
+		<class>railo.runtime.functions.rest.RestInitApplication</class>
+		<description>Registers the directory path with the service mapping provided. 
+		If no service mapping is provided, the application name is used. 
+		If the rest application is already registered, it is refreshed.</description>
+		<argument>
+			<name>dirPath</name>
+			<alias>dir,directory,path</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path to the directory to be registered or reseted.</description>
+	    </argument>
+		<argument>
+			<name>serviceMapping</name>
+			<alias>mapping</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>Alternate string to be used for application name while calling the REST service.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	
+	<!-- RestSetResponse -->
+	<function>
+		<name>RestSetResponse</name>
+		<class>railo.runtime.functions.rest.RestSetResponse</class>
+		<description>Sets the custom responses.</description>
+		<argument>
+			<name>response</name>
+			<alias>rsp</alias>
+			<type>struct</type>
+			<required>yes</required>
+			<description>A struct that contains the response details.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- reverse -->
 	<function>
 		<name>reverse</name>

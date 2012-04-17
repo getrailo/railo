@@ -30,6 +30,7 @@ public interface ComponentAccess extends Component {
 	boolean contains(int access,Key name);
 	Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess);
 	public ComponentAccess _base();// TODO do better impl
+	//public boolean isRest();
 	
 	
 	

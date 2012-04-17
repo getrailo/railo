@@ -169,7 +169,7 @@ public class SocketGateway implements Gateway {
 	            	String line;
 	                while ((line = in.readLine()) != null) {
 	                	if (line.trim().equals("exit")) break;
-	                    else invokeListener(line,_id);
+	                    invokeListener(line,_id);
 	                }
 	                //socketRegistry.remove(this.getName());
 	            }

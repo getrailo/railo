@@ -122,11 +122,11 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return (Collection.Key[]) list.toArray(new Collection.Key[list.size()]);
 	}
 
-    /**
+    /* *
      * @throws ExpressionException
      * @see railo.runtime.type.Struct#remove(java.lang.String)
-     */
-    public Object remove(String key) throws ExpressionException {
+     * /
+    public Object remove (String key) throws ExpressionException {
     	Node rtn=null;
 		if(!caseSensitive){
 			int len = nodeMap.getLength();
@@ -140,21 +140,35 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		
 		if(rtn!=null) return rtn.getNodeValue();
 		throw new ExpressionException("can't remove element with name ["+key+"], element doesn't exist");
-    }
+    }*/
     
 	/**
 	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
-	public Object remove(Collection.Key key) throws PageException {
-		return remove(key.getString());
+	public Object remove(Collection.Key k) throws PageException {
+		String key=k.getString();
+		Node rtn=null;
+		if(!caseSensitive){
+			int len = nodeMap.getLength();
+			String nn;
+			for(int i=len-1;i>=0;i--) {
+				nn=nodeMap.item(i).getNodeName();
+				if(key.equalsIgnoreCase(nn)) rtn=nodeMap.removeNamedItem(nn);
+			}
+		}
+		else rtn=nodeMap.removeNamedItem(toName(key));
+		
+		if(rtn!=null) return rtn.getNodeValue();
+		throw new ExpressionException("can't remove element with name ["+key+"], element doesn't exist");
 	}	
     
     /**
      * @see railo.runtime.type.Struct#removeEL(java.lang.String)
      */
-    public Object removeEL(String key) {
-    	Node rtn=null;
+    public Object removeEL(Collection.Key k) {
+    	String key=k.getString();
+		Node rtn=null;
 		if(!caseSensitive){
 			int len = nodeMap.getLength();
 			String nn;
@@ -169,13 +183,13 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return null;
     }
     
-	/**
+	/* *
 	 *
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	 * /
 	public Object removeEL(Collection.Key key) {
 		return removeEL(key.getString());
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()

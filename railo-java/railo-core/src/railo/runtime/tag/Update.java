@@ -165,7 +165,7 @@ public final class Update extends TagImpl {
 				
 				if(pageContext.getConfig().debug()) {
 					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
+					pageContext.getDebugger().addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
 				}
 			}
 			return EVAL_PAGE;

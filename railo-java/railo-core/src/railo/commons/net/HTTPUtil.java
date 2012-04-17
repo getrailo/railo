@@ -2,7 +2,6 @@ package railo.commons.net;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -17,43 +16,20 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-
 import railo.commons.io.IOUtil;
-import railo.commons.io.res.ContentType;
-import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
-import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.net.proxy.ProxyData;
-import railo.runtime.net.proxy.ProxyDataImpl;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
 import railo.runtime.type.List;
 
 /**
@@ -76,24 +52,10 @@ public final class HTTPUtil {
 	 */
 	public static final int STATUS_OK=200;
 	//private static final String NO_MIMETYPE="Unable to determine MIME type of file.";
-     
-    /**
-     * make a http requst to given url 
-     * @param url
-     * @param username
-     * @param password
-     * @param timeout
-     * @param charset
-     * @param useragent
-     * @param proxyserver
-     * @param proxyport
-     * @param proxyuser
-     * @param proxypassword
-     * @param headers
-     * @return
-     * @throws IOException
-     */
-    public static HttpMethod invoke(URL url, String username, String password, long timeout, 
+
+	public static final int MAX_REDIRECT = 15;
+    
+    /*public static HttpMethod invoke(URL url, String username, String password, long timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -111,16 +73,13 @@ public final class HTTPUtil {
         setCredentials(client,httpMethod,username,password);  
         setProxy(config,state,proxyserver,proxyport,proxyuser,proxypassword);
         
-        /*if(followRedirects!=null){
-        	client.executeMethod(httpMethod);
-        }
-        else */
+        
         	httpMethod = HttpClientUtil.execute(client,httpMethod,true);
         
         return httpMethod;
-    }
+    }*/
     
-    public static HttpMethod post(URL url, String username, String password, long timeout, 
+    /*public static HttpMethod post(URL url, String username, String password, long timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -138,14 +97,10 @@ public final class HTTPUtil {
         setCredentials(client,httpMethod,username,password);  
         setProxy(config,state,proxyserver,proxyport,proxyuser,proxypassword);
         
-        /*if(followRedirects!=null){
-        	client.executeMethod(httpMethod);
-        }
-        else */
-        	httpMethod = HttpClientUtil.execute(client,httpMethod,true);
+        httpMethod = HttpClientUtil.execute(client,httpMethod,true);
         
         return httpMethod;
-    }
+    }*/
     
 
     /**
@@ -444,10 +399,10 @@ public final class HTTPUtil {
     	return URLEncoder.encode(str);
 	}
 
-	public static HttpMethod put(URL url, String username, String password, int timeout, 
+	/*public static HttpMethod put(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
-            String proxypassword, Header[] headers, RequestEntity body) throws IOException {
+            String proxypassword, Header[] headers, Object body) throws IOException {
 		
 		
 		HttpClient client = new HttpClient();
@@ -467,9 +422,9 @@ public final class HTTPUtil {
         
         return HttpClientUtil.execute(client,httpMethod,true);
          
-	}
+	}*/
     
-    public static HttpMethod delete(URL url, String username, String password, int timeout, 
+    /*public static HttpMethod delete(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -491,9 +446,9 @@ public final class HTTPUtil {
         
         return HttpClientUtil.execute(client,httpMethod,true);
          
-	}
+	}*/
 
-    public static HttpMethod head(URL url, String username, String password, int timeout, 
+    /*public static HttpMethod head(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -515,60 +470,13 @@ public final class HTTPUtil {
         
         return HttpClientUtil.execute(client,httpMethod,true);
          
-	}
+	}*/
 
     
 
-    private static void setBody(EntityEnclosingMethod httpMethod, RequestEntity body) {
-        // body
-        if(body!=null)httpMethod.setRequestEntity(body);
-	}
+	
 
-	private static void setProxy(HostConfiguration config, HttpState state, String proxyserver,int proxyport, String proxyuser, String proxypassword) {
-
-        // set Proxy
-            if(!StringUtil.isEmpty(proxyserver)) {
-                config.setProxy(proxyserver,proxyport);
-                if(!StringUtil.isEmpty(proxyuser)) {
-                    if(proxypassword==null)proxypassword="";
-                    state.setProxyCredentials(null,null,new UsernamePasswordCredentials(proxyuser,proxypassword));
-                }
-            } 
-	}
-
-	private static void setCredentials(HttpClient client, HttpMethod httpMethod, String username,String password) {
-        // set Username and Password
-            if(username!=null) {
-                if(password==null)password="";
-                client.getState().setCredentials(null,null,new UsernamePasswordCredentials(username, password));
-                httpMethod.setDoAuthentication( true );
-            }
-	}
-
-	private static void setTimeout(HttpClient client, long timeout) {
-        if(timeout>0){
-        	
-        	client.setConnectionTimeout((int)timeout);
-        	client.setTimeout((int)timeout);
-        }
-	}
-
-	private static void setUserAgent(HttpMethod httpMethod, String useragent) {
-        if(useragent!=null)httpMethod.setRequestHeader("User-Agent",useragent);
-	}
-
-	private static void setContentType(HttpMethod httpMethod, String charset) {
-    	if(charset!=null)httpMethod.addRequestHeader("Content-type", "text/html; charset="+charset );
-	}
-
-	private static void setHeader(HttpMethod httpMethod,Header[] headers) {
-    	if(headers!=null) {
-        	for(int i=0;i<headers.length;i++)
-        		httpMethod.addRequestHeader(headers[i].getName(), headers[i].getValue());
-        }
-	}
-
-	public static RequestEntity toRequestEntity(Object value) throws PageException {
+	/*public static RequestEntity toRequestEntity(Object value) throws PageException {
     	if(value instanceof RequestEntity) return (RequestEntity) value;
     	else if(value instanceof InputStream) {
 			return new InputStreamRequestEntity((InputStream)value,"application/octet-stream");
@@ -579,7 +487,7 @@ public final class HTTPUtil {
 		else {
 			return new StringRequestEntity(Caster.toString(value));
 		}
-    }
+    }*/
     
 	
 	public static URL removeRef(URL url) throws MalformedURLException{
@@ -601,7 +509,7 @@ public final class HTTPUtil {
 	
 			
 
-	public static URL toURL(HttpMethod httpMethod) {
+	/*public static URL toURL(HttpMethod httpMethod) {
 		HostConfiguration config = httpMethod.getHostConfiguration();
 		
 		try {
@@ -612,7 +520,7 @@ public final class HTTPUtil {
 		} catch (MalformedURLException e) {
 			return null;
 		}
-	}
+	}*/
 
 	public static String optimizeRealPath(PageContext pc,String realPath) {
 		int index;
@@ -759,38 +667,14 @@ public final class HTTPUtil {
 	 * return the length of a file defined by a url.
 	 * @param dataUrl
 	 * @return
+	 * @throws IOException 
 	 */
-	public static long length(URL url) {
-		long length=0;
-		
-		// check response header "content-length"
-		ProxyData pd=ProxyDataImpl.NO_PROXY;
-		try {
-			HttpMethod http = HTTPUtil.head(url, null, null, -1,null, "Railo", pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),null);
-			Header cl = http.getResponseHeader("content-length");
-			if(cl!=null)	{
-				length=Caster.toIntValue(cl.getValue(),-1);
-				if(length!=-1) return length;
-			}
-		} 
-		catch (IOException e) {}
-		
-		// get it for size
-		try {
-			HttpMethod http = HTTPUtil.invoke(url, null, null, -1,null, "Railo", pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),null);
-			InputStream is = http.getResponseBodyAsStream();
-			byte[] buffer = new byte[1024];
-	        int len;
-	        length=0;
-	        while((len = is.read(buffer)) !=-1){
-	          length+=len;
-	        }
-		} 
-		catch (IOException e) {}
-		return length;
+	public static long length(URL url) throws IOException {
+		HTTPResponse http = HTTPEngine.head(url, null, null, -1,HTTPEngine.MAX_REDIRECT,null, "Railo", null,null);
+		return http.getContentLength();	
 	}
 
-	public static ContentType getContentType(HttpMethod http) {
+	/*public static ContentType getContentType(HttpMethod http) {
 		Header[] headers = http.getResponseHeaders();
 		for(int i=0;i<headers.length;i++){
 			if("Content-Type".equalsIgnoreCase(headers[i].getName())){
@@ -800,7 +684,7 @@ public final class HTTPUtil {
 			}
 		}
 		return null;
-	}
+	}*/
 	
 	
 
@@ -861,5 +745,23 @@ public final class HTTPUtil {
 	        }
     	}
     	return rtn;
+	}
+	
+	public static boolean isTextMimeType(String mimetype) {
+		if(mimetype==null)mimetype="";
+		else mimetype=mimetype.trim().toLowerCase();
+		return StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/atom+xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "rss")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "atom")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+		
+		// "application/x-www-form-urlencoded" ???
 	}
 }

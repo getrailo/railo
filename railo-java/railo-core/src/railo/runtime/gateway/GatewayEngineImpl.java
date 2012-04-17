@@ -370,7 +370,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 				requestURI, 
 				"method="+functionName+(cfcPeristent?"&"+ComponentPage.REMOTE_PERSISTENT_ID+"="+remotePersisId:""), 
 				null, 
-				new Pair[]{new Pair("AMF-Forward","true")}, 
+				new Pair[]{new Pair<String,Object>("AMF-Forward","true")}, 
 				null, 
 				attrs);
 		

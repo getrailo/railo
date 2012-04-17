@@ -20,6 +20,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ExceptionUtil;
 import railo.runtime.config.Config;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.util.EnumerationWrapper;
 
@@ -170,14 +171,14 @@ public class ServletContextDummy implements ServletContext {
 	 * @see javax.servlet.ServletContext#removeAttribute(java.lang.String)
 	 */
 	public void removeAttribute(String key) {
-		attributes.remove(key);
+		attributes.removeEL(KeyImpl.init(key));
 	}
 
 	/**
 	 * @see javax.servlet.ServletContext#setAttribute(java.lang.String, java.lang.Object)
 	 */
 	public void setAttribute(String key, Object value) {
-		attributes.setEL(key, value);
+		attributes.setEL(KeyImpl.init(key), value);
 	}
 	
 	

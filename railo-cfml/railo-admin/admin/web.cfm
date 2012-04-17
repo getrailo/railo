@@ -135,10 +135,15 @@
 <cffunction name="loadPluginLanguage" output="false">
 	<cfargument name="pluginDir">
 	<cfargument name="pluginName">
+	<cfargument name="lang" type="string" default="#session.railo_admin_lang#">
     
     <cfset var fileLanguage="#pluginDir#/#pluginName#/language.xml">
-    <cfset var language=struct(__action:'plugin',title:ucFirst(pluginName),text:'')>
-    <cfset var txtLanguage="">
+    <cfif arguments.lang EQ "en">
+		<cfset var language=struct(__action:'plugin',title:ucFirst(pluginName),text:'')>
+    <cfelse>
+    	<cfset var language=loadPluginLanguage(arguments.pluginDir,arguments.pluginName,'en')>
+	</cfif>
+	<cfset var txtLanguage="">
     <cfset var xml="">
     
 	<cfif fileExists(fileLanguage)>
@@ -149,7 +154,7 @@
         	<cfset language.__action=trim(xml.xmlRoot.XmlAttributes.action)>
         	<cfset language.__position=StructKeyExists(xml.xmlRoot.XmlAttributes,"position")?xml.xmlRoot.XmlAttributes.position:0>
         </cfif>
-        <cfset xml = XmlSearch(xml, "/languages/language[@key='#lCase(session.railo_admin_lang)#']")[1]>
+        <cfset xml = XmlSearch(xml, "/languages/language[@key='#lCase(trim(arguments.lang))#']")[1]>
         
 		<cfset language.__group=StructKeyExists(xml,"group")?xml.group.XmlText:UCFirst(language.__action)>
 		<cfset language.title=xml.title.XmlText>
@@ -163,6 +168,8 @@
 	</cfif>
 	<cfreturn language>
 </cffunction>
+
+
 
 
 <cfset navigation = stText.MenuStruct[request.adminType]>

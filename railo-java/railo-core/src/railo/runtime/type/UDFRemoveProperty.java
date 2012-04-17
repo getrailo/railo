@@ -104,7 +104,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 			}
 			return false;
 		}
-		else {
+		
 			Object o;
 			boolean has=false;
 			if(propValue instanceof Array) {
@@ -129,7 +129,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 				}
 			}
 			return has;
-		}
+		
 	}
 
 	/**
