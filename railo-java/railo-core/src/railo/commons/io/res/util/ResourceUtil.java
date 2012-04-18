@@ -1321,6 +1321,15 @@ public final class ResourceUtil {
 		return res;
 	}
 	
+	public static Resource getResource(PageContext pc,PageSource ps, Resource defaultValue) {
+		try {
+			return getResource(pc, ps);
+		} 
+		catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+	
 	public static int directrySize(Resource dir,ResourceFilter filter) {
 		if(dir==null || !dir.isDirectory()) return 0;
 		if(filter==null) return dir.list().length;
