@@ -4,6 +4,7 @@ package railo.runtime.tag;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -101,7 +102,9 @@ public class Video extends TagSupport {
 	private long buffersize;
 	private int execution=EXECUTION_PERFORMANCE;
 	private static ProfileCollection _profileCollection;
-	
+
+	private static Method toStruct;
+	private static Boolean hasToStruct;
 	
 	public Video(){
 		
@@ -860,7 +863,8 @@ public class Video extends TagSupport {
 	}
 	
 	private Struct toStruct(VideoInfo info) {
-		Struct sct=new StructImpl();
+		
+		Struct sct=base(info);
 		Struct audio=new StructImpl();
 		Struct video=new StructImpl();
 		sct.setEL("audio", audio);
@@ -884,6 +888,32 @@ public class Video extends TagSupport {
 		if(info.getWidth()!=-1)sct.setEL("width", new Double(info.getWidth()));
 		
 		
+		
+		return sct;
+	}
+	
+	/*
+	 * genrate the base struct for info
+	 * @param info
+	 * @return
+	 */
+	private static synchronized Struct base(VideoInfo info) {
+		// FUTURE add toStruct():Struct to the VideoInfo interface and remove reflection here
+		Struct sct=null;
+		if(hasToStruct!=Boolean.FALSE){
+			try {
+				if(toStruct==null) {
+					toStruct = info.getClass().getMethod("toStruct", new Class[0]);
+				}
+				sct= Caster.toStruct(toStruct.invoke(info, new Object[0]),null);
+				hasToStruct=Boolean.TRUE;
+			}
+			catch(Throwable t){
+				hasToStruct=Boolean.FALSE;
+			}
+		}
+		
+		if(sct==null)sct=new StructImpl();
 		
 		return sct;
 	}
