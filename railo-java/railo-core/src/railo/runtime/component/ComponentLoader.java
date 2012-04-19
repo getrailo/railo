@@ -366,6 +366,38 @@ public class ComponentLoader {
 		if(interfaceUDFs==null) return loadComponent(pc,page, ps,callPath, isRealPath);
 		else return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
 	}
+	
+	public static Page loadPage(PageContext pc,PageSource ps) throws PageException  {
+        if(pc.getConfig().debug()) {
+            DebugEntry debugEntry=pc.getDebugger().getEntry(pc,ps);
+            pc.addPageSource(ps,true);
+            
+            int currTime=pc.getExecutionTime();
+            long exeTime=0;
+            long time=System.currentTimeMillis();
+            try {
+            	debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
+            	exeTime=System.currentTimeMillis();
+                return ((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+            }
+            finally {
+                int diff= ((int)(System.currentTimeMillis()-exeTime)-(pc.getExecutionTime()-currTime));
+                pc.setExecutionTime(pc.getExecutionTime()+(int)(System.currentTimeMillis()-time));
+                debugEntry.updateExeTime(diff);
+                pc.removeLastPageSource(true);
+            }
+        }
+    // no debug
+        else {
+            pc.addPageSource(ps,true);
+            try {   
+            	return ((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+            }
+            finally {
+                pc.removeLastPageSource(true);
+            } 
+        }
+    }
 
 	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {
         ComponentImpl rtn=null;
