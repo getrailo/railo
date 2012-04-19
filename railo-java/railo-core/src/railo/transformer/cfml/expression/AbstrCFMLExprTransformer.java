@@ -7,6 +7,8 @@ import java.util.Iterator;
 import railo.print;
 import railo.runtime.Component;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.other.CreateUniqueId;
@@ -212,18 +214,19 @@ public abstract class AbstrCFMLExprTransformer {
 		public boolean isInterface;
 		public final EvaluatorPool ep;
 		public short context=CTX_NONE; 
-		public TagLibTag[] scriptTags;
+		public final TagLibTag[] scriptTags;
 		public DocComment docComment;
 		public final Page page;
 		public final TransfomerSettings settings; 
 		
-		public Data(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld, TransfomerSettings settings,boolean allowLowerThan) {
+		public Data(Page page, EvaluatorPool ep, CFMLString cfml, FunctionLib[] fld, TransfomerSettings settings,boolean allowLowerThan,TagLibTag[] scriptTags) {
 			this.page=page;
 			this.ep=ep;
 			this.cfml=cfml;
 			this.fld=fld;
 			this.allowLowerThan=allowLowerThan;
 			this.settings=settings;
+			this.scriptTags=scriptTags;
 		}
 	}
 	
@@ -255,8 +258,8 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @param doc XML Document des aktuellen CFXD
 	 * @param cfml CFML Code der transfomiert werden soll.
 	 */
-	protected Data init(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
-		Data data = new Data(page,ep,cfml,fld,settings,allowLowerThan);
+	protected Data init(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) {
+		Data data = new Data(page,ep,cfml,fld,settings,allowLowerThan,scriptTags);
 		if(JSON_ARRAY==null)JSON_ARRAY=getFLF(data,"_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=getFLF(data,"_jsonStruct");
 		return data;

@@ -25,7 +25,7 @@ public interface TagDependentBodyTransformer {
 	 * @param cfml
 	 * @throws TemplateException
 	 */
-	public void transform(Config config,Page page,CFMLTransformer parent, EvaluatorPool ep,FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml,TransfomerSettings setting)
+	public void transform(Page page,CFMLTransformer parent, EvaluatorPool ep,FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings setting)
 		throws TemplateException;
 
 }

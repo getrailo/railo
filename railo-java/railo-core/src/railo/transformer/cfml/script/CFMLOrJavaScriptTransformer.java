@@ -21,7 +21,7 @@ public class CFMLOrJavaScriptTransformer implements TagDependentBodyTransformer 
 	private JavaScriptTransformer jst=new JavaScriptTransformer();
 	private CFMLScriptTransformer cst=new CFMLScriptTransformer();
 	
-	public void transform(Config config,Page page,CFMLTransformer parent, EvaluatorPool ep,FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml,TransfomerSettings settings) 
+	public void transform(Page page,CFMLTransformer parent, EvaluatorPool ep,FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings) 
 	throws TemplateException {
 		Attribute attr = tag.getAttribute("language");
 		if(attr!=null) {
@@ -29,8 +29,8 @@ public class CFMLOrJavaScriptTransformer implements TagDependentBodyTransformer 
 			if(!(expr instanceof LitString))
 				throw new TemplateException(cfml,"Attribute language of the Tag script, must be a literal string value");
 			String str = ((LitString)expr).getString().trim();
-			if("java".equalsIgnoreCase(str))		jst.transform(config,page,parent, ep, flibs, tag, tagLibTag, cfml,settings);
-			else if("cfml".equalsIgnoreCase(str))	cst.transform(config,page,parent, ep, flibs, tag, tagLibTag, cfml,settings);
+			if("java".equalsIgnoreCase(str))		jst.transform(page,parent, ep, flibs, tag, tagLibTag,scriptTags, cfml,settings);
+			else if("cfml".equalsIgnoreCase(str))	cst.transform(page,parent, ep, flibs, tag, tagLibTag,scriptTags, cfml,settings);
 			else 
 				throw new TemplateException(cfml,"invalid value for attribute language from tag script ["+str+"], valid values are [cfml,java]");
 		}

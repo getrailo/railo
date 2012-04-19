@@ -107,18 +107,20 @@ public final class CFMLTransformer {
     
     public class Data {
 		
-		private TagLib[][] tlibs;//=new TagLib[][]{null,new TagLib[0]};
-		private FunctionLib[] flibs;
-		private CFMLString cfml;
-		private EvaluatorPool ep=new EvaluatorPool();
+    	public final TagLib[][] tlibs;//=new TagLib[][]{null,new TagLib[0]};
+		public final FunctionLib[] flibs;
+		public final CFMLString cfml;
+		public final TagLibTag[] scriptTags;
+		public final EvaluatorPool ep=new EvaluatorPool();
 		private SimpleExprTransformer set;
 	    private final Config config;
 		private final Page page;
 	 
-	    public Data(TagLib[][] tlibs, FunctionLib[] flibs, CFMLString cfml,Config config,Page page) {
+	    public Data(TagLib[][] tlibs, FunctionLib[] flibs,TagLibTag[] scriptTags, CFMLString cfml,Config config,Page page) {
 			super();
 			this.tlibs = tlibs;
 			this.flibs = flibs;
+			this.scriptTags = scriptTags;
 			this.cfml = cfml;
 			this.config = config;
 			this.page = page;
@@ -272,7 +274,7 @@ public final class CFMLTransformer {
 		SourceFile source=cfml.getSourceFile(); 
 		
 		Page page=new Page(source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog());
-		Data data = new Data(_tlibs,flibs,cfml,config,page);
+		Data data = new Data(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,config,page);
 		
 		//Body body=page;
 		try {
@@ -430,7 +432,7 @@ public final class CFMLTransformer {
 							text=new StringBuffer();
 						}
                         int line=data.cfml.getLine();
-						parent.addStatement(new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.cfml,TransfomerSettings.toSetting(data.config)),line));
+						parent.addStatement(new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config)),line));
 							
 						if(!data.cfml.isCurrent('#'))
 							throw new TemplateException(data.cfml,"missing terminating [#] for expression");
@@ -582,7 +584,7 @@ public final class CFMLTransformer {
 					throw new TemplateException(data.cfml,e);
 				}
 				if(tdbt==null) throw createTemplateException(data.cfml,"Tag dependent body Transformer is invalid for Tag ["+tagLibTag.getFullName()+"]",tagLibTag);
-				tdbt.transform(data.config,data.page,this,data.ep,data.flibs,tag,tagLibTag,data.cfml,TransfomerSettings.toSetting(data.config));
+				tdbt.transform(data.page,this,data.ep,data.flibs,tag,tagLibTag,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config));
 				
 				//	get TagLib of end Tag
 				if(!data.cfml.forwardIfCurrent("</")) {
@@ -1029,14 +1031,14 @@ public final class CFMLTransformer {
 			if(isNonName) {
 			    int pos=data.cfml.getPos();
 			    try {
-			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.cfml,TransfomerSettings.toSetting(data.config));
+			    expr=transfomer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config));
 			    }
 			    catch(TemplateException ete) {
 			       if(data.cfml.getPos()==pos)expr=noExpression;
 			       else throw ete;
 			    }
 			}
-			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.cfml,TransfomerSettings.toSetting(data.config),true);
+			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config),true);
 			if(type.length()>0) {
 				expr=Cast.toExpression(expr, type);
 			}

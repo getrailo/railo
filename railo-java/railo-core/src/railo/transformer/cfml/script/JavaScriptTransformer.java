@@ -37,8 +37,8 @@ import railo.transformer.util.CFMLString;
  */
 public final class JavaScriptTransformer extends CFMLExprTransformer implements TagDependentBodyTransformer {
 	
-	public void transform(Config config,Page page,CFMLTransformer parent, EvaluatorPool ep,
-			FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml,TransfomerSettings settings)
+	public void transform(Page page,CFMLTransformer parent, EvaluatorPool ep,
+			FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings)
 			throws TemplateException {
 		
 		StringBuilder sb=new StringBuilder();
