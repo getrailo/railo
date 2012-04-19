@@ -5,7 +5,6 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.commons.color.ConstantsDouble;
 import railo.runtime.op.Caster;
-import railo.runtime.type.util.KeyConstants;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.expression.ExprDouble;

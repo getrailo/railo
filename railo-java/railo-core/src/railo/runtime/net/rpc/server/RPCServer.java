@@ -33,8 +33,6 @@ import org.apache.axis.SimpleChain;
 import org.apache.axis.SimpleTargetedChain;
 import org.apache.axis.components.logger.LogFactory;
 import org.apache.axis.encoding.TypeMappingRegistry;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.apache.axis.management.ServiceAdmin;
 import org.apache.axis.security.servlet.ServletSecurityProvider;
 import org.apache.axis.server.AxisServer;
@@ -52,10 +50,9 @@ import railo.commons.lang.ClassUtil;
 import railo.runtime.Component;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
-import railo.runtime.net.rpc.RPCConstants;
+import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ComponentUtil;
-import coldfusion.xml.rpc.QueryBean;
 
 /**
  * xdoclet tags are not active yet; keep web.xml in sync.
@@ -312,13 +309,6 @@ public final class RPCServer{
                     log.debug("Invoking Axis Engine.");
                     //here we run the message by the engine
                 }
-                
-                /*javax.xml.rpc.encoding.TypeMapping typeMapping = engine.getTypeMappingRegistry().getDefaultTypeMapping();
-                typeMapping.register(Object.class, 
-                		org.apache.axis.wsdl.fromJava.Types.OBJECT,
-                        new BeanSerializerFactory(QueryBean.class,WSConstants.QUERY_QNAME),
-                        new BeanDeserializerFactory(QueryBean.class,WSConstants.QUERY_QNAME));
-                */
                 
                 engine.invoke(msgContext);
                 if (isDebug) {
@@ -790,8 +780,6 @@ public final class RPCServer{
                 axisServer.setName("RailoCFC");
             }
             
-            org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
-            	axisServer.getTypeMappingRegistry().getDefaultTypeMapping();
             // add Component Handler
             try {
 				SimpleChain sc=(SimpleChain) axisServer.getGlobalRequest();
@@ -800,12 +788,8 @@ public final class RPCServer{
             catch (ConfigurationException e) {
 				throw AxisFault.makeFault(e);
 			}
+            TypeMappingUtil.registerDefaults(axisServer.getTypeMappingRegistry());
 
-			tm.register(QueryBean.class, 
-                    RPCConstants.QUERY_QNAME,
-                    new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
-                    new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
-            
         }
         return axisServer;
     }
@@ -828,90 +812,20 @@ public final class RPCServer{
 			fullname=className;
 		} 
 		fullname = fullname.substring(fullname.lastIndexOf('.')+1);
-		/*int index=fullname.lastIndexOf('.');
-		if(index==-1) {
-			name=fullname;
-			packages="DefaultNamespace";
-		}
-		else {
-			name=fullname.substring(index+1);
-			packages=fullname.substring(0,index);
-		}*/
 		QName qname = new QName("http://DefaultNamespace",fullname);
-		//QName qname = new QName("http://"+packages,name);
-		
 		registerTypeMapping(clazz, qname);
 	}
 	
-	public void registerTypeMapping(Class clazz,QName qname) {
+	private void registerTypeMapping(Class clazz,QName qname) {
 		TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
+		
 		org.apache.axis.encoding.TypeMapping tm;
 		tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-		// TODO es werden immer neu angehﾊngt und alte bleiben
 		Class c = tm.getClassForQName(qname);
 		if(c!=null && c!=clazz) {
 			tm.removeDeserializer(c, qname);
 			tm.removeSerializer(c, qname);
 		}
-		//QName unknow = new QName("http://unknow","unknow");
-		tm.register(clazz, qname, 
-				new BeanSerializerFactory(clazz,qname), 
-				new BeanDeserializerFactory(clazz,qname));
-		//printAllTypeMappings(reg);
-		
-		if(true) return;
-		
-		
-		
-// TODO remove existing with other class 
-		if(typeMapping==null) {
-			typeMapping = (org.apache.axis.encoding.TypeMapping) 
-	    	axisServer.getTypeMappingRegistry().getDefaultTypeMapping();
+		TypeMappingUtil.registerBeanTypeMapping(tm,clazz, qname);
 		}
-		
-		typeMapping.register(clazz, qname, 
-				new BeanSerializerFactory(clazz,qname), 
-				new BeanDeserializerFactory(clazz,qname));
-
 	}
-
-	/*
-	public void printAllTypeMappings() {
-		printAllTypeMappings(axisServer.getTypeMappingRegistry());
-	}
-
-	public static void printAllTypeMappings(TypeMappingRegistry tmr) {
-		
-		org.apache.axis.encoding.TypeMapping typeMapping = (org.apache.axis.encoding.TypeMapping) 
-    		tmr.getDefaultTypeMapping();
-		
-		
-		String[] encodings = tmr.getRegisteredEncodingStyleURIs();
-		for(int i=0;i<encodings.length;i++) {
-			print.out("-----------------------");
-			print.out(encodings[i]);
-			print.out("-----------------------");
-			
-			printTypeMapping((org.apache.axis.encoding.TypeMapping)tmr.getTypeMapping(encodings[i]));
-		}
-		
-		print.out("-----------------------");
-		print.out("default");
-		print.out("-----------------------");
-		printTypeMapping(typeMapping);
-	}
-
-
-	public static void printTypeMapping(org.apache.axis.encoding.TypeMapping mapping) {
-		Class[] classes = mapping.getAllClasses();
-		
-		for(int i=0;i<classes.length;i++) {
-			if(classes[i].getName().indexOf("addr")!=-1){
-				QName qname = mapping.getTypeQName(classes[i]);
-				print.out(classes[i]+" : "+qname+":"+classes[i].getClassLoader());
-				print.out(" - "+((PhysicalClassLoader)classes[i].getClassLoader()).getDirectory());
-				
-			}
-		}
-	}*/
-}

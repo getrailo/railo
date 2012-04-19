@@ -967,4 +967,8 @@ public final class HTTPUtil {
     	}
     	return rtn;
 	}
+
+	public static boolean isSecure(URL url) {
+		return StringUtil.indexOfIgnoreCase(url.getProtocol(),"https")!=-1;
+	}
 }

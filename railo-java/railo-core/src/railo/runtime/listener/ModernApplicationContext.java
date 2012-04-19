@@ -1,5 +1,7 @@
 package railo.runtime.listener;
 
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
@@ -720,6 +722,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 */
 	public void setORMDatasource(String ormDatasource) {
 		this.ormDatasource=ormDatasource;
+	}
+
+	@Override
+	public Resource getSource() {
+		return component.getPageSource().getPhyscalFile();
 	}
 
 

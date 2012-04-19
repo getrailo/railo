@@ -15,8 +15,6 @@ import javax.xml.namespace.QName;
 import javax.xml.rpc.encoding.TypeMapping;
 
 import org.apache.axis.Constants;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.apache.axis.types.Day;
 import org.apache.axis.types.Duration;
 import org.apache.axis.types.Entities;
@@ -346,12 +344,8 @@ public final class AxisCaster {
         		Object pojo= toPojo(tm,(Component)value,targetClass);
         		try	{	
 	        		QName name = new QName("http://rpc.xml.coldfusion",pojo.getClass().getName());
-		    		if(tm.getSerializer(pojo.getClass(),name)==null){
-		        		tm.register(pojo.getClass(), 
-		        				name,
-		                        new BeanSerializerFactory(pojo.getClass(),name),
-		                        new BeanDeserializerFactory(pojo.getClass(),name));
-	        		}
+		    		TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), name);
+	        		
         		}
         		catch(Throwable fault){
         			throw Caster.toPageException(fault);
@@ -577,7 +571,7 @@ public final class AxisCaster {
     		}
         }
         if(value instanceof Date || value instanceof Calendar) {// do not change to caster.isDate
-    		return Caster.toDate(value,null);
+        	return Caster.toDate(value,null);
         }
         if(value instanceof Object[]) {
         	Object[] arr=(Object[]) value;

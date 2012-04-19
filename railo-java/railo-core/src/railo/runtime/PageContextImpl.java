@@ -360,7 +360,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		this.queryCache=queryCache;
 		server=ScopeContext.getServerScope(this);
 		
-		defaultApplicationContext=new ClassicApplicationContext(config,"",true);
+		defaultApplicationContext=new ClassicApplicationContext(config,"",true,null);
 		
 	}
 	

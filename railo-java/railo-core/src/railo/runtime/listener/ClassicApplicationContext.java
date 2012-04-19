@@ -1,5 +1,6 @@
 package railo.runtime.listener;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -53,12 +54,17 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     private boolean sessionCluster;
     private boolean clientCluster;
 
+
+
+
+	private Resource source;
+
     
     /**
      * constructor of the class
      * @param config
      */
-    public ClassicApplicationContext(Config config,String name,boolean isDefault) {
+    public ClassicApplicationContext(Config config,String name,boolean isDefault, Resource source) {
     	ConfigImpl ci = ((ConfigImpl)config);
     	this.name=name;
     	setClientCookies=config.isClientCookies();
@@ -76,6 +82,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.sessionType=config.getSessionType();
         this.sessionCluster=ci.getSessionCluster();
         this.clientCluster=ci.getClientCluster();
+        this.source=source;
     }
     
     /**
@@ -120,6 +127,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.ormdatasource=ormdatasource;
 		dbl.sessionCluster=sessionCluster;
 		dbl.clientCluster=clientCluster;
+		dbl.source=source;
 		
 		return dbl;
 	}
@@ -458,5 +466,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void reinitORM(PageContext pc) throws PageException {
 		// do nothing
+	}
+
+	@Override
+	public Resource getSource() {
+		return source;
 	}
 }
