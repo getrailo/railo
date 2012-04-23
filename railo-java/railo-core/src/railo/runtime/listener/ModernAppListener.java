@@ -292,7 +292,7 @@ public class ModernAppListener extends AppListenerSupport {
 		// PageContext
 		PageContextImpl pc = (PageContextImpl) factory.getRailoPageContext(factory.getServlet(), req, rsp, null, false, -1, false);
 		// ApplicationContext
-		ClassicApplicationContext ap = new ClassicApplicationContext(factory.getConfig(),applicationName,false);
+		ClassicApplicationContext ap = new ClassicApplicationContext(factory.getConfig(),applicationName,false,app==null?null:ResourceUtil.getResource(pc,app.getPageSource(),null));
 		initApplicationContext(pc, app);
 		ap.setName(applicationName);
 		ap.setSetSessionManagement(true);

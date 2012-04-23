@@ -23,11 +23,14 @@ import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.List;
+import railo.runtime.type.util.ArrayUtil;
 
 public final class ResourceUtil {
 
@@ -178,8 +181,17 @@ public final class ResourceUtil {
     	
         //if(allowRealpath){
 	        if(StringUtil.startsWith(path,'/')) {
-	        	res = pc.getPhysical(path,true);
-	            if(res!=null && res.exists()) return res;
+	        	PageContextImpl pci=(PageContextImpl) pc;
+	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),path,false,pci.useSpecialMappings(),true);
+	        	if(!ArrayUtil.isEmpty(reses)) {
+	        		for(int i=0;i<reses.length;i++){
+	        			res=reses[i];
+	        			if(res.exists()) return res;
+	        		}
+	        	}
+	        	//res = pc.getPhysical(path,true);
+	            //if(res!=null && res.exists()) return res;
 	        }
 	        res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(path));
 	        if(res.exists()) return res;
@@ -237,8 +249,17 @@ public final class ResourceUtil {
         }
         //if(allowRealpath){
 	        if(StringUtil.startsWith(destination,'/')) {
-	            res = pc.getPhysical(destination,true);
-	            if(res!=null && (res.exists() || parentExists(res))) return res;
+	        	PageContextImpl pci=(PageContextImpl) pc;
+	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),true);
+	        	if(!ArrayUtil.isEmpty(reses)) {
+	        		for(int i=0;i<reses.length;i++){
+	        			res=reses[i];
+	        			if(res.exists() || parentExists(res)) return res;
+	        		}
+	        	}
+	            //res = pc.getPhysical(destination,true);
+	            //if(res!=null && (res.exists() || parentExists(res))) return res;
 	        }
 	    	res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(destination));
 	        if(res!=null && (res.exists() || parentExists(res))) return res;
@@ -272,10 +293,12 @@ public final class ResourceUtil {
     	
     	boolean isUNC;
         if(!(isUNC=isUNCPath(destination)) && StringUtil.startsWith(destination,'/')) {
-        	Resource res2 = pc.getPhysical(destination,SystemUtil.isWindows());
-            if(res2!=null) return res2;
-            //res2 = pc.getPhysical(destination,true);
-            //if(res2!=null && res2.exists()) return res2;
+        	PageContextImpl pci=(PageContextImpl) pc;
+        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+        	Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
+        	if(!ArrayUtil.isEmpty(arr)) return arr[0];
+        	//Resource res2 = pc.getPhysical(destination,SystemUtil.isWindows());
+            //if(res2!=null) return res2;
         }
         if(isUNC) {
         	res=pc.getConfig().getResource(destination.replace('/','\\'));
@@ -1335,6 +1358,15 @@ public final class ResourceUtil {
         	res=ResourceUtil.toResourceExisting(pc, path,false);
         }
 		return res;
+	}
+	
+	public static Resource getResource(PageContext pc,PageSource ps, Resource defaultValue) {
+		try {
+			return getResource(pc, ps);
+		} 
+		catch (Throwable t) {
+			return defaultValue;
+		}
 	}
 	
 	public static int directrySize(Resource dir,ResourceFilter filter) {

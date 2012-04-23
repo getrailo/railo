@@ -684,13 +684,26 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * creates a PageSource from Realpath
      * @param realPath
      * @return Page Source
+     * @deprecated use instead getRelativePageSources or getRelativePageSourceExisting
      */
     public abstract PageSource getRelativePageSource(String realPath);
     
-    public abstract PageSource getPageSource(String realPath);
     
-    public abstract Resource getPhysical(String realPath, boolean alsoDefaultMapping);
+    // FUTURE @deprecated use instead Config.getPageSources or Config.getPageSourceExisting
+    /**
+	 * get PageSource of the first Mapping that match the given realPath
+	 * @param realPath path to get PageSource for
+	 */
+	public abstract PageSource getPageSource(String realPath);
 
+	// FUTURE @deprecated use instead Config.getPhysicalResources or Config.getPhysicalResourceExisting
+	/**
+	 * get Resource of the first Mapping that match the given realPath
+	 * @param realPath path to get PageSource for
+	 */
+	public abstract Resource getPhysical(String realPath, boolean alsoDefaultMapping);
+    
+    
 	public abstract PageSource toPageSource(Resource res, PageSource defaultValue);
 
     /**
@@ -712,7 +725,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
-     * @Deprecated used <code> doInclude(PageSource source, boolean runOnce)</code> instead.
+     * deprecated use other doInclude methods
      */
     public abstract void doInclude(PageSource source) throws  PageException;
 
@@ -723,6 +736,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws ServletException
      */
     public abstract void doInclude(PageSource source, boolean runOnce) throws  PageException;
+    
+    //FUTURE public abstract void doInclude(PageSource[] source) throws  PageException;
     
     
     /**  
@@ -980,6 +995,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * compile a CFML Template
      * @param templatePath 
      * @throws PageException 
+     * @deprecated use instead <code>compile(PageSource pageSource)</code>
      */
     public abstract void compile(String templatePath)throws PageException;
     

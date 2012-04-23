@@ -326,9 +326,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		req=new HTTPServletRequestWrap(req);
 		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         ConfigWeb config = factory.getConfig();
-        Resource res = ((ConfigWebImpl)config).getPhysical(null,req.getServletPath(),true);
+        Resource res = ((ConfigWebImpl)config).getPhysicalResourceExisting(null, null, req.getServletPath(), false, true, true); 
         
-		if(!res.exists()) {
+		if(res==null) {
     		rsp.sendError(404);
     	}
     	else {

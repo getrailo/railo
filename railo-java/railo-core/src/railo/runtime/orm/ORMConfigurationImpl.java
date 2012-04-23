@@ -16,6 +16,7 @@ import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
@@ -127,7 +128,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 				
 				while(it.hasNext()){
 					try	{
-						res=toResourceExisting(config, it.next());
+						res=toResourceExisting(config,it.next());
 						if(res!=null) list.add(res);
 					}
 					catch(Throwable t){}
@@ -245,11 +246,6 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		return Caster.toResource(config, obj, existing);
 	}
 
-
-
-
-
-
 	private static Resource toResourceExisting(Config config, Object obj) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
@@ -257,11 +253,21 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		path=path.trim();
 		Resource res;
 		
-		// first check local
 		PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null){
-			res=ResourceUtil.toResourceNotExisting(pc, path);
-			if(res.isDirectory()) return res;
+		
+		// first check relative to application.cfc
+		if(pc!=null) {
+			ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+			Resource src= ac!=null?ac.getSource():null;
+			if(src!=null) {
+				res=src.getParentResource().getRealResource(path);
+				if(res.isDirectory()) return res;
+			}
+			// happens when this is called from within the application.cfc (init)
+			else {
+				res=ResourceUtil.toResourceNotExisting(pc, path);
+				if(res.isDirectory()) return res;
+			}
 		}
 		
 		// then in the webroot
@@ -270,10 +276,8 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		
 		// then absolute
 		res = ResourceUtil.toResourceNotExisting(config, path);
+
 		if(res.isDirectory()) return res;
-		
-		
-		
 		return null;
 	}
 

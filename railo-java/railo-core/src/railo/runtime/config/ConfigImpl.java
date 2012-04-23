@@ -805,28 +805,31 @@ public abstract class ConfigImpl implements Config {
 
 
     public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel) {
-    	return getPageSource(ThreadLocalPageContext.get(),mappings, realPath, onlyTopLevel, ((PageContextImpl)ThreadLocalPageContext.get()).useSpecialMappings(),true);
+    	throw new PageRuntimeException(new DeprecatedException("method not supported"));
     }
     
-    public PageSource getPageSource(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
+    public PageSource getPageSourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping, boolean onlyPhysicalExisting) {
         realPath=realPath.replace('\\','/');
         String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
         Mapping mapping;
-        
-        // app-cfc mappings
+        PageSource ps;
+
         if(mappings!=null){
 	        for(int i=0;i<mappings.length;i++) {
 	            mapping = mappings[i];
 	            //print.err(lcRealPath+".startsWith"+(mapping.getStrPhysical()));
 	            if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
-	            	return mapping.getPageSource(realPath.substring(mapping.getVirtual().length()));
+	            	ps= mapping.getPageSource(realPath.substring(mapping.getVirtual().length()));
+	            	if(onlyPhysicalExisting) {
+	            		if(ps.physcalExists())return ps;
+	            	}
+	            	else if(ps.exists()) return ps;
 	            }
 	        }
         }
         
         /// special mappings
         if(useSpecialMappings && lcRealPath.startsWith("/mapping-",0)){
-        	PageSource ps;
         	String virtual="/mapping-tag";
         	// tag mappings
         	Mapping[] tagMappings=(this instanceof ConfigWebImpl)?new Mapping[]{((ConfigWebImpl)this).getServerTagMapping(),getTagMapping()}:new Mapping[]{getTagMapping()};
@@ -835,7 +838,10 @@ public abstract class ConfigImpl implements Config {
 		            mapping = tagMappings[i];
 		            //if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
 		            	ps = mapping.getPageSource(realPath.substring(virtual.length()));
-		            	if(ps.exists()) return ps;
+		            	if(onlyPhysicalExisting) {
+		            		if(ps.physcalExists())return ps;
+		            	}
+		            	else if(ps.exists()) return ps;
 		            //}
 		        }
         	}
@@ -848,7 +854,10 @@ public abstract class ConfigImpl implements Config {
 		            mapping = tagMappings[i];
 		            //if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
 		            	ps = mapping.getPageSource(realPath.substring(virtual.length()));
-		            	if(ps.exists()) return ps;
+		            	if(onlyPhysicalExisting) {
+		            		if(ps.physcalExists())return ps;
+		            	}
+		            	else if(ps.exists()) return ps;
 		            //}
 		        }
         	}
@@ -860,8 +869,11 @@ public abstract class ConfigImpl implements Config {
             if(isCFC) {
 	        	Mapping[] cmappings = getComponentMappings();
 	        	for(int i=0;i<cmappings.length;i++) {
-	        		PageSource ps = cmappings[i].getPageSource(realPath);
-	        		if(ps.exists()) return ps;
+	        		ps = cmappings[i].getPageSource(realPath);
+	            	if(onlyPhysicalExisting) {
+	            		if(ps.physcalExists())return ps;
+	            	}
+	            	else if(ps.exists()) return ps;
 	            }
         	}
         }
@@ -870,12 +882,91 @@ public abstract class ConfigImpl implements Config {
         for(int i=0;i<this.mappings.length-1;i++) {
             mapping = this.mappings[i];
             if((!onlyTopLevel || mapping.isTopLevel()) && lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
-            	return mapping.getPageSource(realPath.substring(mapping.getVirtual().length()));
+            	ps= mapping.getPageSource(realPath.substring(mapping.getVirtual().length()));
+            	if(onlyPhysicalExisting) {
+            		if(ps.physcalExists())return ps;
+            	}
+            	else if(ps.exists()) return ps;
             }
         }
         
-        if(useDefaultMapping)return this.mappings[this.mappings.length-1].getPageSource(realPath);
+        if(useDefaultMapping){
+        	ps= this.mappings[this.mappings.length-1].getPageSource(realPath);
+        	if(onlyPhysicalExisting) {
+        		if(ps.physcalExists())return ps;
+        	}
+        	else if(ps.exists()) return ps;
+        }
         return null;
+    }
+    
+
+    
+    public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
+        realPath=realPath.replace('\\','/');
+        String lcRealPath = StringUtil.toLowerCase(realPath)+'/';
+        Mapping mapping;
+
+        PageSource ps;
+        List<PageSource> list=new ArrayList<PageSource>();
+    	
+        if(mappings!=null){
+	        for(int i=0;i<mappings.length;i++) {
+	            mapping = mappings[i];
+	            //print.err(lcRealPath+".startsWith"+(mapping.getStrPhysical()));
+	            if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
+	            	list.add(mapping.getPageSource(realPath.substring(mapping.getVirtual().length())));
+	            }
+	        }
+        }
+        
+        /// special mappings
+        if(useSpecialMappings && lcRealPath.startsWith("/mapping-",0)){
+        	String virtual="/mapping-tag";
+        	// tag mappings
+        	Mapping[] tagMappings=(this instanceof ConfigWebImpl)?new Mapping[]{((ConfigWebImpl)this).getServerTagMapping(),getTagMapping()}:new Mapping[]{getTagMapping()};
+        	if(lcRealPath.startsWith(virtual,0)){
+	        	for(int i=0;i<tagMappings.length;i++) {
+		            ps=tagMappings[i].getPageSource(realPath.substring(virtual.length()));
+		            if(ps.exists()) list.add(ps);
+		        }
+        	}
+        	
+        	// customtag mappings
+        	tagMappings=getCustomTagMappings();
+        	virtual="/mapping-customtag";
+        	if(lcRealPath.startsWith(virtual,0)){
+	        	for(int i=0;i<tagMappings.length;i++) {
+		            ps=tagMappings[i].getPageSource(realPath.substring(virtual.length()));
+		            if(ps.exists()) list.add(ps);
+		        }
+        	}
+        }
+        
+        // component mappings (only used for gateway)
+        if(pc!=null && ((PageContextImpl)pc).isGatewayContext()) {
+        	boolean isCFC=getCFCExtension().equalsIgnoreCase(ResourceUtil.getExtension(realPath, null));
+            if(isCFC) {
+	        	Mapping[] cmappings = getComponentMappings();
+	        	for(int i=0;i<cmappings.length;i++) {
+	        		ps=cmappings[i].getPageSource(realPath);
+	        		if(ps.exists()) list.add(ps);
+	            }
+        	}
+        }
+        
+        // config mappings
+        for(int i=0;i<this.mappings.length-1;i++) {
+            mapping = this.mappings[i];
+            if((!onlyTopLevel || mapping.isTopLevel()) && lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0)) {
+            	list.add(mapping.getPageSource(realPath.substring(mapping.getVirtual().length())));
+            }
+        }
+        
+        if(useDefaultMapping){
+        	list.add(this.mappings[this.mappings.length-1].getPageSource(realPath));
+        }
+        return list.toArray(new PageSource[list.size()]); 
     }
     
     /**
@@ -885,33 +976,27 @@ public abstract class ConfigImpl implements Config {
      * @return physical path from mapping
      */
     public Resource getPhysical(Mapping[] mappings, String realPath, boolean alsoDefaultMapping) {
-        realPath=realPath.replace('\\','/');
-        String lcRealPath = StringUtil.toLowerCase(realPath);
-        if(!StringUtil.endsWith(lcRealPath,'/'))lcRealPath+='/';
-        Mapping mapping;
-        //print.out(realPath);
-        
-        // app-cfc mappings
-        if(mappings!=null){        	
-	        for(int i=0;i<mappings.length;i++) {
-	            mapping = mappings[i];
-	            if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0) && mapping.hasPhysical()) {
-	            	return mapping.getPhysical().getRealResource(realPath.substring(mapping.getVirtual().length()));
-	            }
-	        }
-	    }
-        
-        // config mappings
-        for(int i=0;i<this.mappings.length-1;i++) {
-            mapping = this.mappings[i];
-            if(lcRealPath.startsWith(mapping.getVirtualLowerCaseWithSlash(),0) && mapping.hasPhysical()) {
-            	return mapping.getPhysical().getRealResource(realPath.substring(mapping.getVirtual().length()));
-            }
-        }
+    	throw new PageRuntimeException(new DeprecatedException("method not supported"));
+    }
+    
 
-        if(alsoDefaultMapping && this.mappings[this.mappings.length-1].hasPhysical())
-        	return this.mappings[this.mappings.length-1].getPhysical().getRealResource(realPath);
-        return null;
+    public Resource[] getPhysicalResources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
+    	PageSource[] pages = getPageSources(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping);
+    	List<Resource> list=new ArrayList<Resource>();
+    	Resource res;
+    	for(int i=0;i<pages.length;i++) {
+    		if(!pages[i].getMapping().hasPhysical()) continue;
+    		res=pages[i].getPhyscalFile();
+    		if(res!=null) list.add(res);
+    	}
+    	return list.toArray(new Resource[list.size()]);
+    }
+    
+
+    public Resource getPhysicalResourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping) {
+    	PageSource ps = getPageSourceExisting(pc, mappings, realPath, onlyTopLevel, useSpecialMappings, useDefaultMapping,true);
+    	if(ps==null) return null;
+    	return ps.getPhyscalFile();
     }
 
     /**
@@ -1696,7 +1781,7 @@ public abstract class ConfigImpl implements Config {
     }
     public PageSource getBaseComponentPageSource(PageContext pc) {
         if(baseComponentPageSource==null) {
-            baseComponentPageSource=getPageSource(pc,null,getBaseComponentTemplate(),false,false,true);
+        	baseComponentPageSource=PageSourceImpl.best(getPageSources(pc,null,getBaseComponentTemplate(),false,false,true));
         }
         return baseComponentPageSource;
     }

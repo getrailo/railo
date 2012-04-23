@@ -1,5 +1,6 @@
 package railo.runtime.tag;
 
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.exp.ApplicationException;
@@ -290,7 +291,7 @@ public final class Application extends TagImpl {
         ApplicationContext ac;
         boolean initORM;
         if(action==ACTION_CREATE){
-        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false);
+        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource()));
         	initORM=set(ac);
         	pageContext.setApplicationContext(ac);
         }

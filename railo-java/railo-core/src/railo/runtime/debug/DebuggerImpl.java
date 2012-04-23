@@ -419,7 +419,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		args.setEL("debugging", pc.getDebugger().getDebuggingData(pc));
 		
 		try {
-			PageSource ps = pc.getPageSource(debugEntry.getPath());
+			PageSource ps = pc.getPageSourceXXX(debugEntry.getPath());
 			ps.loadPage(pc);
 			pc.addPageSource(ps, true);
 			try{

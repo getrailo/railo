@@ -26,6 +26,7 @@ import railo.runtime.engine.Controler;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 /**  
  * Mapping class
@@ -452,9 +453,16 @@ public final class MappingImpl implements Mapping {
 	}
 
 	public static boolean isOK(PageSource ps) {
-		//return ps!=null;
 		return (ps.getMapping().isTrusted() && ((PageSourceImpl)ps).isLoad()) || ps.exists();
-	} 
+	}
+
+	public static PageSource isOK(PageSource[] arr) {
+		if(ArrayUtil.isEmpty(arr)) return null;
+		for(int i=0;i<arr.length;i++) {
+			if(isOK(arr[i])) return arr[i];
+		}
+		return null;
+	}
 	
 	private static String _getRecursive(Resource res, String path, String filename) {
     	if(res.isDirectory()) {

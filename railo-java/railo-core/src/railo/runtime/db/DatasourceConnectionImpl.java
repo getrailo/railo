@@ -162,7 +162,12 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 			key = MD5.getDigestAsString(key);
 		} catch (IOException e) {}
 		PreparedStatement ps = preparedStatements.get(key);
-		if(ps!=null) return ps;
+		if(ps!=null) {
+			if(ps.isClosed()) 
+				preparedStatements.remove(key);
+			else return ps;
+		}
+		
 		
 		if(createGeneratedKeys)	ps= getConnection().prepareStatement(strSQL,Statement.RETURN_GENERATED_KEYS);
 		else ps=getConnection().prepareStatement(strSQL);
@@ -184,7 +189,11 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 			key = MD5.getDigestAsString(key);
 		} catch (IOException e) {}
 		PreparedStatement ps = preparedStatements.get(key);
-		if(ps!=null) return ps;
+		if(ps!=null) {
+			if(ps.isClosed()) 
+				preparedStatements.remove(key);
+			else return ps;
+		}
 		
 		ps=getConnection().prepareStatement(strSQL,resultSetType,resultSetConcurrency);
 		if(preparedStatements.size()>MAX_PS)

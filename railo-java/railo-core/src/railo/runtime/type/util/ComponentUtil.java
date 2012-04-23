@@ -277,7 +277,14 @@ public final class ComponentUtil {
 	 * @param clazz
 	 */
 	private static void _registerTypeMapping(RPCServer server, Class clazz) {
-		if(!isComplexType(clazz)) return;
+		if(clazz==null) return;
+		
+		if(!isComplexType(clazz)) {
+			if(clazz.isArray()) {
+				_registerTypeMapping(server, clazz.getComponentType());
+			}
+			return;
+		}
 		server.registerTypeMapping(clazz);
 		registerTypeMapping(server,clazz);
 	}
@@ -324,7 +331,6 @@ public final class ComponentUtil {
 
     
     private static Object _getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException, IOException, ClassNotFoundException {
-
     	String real=className.replace('.','/');
     	
 		//Config config = pc.getConfig();
@@ -346,7 +352,6 @@ public final class ComponentUtil {
 				
 			}
 		}
-		
 		// create file
 		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{Pojo.class},null);
     	boolean exist=classFile.exists();

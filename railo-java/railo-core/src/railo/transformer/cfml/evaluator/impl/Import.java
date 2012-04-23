@@ -104,10 +104,10 @@ public final class Import extends EvaluatorSupport {
 		// Second Change	    
 		if(textTagLib.startsWith("/")){
             //config.getPhysical(textTagLib);
-		    PageSource ps = ((ConfigImpl)config).getPageSource(null,null,textTagLib,false,false,true);//toPageSource(config.getMappings(),textTagLib);
+		    PageSource ps = ((ConfigImpl)config).getPageSourceExisting(null,null,textTagLib,false,false,true,false);
 		    
 		    //config.getConfigDir()
-		    if(ps.exists()) {
+		    if(ps!=null) {
 		        if(ps.physcalExists()) {
 		        	Resource file = ps.getPhyscalFile();
 					// TLD

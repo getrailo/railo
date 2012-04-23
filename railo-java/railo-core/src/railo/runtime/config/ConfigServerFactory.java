@@ -48,6 +48,7 @@ public final class ConfigServerFactory {
     			
     			);
     	
+    	boolean doNew=ConfigWebFactory.doNew(configDir);
     	
     	Resource configFile=configDir.getRealResource("railo-server.xml");
         if(!configFile.exists()) {
@@ -63,9 +64,9 @@ public final class ConfigServerFactory {
         Document doc=ConfigWebFactory.loadDocument(configFile);
        
         ConfigServerImpl config=new ConfigServerImpl(engine,initContextes,contextes,configDir,configFile);
-		load(config,doc,false);
+		load(config,doc,false,doNew);
 	    
-		createContextFiles(configDir,config);
+		createContextFiles(configDir,config,doNew);
 	    return config;
     }
     /**
@@ -84,8 +85,8 @@ public final class ConfigServerFactory {
         
         if(configFile==null) return ;
         if(second(configServer.getLoadTime())>second(configFile.lastModified())) return ;
-        
-        load(configServer,ConfigWebFactory.loadDocument(configFile),true);
+        boolean doNew=ConfigWebFactory.doNew(configServer.getConfigDir());
+        load(configServer,ConfigWebFactory.loadDocument(configFile),true,doNew);
     }
     
     private static long second(long ms) {
@@ -101,8 +102,8 @@ public final class ConfigServerFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    static void load(ConfigServerImpl configServer, Document doc, boolean isReload) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
-        ConfigWebFactory.load(null,configServer,doc, isReload);
+    static void load(ConfigServerImpl configServer, Document doc, boolean isReload, boolean doNew) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
+        ConfigWebFactory.load(null,configServer,doc, isReload,doNew);
         loadLabel(configServer,doc);
     }
     
@@ -124,7 +125,7 @@ public final class ConfigServerFactory {
         configServer.setLabels(labels);
 	}
 	
-	public static void createContextFiles(Resource configDir, ConfigServer config) {
+	public static void createContextFiles(Resource configDir, ConfigServer config, boolean doNew) throws IOException {
 		// Security certificate
         Resource secDir = configDir.getRealResource("security");
         if(!secDir.exists())secDir.mkdirs();

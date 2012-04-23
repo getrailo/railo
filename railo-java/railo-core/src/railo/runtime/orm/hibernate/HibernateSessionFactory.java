@@ -25,8 +25,13 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.Component;
+
+import railo.runtime.ComponentPro;
+import railo.runtime.InterfacePage;
+
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
+import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
@@ -335,13 +340,15 @@ public class HibernateSessionFactory {
 					}
 					
 					
-					
 					//Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					ComponentAccess cfc = ComponentLoader.loadComponent(pc, null, ps, name, true,true);
-					if(cfc.isPersistent()){
-						components.add(cfc);
+					Page p = ComponentLoader.loadPage(pc, ps);
+					if(!(p instanceof InterfacePage)){
+						ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);
+						if(cfc.isPersistent()){
+							components.add(cfc);
+						}
 					}
 				} 
 				catch (PageException e) {

@@ -19,7 +19,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
-import railo.runtime.util.IteratorWrapper;
 
 public final class RequestImpl extends StructSupport implements Request {
 

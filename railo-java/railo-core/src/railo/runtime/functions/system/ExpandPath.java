@@ -9,23 +9,37 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.config.Config;
+import railo.runtime.PageContextImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.type.util.ArrayUtil;
 
 public final class ExpandPath implements Function {
+
+	private static final long serialVersionUID = 6192659914120397912L;
+
 	public static String call(PageContext pc , String realPath) throws ExpressionException {
 		
-		Config config=pc.getConfig();
+		ConfigWeb config=pc.getConfig();
 		realPath=realPath.replace('\\','/');
         Resource res;
         
         if(StringUtil.startsWith(realPath,'/')) {
-        	res = pc.getPhysical(realPath,true);
-            if(res!=null) {
-            	return toReturnValue(realPath,res);
-            }
+        	PageContextImpl pci=(PageContextImpl) pc;
+        	ConfigWebImpl cwi=(ConfigWebImpl) config;
+        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),realPath,false,pci.useSpecialMappings(),true);
+        	if(!ArrayUtil.isEmpty(reses)) {
+        		// first check for existing
+	        	for(int i=0;i<reses.length;i++){
+	        		if(reses[i].exists()) {
+	        			return toReturnValue(realPath,reses[i]);
+	        		}
+	        	}
+	        	return toReturnValue(realPath,reses[0]);
+        	}
         }
         realPath=ConfigWebUtil.replacePlaceholder(realPath, config);
         res=pc.getConfig().getResource(realPath);

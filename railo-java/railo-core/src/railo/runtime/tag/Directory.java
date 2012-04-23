@@ -632,21 +632,21 @@ public final class Directory extends TagImpl  {
 		
 	    
 		if(!directory.exists())
-			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
+			throw new ApplicationException("the directory ["+directory.toString()+"] doesn't exist");
 		if(!directory.isDirectory())
-			throw new ApplicationException("file ["+directory.toString()+"] exists, but isn't a directory");
+			throw new ApplicationException("the file ["+directory.toString()+"] exists, but it isn't a directory");
 		if(!directory.canRead())
 			throw new ApplicationException("no access to read directory ["+directory.toString()+"]");
 		
 		if(strNewdirectory==null)
-			throw new ApplicationException("attribute newDirectory is not defined");
+			throw new ApplicationException("the attribute [newDirectory] is not defined");
 		
 		// real to source 
 		Resource newdirectory=toDestination(pc,strNewdirectory,directory);
 		
 	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
 		if(newdirectory.exists())
-			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
+			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exists");
 		try {
 			directory.moveTo(newdirectory);
 		}
