@@ -3,6 +3,7 @@ package railo.runtime.type.util;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -66,8 +67,7 @@ public final class ComponentUtil {
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldtype");
-	private static HashMap<String,String> classComponentMappings = new HashMap<String,String>();
-	
+
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
     /**
@@ -366,12 +366,44 @@ public final class ComponentUtil {
      * @param className the underlying class name a component uses
      * @return the component Path that can be used by loadComponent() to get the component
      */
-	public static String getComponentPathFromClass(String className)  {
-		return classComponentMappings.get(className);
+	public static String getComponentPathFromClass(Class clazz)  {
+		java.lang.reflect.Method m = getComplexTypeMethod(clazz);
+	
+		
+		Object o;
+		try {
+			o = m.invoke(null, new Object[0]);
+			return o.toString();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		return clazz.getName();
+		
 	}
     
 	
-    
+	public static String getComponentNameFromClass(Class clazz)  {
+		String s = getComponentPathFromClass(clazz);
+		if (s.equals("")) {
+			s = clazz.getName();
+		} else {
+			if (s.toLowerCase().endsWith(".cfc")) {
+				s = s.substring(0,s.length()-4);
+			}
+			
+		}
+		String fullname = s.replace('/', '.').replace('\\', '.');
+		fullname = fullname.substring(fullname.lastIndexOf('.')+1);
+		System.out.println(fullname);
+		return fullname;
+	}
+	
+	
 	public static Class getServerComponentPropertiesClass(Component component) throws PageException {
 		try {
 	    	return _getServerComponentPropertiesClass(component);
@@ -397,10 +429,6 @@ public final class ComponentUtil {
 		String classNameOriginal=cp.getPageSource().getFullClassName();
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
-		
-		// keep track of classes and what component they map to, for AxisCastor to accurately convert a
-		// class to the appropriate component
-		classComponentMappings.put(className, cp.getPageSource().getComponentName());
 		
 		// load existing class
 		if(classFile.lastModified()>=classFileOriginal.lastModified()) {

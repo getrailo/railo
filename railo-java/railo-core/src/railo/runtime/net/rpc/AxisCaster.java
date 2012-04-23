@@ -533,10 +533,8 @@ public final class AxisCaster {
     			
     			// get the path of the component 
     			String className = value.getClass().getName();
-    			String componentPath = ComponentUtil.getComponentPathFromClass(className);
-    			if (componentPath == null) {
-    				componentPath = className; //this is not precise, but it is what it did before.
-    			}
+
+    			String componentPath = ComponentUtil.getComponentNameFromClass(value.getClass());
     			Component comp = pc.loadComponent(componentPath);
 
     			ComponentAccess c = ComponentUtil.toComponentAccess(comp);
