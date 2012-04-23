@@ -244,7 +244,7 @@ public final class RPCClient implements Objects, Iteratorable{
         
         org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
         	axisService.getTypeMappingRegistry().getDefaultTypeMapping();
-        TypeMappingRegistry reg=(TypeMappingRegistry) axisService.getTypeMappingRegistry();
+        //TypeMappingRegistry reg=(TypeMappingRegistry) axisService.getTypeMappingRegistry();
         
         //tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
         tm=call.getMessageContext().getTypeMapping();
@@ -295,7 +295,7 @@ public final class RPCClient implements Objects, Iteratorable{
     			throw new RPCException("Invalid arguments count for operation " + methodName+" ("+arguments.length+" instead of "+inNames.size()+")");
     		
             for(int pos = 0; pos < inNames.size(); pos++) {
-    			p = (Parameter)inTypes.get(pos);
+    			p = inTypes.get(pos);
                 inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arguments[pos]);
     		}
         }
@@ -308,13 +308,13 @@ public final class RPCClient implements Objects, Iteratorable{
             Object arg;
             String name;
             for(int pos = 0; pos < inNames.size(); pos++) {
-                p = (Parameter)inTypes.get(pos);
+                p = inTypes.get(pos);
                 name=p.getName();
                 arg=namedArguments.get(name,null);
                 
                 if(arg==null) {
                     throw new RPCException("Invalid arguments for operation " + methodName,
-                            getErrorDetailForArguments((String[])inNames.toArray(new String[inNames.size()]),namedArguments.keysAsString()));
+                            getErrorDetailForArguments(inNames.toArray(new String[inNames.size()]),namedArguments.keysAsString()));
                 }
                 inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arg);
             }
@@ -352,7 +352,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		
 		Struct sct = new StructImpl();
 		for(int pos = 0; pos < outNames.size(); pos++) {
-			String name = (String)outNames.get(pos);
+			String name = outNames.get(pos);
             //print.ln(name);
 			Object value = outputs.get(name);
 			if(value == null && pos == 0) {

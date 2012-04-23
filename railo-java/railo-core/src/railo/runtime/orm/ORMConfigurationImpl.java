@@ -16,7 +16,7 @@ import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
@@ -257,7 +257,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		
 		// first check relative to application.cfc
 		if(pc!=null) {
-			ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+			ApplicationContext ac=pc.getApplicationContext();
 			Resource src= ac!=null?ac.getSource():null;
 			if(src!=null) {
 				res=src.getParentResource().getRealResource(path);

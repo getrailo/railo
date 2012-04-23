@@ -3304,7 +3304,7 @@ public abstract class ConfigImpl implements Config {
 		
 		PageSource ps = componentPathCache.get(pathWithCFC.toLowerCase());
 		if(ps==null) return null;
-		return ((PageSourceImpl)ps).loadPage(pc,null);
+		return ((PageSourceImpl)ps).loadPage(pc,(Page)null);
 	}
 	
 	public void putCachedPageSource(String pathWithCFC,PageSource ps) {

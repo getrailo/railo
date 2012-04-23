@@ -1,5 +1,7 @@
 package railo.runtime.listener;
 
+import java.io.Serializable;
+
 import railo.commons.io.res.Resource;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;

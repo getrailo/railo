@@ -44,6 +44,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.commons.lock.KeyLock;
@@ -778,21 +779,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	@Override
-	public void doInclude(PageSource[] sources) throws PageException {
-		doInclude(sources,false);
-	}
-
-	@Override
-	public void doInclude(PageSource[] source, boolean runOnce) throws PageException {
-		if(runOnce && includeOnce.contains(source)) return;
+	public void doInclude(PageSource[] sources, boolean runOnce) throws PageException {
     	// debug
 		if(!gatewayContext && config.debug()) {
-			DebugEntry debugEntry=debugger.getEntry(this,source);
 			int currTime=executionTime;
             long exeTime=0;
             long time=System.nanoTime();
             
             Page currentPage = PageSourceImpl.loadPage(this, sources);
+			if(runOnce && includeOnce.contains(currentPage.getPageSource())) return;
             DebugEntry debugEntry=debugger.getEntry(this,currentPage.getPageSource());
             try {
                 addPageSource(currentPage.getPageSource(),true);
@@ -815,7 +810,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
                 }
 			}
 			finally {
-				includeOnce.add(source);
+				includeOnce.add(currentPage.getPageSource());
 				int diff= ((int)(System.nanoTime()-exeTime)-(executionTime-currTime));
 			    executionTime+=(int)(System.nanoTime()-time);
 				debugEntry.updateExeTime(diff);
@@ -825,7 +820,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	// no debug
 		else {
 			Page currentPage = PageSourceImpl.loadPage(this, sources);
-		    try {
+			if(runOnce && includeOnce.contains(currentPage.getPageSource())) return;
+	    	try {
 				addPageSource(currentPage.getPageSource(),true);
                 currentPage.call(this);
 			}
@@ -840,7 +836,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
                 }
 			}
 			finally {
-				includeOnce.add(source);
+				includeOnce.add(currentPage.getPageSource());
 				removeLastPageSource(true);
 			}	
 		}

@@ -13,8 +13,11 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
@@ -419,9 +422,9 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		args.setEL("debugging", pc.getDebugger().getDebuggingData(pc));
 		
 		try {
-			PageSource ps = pc.getPageSourceXXX(debugEntry.getPath());
-			ps.loadPage(pc);
-			pc.addPageSource(ps, true);
+			PageSource[] arr = ((PageContextImpl)pc).getPageSources(debugEntry.getPath());
+			Page p = PageSourceImpl.loadPage(pc, arr);
+			pc.addPageSource(p.getPageSource(), true);
 			try{
 				Component cfc = pc.loadComponent(debugEntry.getFullname());
 				cfc.callWithNamedValues(pc, "output", args);

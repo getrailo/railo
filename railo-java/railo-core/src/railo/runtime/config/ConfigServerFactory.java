@@ -125,7 +125,7 @@ public final class ConfigServerFactory {
         configServer.setLabels(labels);
 	}
 	
-	public static void createContextFiles(Resource configDir, ConfigServer config, boolean doNew) throws IOException {
+	public static void createContextFiles(Resource configDir, ConfigServer config, boolean doNew) {
 		// Security certificate
         Resource secDir = configDir.getRealResource("security");
         if(!secDir.exists())secDir.mkdirs();

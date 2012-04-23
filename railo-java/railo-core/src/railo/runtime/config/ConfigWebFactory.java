@@ -1343,7 +1343,7 @@ public final class ConfigWebFactory {
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext,boolean doNew) throws IOException {
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext,boolean doNew) {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 
