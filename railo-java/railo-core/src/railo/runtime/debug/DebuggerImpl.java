@@ -408,7 +408,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		    return;
 		} 
 		try {
-		    pc.doInclude(pc.getRelativePageSource(template));
+		    pc.doInclude(template);
         } 
 		catch (PageException e) {
             pc.handlePageException(e);

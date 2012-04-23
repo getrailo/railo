@@ -15,6 +15,7 @@ import railo.commons.lang.SizeOf;
 import railo.runtime.Page;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
@@ -309,7 +310,7 @@ public final class UDFProperties implements Sizeable,Serializable,Externalizable
 			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
 			ConfigWebImpl cw = (ConfigWebImpl) ThreadLocalPageContext.getConfig(pc);
 			String path=ExternalizableUtil.readString(in);
-			pageSource=cw.getPageSource(pc,null, path, false,true,true);
+			pageSource=PageSourceImpl.best(cw.getPageSources(pc,null, path, false,true,true));
 			
 		} 
 		catch (Throwable e) {

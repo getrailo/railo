@@ -7,6 +7,7 @@ import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -50,15 +51,15 @@ public final class AppListenerUtil {
 	}
 	
 	public static PageSource getApplicationPageSourceRoot(PageContext pc, String filename) {
-		PageSource res = pc.getPageSource("/".concat(filename));
-		if(res.exists()) return res;
+		PageSource ps = ((PageContextImpl)pc).getPageSourceExisting("/".concat(filename));
+		if(ps!=null) return ps;
 		return null;
 	}
 	
 	public static PageSource getApplicationPageSourceCurr2Root(PageContext pc,PageSource requestedPage, String filename) {
-		PageSource res=requestedPage.getRealPage(filename);
-	    if(res.exists()) { 
-			return res;
+		PageSource ps=requestedPage.getRealPage(filename);
+	    if(ps.exists()) { 
+			return ps;
 		}
 	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 	    //Config config = pc.getConfig();
@@ -69,9 +70,9 @@ public final class AppListenerUtil {
 			    sb.append('/');
 			}
 			sb.append(filename);
-			res = pc.getPageSource(sb.toString());
-			if(res.exists()) {
-				return res;
+			ps = ((PageContextImpl)pc).getPageSourceExisting(sb.toString());
+			if(ps!=null) {
+				return ps;
 			}
 		}
 		return null;
@@ -97,13 +98,13 @@ public final class AppListenerUtil {
 	}
 	
 	public static PageSource getApplicationPageSourceRoot(PageContext pc, RefBoolean isCFC) {
-		PageSource res = pc.getPageSource("/Application.cfc");
-		if(res.exists()) {
+		PageSource ps = ((PageContextImpl)pc).getPageSourceExisting("/Application.cfc");
+		if(ps!=null) {
 			isCFC.setValue(true);
-	    	return res;
+	    	return ps;
 		}
-		res = pc.getPageSource("/Application.cfm");
-		if(res.exists()) return res;
+		ps = ((PageContextImpl)pc).getPageSourceExisting("/Application.cfm");
+		if(ps!=null) return ps;
 		return null;
 	}
 	
@@ -127,14 +128,14 @@ public final class AppListenerUtil {
 			    sb.append('/');
 			}
 			path=sb.toString();
-			res = pc.getPageSource(path.concat("Application.cfc"));
-			if(res.exists()) {
+			res = ((PageContextImpl)pc).getPageSourceExisting(path.concat("Application.cfc"));
+			if(res!=null) {
 				isCFC.setValue(true);
 				return res;
 			}
 
-			res = pc.getPageSource(path.concat("Application.cfm"));
-			if(res.exists()) return res;
+			res = ((PageContextImpl)pc).getPageSourceExisting(path.concat("Application.cfm"));
+			if(res!=null) return res;
 		}
 		return null;
 	}

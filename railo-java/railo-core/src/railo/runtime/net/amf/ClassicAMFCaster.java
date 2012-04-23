@@ -16,6 +16,8 @@ import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
+import railo.runtime.PagePlus;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Property;
@@ -258,11 +260,12 @@ public class ClassicAMFCaster implements AMFCaster {
 			ConfigWeb config = pc.getConfig();
 			if(pc!=null){
 				String name="/"+aso.getType().replace('.', '/')+".cfc";
-				PageSourceImpl ps = (PageSourceImpl) pc.getPageSource(name);
-				Page p=ps.loadPage(pc,config,null);
+				PagePlus p = (PagePlus) PageSourceImpl.loadPage(pc, ((PageContextImpl)pc).getPageSources(name), null) ;
+				//PageSourceImpl ps = (PageSourceImpl) pc.getPageSource(name);
+				//Page p=ps.loadPage(pc,config,null);
 				if(p==null)throw new ApplicationException("Could not find a Component with name ["+aso.getType()+"]");
 				
-				Component cfc = ComponentLoader.loadComponent(pc, p, ps, aso.getType(), false);
+				Component cfc = ComponentLoader.loadComponent(pc, p, p.getPageSource(), aso.getType(), false);
 				ComponentWrap cw=ComponentWrap.toComponentWrap(config.getComponentDataMemberDefaultAccess(),cfc);
 				
 				Iterator it = aso.entrySet().iterator();

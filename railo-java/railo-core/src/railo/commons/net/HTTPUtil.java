@@ -41,7 +41,9 @@ import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
@@ -726,7 +728,7 @@ public final class HTTPUtil {
 			requestURI=realPath.substring(0,index);
 			queryString=realPath.substring(index+1);
 		}
-		PageSource ps = pc.getRelativePageSource(requestURI);
+		PageSource ps = PageSourceImpl.best(((PageContextImpl)pc).getRelativePageSources(requestURI));
 		requestURI=ps.getFullRealpath();
 		if(queryString!=null) return requestURI+"?"+queryString;
 		return requestURI;
