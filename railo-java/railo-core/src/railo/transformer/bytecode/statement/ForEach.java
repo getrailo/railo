@@ -1,11 +1,15 @@
 package railo.transformer.bytecode.statement;
 
+import java.util.Iterator;
+
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.runtime.op.Caster;
+import railo.runtime.util.ForEachUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -14,6 +18,8 @@ import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableRef;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.visitor.OnFinally;
+import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 
 public final class ForEach extends StatementBase implements FlowControl,HasBody {
 
@@ -29,6 +35,9 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 	private final static Method HAS_NEXT = 		new Method("hasNext",Types.BOOLEAN_VALUE,new Type[]{});
 	private final static Method NEXT = 			new Method("next",Types.OBJECT,new Type[]{});
 	private final static Method SET = 			new Method("set",Types.OBJECT,new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
+	private static final Method TO_ITERATOR = new Method("toIterator",Types.ITERATOR,new Type[]{Types.OBJECT});
+	private static final Type FOR_EACH_UTIL = Type.getType(ForEachUtil.class);
+	protected static final Method RESET = new Method("reset",Types.VOID,new Type[]{Types.ITERATOR});
 
     //private static final Type COLLECTION_UTIL = Type.getType(CollectionUtil.class);
 
@@ -57,45 +66,54 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
-		int it=adapter.newLocal(Types.ITERATOR);
-		int item=adapter.newLocal(Types.REFERENCE);
-
+		final int it=adapter.newLocal(Types.ITERATOR);
+		final int item=adapter.newLocal(Types.REFERENCE);
+		
 		//Value
-			// Caster.toCollection(value)
+			// ForEachUtil.toIterator(value)
 			value.writeOut(bc, Expression.MODE_REF);
-			adapter.invokeStatic(Types.CASTER, TO_COLLECTION);
-			// ...iterator()
-			adapter.invokeInterface(Types.COLLECTION, ITERATOR);
+			adapter.invokeStatic(FOR_EACH_UTIL, TO_ITERATOR);
 			//adapter.invokeStatic(COLLECTION_UTIL, TO_ITERATOR);
 			// Iterator it=...
 			adapter.storeLocal(it);
-		// Key
-			// new VariableReference(...)
-			key.writeOut(bc, Expression.MODE_REF);
-			// VariableReference item=...
-			adapter.storeLocal(item);
-		
-		// while
-			ExpressionUtil.visitLine(bc, getStartLine());
-			adapter.visitLabel(begin);
+			TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
+				
+				@Override
+				public void writeOut(BytecodeContext bc) throws BytecodeException {
+					GeneratorAdapter a = bc.getAdapter();
+					a.loadLocal(it);
+					a.invokeStatic(FOR_EACH_UTIL, RESET);
+				}
+			});
+			tfv.visitTryBegin(bc);
+			// Key
+				// new VariableReference(...)
+				key.writeOut(bc, Expression.MODE_REF);
+				// VariableReference item=...
+				adapter.storeLocal(item);
 			
-			// hasNext
-			adapter.loadLocal(it);
-			adapter.invokeInterface(Types.ITERATOR, HAS_NEXT);
-			adapter.ifZCmp(Opcodes.IFEQ, end);
-			
-			// item.set(pc,it.next());
-			adapter.loadLocal(item);
-			adapter.loadArg(0);
-			adapter.loadLocal(it);
-			adapter.invokeInterface(Types.ITERATOR, NEXT);
-			adapter.invokeInterface(Types.REFERENCE, SET);
-			adapter.pop();
-			
-			// Body
-			body.writeOut(bc);
-			adapter.visitJumpInsn(Opcodes.GOTO, begin);
-			adapter.visitLabel(end);
+			// while
+				ExpressionUtil.visitLine(bc, getStartLine());
+				adapter.visitLabel(begin);
+				
+				// hasNext
+				adapter.loadLocal(it);
+				adapter.invokeInterface(Types.ITERATOR, HAS_NEXT);
+				adapter.ifZCmp(Opcodes.IFEQ, end);
+				
+				// item.set(pc,it.next());
+				adapter.loadLocal(item);
+				adapter.loadArg(0);
+				adapter.loadLocal(it);
+				adapter.invokeInterface(Types.ITERATOR, NEXT);
+				adapter.invokeInterface(Types.REFERENCE, SET);
+				adapter.pop();
+				
+				// Body
+				body.writeOut(bc);
+				adapter.visitJumpInsn(Opcodes.GOTO, begin);
+				adapter.visitLabel(end);
+			tfv.visitTryEnd(bc);
 		
 	}
 /*

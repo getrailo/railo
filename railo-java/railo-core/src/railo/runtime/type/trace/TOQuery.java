@@ -2169,12 +2169,6 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	}
 
 	@Override
-	public boolean go(int index) throws PageException {
-		log(""+index);
-		return qry.go(index);
-	}
-
-	@Override
 	public NClob getNClob(int arg0) throws SQLException {
 		log(""+arg0);
 		return qry.getNClob(arg0);

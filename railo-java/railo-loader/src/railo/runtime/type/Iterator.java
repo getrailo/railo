@@ -61,15 +61,6 @@ public interface Iterator {
 	public int getCurrentrow(int pid);
 
 	/**
-	* set the internal pointer to defined position
-	* @param index
-	* @return	int 
-	* @throws PageException
-	* @deprecated use instead <code>{@link #go(int,int)}</code>
-	*/
-	public boolean go(int index)throws PageException;
-
-	/**
 	*
 	* set the internal pointer to defined position
 	* @param index

@@ -173,12 +173,6 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{Types.STRING});
 
 	// int getCurrentrow()
-	/*OLD static final Method GET_CURRENTROW_0X = new Method(
-			"getCurrentrow",
-			Types.INT_VALUE,
-			new Type[]{});*/
-	
-	// int getCurrentrow()
 	static final Method GET_CURRENTROW_1 = new Method(
 			"getCurrentrow",
 			Types.INT_VALUE,
@@ -210,12 +204,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			Types.VOID,
 			new Type[]{});
 
-	// boolean go(int index)
-	static final Method GO_1 = new Method(
-			"go",
-			Types.BOOLEAN_VALUE,
-			new Type[]{Types.INT_VALUE});
-	static final Method GO_2 = new Method(
+	static final Method GO = new Method(
 			"go",
 			Types.BOOLEAN_VALUE,
 			new Type[]{Types.INT_VALUE,Types.INT_VALUE});
@@ -833,7 +822,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 				adapter.loadArg(0);
 				adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-				adapter.invokeInterface(Types.QUERY, GO_2);
+				adapter.invokeInterface(Types.QUERY, GO);
 				adapter.pop();
 			}
 		});
@@ -853,7 +842,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 						
 						adapter.loadArg(0);
 						adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-						adapter.invokeVirtual(Types.QUERY, GO_2); 
+						adapter.invokeVirtual(Types.QUERY, GO); 
 						
 						/* OLD
 						adapter.invokeInterface(Types.QUERY, GO_1); 
@@ -874,7 +863,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 					
 					adapter.loadArg(0);
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-					adapter.invokeInterface(Types.QUERY, GO_2);
+					adapter.invokeInterface(Types.QUERY, GO);
 					
 					/* OLD
 					adapter.invokeInterface(Types.QUERY, GO_1);

@@ -139,6 +139,7 @@ public final class TagOutput extends TagBase {
 	private int query=-1;
 	//private int queryImpl=-1;
 	private int group=-1;
+	private int pid;
 
 
 
@@ -250,7 +251,7 @@ public final class TagOutput extends TagBase {
 			
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO);
 			
 			/* OLD
 			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
@@ -323,7 +324,7 @@ public final class TagOutput extends TagBase {
 		adapter.loadLocal(current);
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-		adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+		adapter.invokeInterface(Types.QUERY, TagLoop.GO);
 		
 		/* OLD
 		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
@@ -364,7 +365,7 @@ public final class TagOutput extends TagBase {
 			
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO);
 			
 			/*OLD
 			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
@@ -407,6 +408,7 @@ public final class TagOutput extends TagBase {
 		TagOutput parent = TagOutput.getParentTagOutputQuery(this);
 		numberIterator = parent.getNumberIterator();
 		query = parent.getQuery();
+		pid=parent.getPID();
 		//queryImpl = parent.getQueryImpl();
 		
 		//int currentOuter=ni.current();
@@ -432,9 +434,10 @@ public final class TagOutput extends TagBase {
 			adapter.loadLocal(numberIterator);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
 			
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+			adapter.loadLocal(pid);
+			//adapter.loadArg(0);
+			//adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+			adapter.invokeInterface(Types.QUERY, TagLoop.GO);
 			
 			/* OLD
 			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
@@ -469,12 +472,19 @@ public final class TagOutput extends TagBase {
 		
 		adapter.loadLocal(query);
 		adapter.loadLocal(currentOuter);
-		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
+		
+		adapter.loadLocal(pid);
+		//adapter.loadArg(0);
+		//adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+		adapter.invokeInterface(Types.QUERY, TagLoop.GO);
 		adapter.pop();
 		//adapter.pop();
 	}
 
 
+	private int getPID() {
+		return pid;
+	}
 	/**
 	 * write out normal query
 	 * @param adapter
@@ -506,12 +516,13 @@ public final class TagOutput extends TagBase {
 		else
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_QUERY_OBJ);
 		
-		//adapter.dup();
 		adapter.storeLocal(query);
 		
-		//queryImpl = adapter.newLocal(Types.QUERY_IMPL);
-		//adapter.checkCast(Types.QUERY_IMPL);
-		//adapter.storeLocal(queryImpl);
+		
+		pid = adapter.newLocal(Types.INT_VALUE);
+		adapter.loadArg(0);
+		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
+		adapter.storeLocal(pid);
 		
 
 		
@@ -519,8 +530,9 @@ public final class TagOutput extends TagBase {
 		final int startAt=adapter.newLocal(Types.INT_VALUE);
 		adapter.loadLocal(query);
 		
-		adapter.loadArg(0);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
+		adapter.loadLocal(pid);
+		//adapter.loadArg(0);
+		//adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
 		adapter.invokeInterface(Types.QUERY, TagLoop.GET_CURRENTROW_1);
 		
 		/* OLD
@@ -600,22 +612,15 @@ public final class TagOutput extends TagBase {
 			TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
 				public void writeOut(BytecodeContext bc) {
 					// query.reset();
-					/*adapter.loadLocal(queryImpl);
-					adapter.loadArg(0);
-					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-					adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.RESET);*/
 					
 					// query.go(startAt);
 					adapter.loadLocal(query);
 					adapter.loadLocal(startAt);
 					
-					adapter.loadArg(0);
-					adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
-					adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-					
-					/* OLD
-					adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-					*/
+					adapter.loadLocal(pid);
+					//adapter.loadArg(0);
+					//adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
+					adapter.invokeInterface(Types.QUERY, TagLoop.GO);
 					adapter.pop();
 					
 					
@@ -646,9 +651,10 @@ public final class TagOutput extends TagBase {
 					adapter.loadLocal(numberIterator);
 					adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
 					
-					adapter.loadArg(0);
-					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-					adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
+					adapter.loadLocal(pid);
+					//adapter.loadArg(0);
+					//adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
+					adapter.invokeInterface(Types.QUERY, TagLoop.GO);
 					
 					/* OLD
 					adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
