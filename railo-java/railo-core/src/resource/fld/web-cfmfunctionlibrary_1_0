@@ -9409,6 +9409,38 @@ The value determines whether the image is blurred or sharpened:
 			<type>struct</type>
 		</return>
 	</function>
+	
+	<!-- Invoke -->
+	<function>
+		<name>Invoke</name>
+		<class>railo.runtime.functions.dynamicEvaluation.Invoke</class>
+		<description>invokes a function/operation of the given object and if given object is a string, Railo tries to load as component.</description>
+		<argument>
+			<name>object</name>
+			<alias>cfcinstance,obj,value,variable</alias>
+			<type>any</type>
+			<required>Yes</required>
+			<description>a component, struct or scope that holds a function, can also be the name of a component, in this case the component get loaded.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<alias>methodname,method,functionname,function</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>name of the function/operation</description>
+	    </argument>
+		<argument>
+			<name>arguments</name>
+			<alias>args,argumentcollection</alias>
+			<type>any</type>
+			<required>no</required>
+			<description>arguments to pass to the function/operation</description>
+	    </argument>
+		
+		<return>
+			<type>object</type>
+		</return>
+	</function>
 	<!-- IsClosure -->
 	<function>
 		<name>IsClosure</name>
