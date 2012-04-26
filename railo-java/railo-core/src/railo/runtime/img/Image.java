@@ -1545,14 +1545,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return _info().keysAsString();
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {

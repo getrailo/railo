@@ -563,11 +563,11 @@ public final class ComponentUtil {
 		if(member==null) {
 			String strAccess = toStringAccess(access,"");
 			
-			String[] other;
+			Collection.Key[] other;
 			if(c instanceof ComponentAccess)
-				other=((ComponentAccess)c).keysAsString(access);
+				other=((ComponentAccess)c).keys(access);
 			else 
-				other=c.keysAsString();
+				other=c.keys();
 			
 			if(other.length==0)
 				return new ExpressionException(

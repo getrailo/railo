@@ -319,7 +319,7 @@ public final class ScriptConverter {
 	 */
 	private void _serializeQuery(Query query, StringBuffer sb, Set<Object> done) throws ConverterException {
 		
-		String[] keys = query.keysAsString();
+		Collection.Key[] keys = query.keys();
 		sb.append(goIn());
 		sb.append("query(");
 		
@@ -332,7 +332,7 @@ public final class ScriptConverter {
 		    oDoIt=true;
 		    sb.append(goIn());
             sb.append('\'');
-            sb.append(escape(keys[i]));
+            sb.append(escape(keys[i].getString()));
             sb.append('\'');
 			sb.append(":[");
 			boolean doIt=false;

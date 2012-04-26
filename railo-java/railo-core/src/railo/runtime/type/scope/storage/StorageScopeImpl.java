@@ -265,13 +265,6 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return sct.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public railo.runtime.type.Collection.Key[] keys() {

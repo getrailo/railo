@@ -13,6 +13,7 @@ import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.comparator.ExceptionComparator;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
@@ -37,7 +38,7 @@ public final class StructSort implements Function {
 		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
 		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
 		
-		String[] keys = base.keysAsString();
+		Collection.Key[] keys = base.keys();
 		SortRegister[] arr=new SortRegister[keys.length];
 		boolean hasSubDef=pathToSubElement!=null;
 		
@@ -73,7 +74,7 @@ public final class StructSort implements Function {
 		
 		Array rtn=new ArrayImpl();
 		for(int i=0;i<arr.length;i++) {
-		    rtn.append(keys[arr[i].getOldPosition()]);
+		    rtn.append(keys[arr[i].getOldPosition()].getString());
 		}
 		return rtn;
 			

@@ -65,13 +65,6 @@ public final class CollectionStruct extends StructSupport implements ObjectWrap,
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return coll.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {

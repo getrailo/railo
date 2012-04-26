@@ -166,7 +166,7 @@ public class ShineFilter extends AbstractBufferedImageOp  implements DynFilterin
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Brightness, Angle, Softness, Distance, ShadowOnly, Bevel, ShineColor]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keys(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Brightness, Angle, Softness, Distance, ShadowOnly, Bevel, ShineColor]");
 		}
 
 		return filter(src, dst);

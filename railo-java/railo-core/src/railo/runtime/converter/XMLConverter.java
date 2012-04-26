@@ -290,14 +290,13 @@ public final class XMLConverter {
 		 *  </ROWS>
 		 *  </QUERY>
 		*/
-		String[] keys = query.keysAsString();
-		//StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.List.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
+		Collection.Key[] keys = query.keys();
 		StringBuffer sb=new StringBuffer(goIn()+"<QUERY ID=\""+id+"\">");
 		
 		// columns
 		sb.append(goIn()+"<COLUMNNAMES>");
 		for(int i=0;i<keys.length;i++) {
-			sb.append(goIn()+"<COLUMN NAME=\""+keys[i]+"\"></COLUMN>");
+			sb.append(goIn()+"<COLUMN NAME=\""+keys[i].getString()+"\"></COLUMN>");
 		}
 		sb.append(goIn()+"</COLUMNNAMES>");
 		

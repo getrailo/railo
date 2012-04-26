@@ -10,6 +10,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.CollectionUtil;
 
 public class Dialect {
 	private static Struct dialects=new StructImpl();
@@ -126,7 +127,7 @@ public class Dialect {
 	}
 	
 	public static String[] listDialectNames(){
-		return dialects.keysAsString();
+		return CollectionUtil.toStringArray(dialects.keys());
 	}
 	
 	/*public static void main(String[] args) {

@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * Iterator Implementation for a Object Array
@@ -21,6 +22,9 @@ public final class StringIterator implements Iterator<String>,Enumeration<String
 	public StringIterator(String[] arr) {
 		this.arr=arr;
 		this.pos=0;
+	}
+	public StringIterator(Collection.Key[] arr) {
+		this(CollectionUtil.toStringArray(arr));
 	}
 
 	/**

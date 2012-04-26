@@ -264,12 +264,6 @@ public class Excel extends StructSupport implements Cloneable,Struct {
 
 
 	@Override
-	public String[] keysAsString() {
-		return skeys;
-	}
-
-
-	@Override
 	public Object remove(Key key) throws PageException {
 		return null;
 	}
@@ -334,7 +328,7 @@ public class Excel extends StructSupport implements Cloneable,Struct {
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

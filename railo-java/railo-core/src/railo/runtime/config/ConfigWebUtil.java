@@ -21,6 +21,7 @@ import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
 
@@ -143,12 +144,12 @@ public final class ConfigWebUtil {
             
             if(StringUtil.startsWith(str,'{')){
             	Struct constants = ((ConfigImpl)config).getConstants();
-            	String[] arr = constants.keysAsString();
+            	Collection.Key[] arr = constants.keys();
             	for(int i=0;i<arr.length;i++) {
-            		if(StringUtil.startsWithIgnoreCase(str,"{"+arr[i]+"}")) {
+            		if(StringUtil.startsWithIgnoreCase(str,"{"+arr[i].getString()+"}")) {
             			String value=(String) constants.get(arr[i],null);
             			str=config.getResource( value)
-            				.getReal(str.substring(arr[i].length()+2));
+            				.getReal(str.substring(arr[i].getString().length()+2));
                         break;
             			
             		}

@@ -182,13 +182,6 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return sct.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {

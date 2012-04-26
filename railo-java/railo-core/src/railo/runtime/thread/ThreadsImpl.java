@@ -304,25 +304,13 @@ The current status of the thread; one of the following values:
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return new EntryIterator(this,keys());
 	}
-	
-
-	@Override
-	public String[] keysAsString() {
-		Key[] keys = keys();
-		String[] strKeys=new String[keys.length];
-		for(int i=0;i<keys.length;i++) {
-			strKeys[i]=keys[i].getString();
-		}
-		return null;
-	}
-
 
 	/**
 	 * @see railo.runtime.op.Castable#castToBooleanValue()

@@ -291,14 +291,14 @@ public final class WDDXConverter {
 	 */
 	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
-		String[] keys = query.keysAsString();
+		Collection.Key[] keys = query.keys();
 		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.List.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
 		
 	
 		deep++;
 		int len=query.getRecordcount();
 		for(int i=0;i<keys.length;i++) {
-			sb.append(goIn()+"<field name="+_+keys[i]+_+">");
+			sb.append(goIn()+"<field name="+_+keys[i].getString()+_+">");
 				for(int y=1;y<=len;y++) {
 					try {
 						sb.append(_serialize(query.getAt(keys[i],y),done));

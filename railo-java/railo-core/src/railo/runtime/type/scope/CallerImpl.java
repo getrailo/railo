@@ -217,13 +217,6 @@ public final class CallerImpl extends StructSupport implements Caller  {
     }
 
     /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        return variablesScope.keysAsString();
-    }
-
-    /**
      * @see railo.runtime.type.Collection#keys()
      */
     public Collection.Key[] keys() {

@@ -620,8 +620,9 @@ public class KeyConstants {
 	public static final Key _closure=KeyImpl.intern("closure");
 	public static final Key _function=KeyImpl.intern("function");
 	public static final Key _cgi = KeyImpl.intern("cgi");
-	
-	
+	public static final Key _all = KeyImpl.intern("all");
+	public static final Key _tag = KeyImpl.intern("tag");
+
 	
 	
 	private static HashSet<String> _____keys;

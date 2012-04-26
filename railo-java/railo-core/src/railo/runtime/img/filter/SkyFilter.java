@@ -489,7 +489,7 @@ if (y == 100)System.out.println(fg+" "+gf+gradient);
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Stretch, Angle, Operation, Octaves, H, Lacunarity, Gain, Bias, T, FOV, CloudCover, CloudSharpness, Glow, GlowFalloff, Haziness, SunElevation, SunAzimuth, SunColor, CameraElevation, CameraAzimuth, WindSpeed, Time, Scale, Dimensions]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keys(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Stretch, Angle, Operation, Octaves, H, Lacunarity, Gain, Bias, T, FOV, CloudCover, CloudSharpness, Glow, GlowFalloff, Haziness, SunElevation, SunAzimuth, SunColor, CameraElevation, CameraAzimuth, WindSpeed, Time, Scale, Dimensions]");
 		}
 
 		return filter(src, dst);

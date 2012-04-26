@@ -13,6 +13,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 
 /**
@@ -267,7 +268,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      * @see railo.runtime.db.DataSource#getCustomNames()
      */
     public String[] getCustomNames() {
-        return custom.keysAsString();
+        return CollectionUtil.toStringArray(custom.keys());
     }
     
     /**

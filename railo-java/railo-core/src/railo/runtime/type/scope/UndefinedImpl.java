@@ -177,13 +177,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return variable.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public Collection.Key[] keys() {

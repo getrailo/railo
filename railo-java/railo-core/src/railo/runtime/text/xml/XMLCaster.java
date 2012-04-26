@@ -153,12 +153,13 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			String[] keys=coll.keysAsString();
+			Collection.Key[] keys=coll.keys();
 			Attr[] attres=new Attr[keys.length];
+			Collection.Key k;
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				attres[i]=doc.createAttribute(IsNumeric.call(null,key)?"attribute-"+key:key);
-				attres[i].setValue(Caster.toString(coll.get(KeyImpl.init(key),null)));
+				k=keys[i];
+				attres[i]=doc.createAttribute(IsNumeric.call(null,k.getString())?"attribute-"+k.getString():k.getString());
+				attres[i].setValue(Caster.toString(coll.get(k,null)));
 			}
 			return attres;
 		}

@@ -459,10 +459,10 @@ public abstract class SearchEngineSupport implements SearchEngine {
 	 * @throws SearchException
      */
     protected final synchronized void store() throws SearchException {
-        String[] keys=collections.keysAsString();
+        Collection.Key[] keys=collections.keys();
         for(int i=0;i<keys.length;i++) {
-            Element collEl = getCollectionElement(keys[i]);
-            SearchCollection sc = getCollectionByName(keys[i]);
+            Element collEl = getCollectionElement(keys[i].getString());
+            SearchCollection sc = getCollectionByName(keys[i].getString());
             setAttributes(collEl,sc);  
         }
 

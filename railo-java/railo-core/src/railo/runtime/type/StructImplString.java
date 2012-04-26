@@ -192,13 +192,14 @@ public final class StructImplString extends StructImpl implements Struct {
 	}
 	
 	public static void copy(Struct src,Struct trg,boolean deepCopy) {
-		String[] keys=src.keysAsString();
+		Collection.Key[] keys=src.keys();
 		ThreadLocalDuplication.set(src, trg);
 		try {
+			Collection.Key k;
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				if(!deepCopy) trg.setEL(key,src.get(key,null));
-				else trg.setEL(key,Duplicator.duplicate(src.get(key,null),deepCopy));
+				k=keys[i];
+				if(!deepCopy) trg.setEL(k,src.get(k,null));
+				else trg.setEL(k,Duplicator.duplicate(src.get(k,null),deepCopy));
 			}
 		}
 		finally {

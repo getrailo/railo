@@ -73,6 +73,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
@@ -1563,13 +1564,13 @@ public final class ConfigWebAdmin {
 
 
 	private static String toStringURLStyle(Struct sct) {
-        String[] keys = sct.keysAsString();
+        Collection.Key[] keys = sct.keys();
         StringBuffer rtn=new StringBuffer();
         
         for(int i=0;i<keys.length;i++) {
             
 	            if(rtn.length()>0)rtn.append('&');
-	            rtn.append(URLEncoder.encode(keys[i]));
+	            rtn.append(URLEncoder.encode(keys[i].getString()));
 	            rtn.append('=');
 	            rtn.append(URLEncoder.encode(Caster.toString(sct.get(keys[i],null),"")));
         }
@@ -1577,13 +1578,13 @@ public final class ConfigWebAdmin {
     }
 
 	private static String toStringCSSStyle(Struct sct) {
-        String[] keys = sct.keysAsString();
+        Collection.Key[] keys = sct.keys();
         StringBuffer rtn=new StringBuffer();
         
         for(int i=0;i<keys.length;i++) {
             
 	            if(rtn.length()>0)rtn.append(';');
-	            rtn.append(URLEncoder.encode(keys[i]));
+	            rtn.append(URLEncoder.encode(keys[i].getString()));
 	            rtn.append(':');
 	            rtn.append(URLEncoder.encode(Caster.toString(sct.get(keys[i],null),"")));
         }

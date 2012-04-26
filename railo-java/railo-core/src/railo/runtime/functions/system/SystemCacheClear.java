@@ -12,6 +12,9 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.functions.component.ComponentCacheClear;
 import railo.runtime.functions.other.CTCacheClear;
 import railo.runtime.query.QueryCacheSupport;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public final class SystemCacheClear implements Function {
 	
@@ -50,7 +53,14 @@ public final class SystemCacheClear implements Function {
 		}
 		else
 			throw new FunctionException(pc, "cacheClear", 1, "cacheName", 
-					ExceptionUtil.similarKeyMessage(new String[]{"all","template","component","customtag","query","tag","function"}, cacheName, "cache name", "cache names"));
+					ExceptionUtil.similarKeyMessage(new Collection.Key[]{
+							KeyConstants._all,
+							KeyConstants._template,
+							KeyConstants._component,
+							KeyImpl.init("customtag"),
+							KeyConstants._query,
+							KeyConstants._tag,
+							KeyConstants._function}, cacheName, "cache name", "cache names"));
 		
 		
 		return null;

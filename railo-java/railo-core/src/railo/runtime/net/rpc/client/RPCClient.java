@@ -75,6 +75,7 @@ import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ArrayIterator;
 import railo.transformer.bytecode.util.ASMProperty;
@@ -311,15 +312,13 @@ public final class RPCClient implements Objects, Iteratorable{
             
             
             Object arg;
-            String name;
             for(int pos = 0; pos < inNames.size(); pos++) {
                 p = inTypes.get(pos);
-                name=p.getName();
-                arg=namedArguments.get(name,null);
+                arg=namedArguments.get(KeyImpl.init(p.getName()),null);
                 
                 if(arg==null) {
                     throw new RPCException("Invalid arguments for operation " + methodName,
-                            getErrorDetailForArguments(inNames.toArray(new String[inNames.size()]),namedArguments.keysAsString()));
+                            getErrorDetailForArguments(inNames.toArray(new String[inNames.size()]),CollectionUtil.toStringArray(namedArguments.keys())));
                 }
                 inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arg);
             }

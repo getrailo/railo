@@ -20,6 +20,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.CollectionUtil;
 
 
 /**
@@ -254,7 +255,7 @@ public final class JSConverter {
 
 	private void _serializeASQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
 		
-		String[] keys = query.keysAsString();
+		String[] keys = CollectionUtil.toStringArray(query.keys());
 		for(int i=0;i<keys.length;i++) {
 			keys[i] = StringUtil.escapeJS(keys[i]);
 		}

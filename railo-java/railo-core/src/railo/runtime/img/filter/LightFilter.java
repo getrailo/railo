@@ -779,7 +779,7 @@ if ( bumpShape != 0 ) {
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [ColorSource, Material, BumpFunction, BumpHeight, BumpSoftness, BumpShape, ViewDistance, EnvironmentMap, BumpSource, DiffuseColor]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keys(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [ColorSource, Material, BumpFunction, BumpHeight, BumpSoftness, BumpShape, ViewDistance, EnvironmentMap, BumpSource, DiffuseColor]");
 		}
 
 		return filter(src, dst);

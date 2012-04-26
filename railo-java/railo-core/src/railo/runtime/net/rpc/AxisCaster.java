@@ -320,9 +320,9 @@ public final class AxisCaster {
     private static Map toMap(TypeMapping pc,Object value, Class targetClass) throws PageException {
         Struct src = Caster.toStruct(value);
         Map trg=new HashMap();
-        String[] keys = src.keysAsString();
+        Collection.Key[] keys = src.keys();
         for(int i=0;i<keys.length;i++) {
-            trg.put(keys[i],toAxisType(pc,src.get(keys[i],null),targetClass));
+            trg.put(keys[i].getString(),toAxisType(pc,src.get(keys[i],null),targetClass));
         }
         return trg;
         

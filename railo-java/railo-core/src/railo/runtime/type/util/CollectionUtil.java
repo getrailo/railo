@@ -5,6 +5,8 @@ import java.util.Iterator;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.List;
+import railo.runtime.type.Struct;
 
 public class CollectionUtil {
 
@@ -28,5 +30,22 @@ public class CollectionUtil {
 	public static Iterator toIterator(Collection c){
 		return c.iterator();
 	}
+
+	public static String[] toStringArray(Key[] keys) {
+		if(keys==null) return null;
+		String[] arr=new String[keys.length];
+		for(int i=0;i<keys.length;i++){
+			arr[i]=keys[i].getString();
+		}
+		return arr;
+	}
+
+	/*public static String keyList(Collection coll, String delimeter) {
+		return List.arrayToList(coll.keys(),delimeter);
+	}*/
+
+	/*public static String keyList(Collection.Key[] keys, String delimeter) {
+		return List.arrayToList(keys,delimeter);
+	}*/
 
 }

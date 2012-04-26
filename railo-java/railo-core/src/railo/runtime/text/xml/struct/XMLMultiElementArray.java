@@ -264,21 +264,6 @@ public class XMLMultiElementArray extends ArraySupport {
 	}
 
 	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return struct.getInnerArray().keysAsString();
-	}
-
-	/* *
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 * /
-	public Object remove (String key) throws PageException {
-		return struct.remove(key);
-	}*/
-
-	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
@@ -352,7 +337,7 @@ public class XMLMultiElementArray extends ArraySupport {
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

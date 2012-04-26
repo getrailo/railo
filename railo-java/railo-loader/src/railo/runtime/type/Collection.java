@@ -27,12 +27,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	public Collection.Key[] keys();
 	
 	/**
-	 * @return returns a string array of all keys in the collection
-	 * @deprecated use instead <code>{@link #keys()}</code>
-	*/
-	public String[] keysAsString();
-	
-	/**
 	 * removes value from collection and return it when it exists, otherwise throws a exception
 	 * @param key key of the collection
 	 * @return removed Object

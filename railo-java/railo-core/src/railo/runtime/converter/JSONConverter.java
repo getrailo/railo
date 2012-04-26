@@ -380,7 +380,7 @@ public final class JSONConverter {
 	 */
 	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
-		String[] keys = query.keysAsString();
+		Collection.Key[] _keys = query.keys();
 		sb.append(goIn());
 		sb.append("{");
 		
@@ -413,12 +413,12 @@ public final class JSONConverter {
 			sb.append('{');
 			boolean oDoIt=false;
 			int len=query.getRecordcount();
-			for(int i=0;i<keys.length;i++) {
+			for(int i=0;i<_keys.length;i++) {
 			    if(oDoIt)sb.append(',');
 			    oDoIt=true;
 			    sb.append(goIn());
 	            sb.append('"');
-	            sb.append(escape(keys[i]));
+	            sb.append(escape(_keys[i].getString()));
 	            sb.append('"');
 				sb.append(":[");
 				boolean doIt=false;
@@ -426,7 +426,7 @@ public final class JSONConverter {
 					    if(doIt)sb.append(',');
 					    doIt=true;
 					    try {
-							_serialize(pc,test,query.getAt(keys[i],y),sb,serializeQueryByColumns,done);
+							_serialize(pc,test,query.getAt(_keys[i],y),sb,serializeQueryByColumns,done);
 						} catch (PageException e) {
 							_serialize(pc,test,e.getMessage(),sb,serializeQueryByColumns,done);
 						}
@@ -447,11 +447,11 @@ public final class JSONConverter {
 	
 				sb.append("[");
 				boolean doIt=false;
-					for(int col=0;col<keys.length;col++) {
+					for(int col=0;col<_keys.length;col++) {
 					    if(doIt)sb.append(',');
 					    doIt=true;
 					    try {
-							_serialize(pc,test,query.getAt(keys[col],row),sb,serializeQueryByColumns,done);
+							_serialize(pc,test,query.getAt(_keys[col],row),sb,serializeQueryByColumns,done);
 						} catch (PageException e) {
 							_serialize(pc,test,e.getMessage(),sb,serializeQueryByColumns,done);
 						}
