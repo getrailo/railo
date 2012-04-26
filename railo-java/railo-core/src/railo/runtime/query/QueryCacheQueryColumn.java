@@ -16,6 +16,7 @@ import railo.runtime.type.Sizeable;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.QueryUtil;
 
 public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
@@ -343,6 +344,11 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	public Iterator<Collection.Key> keyIterator() {
 		return column.keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return column.keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

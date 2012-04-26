@@ -25,8 +25,11 @@ public interface ComponentAccess extends Component {
 	int size(int access);
 	String[] keysAsString(int access);
 	Collection.Key[] keys(int access);
-	
+
 	Iterator<Collection.Key> keyIterator(int access);
+	Iterator<String> keysAsStringIterator(int access);
+	
+	
 	Iterator<Entry<Key, Object>> entryIterator(int access);
 	
 	Object get(int access, Collection.Key key) throws PageException;

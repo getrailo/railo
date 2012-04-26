@@ -8,6 +8,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 public class Closure extends StructSupport implements Variables {
@@ -158,6 +159,11 @@ public class Closure extends StructSupport implements Variables {
 	public Iterator<Collection.Key> keyIterator() {
 		return var.keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return var.keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

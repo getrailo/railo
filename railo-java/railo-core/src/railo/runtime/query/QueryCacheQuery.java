@@ -37,6 +37,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 
 public class QueryCacheQuery extends QueryImpl {
 
@@ -589,6 +590,11 @@ public class QueryCacheQuery extends QueryImpl {
 	public Iterator<Collection.Key> keyIterator() {
 		return query.keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return query.keysAsStringIterator();
+    }
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

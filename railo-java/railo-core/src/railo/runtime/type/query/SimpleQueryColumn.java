@@ -24,6 +24,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.scope.Undefined;
 
 public class SimpleQueryColumn implements QueryColumn {
@@ -211,6 +212,11 @@ public class SimpleQueryColumn implements QueryColumn {
 	public Iterator<Collection.Key> keyIterator() {
 		throw SimpleQuery.notSupported();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	throw SimpleQuery.notSupported();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

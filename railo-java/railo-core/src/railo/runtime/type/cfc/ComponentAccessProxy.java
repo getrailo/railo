@@ -120,6 +120,10 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 	public Iterator<Collection.Key> keyIterator(int access) {
 		return getComponentAccess().keyIterator(access);
 	}
+	
+	public Iterator<String> keysAsStringIterator(int access) {
+		return getComponentAccess().keysAsStringIterator(access);
+	}
 
 	/**
 	 * @see railo.runtime.type.cfc.ComponentAccess#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties, int)

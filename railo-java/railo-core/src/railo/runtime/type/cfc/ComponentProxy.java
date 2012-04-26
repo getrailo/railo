@@ -21,6 +21,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 
 public abstract class ComponentProxy implements Component {
 	
@@ -254,6 +255,11 @@ public abstract class ComponentProxy implements Component {
 	public Iterator<Collection.Key> keyIterator() {
 		return getComponent().keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return getComponent().keysAsStringIterator();
+    }
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

@@ -8,9 +8,14 @@ import java.util.Iterator;
 public interface Iteratorable {
 
     /**
-     * @return return a Iterator for Keys as String
+     * @return return a Iterator for Keys as Collection.Keys
      */
     public Iterator<Collection.Key> keyIterator();
+    
+    /**
+     * @return return a Iterator for Keys as String
+     */
+    public Iterator<String> keysAsStringIterator();
     
     /**
      *

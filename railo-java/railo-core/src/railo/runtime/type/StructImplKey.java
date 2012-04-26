@@ -21,6 +21,7 @@ import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -217,6 +218,11 @@ public final class StructImplKey extends StructSupport implements Struct {
 	public Iterator<Collection.Key> keyIterator() {
 		return _map.keySet().iterator();
 	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

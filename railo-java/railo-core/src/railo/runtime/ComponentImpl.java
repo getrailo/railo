@@ -76,6 +76,7 @@ import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
@@ -736,26 +737,23 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
 
-    /**
-     * return iterator for keys
-     * @param access
-     * @return iterator of the keys
-     */
-    public Iterator<Collection.Key> keyIterator(int access) {
+    @Override
+	public Iterator<Collection.Key> keyIterator(int access) {
         return keySet(access).iterator();
+    }
+    
+    @Override
+	public Iterator<String> keysAsStringIterator(int access) {
+        return new StringIterator(keysAsString(access));
     }
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator(int access) {
 		return new ComponentAccessEntryIterator(this, keys(access),access);
 	}
-    
-    
-    /**
-     * @param access 
-     * @return keys inside Component
-     */
-    public Collection.Key[] keys(int access) {
+
+	@Override
+	 public Collection.Key[] keys(int access) {
         Set<Key> set = keySet(access);
         return set.toArray(new Collection.Key[set.size()]);
     }
@@ -1867,11 +1865,14 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return get(access,name,null)!=null;
     }
 
-    /**
-     * @see railo.runtime.type.Collection#keyIterator()
-     */
-    public Iterator<Collection.Key> keyIterator() {
+    @Override
+	public Iterator<Collection.Key> keyIterator() {
     	return keyIterator(getAccess(ThreadLocalPageContext.get()));
+    }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return keysAsStringIterator(getAccess(ThreadLocalPageContext.get()));
     }
 	
 	@Override

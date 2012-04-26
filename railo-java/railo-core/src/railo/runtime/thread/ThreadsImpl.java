@@ -25,6 +25,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
@@ -300,6 +301,11 @@ The current status of the thread; one of the following values:
 	public Iterator<Collection.Key> keyIterator() {
 		return new railo.runtime.type.it.KeyIterator(keys());
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

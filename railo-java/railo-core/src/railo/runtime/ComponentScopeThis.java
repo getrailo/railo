@@ -17,6 +17,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
@@ -154,19 +155,19 @@ public final class ComponentScopeThis extends StructSupport implements Component
 		return component.set(key,value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		return component.setEL(key,value);
 	}
 
-    /**
-     * @see railo.runtime.type.Iteratorable#keyIterator()
-     */
-    public Iterator<Collection.Key> keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
         return component.keyIterator(access);
+    }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return component.keysAsStringIterator(access);
     }
 	
 	@Override

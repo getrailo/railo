@@ -29,6 +29,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.util.ArrayIterator;
@@ -745,6 +746,11 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

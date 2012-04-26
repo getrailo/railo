@@ -13,6 +13,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -280,6 +281,11 @@ public final class CallerImpl extends StructSupport implements Caller  {
      */
     public Iterator<Collection.Key> keyIterator() {
         return variablesScope.keyIterator();
+    }
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return variablesScope.keysAsStringIterator();
     }
 	
 	@Override

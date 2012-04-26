@@ -26,6 +26,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructUtil;
 
@@ -353,6 +354,11 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

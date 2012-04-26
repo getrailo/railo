@@ -23,6 +23,7 @@ import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
 
 
@@ -653,6 +654,11 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

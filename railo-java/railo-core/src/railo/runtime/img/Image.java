@@ -101,6 +101,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructSupport;
 
@@ -1607,6 +1608,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Iterator<Collection.Key> keyIterator() {
 		return _info().keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return _info().keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

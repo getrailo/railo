@@ -13,6 +13,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 
 abstract class TOCollection extends TOObjects implements Collection {
 
@@ -41,6 +42,12 @@ abstract class TOCollection extends TOObjects implements Collection {
 		log();
 		return coll.keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	log();
+    	return coll.keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

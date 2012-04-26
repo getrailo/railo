@@ -19,6 +19,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.scope.FormImpl.Item;
 import railo.runtime.type.util.StructSupport;
 
@@ -157,6 +158,11 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 	public Iterator<Collection.Key> keyIterator() {
 		return form.keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return form.keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

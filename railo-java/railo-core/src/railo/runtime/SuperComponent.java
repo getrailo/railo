@@ -25,6 +25,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -409,6 +410,11 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 */
 	public Iterator<Collection.Key> keyIterator() {
 		return comp.keyIterator(getAccess());
+	}
+	
+
+	public Iterator<String> keysAsStringIterator() {
+		return comp.keysAsStringIterator(getAccess());
 	}
 	
 	@Override

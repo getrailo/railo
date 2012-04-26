@@ -20,6 +20,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
@@ -268,6 +269,11 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
      */
     public Iterator<Collection.Key> keyIterator() {
         return component.keyIterator(access);
+    }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return component.keysAsStringIterator(access);
     }
 	
 	@Override

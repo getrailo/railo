@@ -70,8 +70,10 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.ObjectsIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.util.ArrayIterator;
@@ -903,6 +905,13 @@ public final class RPCClient implements Objects, Iteratorable{
         }
         return new KeyIterator(list.toArray(new Collection.Key[list.size()]));
     }
+
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+		return new KeyAsStringIterator(keyIterator());
+	}
+    
+    
 	/**
 	 *
 	 * @see railo.runtime.type.Iteratorable#iterator()

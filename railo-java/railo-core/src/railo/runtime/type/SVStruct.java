@@ -16,6 +16,7 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.util.StructSupport;
 
@@ -123,6 +124,11 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
     @Override
 	public Iterator<Collection.Key> keyIterator() {
         return parent.keyIterator();
+    }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return parent.keysAsStringIterator();
     }
 	
 	@Override

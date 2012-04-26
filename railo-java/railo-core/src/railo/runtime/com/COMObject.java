@@ -14,6 +14,7 @@ import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.KeyAsStringIterator;
 
 import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
@@ -283,12 +284,17 @@ public final class COMObject implements Objects, Iteratorable {
 		return valueIterator();
 	}
 	
-    /**
-     * @see railo.runtime.type.Iteratorable#keyIterator()
-     */
+	@Override
     public Iterator<Collection.Key> keyIterator() {
         return new COMKeyWrapperIterator(this);
     }
+    
+    @Override
+    public Iterator<String> keysAsStringIterator() {
+        return new KeyAsStringIterator(keyIterator());
+    }
+    
+    
 
     /**
      * @see railo.runtime.type.Iteratorable#valueIterator()

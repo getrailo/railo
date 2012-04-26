@@ -24,6 +24,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.QueryStack;
@@ -524,6 +525,11 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Iterator<Collection.Key> keyIterator() {
 		return variable.keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return variable.keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

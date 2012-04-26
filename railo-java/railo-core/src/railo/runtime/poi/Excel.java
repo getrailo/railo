@@ -33,6 +33,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 public class Excel extends StructSupport implements Cloneable,Struct {
@@ -330,6 +331,11 @@ public class Excel extends StructSupport implements Cloneable,Struct {
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys);
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

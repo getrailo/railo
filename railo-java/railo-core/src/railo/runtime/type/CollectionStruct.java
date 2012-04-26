@@ -10,6 +10,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 public final class CollectionStruct extends StructSupport implements ObjectWrap,Struct {
@@ -109,6 +110,11 @@ public final class CollectionStruct extends StructSupport implements ObjectWrap,
 	public Iterator<Collection.Key> keyIterator() {
 		return coll.keyIterator();
 	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return coll.keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

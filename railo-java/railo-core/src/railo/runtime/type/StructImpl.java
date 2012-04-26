@@ -18,6 +18,7 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -225,7 +226,12 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
 	public Iterator<Collection.Key> keyIterator() {
-		return new KeyIterator(keys());
+		return map.keySet().iterator();
+	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+		return new StringIterator(keysAsString());
 	}
 	
 

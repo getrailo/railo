@@ -13,6 +13,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -115,6 +116,11 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	public Iterator<Collection.Key> keyIterator() {
 		return null;
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return null;
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

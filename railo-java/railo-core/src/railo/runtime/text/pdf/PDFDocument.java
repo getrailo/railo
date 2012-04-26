@@ -32,6 +32,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 import com.lowagie.text.pdf.PdfReader;
@@ -164,6 +165,11 @@ public class PDFDocument extends StructSupport implements Struct {
 	public Iterator<Collection.Key> keyIterator() {
 		return getInfo().keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return getInfo().keysAsStringIterator();
+    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

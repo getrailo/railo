@@ -3654,7 +3654,7 @@ public final class Caster {
      */
     public static Iterator toIterator(Object o) throws PageException {
         if(o instanceof Iterator) return (Iterator)o;
-        else if(o instanceof Iteratorable) return ((Iteratorable)o).keyIterator();
+        else if(o instanceof Iteratorable) return ((Iteratorable)o).keysAsStringIterator();
         else if(o instanceof Enumeration) return new IteratorWrapper((Enumeration)o);
         else if(o instanceof JavaObject) {
         	String[] names = ClassUtil.getFieldNames(((JavaObject)o).getClazz());

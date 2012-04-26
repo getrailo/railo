@@ -22,6 +22,7 @@ import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
 import railo.runtime.type.util.ListIteratorImpl;
 
@@ -646,12 +647,15 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		return arr;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {

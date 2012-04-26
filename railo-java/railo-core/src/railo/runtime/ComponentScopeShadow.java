@@ -21,6 +21,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
@@ -137,6 +138,11 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keysAsString());
+    }
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
