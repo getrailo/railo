@@ -138,11 +138,6 @@ public class SimpleQueryColumn implements QueryColumn {
 	}
 
 	
-	public String[] keysAsString() {
-		throw SimpleQuery.notSupported();
-	}
-
-	
 	public Object remove(Key key) throws PageException {
 		throw SimpleQuery.notSupported();
 	}

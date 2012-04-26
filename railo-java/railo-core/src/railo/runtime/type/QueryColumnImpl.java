@@ -104,18 +104,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return size;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-	    String[] k=new String[size()];
-        int len=k.length;
-		for(int i=1;i<=len;i++) {
-			k[i-1]=Caster.toString(i);
-		}
-		return k;
-	}
-
+	@Override
 	public Collection.Key[] keys() {
 		Collection.Key[] k=new Collection.Key[size()];
         int len=k.length;
@@ -749,7 +738,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

@@ -74,22 +74,7 @@ public final class ComponentScopeThis extends StructSupport implements Component
         return component.size(access)+1;
     }
     
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        Set<Key> keySet = component.keySet(access);
-        keySet.add(KeyConstants._this);
-        String[] arr = new String[keySet.size()];
-        Iterator<Key> it = keySet.iterator();
-        
-        int index=0;
-        while(it.hasNext()){
-        	arr[index++]=it.next().getString();
-        }
-        return arr;
-    }
-
+    @Override
     public Collection.Key[] keys() {
     	Set<Key> keySet = component.keySet(access);
         keySet.add(KeyConstants._this);
@@ -103,21 +88,13 @@ public final class ComponentScopeThis extends StructSupport implements Component
         return arr;
     }
     
-    
-    
-
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
-	public Object remove(Collection.Key key) throws PageException {
+    @Override
+    public Object remove(Collection.Key key) throws PageException {
 		return component.remove(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
-	public Object removeEL(Collection.Key key) {
+    @Override
+    public Object removeEL(Collection.Key key) {
 		 return component.removeEL(key);
 	}
 

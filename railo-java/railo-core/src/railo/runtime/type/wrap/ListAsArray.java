@@ -328,18 +328,6 @@ public class ListAsArray implements Array,List,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		int[] intKeys = intKeys();
-		String[] keys = new String[intKeys.length];
-		for(int i=0;i<intKeys.length;i++) {
-			keys[i]=Caster.toString(intKeys[i]);
-		}
-		return keys;
-	}
-
-	/**
 	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
@@ -413,7 +401,7 @@ public class ListAsArray implements Array,List,Sizeable {
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

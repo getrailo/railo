@@ -95,7 +95,7 @@ public final class RequestImpl extends StructSupport implements Request {
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override
@@ -114,20 +114,6 @@ public final class RequestImpl extends StructSupport implements Request {
 				list.add(KeyImpl.getInstance(names.nextElement()));
 			}
 			return list.toArray(new Key[list.size()]);
-		}
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		synchronized (_req) {
-			Enumeration<String> names = _req.getAttributeNames();
-			List<String> list=new ArrayList<String>();
-			while(names.hasMoreElements()){
-				list.add(names.nextElement());
-			}
-			return list.toArray(new String[list.size()]);
 		}
 	}
 

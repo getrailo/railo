@@ -642,28 +642,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	includeOnce.clear();
 	}
 
-	
-	
-	/* *
-	 * called when parent thread end
-	 * /
-	public void unlink() {
-		
-		//print.o(request.keysAsString());
-		// unlink request scope
-		HttpServletRequest org = req.getOriginalRequest();
-		if(org instanceof HttpServletRequestDummy) {
-			((HttpServletRequestDummy)org).setAttributes(new StructImpl());
-		}
-		
-		RequestImpl r = new RequestImpl();
-		r.initialize(this);
-		StructImpl.copy(request,r,false);
-		//print.o(request.keysAsString());
-		//print.o(r.keysAsString());
-		this.request=r;
-	}*/
-
     /**
      * @see railo.runtime.PageContext#write(java.lang.String)
      */

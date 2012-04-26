@@ -320,36 +320,21 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	 */
 	public synchronized Collection.Key[] keys() {
 		
-		ArrayList lst=new ArrayList();
+		ArrayList<Collection.Key> lst=new ArrayList<Collection.Key>();
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
 			count++;
 			if(o!=null) lst.add(KeyImpl.getInstance(count+""));
 		}
-		return (Collection.Key[]) lst.toArray(new Collection.Key[lst.size()]);
-	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public synchronized String[] keysAsString() {
-		
-		ArrayList lst=new ArrayList();
-		int count=0;
-		for(int i=offset;i<offset+size;i++) {
-			Object o=arr[i];
-			count++;
-			if(o!=null) lst.add(count+"");
-		}
-		return (String[]) lst.toArray(new String[lst.size()]);
+		return lst.toArray(new Collection.Key[lst.size()]);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Array#intKeys()
 	 */
 	public synchronized int[] intKeys() {
-		ArrayList lst=new ArrayList();		
+		ArrayList<Integer> lst=new ArrayList<Integer>();		
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
@@ -360,7 +345,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		int[] ints=new int[lst.size()];
 		
 		for(int i=0;i<ints.length;i++){
-			ints[i]=((Integer)lst.get(i)).intValue();
+			ints[i]=lst.get(i).intValue();
 		}
 		return ints;
 	}
@@ -630,13 +615,14 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	
 	protected Collection duplicate(ArrayImpl arr,boolean deepCopy) {
 		arr.dimension=dimension;
-		String[] keys=this.keysAsString();
+		Collection.Key[] keys=this.keys();
 		ThreadLocalDuplication.set(this, arr);
+		Collection.Key k;
 		try {
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				if(deepCopy)arr.set(key,Duplicator.duplicate(this.get(key,null),deepCopy));
-				else arr.set(key,this.get(key,null));
+				k=keys[i];
+				if(deepCopy)arr.set(k,Duplicator.duplicate(this.get(k,null),deepCopy));
+				else arr.set(k,this.get(k,null));
 			}
 		}
 		catch (ExpressionException e) {}
@@ -654,7 +640,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 
 	@Override

@@ -691,35 +691,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return QueryUtil.toStringArray(columnNames);
-	}
-
-	/* *
-	 * @see railo.runtime.type.Collection#removeEL(java.lang.String)
-	 * /
-	public synchronized Object removeEL (String key) {
-		return setEL(key,null);
-	}*/
-
-	/**
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
 	 */
 	public Object removeEL(Collection.Key key) {
 		return setEL(key,null);
 	}
 
-	/* *
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 * /
-	public synchronized Object remove (String key) throws PageException {
-		return set(key,null);
-	}*/
-
-	
-	
 	/**
 	 * @throws PageException 
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
@@ -1453,7 +1430,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		String[] keys=keysAsString();
+		Collection.Key[] keys=keys();
 		
 		StringBuffer sb=new StringBuffer();
 
@@ -1481,7 +1458,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	
 	// Header
 		for(int i=0;i<keys.length;i++) {
-			sb.append(getToStringField(keys[i]));
+			sb.append(getToStringField(keys[i].getString()));
 		}
 		sb.append("|\n");
 		sb.append(trenner);
@@ -1638,9 +1615,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
      * @see com.allaire.cfx.Query#getColumnIndex(java.lang.String)
      */
     public int getColumnIndex(String coulmnName) {
-        String[] keys = keysAsString();
+        Collection.Key[] keys = keys();
 		for(int i=0;i<keys.length;i++) {
-			if(keys[i].equalsIgnoreCase(coulmnName)) return i+1;
+			if(keys[i].getString().equalsIgnoreCase(coulmnName)) return i+1;
 		}
 		return -1;
     }
@@ -1706,17 +1683,14 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see railo.runtime.type.Query#getColumnNamesAsString()
 	 */
 	public String[] getColumnNamesAsString() {
-		String[] keys = keysAsString();
-		String[] rtn=new String[keys.length];
-		System.arraycopy(keys,0,rtn,0,keys.length);
-		return rtn;
+		return CollectionUtil.toStringArray(keys());
 	}
 
     /**
      * @see com.allaire.cfx.Query#getData(int, int)
      */
     public String getData(int row, int col) throws IndexOutOfBoundsException {
-        String[] keys = keysAsString();
+        Collection.Key[] keys = keys();
 		if(col<1 || col>keys.length) {
 			new IndexOutOfBoundsException("invalid column index to retrieve Data from query, valid index goes from 1 to "+keys.length);
 		}
@@ -1751,7 +1725,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
      * @see com.allaire.cfx.Query#setData(int, int, java.lang.String)
      */
     public void setData(int row, int col, String value) throws IndexOutOfBoundsException {
-        String[] keys = keysAsString();
+        Collection.Key[] keys = keys();
 		if(col<1 || col>keys.length) {
 			new IndexOutOfBoundsException("invalid column index to retrieve Data from query, valid index goes from 1 to "+keys.length);
 		}
@@ -3195,7 +3169,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

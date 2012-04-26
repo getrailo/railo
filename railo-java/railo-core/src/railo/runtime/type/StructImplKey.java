@@ -110,28 +110,6 @@ public final class StructImplKey extends StructSupport implements Struct {
 		}
 		return keys;
 	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		Iterator<Key> it = keyIterator();
-		String[] keys = new String[size()];
-		int count=0;
-		while(it.hasNext()) {
-			keys[count++]=it.next().getString();
-		}
-		return keys;
-	}
-
-	/* *
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 * /
-	public Object remove (String key) throws PageException {
-		Object obj= _map.remove (StringUtil.toLowerCase(key));
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
-		return obj;
-	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
@@ -221,7 +199,7 @@ public final class StructImplKey extends StructSupport implements Struct {
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

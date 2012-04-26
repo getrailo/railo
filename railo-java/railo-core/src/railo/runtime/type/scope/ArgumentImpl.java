@@ -255,14 +255,14 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		
 		// remove all upper
 			LinkedHashMap lhm = new LinkedHashMap();
-			String[] keys=keysAsString();
+			Collection.Key[] keys=keys();
 			
-			String k;
+			Collection.Key k;
 			for(int i=1;i<=keys.length;i++) {
 				if(i<index)continue;
 				k=keys[i-1];
-				lhm.put(k,get(k,null));
-				removeEL(KeyImpl.getInstance(k));
+				lhm.put(k.getString(),get(k,null));
+				removeEL(k);
 			}
 		
 		// set new value

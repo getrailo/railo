@@ -432,14 +432,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 
 	/**
 	 *
-	 * @see railo.runtime.ComponentImpl#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return comp.keysAsString(getAccess());
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.ComponentImpl#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {

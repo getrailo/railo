@@ -38,12 +38,6 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	public int size() {
 		return 0;
 	}
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return null;
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#keys()

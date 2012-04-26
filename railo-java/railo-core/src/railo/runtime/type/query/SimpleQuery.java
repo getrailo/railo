@@ -223,23 +223,6 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	public Key[] keys() {
 		return columnNames;
 	}
-	
-	
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#keysAsString()
-	 */
-	
-	public String[] keysAsString() {
-		return QueryUtil.toStringArray(keys());
-	}
-
-	/* *
-	 * @see railo.runtime.type.QueryImpl#removeEL(java.lang.String)
-	 * /
-	public synchronized Object removeEL(String key) {
-		throw notSupported();
-	}*/
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeEL(railo.runtime.type.Collection.Key)
@@ -2337,7 +2320,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

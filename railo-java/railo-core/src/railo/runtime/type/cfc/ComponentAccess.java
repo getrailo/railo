@@ -23,7 +23,6 @@ public interface ComponentAccess extends Component {
 	Object call(PageContext pc, int access, Collection.Key name, Object[] args) throws PageException;
 	Object callWithNamedValues(PageContext pc, int access, Collection.Key name, Struct args) throws PageException;
 	int size(int access);
-	String[] keysAsString(int access);
 	Collection.Key[] keys(int access);
 
 	Iterator<Collection.Key> keyIterator(int access);

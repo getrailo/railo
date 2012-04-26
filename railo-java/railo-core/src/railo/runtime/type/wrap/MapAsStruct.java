@@ -54,20 +54,6 @@ public  class MapAsStruct extends StructSupport implements Struct {
        return map.size();
     }
 
-
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public synchronized String[] keysAsString() {
-        int len=size();
-        String[] k=new String[len];
-        Iterator it = map.keySet().iterator();
-        int count=0;
-        while(it.hasNext()) {
-            k[count++]=it.next().toString();
-        }
-        return k;
-    }
     /**
      * @see railo.runtime.type.Collection#keys()
      */
@@ -180,7 +166,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
 
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-		return new StringIterator(keysAsString());
+		return new StringIterator(keys());
 	}
 	
 	@Override

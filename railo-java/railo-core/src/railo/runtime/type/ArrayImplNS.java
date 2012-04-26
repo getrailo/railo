@@ -22,6 +22,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
@@ -316,36 +317,21 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	 */
 	public Collection.Key[] keys() {
 		
-		ArrayList lst=new ArrayList();
+		ArrayList<Collection.Key> lst=new ArrayList<Collection.Key>();
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
 			count++;
 			if(o!=null) lst.add(KeyImpl.getInstance(count+""));
 		}
-		return (Collection.Key[]) lst.toArray(new Collection.Key[lst.size()]);
-	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		
-		ArrayList lst=new ArrayList();
-		int count=0;
-		for(int i=offset;i<offset+size;i++) {
-			Object o=arr[i];
-			count++;
-			if(o!=null) lst.add(count+"");
-		}
-		return (String[]) lst.toArray(new String[lst.size()]);
+		return  lst.toArray(new Collection.Key[lst.size()]);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Array#intKeys()
 	 */
 	public int[] intKeys() {
-		ArrayList lst=new ArrayList();		
+		ArrayList<Integer> lst=new ArrayList<Integer>();		
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
@@ -356,7 +342,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		int[] ints=new int[lst.size()];
 		
 		for(int i=0;i<ints.length;i++){
-			ints[i]=((Integer)lst.get(i)).intValue();
+			ints[i]=lst.get(i).intValue();
 		}
 		return ints;
 	}
@@ -633,13 +619,14 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	public Collection duplicate(boolean deepCopy) {
 		ArrayImplNS arr=new ArrayImplNS();
 		arr.dimension=dimension;
-		String[] keys=this.keysAsString();
+		Collection.Key[] keys=this.keys();
 		
 		ThreadLocalDuplication.set(this, arr);
 		try {
+			Collection.Key k;
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				arr.set(key,Duplicator.duplicate(this.get(key,null),deepCopy));
+				k=keys[i];
+				arr.set(k,Duplicator.duplicate(this.get(k,null),deepCopy));
 			}
 		} 
 		catch (ExpressionException e) {}
@@ -657,7 +644,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

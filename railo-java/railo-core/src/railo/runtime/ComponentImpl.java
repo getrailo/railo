@@ -534,10 +534,14 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	}
         	else if(_namedArgs!=null) {
         		UDFImpl.argumentCollection(_namedArgs, new FunctionArgument[]{});
-        		Key[] keys = _namedArgs.keys();
-        		for(int i=0;i<keys.length;i++) {
-        			args.setEL(keys[i],_namedArgs.get(keys[i],null));
+        		
+        		Iterator<Entry<Key, Object>> it = _namedArgs.entryIterator();
+        		Entry<Key, Object> e;
+        		while(it.hasNext()){
+        			e = it.next();
+        			args.setEL(e.getKey(),e.getValue());
         		}
+        		
         	}
         	
         	//Struct newArgs=new StructImpl(StructImpl.TYPE_SYNC);
@@ -744,7 +748,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     
     @Override
 	public Iterator<String> keysAsStringIterator(int access) {
-        return new StringIterator(keysAsString(access));
+        return new StringIterator(keys(access));
     }
 
 	@Override
@@ -757,31 +761,15 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         Set<Key> set = keySet(access);
         return set.toArray(new Collection.Key[set.size()]);
     }
-
-    /**
-     * @param access
-     * @return
-     */
-    public String[] keysAsString(int access) {
-    	Collection.Key[] keys = keys(access);
-    	String[] strKeys = new String[keys.length];
-    	for(int i=0;i<keys.length;i++) {
-    		strKeys[i]=keys[i].getString();
-    	}
-        return strKeys;
-    }
 	
-	/**
-	 * clear all member
-	 */
+	@Override
 	public void clear() {
 		_data.clear();
 		_udfs.clear();
 	}
-	
 
-
-    public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
+	@Override
+	public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
         if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyImpl.SUPER)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this)._base());
@@ -1879,13 +1867,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return entryIterator(getAccess(ThreadLocalPageContext.get()));
 	}
-    
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-   	return keysAsString(getAccess(ThreadLocalPageContext.get()));
-   }
 
     public Collection.Key[] keys() {
     	return keys(getAccess(ThreadLocalPageContext.get()));

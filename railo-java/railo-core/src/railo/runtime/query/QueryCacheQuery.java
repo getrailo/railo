@@ -609,13 +609,6 @@ public class QueryCacheQuery extends QueryImpl {
 	}
 
 	/**
-	 * @see railo.runtime.type.QueryImpl#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return query.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.QueryImpl#next()
 	 */
 	public boolean next() {

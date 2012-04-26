@@ -121,7 +121,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
     void setFieldNames() {
     	if(size()>0) {
-    		setEL(KeyImpl.FIELD_NAMES,List.arrayToList(keysAsString(), ","));
+    		setEL(KeyImpl.FIELD_NAMES,List.arrayToList(keys(), ","));
         }
     }
 

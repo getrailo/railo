@@ -81,13 +81,6 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 	}
 
 	/**
-	 * @see railo.runtime.type.cfc.ComponentAccess#keysAsString(int)
-	 */
-	public String[] keysAsString(int access) {
-		return getComponentAccess().keysAsString(access);
-	}
-
-	/**
 	 * @see railo.runtime.type.cfc.ComponentAccess#keys(int)
 	 */
 	public Key[] keys(int access) {

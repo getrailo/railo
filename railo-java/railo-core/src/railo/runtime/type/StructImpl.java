@@ -129,38 +129,6 @@ public class StructImpl extends StructSupport {
 		}
 	}
 
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		try	{
-			//if(true)throw new RuntimeException("");
-			String[] keys = new String[size()];
-			Iterator<Key> it = map.keySet().iterator();
-			int count=0;
-			while(it.hasNext() && keys.length>count) {
-				keys[count++]=Caster.toString(it.next(), "");
-			}
-			return keys;
-		}
-		catch(Throwable t) {
-			Map<Key, Object> old = map;
-			try{	
-				map=Collections.synchronizedMap(map);
-				Object[] arr = map.keySet().toArray();
-				String[] keys = new String[arr.length];
-				for(int i=0;i<arr.length;i++){
-					keys[i]=Caster.toString(arr[i], "");
-				}	
-				return keys;
-			}
-			finally {
-				map=old;
-			}
-		}
-	}
-
 	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
 	 * /
@@ -231,7 +199,7 @@ public class StructImpl extends StructSupport {
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-		return new StringIterator(keysAsString());
+		return new StringIterator(keys());
 	}
 	
 

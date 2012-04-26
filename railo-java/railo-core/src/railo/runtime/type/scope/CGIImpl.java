@@ -138,12 +138,6 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	public int size() {
 		return keys.length;
 	}
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return keys;
-	}
 
 	public Collection.Key[] keys() {
 		return StructUtil.toCollectionKeys(keys);
@@ -302,7 +296,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

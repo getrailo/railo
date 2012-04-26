@@ -266,7 +266,6 @@ public final class VariableUtilImpl implements VariableUtil {
 			}
 			
 			throw new ExpressionException("Key ["+key.getString()+"] doesn't exist in Map ("+((Map)coll).getClass().getName()+")",detail);
-					//,"keys are ["+railo.runtime.type.List.arrayToList(MapAsStruct.toStruct((Map)coll, true).keysAsString(),",")+"]");
 		} 
 		// List
 		else if(coll instanceof List) {

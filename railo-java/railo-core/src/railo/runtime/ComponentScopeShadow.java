@@ -141,26 +141,12 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return new EntryIterator(this, keys());
-	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		String[] keys=new String[shadow.size()+1];
-		Iterator<Key> it = shadow.keySet().iterator();
-		int index=0;
-		while(it.hasNext()) {
-			keys[index++]=it.next().getString();
-		}
-		keys[index]=KeyImpl.THIS_UC.getString();
-		return keys;
 	}
 
 	/**
@@ -220,7 +206,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#size()
 	 */
 	public int size() {
-		return keysAsString().length;
+		return keys().length;
 	}
 
 	/**

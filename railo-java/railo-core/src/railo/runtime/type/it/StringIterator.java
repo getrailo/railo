@@ -12,19 +12,16 @@ import railo.runtime.type.util.CollectionUtil;
  */
 public final class StringIterator implements Iterator<String>,Enumeration<String> {
 	
-	private String[] arr;
+	private Collection.Key[] arr;
 	private int pos;
 
 	/**
 	 * constructor for the class
 	 * @param arr Base Array
 	 */
-	public StringIterator(String[] arr) {
+	public StringIterator(Collection.Key[] arr) {
 		this.arr=arr;
 		this.pos=0;
-	}
-	public StringIterator(Collection.Key[] arr) {
-		this(CollectionUtil.toStringArray(arr));
 	}
 
 	/**
@@ -45,9 +42,9 @@ public final class StringIterator implements Iterator<String>,Enumeration<String
 	 * @see java.util.Iterator#next()
 	 */
 	public String next() {
-		String key = arr[pos++];
+		Collection.Key key = arr[pos++];
 		if(key==null) return null;
-		return key;
+		return key.getString();
 	}
 
 	public boolean hasMoreElements() {

@@ -325,15 +325,6 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		return count;
 	}
 
-	public String[] keysAsString() {
-		NodeList elements=XMLUtil.getChildNodes(node,Node.ELEMENT_NODE,false,null);// TODO ist das false hier OK?
-		String[] arr=new String[elements.getLength()];
-		for(int i=0;i<arr.length;i++) {
-			arr[i]=elements.item(i).getNodeName();
-		}
-		return arr;
-	}
-
 	public Collection.Key[] keys() {
 		NodeList elements=XMLUtil.getChildNodes(node,Node.ELEMENT_NODE,false,null);// TODO ist das false hie ok
 		Collection.Key[] arr=new Collection.Key[elements.getLength()];
@@ -377,7 +368,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

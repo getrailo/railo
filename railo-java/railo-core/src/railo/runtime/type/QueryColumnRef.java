@@ -153,17 +153,7 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
         return query.size();
     }
 
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        String[] k=new String[size()];
-        for(int i=1;i<=k.length;i++) {
-            k[i-1]=Caster.toString(i);
-        }
-        return k;
-    }
-    
+    @Override
     public Collection.Key[] keys() {
     	Collection.Key[] k=new Collection.Key[size()];
         for(int i=1;i<=k.length;i++) {
@@ -258,7 +248,7 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     
 	@Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

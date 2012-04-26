@@ -180,19 +180,12 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public Key[] keys() {
-		String[] strKeys = keysAsString();
+		String[] strKeys = Reflector.getPropertyKeys(jo.getClazz());
 		Key[] keys=new Key[strKeys.length];
 		for(int i=0;i<strKeys.length;i++) {
 			keys[i]=KeyImpl.init(strKeys[i]);
 		}
 		return keys;
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return Reflector.getPropertyKeys(jo.getClazz());
 	}
 
 	/**
@@ -227,7 +220,7 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	 * @see railo.runtime.type.Collection#size()
 	 */
 	public int size() {
-		return keysAsString().length;
+		return keys().length;
 	}
 
 	/**
@@ -246,7 +239,7 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

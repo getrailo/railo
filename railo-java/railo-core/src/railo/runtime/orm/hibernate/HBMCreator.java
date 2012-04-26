@@ -816,7 +816,7 @@ public class HBMCreator {
 			if(info==null) {
 				String msg="table ["+tableName+"] has no column with name ["+columnName+"]";
 				if(columnsInfo!=null)
-					msg+=", column names are ["+List.arrayToList(columnsInfo.keysAsString(), ", ")+"]";
+					msg+=", column names are ["+List.arrayToList(columnsInfo.keys(), ", ")+"]";
 				ORMUtil.printError(msg, engine);
 				
 				//throw new ORMException(msg);

@@ -313,21 +313,6 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return list.toArray(new Key[list.size()]);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#keysAsString()
-	 */
-	public String[] keysAsString() {
-		Key[] keys = keys();
-		String[] strKeys=new String[keys.length];
-		for(int i=0;i<keys.length;i++){
-			strKeys[i]=keys[i].getString();
-		}
-		return strKeys;
-	}
-
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.StructImpl#remove(railo.runtime.type.Collection.Key)
-	 */
 	@Override
 	public Object remove(Key key) throws PageException {
 		Object curr = super.get(key,null);
@@ -357,7 +342,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 
 	@Override
@@ -459,7 +444,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Object get(Key key) throws PageException {
 		Object res = get(key,NULL);
 		if(res!=NULL) return res;
-		throw StructImpl.invalidKey(keysAsString(), key);
+		throw StructImpl.invalidKey(keys(), key);
 	}
 	public Object get(PageContext pc, String key, Object defaultValue) {
 		return get(key,defaultValue);

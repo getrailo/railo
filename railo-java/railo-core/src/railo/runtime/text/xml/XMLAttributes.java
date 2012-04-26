@@ -71,19 +71,20 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		String[] keys=keysAsString();
+		Collection.Key[] keys=keys();
 		maxlevel--;
 		DumpTable table = new DumpTable("xml","#999966","#cccc99","#000000");
 		table.setTitle("Struct (XML Attributes)");
 
 		int maxkeys=dp.getMaxKeys();
 		int index=0;
+		Collection.Key k;
 		for(int i=0;i<keys.length;i++) {
-			String key=keys[i];
+			k=keys[i];
 			
-			if(DumpUtil.keyValid(dp,maxlevel, key)){
+			if(DumpUtil.keyValid(dp,maxlevel, k)){
 				if(maxkeys<=index++)break;
-				table.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
+				table.appendRow(1,new SimpleDumpData(k.getString()),DumpUtil.toDumpData(get(k.getString(),null), pageContext,maxlevel,dp));
 			}
 		}
 		return table;
@@ -96,21 +97,6 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	public int size() {
 		return nodeMap.getLength();
 	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		int len=nodeMap.getLength();
-		ArrayList list = new ArrayList();
-		for(int i=0;i<len;i++) {
-			Node item = nodeMap.item(i);
-			if(item instanceof Attr)
-				list.add(((Attr)item).getName());
-		}
-		return (String[]) list.toArray(new String[list.size()]);
-	}
 	
 	/**
 	 *
@@ -118,34 +104,14 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	 */
 	public Collection.Key[] keys() {
 		int len=nodeMap.getLength();
-		ArrayList list = new ArrayList();
+		ArrayList<Collection.Key> list =new ArrayList<Collection.Key>();
 		for(int i=0;i<len;i++) {
 			Node item = nodeMap.item(i);
 			if(item instanceof Attr)
 				list.add(KeyImpl.init(((Attr)item).getName()));
 		}
-		return (Collection.Key[]) list.toArray(new Collection.Key[list.size()]);
+		return list.toArray(new Collection.Key[list.size()]);
 	}
-
-    /* *
-     * @throws ExpressionException
-     * @see railo.runtime.type.Struct#remove(java.lang.String)
-     * /
-    public Object remove (String key) throws ExpressionException {
-    	Node rtn=null;
-		if(!caseSensitive){
-			int len = nodeMap.getLength();
-			String nn;
-			for(int i=len-1;i>=0;i--) {
-				nn=nodeMap.item(i).getNodeName();
-				if(key.equalsIgnoreCase(nn)) rtn=nodeMap.removeNamedItem(nn);
-			}
-		}
-		else rtn=nodeMap.removeNamedItem(toName(key));
-		
-		if(rtn!=null) return rtn.getNodeValue();
-		throw new ExpressionException("can't remove element with name ["+key+"], element doesn't exist");
-    }*/
     
 	/**
 	 *
@@ -200,9 +166,9 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	 * @see railo.runtime.type.Collection#clear()
 	 */
 	public void clear() {
-		String[] keys=keysAsString();
+		Collection.Key[] keys=keys();
 		for(int i=0;i<keys.length;i++) {
-			nodeMap.removeNamedItem(keys[i]);
+			nodeMap.removeNamedItem(keys[i].getString());
 		}
 	}
 
@@ -295,7 +261,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override
@@ -367,10 +333,11 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		XMLAttributes sct=new XMLAttributes(owner,nodeMap,caseSensitive);
 		ThreadLocalDuplication.set(this, sct);
 		try{
-			String[] keys=keysAsString();
+			Collection.Key[] keys=keys();
+			Collection.Key k;
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				sct.setEL(key,Duplicator.duplicate(get(key,null),deepCopy));
+				k=keys[i];
+				sct.setEL(k,Duplicator.duplicate(get(k,null),deepCopy));
 			}
 		}
 		finally {

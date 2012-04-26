@@ -195,13 +195,6 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
     }
 
     /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        return component.keysAsString(access);
-    }
-
-    /**
      * @see railo.runtime.type.Collection#keys()
      */
     public Collection.Key[] keys() {

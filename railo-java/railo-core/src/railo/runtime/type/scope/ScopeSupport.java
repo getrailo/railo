@@ -99,7 +99,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 	 * @see railo.runtime.type.StructImpl#invalidKey(java.lang.String)
 	 */
 	protected ExpressionException invalidKey(String key) {
-		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+List.arrayToList(keysAsString(), ",")+")");
+		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+List.arrayToList(keys(), ",")+")");
 	}
 
     /**

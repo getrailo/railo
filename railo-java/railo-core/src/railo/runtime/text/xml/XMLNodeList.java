@@ -22,6 +22,7 @@ import railo.runtime.text.xml.struct.XMLObject;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
@@ -83,22 +84,13 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return getLength();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		String[] keys=new String[getLength()];
+	@Override
+	public Collection.Key[] keys() {
+		Collection.Key[] keys=new Collection.Key[getLength()];
 		for(int i=1;i<=keys.length;i++) {
-			keys[i-1]=i+"";
+			keys[i-1]=KeyImpl.init(i+"");
 		}
 		return keys;
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
-	public Collection.Key[] keys() {
-		return StructUtil.toCollectionKeys(keysAsString());
 	}
 	
 	/**
@@ -293,7 +285,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
     
     @Override
 	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keysAsString());
+    	return new StringIterator(keys());
     }
 	
 	@Override

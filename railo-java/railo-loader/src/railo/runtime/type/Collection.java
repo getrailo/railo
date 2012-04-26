@@ -23,6 +23,7 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 
 	/**
 	 * @return returns a string array of all keys in the collection
+	 * @deprecated use instead <code>keyIterator()</code>
 	 */
 	public Collection.Key[] keys();
 	

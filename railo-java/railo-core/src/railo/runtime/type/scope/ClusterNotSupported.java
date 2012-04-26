@@ -30,12 +30,6 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	public int size() {
 		return 0;
 	}
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return null;
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#keys()

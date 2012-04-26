@@ -129,7 +129,7 @@ public final class ComponentUtil {
     	java.util.List _keys=new ArrayList();
     
         // remote methods
-        String[] keys = component.keysAsString(Component.ACCESS_REMOTE);
+        Collection.Key[] keys = component.keys(Component.ACCESS_REMOTE);
         int max;
         for(int i=0;i<keys.length;i++){
         	max=-1;
