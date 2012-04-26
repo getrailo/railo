@@ -1,6 +1,7 @@
 package railo.runtime.type.trace;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.debug.Debugger;
@@ -9,7 +10,9 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 
 abstract class TOCollection extends TOObjects implements Collection {
 
@@ -34,9 +37,15 @@ abstract class TOCollection extends TOObjects implements Collection {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		log();
 		return coll.keyIterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		log();
+		return coll.entryIterator();
 	}
 
 	/**

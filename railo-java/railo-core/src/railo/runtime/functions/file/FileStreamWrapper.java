@@ -3,6 +3,7 @@ package railo.runtime.functions.file;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -16,8 +17,10 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.StructSupport;
 
 public abstract class FileStreamWrapper extends StructSupport implements Struct {
@@ -221,8 +224,13 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return info().keyIterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return info().entryIterator();
 	}
 
 	/**

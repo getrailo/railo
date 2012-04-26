@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -15,7 +16,9 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
 
@@ -236,8 +239,13 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 
 	/**

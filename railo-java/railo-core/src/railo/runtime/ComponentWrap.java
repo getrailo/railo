@@ -2,20 +2,24 @@ package railo.runtime;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.component.Member;
 import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
@@ -262,9 +266,14 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
     /**
      * @see railo.runtime.type.Iteratorable#keyIterator()
      */
-    public Iterator keyIterator() {
-        return component.iterator(access);
+    public Iterator<Collection.Key> keyIterator() {
+        return component.keyIterator(access);
     }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return component.entryIterator(access);
+	}
     
 	/**
 	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)

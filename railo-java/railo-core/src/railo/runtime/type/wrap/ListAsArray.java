@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 
 import org.apache.poi.ss.formula.functions.T;
 
@@ -22,9 +23,11 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.ArrayUtil;
 
@@ -402,11 +405,14 @@ public class ListAsArray implements Array,List,Sizeable {
 		return list.iterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 
 	/**

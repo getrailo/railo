@@ -1,6 +1,8 @@
 package railo.runtime.type;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.PageException;
@@ -145,6 +147,9 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
      */
     public boolean containsKey(Collection.Key key);
     
+
+    public Iterator<Entry<Key, Object>> entryIterator();
+    
     interface Key extends Serializable {
 
     	/**
@@ -195,6 +200,7 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
     	 * @return return id for this key, this key is unique for the system but ignore case of input
     	 */
     	public int getId();
-    	
+
+        
     }
 }

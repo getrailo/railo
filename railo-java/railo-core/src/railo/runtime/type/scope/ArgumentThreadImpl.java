@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -16,7 +17,9 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.StructUtil;
 
 public final class ArgumentThreadImpl implements Argument,Sizeable {
@@ -250,8 +253,13 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return sct.keyIterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return sct.entryIterator();
 	}
 
 	/**

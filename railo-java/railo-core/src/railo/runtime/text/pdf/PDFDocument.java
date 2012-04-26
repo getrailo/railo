@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.pdfbox.exceptions.CryptographyException;
 import org.pdfbox.exceptions.InvalidPasswordException;
@@ -28,7 +29,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.StructSupport;
 
 import com.lowagie.text.pdf.PdfReader;
@@ -158,8 +161,13 @@ public class PDFDocument extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return getInfo().keyIterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return getInfo().entryIterator();
 	}
 
 	/**

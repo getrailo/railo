@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -22,6 +23,8 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructUtil;
@@ -346,11 +349,14 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return super.remove(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 
 	/**

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
@@ -15,6 +16,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
 
@@ -103,14 +105,7 @@ public class StructImpl extends StructSupport {
 	
 	public Collection.Key[] keys() {
 		try	{
-			//Collection.Key[] keys = new Collection.Key[size()];
 			return map.keySet().toArray(new Key[map.size()]);
-			/*Iterator<Key> it = map.keySet().iterator();
-			int count=0;
-			while(it.hasNext() && keys.length>count) {
-				keys[count++]=KeyImpl.toKey(it.next(), null);
-			}
-			return keys;*/
 		}
 		catch(Throwable t) {
 			Map<Key, Object> old = map;
@@ -231,6 +226,11 @@ public class StructImpl extends StructSupport {
 	 */
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+	
+
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return this.map.entrySet().iterator();
 	}
 	
 	/**

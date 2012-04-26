@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -68,9 +69,13 @@ import railo.runtime.type.UDFGSProperty;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.type.cfc.ComponentAccessEntryIterator;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
@@ -729,17 +734,22 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         }
         return members;
     }
-    
-    
+
 
     /**
      * return iterator for keys
      * @param access
      * @return iterator of the keys
      */
-    public Iterator iterator(int access) {
-        return new ArrayIterator(keysAsString(access));
+    public Iterator<Collection.Key> keyIterator(int access) {
+        return keySet(access).iterator();
     }
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator(int access) {
+		return new ComponentAccessEntryIterator(this, keys(access),access);
+	}
+    
     
     /**
      * @param access 
@@ -1860,9 +1870,14 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     /**
      * @see railo.runtime.type.Collection#keyIterator()
      */
-    public Iterator keyIterator() {
-    	return iterator(getAccess(ThreadLocalPageContext.get()));
+    public Iterator<Collection.Key> keyIterator() {
+    	return keyIterator(getAccess(ThreadLocalPageContext.get()));
     }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return entryIterator(getAccess(ThreadLocalPageContext.get()));
+	}
     
     /**
      * @see railo.runtime.type.Collection#keysAsString()

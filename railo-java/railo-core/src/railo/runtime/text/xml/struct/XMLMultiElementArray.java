@@ -3,6 +3,7 @@ package railo.runtime.text.xml.struct;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,7 +15,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.ArraySupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.ArrayAsArrayList;
@@ -341,8 +345,13 @@ public class XMLMultiElementArray extends ArraySupport {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
-		return new ArrayIterator(keysAsString());
+	public Iterator<Collection.Key> keyIterator() {
+		return new KeyIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 
 	/**

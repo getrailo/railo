@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
@@ -65,12 +66,14 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.timer.Stopwatch;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.CollectionIterator;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
@@ -3179,17 +3182,19 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		updateObject(columnName, new DateTimeImpl(x.getTime(),false));
 	}
 
+	@Override
 	public ResultSetMetaData getMetaData() throws SQLException {
-		
 		throw new SQLException("method is not implemented");
 	}
 
-
-    /**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 	
 

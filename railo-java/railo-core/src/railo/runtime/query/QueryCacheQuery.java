@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.db.SQL;
@@ -33,7 +34,9 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 
 public class QueryCacheQuery extends QueryImpl {
 
@@ -582,11 +585,14 @@ public class QueryCacheQuery extends QueryImpl {
 		return query.iterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return query.keyIterator();
+	}
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return query.entryIterator();
 	}
 
 	/**

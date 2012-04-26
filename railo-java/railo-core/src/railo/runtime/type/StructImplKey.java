@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.collections.HashTable;
 import railo.commons.lang.StringUtil;
@@ -17,7 +18,9 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -30,7 +33,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	public static final int TYPE_SYNC=2;
 	public static final int TYPE_REGULAR=3;
 	
-	private Map _map;
+	private Map<Collection.Key,Object> _map;
 	//private static  int scount=0;
 	//private static int kcount=0;
 	
@@ -38,7 +41,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	 * default constructor
 	 */
 	public StructImplKey() {
-		_map=new HashMap();
+		_map=new HashMap<Collection.Key,Object>();
 	}
 	
     /**
@@ -49,10 +52,10 @@ public final class StructImplKey extends StructSupport implements Struct {
      * @param doubleLinked
      */
     public StructImplKey(int type) {
-    	if(type==TYPE_LINKED)		_map=new LinkedHashMap();
-    	else if(type==TYPE_WEAKED)	_map=new java.util.WeakHashMap();
+    	if(type==TYPE_LINKED)		_map=new LinkedHashMap<Collection.Key,Object>();
+    	else if(type==TYPE_WEAKED)	_map=new java.util.WeakHashMap<Collection.Key,Object>();
         else if(type==TYPE_SYNC)	_map=new HashTable();
-        else 						_map=new HashMap();
+        else 						_map=new HashMap<Collection.Key,Object>();
     }
     
 	/**
@@ -98,11 +101,11 @@ public final class StructImplKey extends StructSupport implements Struct {
 	}
 
 	public Collection.Key[] keys() {//print.out("keys");
-		Iterator it = keyIterator();
+		Iterator<Key> it = keyIterator();
 		Collection.Key[] keys = new Collection.Key[size()];
 		int count=0;
 		while(it.hasNext()) {
-			keys[count++]=KeyImpl.toKey(it.next(), null);
+			keys[count++]=it.next();
 		}
 		return keys;
 	}
@@ -111,11 +114,11 @@ public final class StructImplKey extends StructSupport implements Struct {
 	 * @see railo.runtime.type.Collection#keysAsString()
 	 */
 	public String[] keysAsString() {
-		Iterator it = keyIterator();
+		Iterator<Key> it = keyIterator();
 		String[] keys = new String[size()];
 		int count=0;
 		while(it.hasNext()) {
-			keys[count++]=StringUtil.toString(it.next(), null);
+			keys[count++]=it.next().getString();
 		}
 		return keys;
 	}
@@ -210,12 +213,14 @@ public final class StructImplKey extends StructSupport implements Struct {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		//return new ArrayIterator(map.keySet().toArray());
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return _map.keySet().iterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 	
 	/**

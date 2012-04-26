@@ -58,8 +58,10 @@ import railo.runtime.type.QueryColumnRef;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.CollectionIterator;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.QueryUtil;
 
@@ -2328,8 +2330,13 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	  /**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 	
 

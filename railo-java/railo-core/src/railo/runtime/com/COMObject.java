@@ -286,7 +286,7 @@ public final class COMObject implements Objects, Iteratorable {
     /**
      * @see railo.runtime.type.Iteratorable#keyIterator()
      */
-    public Iterator keyIterator() {
+    public Iterator<Collection.Key> keyIterator() {
         return new COMKeyWrapperIterator(this);
     }
 

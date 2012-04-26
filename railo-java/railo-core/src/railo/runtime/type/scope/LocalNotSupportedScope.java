@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -9,7 +10,9 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -109,7 +112,12 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
+		return null;
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
 		return null;
 	}
 

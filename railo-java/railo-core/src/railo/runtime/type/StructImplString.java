@@ -12,8 +12,10 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.system.GetUserRoles;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
@@ -27,7 +29,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	public static final int TYPE_SYNC=2;
 	public static final int TYPE_REGULAR=3;
 	
-	private Map map;
+	private Map<Collection.Key,Object> map;
 	//private static  int scount=0;
 	//private static int kcount=0;
 	
@@ -35,7 +37,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * default constructor
 	 */
 	public StructImplString() {
-		map=new HashMap();
+		map=new HashMap<Collection.Key, Object>();
 	}
 	
     /**
@@ -46,10 +48,10 @@ public final class StructImplString extends StructImpl implements Struct {
      * @param doubleLinked
      */
     public StructImplString(int type) {
-    	if(type==TYPE_LINKED)		map=new LinkedHashMap();
-    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap();
+    	if(type==TYPE_LINKED)		map=new LinkedHashMap<Collection.Key, Object>();
+    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap<Collection.Key, Object>();
         else if(type==TYPE_SYNC)	map=new HashTable();
-        else 						map=new HashMap();
+        else 						map=new HashMap<Collection.Key, Object>();
     }
     
 	/**
@@ -75,7 +77,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Collection.Key key, Object value) throws PageException {
-		map.put(key.getLowerString(),value);
+		map.put(key,value);
 		return value;
 	}
 	
@@ -83,7 +85,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Collection.Key key, Object value) {
-        map.put(key.getLowerString(),value);
+        map.put(key,value);
 		return value;
 	}
 
@@ -94,12 +96,12 @@ public final class StructImplString extends StructImpl implements Struct {
 		return map.size();
 	}
 
-	public Collection.Key[] keys() {//print.out("keys");
-		Iterator it = map.keySet().iterator();
+	public Collection.Key[] keys() {
+		Iterator<Key> it = map.keySet().iterator();
 		Collection.Key[] keys = new Collection.Key[size()];
 		int count=0;
 		while(it.hasNext()) {
-			keys[count++]=KeyImpl.toKey(it.next(), null);
+			keys[count++]=it.next();
 		}
 		return keys;
 	}
@@ -108,11 +110,11 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * @see railo.runtime.type.Collection#keysAsString()
 	 */
 	public String[] keysAsString() {
-		Iterator it = map.keySet().iterator();
+		Iterator<Key> it = map.keySet().iterator();
 		String[] keys = new String[size()];
 		int count=0;
 		while(it.hasNext()) {
-			keys[count++]=StringUtil.toString(it.next(), null).toUpperCase();
+			keys[count++]=it.next().getUpperString();
 		}
 		return keys;
 		
@@ -207,7 +209,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return map.keySet().iterator();
 	}
 	

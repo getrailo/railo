@@ -5,6 +5,7 @@ package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletInputStream;
 
@@ -15,7 +16,9 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.scope.FormImpl.Item;
 import railo.runtime.type.util.StructSupport;
 
@@ -151,8 +154,13 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 	 *
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return form.keyIterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return form.entryIterator();
 	}
 
 	/**

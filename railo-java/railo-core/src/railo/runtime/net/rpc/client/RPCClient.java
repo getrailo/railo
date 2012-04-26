@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import javax.swing.JComboBox.KeySelectionManager;
 import javax.wsdl.Binding;
 import javax.wsdl.Operation;
 import javax.wsdl.Port;
@@ -63,11 +64,13 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Iteratorable;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
@@ -873,8 +876,8 @@ public final class RPCClient implements Objects, Iteratorable{
     /**
      * @see railo.runtime.type.Iteratorable#keyIterator()
      */
-    public Iterator keyIterator() {
-    	List list=new ArrayList();
+    public Iterator<Collection.Key> keyIterator() {
+    	List<Collection.Key> list=new ArrayList<Collection.Key>();
     	javax.wsdl.Service service = null;
         Port port = null;
     	try {
@@ -882,7 +885,7 @@ public final class RPCClient implements Objects, Iteratorable{
             port = getWSDLPort(service);
     	}
     	catch(Exception e) {
-    		return new ArrayIterator(ArrayUtil.OBJECT_EMPTY);
+    		return new KeyIterator(new Collection.Key[0]);
     	}
     	
         Binding binding = port.getBinding();
@@ -895,10 +898,10 @@ public final class RPCClient implements Objects, Iteratorable{
         while(itr.hasNext())  {
             tmpOp = (Operation)itr.next();
             //Parameters p = (Parameters)bEntry.getParameters().get(tmpOp);
-            list.add(tmpOp.getName());
+            list.add(KeyImpl.init(tmpOp.getName()));
             
         }
-        return new ArrayIterator(list.toArray());
+        return new KeyIterator(list.toArray(new Collection.Key[list.size()]));
     }
 	/**
 	 *

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.poi.ss.formula.functions.T;
 
@@ -24,7 +25,9 @@ import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.reflection.pairs.MethodInstance;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.CollectionUtil;
@@ -738,11 +741,14 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return keyIterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 
 	/**

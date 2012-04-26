@@ -3,6 +3,7 @@ package railo.runtime.type.scope;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import railo.print;
 import railo.runtime.ComponentScope;
@@ -20,7 +21,9 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.QueryStack;
@@ -518,8 +521,13 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return variable.keyIterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return variable.entryIterator();
 	}
 	
 	/**

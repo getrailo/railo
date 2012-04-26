@@ -1,6 +1,7 @@
 package railo.runtime.query;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -12,7 +13,9 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.QueryUtil;
 
 public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
@@ -337,8 +340,13 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	 *
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return column.keyIterator();
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return column.entryIterator();
 	}
 
 	/**

@@ -3,6 +3,7 @@ package railo.runtime.text.xml;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -20,7 +21,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLObject;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.ArraySupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructUtil;
@@ -281,11 +285,14 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		return new ArrayIterator(keysAsString());
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
+		return new KeyIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 	
 	public Iterator valueIterator() {

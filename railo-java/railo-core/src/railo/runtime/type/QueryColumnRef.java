@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -12,7 +13,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.QueryUtil;
 
@@ -247,12 +250,15 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 		return setEL(Caster.toIntValue(key,query.getCurrentrow()),value);
 	}
 
-    /**
-     * @see railo.runtime.type.Iteratorable#keyIterator()
-     */
-    public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
         return new KeyIterator(keys());
     }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
+	}
     
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()

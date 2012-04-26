@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.Thread.State;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -20,8 +21,10 @@ import railo.runtime.tag.Http3;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
@@ -293,11 +296,18 @@ The current status of the thread; one of the following values:
 		return table;
 	}
 
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new railo.runtime.type.it.KeyIterator(keys());
 	}
 	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
+	}
+	
 
+	@Override
 	public String[] keysAsString() {
 		Key[] keys = keys();
 		String[] strKeys=new String[keys.length];
