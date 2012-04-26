@@ -329,7 +329,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	        
 	        
 	        if(properties.returnType==CFTypes.TYPE_ANY) return returnValue;
-	        else if(Decision.isCastableTo(properties.strReturnType,returnValue,false)) return returnValue;
+	        else if(Decision.isCastableTo(properties.strReturnType,returnValue,false,-1)) return returnValue;
 	        else throw new UDFCasterException(this,properties.strReturnType,returnValue);
 			//REALCAST return Caster.castTo(pageContext,returnType,returnValue,false);
 //////////////////////////////////////////

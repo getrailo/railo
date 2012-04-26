@@ -55,7 +55,8 @@ public final class CastFloat extends ExpressionBase implements ExprFloat {
 
     	if(expr instanceof OpDouble) {
             ((OpDouble)expr).writeOutDouble(bc,MODE_VALUE);
-            if(mode==MODE_REF)adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_FLOAT_FROM_FLOAT);
+            if(mode==MODE_VALUE)adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_FLOAT_VALUE_FROM_DOUBLE);
+            else adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_FLOAT_FROM_DOUBLE);
         }
     	else if(expr instanceof ExprBoolean) {
             expr.writeOut(bc,MODE_VALUE);
@@ -65,8 +66,6 @@ public final class CastFloat extends ExpressionBase implements ExprFloat {
         }
         else if(expr instanceof ExprFloat) {
             expr.writeOut(bc,mode);
-            //if(mode==MODE_VALUE)adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_FLOAT_VALUE_FROM_DOUBLE);
-            //if(mode==MODE_REF) adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_FLOAT_FROM_FLOAT);
         }
         else if(expr instanceof ExprDouble) {
             expr.writeOut(bc,MODE_VALUE);

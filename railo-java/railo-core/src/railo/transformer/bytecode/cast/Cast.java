@@ -48,6 +48,8 @@ public final class Cast extends ExpressionBase {
     	case 'd':
     		if("double".equals(type))							return CastDouble.toExprDouble(expr);
     	break;
+    	case 'i':
+        	if("int".equals(lcType))							return CastInt.toExprInt(expr);
     	case 'n':
         	if("number".equals(lcType))							return CastDouble.toExprDouble(expr);
         break;

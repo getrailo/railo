@@ -105,7 +105,6 @@ import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.tag.Login;
 import railo.runtime.tag.TagHandlerPool;
-import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -863,7 +862,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
   
     public List<PageSource> getPageSourceList() {
         return (List<PageSource>) pathList.clone();
-        
     }
     
     
@@ -1403,17 +1401,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
 
     public void param(String type, String name, Object defaultValue,String regex) throws PageException {
-    	param(type, name, defaultValue,Double.NaN,Double.NaN,regex);
+    	param(type, name, defaultValue,Double.NaN,Double.NaN,regex,-1);
     }
 	public void param(String type, String name, Object defaultValue,double min, double max) throws PageException {
-    	param(type, name, defaultValue,min,max,null);
+    	param(type, name, defaultValue,min,max,null,-1);
+    }
+
+    public void param(String type, String name, Object defaultValue,int maxLength) throws PageException {
+    	param(type, name, defaultValue,Double.NaN,Double.NaN,null,maxLength);
     }
 
     public void param(String type, String name, Object defaultValue) throws PageException {
-    	param(type, name, defaultValue,Double.NaN,Double.NaN,null);
+    	param(type, name, defaultValue,Double.NaN,Double.NaN,null,-1);
     }
 	
-    private void param(String type, String name, Object defaultValue, double min,double max, String strPattern) throws PageException {
+    private void param(String type, String name, Object defaultValue, double min,double max, String strPattern, int maxLength) throws PageException {
 		
     	
     	// check attributes type
@@ -1465,7 +1467,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				setVariable(name,str);
 			}
 			else {
-				if(!Decision.isCastableTo(type,value,true)) throw new CasterException(value,type);	
+				if(!Decision.isCastableTo(type,value,true,maxLength)) {
+					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
+						StringBuilder msg=new StringBuilder(CasterException.createMessage(value, type));
+						msg.append(" with a maximal length of "+maxLength+" characters");
+						throw new CasterException(msg.toString());	
+					}
+					throw new CasterException(value,type);	
+				}
+				
+				
+				
 				setVariable(name,value);
 				//REALCAST setVariable(name,Caster.castTo(this,type,value,true));
 			}
@@ -2538,8 +2550,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
     }
 
-    
-
     /**
      * @see railo.runtime.PageContext#getActiveComponent()
      */
@@ -2547,15 +2557,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         return activeComponent;
     }
     
-    
-    
-    
     /**
      * @see railo.runtime.PageContext#getRemoteUser()
      */
     public Credential getRemoteUser() throws PageException {
         if(remoteUser==null) {
-        	String name=Login.getApplicationName(applicationContext);
+        	Key name = KeyImpl.init(Login.getApplicationName(applicationContext));
 		    Resource roles = config.getConfigDir().getRealResource("roles");
 		    
         	if(applicationContext.getLoginStorage()==Scope.SCOPE_SESSION) {
@@ -2620,7 +2627,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	else {
     		exception = Caster.toPageException(t);
-    		undefinedScope().setEL(CFCATCH,exception.getCatchBlock(this));
+    		undefinedScope().setEL(CFCATCH,exception.getCatchBlock(config));
     		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
     	}
     	return exception;

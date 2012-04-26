@@ -8686,7 +8686,33 @@ Each type-value pair must start with a hyphen.</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The type of parameter that is required. The default is 'any'.</description>
+			<description>The type of parameter that is required. The default is 'any' and valid values are:
+- any: any type of value
+- array: an array of values
+- binary: a binary value
+- boolean: a Boolean value
+- creditcard: a 13-16 digit number conforming to the mod10 algorithm
+- date or time: a date-time value
+- email: a valid e-mail address
+- eurodate: a date-time value. Any date part must be in the format dd/mm/yy. The format can use /, -, or . characters as delimiters
+- float or numeric: a numeric value
+- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where Ô XÕ is a hexadecimal number
+- integer: an integer
+- query: a query object
+- range: a numeric range, specified by the min and max attributes
+- regex or regular_expression: matches input against pattern attribute
+- ssn or social_security_number: a U.S. social security number
+- string: a string value or single character
+- struct: a structure
+- telephone: a standard U.S. telephone number
+- url: an http, https, ftp, file, mailto, or news URL
+- uuid: a ColdFusion Universally Unique Identifier, formatted Ô XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXXÕ, where Ô XÕ is a hexadecimal number. See CreateUUID
+- usdate: a U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years
+- variableName: a string formatted according to ColdFusion variable naming conventions
+- xml: XML objects and XML strings
+- zipcode: U.S., 5- or 9-digit format ZIP codes
+			
+</description>
 		</attribute>
 		<attribute>
 			<type>any</type>
@@ -8715,6 +8741,13 @@ Each type-value pair must start with a hyphen.</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>define a regular expression pattern, to check value against </description>
+		</attribute>
+		<attribute>
+			<type>int</type>
+			<name>maxlength</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>define the maxlength of a value for this types: email, url and string</description>
 		</attribute>
 	</tag>
 

@@ -1024,6 +1024,17 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @param type
      * @param name
      * @param defaultValue
+     * @param maxLength
+     * @throws PageException 
+     */
+    public abstract void param(String type, String name, Object defaultValue, int maxLength) throws PageException;
+    
+    
+
+    /**
+     * @param type
+     * @param name
+     * @param defaultValue
      * @throws PageException 
      */
     public abstract void param(String type, String name, Object defaultValue, String pattern) throws PageException;

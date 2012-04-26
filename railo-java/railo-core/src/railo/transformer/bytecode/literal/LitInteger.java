@@ -6,6 +6,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.expression.ExprInt;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
@@ -14,7 +15,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * Literal Double Value
  */
-public final class LitInteger extends ExpressionBase implements Literal {
+public final class LitInteger extends ExpressionBase implements Literal,ExprInt {
     
     private int i;
 
