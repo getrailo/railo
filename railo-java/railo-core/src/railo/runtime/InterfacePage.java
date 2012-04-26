@@ -61,7 +61,7 @@ public abstract class InterfacePage extends PagePlus  {
 			String cdf = pc.getConfig().getComponentDumpTemplate();
 			if(cdf!=null && cdf.trim().length()>0) {
 			    pc.variablesScope().set(COMPONENT,interf);
-			    pc.doInclude(pc.getRelativePageSource(cdf));
+			    pc.doInclude(cdf);
 			}
 			else pc.write(pc.getConfig().getDefaultDumpWriter().toString(pc,interf.toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true));
 			

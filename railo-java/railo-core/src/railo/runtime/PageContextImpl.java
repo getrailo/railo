@@ -101,6 +101,7 @@ import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.tag.Login;
 import railo.runtime.tag.TagHandlerPool;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
@@ -679,13 +680,37 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#getRelativePageSource(java.lang.String)
      */
     public PageSource getRelativePageSource(String realPath) {
-    	if(StringUtil.startsWith(realPath,'/')) return getPageSource(realPath);
+    	SystemOut.print(config.getOutWriter(),"method getRelativePageSource is deprecated");
+    	if(StringUtil.startsWith(realPath,'/')) return PageSourceImpl.best(getPageSources(realPath));
     	if(pathList.size()==0) return null;
 		return ((PageSource) pathList.getLast()).getRealPage(realPath);
 	}
     
+    public PageSource getRelativePageSourceExisting(String realPath) {
+    	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
+    	if(pathList.size()==0) return null;
+		PageSource ps = pathList.getLast().getRealPage(realPath);
+		if(PageSourceImpl.pageExist(ps)) return ps;
+		return null;
+	}
+    
+    public PageSource[] getRelativePageSources(String realPath) {
+    	if(StringUtil.startsWith(realPath,'/')) return getPageSources(realPath);
+    	if(pathList.size()==0) return null;
+		return new PageSource[]{ pathList.getLast().getRealPage(realPath)};
+	}
+    
     public PageSource getPageSource(String realPath) {
-    	return config.getPageSource(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true);
+    	SystemOut.print(config.getOutWriter(),"method getPageSource is deprecated");
+    	return PageSourceImpl.best(config.getPageSources(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true));
+	}
+    
+    public PageSource[] getPageSources(String realPath) {
+    	return config.getPageSources(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true);
+	}
+    
+    public PageSource getPageSourceExisting(String realPath) {
+    	return config.getPageSourceExisting(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true,false);
 	}
 
     public boolean useSpecialMappings(boolean useTagMappings) {
@@ -697,7 +722,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return useSpecialMappings;
 	}
     
-
+    /*public Resource[] getPhysicalResources(String realPath, boolean alsoDefaultMapping) {
+    	return config.getPhysicalResources(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,alsoDefaultMapping);
+	}
+    
+    public Resource getPhysicalResourceExisting(String realPath, boolean alsoDefaultMapping) {
+    	return config.getPhysicalResourceExisting(this, applicationContext.getMappings(),realPath,false,useSpecialMappings,alsoDefaultMapping);
+	}*/
+    
     public Resource getPhysical(String realPath, boolean alsoDefaultMapping){
     	return config.getPhysical(applicationContext.getMappings(),realPath, alsoDefaultMapping);
     }
@@ -711,23 +743,29 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see railo.runtime.PageContext#doInclude(java.lang.String)
 	 */
 	public void doInclude(String realPath) throws PageException {
-		doInclude(getRelativePageSource(realPath));
+		doInclude(getRelativePageSources(realPath));
+	}
+	
+
+	public void doInclude(PageSource source) throws PageException {
+		doInclude(new PageSource[]{source});
 	}
 
 	/**
 	 * @see railo.runtime.PageContext#doInclude(railo.runtime.PageSource)
 	 */
-	public void doInclude(PageSource source) throws PageException {
+	public void doInclude(PageSource[] sources) throws PageException {
     	// debug
 		if(config.debug()) {
-			DebugEntry debugEntry=debugger.getEntry(this,source);
 			int currTime=executionTime;
             long exeTime=0;
             long time=System.currentTimeMillis();
             
-            Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
+            Page currentPage = PageSourceImpl.loadPage(this, sources);
+            //Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
+			DebugEntry debugEntry=debugger.getEntry(this,currentPage.getPageSource());
             try {
-                addPageSource(source,true);
+                addPageSource(currentPage.getPageSource(),true);
                 debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
                 exeTime=System.currentTimeMillis();
                 currentPage.call(this);
@@ -754,9 +792,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		}
 	// no debug
 		else {
-            Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
+			PagePlus currentPage = (PagePlus) PageSourceImpl.loadPage(this, sources);
+			//Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
 		    try {
-				addPageSource(source,true);
+				addPageSource(currentPage.getPageSource(),true);
                 currentPage.call(this);
 			}
 			catch(Throwable t){
@@ -1801,7 +1840,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						Struct catchBlock=pe.getCatchBlock(this);
 						variablesScope().setEL(CFCATCH,catchBlock);
 						variablesScope().setEL(CATCH,catchBlock);
-						doInclude(getRelativePageSource(template));
+						doInclude(template);
 					    return;
 			        } 
 					catch (PageException e) {
@@ -1987,10 +2026,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    			if(!base.exists())base=getPageSource(realPath.substring(index));
 	    		}*/
 	    	}
-	    	if(base==null) base=config.getPageSource(this,null,realPath,onlyTopLevel,false,true);
+	    	if(base==null) base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
 	    	
 	    }
-	    else base=config.getPageSource(this,null,realPath,onlyTopLevel,false,true);
+	    else base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
 	    
 	    try {
 	    	listener.onRequest(this,base);
@@ -2678,7 +2717,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#compile(java.lang.String)
      */
     public void compile(String realPath) throws PageException {
-        compile(getRelativePageSource(realPath));
+    	SystemOut.printDate("method PageContext.compile(String) should no longer be used!");
+    	compile(PageSourceImpl.best(getRelativePageSources(realPath)));
     }
     
     public HttpServlet getServlet() {

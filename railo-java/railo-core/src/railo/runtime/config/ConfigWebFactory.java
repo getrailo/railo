@@ -139,15 +139,6 @@ import railo.transformer.library.tag.TagLibException;
  * 
  */
 public final class ConfigWebFactory {
-
-	
-
-
-
-	
-
-
-
 	/**
      * creates a new ServletConfig Impl Object
      * @param configServer
@@ -191,6 +182,9 @@ public final class ConfigWebFactory {
     			"===================================================================\n"
     			
     			);
+    	
+    	boolean doNew=doNew(configDir);
+    	
         
     	Resource configFile=configDir.getRealResource("railo-web.xml.cfm");
     	Resource configFileOld=configDir.getRealResource("railo-web.xml");
@@ -241,11 +235,11 @@ public final class ConfigWebFactory {
     	if(configDir.exists())createHtAccess(configDir.getRealResource(".htaccess"));
     		
         
-        createContextFiles(configDir,servletConfig);
+        createContextFiles(configDir,servletConfig,doNew);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc,false);
-		createContextFilesPost(configDir,configWeb,servletConfig,false);
+		load(configServer,configWeb,doc,false,doNew);
+		createContextFilesPost(configDir,configWeb,servletConfig,false,doNew);
 	    return configWeb;
     }
     
@@ -285,17 +279,24 @@ public final class ConfigWebFactory {
     	Resource configFile=config.getConfigFile();
         Resource configDir=config.getConfigDir();
         
+        boolean doNew=doNew(configDir);
+        
         if(configFile==null) return ;
         
         if(second(config.getLoadTime())>second(configFile.lastModified()) && !force) return ;
         
         Document doc=loadDocument(configFile);
-        createContextFiles(configDir,null);
+        createContextFiles(configDir,null,doNew);
         config.reset();
         
-		load(config.getConfigServerImpl(),config,doc,true);
-		createContextFilesPost(configDir,config,null,false);
+		load(config.getConfigServerImpl(),config,doc,true,doNew);
+		createContextFilesPost(configDir,config,null,false,doNew);
     }
+    
+    
+    
+    
+    
     
     private static long second(long ms) {
 		return ms/1000;
@@ -312,7 +313,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
@@ -349,7 +350,7 @@ public final class ConfigWebFactory {
         loadCustomTagsMappings(configServer,config,doc);
     	loadPassword(cs,config,doc);
     	//loadLabel(cs,config,doc);
-    	loadFilesystem(cs,config,doc); // load tlds
+    	loadFilesystem(cs,config,doc, doNew); // load tlds
     	loadTag(cs,config,doc); // load tlds
         loadRegional(configServer,config,doc);
     	loadScope(configServer,config,doc);
@@ -383,7 +384,7 @@ public final class ConfigWebFactory {
     	}
     	catch(Throwable t){}
 
-    	doNew(config.getConfigDir(), false);
+    	//doNew(config.getConfigDir(), false);
     	
     	ThreadLocalConfig.release();
     }
@@ -953,7 +954,7 @@ public final class ConfigWebFactory {
 	 * @throws IOException 
 	 * @throws IOException
 	 */
-	public static void createContextFiles(Resource configDir, ServletConfig servletConfig) throws IOException {
+	public static void createContextFiles(Resource configDir, ServletConfig servletConfig, boolean doNew) throws IOException {
 	    // NICE dies muss dynamisch ersstelt werden, da hier der admin hinkommt und dieser sehr viele files haben wird
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
@@ -968,10 +969,6 @@ public final class ConfigWebFactory {
 	            }
 	        }
 	    }
-        
-        boolean doNew=doNew(configDir,true);
-        
-        
         
         // video
         Resource videoDir = configDir.getRealResource("video");
@@ -1319,10 +1316,7 @@ public final class ConfigWebFactory {
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext) throws IOException {
-		boolean doNew=doNew(configDir,true);
-  		
-		
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext,boolean doNew) throws IOException {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 
@@ -1368,20 +1362,26 @@ public final class ConfigWebFactory {
 
 	}
 
-	private static boolean doNew(Resource contextDir,boolean readonly) throws IOException {
-		Resource version=contextDir.getRealResource("version");
-		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
-		if(!version.exists()) {
-            if(!readonly){
-            	version.createNewFile();
-            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            }
-            return true;
-        }
-        else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
-        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            return true;
-        }
+	static boolean doNew(Resource contextDir) {
+		
+		final boolean readonly=false;
+		try{
+			Resource version=contextDir.getRealResource("version");
+			String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
+			if(!version.exists()) {
+				if(!readonly){
+	            	version.createNewFile();
+	            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
+	            }
+	            return true;
+	        }
+	        else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
+	        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
+	
+	            return true;
+	        }
+		}
+		catch(Throwable t){}
         return false;
     }
 	
@@ -2378,7 +2378,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */    
-    private static void loadFilesystem(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+    private static void loadFilesystem(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean doNew) throws ExpressionException, TagLibException, FunctionLibException {
         
     	if(configServer!=null){
     		Resource src = configServer.getConfigDir().getRealResource("distribution");
@@ -2453,7 +2453,7 @@ public final class ConfigWebFactory {
 	  	// Tag Directory
 	  	if(strTagDirectory!=null) {
 	  		Resource dir=ConfigWebUtil.getFile(config,configDir,strTagDirectory,FileUtil.TYPE_DIR);
-	  		createTagFiles(config,configDir,dir);
+	  		createTagFiles(config,configDir,dir,doNew);
 	  		if(dir!=null) {
 	  			config.setTagDirectory(dir);
 	  		}
@@ -2483,7 +2483,7 @@ public final class ConfigWebFactory {
 	  	// Function Directory
 	  	if(strFunctionDirectory!=null) {
 	  		Resource dir=ConfigWebUtil.getFile(config,configDir,strFunctionDirectory,FileUtil.TYPE_DIR);
-	  		createFunctionFiles(config,configDir,dir);
+	  		createFunctionFiles(config,configDir,dir,doNew);
 	  	  if(dir!=null) config.setFunctionDirectory(dir);
 	  	}
 	  	
@@ -2497,12 +2497,7 @@ public final class ConfigWebFactory {
     }
 
 
-    private static void createTagFiles(Config config,Resource configDir,Resource dir) {
-    	boolean doNew=true;
-    	try {
-			doNew=doNew(configDir,true);
-		} catch (IOException e) {}
-        
+    private static void createTagFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
     	if(config instanceof ConfigServer){
     		Resource f = dir.getRealResource("Dump.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Dump.cfc",f);
@@ -2513,12 +2508,8 @@ public final class ConfigWebFactory {
     	}
 	}
 
-    private static void createFunctionFiles(Config config,Resource configDir,Resource dir) {
-    	boolean doNew=true;
-    	try {
-			doNew=doNew(configDir,true);
-		} catch (IOException e) {}
-        
+    private static void createFunctionFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
+    	
     	if(config instanceof ConfigServer){
     		Resource f = dir.getRealResource("writeDump.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeDump.cfm",f);

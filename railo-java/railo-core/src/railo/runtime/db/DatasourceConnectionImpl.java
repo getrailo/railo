@@ -173,7 +173,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 		else ps=getConnection().prepareStatement(strSQL);
 		if(preparedStatements.size()>MAX_PS)
 			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
-		//if(allowCaching)preparedStatements.put(key,ps);
+		if(allowCaching)preparedStatements.put(key,ps);
 		return ps;
 	}
 	
@@ -198,7 +198,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 		ps=getConnection().prepareStatement(strSQL,resultSetType,resultSetConcurrency);
 		if(preparedStatements.size()>MAX_PS)
 			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
-		//preparedStatements.put(key,ps);
+		preparedStatements.put(key,ps);
 		return ps;
 	}
 	

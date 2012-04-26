@@ -1157,8 +1157,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         
         try {
-            PageSource ps = pageContext.getPageSource(config.getDebugTemplate());
-            if(ps.exists()) sct.set(DEBUG_TEMPLATE,ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(config.getDebugTemplate());
+            if(ps!=null) sct.set(DEBUG_TEMPLATE,ps.getDisplayPath());
             else sct.set(DEBUG_TEMPLATE,"");
         } catch (PageException e) {
             sct.set(DEBUG_TEMPLATE,"");
@@ -1180,8 +1180,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         // 500
         String template=config.getErrorTemplate(500);
         try {
-            PageSource ps = pageContext.getPageSource(template);
-            if(ps.exists()) templates.set("500",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(template);
+            if(ps!=null) templates.set("500",ps.getDisplayPath());
             else templates.set("500","");
         } catch (PageException e) {
         	templates.set("500","");
@@ -1191,8 +1191,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         // 404
         template=config.getErrorTemplate(404);
         try {
-            PageSource ps = pageContext.getPageSource(template);
-            if(ps.exists()) templates.set("404",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(template);
+            if(ps!=null) templates.set("404",ps.getDisplayPath());
             else templates.set("404","");
         } catch (PageException e) {
         	templates.set("404","");
@@ -3633,8 +3633,8 @@ private void doGetMappings() throws PageException {
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         // Base Component
         try {
-            PageSource ps = pageContext.getPageSource(config.getBaseComponentTemplate());
-            if(ps.exists()) sct.set("baseComponentTemplate",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(config.getBaseComponentTemplate());
+            if(ps!=null) sct.set("baseComponentTemplate",ps.getDisplayPath());
             else sct.set("baseComponentTemplate","");
         } catch (PageException e) {
             sct.set("baseComponentTemplate","");
@@ -3643,8 +3643,8 @@ private void doGetMappings() throws PageException {
         
         // dump template
         try {
-            PageSource ps = pageContext.getPageSource(config.getComponentDumpTemplate());
-            if(ps.exists()) sct.set("componentDumpTemplate",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(config.getComponentDumpTemplate());
+            if(ps!=null) sct.set("componentDumpTemplate",ps.getDisplayPath());
             else sct.set("componentDumpTemplate","");
         } catch (PageException e) {
             sct.set("componentDumpTemplate","");

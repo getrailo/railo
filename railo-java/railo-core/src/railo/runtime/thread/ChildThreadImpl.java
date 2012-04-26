@@ -13,6 +13,7 @@ import railo.commons.lang.Pair;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
@@ -140,7 +141,8 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ConfigWebImpl cwi;
 			try {
 				cwi = (ConfigWebImpl)config;
-				p=cwi.getPageSource(oldPc,null, template, false,false,true).loadPage(cwi);
+				p=PageSourceImpl.loadPage(pc, cwi.getPageSources(oldPc,null, template, false,false,true));
+				//p=cwi.getPageSources(oldPc,null, template, false,false,true).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
