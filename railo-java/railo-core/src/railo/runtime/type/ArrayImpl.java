@@ -647,7 +647,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
 

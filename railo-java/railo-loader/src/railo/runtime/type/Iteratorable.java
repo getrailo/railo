@@ -10,7 +10,7 @@ public interface Iteratorable {
     /**
      * @return return a Iterator for Keys as String
      */
-    public Iterator keyIterator();
+    public Iterator<Collection.Key> keyIterator();
     
     /**
      *
