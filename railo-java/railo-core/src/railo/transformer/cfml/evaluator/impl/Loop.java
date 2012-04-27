@@ -44,16 +44,22 @@ public final class Loop extends EvaluatorSupport {
         }
         // list loop
         else if(tag.containsAttribute("list")){
-			if(!tag.containsAttribute("index"))
-				throw new EvaluatorException("Wrong Context, when you use attribute list you must also use attribute index");
+			if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
+				throw new EvaluatorException("Wrong Context, when you use attribute list,you must define attribute index and/or item");
 			loop.setType(TagLoop.TYPE_LIST);
 		}
         // array loop
         else if(tag.containsAttribute("array")){
-			if(!tag.containsAttribute("index"))
-				throw new EvaluatorException("Wrong Context, when you use attribute array you must also use attribute index");
+			if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
+				throw new EvaluatorException("Wrong Context, when you use attribute array, you must define attribute index and/or item");
 			loop.setType(TagLoop.TYPE_ARRAY);
 		}
+        // collection loop      
+        else if(tag.containsAttribute("collection")) {
+        	if(!tag.containsAttribute("index") && !tag.containsAttribute("item"))
+				throw new EvaluatorException("Wrong Context, when you use attribute collection,you must define attribute index and/or item");
+			loop.setType(TagLoop.TYPE_COLLECTION);
+        }
 		// index loop	
 		else if(tag.containsAttribute("index")) {
 			if(!tag.containsAttribute("from") || !tag.containsAttribute("to"))
@@ -81,12 +87,6 @@ public final class Loop extends EvaluatorSupport {
 		else if(tag.containsAttribute("query")){
 			loop.setType(TagLoop.TYPE_QUERY);
 		}
-        // collection loop      
-        else if(tag.containsAttribute("collection")) {
-            if(!tag.containsAttribute("item"))
-                throw new EvaluatorException("Wrong Context, when you use attribute collection you must also use attribute item");
-            loop.setType(TagLoop.TYPE_COLLECTION);
-        }
 		else {
 			throw new EvaluatorException("Wrong Context, invalid attributes in tag cfloop");
 		}

@@ -197,6 +197,7 @@ public final class Types {
 	public static final Type COLLECTION_KEY_ARRAY = Type.getType(Collection.Key[].class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
 	public static final Type MAP = Type.getType(Map.class);
+	public static final Type MAP_ENTRY = Type.getType(Map.Entry.class);
 	public static final Type CHAR_ARRAY = Type.getType(char[].class);
 	public static final Type IOUTIL = Type.getType(IOUtil.class);
 	public static final Type BODY_CONTENT = Type.getType(BodyContent.class);

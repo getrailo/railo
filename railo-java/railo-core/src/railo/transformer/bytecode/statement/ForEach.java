@@ -1,14 +1,11 @@
 package railo.transformer.bytecode.statement;
 
-import java.util.Iterator;
-
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.runtime.op.Caster;
 import railo.runtime.util.ForEachUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
@@ -28,14 +25,10 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 	private VariableRef key;
 	private Variable value;
 
-	private final static Method TO_COLLECTION =	new Method("toCollection",Types.COLLECTION,new Type[]{Types.OBJECT});
-	//private final static Method TO_ITERATOR =	new Method("toIterator",Types.ITERATOR,new Type[]{Types.COLLECTION});
-	private final static Method ITERATOR = 	new Method("iterator",Types.ITERATOR,new Type[]{});
-	//private final static Method KEY_ITERATORx = 	new Method("keyIterator",Types.ITERATOR,new Type[]{});
 	private final static Method HAS_NEXT = 		new Method("hasNext",Types.BOOLEAN_VALUE,new Type[]{});
 	private final static Method NEXT = 			new Method("next",Types.OBJECT,new Type[]{});
 	private final static Method SET = 			new Method("set",Types.OBJECT,new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
-	private static final Method TO_ITERATOR = new Method("toIterator",Types.ITERATOR,new Type[]{Types.OBJECT});
+	public static final Method TO_ITERATOR = new Method("toIterator",Types.ITERATOR,new Type[]{Types.OBJECT});
 	private static final Type FOR_EACH_UTIL = Type.getType(ForEachUtil.class);
 	protected static final Method RESET = new Method("reset",Types.VOID,new Type[]{Types.ITERATOR});
 
