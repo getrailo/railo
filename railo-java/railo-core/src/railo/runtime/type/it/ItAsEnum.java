@@ -3,11 +3,13 @@ package railo.runtime.type.it;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-public class ItAsEnum implements Enumeration {
-	
-	private Iterator it;
+import railo.runtime.type.Collection;
 
-	private ItAsEnum(Iterator it){
+public class ItAsEnum implements Enumeration<String> {
+	
+	private Iterator<Collection.Key> it;
+
+	private ItAsEnum(Iterator<Collection.Key> it){
 		this.it=it;
 	}
 
@@ -17,12 +19,11 @@ public class ItAsEnum implements Enumeration {
 	}
 
 	@Override
-	public Object nextElement() {
-		return it.next();
+	public String nextElement() {
+		return it.next().getString();
 	}
 	
-	public static Enumeration toEnumeration(Iterator it){
-		if(it instanceof Enumeration) return (Enumeration) it;
+	public static Enumeration<String> toStringEnumeration(Iterator<Collection.Key> it){
 		return new ItAsEnum(it);
 	}
 

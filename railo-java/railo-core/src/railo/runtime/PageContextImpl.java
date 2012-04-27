@@ -1674,7 +1674,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		case javax.servlet.jsp.PageContext.APPLICATION_SCOPE:
 			return getServletContext().getAttributeNames();
 		case javax.servlet.jsp.PageContext.PAGE_SCOPE:
-			return ItAsEnum.toEnumeration(variablesScope().keyIterator());
+			return ItAsEnum.toStringEnumeration(variablesScope().keyIterator());
 		case javax.servlet.jsp.PageContext.REQUEST_SCOPE:
 			return req.getAttributeNames();
 		case javax.servlet.jsp.PageContext.SESSION_SCOPE:

@@ -195,7 +195,9 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	}
 
 	public Enumeration getAttributeNames() {
-		if(disconnected) return new EnumerationWrapper(disconnectedData);
+		if(disconnected) {
+			return new EnumerationWrapper(disconnectedData);
+		}
 		return req.getAttributeNames();
 		
 	}
