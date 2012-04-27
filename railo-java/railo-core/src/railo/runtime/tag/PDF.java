@@ -10,6 +10,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.oro.text.regex.MalformedPatternException;
@@ -36,6 +37,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
@@ -1110,21 +1112,24 @@ public class PDF extends BodyTagImpl  {
 			PdfStamper stamp = new PdfStamper(pr, os=destination.getOutputStream());
 			HashMap moreInfo = new HashMap();
             
-			Key[] keys = info.keys();
-			for(int i=0;i<keys.length;i++) {
-				moreInfo.put(StringUtil.ucFirst(keys[i].getLowerString()), Caster.toString(info.get(keys[i])));
+			//Key[] keys = info.keys();
+			Iterator<Entry<Key, Object>> it = info.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()) {
+				e = it.next();
+				moreInfo.put(StringUtil.ucFirst(e.getKey().getLowerString()), Caster.toString(e.getValue()));
 			}
 			// author
-			Object value = info.get("author", null);	
+			Object value = info.get(KeyConstants._author, null);	
 			if(value!=null)moreInfo.put("Author", Caster.toString(value));
 			// keywords
 			value = info.get("keywords", null);	
 			if(value!=null)moreInfo.put("Keywords", Caster.toString(value));
 			// title
-			value = info.get("title", null);	
+			value = info.get(KeyConstants._title, null);	
 			if(value!=null)moreInfo.put("Title", Caster.toString(value));
 			// subject
-			value = info.get("subject", null);	
+			value = info.get(KeyConstants._subject, null);	
 			if(value!=null)moreInfo.put("Subject", Caster.toString(value));
 			// creator
 			value = info.get("creator", null);	

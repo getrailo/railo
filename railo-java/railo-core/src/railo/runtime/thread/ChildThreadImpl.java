@@ -3,6 +3,8 @@ package railo.runtime.thread;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -158,13 +160,13 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		
 		Argument newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));
         LocalImpl newLocal=pc.getScopeFactory().getLocalInstance();
-        Key[] keys = attrs.keys();
-		for(int i=0;i<keys.length;i++){
-			newArgs.setEL(keys[i],attrs.get(keys[i],null));
-			//newLocal.setEL(keys[i],attrs.get(keys[i],null));
+        //Key[] keys = attrs.keys();
+        Iterator<Entry<Key, Object>> it = attrs.entryIterator();
+        Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			newArgs.setEL(e.getKey(),e.getValue());
 		}
-		
-		//print.out(newArgs);
 		
 		newLocal.setEL(KEY_ATTRIBUTES, newArgs);
 
