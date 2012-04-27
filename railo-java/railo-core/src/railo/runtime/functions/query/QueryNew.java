@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -21,7 +22,7 @@ import railo.runtime.type.util.QueryUtil;
  * Implements the Cold Fusion Function querynew
  */
 public final class QueryNew implements Function {
-	public static railo.runtime.type.Query call(PageContext pc , String columnList) {
+	public static railo.runtime.type.Query call(PageContext pc , String columnList) throws DatabaseException {
 	    return new QueryImpl(List.listToArrayTrim(columnList,","),0,"query");
 	}
 	public static railo.runtime.type.Query call(PageContext pc , String columnList, String columnTypeList) throws PageException {

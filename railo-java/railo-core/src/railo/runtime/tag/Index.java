@@ -19,6 +19,7 @@ import railo.runtime.search.SearchCollectionSupport;
 import railo.runtime.search.SearchException;
 import railo.runtime.search.SearchIndex;
 import railo.runtime.search.lucene2.LuceneSearchCollection;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -228,8 +229,8 @@ public final class Index extends TagImpl {
 	* @param external value to set
 	 * @throws ApplicationException
 	**/
-	public void setExternal(boolean external) throws ApplicationException	{
-		throw new ApplicationException("attribute external ["+external+"] in tag index is deprecated");
+	public void setExternal(boolean external) {
+		DeprecatedUtil.tagAttribute(pageContext,"Index", "external");
 	}
 
 	/** set the value extensions

@@ -29,11 +29,10 @@ public class XMLElementStruct extends XMLNodeStruct implements Element {
 	 * @param caseSensitive
 	 */
 	protected XMLElementStruct(Element element, boolean caseSensitive) {
-		super(element, caseSensitive);
-		if(element instanceof XMLElementStruct)
-			element=((XMLElementStruct)element).getElement();
-		this.element=element;
+		super(element instanceof XMLElementStruct?element=((XMLElementStruct)element).getElement():element, caseSensitive);
+        this.element=element;
 	}
+	
 	/**
 	 * @see org.w3c.dom.Element#getTagName()
 	 */

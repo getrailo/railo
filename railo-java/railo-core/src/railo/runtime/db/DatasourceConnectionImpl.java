@@ -154,7 +154,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
 	 */
-	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys) throws SQLException {
+	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys,boolean allowCaching) throws SQLException {
 		// create key
 		String strSQL=sql.getSQLString();
 		String key=strSQL.trim()+":"+createGeneratedKeys;
@@ -162,13 +162,18 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 			key = MD5.getDigestAsString(key);
 		} catch (IOException e) {}
 		PreparedStatement ps = preparedStatements.get(key);
-		if(ps!=null) return ps;
+		if(ps!=null) {
+			if(ps.isClosed()) 
+				preparedStatements.remove(key);
+			else return ps;
+		}
+		
 		
 		if(createGeneratedKeys)	ps= getConnection().prepareStatement(strSQL,Statement.RETURN_GENERATED_KEYS);
 		else ps=getConnection().prepareStatement(strSQL);
 		if(preparedStatements.size()>MAX_PS)
 			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
-		preparedStatements.put(key,ps);
+		if(allowCaching)preparedStatements.put(key,ps);
 		return ps;
 	}
 	
@@ -184,7 +189,11 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 			key = MD5.getDigestAsString(key);
 		} catch (IOException e) {}
 		PreparedStatement ps = preparedStatements.get(key);
-		if(ps!=null) return ps;
+		if(ps!=null) {
+			if(ps.isClosed()) 
+				preparedStatements.remove(key);
+			else return ps;
+		}
 		
 		ps=getConnection().prepareStatement(strSQL,resultSetType,resultSetConcurrency);
 		if(preparedStatements.size()>MAX_PS)

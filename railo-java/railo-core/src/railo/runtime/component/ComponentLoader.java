@@ -4,6 +4,12 @@ import java.util.Map;
 
 import javax.servlet.jsp.tagext.BodyContent;
 
+import railo.print;
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.filter.DirectoryResourceFilter;
+import railo.commons.io.res.filter.ExtensionResourceFilter;
+import railo.commons.io.res.filter.OrResourceFilter;
+import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.ComponentImpl;
@@ -31,7 +37,9 @@ import railo.runtime.writer.BodyContentUtil;
 public class ComponentLoader {
 	
 
-    public static ComponentImpl loadComponent(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
+    private static final ResourceFilter DIR_OR_EXT=new OrResourceFilter(new ResourceFilter[]{DirectoryResourceFilter.FILTER,new ExtensionResourceFilter(".cfc")});
+
+	public static ComponentImpl loadComponent(PageContext pc,String rawPath, Boolean searchLocal, Boolean searchRoot) throws PageException  {
     	return (ComponentImpl)load(pc, rawPath, searchLocal, searchRoot,null,false);
     }
 
@@ -112,14 +120,11 @@ public class ComponentLoader {
     	// search from local
     	if(searchLocal && isRealPath)	{
     		// check realpath
-	    	ps=pc.getRelativePageSource(pathWithCFC);
-    		if(ps!=null) {
-				page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
-
-				if(page!=null){
-					if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
-					return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
-				}
+    		PageSource[] arr = ((PageContextImpl)pc).getRelativePageSources(pathWithCFC);
+    		page=PageSourceImpl.loadPage(pc, arr,null);
+			if(page!=null){
+				if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
+				return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 			}
     	}
     	
@@ -132,7 +137,7 @@ public class ComponentLoader {
 
     		ImportDefintion impDef = config.getComponentDefaultImport();
 	    	ImportDefintion[] impDefs=pp==null?new ImportDefintion[0]:pp.getImportDefintions();
-	    	
+	    	PageSource[] arr;
     		
 	    	int i=-1;
 	    	do{
@@ -140,10 +145,9 @@ public class ComponentLoader {
 	    			
 	    			// search from local first
 	    			if(searchLocal){
-		    			ps=pc.getRelativePageSource(impDef.getPackageAsPath()+pathWithCFC);
-		    			//print.o("ps1:"+ps.getDisplayPath());
-			    		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
-			    		if(page!=null)	{
+	    				arr = ((PageContextImpl)pc).getRelativePageSources(impDef.getPackageAsPath()+pathWithCFC);
+	    				page=PageSourceImpl.loadPage(pc, arr,null);
+	    				if(page!=null)	{
 			    			if(doCache)config.putCachedPageSource("import:"+impDef.getPackageAsPath()+pathWithCFC, page.getPageSource());
 			    			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 			        	}
@@ -165,13 +169,10 @@ public class ComponentLoader {
 		        	}*/
 	    			
 	    			// search mappings and webroot
-	    	    	ps=((PageContextImpl)pc).getPageSource("/"+impDef.getPackageAsPath()+pathWithCFC);
-	    	    	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
-	    	    	if(page!=null){
+	    			page=PageSourceImpl.loadPage(pc, ((PageContextImpl)pc).getPageSources("/"+impDef.getPackageAsPath()+pathWithCFC), null);
+	    			if(page!=null){
 	    	    		String key=impDef.getPackageAsPath()+pathWithCFC;
-	    	    		//app-if(((MappingImpl)ps.getMapping()).isAppMapping())key=appName+":"+key;
-	    	    		
-	    	    		if(doCache && !((MappingImpl)ps.getMapping()).isAppMapping())
+	    	    		if(doCache && !((MappingImpl)page.getPageSource().getMapping()).isAppMapping())
 	    	    			config.putCachedPageSource("import:"+key, page.getPageSource());
 	    				return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 	    	    	}
@@ -216,12 +217,11 @@ public class ComponentLoader {
     	}*/
     	
     	// search mappings and webroot
-    	ps=((PageContextImpl)pc).getPageSource(p);
-    	page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+    	page=PageSourceImpl.loadPage(pc,((PageContextImpl)pc).getPageSources(p),null);
     	if(page!=null){
-    		//app-String key=((MappingImpl)ps.getMapping()).isAppMapping()?":"+appName+":"+pathWithCFC:pathWithCFC;
     		String key=pathWithCFC;
-    		if(doCache && !((MappingImpl)ps.getMapping()).isAppMapping())config.putCachedPageSource(key, page.getPageSource());
+    		if(doCache && !((MappingImpl)page.getPageSource().getMapping()).isAppMapping())
+    			config.putCachedPageSource(key, page.getPageSource());
 			return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
     	}
 		
@@ -231,6 +231,16 @@ public class ComponentLoader {
     		m=cMappings[i];
     		ps=m.getPageSource(p);
     		page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+    		
+    		// recursive search
+    		if(page==null && config.doComponentDeepSearch() && m.hasPhysical() && path.indexOf('/')==-1) {
+    			String _path=getPagePath(pc, m.getPhysical(), null,pathWithCFC,DirectoryResourceFilter.FILTER);
+    			if(_path!=null) {
+    				ps=m.getPageSource(_path);
+        			page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+        			doCache=false;// do not cache this, it could be ambigous
+    			}
+    		}
     		
     		if(page!=null){
     			if(doCache)config.putCachedPageSource(pathWithCFC, page.getPageSource());
@@ -249,7 +259,6 @@ public class ComponentLoader {
 					page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 	
 					if(page!=null){
-						//if(doCache)config.putCachedPageSource(localCacheName, page.getPageSource());
 						return returnPage?page:load(pc,page,page.getPageSource(),trim(path.replace('/', '.')),isRealPath,interfaceUDFs);
 					}
 				}
@@ -271,8 +280,30 @@ public class ComponentLoader {
 		
     	
 	}
-    
-    private static String trim(String str) {
+
+    private static String getPagePath(PageContext pc, Resource res, String dir,String name, ResourceFilter filter) {
+		if(res.isFile()) {
+			if(res.getName().equalsIgnoreCase(name)) {
+				return dir+res.getName();
+			}
+		}
+		else if(res.isDirectory()) {
+			Resource[] _dir = res.listResources(filter);
+			if(_dir!=null){
+				if(dir==null) dir="/";
+				else dir=dir+res.getName()+"/";
+				String path;
+				for(int i=0;i<_dir.length;i++){
+					path=getPagePath(pc, _dir[i],dir, name,DIR_OR_EXT);
+					if(path!=null) return path;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	private static String trim(String str) {
     	if(StringUtil.startsWith(str, '.'))str=str.substring(1);
 		return str;
 	}
@@ -280,24 +311,26 @@ public class ComponentLoader {
 	private static Page getPage(PageContext pc,String path, RefBoolean isRealPath, boolean searchLocal) throws PageException  {
     	Page page=null;
 	    isRealPath.setValue(!StringUtil.startsWith(path,'/'));
-	    PageSource ps;
 	    // search from local
+	    PageSource[] arr;
 	    
 	    if(searchLocal && isRealPath.toBooleanValue()){
-	    	ps=pc.getRelativePageSource(path);
-		    if(ps==null) return null;
-		    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+	    	arr = ((PageContextImpl)pc).getRelativePageSources(path);
+		    page=PageSourceImpl.loadPage(pc, arr, null);
+	    	//if(ps==null) return null;
+		    //page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
 	    }
 	    // search from root
 	    if(page==null) {
 	    	if(isRealPath.toBooleanValue()){
 	    		isRealPath.setValue(false);
-	    		ps=pc.getPageSource('/'+path);
+	    		arr=((PageContextImpl)pc).getPageSources('/'+path);
 	    	}
 	    	else {
-	    		ps=pc.getPageSource(path);
+	    		arr=((PageContextImpl)pc).getPageSources(path);
 	    	}
-    	    page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
+    	    page=PageSourceImpl.loadPage(pc,arr,null);
+    	    //page=((PageSourceImpl)ps).loadPage(pc,pc.getConfig(),null);
         }
     	return page;
 	}
@@ -327,6 +360,38 @@ public class ComponentLoader {
 		if(interfaceUDFs==null) return loadComponent(pc,page, ps,callPath, isRealPath);
 		else return loadInterface(pc,page, ps, callPath, isRealPath, interfaceUDFs);
 	}
+	
+	public static Page loadPage(PageContext pc,PageSource ps) throws PageException  {
+        if(pc.getConfig().debug()) {
+            DebugEntry debugEntry=pc.getDebugger().getEntry(pc,ps);
+            pc.addPageSource(ps,true);
+            
+            int currTime=pc.getExecutionTime();
+            long exeTime=0;
+            long time=System.currentTimeMillis();
+            try {
+            	debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
+            	exeTime=System.currentTimeMillis();
+                return ((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+            }
+            finally {
+                int diff= ((int)(System.currentTimeMillis()-exeTime)-(pc.getExecutionTime()-currTime));
+                pc.setExecutionTime(pc.getExecutionTime()+(int)(System.currentTimeMillis()-time));
+                debugEntry.updateExeTime(diff);
+                pc.removeLastPageSource(true);
+            }
+        }
+    // no debug
+        else {
+            pc.addPageSource(ps,true);
+            try {   
+            	return ((PageSourceImpl)ps).loadPage(pc,pc.getConfig());
+            }
+            finally {
+                pc.removeLastPageSource(true);
+            } 
+        }
+    }
 
 	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {
         ComponentImpl rtn=null;

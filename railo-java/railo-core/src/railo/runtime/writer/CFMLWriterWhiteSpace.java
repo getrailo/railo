@@ -314,6 +314,14 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 	public void writeRaw(String str) throws IOException {
 		printBuffer();
 		super.write(str);
-	}
+	}    
+	
+	/**
+     * just a wrapper function for ACF
+     * @throws IOException 
+     */
+    public void initHeaderBuffer() throws IOException{
+    	resetHTMLHead();
+    }
 	
 }

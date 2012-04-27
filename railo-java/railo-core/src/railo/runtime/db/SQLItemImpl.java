@@ -149,4 +149,19 @@ public final class SQLItemImpl implements SQLItem,Serializable,Sizeable {
 		SizeOf.size(this.nulls)+
 		SizeOf.size(this.value);
 	}
+
+	
+	public static SQLItem duplicate(SQLItem item) {
+		if(!(item instanceof SQLItemImpl)) return item;
+		return ((SQLItemImpl) item).duplicate();
+	}
+
+	public SQLItem duplicate() {
+		SQLItemImpl rtn = new SQLItemImpl(value,type);
+		rtn.nulls=nulls;
+		rtn.cfValue=cfValue;
+		rtn.isValueSet=isValueSet;
+		rtn.scale=scale;
+		return rtn;
+	}
 }

@@ -43,8 +43,8 @@
 		struct(
 			action:"remote",label:stMenu.remote.label,
 			children:array(
-				struct(action:"securityKey",label:stMenu.remote.securityKey,display:true),
-				struct(action:"clients",label:stMenu.remote.clients,hidden:  server.ColdFusion.ProductLevel eq "community" or server.ColdFusion.ProductLevel eq "professional")
+				struct(action:"securityKey",label:stMenu.remote.securityKey,hidden:!request.hasRemoteClientUsage),
+				struct(action:"clients",label:stMenu.remote.clients,hidden:!request.hasRemoteClientUsage)
 			)
 		),
 		

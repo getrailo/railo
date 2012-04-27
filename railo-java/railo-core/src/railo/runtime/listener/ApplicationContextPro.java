@@ -1,5 +1,6 @@
 package railo.runtime.listener;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -73,4 +74,6 @@ public interface ApplicationContextPro extends ApplicationContext {
 	public void setSecuritySettings(String applicationtoken,String cookiedomain, int idletimeout);
 	
 	public void reinitORM(PageContext pc) throws PageException ;
+
+	public Resource getSource(); 
 }

@@ -420,9 +420,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     		// UDF does not exist
     		if(cUdf==null ) {
     			throw new ExpressionException(
-      					 "component ["+componentPage.getPageSource().getComponentName()+
+      					 "component ["+componentPage.getPageSource().getDisplayPath()+
       					 "] does not implement the function ["+iUdf.toString().toLowerCase()+"] of the interface ["+
-      					 iUdf.getPageSource().getComponentName()+"]");
+      					 iUdf.getPageSource().getDisplayPath()+"]");
       					
     		}
     		
@@ -483,9 +483,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	private String _getErrorMessage(UDFImpl cUdf,UDFImpl iUdf) {
 		return "function ["+cUdf.toString().toLowerCase()+"] of component " +
-			 "["+pageSource.getComponentName()+"]" +
+			 "["+pageSource.getDisplayPath()+"]" +
 			 " does not match the function declarition ["+iUdf.toString().toLowerCase()+"] of the interface " +
-			 "["+iUdf.getPageSource().getComponentName()+"]";
+			 "["+iUdf.getPageSource().getDisplayPath()+"]";
 	}
 
 

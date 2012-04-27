@@ -129,7 +129,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         }
         if(!doQueryString) return src;
         if(clazz.getName().indexOf("microsoft")!=-1 || clazz.getName().indexOf("jtds")!=-1)
-        return src+=';'+name+'='+value;
+        	return src+=';'+name+'='+value;
         return src+=((src.indexOf('?')!=-1)?'&':'?')+name+'='+value;
     }
 

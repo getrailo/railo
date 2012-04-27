@@ -234,14 +234,8 @@ public final class CacheResourceProvider implements ResourceProvider {
 			createRoot();
 			
 		}
-		try {
-			Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
-			return c;
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
+		return c;
 	}
 	
 	private String toKey(String path, String name) {

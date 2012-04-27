@@ -538,15 +538,15 @@ public final class JSONConverter {
 		    sb.append(((ScriptConvertable)object).serialize());
 		    return;
 		}
-		
-		if(done.contains(object)){
+		Object raw = LazyConverter.toRaw(object);
+		if(done.contains(raw)){
 			sb.append(goIn());
 		    sb.append("null");
 		    return;
 		}
 		
 		
-		done.add(object);
+		done.add(raw);
 		try{
 		        // Component
 		        if(object instanceof Component) {
@@ -609,7 +609,7 @@ public final class JSONConverter {
 				_serializeClass(pc,test,object.getClass(),object,sb,serializeQueryByColumns,done);
 		}
 		finally{
-			done.remove(object);
+			done.remove(raw);
 		}
 	}
 

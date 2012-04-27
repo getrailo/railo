@@ -13,6 +13,7 @@ import railo.commons.lang.Pair;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
@@ -140,7 +141,8 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ConfigWebImpl cwi;
 			try {
 				cwi = (ConfigWebImpl)config;
-				p=cwi.getPageSource(oldPc,null, template, false,false,true).loadPage(cwi);
+				p=PageSourceImpl.loadPage(pc, cwi.getPageSources(oldPc,null, template, false,false,true));
+				//p=cwi.getPageSources(oldPc,null, template, false,false,true).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
@@ -175,17 +177,18 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		try {
 			p.threadCall(pc, threadIndex); 
 		}
-		catch(Abort a){}
 		catch (Throwable t) {
-			ConfigWeb c = pc.getConfig();
-			if(c instanceof ConfigImpl) {
-				ConfigImpl ci=(ConfigImpl) c;
-				LogAndSource log = ci.getThreadLogger();
-				if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+			if(!Abort.isSilentAbort(t)) {
+				ConfigWeb c = pc.getConfig();
+				if(c instanceof ConfigImpl) {
+					ConfigImpl ci=(ConfigImpl) c;
+					LogAndSource log = ci.getThreadLogger();
+					if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+				}
+				PageException pe = Caster.toPageException(t);
+				if(!serializable)catchBlock=pe.getCatchBlock(pc);
+				return pe;
 			}
-			PageException pe = Caster.toPageException(t);
-			if(!serializable)catchBlock=pe.getCatchBlock(pc);
-			return pe;
 		}
 		finally {
 			completed=true;

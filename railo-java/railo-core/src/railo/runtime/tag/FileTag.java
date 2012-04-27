@@ -624,7 +624,7 @@ public final class FileTag extends TagImpl {
             if(!file.exists()) file.createNewFile();
             String content=Caster.toString(output);
             if(fixnewline)content=doFixNewLine(content);
-    		if(addnewline) content+="\n";
+    		if(addnewline) content+=SystemUtil.getOSSpecificLineSeparator();
             IOUtil.write(file,content,charset,true);
         	
         } 
@@ -775,7 +775,7 @@ public final class FileTag extends TagImpl {
 			cffile.set("clientfileext",getFileExtension(clientFile));
 			cffile.set("clientfilename",getFileName(clientFile));
 		
-	    // check desination
+	    // check destination
 	    if(StringUtil.isEmpty(strDestination))
 	    	throw new ApplicationException("attribute destination is not defined in tag file");
 
@@ -791,13 +791,13 @@ public final class FileTag extends TagImpl {
 	    else if(!clientFileName.equalsIgnoreCase(destination.getName()))
 	    	fileWasRenamed=true;
 	    
-	    // check parent desination -> directory of the desinatrion
+	    // check parent destination -> directory of the desinatrion
 	    Resource parentDestination=destination.getParentResource();
 	    
 	    if(!parentDestination.exists())
 	    	throw new ApplicationException("attribute destination has a invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
 	    else if(!parentDestination.canWrite())
-	    	throw new ApplicationException("can't write to desination directory ["+parentDestination+"], no access to write");
+	    	throw new ApplicationException("can't write to destination directory ["+parentDestination+"], no access to write");
 	    
 	    // set server variables
 		cffile.set("serverdirectory",getParent(destination));
@@ -811,7 +811,7 @@ public final class FileTag extends TagImpl {
 	    if(destination.exists()) {
 	    	fileExisted=true;
 	    	if(nameconflict==NAMECONFLICT_ERROR) {
-	    		throw new ApplicationException("desination file ["+destination+"] already exist");
+	    		throw new ApplicationException("destination file ["+destination+"] already exist");
 	    	}
 	    	else if(nameconflict==NAMECONFLICT_SKIP) {
 				cffile.set("fileexisted",Caster.toBoolean(fileExisted));
@@ -838,7 +838,7 @@ public final class FileTag extends TagImpl {
 	    		fileWasOverwritten=true;
 	    		if(!destination.delete())
 	    			if(destination.exists()) // hier hatte ich concurrent problem das damit ausgeraeumt ist
-	    				throw new ApplicationException("can't delete desination file ["+destination+"]");
+	    				throw new ApplicationException("can't delete destination file ["+destination+"]");
 	    	}
 	    	// for "overwrite" no action is neded
 	    	

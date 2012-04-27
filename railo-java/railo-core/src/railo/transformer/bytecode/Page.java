@@ -27,6 +27,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.extern.StringExternalizerWriter;
 import railo.transformer.bytecode.literal.LitString;
@@ -60,6 +61,7 @@ public final class Page extends BodyBase {
 	}
 
 	private static final Type KEY_IMPL = Type.getType(KeyImpl.class);
+	private static final Type KEY_CONSTANTS = Type.getType(KeyConstants.class);
 	private static final Method KEY_INIT = new Method(
 			"init",
 			Types.COLLECTION_KEY,
@@ -699,11 +701,14 @@ public final class Page extends BodyBase {
 			ga.dup();
 			ga.push(index++);
 			
-			ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
-			if(value instanceof Literal)
+			/*String str = value.getString();
+			if(KeyConstants.hasConstant(str)) {
+				ga.getStatic(KEY_CONSTANTS, "_"+str, Types.COLLECTION_KEY);
+			}
+			else {*/
+				ExpressionUtil.writeOutSilent(value,bc, Expression.MODE_REF);
 				ga.invokeStatic(KEY_IMPL, KEY_INTERN);
-			else 
-				ga.invokeStatic(KEY_IMPL, KEY_INIT);
+			//}
 			ga.visitInsn(Opcodes.AASTORE);
 		}
 		ga.visitFieldInsn(Opcodes.PUTSTATIC, 
@@ -1236,7 +1241,11 @@ public final class Page extends BodyBase {
 			attr=(Attribute) entry.getValue();
 			adapter.loadLocal(sct);
 			adapter.push(attr.getName());
-			ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			if(attr.getValue() instanceof Literal)
+				ExpressionUtil.writeOutSilent(attr.getValue(),bc,Expression.MODE_REF);
+			else
+				adapter.push("[runtime expression]");
+			
 			adapter.invokeVirtual(STRUCT_IMPL, SET_EL);
 			adapter.pop();
 		}

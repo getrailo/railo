@@ -361,14 +361,15 @@ public final class WDDXConverter {
 			deep--;
 			return rtn;
 		}
-		
-		if(done.contains(object)){
+
+		Object raw = LazyConverter.toRaw(object);
+		if(done.contains(raw)){
 			rtn= goIn()+"<null/>";
 			deep--;
 			return rtn;
 		}
 		
-		done.add(object);
+		done.add(raw);
 		try {
 			// Component
 			if(object instanceof Component) {
@@ -408,7 +409,7 @@ public final class WDDXConverter {
 			}
 		}
 		finally{
-			done.remove(object);
+			done.remove(raw);
 		}
 		// Others
 		rtn="<struct type="+_+"L"+object.getClass().getName()+";"+_+"></struct>";

@@ -103,7 +103,8 @@ Defaults --->
                     componentDefaultImport="#form.componentDefaultImport#"
                     componentLocalSearch="#isDefined('form.componentLocalSearch')#"
                     componentPathCache="#isDefined('form.componentPathCache')#"
-                    
+                    deepSearch="#isDefined('form.componentDeepSearchDesc') and form.componentDeepSearchDesc EQ true#"
+						
                     
                     remoteClients="#request.getRemoteClients()#"
                     >
@@ -131,6 +132,7 @@ Defaults --->
                 componentPathCache=""
                 componentDefaultImport=""
                 componentLocalSearch=""
+                deepSearch=""
 				remoteClients="#request.getRemoteClients()#">
 		
 		</cfcase>
@@ -235,6 +237,20 @@ Create Datasource --->
 		<span class="comment">#stText.Components.componentMappingSearchDesc#</span>
 	</td>
 </tr>
+
+<!--- Deep Search ---->
+<tr>
+	<td class="tblHead" width="150">#stText.Components.componentDeepSearch#</td>
+	<td class="tblContent" colspan="4">
+	<cfif hasAccess>
+    	<input type="checkbox" class="checkbox" name="componentDeepSearchDesc" value="yes" <cfif component.deepsearch>checked</cfif>>
+    <cfelse>
+    	<b>#yesNoFormat(setting.deepsearch)#</b>
+	</cfif>
+    
+    <span class="comment">#stText.Components.componentDeepSearchDesc#</span></td>
+</tr>
+
 
 <!--- component path cache ---->
 <tr>
@@ -343,7 +359,6 @@ Use Shadow --->
 
 
 <cfoutput>
-
 <table class="tbl" width="740">
 <tr>
 	<td colspan="5"><h2>#stText.Components.componentMappings#</h2>
@@ -357,7 +372,7 @@ Use Shadow --->
 		<td class="tblHead" nowrap>#stText.Components.Physical#</td>
 		<td class="tblHead" nowrap>#stText.Components.Archive#</td>
 		<td class="tblHead" nowrap>#stText.Components.Primary#</td>
-		<td class="tblHead" nowrap>#stText.Components.Trusted#</td>
+		<td class="tblHead" nowrap>#stText.Mappings.TrustedHead#</td>
 	</tr>
 	<cfset count=0>
 
@@ -394,8 +409,17 @@ Use Shadow --->
 			<option value="archive" <cfif not mappings.physicalFirst>selected</cfif>>#stText.Components.archive#</option>
 		</select></cfif></td>
 		
-		<td class="tblContent" nowrap><cfif mappings.readOnly>#iif(mappings.Trusted,de("Yes"),de("No"))#<cfelse><input type="checkbox" class="checkbox" 
-		name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" value="yes" <cfif mappings.trusted>checked</cfif>></cfif></td>
+		<td class="tblContent" nowrap>
+		<cfif mappings.readOnly>
+            	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
+			<cfelse>
+            <select name="trusted_#mappings.currentrow#" onChange="checkTheBox(this)">
+                <option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+            </cfif>
+		
+		</td>
 	</tr>
 </cfloop>
 <cfif hasAccess>
@@ -417,8 +441,11 @@ Use Shadow --->
 			<option value="physical" selected>#stText.Components.physical#</option>
 			<option value="archive">#stText.Components.archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap><input onClick="checkTheBox(this)" type="checkbox" class="checkbox" 
-		name="trusted_#mappings.recordcount+1#" value="yes"></td>
+		<td class="tblContent" nowrap>
+        <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+                <option value="true">#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select></td>
 	</tr>
 </cfif>
 <cfif hasAccess>

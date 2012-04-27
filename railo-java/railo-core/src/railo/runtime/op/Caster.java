@@ -3142,28 +3142,38 @@ public final class Caster {
         	clazz=ClassUtil.toArrayClass(clazz);
         	return clazz;
         }
-        
         // check for argument
-        Class<?> clazz=otherTypeToClass(type);
-        if(clazz!=null) return clazz;
-        throw new ExpressionException("invalid type ["+type+"]");
+        Class<?> clazz;
+		try {
+			clazz = otherTypeToClass(type);
+		} 
+		catch (ClassException e) {
+			throw Caster.toPageException(e);
+		}
+        return clazz;
     }
     
-    private static Class<?> otherTypeToClass(String type){
+    private static Class<?> otherTypeToClass(String type) throws PageException, ClassException{
     	PageContext pc = ThreadLocalPageContext.get();
-        if(pc!=null)	{
+    	PageException pe=null;
+        // try to load as cfc
+    	if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
         		return ComponentUtil.getServerComponentPropertiesClass(c);
     		} 
-            catch (PageException pe) {}
+            catch (PageException e) {
+            	pe=e;
+            }
         }
+        // try to load as class
         try {
 			return ClassUtil.loadClass(type);
 		} 
-        catch (ClassException e) {}
-        
-        return null;
+        catch (ClassException ce) {
+        	if(pe!=null) throw pe;
+        	throw ce;
+        }
     }
     
 
@@ -3361,7 +3371,6 @@ public final class Caster {
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+type+"]");
         }
         throw new CasterException(o,type);
-        //throw new ExpressionException("invalid type ["+type+"]");
     }
 
 	public static String toZip(Object o) throws PageException {

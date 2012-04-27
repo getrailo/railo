@@ -17,13 +17,13 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.util.StructSupport;
-import railo.runtime.util.IteratorWrapper;
 
 public final class RequestImpl extends StructSupport implements Request {
 
 	
-	private HttpServletRequest req;
+	private HttpServletRequest _req;
 	private boolean init;
 	private static int _id=0;
 	private int id=0;
@@ -42,8 +42,7 @@ public final class RequestImpl extends StructSupport implements Request {
     }
 
 	public void initialize(PageContext pc) {
-		
-		req = pc.getHttpServletRequest();//HTTPServletRequestWrap.pure(pc.getHttpServletRequest());
+		_req = pc.getHttpServletRequest();//HTTPServletRequestWrap.pure(pc.getHttpServletRequest());
 		init=true;
 		
 	}
@@ -75,10 +74,12 @@ public final class RequestImpl extends StructSupport implements Request {
 	 */
 	public int size() {
 		int size=0;
-		Enumeration<String> names = req.getAttributeNames();
-		while(names.hasMoreElements()){
-			names.nextElement();
-			size++;
+		synchronized (_req) {
+			Enumeration<String> names = _req.getAttributeNames();
+			while(names.hasMoreElements()){
+				names.nextElement();
+				size++;
+			}
 		}
 		return size;
 	}
@@ -89,31 +90,35 @@ public final class RequestImpl extends StructSupport implements Request {
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
 	public Iterator keyIterator() {
-		return new IteratorWrapper(req.getAttributeNames());
+		return new KeyIterator(keys());
 	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public Key[] keys() {
-		Enumeration<String> names = req.getAttributeNames();
-		List<Key> list=new ArrayList<Key>();
-		while(names.hasMoreElements()){
-			list.add(KeyImpl.getInstance(names.nextElement()));
+		synchronized (_req) {
+			Enumeration<String> names = _req.getAttributeNames();
+			List<Key> list=new ArrayList<Key>();
+			while(names.hasMoreElements()){
+				list.add(KeyImpl.getInstance(names.nextElement()));
+			}
+			return list.toArray(new Key[list.size()]);
 		}
-		return list.toArray(new Key[list.size()]);
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#keysAsString()
 	 */
 	public String[] keysAsString() {
-		Enumeration<String> names = req.getAttributeNames();
-		List<String> list=new ArrayList<String>();
-		while(names.hasMoreElements()){
-			list.add(names.nextElement());
+		synchronized (_req) {
+			Enumeration<String> names = _req.getAttributeNames();
+			List<String> list=new ArrayList<String>();
+			while(names.hasMoreElements()){
+				list.add(names.nextElement());
+			}
+			return list.toArray(new String[list.size()]);
 		}
-		return list.toArray(new String[list.size()]);
 	}
 
 	/**
@@ -129,9 +134,11 @@ public final class RequestImpl extends StructSupport implements Request {
 	 * @see java.util.Map#clear()
 	 */
 	public void clear() {
-		Enumeration<String> names = req.getAttributeNames();
-		while(names.hasMoreElements()){
-			req.removeAttribute(names.nextElement());
+		synchronized (_req) {
+			Enumeration<String> names = _req.getAttributeNames();
+			while(names.hasMoreElements()){
+				_req.removeAttribute(names.nextElement());
+			}
 		}
 	}
 
@@ -144,47 +151,52 @@ public final class RequestImpl extends StructSupport implements Request {
 
 
 	public Object removeEL(Key key) {
-		
-		Object value = req.getAttribute(key.getLowerString()); 
-		if(value!=null) {
-			req.removeAttribute(key.getLowerString());
-			return value;
-		}
-		
-		Enumeration<String> names = req.getAttributeNames();
-		String k;
-		while(names.hasMoreElements()){
-			k=names.nextElement();
-			if(k.equalsIgnoreCase(key.getString())) {
-				value= req.getAttribute(k);
-				req.removeAttribute(k);
+		synchronized (_req) {
+			Object value = _req.getAttribute(key.getLowerString()); 
+			if(value!=null) {
+				_req.removeAttribute(key.getLowerString());
 				return value;
 			}
+			
+			Enumeration<String> names = _req.getAttributeNames();
+			String k;
+			while(names.hasMoreElements()){
+				k=names.nextElement();
+				if(k.equalsIgnoreCase(key.getString())) {
+					value= _req.getAttribute(k);
+					_req.removeAttribute(k);
+					return value;
+				}
+			}
+			return value;
 		}
-		return value;
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		Object value = req.getAttribute(key.getLowerString()); 
-		if(value!=null) return value;
-		
-		Enumeration<String> names = req.getAttributeNames();
-		String k;
-		while(names.hasMoreElements()){
-			k=names.nextElement();
-			if(k.equalsIgnoreCase(key.getString())) return req.getAttribute(k);
+		synchronized (_req) {
+			Object value = _req.getAttribute(key.getLowerString()); 
+			if(value!=null) return value;
+			
+			Enumeration<String> names = _req.getAttributeNames();
+			String k;
+			while(names.hasMoreElements()){
+				k=names.nextElement();
+				if(k.equalsIgnoreCase(key.getString())) return _req.getAttribute(k);
+			}
+			return defaultValue;
 		}
-		return defaultValue;
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Key key, Object value) {
-		req.setAttribute(key.getLowerString(), value);
+		synchronized (_req) {
+			_req.setAttribute(key.getLowerString(), value);
+		}
 		return value;
 	}
 

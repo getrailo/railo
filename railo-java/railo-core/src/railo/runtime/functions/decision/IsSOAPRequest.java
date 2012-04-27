@@ -2,16 +2,17 @@ package railo.runtime.functions.decision;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
-import railo.runtime.exp.FunctionNotSupported;
 import railo.runtime.ext.function.Function;
+import railo.runtime.net.rpc.AxisUtil;
 
 /**
  * 
  */
 public final class IsSOAPRequest implements Function {
 	
-//	 TODO impl. function IsSOAPRequest
+	private static final long serialVersionUID = 5616044662863702066L;
+
 	public static boolean call(PageContext pc) throws ExpressionException {
-		throw new FunctionNotSupported("IsSOAPRequest");
+		return AxisUtil.isSOAPRequest();
 	}
 }

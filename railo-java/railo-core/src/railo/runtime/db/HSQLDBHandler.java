@@ -17,7 +17,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.DatabaseException;
-import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
@@ -45,8 +44,6 @@ public final class HSQLDBHandler {
 	private static final int BINARY=6;
 	
 	
-	private DatasourceConnection dc;
-    private ArrayList<String> usedTables=new ArrayList<String>();
 	Executer executer=new Executer();
 	QoQ qoq=new QoQ();
 	private static Object lock=new SerializableObject(); 
@@ -60,17 +57,17 @@ public final class HSQLDBHandler {
 	
 	/**
 	 * adds a table to the memory database
+	 * @param conn 
 	 * @param pc
 	 * @param name name of the new table
 	 * @param query data source for table
 	 * @throws SQLException 
 	 * @throws PageException 
 	 */
-	private void addTable(PageContext pc,String name,Query query, boolean doSimpleTypes) throws SQLException, PageException {
+	private static void addTable(Connection conn, PageContext pc,String name,Query query, boolean doSimpleTypes,ArrayList<String> usedTables) throws SQLException, PageException {
       Statement stat;
-		name=name.replace('.','_');
 		usedTables.add(name);
-			stat = dc.getConnection().createStatement();
+			stat = conn.createStatement();
 			Key[] keys = query.keys();
 			int[] types=query.getTypes();
 			int[] innerTypes=toInnerTypes(types);
@@ -95,8 +92,7 @@ public final class HSQLDBHandler {
 				insert.append(")");
 				values.append(")");
                 stat.execute(create.toString());
-				PreparedStatement prepStat = dc.getConnection().prepareStatement(insert.toString()+values.toString());
-				
+				PreparedStatement prepStat = conn.prepareStatement(insert.toString()+values.toString());
 
 			// INSERT STATEMENT
 			//HashMap integerTypes=getIntegerTypes(types);
@@ -147,7 +143,7 @@ public final class HSQLDBHandler {
 	}
 	
 	
-	private int[] toInnerTypes(int[] types) {
+	private static int[] toInnerTypes(int[] types) {
 		int[] innerTypes=new int[types.length];
 		for(int i=0;i<types.length;i++) {
 			int type=types[i];
@@ -179,7 +175,7 @@ public final class HSQLDBHandler {
 	}
 	
 	
-	private String toUsableType(int type) {
+	private static String toUsableType(int type) {
 		if(type==Types.NCHAR)return "CHAR";
 		if(type==Types.NCLOB)return "CLOB";
 		if(type==Types.NVARCHAR)return "VARCHAR_IGNORECASE";
@@ -195,33 +191,31 @@ public final class HSQLDBHandler {
 	
 	/**
 	 * remove a table from the memory database
+	 * @param conn 
 	 * @param name
 	 * @throws DatabaseException
 	 */
-	private void removeTable(String name) throws DatabaseException {
+	private static void removeTable(Connection conn, String name) throws SQLException {
 		name=name.replace('.','_');
-		try {
-			Statement stat = dc.getConnection().createStatement();
-			stat.execute("DROP TABLE "+name);
-		} catch (SQLException e) {
-			throw new DatabaseException(e,dc);
-		}
+		Statement stat = conn.createStatement();
+		stat.execute("DROP TABLE "+name);
+		DBUtil.commitEL(conn);
 	} 
     
 	/**
 	 * remove all table inside the memory database
+	 * @param conn 
 	 */
-	private void removeAll() {
+	private static void removeAll(Connection conn, ArrayList<String> usedTables) {
 		int len=usedTables.size();
+		
 		for(int i=0;i<len;i++) {
 			
 			String tableName=usedTables.get(i).toString();
 			//print.out("remove:"+tableName);
 			try {
-				removeTable(tableName);
-			} catch (DatabaseException e) {
-	               //ExceptionHandler.printStackTrace(e);
-	        }
+				removeTable(conn,tableName);
+			} catch (Throwable t) {}
 		}
 	}
 	
@@ -302,12 +296,7 @@ public final class HSQLDBHandler {
 			String strSQL=StringUtil.replace(sql.getSQLString(),"[","",false);
 			strSQL=StringUtil.replace(strSQL,"]","",false);
 			sql.setSQLString(strSQL);
-			try {
-				return  _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,isUnion);
-			}
-			catch(PageException pe){
-				return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,isUnion);
-			}
+			return _execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,isUnion);
 			
 		}
     	catch(ParseException e) {
@@ -318,7 +307,7 @@ public final class HSQLDBHandler {
     
     private QueryImpl _execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout, Stopwatch stopwatch, Set<String> tables, boolean isUnion) throws PageException {
     	try {
-			return __execute(pc, sql, maxrows, fetchsize, timeout,stopwatch,tables,false);
+			return __execute(pc, SQLImpl.duplicate(sql), maxrows, fetchsize, timeout,stopwatch,tables,false);
 		}
     	catch(PageException pe) {
 			if(isUnion || StringUtil.indexOf(pe.getMessage(), "NumberFormatException:")!=-1){
@@ -328,14 +317,14 @@ public final class HSQLDBHandler {
 		}
 	}
 
-	public QueryImpl __execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout,Stopwatch stopwatch, Set<String> tables, boolean doSimpleTypes) throws PageException {
-
+	public static  QueryImpl __execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout,Stopwatch stopwatch,Set<String> tables, boolean doSimpleTypes) throws PageException {
+		ArrayList<String> usedTables=new ArrayList<String>();
 		synchronized(lock) {
 		    	
 			QueryImpl nqr=null;
 			ConfigImpl config = (ConfigImpl)pc.getConfig();
 			DatasourceConnectionPool pool = config.getDatasourceConnectionPool();
-	    	dc=pool.getDatasourceConnection(pc,config.getDataSource("_queryofquerydb"),"sa","");
+			DatasourceConnection dc=pool.getDatasourceConnection(pc,config.getDataSource("_queryofquerydb"),"sa","");
 	    	Connection conn = dc.getConnection();
 	    	try {
 	    		DBUtil.setAutoCommitEL(conn,false);
@@ -349,14 +338,15 @@ public final class HSQLDBHandler {
 		    		//int len=tables.size();
 	                while(it.hasNext()) {
 		    			String tableName=it.next().toString();//tables.get(i).toString();
+		    			
 		    			String modTableName=tableName.replace('.','_');
 	                    String modSql=StringUtil.replace(sql.getSQLString(),tableName,modTableName,false);
 		    			sql.setSQLString(modSql);
-		    			addTable(pc,tableName,Caster.toQuery(pc.getVariable(tableName)),doSimpleTypes);
+		    			addTable(conn,pc,modTableName,Caster.toQuery(pc.getVariable(tableName)),doSimpleTypes,usedTables);
 		    		}
 	                DBUtil.setReadOnlyEL(conn,true);
 	                try {
-	                	nqr =new QueryImpl(dc,sql,maxrows,fetchsize,timeout,"query");
+	                	nqr =new QueryImpl(dc,sql,maxrows,fetchsize,timeout,"query",null,false,false);
 	                }
 	                finally {
 						DBUtil.setReadOnlyEL(conn,false);
@@ -373,8 +363,8 @@ public final class HSQLDBHandler {
 	
 	    	}
 	    	finally {
+	    		removeAll(conn,usedTables);
                 DBUtil.setAutoCommitEL(conn,true);
-	    		removeAll();
 	    		pool.releaseDatasourceConnection(dc);
 	    		
 	    		//manager.releaseConnection(dc);

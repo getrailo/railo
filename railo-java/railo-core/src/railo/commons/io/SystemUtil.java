@@ -29,6 +29,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -675,7 +676,7 @@ public final class SystemUtil {
 		return (int)(1000L-(1000L*used/max));
 	}
 	
-	public static Query getMemoryUsage(int type) {
+	public static Query getMemoryUsage(int type) throws DatabaseException {
 		
 		
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();

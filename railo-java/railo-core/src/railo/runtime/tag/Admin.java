@@ -6,9 +6,9 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +21,7 @@ import javax.servlet.jsp.tagext.Tag;
 import org.opencfml.eventgateway.Gateway;
 
 import railo.commons.collections.HashTable;
+import railo.commons.db.DBUtil;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
@@ -510,6 +511,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getDatasources",         ACCESS_FREE) && check2(ACCESS_READ  )) doGetDatasources();
         else if(check("getRemoteClients",       ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClients();
         else if(check("getRemoteClient",       	ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClient();
+        else if(check("hasRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doHasRemoteClientUsage();
         else if(check("getRemoteClientUsage",   ACCESS_FREE) && check2(ACCESS_READ  )) doGetRemoteClientUsage();
         else if(check("getSpoolerTasks",   		ACCESS_FREE) && check2(ACCESS_READ  )) doGetSpoolerTasks();
         else if(check("getPerformanceSettings", ACCESS_FREE) && check2(ACCESS_READ  )) doGetPerformanceSettings();
@@ -983,7 +985,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Resource srcDir = ResourceUtil.toResourceExisting(pageContext, "zip://"+src.getAbsolutePath());
         String name=ResourceUtil.getName(src.getName());
         if(!PluginFilter.doAccept(srcDir))
-        	throw new ApplicationException("plugin ["+srcDir.getName()+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root");
+        	throw new ApplicationException("plugin ["+strSrc+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.List.arrayToList(srcDir.list(), ", ")+"]");
         
         Resource dir = getPluginDirectory();
         Resource trgDir = dir.getRealResource(name);
@@ -1155,8 +1157,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         
         try {
-            PageSource ps = pageContext.getPageSource(config.getDebugTemplate());
-            if(ps.exists()) sct.set(DEBUG_TEMPLATE,ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(config.getDebugTemplate());
+            if(ps!=null) sct.set(DEBUG_TEMPLATE,ps.getDisplayPath());
             else sct.set(DEBUG_TEMPLATE,"");
         } catch (PageException e) {
             sct.set(DEBUG_TEMPLATE,"");
@@ -1178,8 +1180,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         // 500
         String template=config.getErrorTemplate(500);
         try {
-            PageSource ps = pageContext.getPageSource(template);
-            if(ps.exists()) templates.set("500",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(template);
+            if(ps!=null) templates.set("500",ps.getDisplayPath());
             else templates.set("500","");
         } catch (PageException e) {
         	templates.set("500","");
@@ -1189,8 +1191,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         // 404
         template=config.getErrorTemplate(404);
         try {
-            PageSource ps = pageContext.getPageSource(template);
-            if(ps.exists()) templates.set("404",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(template);
+            if(ps!=null) templates.set("404",ps.getDisplayPath());
             else templates.set("404","");
         } catch (PageException e) {
         	templates.set("404","");
@@ -2158,8 +2160,6 @@ private void doGetMappings() throws PageException {
     			new String[]{"code","displayname"},
     			new String[]{"varchar","varchar"},
     			0,"usage");
-       
-
         Struct usages = config.getRemoteClientUsage();
         Key[] keys = usages.keys();
         for(int i=0;i<keys.length;i++) {
@@ -2169,6 +2169,12 @@ private void doGetMappings() throws PageException {
         	//qry.setAt("description", i+1, usages[i].getDescription());
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
+    }
+
+    private void doHasRemoteClientUsage() throws PageException {
+        
+        Struct usages = config.getRemoteClientUsage();
+        pageContext.setVariable(getString("admin",action,"returnVariable"),usages.isEmpty()?Boolean.FALSE:Boolean.TRUE);
     }
     
     
@@ -2219,6 +2225,7 @@ private void doGetMappings() throws PageException {
         String username=getString("admin",action,"dbusername");
         String password=getString("admin",action,"dbpassword");
         String host=getString("host","");
+        String timezone=getString("timezone","");
         String database=getString("database","");
         int port=getInt("port",-1);
         int connLimit=getInt("connectionLimit",-1);
@@ -2260,6 +2267,7 @@ private void doGetMappings() throws PageException {
                 allow,
                 validate,
                 storage,
+                timezone,
                 custom
                 
         );
@@ -2505,13 +2513,7 @@ private void doGetMappings() throws PageException {
     private Connection getConnection(String dsn, String user, String pass) throws DatabaseException  {
         Connection conn=null;
         try {
-            if(dsn.indexOf('?')==-1) {
-                conn = DriverManager.getConnection(dsn, user, pass);
-            }
-            else{
-                String connStr=dsn+"&user="+user+"&password="+pass;
-                conn = DriverManager.getConnection(connStr, user, pass);
-            }
+        	conn = DBUtil.getConnection(dsn, user, pass);
             conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
@@ -3085,6 +3087,7 @@ private void doGetMappings() throws PageException {
                 sct.setEL("database",d.getDatabase());
                 sct.setEL("port",d.getPort()<1?"":Caster.toString(d.getPort()));
                 sct.setEL("dsnTranslated",d.getDsnTranslated());
+                sct.setEL("timezone",toStringTimeZone(d.getTimeZone()));
                 sct.setEL("password",d.getPassword());
                 sct.setEL("username",d.getUsername());
                 sct.setEL("readonly",Caster.toBoolean(d.isReadOnly()));
@@ -3113,7 +3116,12 @@ private void doGetMappings() throws PageException {
         }
         throw new ApplicationException("there is no datasource with name ["+name+"]");
     }
-    private void doGetRemoteClient() throws PageException {
+    private Object toStringTimeZone(TimeZone timeZone) {
+		if(timeZone==null) return "";
+		return timeZone.getID();
+	}
+
+	private void doGetRemoteClient() throws PageException {
         
         String url=getString("admin",action,"url");
         RemoteClient[] clients = config.getRemoteClients();
@@ -3308,7 +3316,7 @@ private void doGetMappings() throws PageException {
         Map ds = config.getDataSourcesAsMap();
         Iterator it = ds.keySet().iterator();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"name","host","classname","dsn","DsnTranslated","database","port",
-                "username","password","readonly"
+                "timezone","username","password","readonly"
                 ,"grant","drop","create","revoke","alter","select","delete","update","insert"
                 ,"connectionLimit","connectionTimeout","clob","blob","validate","storage","customSettings"},ds.size(),"query");
         
@@ -3326,6 +3334,7 @@ private void doGetMappings() throws PageException {
             qry.setAt("database",row,d.getDatabase());
             qry.setAt("port",row,d.getPort()<1?"":Caster.toString(d.getPort()));
             qry.setAt("dsnTranslated",row,d.getDsnTranslated());
+            qry.setAt("timezone",row,toStringTimeZone(d.getTimeZone()));
             qry.setAt("password",row,d.getPassword());
             qry.setAt("username",row,d.getUsername());
             qry.setAt("readonly",row,Caster.toBoolean(d.isReadOnly()));
@@ -3600,6 +3609,8 @@ private void doGetMappings() throws PageException {
      * 
      */
     private void doUpdateComponent() throws PageException {
+
+    	admin.updateComponentDeepSearch(getBoolObject("admin", action, "deepSearch"));
         admin.updateBaseComponent(getString("admin",action,"baseComponentTemplate"));
         admin.updateComponentDumpTemplate(getString("admin",action,"componentDumpTemplate"));
         admin.updateComponentDataMemberDefaultAccess(getString("admin",action,"componentDataMemberDefaultAccess"));
@@ -3622,8 +3633,8 @@ private void doGetMappings() throws PageException {
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         // Base Component
         try {
-            PageSource ps = pageContext.getPageSource(config.getBaseComponentTemplate());
-            if(ps.exists()) sct.set("baseComponentTemplate",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(config.getBaseComponentTemplate());
+            if(ps!=null) sct.set("baseComponentTemplate",ps.getDisplayPath());
             else sct.set("baseComponentTemplate","");
         } catch (PageException e) {
             sct.set("baseComponentTemplate","");
@@ -3632,14 +3643,15 @@ private void doGetMappings() throws PageException {
         
         // dump template
         try {
-            PageSource ps = pageContext.getPageSource(config.getComponentDumpTemplate());
-            if(ps.exists()) sct.set("componentDumpTemplate",ps.getDisplayPath());
+            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(config.getComponentDumpTemplate());
+            if(ps!=null) sct.set("componentDumpTemplate",ps.getDisplayPath());
             else sct.set("componentDumpTemplate","");
         } catch (PageException e) {
             sct.set("componentDumpTemplate","");
         }
         sct.set("strComponentDumpTemplate",config.getComponentDumpTemplate());
 
+        sct.set("deepSearch",Caster.toBoolean(config.doComponentDeepSearch()));
         sct.set("componentDataMemberDefaultAccess",ComponentUtil.toStringAccess(config.getComponentDataMemberDefaultAccess()));
         sct.set("triggerDataMember",Caster.toBoolean(config.getTriggerComponentDataMember()));
         sct.set("useShadow",Caster.toBoolean(config.useComponentShadow()));
@@ -3969,7 +3981,7 @@ private void doGetMappings() throws PageException {
         
         String[] timeZones = TimeZone.getAvailableIDs();
         railo.runtime.type.Query qry=new QueryImpl(new String[]{"id","display"},new String[]{"varchar","varchar"},timeZones.length,"timezones");
-        
+        Arrays.sort(timeZones);
         TimeZone timeZone;
         for(int i=0;i<timeZones.length;i++) {
             timeZone=TimeZone.getTimeZone(timeZones[i]);
@@ -4021,7 +4033,7 @@ private void doGetMappings() throws PageException {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         sct.set("locale",Caster.toString(config.getLocale()));
-        sct.set("timezone",pageContext.getTimeZone().getID());
+        sct.set("timezone",toStringTimeZone(pageContext.getTimeZone()));
         sct.set("timeserver",config.getTimeServer());
         sct.set("usetimeserver",config.getUseTimeServer());
 		// replaced with encoding outputsct.set("defaultencoding", config.get DefaultEncoding());

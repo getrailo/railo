@@ -1074,7 +1074,7 @@ public final class ConfigWebAdmin {
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,boolean validate,boolean storage, Struct custom) throws ExpressionException, SecurityException {
+            boolean blob,boolean clob,int allow,boolean validate,boolean storage,String timezone, Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1130,6 +1130,8 @@ public final class ConfigWebAdmin {
 	      		el.setAttribute("password",ConfigWebFactory.encrypt(password));
 
                 el.setAttribute("host",host);
+                if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
+                else if(el.hasAttribute("timezone")) el.removeAttribute("timezone");
                 el.setAttribute("database",database);
                 el.setAttribute("port",Caster.toString(port));
                 el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
@@ -1162,6 +1164,7 @@ public final class ConfigWebAdmin {
   		if(password.length()>0)el.setAttribute("password",ConfigWebFactory.encrypt(password));
         
         el.setAttribute("host",host);
+        if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
         el.setAttribute("database",database);
         if(port>-1)el.setAttribute("port",Caster.toString(port));
         if(connectionLimit>-1)el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
@@ -2086,6 +2089,26 @@ public final class ConfigWebAdmin {
         //if(baseComponent.trim().length()>0)
         	scope.setAttribute("base",baseComponent);
     }
+    
+    
+
+	public void updateComponentDeepSearch(Boolean deepSearch) throws SecurityException {
+		checkWriteAccess();
+	    boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+	    if(!hasAccess)
+	        throw new SecurityException("no access to update component setting");
+	    //config.resetBaseComponentPage();
+	    Element scope=_getRootElement("component");
+	    //if(baseComponent.trim().length()>0)
+	    if(deepSearch!=null)
+    	scope.setAttribute("deep-search",Caster.toString(deepSearch.booleanValue()));
+	    
+	    else {
+	        if(scope.hasAttribute("deep-search"))
+	        	scope.removeAttribute("deep-search");
+	    }
+		
+	}
     
 
     public void updateComponentDefaultImport(String componentDefaultImport) throws SecurityException {

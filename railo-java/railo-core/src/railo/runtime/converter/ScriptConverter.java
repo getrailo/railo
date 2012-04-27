@@ -426,15 +426,15 @@ public final class ScriptConverter {
 			    deep--;
 			    return;
 	        }
-			
-	        if(done.contains(object)) {
+			Object raw = LazyConverter.toRaw(object);
+	        if(done.contains(raw)) {
 	        	sb.append(goIn());
 			    sb.append("nullValue()");
 			    deep--;
 			    return;
 	        }
 			
-			done.add(object);
+			done.add(raw);
 			try {
 		        // Component
 		        if(object instanceof Component) {
@@ -486,7 +486,7 @@ public final class ScriptConverter {
 				}
 			}
 			finally {
-				done.remove(object);
+				done.remove(raw);
 			}
 			throw new ConverterException("can't serialize Object of type [ "+Caster.toClassName(object)+" ]");
 			//deep--;

@@ -10,13 +10,13 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
 import railo.runtime.type.util.ComponentUtil;
 
 public class ORMUtil {
@@ -76,12 +76,12 @@ public class ORMUtil {
 
 		// arrays
 		if(Decision.isArray(left) && Decision.isArray(right)){
-			return _equals(done,(Component)left, (Component)right);
+			return _equals(done,Caster.toArray(left,null), Caster.toArray(right,null));
 		}
 
 		// struct
 		if(Decision.isStruct(left) && Decision.isStruct(right)){
-			return _equals(done,(Struct)left, (Struct)right);
+			return _equals(done,Caster.toStruct(left,null), Caster.toStruct(right,null));
 		}
 		
 		try {

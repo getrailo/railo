@@ -121,7 +121,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
      * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
      */
     public void setDynamicAttribute(String uri, String name, Object value) {
-    	TagUtil.setDynamicAttribute(attributesScope,name,value);
+    	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.UPPER_CASE);
     }
 
     /**
@@ -560,7 +560,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	// abort 
     	try {
-			if(t instanceof railo.runtime.exp.Abort){
+			if(railo.runtime.exp.Abort.isAbort(t)){
 				if(bodyContent!=null){
 					bodyContent.writeOut(bodyContent.getEnclosingWriter());
 					bodyContent.clearBuffer();
