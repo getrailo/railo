@@ -13,6 +13,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -175,10 +176,10 @@ public final class RequestImpl extends StructSupport implements Request {
 			if(value!=null) return value;
 			
 			Enumeration<String> names = _req.getAttributeNames();
-			String k;
+			Collection.Key k;
 			while(names.hasMoreElements()){
-				k=names.nextElement();
-				if(k.equalsIgnoreCase(key.getString())) return _req.getAttribute(k);
+				k=Caster.toKey(names.nextElement(),null);
+				if(key.equals(k)) return _req.getAttribute(k.getString());
 			}
 			return defaultValue;
 		}
