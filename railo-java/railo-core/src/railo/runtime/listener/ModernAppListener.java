@@ -3,7 +3,9 @@ package railo.runtime.listener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.Cookie;
 
@@ -132,9 +134,12 @@ public class ModernAppListener extends AppListenerSupport {
 		        if(args!=null) {
 		        	if(Decision.isCastableToStruct(args)){
 			        	Struct sct = Caster.toStruct(args,false);
-			        	Key[] keys = url.keys();
-			        	for(int i=0;i<keys.length;i++){
-			        		sct.setEL(keys[i],url.get(keys[i]));
+			        	//Key[] keys = url.keys();
+			        	Iterator<Entry<Key, Object>> it = url.entryIterator();
+			        	Entry<Key, Object> e;
+			        	while(it.hasNext()){
+			        		e = it.next();
+			        		sct.setEL(e.getKey(),e.getValue());
 			        	}
 			        	args=sct;
 		        	}

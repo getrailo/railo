@@ -15,7 +15,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
@@ -23,7 +22,6 @@ import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.ArrayAsArrayList;
-import railo.runtime.util.ArrayIterator;
 
 public class XMLMultiElementArray extends ArraySupport {
 

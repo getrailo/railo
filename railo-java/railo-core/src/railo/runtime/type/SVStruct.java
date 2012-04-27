@@ -2,7 +2,6 @@ package railo.runtime.type;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -13,10 +12,8 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.util.StructSupport;
 

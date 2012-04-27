@@ -11,6 +11,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.CollectionUtil;
 
 public final class UDFSetterProperty extends UDFGSProperty {
 
@@ -83,7 +84,7 @@ public final class UDFSetterProperty extends UDFGSProperty {
 		Object value = values.get(propName,null);
 		
 		if(value==null){
-			Key[] keys = values.keys();
+			Key[] keys = CollectionUtil.keys(values);
 			if(keys.length==1) {
 				value=values.get(keys[0]);
 			}

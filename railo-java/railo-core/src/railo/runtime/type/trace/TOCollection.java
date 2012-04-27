@@ -10,10 +10,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.it.StringIterator;
 
 abstract class TOCollection extends TOObjects implements Collection {
 

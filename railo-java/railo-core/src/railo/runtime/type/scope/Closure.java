@@ -1,14 +1,10 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 public class Closure extends StructSupport implements Variables {

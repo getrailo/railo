@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.w3c.dom.Node;
@@ -43,6 +44,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
@@ -225,19 +227,21 @@ public final class JSONConverter {
     	
     	sb.append(goIn());
         sb.append("{");
-        Key[] keys = struct.keys();
-        Key key;
+        //Key[] keys = struct.keys();
+        //Key key;
+        Iterator<Entry<Key, Object>> it = struct.entryIterator();
+        Entry<Key, Object> e;
         Object value;
         boolean doIt=false;
-        for(int i=0;i<keys.length;i++) {
-        	key=keys[i];
-        	value=struct.get(key,null);
-        	
+        while(it.hasNext()) {
+        	e = it.next();
+        	//key=keys[i];
+        	value=e.getValue();
         	if(!addUDFs && (value instanceof UDF || value==null))continue;
         	if(doIt)sb.append(',');
             doIt=true;
             sb.append('"');
-            sb.append(escape(key.getString()));
+            sb.append(escape(e.getKey().getString()));
             sb.append('"');
             sb.append(':');
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
@@ -250,7 +254,7 @@ public final class JSONConverter {
         	try {
 				ComponentAccess ca = ComponentUtil.toComponentAccess(cp);
 				isPeristent=ca.isPersistent();
-			} catch (ExpressionException e) {}
+			} catch (ExpressionException ee) {}
 			
         	Property[] props = cp.getProperties(false);
         	ComponentScope scope = cp.getComponentScope();
@@ -263,7 +267,7 @@ public final class JSONConverter {
         			else if(!remotingFetch.booleanValue()) continue;
             		
         		}
-        		key=KeyImpl.getInstance(props[i].getName());
+        		Key key = KeyImpl.getInstance(props[i].getName());
             	value=scope.get(key,null);
             	if(!addUDFs && (value instanceof UDF || value==null))continue;
             	if(doIt)sb.append(',');
@@ -380,7 +384,7 @@ public final class JSONConverter {
 	 */
 	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
-		Collection.Key[] _keys = query.keys();
+		Collection.Key[] _keys = CollectionUtil.keys(query);
 		sb.append(goIn());
 		sb.append("{");
 		

@@ -1,6 +1,5 @@
 package railo.transformer.cfml;
 
-import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.expression.Expression;

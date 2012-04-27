@@ -1,6 +1,8 @@
 package railo.runtime.db;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
@@ -12,6 +14,7 @@ import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.CollectionUtil;
 
@@ -118,9 +121,14 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         dsnTranslated=replace(dsnTranslated,"username",username,false);
         dsnTranslated=replace(dsnTranslated,"password",password,false);
         
-        Collection.Key[] keys = custom==null?new Collection.Key[0]:custom.keys();
-        for(int i=0;i<keys.length;i++) {
-            dsnTranslated=replace(dsnTranslated,keys[i].getString(),Caster.toString(custom.get(keys[i],null),""),true);
+        //Collection.Key[] keys = custom==null?new Collection.Key[0]:custom.keys();
+        if(custom!=null) {
+        	Iterator<Entry<Key, Object>> it = custom.entryIterator();
+        	Entry<Key, Object> e;
+            while(it.hasNext()) {
+	        	e = it.next();
+	            dsnTranslated=replace(dsnTranslated,e.getKey().getString(),Caster.toString(e.getValue(),""),true);
+	        }
         }
     }
 
@@ -268,7 +276,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      * @see railo.runtime.db.DataSource#getCustomNames()
      */
     public String[] getCustomNames() {
-        return CollectionUtil.toStringArray(custom.keys());
+        return CollectionUtil.keysAsString(custom);
     }
     
     /**

@@ -125,6 +125,7 @@ import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterEntryImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
 
@@ -2297,11 +2298,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     			new String[]{"varchar","varchar"},
     			0,"usage");
         Struct usages = config.getRemoteClientUsage();
-        Key[] keys = usages.keys();
-        for(int i=0;i<keys.length;i++) {
+        //Key[] keys = usages.keys();
+        Iterator<Entry<Key, Object>> it = usages.entryIterator();
+        Entry<Key, Object> e;
+        int i=-1;
+        while(it.hasNext()) {
+        	i++;
+        	e = it.next();
         	qry.addRow();
-        	qry.setAt("code", i+1, keys[i].getString());
-        	qry.setAt("displayname", i+1, usages.get(keys[i]));
+        	qry.setAt(KeyConstants._code, i+1, e.getKey().getString());
+        	qry.setAt(KeyConstants._displayname, i+1, e.getValue());
         	//qry.setAt("description", i+1, usages[i].getDescription());
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
@@ -3427,10 +3433,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		
 		Struct entries = Caster.toStruct(getObject("admin",action,"entries"));
 		Struct entry;
-		Key[] keys = entries.keys();
+		Iterator<Object> it = entries.valueIterator();
 		Cluster cluster = pageContext.clusterScope();
-		for(int i=0;i<keys.length;i++) {
-			entry=Caster.toStruct(entries.get(keys[i]));
+		while(it.hasNext()) {
+			entry=Caster.toStruct(it.next());
 			cluster.setEntry(
 				new ClusterEntryImpl(
 						KeyImpl.getInstance(Caster.toString(entry.get(KeyImpl.KEY))),

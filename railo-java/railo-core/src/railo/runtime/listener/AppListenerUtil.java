@@ -1,5 +1,9 @@
 package railo.runtime.listener;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -165,17 +169,19 @@ public final class AppListenerUtil {
 
 	public static Mapping[] toMappings(ConfigWeb cw,Object o) throws PageException {
 		Struct sct = Caster.toStruct(o);
-		Key[] keys = sct.keys();
-		Mapping[] mappings=new Mapping[keys.length];
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		java.util.List<Mapping> mappings=new ArrayList<Mapping>();
 		ConfigWebImpl config=(ConfigWebImpl) cw;
 		String virtual,physical;
-		for(int i=0;i<keys.length;i++) {
-			virtual=translateMappingVirtual(keys[i].getString());
-			physical=Caster.toString(sct.get(keys[i]));
-			mappings[i]=config.getApplicationMapping(virtual,physical);
+		while(it.hasNext()) {
+			e = it.next();
+			virtual=translateMappingVirtual(e.getKey().getString());
+			physical=Caster.toString(e.getValue());
+			mappings.add(config.getApplicationMapping(virtual,physical));
 			
 		}
-		return mappings;
+		return mappings.toArray(new Mapping[mappings.size()]);
 	}
 	
 
@@ -202,9 +208,9 @@ public final class AppListenerUtil {
 		else if(o instanceof Struct){
 			array=new ArrayImpl();
 			Struct sct=(Struct) o;
-			Key[] keys = sct.keys();
-			for(int i=0;i<keys.length;i++) {
-				array.append(sct.get(keys[i]));
+			Iterator<Object> it = sct.valueIterator();
+			while(it.hasNext()) {
+				array.append(it.next());
 			}
 		}
 		else {

@@ -108,7 +108,7 @@ public class QueryUtil {
 
 	public static DumpData toDumpData(Query query,PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
-		Collection.Key[] keys=query.keys();
+		Collection.Key[] keys=CollectionUtil.keys(query);
 		DumpData[] heads=new DumpData[keys.length+1];
 		//int tmp=1;
 		heads[0]=new SimpleDumpData("");

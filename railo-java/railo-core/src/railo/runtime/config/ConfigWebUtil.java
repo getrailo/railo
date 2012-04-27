@@ -2,6 +2,8 @@ package railo.runtime.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -22,6 +24,7 @@ import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
 
@@ -144,12 +147,15 @@ public final class ConfigWebUtil {
             
             if(StringUtil.startsWith(str,'{')){
             	Struct constants = ((ConfigImpl)config).getConstants();
-            	Collection.Key[] arr = constants.keys();
-            	for(int i=0;i<arr.length;i++) {
-            		if(StringUtil.startsWithIgnoreCase(str,"{"+arr[i].getString()+"}")) {
-            			String value=(String) constants.get(arr[i],null);
+            	//Collection.Key[] arr = constants.keys();
+            	Iterator<Entry<Key, Object>> it = constants.entryIterator();
+            	Entry<Key, Object> e;
+            	while(it.hasNext()) {
+            		e = it.next();
+            		if(StringUtil.startsWithIgnoreCase(str,"{"+e.getKey().getString()+"}")) {
+            			String value=(String) e.getValue();
             			str=config.getResource( value)
-            				.getReal(str.substring(arr[i].getString().length()+2));
+            				.getReal(str.substring(e.getKey().getString().length()+2));
                         break;
             			
             		}

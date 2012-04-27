@@ -41,6 +41,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 import railo.runtime.type.wrap.ListAsArray;
@@ -102,9 +103,9 @@ public class ClassicAMFCaster implements AMFCaster {
 		return XMLCaster.toRawNode(node);
 	}
 	protected Object toAMFObject(Query query) throws PageException {
-		List result = new ArrayList();
+		List<ASObject> result = new ArrayList<ASObject>();
 		int len=query.getRecordcount();
-        Collection.Key[] columns=query.keys();
+        Collection.Key[] columns=CollectionUtil.keys(query);
     	ASObject row;
         for(int r=1;r<=len;r++) {
         	result.add(row = new ASObject());
@@ -175,10 +176,12 @@ public class ClassicAMFCaster implements AMFCaster {
     
 	protected Object toAMFObject(Struct src) throws PageException {
     	Struct trg=new StructImpl();
-    	Key[] keys = src.keys();
-    	
-        for(int i=0;i<keys.length;i++) {
-            trg.set(KeyImpl.init(toString(keys[i],forceStructLower)), toAMFObject(src.get(keys[i])));
+    	//Key[] keys = src.keys();
+    	Iterator<Entry<Key, Object>> it = src.entryIterator();
+    	Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
+            trg.set(KeyImpl.init(toString(e.getKey(),forceStructLower)), toAMFObject(e.getValue()));
         }
         return trg;
     }

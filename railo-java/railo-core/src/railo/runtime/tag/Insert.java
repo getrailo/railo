@@ -223,7 +223,7 @@ public final class Insert extends TagImpl {
         String[] fields=null; 
         Form form = pageContext.formScope();
         if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
-        else fields=CollectionUtil.toStringArray(pageContext.formScope().keys());
+        else fields=CollectionUtil.keysAsString(pageContext.formScope());
         
         StringBuffer names=new StringBuffer();
         StringBuffer values=new StringBuffer();

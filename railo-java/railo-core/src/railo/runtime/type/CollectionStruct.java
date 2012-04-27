@@ -1,16 +1,12 @@
 package railo.runtime.type;
 
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 public final class CollectionStruct extends StructSupport implements ObjectWrap,Struct {

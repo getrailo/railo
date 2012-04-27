@@ -3,6 +3,8 @@
  */
 package railo.runtime.functions.list;
 
+import java.util.Iterator;
+
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -39,10 +41,10 @@ public final class ListFilter implements Function {
 		
 		
 		StringBuilder sb=new StringBuilder();
-		Key[] keys = array.keys();
+		Iterator<Object> it = array.valueIterator();
 		Object value;
-		for(int i=0;i<keys.length;i++){
-			value=array.get(keys[i]);
+		while(it.hasNext()){
+			value=it.next();
 			if(Caster.toBooleanValue(filter.call(pc, new Object[]{value}, true))){
 				if(sb.length()>0) sb.append(delimeter);
 				sb.append(value);

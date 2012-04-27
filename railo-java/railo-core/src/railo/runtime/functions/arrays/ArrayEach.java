@@ -3,6 +3,8 @@
  */
 package railo.runtime.functions.arrays;
 
+import java.util.Iterator;
+
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -16,9 +18,9 @@ public final class ArrayEach implements Function {
 	private static final long serialVersionUID = -2271260656749514177L;
 
 	public static String call(PageContext pc , Array array, UDF udf) throws PageException {
-		Key[] keys = array.keys();
-		for(int i=0;i<keys.length;i++){
-			udf.call(pc, new Object[]{array.get(keys[i])}, true);
+		Iterator<Object> it = array.valueIterator();
+		while(it.hasNext()){
+			udf.call(pc, new Object[]{it.next()}, true);
 		}
 		return null;
 	}

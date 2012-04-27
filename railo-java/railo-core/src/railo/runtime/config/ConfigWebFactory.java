@@ -131,8 +131,8 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuter;
-import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
@@ -501,20 +501,20 @@ public final class ConfigWebFactory {
         }
         else {
         	//print.err("yep");
-        	if(!hasRich)sct.put("html",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_RICH,"html", new HTMLDumpWriter()));
-        	if(!hasPlain)sct.put("text",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_PLAIN,"text", new TextDumpWriter()));  
+        	if(!hasRich)sct.setEL(KeyConstants._html,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_RICH,"html", new HTMLDumpWriter()));
+        	if(!hasPlain)sct.setEL(KeyConstants._text,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_PLAIN,"text", new TextDumpWriter()));  
         	
-        	sct.put("classic",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"classic", new ClassicHTMLDumpWriter()));  
-        	sct.put("simple",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"simple", new SimpleHTMLDumpWriter()));  
+        	sct.setEL(KeyConstants._classic,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"classic", new ClassicHTMLDumpWriter()));  
+        	sct.setEL(KeyConstants._simple,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"simple", new SimpleHTMLDumpWriter()));  
 
         	
         }
-        DumpWriterEntry[] entries = new DumpWriterEntry[sct.size()];
-        Key[] keys = sct.keys();
-        for(int i=0;i<keys.length;i++){
-        	entries[i]=(DumpWriterEntry) sct.get(keys[i],null);
+        Iterator<Object> it = sct.valueIterator();
+        java.util.List<DumpWriterEntry> entries=new ArrayList<DumpWriterEntry>();
+        while(it.hasNext()){
+        	entries.add((DumpWriterEntry) it.next());
         }
-        config.setDumpWritersEntries(entries);
+        config.setDumpWritersEntries(entries.toArray(new DumpWriterEntry[entries.size()]));
 	}
     
     

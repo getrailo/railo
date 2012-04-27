@@ -1,6 +1,8 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.Tag;
 
@@ -12,6 +14,7 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -347,14 +350,14 @@ public final class Slider extends TagImpl {
         pageContext.forceWrite("<param name=\"form\" value=\""+enc(form.getName())+"\"></param>\n");
         pageContext.forceWrite("<param name=\"element\" value=\""+enc(input.getName())+"\"></param>\n");
         
-        railo.runtime.type.Collection.Key[] keys = params.keys();
-        railo.runtime.type.Collection.Key key;
-        for(int i=0;i<keys.length;i++) {
-            key = keys[i];
+        Iterator<Entry<Key, Object>> it = params.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+            e = it.next();
             pageContext.forceWrite("<param name=\"");
-            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite(e.getKey().getString());
             pageContext.forceWrite("\" value=\"");
-            pageContext.forceWrite(enc(Caster.toString(params.get(key,""))));
+            pageContext.forceWrite(enc(Caster.toString(e.getValue())));
             pageContext.forceWrite("\"></param>\n");
         }
         pageContext.forceWrite("</applet>");

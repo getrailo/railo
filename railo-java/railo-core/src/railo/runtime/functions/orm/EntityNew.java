@@ -1,6 +1,9 @@
 package railo.runtime.functions.orm;
 
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -20,9 +23,12 @@ public class EntityNew {
 		if(properties==null)return session.create(pc,name);
 		
 		Component entity = session.create(pc,name);
-		Key[] keys = properties.keys();
-		for(int i=0;i<keys.length;i++){
-			entity.call(pc, "set"+keys[i], new Object[]{properties.get(keys[i])});
+		//Key[] keys = properties.keys();
+		Iterator<Entry<Key, Object>> it = properties.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			entity.call(pc, "set"+e.getKey().getString(), new Object[]{e.getValue()});
 		}
 		return entity;
 	}

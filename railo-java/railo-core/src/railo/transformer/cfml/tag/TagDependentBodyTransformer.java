@@ -1,8 +1,5 @@
 package railo.transformer.cfml.tag;
 
-import org.hibernate.transform.Transformers;
-
-import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.statement.tag.Tag;

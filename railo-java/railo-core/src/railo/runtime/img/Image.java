@@ -44,7 +44,6 @@ import java.io.OutputStream;
 import java.text.AttributedString;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map.Entry;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -98,10 +97,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructSupport;
 

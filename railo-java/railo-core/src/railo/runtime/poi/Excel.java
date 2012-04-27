@@ -1,7 +1,6 @@
 package railo.runtime.poi;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import org.apache.poi.POIXMLProperties;
 import org.apache.poi.hpsf.DocumentSummaryInformation;
@@ -29,7 +28,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;

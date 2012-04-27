@@ -3,10 +3,8 @@ package railo.runtime.type.cfc;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.it.EntryIterator.EntryImpl;
 
 public class ComponentAccessEntryIterator extends EntryIterator implements Iterator<Entry<Key, Object>> {
 

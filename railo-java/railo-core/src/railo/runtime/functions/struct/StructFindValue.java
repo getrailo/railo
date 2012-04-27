@@ -3,6 +3,9 @@
  */
 package railo.runtime.functions.struct;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
@@ -14,6 +17,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public final class StructFindValue implements Function {
 	public static Array call(PageContext pc , railo.runtime.type.Struct struct, String value) throws PageException {
@@ -39,16 +43,16 @@ public final class StructFindValue implements Function {
      * @throws PageException
      */
     private static boolean getValues(PageContext pc,Array array,Collection coll, String value, boolean all, String path) throws PageException {
-        Key[] keys = coll.keys();
-        //print.ln("->"+List.arrayToList(keys,","));
+        //Key[] keys = coll.keys();
         boolean abort=false;
-        
-        
         Key key;
-        loop:for(int i=0;i<keys.length;i++) {
+        Iterator<Entry<Key, Object>> it = coll.entryIterator();
+        Entry<Key, Object> e;
+        loop:while(it.hasNext()) {
+        	e = it.next();
             if(abort)break loop;
-            key=keys[i];
-            Object o=coll.get(key);
+            key=e.getKey();
+            Object o=e.getValue();
             
             // Collection (this function search first for sub)
             if(o instanceof Collection) {
@@ -60,9 +64,9 @@ public final class StructFindValue implements Function {
             String target=Caster.toString(o,null);
             if((target!=null && target.equalsIgnoreCase(value)) /*|| (o instanceof Array && checkSub(array,((Array)o),value,all,path,abort))*/) {
                 Struct sct=new StructImpl();
-	                sct.setEL("key",key.getString());
-		                sct.setEL("path",StructFindKey.createKey(coll, path, key));
-		                sct.setEL("owner",coll);
+	                sct.setEL(KeyConstants._key,key.getString());
+		                sct.setEL(KeyConstants._path,StructFindKey.createKey(coll, path, key));
+		                sct.setEL(KeyConstants._owner,coll);
                 array.append(sct);
                 if(!all)abort=true;
             }

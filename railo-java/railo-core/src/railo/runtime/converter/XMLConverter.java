@@ -44,6 +44,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
@@ -290,7 +291,7 @@ public final class XMLConverter {
 		 *  </ROWS>
 		 *  </QUERY>
 		*/
-		Collection.Key[] keys = query.keys();
+		Collection.Key[] keys = CollectionUtil.keys(query);
 		StringBuffer sb=new StringBuffer(goIn()+"<QUERY ID=\""+id+"\">");
 		
 		// columns

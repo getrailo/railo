@@ -1,6 +1,5 @@
 package railo.runtime.type.it;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import railo.runtime.type.Collection;

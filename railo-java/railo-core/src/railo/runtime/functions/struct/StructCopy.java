@@ -9,14 +9,13 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 public final class StructCopy implements Function {
 	public static Object call(PageContext pc , Struct src) throws PageException {
 		
 		Collection trg = src.duplicate(false);
-		
-		
-		Collection.Key[] keys=trg.keys();
+		Collection.Key[] keys=CollectionUtil.keys(trg);
 		Collection.Key key;
 		Object o;
 		for(int i=0;i<keys.length;i++) {

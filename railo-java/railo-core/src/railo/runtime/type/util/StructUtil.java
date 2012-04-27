@@ -37,10 +37,12 @@ public final class StructUtil {
      * @param overwrite overwrite data if exist in target
      */
     public static void copy(Struct source, Struct target, boolean overwrite) {
-    	railo.runtime.type.Collection.Key[] skeys = source.keys();
-        for(int i=0;i<skeys.length;i++) {
-            if(overwrite || !target.containsKey(skeys[i])) 
-                target.setEL(skeys[i],source.get(skeys[i],null));
+    	Iterator<Entry<Key, Object>> it = source.entryIterator();
+    	Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
+            if(overwrite || !target.containsKey(e.getKey())) 
+                target.setEL(e.getKey(),e.getValue());
         }
     }
 
@@ -59,11 +61,13 @@ public final class StructUtil {
 	public static Struct duplicate(Struct sct,boolean deepCopy) {
 
 		Struct rtn=new StructImpl();
-		railo.runtime.type.Collection.Key[] keys=sct.keys();
-		railo.runtime.type.Collection.Key key;
-		for(int i=0;i<keys.length;i++) {
-			key=keys[i];
-			rtn.setEL(key,Duplicator.duplicate(sct.get(key,null),deepCopy));
+		//railo.runtime.type.Collection.Key[] keys=sct.keys();
+		//railo.runtime.type.Collection.Key key;
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+    	Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e=it.next();
+			rtn.setEL(e.getKey(),Duplicator.duplicate(e.getValue(),deepCopy));
 		}
 		return rtn;
 	}
@@ -77,29 +81,29 @@ public final class StructUtil {
 		}
 	}
 
-	public static Set entrySet(Struct sct) {
-		HashSet set=new HashSet();
-        Collection.Key[] keys = sct.keys();
-        for(int i=0;i<keys.length;i++) {
-            set.add(new StructMapEntry(sct,keys[i],sct.get(keys[i], null)));
-        }
-        return set;
+	public static Set<Entry<String, Object>> entrySet(Struct sct) {
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		HashSet<Entry<String, Object>> set=new HashSet<Entry<String, Object>>();
+		while(it.hasNext()){
+			e= it.next();
+			set.add(new StructMapEntry(sct,e.getKey(),e.getValue()));
+		}
+		return set;
 	}
 	
-
-	public static Set keySet(Struct sct) {
-		Collection.Key[] arr=sct.keys();
-		Set set=new HashSet();
-		
-		for(int i=0;i<arr.length;i++){
-			set.add(arr[i].getString());
+	public static Set<String> keySet(Struct sct) {
+		Iterator<Key> it = sct.keyIterator();
+		Set<String> set=new HashSet<String>();
+		while(it.hasNext()){
+			set.add(it.next().getString());
 		}
 		return set;
 	}
 
 	
 	public static DumpTable toDumpTable(Struct sct,String title,PageContext pageContext, int maxlevel, DumpProperties dp) {
-		Key[] keys = order(sct.keys());
+		Key[] keys = order(CollectionUtil.keys(sct));
 		DumpTable table = new DumpTable("struct","#9999ff","#ccccff","#000000");// "#9999ff","#ccccff","#000000"
 		if(sct.size()>10 && dp.getMetainfo())table.setComment("Entries:"+sct.size());
 	    if(!StringUtil.isEmpty(title))table.setTitle(title);
@@ -131,11 +135,12 @@ public final class StructUtil {
 	 * @param sct
 	 * @return
 	 */
-	public static java.util.Collection values(Struct sct) {
-		ArrayList arr = new ArrayList();
-		Key[] keys = sct.keys();
-		for(int i=0;i<keys.length;i++) {
-			arr.add(sct.get(keys[i],null));
+	public static java.util.Collection<?> values(Struct sct) {
+		ArrayList<Object> arr = new ArrayList<Object>();
+		//Key[] keys = sct.keys();
+		Iterator<Object> it = sct.valueIterator();
+		while(it.hasNext()) {
+			arr.add(it.next());
 		}
 		return arr;
 	}
@@ -157,10 +162,13 @@ public final class StructUtil {
 	 * @return
 	 */
 	public static long sizeOf(Struct sct) {
-		Key[] keys = sct.keys();
-		long size = SizeOf.size(keys);
-		if(keys!=null)for(int i=0;i<keys.length;i++) {
-			size += SizeOf.size(sct.get(keys[i],null));
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		long size = 0;
+		while(it.hasNext()) {
+			e = it.next();
+			size+=SizeOf.size(e.getKey());
+			size+=SizeOf.size(e.getValue());
 		}
 		return size;
 	}

@@ -1,6 +1,7 @@
 package railo.runtime.db;
 
 import java.io.ByteArrayInputStream;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -21,6 +22,7 @@ import railo.runtime.sql.old.ZQuery;
 import railo.runtime.sql.old.ZSelectItem;
 import railo.runtime.sql.old.ZqlParser;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -86,9 +88,12 @@ public final class Executer {
 				
 				if(!isSMS && !select.getColumn().equals("*"))
 					throw new DatabaseException("can't execute this type of query at the moment",null,sql,null);
-				Collection.Key[] keys = qr.keys();
-				for(int y=0;y<keys.length;y++){
-					selects.put(keys[y].getString(),keys[y].getString());
+				//Collection.Key[] keys = qr.keys();
+				Iterator<Key> it = qr.keyIterator();
+				Key k;
+				while(it.hasNext()){
+					k = it.next();
+					selects.put(k.getString(),k.getString());
 				}
 				isSMS=false;
 			}

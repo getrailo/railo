@@ -116,6 +116,7 @@ import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.it.ItAsEnum;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
@@ -1673,7 +1674,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		case javax.servlet.jsp.PageContext.APPLICATION_SCOPE:
 			return getServletContext().getAttributeNames();
 		case javax.servlet.jsp.PageContext.PAGE_SCOPE:
-			return new KeyIterator(variablesScope().keys());
+			return ItAsEnum.toEnumeration(variablesScope().keyIterator());
 		case javax.servlet.jsp.PageContext.REQUEST_SCOPE:
 			return req.getAttributeNames();
 		case javax.servlet.jsp.PageContext.SESSION_SCOPE:
@@ -1834,11 +1835,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 					try {
 						String content = IOUtil.toString(res, getConfig().getTemplateCharset());
 						Struct sct=pe.getErrorBlock(this,ep);
-						Key[] keys = sct.keys();
+						java.util.Iterator<Entry<Key, Object>> it = sct.entryIterator();
+						Entry<Key, Object> e;
 						String v;
-						for(int i=0;i<keys.length;i++){
-							v=Caster.toString(sct.get(keys[i],null),null);
-							if(v!=null)content=repl(content, keys[i].getString(), v);
+						while(it.hasNext()){
+							e = it.next();
+							v=Caster.toString(e.getValue(),null);
+							if(v!=null)content=repl(content, e.getKey().getString(), v);
 						}
 						
 						write(content);

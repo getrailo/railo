@@ -4,6 +4,7 @@
 package railo.runtime.functions.list;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import railo.runtime.PageContext;
@@ -26,10 +27,11 @@ public final class ListRemoveDuplicates implements Function {
 		Array array = List.listToArrayRemoveEmpty(list, delimeter);
 		Set<String> existing=new HashSet<String>();
 		StringBuilder sb=new StringBuilder();
-		Key[] keys = array.keys();
+		//Key[] keys = array.keys();
+		Iterator<Object> it = array.valueIterator();
 		String value;
-		for(int i=0;i<keys.length;i++){
-			value=Caster.toString(array.get(keys[i]));
+		while(it.hasNext()){
+			value=Caster.toString(it.next());
 			if(existing.contains(value)) continue;
 			
 			existing.add(value);

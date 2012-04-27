@@ -4,8 +4,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
-import railo.transformer.bytecode.BytecodeContext;
-
 public final class ArrayVisitor {
 
 	public void visitBegin(GeneratorAdapter adapter,Type type,int length) {

@@ -1,7 +1,6 @@
 package railo.runtime.type.scope;
 
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -10,10 +9,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.it.EntryIterator;
-import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**

@@ -1,10 +1,7 @@
 package railo.runtime.type.it;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 
-import railo.print;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection.Key;

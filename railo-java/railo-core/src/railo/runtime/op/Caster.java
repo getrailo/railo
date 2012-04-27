@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -2063,16 +2064,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             ArrayList arr=new ArrayList();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    arr.add(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e = it.next();
+                    arr.add(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+(e!=null?e.getKey():"")+"] is not a number");
             }
             return arr;
         }
@@ -2128,16 +2129,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    arr.setE(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e = it.next();
+                    arr.setE(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key.getString()+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+e.getKey().getString()+"] is not a number");
             }
             return arr;
         }
@@ -2182,17 +2183,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    //print.ln(key);
-                    arr.setE(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e=it.next();
+                    arr.setE(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+e.getKey()+"] is not a number");
             }
             return toNativeArray(arr);
         }
@@ -2235,13 +2235,15 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    arr.setEL(toIntValue(keys[i].toString()),sct.get(keys[i],null));
+                while(it.hasNext()) {
+                	e=it.next();
+                    arr.setEL(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
+            catch (ExpressionException ee) {
                 return defaultValue;
             }
             return arr;
@@ -3790,12 +3792,14 @@ public final class Caster {
     
     public static Object[] toFunctionValues(Struct args) {
     	// TODO nicht sehr optimal 
-    	Key[] keys = args.keys();
-        FunctionValue[] fvalues=new FunctionValue[args.size()];
-        for(int i=0;i<keys.length;i++) {
-        	fvalues[i]=new FunctionValueImpl(keys[i].getString(),args.get(keys[i],null));
+    	Iterator<Entry<Key, Object>> it = args.entryIterator();
+        Entry<Key, Object> e;
+        List<FunctionValue> fvalues=new ArrayList<FunctionValue>();
+        while(it.hasNext()) {
+        	e=it.next();
+        	fvalues.add(new FunctionValueImpl(e.getKey().getString(),e.getValue()));
         }
-        return fvalues;
+        return fvalues.toArray(new FunctionValue[fvalues.size()]);
     }
 
     /**

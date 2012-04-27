@@ -3,6 +3,8 @@
  */
 package railo.runtime.functions.arrays;
 
+import java.util.Iterator;
+
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -33,10 +35,10 @@ public final class ArrayFilter implements Function {
 		
 		
 		Array rtn=new ArrayImpl();
-		Key[] keys = array.keys();
+		Iterator<Object> it = array.valueIterator();
 		Object value;
-		for(int i=0;i<keys.length;i++){
-			value=array.get(keys[i]);
+		while(it.hasNext()){
+			value=it.next();
 			if(Caster.toBooleanValue(filter.call(pc, new Object[]{value}, true)))
 				rtn.append(value);
 		}

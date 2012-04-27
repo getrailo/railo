@@ -1,6 +1,8 @@
 package railo.runtime.com;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -121,12 +123,12 @@ public final class COMObject implements Objects, Iteratorable {
      */
     public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
 //      TODO gibt es hier eine bessere möglichkeit?
-        Collection.Key[] keys = args.keys();
-        Object[] values=new Object[keys.length];
-        for(int i=0;i<keys.length;i++) {
-            values[i]=args.get(keys[i],null);
+        Iterator<Object> it = args.valueIterator();
+    	List<Object> values=new ArrayList<Object>();
+        while(it.hasNext()) {
+            values.add(it.next());
         }   
-        return call(pc,methodName,values);
+        return call(pc,methodName,values.toArray(new Object[values.size()]));
     }
 
 	/**

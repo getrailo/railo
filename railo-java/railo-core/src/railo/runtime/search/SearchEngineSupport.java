@@ -3,6 +3,7 @@ package railo.runtime.search;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xml.serialize.OutputFormat;
@@ -27,6 +28,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
@@ -35,6 +37,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * 
@@ -96,24 +99,26 @@ public abstract class SearchEngineSupport implements SearchEngine {
             query=new QueryImpl(cols, collections.size(),"query");
         }
         
-        Collection.Key[] keys = collections.keys();
-	    
-        for(int i=0;i<keys.length;i++) {
-	        try {
-		        SearchCollection coll = (SearchCollection) collections.get(keys[i]);
-                query.setAt("external",i+1,Boolean.FALSE);
-                query.setAt("charset",i+1,"UTF-8");
-                query.setAt("created",i+1,coll.created());
+        //Collection.Key[] keys = collections.keys();
+	    Iterator<Object> it = collections.valueIterator();
+	    int i=-1;
+        while(it.hasNext()) {
+	        i++;
+        	try {
+		        SearchCollection coll = (SearchCollection) it.next();
+                query.setAt(KeyConstants._external,i+1,Boolean.FALSE);
+                query.setAt(KeyConstants._charset,i+1,"UTF-8");
+                query.setAt(KeyConstants._created,i+1,coll.created());
                 
                 query.setAt("categories",i+1,Boolean.TRUE);
-		        query.setAt("language",i+1,coll.getLanguage());
+		        query.setAt(KeyConstants._language,i+1,coll.getLanguage());
 		        query.setAt("mapped",i+1,Boolean.FALSE);
-		        query.setAt("name",i+1,coll.getName());
-		        query.setAt("online",i+1,Boolean.TRUE);
-		        query.setAt("path",i+1,coll.getPath().getAbsolutePath());
+		        query.setAt(KeyConstants._name,i+1,coll.getName());
+		        query.setAt(KeyConstants._online,i+1,Boolean.TRUE);
+		        query.setAt(KeyConstants._path,i+1,coll.getPath().getAbsolutePath());
 		        query.setAt("registered",i+1,"CF");
-		        query.setAt("lastmodified",i+1,coll.getLastUpdate());
-		        query.setAt("size",i+1,new Double(coll.getSize()));
+		        query.setAt(KeyConstants._lastmodified,i+1,coll.getLastUpdate());
+		        query.setAt(KeyConstants._size,i+1,new Double(coll.getSize()));
 		        query.setAt("doccount",i+1,new Double(coll.getDocumentCount())); 
 	        }
 		    catch(PageException pe) {}
@@ -459,10 +464,13 @@ public abstract class SearchEngineSupport implements SearchEngine {
 	 * @throws SearchException
      */
     protected final synchronized void store() throws SearchException {
-        Collection.Key[] keys=collections.keys();
-        for(int i=0;i<keys.length;i++) {
-            Element collEl = getCollectionElement(keys[i].getString());
-            SearchCollection sc = getCollectionByName(keys[i].getString());
+        //Collection.Key[] keys=collections.keys();
+        Iterator<Key> it = collections.keyIterator();
+        Key k;
+    	while(it.hasNext()) {
+    		k=it.next();
+            Element collEl = getCollectionElement(k.getString());
+            SearchCollection sc = getCollectionByName(k.getString());
             setAttributes(collEl,sc);  
         }
 

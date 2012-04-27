@@ -47,6 +47,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
@@ -291,7 +292,7 @@ public final class WDDXConverter {
 	 */
 	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
-		Collection.Key[] keys = query.keys();
+		Collection.Key[] keys = CollectionUtil.keys(query);
 		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.List.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
 		
 	

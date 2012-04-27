@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
@@ -66,7 +66,6 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.timer.Stopwatch;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
@@ -1683,7 +1682,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see railo.runtime.type.Query#getColumnNamesAsString()
 	 */
 	public String[] getColumnNamesAsString() {
-		return CollectionUtil.toStringArray(keys());
+		return CollectionUtil.keysAsString(this);
 	}
 
     /**

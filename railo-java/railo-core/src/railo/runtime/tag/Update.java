@@ -223,7 +223,7 @@ public final class Update extends TagImpl {
         String[] fields=null; 
         Form form = pageContext.formScope();
         if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
-        else fields=CollectionUtil.toStringArray(pageContext.formScope().keys());
+        else fields=CollectionUtil.keysAsString(pageContext.formScope());
         
         StringBuffer set=new StringBuffer();
         StringBuffer where=new StringBuffer();

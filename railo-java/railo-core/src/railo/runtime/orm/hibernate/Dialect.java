@@ -127,12 +127,6 @@ public class Dialect {
 	}
 	
 	public static String[] listDialectNames(){
-		return CollectionUtil.toStringArray(dialects.keys());
+		return CollectionUtil.keysAsString(dialects);
 	}
-	
-	/*public static void main(String[] args) {
-		String[] arr = listDialectNames();
-		Arrays.sort(arr);
-		print.o(List.arrayToList(arr, ", "));
-	}*/
 }

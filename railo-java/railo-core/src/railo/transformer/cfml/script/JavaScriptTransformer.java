@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import org.objectweb.asm.Label;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;

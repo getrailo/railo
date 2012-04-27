@@ -3,6 +3,9 @@
  */
 package railo.runtime.functions.struct;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -35,12 +38,14 @@ public final class StructFilter implements Function {
 		
 		
 		Struct rtn=new StructImpl();
-		Key[] keys = sct.keys();
+		//Key[] keys = sct.keys();
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Object value;
-		for(int i=0;i<keys.length;i++){
-			value=sct.get(keys[i]);
-			if(Caster.toBooleanValue(filter.call(pc, new Object[]{keys[i],value}, true)))
-				rtn.set(keys[i], value);
+		while(it.hasNext()){
+			Entry<Key, Object> e = it.next();
+			value=e.getValue();
+			if(Caster.toBooleanValue(filter.call(pc, new Object[]{e.getKey().getString(),value}, true)))
+				rtn.set(e.getKey(), value);
 		}
 		return rtn;
 	}

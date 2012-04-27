@@ -46,36 +46,44 @@ public class TagUtil {
 		}
 		
 		
-		Key[] keys = attrs.keys();
+		//Key[] keys = attrs.keys();
+		Iterator<Entry<Key, Object>> it;
+		Entry<Key, Object> e;
 		if(TagLibTag.ATTRIBUTE_TYPE_DYNAMIC==attrType) {
 			DynamicAttributes da=(DynamicAttributes) tag;
-			for(int i=0;i<keys.length;i++) {
-				da.setDynamicAttribute(null, keys[i].getString(),attrs.get(keys[i],null));
+			it = attrs.entryIterator();
+			while(it.hasNext()) {
+				e = it.next();
+				da.setDynamicAttribute(null, e.getKey().getString(),e.getValue());
 			}
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_FIXED==attrType) {
 			Object value;
-			for(int i=0;i<keys.length;i++) {
-				value=attrs.get(keys[i],null);
-				if(value!=null)Reflector.callSetterEL(tag, keys[i].getString(),value);
+			it = attrs.entryIterator();
+			while(it.hasNext()) {
+				e = it.next();
+				value=e.getValue();
+				if(value!=null)Reflector.callSetterEL(tag, e.getKey().getString(),value);
 				//}catch(PageException pe){}
 			}	
 		}
 		else if(TagLibTag.ATTRIBUTE_TYPE_MIXED==attrType) {
 			MethodInstance setter;
-			for(int i=0;i<keys.length;i++) {
-				setter = Reflector.getSetterEL(tag, keys[i].getString(),attrs.get(keys[i],null));
+			it = attrs.entryIterator();
+			while(it.hasNext()) {
+				e = it.next();
+				setter = Reflector.getSetterEL(tag, e.getKey().getString(),e.getValue());
 				if(setter!=null) {
 					try {
 						setter.invoke(tag);
 					} 
-					catch (Exception e) {
-						throw Caster.toPageException(e);
+					catch (Exception _e) {
+						throw Caster.toPageException(_e);
 					}
 				}
 				else {
 					DynamicAttributes da=(DynamicAttributes) tag;
-					da.setDynamicAttribute(null, keys[i].getString(),attrs.get(keys[i],null));
+					da.setDynamicAttribute(null, e.getKey().getString(),e.getValue());
 				}
 			}
 		}
@@ -93,12 +101,12 @@ public class TagUtil {
         if(name.equals("attributecollection")) {
             if(value instanceof railo.runtime.type.Collection) {
             	railo.runtime.type.Collection coll=(railo.runtime.type.Collection)value;
-                railo.runtime.type.Collection.Key[] keys=coll.keys();
-                railo.runtime.type.Collection.Key key;
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i]; 
-                    if(attributes.get(key,null)==null)
-                        attributes.setEL(key,coll.get(key,null));
+                Iterator<Entry<Key, Object>> it = coll.entryIterator();
+            	Entry<Key, Object> e;
+                while(it.hasNext()) {
+                	e = it.next();
+                    if(attributes.get(e.getKey(),null)==null)
+                        attributes.setEL(e.getKey(),e.getValue());
                 }
                 return;
             }

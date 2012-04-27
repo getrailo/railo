@@ -5,6 +5,7 @@ package railo.runtime.functions.other;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
@@ -21,6 +22,7 @@ import railo.runtime.tag.CFTagCore;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
@@ -122,19 +124,20 @@ public final class GetTagData implements Function {
 			Struct srcAttrs = Caster.toStruct(metadata.get("attributes",null),null,false);
 			Struct src;
 			if(srcAttrs!=null){
-				Key[] keys = srcAttrs.keys();
-				for(int i=0;i<keys.length;i++){
-					
-					src = Caster.toStruct(srcAttrs.get(keys[i]),null,false);
-					if(Caster.toBooleanValue(src.get("hidden",null),false))continue;
+				//Key[] keys = srcAttrs.keys();
+				Iterator<Entry<Key, Object>> it = srcAttrs.entryIterator();
+				Entry<Key, Object> e;
+				while(it.hasNext()){
+					e = it.next();
+					src = Caster.toStruct(e.getValue(),null,false);
+					if(Caster.toBooleanValue(src.get(KeyConstants._hidden,null),false))continue;
 					Struct _attr=new StructImpl();
-					_attr.set("status","implemeted");
-					_attr.set("description",src.get("hint",""));
-					_attr.set("type",src.get("type","any"));
-					_attr.set("required",Caster.toBoolean(src.get("required",""),null));
+					_attr.set(KeyConstants._status,"implemeted");
+					_attr.set(KeyConstants._description,src.get("hint",""));
+					_attr.set(KeyConstants._type,src.get("type","any"));
+					_attr.set(KeyConstants._required,Caster.toBoolean(src.get("required",""),null));
 					_attr.set("scriptSupport","none");
-					
-					_attrs.setEL(keys[i].getLowerString(),_attr);
+					_attrs.setEL(e.getKey().getLowerString(),_attr);
 					
 				}
 			}

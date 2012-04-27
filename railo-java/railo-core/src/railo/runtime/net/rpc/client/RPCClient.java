@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import javax.swing.JComboBox.KeySelectionManager;
 import javax.wsdl.Binding;
 import javax.wsdl.Operation;
 import javax.wsdl.Port;
@@ -25,7 +24,6 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.configuration.EngineConfigurationFactoryFinder;
 import org.apache.axis.configuration.SimpleProvider;
-import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.axis.transport.http.CommonsHTTPSender;
 import org.apache.axis.wsdl.gen.Parser;
@@ -73,11 +71,9 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.ObjectsIterator;
-import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.util.ArrayIterator;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMPropertyImpl;
 
@@ -318,7 +314,7 @@ public final class RPCClient implements Objects, Iteratorable{
                 
                 if(arg==null) {
                     throw new RPCException("Invalid arguments for operation " + methodName,
-                            getErrorDetailForArguments(inNames.toArray(new String[inNames.size()]),CollectionUtil.toStringArray(namedArguments.keys())));
+                            getErrorDetailForArguments(inNames.toArray(new String[inNames.size()]),CollectionUtil.keysAsString(namedArguments)));
                 }
                 inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arg);
             }

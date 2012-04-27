@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
@@ -17,6 +18,7 @@ import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.tag.util.DeprecatedUtil;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -286,11 +288,13 @@ public final class Form extends BodyTagImpl {
     public void setPassthrough(Object passthrough) throws PageException {
         if(passthrough instanceof Struct) {
             Struct sct = (Struct) passthrough;
-            railo.runtime.type.Collection.Key[] keys=sct.keys();
-            railo.runtime.type.Collection.Key key;
-            for(int i=0;i<keys.length;i++) {
-                key=keys[i];
-                attributes.setEL(key,sct.get(key,null));
+            //railo.runtime.type.Collection.Key[] keys=sct.keys();
+            //railo.runtime.type.Collection.Key key;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e;
+            while(it.hasNext()) {
+            	e = it.next();
+                attributes.setEL(e.getKey(),e.getValue());
             }
         }
         else this.passthrough = Caster.toString(passthrough);
@@ -441,14 +445,14 @@ public final class Form extends BodyTagImpl {
         //}
         pageContext.forceWrite("<form");
         
-        railo.runtime.type.Collection.Key[] keys = attributes.keys();
-        railo.runtime.type.Collection.Key key;
-        for(int i=0;i<keys.length;i++) {
-            key = keys[i];
+        Iterator<Entry<Key, Object>> it = attributes.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
             pageContext.forceWrite(" ");
-            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite(e.getKey().getString());
             pageContext.forceWrite("=");
-            pageContext.forceWrite(de(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite(de(Caster.toString(e.getValue())));
             
         }
         

@@ -1,5 +1,8 @@
 package railo.runtime.gateway;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import org.opencfml.eventgateway.Gateway;
 import org.opencfml.eventgateway.GatewayEngine;
 import org.opencfml.eventgateway.GatewayException;
@@ -172,11 +175,14 @@ public class GatewayEntryImpl implements GatewayEntry {
 		Struct otherCustom = other.getCustom();
 		if(otherCustom.size()!=custom.size()) return false;
 		
-		Key[] keys = otherCustom.keys();
+		//Key[] keys = otherCustom.keys();
+		Iterator<Entry<Key, Object>> it = otherCustom.entryIterator();
+		Entry<Key, Object> e;
 		Object ot,oc;
-		for(int i=0;i<keys.length;i++){
-			ot=custom.get(keys[i],null);
-			oc=otherCustom.get(keys[i],null);
+		while(it.hasNext()){
+			e = it.next();
+			ot=custom.get(e.getKey(),null);
+			oc=e.getValue();
 			if(ot==null) return false;
 			if(!ot.equals(oc)) return false;
 		}

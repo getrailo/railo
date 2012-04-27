@@ -13,6 +13,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.PropertyFactory;
 
 public final class UDFHasProperty extends UDFGSProperty {
@@ -74,7 +75,7 @@ public final class UDFHasProperty extends UDFGSProperty {
 		Key key = arguments[0].getName();
 		Object value = values.get(key,null);
 		if(value==null){
-			Key[] keys = values.keys();
+			Key[] keys = CollectionUtil.keys(values);
 			if(keys.length>0) {
 				value=values.get(keys[0]);
 			}
@@ -129,10 +130,9 @@ public final class UDFHasProperty extends UDFGSProperty {
 			
 			if(propValue instanceof Array) {
 				Array arr = ((Array)propValue);
-				Key[] keys = arr.keys();
-				for(int i=0;i<keys.length;i++){
-					o=arr.get(keys[i],null);
-					if(ORMUtil.equals(value,o))return true;
+				Iterator<Object> it = arr.valueIterator();
+				while(it.hasNext()){
+					if(ORMUtil.equals(value,it.next()))return true;
 				}
 			}
 			else if(propValue instanceof java.util.List) {

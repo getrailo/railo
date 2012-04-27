@@ -98,7 +98,7 @@ public final class RequestImpl implements Request {
 	 * @see com.allaire.cfx.Request#getAttributeList()
 	 */
 	public String[] getAttributeList() {
-		return CollectionUtil.toStringArray(attributes.keys());
+		return CollectionUtil.keysAsString(attributes);
 	}
 
 	/**

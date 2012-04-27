@@ -2,19 +2,15 @@ package railo.runtime.type.cfc;
 
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.it.EntryIterator;
 
 public abstract class ComponentAccessProxy extends ComponentProxy implements ComponentAccess {
 

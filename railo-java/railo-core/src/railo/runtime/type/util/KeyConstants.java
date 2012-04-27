@@ -622,6 +622,16 @@ public class KeyConstants {
 	public static final Key _cgi = KeyImpl.intern("cgi");
 	public static final Key _all = KeyImpl.intern("all");
 	public static final Key _tag = KeyImpl.intern("tag");
+	public static final Key _classic = KeyImpl.intern("classic");
+	public static final Key _simple = KeyImpl.intern("simple");
+	public static final Key _hidden = KeyImpl.intern("hidden");
+	public static final Key _external = KeyImpl.intern("external");
+	public static final Key _charset = KeyImpl.intern("charset");
+	public static final Key _created = KeyImpl.intern("created");
+	public static final Key _language = KeyImpl.intern("language");
+	public static final Key _online = KeyImpl.intern("online");
+	public static final Key _lastmodified = KeyImpl.intern("lastmodified");
+	public static final Key _lastModified = KeyImpl.intern("lastModified");
 
 	
 	

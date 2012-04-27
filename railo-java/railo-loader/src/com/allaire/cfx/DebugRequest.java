@@ -1,7 +1,10 @@
 package com.allaire.cfx;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.type.Collection.Key;
@@ -80,14 +83,12 @@ public class DebugRequest implements Request {
      * @see com.allaire.cfx.Request#getAttributeList()
      */
     public String[] getAttributeList() {
-    	Key[] keys = attributes.keys();
-    	if(keys==null) return null;
-    	
-    	String[] arr=new String[keys.length];
-		for(int i=0;i<keys.length;i++){
-			arr[i]=keys[i].getString();
+    	Iterator<Key> it = attributes.keyIterator();
+    	List<String> arr=new ArrayList<String>();
+    	while(it.hasNext()){
+			arr.add(it.next().getString());
 		}
-        return arr;
+        return arr.toArray(new String[arr.size()]);
     }
 
     /**

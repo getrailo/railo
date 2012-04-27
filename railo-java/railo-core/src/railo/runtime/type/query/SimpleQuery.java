@@ -58,7 +58,6 @@ import railo.runtime.type.QueryColumnRef;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.CollectionIterator;
 import railo.runtime.type.it.EntryIterator;

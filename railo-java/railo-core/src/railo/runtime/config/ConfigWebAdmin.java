@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
@@ -74,6 +75,7 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
@@ -1564,29 +1566,31 @@ public final class ConfigWebAdmin {
 
 
 	private static String toStringURLStyle(Struct sct) {
-        Collection.Key[] keys = sct.keys();
+        Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
         StringBuffer rtn=new StringBuffer();
-        
-        for(int i=0;i<keys.length;i++) {
-            
-	            if(rtn.length()>0)rtn.append('&');
-	            rtn.append(URLEncoder.encode(keys[i].getString()));
-	            rtn.append('=');
-	            rtn.append(URLEncoder.encode(Caster.toString(sct.get(keys[i],null),"")));
+        while(it.hasNext()) {
+            e = it.next();
+            if(rtn.length()>0)rtn.append('&');
+            rtn.append(URLEncoder.encode(e.getKey().getString()));
+            rtn.append('=');
+            rtn.append(URLEncoder.encode(Caster.toString(e.getValue(),"")));
         }
         return rtn.toString();
     }
 
 	private static String toStringCSSStyle(Struct sct) {
-        Collection.Key[] keys = sct.keys();
+        //Collection.Key[] keys = sct.keys();
         StringBuffer rtn=new StringBuffer();
+        Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
         
-        for(int i=0;i<keys.length;i++) {
-            
-	            if(rtn.length()>0)rtn.append(';');
-	            rtn.append(URLEncoder.encode(keys[i].getString()));
-	            rtn.append(':');
-	            rtn.append(URLEncoder.encode(Caster.toString(sct.get(keys[i],null),"")));
+		while(it.hasNext()) {
+			e = it.next();
+            if(rtn.length()>0)rtn.append(';');
+            rtn.append(URLEncoder.encode(e.getKey().getString()));
+            rtn.append(':');
+            rtn.append(URLEncoder.encode(Caster.toString(e.getValue(),"")));
         }
         return rtn.toString();
     }

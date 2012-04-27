@@ -1,6 +1,5 @@
 package railo.runtime.util;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 

@@ -172,9 +172,11 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		}
 		
 		
-		Collection.Key[] arr=values.keys();
-		for(int i=0;i<arr.length;i++) {
-			newArgs.set(arr[i],values.get(arr[i],null));
+		Iterator<Entry<Key, Object>> it = values.entryIterator();
+    	Entry<Key, Object> e;
+		while(it.hasNext()) {
+			e = it.next();
+			newArgs.set(e.getKey(),e.getValue());
 		}
 	}
     
@@ -190,25 +192,32 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			
 			if(value instanceof Argument) {
 				Argument argColl=(Argument) value;
-			    Collection.Key[] keys = argColl.keys();
-			    for(int i=0;i<keys.length;i++) {
-			    	if(funcArgs.length>i && keys[i] instanceof ArgumentIntKey) {
+				Iterator<Key> it = argColl.keyIterator();
+				Key k;
+				int i=-1;
+			    while(it.hasNext()) {
+			    	i++;
+			    	k = it.next();
+			    	if(funcArgs.length>i && k instanceof ArgumentIntKey) {
 	            		if(!values.containsKey(funcArgs[i].getName()))
-	            			values.setEL(funcArgs[i].getName(),argColl.get(keys[i],Argument.NULL));
+	            			values.setEL(funcArgs[i].getName(),argColl.get(k,Argument.NULL));
 	            		else 
-	            			values.setEL(keys[i],argColl.get(keys[i],Argument.NULL));
+	            			values.setEL(k,argColl.get(k,Argument.NULL));
 			    	}
-	            	else if(!values.containsKey(keys[i])){
-	            		values.setEL(keys[i],argColl.get(keys[i],Argument.NULL));
+	            	else if(!values.containsKey(k)){
+	            		values.setEL(k,argColl.get(k,Argument.NULL));
 	            	}
 	            }
 		    }
 			else if(value instanceof Collection) {
 		        Collection argColl=(Collection) value;
-			    Collection.Key[] keys = argColl.keys();
-			    for(int i=0;i<keys.length;i++) {
-			    	if(!values.containsKey(keys[i])){
-	            		values.setEL(keys[i],argColl.get(keys[i],Argument.NULL));
+			    //Collection.Key[] keys = argColl.keys();
+				Iterator<Key> it = argColl.keyIterator();
+				Key k;
+				while(it.hasNext()) {
+			    	k = it.next();
+			    	if(!values.containsKey(k)){
+	            		values.setEL(k,argColl.get(k,Argument.NULL));
 	            	}
 	            }
 		    }

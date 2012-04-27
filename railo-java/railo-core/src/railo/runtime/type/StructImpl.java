@@ -5,19 +5,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.collections.HashTable;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
@@ -175,12 +173,12 @@ public class StructImpl extends StructSupport {
 	public static void copy(Struct src,Struct trg,boolean deepCopy) {
 		ThreadLocalDuplication.set(src,trg);
 		try{
-			Key[] keys = src.keys();
-			Key key;
-			for(int i=0;i<keys.length;i++) {
-				key=keys[i];
-				if(!deepCopy) trg.setEL(key,src.get(key,null));
-				else trg.setEL(key,Duplicator.duplicate(src.get(key,null),deepCopy));
+			Iterator<Entry<Key, Object>> it = src.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()) {
+				e = it.next();
+				if(!deepCopy) trg.setEL(e.getKey(),e.getValue());
+				else trg.setEL(e.getKey(),Duplicator.duplicate(e.getValue(),deepCopy));
 			}
 		}
 		finally {

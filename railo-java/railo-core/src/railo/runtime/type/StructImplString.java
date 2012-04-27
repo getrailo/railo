@@ -4,15 +4,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.collections.HashTable;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.functions.system.GetUserRoles;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection.Key;
@@ -168,14 +167,14 @@ public final class StructImplString extends StructImpl implements Struct {
 	}
 	
 	public static void copy(Struct src,Struct trg,boolean deepCopy) {
-		Collection.Key[] keys=src.keys();
+		Iterator<Entry<Key, Object>> it = src.entryIterator();
+		Entry<Key, Object> e;
 		ThreadLocalDuplication.set(src, trg);
 		try {
-			Collection.Key k;
-			for(int i=0;i<keys.length;i++) {
-				k=keys[i];
-				if(!deepCopy) trg.setEL(k,src.get(k,null));
-				else trg.setEL(k,Duplicator.duplicate(src.get(k,null),deepCopy));
+			while(it.hasNext()) {
+				e = it.next();
+				if(!deepCopy) trg.setEL(e.getKey(),e.getValue());
+				else trg.setEL(e.getKey(),Duplicator.duplicate(e.getValue(),deepCopy));
 			}
 		}
 		finally {

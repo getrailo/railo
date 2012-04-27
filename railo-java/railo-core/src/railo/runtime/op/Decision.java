@@ -41,6 +41,7 @@ import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -472,12 +473,14 @@ public final class Decision {
         //else if(o instanceof XMLStruct) return true;
         else if(o instanceof Struct) {
             Struct sct=(Struct) o;
-            Collection.Key[] keys=sct.keys();
+            Iterator<Key> it = sct.keyIterator();
             try {
-                for(int i=0;i<keys.length;i++) Caster.toIntValue(keys[i].toString());
+                while(it.hasNext()) {
+                	Caster.toIntValue(it.next().getString());
+                }
                 return true;
             } 
-            catch (Exception e) {
+            catch (Throwable t) {
                 return false;
             }
         }

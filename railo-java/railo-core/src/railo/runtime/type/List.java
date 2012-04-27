@@ -14,6 +14,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * List is not a type, only some static method to manipulate String lists
@@ -1470,7 +1471,7 @@ public final class List {
 	 * @throws PageException 
 	 */
 	public static Array trimItems(Array arr) throws PageException {
-		Key[] keys = arr.keys();
+		Key[] keys = CollectionUtil.keys(arr);
 		
 		for(int i=0;i<keys.length;i++) {
 			arr.setEL(keys[i], Caster.toString(arr.get(keys[i],null)).trim());

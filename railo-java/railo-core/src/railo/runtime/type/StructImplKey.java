@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.collections.HashTable;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -179,12 +178,12 @@ public final class StructImplKey extends StructSupport implements Struct {
 	public static void copy(Struct src,Struct trg,boolean deepCopy) {
 		ThreadLocalDuplication.set(src, trg);
 		try {
-			Collection.Key[] keys=src.keys();
-			Collection.Key key;
-			for(int i=0;i<keys.length;i++) {
-				key=keys[i];
-				if(!deepCopy) trg.setEL(key,src.get(key,null));
-				else trg.setEL(key,Duplicator.duplicate(src.get(key,null),deepCopy));
+			Iterator<Entry<Key, Object>> it = src.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()) {
+				e = it.next();
+				if(!deepCopy) trg.setEL(e.getKey(),e.getValue());
+				else trg.setEL(e.getKey(),Duplicator.duplicate(e.getValue(),deepCopy));
 			}
 		}
 		finally {

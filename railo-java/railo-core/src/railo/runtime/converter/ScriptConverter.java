@@ -26,6 +26,7 @@ import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
@@ -319,7 +320,9 @@ public final class ScriptConverter {
 	 */
 	private void _serializeQuery(Query query, StringBuffer sb, Set<Object> done) throws ConverterException {
 		
-		Collection.Key[] keys = query.keys();
+		//Collection.Key[] keys = query.keys();
+		Iterator<Key> it = query.keyIterator();
+		Key k;
 		sb.append(goIn());
 		sb.append("query(");
 		
@@ -327,12 +330,13 @@ public final class ScriptConverter {
 		deep++;
 		boolean oDoIt=false;
 		int len=query.getRecordcount();
-		for(int i=0;i<keys.length;i++) {
+		while(it.hasNext()) {
+			k = it.next();
 		    if(oDoIt)sb.append(',');
 		    oDoIt=true;
 		    sb.append(goIn());
             sb.append('\'');
-            sb.append(escape(keys[i].getString()));
+            sb.append(escape(k.getString()));
             sb.append('\'');
 			sb.append(":[");
 			boolean doIt=false;
@@ -340,7 +344,7 @@ public final class ScriptConverter {
 			    if(doIt)sb.append(',');
 			    doIt=true;
 			    try {
-					_serialize(query.getAt(keys[i],y),sb,done);
+					_serialize(query.getAt(k,y),sb,done);
 				} catch (PageException e) {
 					_serialize(e.getMessage(),sb,done);
 				}

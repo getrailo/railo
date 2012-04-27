@@ -50,6 +50,7 @@ import railo.runtime.op.date.DateCaster;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
@@ -319,10 +320,12 @@ public final class AxisCaster {
     
     private static Map toMap(TypeMapping pc,Object value, Class targetClass) throws PageException {
         Struct src = Caster.toStruct(value);
-        Map trg=new HashMap();
-        Collection.Key[] keys = src.keys();
-        for(int i=0;i<keys.length;i++) {
-            trg.put(keys[i].getString(),toAxisType(pc,src.get(keys[i],null),targetClass));
+        Map<String,Object> trg=new HashMap<String,Object>();
+        Iterator<Entry<Key, Object>> it = src.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
+            trg.put(e.getKey().getString(),toAxisType(pc,e.getValue(),targetClass));
         }
         return trg;
         

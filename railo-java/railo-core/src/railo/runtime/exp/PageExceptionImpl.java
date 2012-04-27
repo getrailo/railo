@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -27,11 +28,13 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.writer.CFMLWriter;
 
 /**
@@ -428,16 +431,19 @@ public abstract class PageExceptionImpl extends PageException {
 			htmlBox.appendRow(1,new SimpleDumpData("Detail"),new SimpleDumpData(detail));
 		
 		// additional
-		Iterator it=additional.keyIterator();
+		Iterator<Key> it = additional.keyIterator();
+		Collection.Key k;
 		while(it.hasNext()) {
-			String key=it.next().toString();
-			htmlBox.appendRow(1,new SimpleDumpData(key),new SimpleDumpData(additional.get(key,"").toString()));
+			k=it.next();
+			htmlBox.appendRow(1,new SimpleDumpData(k.getString()),new SimpleDumpData(additional.get(k,"").toString()));
 		}
 		
 		Array tagContext = getTagContext(pageContext.getConfig());
 		// Context MUSTMUST
 		if(tagContext.size()>0) {
-			Collection.Key[] keys=tagContext.keys();
+			//Collection.Key[] keys=tagContext.keys();
+			Iterator<Object> vit = tagContext.valueIterator();
+			//Entry<Key, Object> te;
 			DumpTable context=new DumpTable("#ff9900","#FFCC00","#000000");
 			//context.setTitle("The Error Occurred in");
 			//context.appendRow(0,new SimpleDumpData("The Error Occurred in"));
@@ -446,14 +452,14 @@ public abstract class PageExceptionImpl extends PageException {
 					new SimpleDumpData("template"),
 					new SimpleDumpData("line"));
 			try {
-				for(int i=0;i<keys.length;i++) {
-					Struct struct=(Struct)tagContext.get(keys[i],null);
+				boolean first=true;
+				while(vit.hasNext()) {
+					Struct struct=(Struct)vit.next();
 					context.appendRow(1,
-							new SimpleDumpData(i>0?"called from ":"occurred in"),
-							new SimpleDumpData(struct.get("template","")+""),
-							new SimpleDumpData(Caster.toString(struct.get("line",null))));
-					
-					
+							new SimpleDumpData(first?"called from ":"occurred in"),
+							new SimpleDumpData(struct.get(KeyConstants._template,"")+""),
+							new SimpleDumpData(Caster.toString(struct.get(KeyConstants._line,null))));
+					first=false;
 				}
 				htmlBox.appendRow(1,new SimpleDumpData("Context"),context);
 				

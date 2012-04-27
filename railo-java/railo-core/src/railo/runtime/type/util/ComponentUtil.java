@@ -567,7 +567,7 @@ public final class ComponentUtil {
 			if(c instanceof ComponentAccess)
 				other=((ComponentAccess)c).keys(access);
 			else 
-				other=c.keys();
+				other=CollectionUtil.keys(c);
 			
 			if(other.length==0)
 				return new ExpressionException(

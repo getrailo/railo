@@ -3,6 +3,8 @@ package railo.runtime;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +50,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
@@ -221,14 +224,15 @@ public abstract class ComponentPage extends Page  {
 		String method = pc.getHttpServletRequest().getMethod();
 		String[] subPath = result.getPath();
 		
-		Key[] keys = component.keys();
+		Iterator<Entry<Key, Object>> it = component.entryIterator();
+		Entry<Key, Object> e;
 		Object value;
 		UDF udf;
-		//FunctionArgument[] args;
 		Struct meta;
 		boolean hasFunction=false;
-		for(int i=0;i<keys.length;i++){
-			value=component.get(keys[i],null);
+		while(it.hasNext()){
+			e = it.next();
+			value=e.getValue();
 			if(value instanceof UDF){
 				udf=(UDF)value;
 				try {
@@ -242,7 +246,7 @@ public abstract class ComponentPage extends Page  {
 					if(StringUtil.isEmpty(restPath)){
 						if(ArrayUtil.isEmpty(subPath)) {
 							hasFunction=true;
-							_callRest(pc, component, udf, path, result.getVariables(),result, suppressContent,keys[i]);
+							_callRest(pc, component, udf, path, result.getVariables(),result, suppressContent,e.getKey());
 							break;
 						}
 					}
@@ -251,12 +255,12 @@ public abstract class ComponentPage extends Page  {
 						int index=RestUtil.matchPath(var, Path.init(restPath)/*TODO cache this*/, result.getPath());
 						if(index>=0 && index+1==result.getPath().length) {
 							hasFunction=true;
-							_callRest(pc, component, udf, path, var,result, suppressContent,keys[i]);
+							_callRest(pc, component, udf, path, var,result, suppressContent,e.getKey());
 							break;
 						}
 					}
 				} 
-				catch (PageException e) {}
+				catch (PageException pe) {}
 			}
 		}
 		
@@ -320,12 +324,15 @@ public abstract class ComponentPage extends Page  {
     		// headers
     		Struct headers=Caster.toStruct(sct.get(KeyConstants._headers,null),null);
     		if(headers!=null){
-    			Key[] keys = headers.keys();
+    			//Key[] keys = headers.keys();
+    			Iterator<Entry<Key, Object>> it = headers.entryIterator();
+    			Entry<Key, Object> e;
     			String n,v;
     			Object tmp;
-    			for(int i=0;i<keys.length;i++){
-    				n=keys[i].getString();
-    				tmp=headers.get(keys[i]);
+    			while(it.hasNext()){
+    				e = it.next();
+    				n=e.getKey().getString();
+    				tmp=e.getValue();
     				v=Caster.toString(tmp,null);
     				if(tmp!=null && v==null) v=tmp.toString();
     				rsp.setHeader(n, v);
@@ -537,7 +544,7 @@ public abstract class ComponentPage extends Page  {
 	}
 
 	public static Struct translate(Component c, String strMethod, Struct params) {
-		Key[] keys = params.keys();
+		Key[] keys = CollectionUtil.keys(params);
 		FunctionArgument[] args=null;
 		int index=-1;
 		Object value;

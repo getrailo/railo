@@ -43,6 +43,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.CollectionUtil;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -345,7 +346,7 @@ public class HibernateORMSession implements ORMSession{
 			// struct
 			else if(Decision.isStruct(params)) {
 				Struct sct=Caster.toStruct(params);
-				Key[] keys = sct.keys();
+				Key[] keys = CollectionUtil.keys(sct);
 				String name;
 				// fix case-senstive
 				Struct names=new StructImpl();

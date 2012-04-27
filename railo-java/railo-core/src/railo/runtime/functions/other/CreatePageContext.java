@@ -3,6 +3,11 @@
  */
 package railo.runtime.functions.other;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+
 import javax.servlet.http.Cookie;
 
 import railo.commons.io.DevNullOutputStream;
@@ -15,6 +20,7 @@ import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.CollectionUtil;
 
 public final class CreatePageContext implements Function {
 
@@ -54,7 +60,7 @@ public final class CreatePageContext implements Function {
 	}
 
 	private static Struct castValuesToString(Struct sct) throws PageException {
-		Key[] keys = sct.keys();
+		Key[] keys = CollectionUtil.keys(sct);
 		for(int i=0;i<keys.length;i++){
 			sct.set(keys[i], Caster.toString(sct.get(keys[i])));
 		}
@@ -62,23 +68,27 @@ public final class CreatePageContext implements Function {
 	}
 
 	private static Pair<String,Object>[] toPair(Struct sct, boolean doStringCast) throws PageException {
-		Key[] keys = sct.keys();
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
 		Object value;
-		Pair<String,Object>[] pairs=new Pair[keys.length];
-		for(int i=0;i<keys.length;i++){
-			value= sct.get(keys[i]);
+		List<Pair<String,Object>> pairs=new ArrayList<Pair<String,Object>>();
+		while(it.hasNext()){
+			e = it.next();
+			value= e.getValue();
 			if(doStringCast)value=Caster.toString(value);
-			pairs[i]=new Pair<String,Object>(keys[i].getString(),value);
+			pairs.add(new Pair<String,Object>(e.getKey().getString(),value));
 		}
-		return pairs;
+		return pairs.toArray(new Pair[pairs.size()]);
 	}
 
 	private static Cookie[] toCookies(Struct sct) throws PageException {
-		Key[] keys = sct.keys();
-		Cookie[] cookies=new Cookie[keys.length];
-		for(int i=0;i<keys.length;i++){
-			cookies[i]=new Cookie(keys[i].getString(), Caster.toString(sct.get(keys[i])));
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		List<Cookie> cookies=new ArrayList<Cookie>();
+		while(it.hasNext()){
+			e = it.next();
+			cookies.add(new Cookie(e.getKey().getString(), Caster.toString(e.getValue())));
 		}
-		return cookies;
+		return cookies.toArray(new Cookie[cookies.size()]);
 	}
 }

@@ -21,7 +21,7 @@ public interface Iteratorable {
      *
      * @return return a Iterator for Values
      */
-    public Iterator valueIterator();
+    public Iterator<Object> valueIterator();
     
     /**
      * @return return a Iterator for keys

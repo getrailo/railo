@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -43,7 +47,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.text.xml.struct.XMLStructFactory;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
 /**
@@ -93,12 +97,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Text[] textes=new Text[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				textes[i]=toText(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Text> textes=new ArrayList<Text>();
+			while(it.hasNext()) {
+				textes.add(toText(doc,it.next()));
 			}
-			return textes;
+			return textes.toArray(new Text[textes.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -122,9 +126,9 @@ public final class XMLCaster {
 		if(o instanceof Attr) return (Attr)o;
 		if(o instanceof Struct && ((Struct)o).size()==1) {
 			Struct sct=(Struct)o;
-			Collection.Key key=sct.keys()[0];
-			Attr attr= doc.createAttribute(key.getString());
-			attr.setValue(Caster.toString(sct.get(key,null)));
+			Entry<Key, Object> e = sct.entryIterator().next();
+			Attr attr= doc.createAttribute(e.getKey().getString());
+			attr.setValue(Caster.toString(e.getValue()));
 			return attr;
 		}
 		
@@ -153,15 +157,19 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Attr[] attres=new Attr[keys.length];
+			Iterator<Entry<Key, Object>> it = coll.entryIterator();
+			Entry<Key, Object> e;
+			List<Attr> attres=new ArrayList<Attr>();
+			Attr attr;
 			Collection.Key k;
-			for(int i=0;i<keys.length;i++) {
-				k=keys[i];
-				attres[i]=doc.createAttribute(IsNumeric.call(null,k.getString())?"attribute-"+k.getString():k.getString());
-				attres[i].setValue(Caster.toString(coll.get(k,null)));
+			while(it.hasNext()) {
+				e = it.next();
+				k=e.getKey();
+				attr=doc.createAttribute(IsNumeric.call(null,k.getString())?"attribute-"+k.getString():k.getString());
+				attr.setValue(Caster.toString(e.getValue()));
+				attres.add(attr);
 			}
-			return attres;
+			return attres.toArray(new Attr[attres.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -209,12 +217,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Comment[] comments=new Comment[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				comments[i]=toComment(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Comment> comments=new ArrayList<Comment>();
+			while(it.hasNext()) {
+				comments.add(toComment(doc,it.next()));
 			}
-			return comments;
+			return comments.toArray(new Comment[comments.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -262,12 +270,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Element[] elements=new Element[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				elements[i]=toElement(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Element> elements=new ArrayList<Element>();
+			while(it.hasNext()) {
+				elements.add(toElement(doc,it.next()));
 			}
-			return elements;
+			return elements.toArray(new Element[elements.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -329,12 +337,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Node[] nodes=new Node[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				nodes[i]=toNode(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Node> nodes=new ArrayList<Node>();
+			while(it.hasNext()) {
+				nodes.add(toNode(doc,it.next()));
 			}
-			return nodes;
+			return nodes.toArray(new Node[nodes.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);

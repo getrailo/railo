@@ -11,6 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.List;
+import railo.runtime.type.util.CollectionUtil;
 
 public final class ExceptionUtil {
 	
@@ -56,17 +57,22 @@ public final class ExceptionUtil {
 	 * @param keyLabel
 	 * @return
 	 */
-	public static String similarKeyMessage(Collection.Key[] keys,String keySearched, String keyLabel, String keyLabels) {
+	public static String similarKeyMessage(Collection.Key[] _keys,String keySearched, String keyLabel, String keyLabels) {
 		
-		Arrays.sort(keys);
-		String list=List.arrayToList(keys, ",");
+		Arrays.sort(_keys);
+		String list=List.arrayToList(_keys, ",");
 		String keySearchedSoundex=StringUtil.soundex(keySearched);
 		
-		for(int i=0;i<keys.length;i++){
-			if(StringUtil.soundex(keys[i].getString()).equals(keySearchedSoundex))
-				return keyLabel+" ["+keySearched+"] does not exist, but there is a similar "+keyLabel+" ["+keys[i].getString()+"] available, complete list of all available "+keyLabels+" ["+list+"]";
+		for(int i=0;i<_keys.length;i++){
+			if(StringUtil.soundex(_keys[i].getString()).equals(keySearchedSoundex))
+				return keyLabel+" ["+keySearched+"] does not exist, but there is a similar "+keyLabel+" ["+_keys[i].getString()+"] available, complete list of all available "+keyLabels+" ["+list+"]";
 		}
 		return keyLabel+" ["+keySearched+"] does not exist, only the followings are available "+keyLabels+" ["+list+"]";
+	}
+	
+
+	public static String similarKeyMessage(Collection coll,String keySearched, String keyLabel, String keyLabels) {
+		return similarKeyMessage(CollectionUtil.keys(coll), keySearched, keyLabel, keyLabels);
 	}
 
 	public static IOException toIOException(Throwable t) {
