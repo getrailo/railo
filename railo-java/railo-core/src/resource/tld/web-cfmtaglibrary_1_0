@@ -7462,7 +7462,7 @@ Valid only for cfinput type="text".</description>
 		connections are anonymous.</description>
 		</attribute>
 		<attribute>
-			<type>numeric</type>
+			<type>number</type>
 			<name>referral</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

@@ -356,6 +356,7 @@ public class HibernateCaster {
 		if("datetime".equals(type)) 				return "timestamp";
 		if("numeric".equals(type)) 					return "double";
 		if("number".equals(type)) 					return "double";
+		if("numeric".equals(type)) 					return "double";
 		if("char".equals(type)) 					return "character";
 		if("nchar".equals(type)) 					return "character";
 		if("decimal".equals(type)) 					return "double";
