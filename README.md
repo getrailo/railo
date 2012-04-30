@@ -9,7 +9,7 @@ Building from source
 Before you start building Railo from source, you are going to need a few things installed on your machine:
 
 1. Eclipse for JEE - this is the easiest Eclipse bundle to work with when building Java projects <http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/heliosr>
-1. Java 5 JDK - not just the JRE (because you're going to be compiling Java code) - and not Java 6! Railo requires Java 5 to build correctly! (CHECK)
+1. Java 6 JDK - not just the JRE (because you're going to be compiling Java code) - and not Java 7! Railo requires Java 6 to build correctly!
 1. A Git client, any client will do. The demo here will be using the command line client to keep it simple <http://git-scm.com/>. There is also the EGit plugin for Eclipse for you to commit your changes locally and create patch files for submission <http://www.eclipse.org/egit/>
 1. A running Railo installation in which to test your new patch file <http://www.getrailo.org/index.cfm/download/>
 
@@ -31,14 +31,14 @@ after a little while you should see something like:
 	
 That's it! you have downloaded all the source code for Railo!
 
-### 3. Setup Eclipse for JVM JDK5
-Currently we build Railo with JDK5, so you need to setup Eclipse to use that JVM as default. you can do this by going to:
+### 3. Setup Eclipse for JVM JDK6
+Currently we build Railo with JDK6, so you need to setup Eclipse to use that JVM as default. you can do this by going to:
 
 	Eclipse (or Window on Windows) -> Preferences -> Java -> Installed JREs 
 	
-Here you can click "Add..." to add the JRE 5 and select the checkbox to make it your default.
+Here you can click "Add..." to add the JRE 6 and select the checkbox to make it your default.
 
-Note: On OSX this will be under "/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Home"
+Note: On OSX this will be under "/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home"
 
 
 ### 4. Import the code into Eclipse
@@ -64,7 +64,7 @@ Now that you have imported the projects you will see some exclamation marks next
 1. We shall now re-add the Jars. Click on Add External Jars... and select the path to <checkoutdirectory>/railo-java/libs and select all the jar files click ok, and click ok again. 
 1. Repeat the process above for the Railo-Loader project
 
-There might also be under "Libraries" an entry that says 'JRE System Library [1.5.0] unbound' which you will need to remove and click "Add Library..." select a JRE System Library and select the "Workspace default JRE (JVM 1.50)" which we added in step 3. 
+There might also be under "Libraries" an entry that says 'JRE System Library [1.6.0] unbound' which you will need to remove and click "Add Library..." select a JRE System Library and select the "Workspace default JRE (JVM 1.60)" which we added in step 3. 
 
 
 ### 6. Setting your build version
@@ -132,33 +132,3 @@ Well done! you have now built Railo!
 
 ### 10. Posting patches and fixes
 If you have modified the code and want to submit a patch, you should post your issues at the JIRA bug tracker: <https://jira.jboss.org/browse/RAILO>
-
-
-
-## Problems on OS X Snow Leopard 
-
-There are some problems on OS X Snow Leopard, especially when dealing with the fact that you don't actually have Java 1.5.0 which is required to build the source, there are work rounds for this, see: <http://chxor.chxo.com/post/183013153/installing-java-1-5-on-snow-leopard>
-
->Download the official Java package from Apple, �Java for Mac OS X 10.5 Update 7” dated May 18, 2010.
-
->Then use the excellent shareware utility Pacifist to open the downloaded JavaForMacOSX10.5Update4.pkg file.
-
->How to install
-
->1) First use Finder to go to System > Library > Frameworks > JavaVM.framework > Versions and delete the two aliases (symlinks) >“1.5” and “1.5.0”. Don’t skip this step, because otherwise the extraction will follow the symlinks and overwrite the contents 
->of the 1.6.0 folder, oops.
-
->2) In Pacifist, drill down into Contents > System > Library > Frameworks > JavaVM.framework > Versions.
-
->3) In Pacifist, select 1.5 and 1.5.0, right-click, and chose Install to Default Location
-
-
-Also if you get an error like:
->java.lang.UnsatisfiedLinkError: Cannot load 32-bit SWT libraries on 64-bit JVM
-
->   at org.eclipse.swt.internal.Library.loadLibrary(Library.java:182)
-
->    at org.eclipse.swt.internal.Library.loadLibrary(Library.java:159)
-
-see <http://www.agynamix.de/blog/run-32bit-swt-apps-from-eclipse-in-snow-leopard/>
-
