@@ -45,6 +45,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 	private boolean hidden;
 	private boolean readonly;
 	private boolean paused;
+	private boolean autoDelete;
 	private String md5;
 
     
@@ -75,7 +76,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
             Date endDate, Time endTime, String url, int port, String interval, 
             long timeout, Credentials credentials, String proxyHost, int proxyPort, 
             Credentials proxyCredentials, boolean resolveURL, boolean publish,boolean hidden, 
-            boolean readonly,boolean paused) throws IOException, ScheduleException {
+            boolean readonly,boolean paused, boolean autoDelete) throws IOException, ScheduleException {
     	
     	
     	String md5=task.toLowerCase()+file+startDate+startTime+endDate+endTime+url+port+interval+timeout+
@@ -116,6 +117,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
         this.hidden=hidden;
         this.readonly=readonly;
         this.paused=paused;
+        this.autoDelete=autoDelete;
     }
 
 
@@ -346,6 +348,17 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 
 	public void setPaused(boolean paused) {
 		this.paused=paused;
+	}
+	
+
+	public boolean isAutoDelete() {
+		return autoDelete;
+	}
+
+
+
+	public void setAutoDelete(boolean autoDelete) {
+		this.autoDelete=autoDelete;
 	}
 
 

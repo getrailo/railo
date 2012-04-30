@@ -94,7 +94,7 @@ public final class SchedulerImpl implements Scheduler {
     }
 
 	private void init(ScheduleTask task) {
-		new ScheduledTaskThread(engine,config,log,task,charset).start();
+		new ScheduledTaskThread(engine,this,config,log,task,charset).start();
 	}
 
 	/**
@@ -105,7 +105,7 @@ public final class SchedulerImpl implements Scheduler {
     private ScheduleTaskImpl[] readInAllTasks() throws PageException {
         Element root = doc.getDocumentElement();
         NodeList children = root.getChildNodes();
-        ArrayList list=new ArrayList();
+        ArrayList<ScheduleTaskImpl> list=new ArrayList<ScheduleTaskImpl>();
         
         int len=children.getLength();
         for(int i=0;i<len;i++) {
@@ -149,7 +149,8 @@ public final class SchedulerImpl implements Scheduler {
                     su.toBoolean(el,"publish"),
                     su.toBoolean(el,"hidden",false),
                     su.toBoolean(el,"readonly",false),
-                    su.toBoolean(el,"paused",false));
+                    su.toBoolean(el,"paused",false),
+                    su.toBoolean(el,"autoDelete",false));
             return st;
         } catch (Exception e) {e.printStackTrace();
             throw Caster.toPageException(e);
@@ -209,6 +210,7 @@ public final class SchedulerImpl implements Scheduler {
         su.setBoolean(el,"publish",task.isPublish());   
         su.setBoolean(el,"hidden",((ScheduleTaskImpl)task).isHidden());  
         su.setBoolean(el,"readonly",((ScheduleTaskImpl)task).isReadonly());  
+        su.setBoolean(el,"autoDelete",((ScheduleTaskImpl)task).isAutoDelete());  
     }
     
     /**
@@ -246,7 +248,7 @@ public final class SchedulerImpl implements Scheduler {
      * @see railo.runtime.schedule.Scheduler#getAllScheduleTasks()
      */
 	public ScheduleTask[] getAllScheduleTasks() {
-		ArrayList list=new ArrayList();
+		ArrayList<ScheduleTask> list=new ArrayList<ScheduleTask>();
 		for(int i=0;i<tasks.length;i++) {
 	        if(!tasks[i].isHidden()) list.add(tasks[i]);
 	    }
@@ -334,6 +336,23 @@ public final class SchedulerImpl implements Scheduler {
 	    //init();
 	    su.store(doc,schedulerFile);
 	}
+	
+	public synchronized void removeIfNoLonerValid(ScheduleTask task) throws IOException {
+		ScheduleTaskImpl sti=(ScheduleTaskImpl) task;
+		if(sti.isValid() || !sti.isAutoDelete()) return;
+		
+		// disable running task
+		sti.setValid(false);
+		
+	    // remove from xml
+	    NodeList list = doc.getDocumentElement().getChildNodes();
+	    Element el=su.getElement(list,"name", sti.getTask());
+	    if(el!=null) {
+	    	el.getParentNode().removeChild(el);
+	    }
+	    su.store(doc,schedulerFile);
+	}
+	
 
 	/**
      * @see railo.runtime.schedule.Scheduler#runScheduleTask(java.lang.String, boolean)
