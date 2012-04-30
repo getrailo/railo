@@ -23,6 +23,8 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
 import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
@@ -282,7 +284,6 @@ public class HibernateORMSession implements ORMSession{
 		//Session session = getSession(pc,null);
 		hql=hql.trim();
 		org.hibernate.Query query = session().createQuery(hql); 
-		
 		// options
 		if(options!=null){
 			// maxresults
@@ -329,6 +330,7 @@ public class HibernateORMSession implements ORMSession{
 				Iterator it = arr.valueIterator();
 				int index=0;
 				SQLItem item;
+				RefBoolean isArray=null;//new RefBooleanImpl();
 				while(it.hasNext()){
 					obj=it.next();
 					if(obj instanceof SQLItem) {
@@ -339,8 +341,12 @@ public class HibernateORMSession implements ORMSession{
 					}
 					if(meta!=null){
 						type = meta.getOrdinalParameterExpectedType(index+1);
-						obj=HibernateCaster.toSQL(engine, type, obj);
-						query.setParameter(index, obj,type);
+						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
+						// TOOD can the following be done somehow
+						//if(isArray.toBooleanValue())
+						//	query.setParameterList(index, (Object[])obj,type);
+						//else
+							query.setParameter(index, obj,type);
 					}
 					else
 						query.setParameter(index, obj);
@@ -364,14 +370,19 @@ public class HibernateORMSession implements ORMSession{
 					}
 				}
 				
+				RefBoolean isArray=new RefBooleanImpl();
 				for(int i=0;i<keys.length;i++){
 					obj=sct.get(keys[i],null);
 					if(meta!=null){
 						name=(String) names.get(keys[i],null);
 						if(name==null) continue; // param not needed will be ignored
 						type = meta.getNamedParameterExpectedType(name);
-						obj=HibernateCaster.toSQL(engine, type, obj);
-						query.setParameter(name, obj,type);
+						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
+						if(isArray.toBooleanValue())
+							query.setParameterList(name, (Object[])obj,type);
+						else
+							query.setParameter(name, obj,type);
+						
 						
 					}
 					else
@@ -549,7 +560,7 @@ public class HibernateORMSession implements ORMSession{
 			if(!StringUtil.isEmpty(idName)){
 				Object idValue = scope.get(KeyImpl.init(idName),null);
 				if(idValue!=null){
-					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(engine, idType, idValue)));
+					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(engine, idType, idValue,null)));
 				}
 			}
 			criteria.add(Example.create(cfc));
@@ -601,7 +612,7 @@ public class HibernateORMSession implements ORMSession{
 					entry=(Entry) it.next();
 					colName=HibernateUtil.validateColumnName(metaData, Caster.toString(entry.getKey()));
 					Type type = HibernateUtil.getPropertyType(metaData,colName,null);
-					value=HibernateCaster.toSQL(engine,type,entry.getValue());
+					value=HibernateCaster.toSQL(engine,type,entry.getValue(),null);
 					if(value!=null)	criteria.add(Restrictions.eq(colName, value));
 					else 			criteria.add(Restrictions.isNull(colName));
 					

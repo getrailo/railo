@@ -755,4 +755,25 @@ public final class ArrayUtil {
 		}
 		return size;
 	}
+
+
+	/**
+	 * creates a native array out of the input list, if all values are from the same type, this type is used for the array, otherwise object
+	 * @param list
+	 */
+	public static Object[] toArray(List<?> list) {
+		Iterator<?> it = list.iterator();
+		Class clazz=null;
+		while(it.hasNext()){
+			Object v = it.next();
+			if(v==null) continue;
+			if(clazz==null) clazz=v.getClass();
+			else if(clazz!=v.getClass()) return list.toArray();	
+		}
+		if(clazz==Object.class || clazz==null) 
+			return list.toArray();
+		
+		Object arr = java.lang.reflect.Array.newInstance(clazz, list.size());
+		return list.toArray((Object[]) arr);	
+	}
 }

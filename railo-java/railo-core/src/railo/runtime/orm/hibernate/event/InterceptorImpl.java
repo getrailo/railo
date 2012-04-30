@@ -80,7 +80,7 @@ public class InterceptorImpl extends EmptyInterceptor {
             
             if(before != current && (current == null || !Operator.equalsEL(before, current, false, true))) {
             	try {
-					state[i] = HibernateCaster.toSQL(null, types[i], current);
+					state[i] = HibernateCaster.toSQL(null, types[i], current,null);
 				} catch (PageException e) {
 					state[i] = current;
 				}
