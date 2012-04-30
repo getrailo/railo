@@ -2469,6 +2469,22 @@ Example:
 			<rtexprvalue>true</rtexprvalue>
 			<description>used only for type bookmark, name of the bookmark to define.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>evalAtPrint</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>unimplemented</status>
+			<description>
+Determines if the contents of the cfdocumentitem tag body has to be evaluated at the time of printing the document.
+- true: evaluates the contents of the cfdocumentitem tag body only at the time of printing the document.
+- false (default): evaluates the contents of the cfdocumentitem tag body immediately.
+			</description>
+		</attribute>
+		
+		
+		
+		
 	</tag>
 	<!-- DocumentSection -->
 	<tag>
