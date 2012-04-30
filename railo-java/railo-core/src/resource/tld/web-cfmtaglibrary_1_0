@@ -2476,6 +2476,22 @@ Example:
 			<rtexprvalue>true</rtexprvalue>
 			<description>used only for type bookmark, name of the bookmark to define.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>evalAtPrint</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>unimplemented</status>
+			<description>
+Determines if the contents of the cfdocumentitem tag body has to be evaluated at the time of printing the document.
+- true: evaluates the contents of the cfdocumentitem tag body only at the time of printing the document.
+- false (default): evaluates the contents of the cfdocumentitem tag body immediately.
+			</description>
+		</attribute>
+		
+		
+		
+		
 	</tag>
 	<!-- DocumentSection -->
 	<tag>
@@ -7486,7 +7502,7 @@ Valid only for cfinput type="text".</description>
 		connections are anonymous.</description>
 		</attribute>
 		<attribute>
-			<type>numeric</type>
+			<type>number</type>
 			<name>referral</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -10228,7 +10244,7 @@ dWord: creates a value of 0 (zero)</description>
                 if one with the name specified by the task attribute
                 does not exist
             run: executes the specified task</description>
-    </attribute>
+    	</attribute>
 		<attribute>
 			<type>string</type>
 			<name>serverpassword</name>
@@ -10242,7 +10258,7 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		<description>if set to true the scheduled task is not displayed in the Railo Administrator.</description>
-    </attribute>
+    	</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>readonly</name>
@@ -10411,6 +10427,14 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>return variable name of action list</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>autoDelete</name>
+			<required>false</required>
+			<status>hidden</status>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, the scheduled task get deleted when there is no possible future execution.</description>
 		</attribute>
 	</tag>
 	<!-- Script -->

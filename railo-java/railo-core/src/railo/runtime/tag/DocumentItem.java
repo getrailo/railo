@@ -22,6 +22,7 @@ public final class DocumentItem extends BodyTagImpl {
 	private int type;
 	private String name;
 	private PDFPageMark body;
+	private boolean evalAtPrint;
 	
 	/**
 	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
@@ -47,6 +48,9 @@ public final class DocumentItem extends BodyTagImpl {
 		
 	}
 
+	public void setEvalatprint(boolean evalAtPrint){
+		this.evalAtPrint=evalAtPrint;
+	}
 
     /**
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()

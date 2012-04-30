@@ -1655,8 +1655,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(triggerDataMember && !isPrivate(pc)) {
         	return callGetter(pc,key);
         }
-        throw new ExpressionException("Component ["+getCallName()+"] has no acessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
-        //throw new ExpressionException("Component ["+getCallName()+"] has no acessible Member with name ["+name+"]");
+        throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
+        //throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+name+"]");
     }
 
     private Object callGetter(PageContext pc,Collection.Key key) throws PageException {
@@ -1667,7 +1667,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
                 return _call(pc,udf,null,ArrayUtil.OBJECT_EMPTY);
             }
         } 
-        throw new ExpressionException("Component ["+getCallName()+"] has no acessible Member with name ["+key+"]");
+        throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
     
     private Object callGetter(PageContext pc,Collection.Key key, Object defaultValue) {
@@ -1716,7 +1716,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(triggerDataMember && !isPrivate(ThreadLocalPageContext.get())) {
         	return callGetter(ThreadLocalPageContext.get(),key);
         }
-        throw new ExpressionException("Component ["+getCallName()+"] has no acessible Member with name ["+key+"]");
+        throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
     }
 
     /**
