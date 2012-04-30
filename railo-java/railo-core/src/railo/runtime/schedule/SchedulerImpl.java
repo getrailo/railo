@@ -117,7 +117,7 @@ public final class SchedulerImpl implements Scheduler {
                 list.add(readInTask((Element)n));
             } 
         }
-        return (ScheduleTaskImpl[]) list.toArray(new ScheduleTaskImpl[list.size()]);
+        return list.toArray(new ScheduleTaskImpl[list.size()]);
     }
     
     
@@ -259,7 +259,7 @@ public final class SchedulerImpl implements Scheduler {
 		for(int i=0;i<tasks.length;i++) {
 	        if(!tasks[i].isHidden()) list.add(tasks[i]);
 	    }
-	    return (ScheduleTask[]) list.toArray(new ScheduleTask[list.size()]);
+	    return list.toArray(new ScheduleTask[list.size()]);
 	}
 	
 	/**

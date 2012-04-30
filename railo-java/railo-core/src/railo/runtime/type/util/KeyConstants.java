@@ -631,18 +631,6 @@ public class KeyConstants {
 	public static final Key _online = KeyImpl.intern("online");
 	public static final Key _lastmodified = KeyImpl.intern("lastmodified");
 	public static final Key _lastModified = KeyImpl.intern("lastModified");
-	public static Key _returnFormat=KeyImpl.intern("returnFormat");
-	public static Key _s3=KeyImpl.intern("s3");
-	public static Key _super=KeyImpl.intern("super");
-	public static Key _argumentCollection=KeyImpl.intern("argumentCollection");
-	public static Key _returntype=KeyImpl.intern("returntype");
-	public static Key _description=KeyImpl.intern("description");
-	public static Key _displayname=KeyImpl.intern("displayname");
-	public static Key _arguments=KeyImpl.intern("arguments");
-	public static Key _variables=KeyImpl.intern("variables");
-	public static Key _fieldnames=KeyImpl.intern("fieldnames");
-	public static Key _local=KeyImpl.intern("local");
-	public static Key _exceptions=KeyImpl.intern("exceptions");
 	public static Key _task=KeyImpl.intern("task");
 	public static Key _port=KeyImpl.intern("port");
 	

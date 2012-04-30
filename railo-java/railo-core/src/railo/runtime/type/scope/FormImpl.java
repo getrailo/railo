@@ -35,7 +35,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.util.ApplicationContext;
 
 
 /**

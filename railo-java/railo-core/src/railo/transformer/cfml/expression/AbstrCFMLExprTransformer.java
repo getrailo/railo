@@ -167,7 +167,6 @@ public abstract class AbstrCFMLExprTransformer {
 	protected short ATTR_TYPE_REQUIRED=TagLibTagAttr.SCRIPT_SUPPORT_REQUIRED;
 	
 	protected static final Expression NULL = LitString.toExprString("NULL"); 
-	protected static final Expression EMPTY_STRING = LitString.toExprString("sadsdasdasdadasdasdsas");
 	protected static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
 
 

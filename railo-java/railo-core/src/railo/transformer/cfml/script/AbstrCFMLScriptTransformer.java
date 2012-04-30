@@ -126,7 +126,6 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	}
 
 	private static final Expression NULL = LitString.toExprString("NULL"); 
-	private static final Expression EMPTY_STRING = LitString.toExprString("sadsdasdasdadasdasdsas");
 	private static final Attribute ANY = new Attribute(false,"type",LitString.toExprString("any"),"string"); 
 
 	
@@ -715,7 +714,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				}
 				
 				// argument attributes
-				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,EMPTY_STRING,Boolean.TRUE,null,false);
+				Attribute[] _attrs = attributes(null,null,data,COMMA_ENDBRACKED,LitString.EMPTY,Boolean.TRUE,null,false);
 				Attribute _attr;
 				if(!ArrayUtil.isEmpty(_attrs)){
 					if(meta==null) meta=new HashMap<String, Attribute>();
@@ -765,7 +764,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			
 			
 		// attributes
-		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,EMPTY_STRING,Boolean.TRUE,null,false);
+		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false);
 		for(int i=0;i<attrs.length;i++){
 			func.addAttribute(attrs[i]);
 		}
@@ -921,7 +920,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		// attributes
 		//attributes(func,data);
-		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,EMPTY_STRING,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false);
+		Attribute[] attrs = attributes(tag,tlt,data,SEMI_BLOCK,LitString.EMPTY,script.getRtexpr()?Boolean.TRUE:Boolean.FALSE,null,false);
 		
 		for(int i=0;i<attrs.length;i++){
 			tag.addAttribute(attrs[i]);
@@ -1058,7 +1057,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				}
 				// attr with no value
 				else {
-					attr=new Attribute(true,attr.getName(),EMPTY_STRING,"string");
+					attr=new Attribute(true,attr.getName(),LitString.EMPTY,"string");
 					property.addAttribute(attr);
 				}
 			}
@@ -1183,7 +1182,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				}
 				// attr with no value
 				else {
-					attr=new Attribute(true,attr.getName(),EMPTY_STRING,"string");
+					attr=new Attribute(true,attr.getName(),LitString.EMPTY,"string");
 					param.addAttribute(attr);
 				}
 			}
