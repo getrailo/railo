@@ -1,5 +1,7 @@
 package railo.runtime.db;
 
+import java.sql.PreparedStatement;
+
 public class DataSourceUtil {
 
 	public static boolean isMSSQL(DatasourceConnection dc) {
@@ -13,6 +15,16 @@ public class DataSourceUtil {
 
 	public static boolean isValid(DatasourceConnection dc, int timeout) throws Throwable {
 		return dc.getConnection().isValid(timeout); 
+	}
+	
+	
+	public static boolean isClosed(PreparedStatement ps, boolean defaultValue) {
+		try {
+			return ps.isClosed();
+		} 
+		catch (Throwable t) {
+			return defaultValue;
+		}
 	}
 
 }
