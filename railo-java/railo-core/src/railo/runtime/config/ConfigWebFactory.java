@@ -3000,7 +3000,7 @@ public final class ConfigWebFactory {
     // config
         if(orm==null) orm = doc.createElement("orm"); // this is just a dummy 
         ORMConfiguration def=hasCS?((ConfigServerImpl)configServer).getORMConfig():null;
-        ORMConfiguration ormConfig=ORMConfiguration.load(config,orm,config.getRootDirectory(),def);
+        ORMConfiguration ormConfig=ORMConfiguration.load(config,null,orm,config.getRootDirectory(),def);
         config.setORMConfig(ormConfig);
         
     }

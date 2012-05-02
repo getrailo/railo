@@ -2658,7 +2658,7 @@ private void doGetMappings() throws PageException {
     	}
     	settings.set(ORMConfiguration.CFC_LOCATION, arrCfclocation);
     	
-    	admin.updateORMSetting(ORMConfiguration.load(config, settings, null, oc));
+    	admin.updateORMSetting(ORMConfiguration.load(config,null, settings, null, oc));
         
     	
     	store();
