@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
+import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -41,11 +42,17 @@ import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMTransaction;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.scope.Argument;
+import railo.runtime.type.scope.ArgumentImpl;
+import railo.runtime.type.util.ArraySupport;
+import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ComponentUtil;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -274,7 +281,25 @@ public class HibernateORMSession implements ORMSession{
 		return _executeQuery(pc, hql, params, unique, queryOptions);
 	}
 	
-	private Object _executeQuery(PageContext pc,String hql, Object params, boolean unique,Struct options) throws PageException {
+	public Object _executeQuery(PageContext pc,String hql, Object params, boolean unique,Struct queryOptions) throws PageException {
+		try{
+			return __executeQuery(pc, hql, params, unique, queryOptions);
+		}
+		catch(QueryException qe) {
+			// argument scope is array and struct at the same time, by default it is handled as struct, if this fails try it as array
+			if(params instanceof Argument) {
+				try{
+					return __executeQuery(pc, hql, ArgumentImpl.toArray((Argument)params), unique, queryOptions);
+				}
+				catch(Throwable t){t.printStackTrace();}
+			}
+			throw qe;
+		}
+		
+		
+	}
+	
+	private Object __executeQuery(PageContext pc,String hql, Object params, boolean unique,Struct options) throws PageException {
 		//Session session = getSession(pc,null);
 		hql=hql.trim();
 		org.hibernate.Query query = session().createQuery(hql); 
@@ -318,39 +343,10 @@ public class HibernateORMSession implements ORMSession{
 			ParameterMetadata meta = plan.getParameterMetadata();
 			Type type;
 			Object obj;
-			// array
-			if(Decision.isArray(params)){
-				Array arr=Caster.toArray(params);
-				Iterator it = arr.valueIterator();
-				int index=0;
-				SQLItem item;
-				RefBoolean isArray=null;//new RefBooleanImpl();
-				while(it.hasNext()){
-					obj=it.next();
-					if(obj instanceof SQLItem) {
-						item=(SQLItem) obj;
-						obj=item.getValue();
-						//HibernateCaster.toHibernateType(item.getType(), null); MUST
-						//query.setParameter(index, item.getValue(),type);
-					}
-					if(meta!=null){
-						type = meta.getOrdinalParameterExpectedType(index+1);
-						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
-						// TOOD can the following be done somehow
-						//if(isArray.toBooleanValue())
-						//	query.setParameterList(index, (Object[])obj,type);
-						//else
-							query.setParameter(index, obj,type);
-					}
-					else
-						query.setParameter(index, obj);
-					index++;
-				}
-				if(meta.getOrdinalParameterCount()>index)
-					throw new ORMException(engine,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements");
-			}
+			
+
 			// struct
-			else if(Decision.isStruct(params)) {
+			if(Decision.isStruct(params)) {
 				Struct sct=Caster.toStruct(params);
 				Key[] keys = CollectionUtil.keys(sct);
 				String name;
@@ -382,6 +378,38 @@ public class HibernateORMSession implements ORMSession{
 					else
 						query.setParameter(keys[i].getString(), obj);
 				}
+			}
+			
+			// array
+			else if(Decision.isArray(params)){
+				Array arr=Caster.toArray(params);
+				Iterator it = arr.valueIterator();
+				int index=0;
+				SQLItem item;
+				RefBoolean isArray=null;//new RefBooleanImpl();
+				while(it.hasNext()){
+					obj=it.next();
+					if(obj instanceof SQLItem) {
+						item=(SQLItem) obj;
+						obj=item.getValue();
+						//HibernateCaster.toHibernateType(item.getType(), null); MUST
+						//query.setParameter(index, item.getValue(),type);
+					}
+					if(meta!=null){
+						type = meta.getOrdinalParameterExpectedType(index+1);
+						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
+						// TOOD can the following be done somehow
+						//if(isArray.toBooleanValue())
+						//	query.setParameterList(index, (Object[])obj,type);
+						//else
+							query.setParameter(index, obj,type);
+					}
+					else
+						query.setParameter(index, obj);
+					index++;
+				}
+				if(meta.getOrdinalParameterCount()>index)
+					throw new ORMException(engine,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements");
 			}
 		}
 		
