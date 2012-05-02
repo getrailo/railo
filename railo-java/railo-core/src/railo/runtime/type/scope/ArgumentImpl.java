@@ -18,9 +18,12 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.wrap.ArrayAsList;
 
 /**
@@ -450,5 +453,29 @@ public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 	}
 */
 
+	/**
+	 * converts a argument scope to a regular struct
+	 * @param arg argument scope to convert
+	 * @return resulting struct
+	 */
+	public static Struct toStruct(Argument arg) {
+		Struct trg=new StructImpl();
+		StructImpl.copy(arg, trg, false);
+		return trg;
+	}
 
+	/**
+	 * converts a argument scope to a regular array
+	 * @param arg argument scope to convert
+	 * @return resulting array
+	 */
+	public static Array toArray(Argument arg) {
+		ArrayImpl trg=new ArrayImpl();
+		int[] keys = arg.intKeys();
+		for(int i=0;i<keys.length;i++){
+			trg.setEL(keys[i],
+					arg.get(keys[i],null));
+		}
+		return trg;
+	}
 }
