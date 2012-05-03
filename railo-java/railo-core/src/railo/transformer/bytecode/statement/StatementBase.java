@@ -89,28 +89,17 @@ public abstract class StatementBase implements Statement {
     /**
      * sets the line value.
      * @param line The line to set.
-     * @deprecated replaced with "setStartLine"
-     */
-    public void setLine(int startLine) {
-        setStartLine(startLine);
-    }
-
-    /**
-     * sets the line value.
-     * @param line The line to set.
      */
     public void setEndLine(int endLine) {
         this.endLine = endLine;
     }
-	/**
-	 * @return the startLine
-	 */
+    
+    @Override
 	public int getStartLine() {
 		return startLine;
 	}
-	/**
-	 * @return the endLine
-	 */
+	
+	@Override
 	public int getEndLine() {
 		return endLine;
 	}
