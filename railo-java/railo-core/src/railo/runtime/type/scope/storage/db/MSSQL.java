@@ -8,12 +8,15 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
+import railo.runtime.type.scope.storage.StorageScopeEngine;
+import railo.runtime.type.scope.storage.StorageScopeListener;
+import railo.runtime.type.scope.storage.clean.DatasourceStorageScopeCleaner;
 
 public class MSSQL extends SQLExecutorSupport {
 
 	@Override
 	public Query select(Config config, String cfid, String applicationName,
-			DatasourceConnection dc, String type, Log log,
+			DatasourceConnection dc, int type, Log log,
 			boolean createTableIfNotExist) throws PageException, SQLException {
 		// TODO Auto-generated method stub
 		return null;
@@ -21,7 +24,7 @@ public class MSSQL extends SQLExecutorSupport {
 
 	@Override
 	public void update(Config config, String cfid, String applicationName,
-			DatasourceConnection dc, String type, Struct data, long timeSpan,
+			DatasourceConnection dc, int type, Struct data, long timeSpan,
 			Log log) throws PageException, SQLException {
 		// TODO Auto-generated method stub
 
@@ -29,10 +32,19 @@ public class MSSQL extends SQLExecutorSupport {
 
 	@Override
 	public void delete(Config config, String cfid, String appName,
-			DatasourceConnection dc, String typeAsString, Log log)
+			DatasourceConnection dc, int type, Log log)
 			throws PageException, SQLException {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void clean(Config config, DatasourceConnection dc, int type,
+			StorageScopeEngine engine, DatasourceStorageScopeCleaner cleaner,
+			StorageScopeListener listener, Log log) throws PageException,
+			SQLException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
