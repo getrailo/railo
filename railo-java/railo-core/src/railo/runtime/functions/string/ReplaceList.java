@@ -3,22 +3,42 @@
  */
 package railo.runtime.functions.string;
 
+import java.util.Iterator;
+
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
+import railo.runtime.op.Caster;
+import railo.runtime.type.Array;
 import railo.runtime.type.List;
 
 public final class ReplaceList implements Function {
 	
-	public static String call(PageContext pc , String str, String list1, String list2) {
+	private static final long serialVersionUID = -3935300433837460732L;
 
-        StringList l1 = List.toListTrim(list1,',');
-        StringList l2 = List.toListTrim(list2,',');
-        
-        
-        while(l1.hasNext()) {
-            str=StringUtil.replace(str,l1.next(),((l2.hasNext())?l2.next():""),false);
+	public static String call(PageContext pc , String str, String list1, String list2) {
+		return call(pc, str, list1, list2, ",", ",");
+	}
+	
+	public static String call(PageContext pc , String str, String list1, String list2, String delimiter_list1) {
+		if(delimiter_list1==null) delimiter_list1=",";
+		
+		return call(pc, str, list1, list2, delimiter_list1, delimiter_list1);
+	}
+	
+	public static String call(PageContext pc , String str, String list1, String list2, String delimiter_list1, String delimiter_list2) {
+		if(delimiter_list1==null) delimiter_list1=",";
+		if(delimiter_list2==null) delimiter_list2=",";
+
+		Array arr1=List.listToArray(list1, delimiter_list1);
+		Array arr2=List.listToArray(list2, delimiter_list2);
+
+		Iterator<Object> it1 = arr1.valueIterator();
+		Iterator<Object> it2 = arr2.valueIterator();
+		
+        while(it1.hasNext()) {
+            str=StringUtil.replace(str,Caster.toString(it1.next(),null),((it2.hasNext())?Caster.toString(it2.next(),null):""),false);
         }
 		return str;
 	}
