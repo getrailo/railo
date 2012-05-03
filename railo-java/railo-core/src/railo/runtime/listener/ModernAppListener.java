@@ -54,6 +54,7 @@ public class ModernAppListener extends AppListenerSupport {
 	private static final Collection.Key ON_CFCREQUEST = KeyImpl.intern("onCFCRequest");
 	private static final Collection.Key ON_REQUEST = KeyImpl.intern("onRequest");
 	private static final Collection.Key ON_REQUEST_END = KeyImpl.intern("onRequestEnd");
+	private static final Collection.Key ON_ABORT = KeyImpl.intern("onAbort");
 	private static final Collection.Key ON_APPLICATION_START = KeyImpl.intern("onApplicationStart");
 	private static final Collection.Key ON_APPLICATION_END = KeyImpl.intern("onApplicationEnd");
 	private static final Collection.Key ON_SESSION_START = KeyImpl.intern("onSessionStart");
@@ -102,6 +103,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 			if(!pci.initApplicationContext()) return;
 
+			boolean doOnRequestEnd=true;
 			
 			// onRequestStart
 			if(app.contains(pc,ON_REQUEST_START)) {
@@ -197,11 +199,16 @@ public class ModernAppListener extends AppListenerSupport {
 						}
 						else throw pe;
 					}
+					else {
+						doOnRequestEnd=false;
+						if(app.contains(pc,ON_ABORT)) 
+							call(app,pci, ON_ABORT, new Object[]{targetPage});
+					}
 				}
 			}
 			
 			// onRequestEnd
-			if(app.contains(pc,ON_REQUEST_END)) {
+			if(doOnRequestEnd && app.contains(pc,ON_REQUEST_END)) {
 				call(app,pci, ON_REQUEST_END, new Object[]{targetPage});
 			}
 		}
