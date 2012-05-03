@@ -20,7 +20,7 @@ public final class KeyIterator implements Iterator<Collection.Key>,Enumeration<C
 	 */
 	public KeyIterator(Collection.Key[] arr) {
 		
-		this.arr=arr;
+		this.arr=arr==null?new Collection.Key[0]:arr;
 		this.pos=0;
 	}
 
