@@ -114,9 +114,9 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 	protected static URLItem[] setFromTextPlain(String str) {
 		return setFrom___(str, '\n');
 	}
-	protected static URLItem[] setFrom___(String tp,char delimeter) {
+	protected static URLItem[] setFrom___(String tp,char delimiter) {
         if(tp==null) return new URLItem[0];
-        Array arr=List.listToArrayRemoveEmpty(tp,delimeter);
+        Array arr=List.listToArrayRemoveEmpty(tp,delimiter);
         URLItem[] pairs=new URLItem[arr.size()];
         
         //Array item;

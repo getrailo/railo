@@ -14,11 +14,11 @@ public final class ListValueCountNoCase implements Function {
 	public static double call(PageContext pc , String list, String value) throws PageException {
 		return ListValueCount.call(pc,list.toLowerCase(),value.toLowerCase(),",");
 	}
-	public static double call(PageContext pc , String list, String value, String delimeter) throws PageException {
-		return ListValueCount.call(pc,list.toLowerCase(),value.toLowerCase(),delimeter);
+	public static double call(PageContext pc , String list, String value, String delimiter) throws PageException {
+		return ListValueCount.call(pc,list.toLowerCase(),value.toLowerCase(),delimiter);
 		
 	}
-	public static double call(PageContext pc , String list, String value, String delimeter,boolean includeEmptyFields) throws PageException {
-		return ListValueCount.call(pc,list.toLowerCase(),value.toLowerCase(),delimeter,includeEmptyFields);
+	public static double call(PageContext pc , String list, String value, String delimiter,boolean includeEmptyFields) throws PageException {
+		return ListValueCount.call(pc,list.toLowerCase(),value.toLowerCase(),delimiter,includeEmptyFields);
 	}
 }

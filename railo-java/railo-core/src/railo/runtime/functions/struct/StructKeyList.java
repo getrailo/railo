@@ -13,8 +13,8 @@ public final class StructKeyList implements Function {
 	public static String call(PageContext pc , Struct struct) {
 		return call(pc,struct,",");//KeyImpl.toUpperCaseList(struct.keys(), ",");
 	}
-	public static String call(PageContext pc , Struct struct, String delimeter) {
-		return KeyImpl.toList(CollectionUtil.keys(struct), delimeter);
+	public static String call(PageContext pc , Struct struct, String delimiter) {
+		return KeyImpl.toList(CollectionUtil.keys(struct), delimiter);
 		
 	}
 }

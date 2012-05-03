@@ -15,14 +15,14 @@ public class QueryValueList implements Function {
 	public static String call(PageContext pc , Query query, String columnName) throws PageException {
 		return call(pc,query,columnName,null);
 	}
-	public static String call(PageContext pc, Query query, String columnName, String delimeter) throws PageException {
-		if(delimeter==null)delimeter=",";
+	public static String call(PageContext pc, Query query, String columnName, String delimiter) throws PageException {
+		if(delimiter==null)delimiter=",";
 		QueryColumn column = query.getColumn(KeyImpl.init(columnName));
 	    
 		StringBuffer sb=new StringBuffer();
 		int size=column.size();
 		for(int i=1;i<=size;i++) {
-			if(i>1)sb.append(delimeter);
+			if(i>1)sb.append(delimiter);
 			sb.append(Caster.toString(column.get(i)));
 		}
 		return sb.toString();		

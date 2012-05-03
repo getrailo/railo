@@ -11,13 +11,13 @@ public final class ListAppend implements Function {
 		if(list.length()==0) return value;
 		return new StringBuffer(list).append(',').append(value).toString();
 	}
-	public static String call(PageContext pc , String list, String value, String delimeter) {
+	public static String call(PageContext pc , String list, String value, String delimiter) {
 		if(list.length()==0) return value;
-        switch(delimeter.length()) {
+        switch(delimiter.length()) {
         case 0:return list;
-        case 1:return new StringBuffer(list).append(delimeter).append(value).toString();
+        case 1:return new StringBuffer(list).append(delimiter).append(value).toString();
         }
-        return new StringBuffer(list).append(delimeter.charAt(0)).append(value).toString();
+        return new StringBuffer(list).append(delimiter.charAt(0)).append(value).toString();
 	}
 	
 }

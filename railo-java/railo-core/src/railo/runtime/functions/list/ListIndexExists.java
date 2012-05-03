@@ -14,11 +14,11 @@ public final class ListIndexExists implements Function {
 	public static boolean call(PageContext pc , String list, double index) {
         return call(pc,list,index,",",false);
     }
-    public static boolean call(PageContext pc , String list, double index, String delimeter) {
-        return call(pc,list,index,delimeter,false);
+    public static boolean call(PageContext pc , String list, double index, String delimiter) {
+        return call(pc,list,index,delimiter,false);
     }
-    public static boolean call(PageContext pc , String list, double index, String delimeter,boolean includeEmptyFields) {
-        if(includeEmptyFields)return List.listToArray(list,delimeter).get((int)index,null)!=null;
-    	return List.listToArrayRemoveEmpty(list,delimeter).get((int)index,null)!=null;
+    public static boolean call(PageContext pc , String list, double index, String delimiter,boolean includeEmptyFields) {
+        if(includeEmptyFields)return List.listToArray(list,delimiter).get((int)index,null)!=null;
+    	return List.listToArrayRemoveEmpty(list,delimiter).get((int)index,null)!=null;
     }
 }

@@ -98,15 +98,15 @@ public final class CreateObject implements Function {
     }
 	
 	 
-    public static Object doJava(PageContext pc,String className, String pathes, String delimeter) throws PageException {
+    public static Object doJava(PageContext pc,String className, String pathes, String delimiter) throws PageException {
         if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
         	ConfigImpl ci = ((ConfigImpl)pc.getConfig());
         	
         	// load resources
         	Resource[] reses=null;
         	if(!StringUtil.isEmpty(pathes, true)) {
-        		if(StringUtil.isEmpty(delimeter))delimeter=",";
-        		Array arrPathes = List.listToArrayRemoveEmpty(pathes.trim(),delimeter);
+        		if(StringUtil.isEmpty(delimiter))delimiter=",";
+        		Array arrPathes = List.listToArrayRemoveEmpty(pathes.trim(),delimiter);
         		reses=new Resource[arrPathes.size()];
         		for(int i=0;i<reses.length;i++) {
         			reses[i]=ResourceUtil.toResourceExisting(pc,Caster.toString(arrPathes.getE(i+1)));

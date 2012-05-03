@@ -79,10 +79,10 @@ public final class CreationImpl implements Creation {
 	/**
 	 * @see railo.runtime.util.Creation#createArray(java.lang.String, java.lang.String, boolean, boolean)
 	 */
-	public Array createArray(String list, String delimeter,boolean removeEmptyItem, boolean trim) {
-		if(removeEmptyItem)return List.listToArrayRemoveEmpty(list, delimeter);
-		if(trim)return List.listToArrayTrim(list, delimeter);
-		return List.listToArray(list, delimeter);
+	public Array createArray(String list, String delimiter,boolean removeEmptyItem, boolean trim) {
+		if(removeEmptyItem)return List.listToArrayRemoveEmpty(list, delimiter);
+		if(trim)return List.listToArrayTrim(list, delimiter);
+		return List.listToArray(list, delimiter);
 	}
 	
     /**

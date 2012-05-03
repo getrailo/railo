@@ -17,7 +17,7 @@ import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 
 public final class TagSwitch extends TagBase {
 
-	// int listFindNoCase(String list, String value, String delimeter)
+	// int listFindNoCase(String list, String value, String delimiter)
 	private static final Method LIST_FIND_NO_CASE = new Method(
 														"listFindForSwitch",
 														Types.INT_VALUE,

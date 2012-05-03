@@ -18,38 +18,38 @@ public final class ListQualify implements Function {
 		return call(pc,list,qualifier,",","all", false, false);
 	}
 
-	public static String call(PageContext pc , String list, String qualifier, String delimeter) {
-		return call(pc,list,qualifier,delimeter,"all", false, false);
+	public static String call(PageContext pc , String list, String qualifier, String delimiter) {
+		return call(pc,list,qualifier,delimiter,"all", false, false);
 	}
 
-	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements) {
-		return call(pc, list, qualifier, delimeter, elements, false, false);
+	public static String call(PageContext pc , String list, String qualifier, String delimiter, String elements) {
+		return call(pc, list, qualifier, delimiter, elements, false, false);
 	}
 	
-	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields) {
-		return call(pc, list, qualifier, delimeter, elements, includeEmptyFields, false);
+	public static String call(PageContext pc , String list, String qualifier, String delimiter, String elements, boolean includeEmptyFields) {
+		return call(pc, list, qualifier, delimiter, elements, includeEmptyFields, false);
 	}
 	
-	public static String call(PageContext pc , String list, String qualifier, String delimeter, String elements, boolean includeEmptyFields, 
+	public static String call(PageContext pc , String list, String qualifier, String delimiter, String elements, boolean includeEmptyFields, 
 			boolean psq // this is used only internally by railo, search for "PSQ-BIF" in code
 			) {
 	   	
 		if(list.length()==0) return "";
 		if(psq)list=StringUtil.replace(list, "'", "''", false);
 		
-	   	Array arr=includeEmptyFields?List.listToArray(list,delimeter):List.listToArrayRemoveEmpty(list,delimeter);
+	   	Array arr=includeEmptyFields?List.listToArray(list,delimiter):List.listToArrayRemoveEmpty(list,delimiter);
 		
 		boolean isQChar=qualifier.length()==1;
-		boolean isDChar=delimeter.length()==1;
+		boolean isDChar=delimiter.length()==1;
 		
-		if(isQChar && isDChar) return doIt(arr,qualifier.charAt(0),delimeter.charAt(0),elements);
-		else if(isQChar && !isDChar) return doIt(arr,qualifier.charAt(0),delimeter,elements);
-		else if(!isQChar && isDChar) return doIt(arr,qualifier,delimeter.charAt(0),elements);
-		else return doIt(arr,qualifier,delimeter,elements);
+		if(isQChar && isDChar) return doIt(arr,qualifier.charAt(0),delimiter.charAt(0),elements);
+		else if(isQChar && !isDChar) return doIt(arr,qualifier.charAt(0),delimiter,elements);
+		else if(!isQChar && isDChar) return doIt(arr,qualifier,delimiter.charAt(0),elements);
+		else return doIt(arr,qualifier,delimiter,elements);
 		
 	}
 
-    private static String doIt(Array arr, char qualifier, char delimeter, String elements) {
+    private static String doIt(Array arr, char qualifier, char delimiter, String elements) {
         StringBuffer rtn=new StringBuffer();
         int len=arr.size();
         
@@ -58,7 +58,7 @@ public final class ListQualify implements Function {
 			rtn.append(arr.get(1,""));
 			rtn.append(qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				rtn.append(qualifier);
 				rtn.append(arr.get(i,""));
 				rtn.append(qualifier);
@@ -67,13 +67,13 @@ public final class ListQualify implements Function {
 		else {
 			qualifyString(rtn,arr.get(1,"").toString(),qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				qualifyString(rtn,arr.get(i,"").toString(),qualifier);
 			}
 		}
 		return rtn.toString();
     }
-    private static String doIt(Array arr, char qualifier, String delimeter, String scope) {
+    private static String doIt(Array arr, char qualifier, String delimiter, String scope) {
         StringBuffer rtn=new StringBuffer();
         int len=arr.size();
         
@@ -82,7 +82,7 @@ public final class ListQualify implements Function {
 			rtn.append(arr.get(1,""));
 			rtn.append(qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				rtn.append(qualifier);
 				rtn.append(arr.get(i,""));
 				rtn.append(qualifier);
@@ -91,13 +91,13 @@ public final class ListQualify implements Function {
 		else {
 			qualifyString(rtn,arr.get(1,"").toString(),qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				qualifyString(rtn,arr.get(i,"").toString(),qualifier);
 			}
 		}
 		return rtn.toString();
     }
-    private static String doIt(Array arr, String qualifier, char delimeter, String scope) {
+    private static String doIt(Array arr, String qualifier, char delimiter, String scope) {
         StringBuffer rtn=new StringBuffer();
         int len=arr.size();
         
@@ -106,7 +106,7 @@ public final class ListQualify implements Function {
 			rtn.append(arr.get(1,""));
 			rtn.append(qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				rtn.append(qualifier);
 				rtn.append(arr.get(i,""));
 				rtn.append(qualifier);
@@ -115,13 +115,13 @@ public final class ListQualify implements Function {
 		else {
 			qualifyString(rtn,arr.get(1,"").toString(),qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				qualifyString(rtn,arr.get(i,"").toString(),qualifier);
 			}
 		}
 		return rtn.toString();
     }
-    private static String doIt(Array arr, String qualifier, String delimeter, String scope) {
+    private static String doIt(Array arr, String qualifier, String delimiter, String scope) {
         StringBuffer rtn=new StringBuffer();
         int len=arr.size();
         
@@ -130,7 +130,7 @@ public final class ListQualify implements Function {
 			rtn.append(arr.get(1,""));
 			rtn.append(qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				rtn.append(qualifier);
 				rtn.append(arr.get(i,""));
 				rtn.append(qualifier);
@@ -139,7 +139,7 @@ public final class ListQualify implements Function {
 		else {
 			qualifyString(rtn,arr.get(1,"").toString(),qualifier);
 			for(int i=2;i<=len;i++) {
-				rtn.append(delimeter);
+				rtn.append(delimiter);
 				qualifyString(rtn,arr.get(i,"").toString(),qualifier);
 			}
 		}

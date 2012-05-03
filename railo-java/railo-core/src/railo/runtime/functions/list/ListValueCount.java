@@ -17,12 +17,12 @@ public final class ListValueCount implements Function {
 		return call(pc,list,value,",",false);
 	}
 
-	public static double call(PageContext pc , String list, String value, String delimeter) throws PageException {
-		return call(pc,list,value,delimeter,false);
+	public static double call(PageContext pc , String list, String value, String delimiter) throws PageException {
+		return call(pc,list,value,delimiter,false);
 	}
-	public static double call(PageContext pc , String list, String value, String delimeter,boolean includeEmptyFields) throws PageException {
+	public static double call(PageContext pc , String list, String value, String delimiter,boolean includeEmptyFields) throws PageException {
 		int count=0;
-		Array arr= includeEmptyFields?List.listToArray(list,delimeter):List.listToArrayRemoveEmpty(list,delimeter);
+		Array arr= includeEmptyFields?List.listToArray(list,delimiter):List.listToArrayRemoveEmpty(list,delimiter);
 		int len=arr.size();
 		
 		for(int i=1;i<=len;i++) {

@@ -390,12 +390,12 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return arr;
 	}
 
-	public static String toUpperCaseList(Key[] array, String delimeter) {
+	public static String toUpperCaseList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getUpperString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(((KeyImpl)array[i]).getUpperString());
@@ -403,19 +403,19 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(((KeyImpl)array[i]).getUpperString());
 			}
 		}
 		return sb.toString();
 	}
 
-	public static String toList(Key[] array, String delimeter) {
+	public static String toList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(((KeyImpl)array[i]).getString());
@@ -423,19 +423,19 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(((KeyImpl)array[i]).getString());
 			}
 		}
 		return sb.toString();
 	}
 
-	public static String toLowerCaseList(Key[] array, String delimeter) {
+	public static String toLowerCaseList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getLowerString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(((KeyImpl)array[i]).getLowerString());
@@ -443,7 +443,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(((KeyImpl)array[i]).getLowerString());
 			}
 		}

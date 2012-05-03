@@ -25,7 +25,7 @@ public final class ListFilter implements Function {
 		return call(pc, list, filter,",");
 	}
 
-	public static String call(PageContext pc , String list, UDF filter, String delimeter) throws PageException {
+	public static String call(PageContext pc , String list, UDF filter, String delimiter) throws PageException {
 		// check UDF return type
 		int type = filter.getReturnType();
 		if(type!=CFTypes.TYPE_BOOLEAN && type!=CFTypes.TYPE_ANY)
@@ -36,8 +36,8 @@ public final class ListFilter implements Function {
 		if(args.length>1)
 			throw new ExpressionException("UDF filter has to many arguments ["+args.length+"], should have at maximum 1 argument");
 		
-		if(delimeter==null) delimeter=",";
-		Array array = List.listToArrayRemoveEmpty(list, delimeter);
+		if(delimiter==null) delimiter=",";
+		Array array = List.listToArrayRemoveEmpty(list, delimiter);
 		
 		
 		StringBuilder sb=new StringBuilder();
@@ -46,7 +46,7 @@ public final class ListFilter implements Function {
 		while(it.hasNext()){
 			value=it.next();
 			if(Caster.toBooleanValue(filter.call(pc, new Object[]{value}, true))){
-				if(sb.length()>0) sb.append(delimeter);
+				if(sb.length()>0) sb.append(delimiter);
 				sb.append(value);
 			}
 		}

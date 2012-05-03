@@ -14,10 +14,10 @@ public final class ListRest implements Function {
 	public static String call(PageContext pc , String list) {
 		return List.rest(list, ",",true);
 	}
-	public static String call(PageContext pc , String list, String delimeter) {
-		return List.rest(list, delimeter,true);
+	public static String call(PageContext pc , String list, String delimiter) {
+		return List.rest(list, delimiter,true);
 	}
-	public static String call(PageContext pc , String list, String delimeter, boolean includeEmptyFields) {
-		return List.rest(list, delimeter,!includeEmptyFields);
+	public static String call(PageContext pc , String list, String delimiter, boolean includeEmptyFields) {
+		return List.rest(list, delimiter,!includeEmptyFields);
 	}
 }

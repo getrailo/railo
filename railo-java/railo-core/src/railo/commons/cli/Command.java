@@ -75,7 +75,7 @@ public class Command {
 			c=carr[i];
 			//if(i>0)last=carr[i-1];
 			switch(c){
-		// DELIMETER
+		// DELIMITER
 			/*case '\\':	
 				if(i+1<carr.length){
 					sb.append(carr[++i]);

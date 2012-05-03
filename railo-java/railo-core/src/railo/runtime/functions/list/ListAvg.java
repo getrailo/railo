@@ -14,7 +14,7 @@ public final class ListAvg implements Function {
     public static double call(PageContext pc , String list) throws ExpressionException {
         return call(pc,list,",");
     }
-    public static double call(PageContext pc , String list, String delimeter) throws ExpressionException {
-        return ArrayUtil.avg(List.listToArrayRemoveEmpty(list,delimeter));
+    public static double call(PageContext pc , String list, String delimiter) throws ExpressionException {
+        return ArrayUtil.avg(List.listToArrayRemoveEmpty(list,delimiter));
     }
 }

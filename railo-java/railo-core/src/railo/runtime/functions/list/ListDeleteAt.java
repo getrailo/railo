@@ -10,10 +10,10 @@ import railo.runtime.ext.function.Function;
 
 public final class ListDeleteAt implements Function {
 	
-	private static char[] DEFAULT_DELIMETER=new char[]{','};
+	private static char[] DEFAULT_DELIMITER=new char[]{','};
 	
 	public static String call(PageContext pc , String list, double posNumber) throws ExpressionException {
-		return _call(pc,list,(int)posNumber,DEFAULT_DELIMETER,false);
+		return _call(pc,list,(int)posNumber,DEFAULT_DELIMITER,false);
 	}
 	
 	public static String call(PageContext pc, String list, double posNumber, String del) throws ExpressionException {
@@ -41,7 +41,7 @@ public final class ListDeleteAt implements Function {
     	
     	int i=0;
     	
-    	// ignore all delimeter at start
+    	// ignore all delimiter at start
     	if(!includeEmptyFields)for(;i<len;i++){
     		c=list.charAt(i);
     		if(!equal(del,c)) break;
@@ -67,7 +67,7 @@ public final class ListDeleteAt implements Function {
     		if(equal(del,list.charAt(i))) break;
     	}
     	
-    	// ignore following delimeter
+    	// ignore following delimiter
     	for(;i<len;i++){
     		if(!equal(del,list.charAt(i))) break;
     	}

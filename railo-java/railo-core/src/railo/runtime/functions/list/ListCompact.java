@@ -11,7 +11,7 @@ public final class ListCompact implements Function {
 	public static String call(PageContext pc , String list) {
 		return call(pc,list,",");
 	}
-	public static String call(PageContext pc , String list, String delimeter) {
-		return List.trim(list,delimeter);
+	public static String call(PageContext pc , String list, String delimiter) {
+		return List.trim(list,delimiter);
 	}
 }

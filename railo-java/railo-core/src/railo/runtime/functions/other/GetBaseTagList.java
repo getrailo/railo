@@ -24,11 +24,11 @@ public final class GetBaseTagList implements Function {
     public static String call(PageContext pc) {
         return call(pc,",");
     }
-    public static String call(PageContext pc, String delimeter) {
+    public static String call(PageContext pc, String delimiter) {
         Tag tag=pc.getCurrentTag();
         StringBuffer sb=new StringBuffer();
         while(tag!=null) {
-        	if(sb.length()>0)sb.append(delimeter);
+        	if(sb.length()>0)sb.append(delimiter);
             sb.append(getName(pc,tag));
             tag=tag.getParent();
         }

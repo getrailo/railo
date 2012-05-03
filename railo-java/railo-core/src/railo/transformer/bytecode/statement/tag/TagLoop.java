@@ -134,13 +134,13 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{});
 	
 
-	// Array listToArrayRemoveEmpty(String list, String delimeter)
+	// Array listToArrayRemoveEmpty(String list, String delimiter)
 	private static final Method LIST_TO_ARRAY_REMOVE_EMPTY_SS = new Method(
 			"listToArrayRemoveEmpty",
 			Types.ARRAY,
 			new Type[]{Types.STRING,Types.STRING});
 	
-	// Array listToArrayRemoveEmpty(String list, char delimeter)
+	// Array listToArrayRemoveEmpty(String list, char delimiter)
 	private static final Method LIST_TO_ARRAY_REMOVE_EMPTY_SC = new Method(
 			"listToArrayRemoveEmpty",
 			Types.ARRAY,

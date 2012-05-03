@@ -236,11 +236,11 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		}
 	}*/
     
-	private void initializeUrlEncodedOrTextPlain(PageContext pc, char delimeter, boolean scriptProteced) {
+	private void initializeUrlEncodedOrTextPlain(PageContext pc, char delimiter, boolean scriptProteced) {
 		BufferedReader reader=null;
 		try {
 			reader = pc.getHttpServletRequest().getReader();
-			raw=setFrom___(IOUtil.toString(reader,false),delimeter);
+			raw=setFrom___(IOUtil.toString(reader,false),delimiter);
 			fillDecoded(raw,encoding,scriptProteced);
 		} 
         catch (Exception e) {

@@ -45,14 +45,14 @@ public class CollectionUtil {
 	
 	
 
-	public static String getKeyList(Collection coll, String delimeter) {
+	public static String getKeyList(Collection coll, String delimiter) {
 		if(coll.size()==0) return "";
 		
 		
 		Iterator<Key> it = coll.keyIterator();
 		StringBuilder sb=new StringBuilder(it.next().getString());
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			while(it.hasNext()) {
 				sb.append(c);
 				sb.append(it.next().getString());
@@ -60,7 +60,7 @@ public class CollectionUtil {
 		}
 		else {
 			while(it.hasNext()) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(it.next().getString());
 			}
 		}
@@ -93,12 +93,12 @@ public class CollectionUtil {
 	
 	
 
-	/*public static String keyList(Collection coll, String delimeter) {
-		return List.arrayToList(coll.keys(),delimeter);
+	/*public static String keyList(Collection coll, String delimiter) {
+		return List.arrayToList(coll.keys(),delimiter);
 	}*/
 
-	/*public static String keyList(Collection.Key[] keys, String delimeter) {
-		return List.arrayToList(keys,delimeter);
+	/*public static String keyList(Collection.Key[] keys, String delimiter) {
+		return List.arrayToList(keys,delimiter);
 	}*/
 
 }

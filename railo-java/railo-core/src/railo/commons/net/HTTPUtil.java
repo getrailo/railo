@@ -232,14 +232,14 @@ public final class HTTPUtil {
        		       
     }
     
-    private static String decodeQuery(String query,char startDelimeter) {
+    private static String decodeQuery(String query,char startDelimiter) {
     	if(!StringUtil.isEmpty(query)) {
     		StringBuilder res=new StringBuilder();
         	
         	StringList list = List.toList(query, '&');
         	String str;
         	int index;
-        	char del=startDelimeter;
+        	char del=startDelimiter;
         	while(list.hasNext()){
         		res.append(del);
         		del='&';

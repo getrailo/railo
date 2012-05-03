@@ -47,7 +47,7 @@ public interface Creation {
      * creates and returns a array based on a string list
      * @return array
      */
-    public abstract Array createArray(String list, String delimeter,boolean removeEmptyItem,boolean trim);
+    public abstract Array createArray(String list, String delimiter,boolean removeEmptyItem,boolean trim);
 
     /**
      * creates and returns a DateTime instance
