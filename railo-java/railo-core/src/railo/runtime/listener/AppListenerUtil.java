@@ -301,7 +301,7 @@ public final class AppListenerUtil {
 		if(sct==null)sct=new StructImpl();
 		Resource res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
-		ac.setORMConfiguration(ORMConfigurationImpl.load(config,sct,res,config.getORMConfig()));
+		ac.setORMConfiguration(ORMConfigurationImpl.load(config,ac,sct,res,config.getORMConfig()));
 		
 		// datasource
 		Object o = sct.get(KeyImpl.DATA_SOURCE,null);

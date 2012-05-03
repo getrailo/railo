@@ -2800,7 +2800,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	}
     	settings.set(ORMConfigurationImpl.CFC_LOCATION, arrCfclocation);
     	
-    	admin.updateORMSetting(ORMConfigurationImpl.load(config, settings, null, oc));
+    	admin.updateORMSetting(ORMConfigurationImpl.load(config, null settings, null, oc));
         
     	
     	store();
