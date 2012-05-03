@@ -341,16 +341,10 @@ public final class SchedulerImpl implements Scheduler {
 		ScheduleTaskImpl sti=(ScheduleTaskImpl) task;
 		if(sti.isValid() || !sti.isAutoDelete()) return;
 		
-		// disable running task
-		sti.setValid(false);
 		
-	    // remove from xml
-	    NodeList list = doc.getDocumentElement().getChildNodes();
-	    Element el=su.getElement(list,"name", sti.getTask());
-	    if(el!=null) {
-	    	el.getParentNode().removeChild(el);
-	    }
-	    su.store(doc,schedulerFile);
+		try {
+			removeScheduleTask(task.getTask(), false);
+		} catch (ScheduleException e) {}
 	}
 	
 
