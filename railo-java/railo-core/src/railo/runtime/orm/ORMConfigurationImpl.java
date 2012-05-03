@@ -90,15 +90,15 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	
 
 
-	public static ORMConfiguration load(Config config,ApplicationContextPro ac, Element el, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
+	public static ORMConfiguration load(Config config,ApplicationContext ac, Element el, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
 		return _load(config,ac, new _GetElement(el),defaultCFCLocation,defaultConfig);
 	}
 	
-	public static ORMConfiguration load(Config config,ApplicationContextPro ac,Struct settings, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
+	public static ORMConfiguration load(Config config,ApplicationContext ac,Struct settings, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
 		return _load(config,ac, new _GetStruct(settings),defaultCFCLocation,defaultConfig);
 	}
 
-	private static ORMConfiguration _load(Config config,ApplicationContextPro ac, _Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
+	private static ORMConfiguration _load(Config config,ApplicationContext ac, _Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
 		
 		if(dc==null)dc=new ORMConfigurationImpl();
 		ORMConfigurationImpl c = ((ORMConfigurationImpl)dc).duplicate();
@@ -236,7 +236,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		return Caster.toResource(config, obj, existing);
 	}
 
-	private static Resource toResourceExisting(Config config, ApplicationContextPro ac,Object obj) {
+	private static Resource toResourceExisting(Config config, ApplicationContext ac,Object obj) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(path,true)) return null;
