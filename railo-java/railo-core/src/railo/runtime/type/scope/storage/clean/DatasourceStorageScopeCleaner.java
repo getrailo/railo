@@ -1,7 +1,10 @@
 package railo.runtime.type.scope.storage.clean;
 
+import java.sql.SQLException;
 import java.sql.Types;
 
+import railo.commons.io.log.Log;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.DataSource;
@@ -20,6 +23,8 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.scope.storage.StorageScopeDatasource;
 import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.StorageScopeListener;
+import railo.runtime.type.scope.storage.db.SQLExecutionFactory;
+import railo.runtime.type.scope.storage.db.SQLExecutor;
 
 public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 	
@@ -42,66 +47,26 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 			if(((DataSourceImpl)datasources[i]).isStorage()) {
 				try {
 					clean(config,datasources[i]);
-				} catch (PageException e) {
-					error(e);
+				} catch (Throwable t) {
+					error(t);
 				}
 			}
 		}
 	}
 
-	private void clean(ConfigWeb config, DataSource dataSource) throws PageException	{
+	private void clean(ConfigWeb config, DataSource dataSource) throws PageException, SQLException	{
 		ConfigWebImpl cwi=(ConfigWebImpl) config;
 		DatasourceConnection dc=null;
-		Query query=null;
-	    
-		//  	executeUpdate(config,dc.getConnection(),"insert into "+PREFIX+"_"+getTypeAsString()+"_data (expires,data,cfid,name) values(?,?,?,?)",false);
-		   
-	    // select
-	    SQL sqlSelect=new SQLImpl("select cfid,name from "+StorageScopeDatasource.PREFIX+"_"+strType+"_data where expires<=?"
-						,new SQLItem[]{
-			 		new SQLItemImpl(System.currentTimeMillis(),Types.VARCHAR)
-				});
-	    //print.o(sqlSelect);
 		
 		DatasourceConnectionPool pool = cwi.getDatasourceConnectionPool();
 		try {
 			dc=pool.getDatasourceConnection(null,dataSource,null,null);
-			query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
-			int recordcount=query.getRecordcount();
-			//print.o("recordcount:"+recordcount);
-			
-			String cfid,name;
-			for(int row=1;row<=recordcount;row++){
-				cfid=Caster.toString(query.getAt(KeyImpl.CFID, row, null),null);
-				name=Caster.toString(query.getAt(KeyImpl.NAME, row, null),null);
-				
-				if(listener!=null)listener.doEnd(engine, this,name, cfid);
-				
-				
-				info("remove "+strType+"/"+name+"/"+cfid+" from datasource "+dataSource.getName());
-				engine.remove(type,name,cfid);
-				SQLImpl sql = new SQLImpl("delete from "+StorageScopeDatasource.PREFIX+"_"+strType+"_data where cfid=? and name=?",new SQLItem[]{
-						new SQLItemImpl(cfid,Types.VARCHAR),
-						new SQLItemImpl(name,Types.VARCHAR)
-						});
-				new QueryImpl(dc,sql,-1,-1,-1,"query");
-				
-				
-				
-			}
-			
-			
+			Log log=((ConfigImpl)config).getScopeLogger();
+			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
+			executor.clean(config, dc, type, engine,this, listener, log);
 		}
 	    finally {
 	    	if(dc!=null) pool.releaseDatasourceConnection(dc);
 	    }
-	    
-	    
-	    
-	    
-	    
-	    //long expires=Caster.toLongValue(query.get(StorageScopeDatasource.EXPIRES));
-	    
-	    
 	}
 }
