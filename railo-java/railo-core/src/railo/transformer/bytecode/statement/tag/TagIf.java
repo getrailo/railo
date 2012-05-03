@@ -50,7 +50,7 @@ public final class TagIf extends TagBase {
 					continue;
 				}
 				else if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Else")) {
-					ExpressionUtil.visitLine(bc, t.getLine());
+					ExpressionUtil.visitLine(bc, t.getStartLine());
 			        hasElse=true;
 					writeOutElseIfEnd(adapter, endIf, end);
 					//endIf=writeOutElseIfStart(adapter,t);
@@ -71,7 +71,7 @@ public final class TagIf extends TagBase {
 		
 		Label endIf = new Label();
         
-		ExpressionUtil.visitLine(bc, tag.getLine());
+		ExpressionUtil.visitLine(bc, tag.getStartLine());
         cont.writeOut(bc,Expression.MODE_VALUE);
         adapter.ifZCmp(Opcodes.IFEQ, endIf);
         return endIf;

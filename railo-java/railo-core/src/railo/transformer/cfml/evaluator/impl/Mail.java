@@ -31,7 +31,7 @@ public final class Mail extends EvaluatorSupport {
 		    TagLib lib = libTag.getTagLib();
 		    TagLibTag outputTag = lib.getTag("output");
 		    
-		    TagOutput output=new TagOutput(tag.getLine());
+		    TagOutput output=new TagOutput(tag.getStartLine());
 		    output.setFullname(outputTag.getFullName());
 		    output.setTagLibTag(outputTag);
 		    output.addAttribute(new Attribute(false,"output",LitBoolean.toExprBoolean(true, -1),"boolean"));

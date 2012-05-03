@@ -115,7 +115,7 @@ public final class TagTry extends TagBase {
 			
 			public void writeOut(BytecodeContext bc) throws BytecodeException {
 				if(_finally!=null) {
-					ExpressionUtil.visitLine(bc, _finally.getLine());
+					ExpressionUtil.visitLine(bc, _finally.getStartLine());
 					_finally.getBody().writeOut(bc);
 				}
 			}
@@ -184,7 +184,7 @@ public final class TagTry extends TagBase {
 					continue;
 				}
 				
-				ExpressionUtil.visitLine(bc, tag.getLine());
+				ExpressionUtil.visitLine(bc, tag.getStartLine());
 				
 				// if(pe.typeEqual(@type)
 				adapter.loadLocal(pe);

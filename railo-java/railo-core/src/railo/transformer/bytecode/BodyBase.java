@@ -135,14 +135,14 @@ public class BodyBase extends StatementBase implements Body {
 			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
 	    	Statement s = it.next();
 	    	if(_bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
-					(isOutsideMethod || !s.hasFlowController()) && s.getLine()!=-1) {
+					(isOutsideMethod || !s.hasFlowController()) && s.getStartLine()!=-1) {
         		if(a!=null){
         			a.returnValue();
     				a.endMethod();
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
         		String method= ASMUtil.createOverfowMethod();
-        		ExpressionUtil.visitLine(bc, s.getLine());
+        		ExpressionUtil.visitLine(bc, s.getStartLine());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
     			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());

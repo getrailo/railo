@@ -357,7 +357,7 @@ public final class ASMUtil {
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStartLine());
 				//return null;
 			}
 			if(parent instanceof Page)	return (Page) parent;
@@ -394,7 +394,7 @@ public final class ASMUtil {
 			parent=parent.getParent();
 			//print.ln(" - "+parent);
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStartLine());
 				//return null;
 			}
 			if(parent instanceof TagComponent)

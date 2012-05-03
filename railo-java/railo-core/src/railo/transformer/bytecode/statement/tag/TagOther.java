@@ -139,7 +139,7 @@ public final class TagOther {
 
 		Label tagBegin=new Label();
 		Label tagEnd=new Label();
-		ExpressionUtil.visitLine(bc, tag.getLine());
+		ExpressionUtil.visitLine(bc, tag.getStartLine());
 		// TODO adapter.visitLocalVariable("tag", "L"+currType.getInternalName()+";", null, tagBegin, tagEnd, currLocal);
 
 		adapter.visitLabel(tagBegin);
@@ -381,7 +381,7 @@ public final class TagOther {
 		try {
 			return tlt.getTagType();
 		} catch (ClassException e) {
-			throw new BytecodeException(e,tag.getLine());
+			throw new BytecodeException(e,tag.getStartLine());
 		}
 	}
 }

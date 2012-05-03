@@ -122,13 +122,13 @@ public final class ExpressionUtil {
     public static int getStartLine(Statement s){
     	if(s instanceof StatementBase)return ((StatementBase)s).getStartLine();
     	if(s instanceof Tag)return ((Tag)s).getStartLine();
-    	return s.getLine();
+    	return s.getStartLine();
     }
     
     public static int getEndLine(Statement s){
     	if(s instanceof StatementBase)return ((StatementBase)s).getEndLine();
     	if(s instanceof Tag)return ((Tag)s).getEndLine();
-    	return s.getLine();
+    	return s.getStartLine();
     }
 
 	public static boolean doLog(BytecodeContext bc) {

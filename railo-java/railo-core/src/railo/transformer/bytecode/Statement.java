@@ -33,6 +33,17 @@ public interface Statement {
     /**
      * Returns the value of line.
      * @return value line
+     * @deprecated use instead getStartLine()
      */
-    public int getLine();
+    //public int getLine();
+    
+    /**
+	 * @return the startLine
+	 */
+	public int getStartLine();
+	
+	/**
+	 * @return the endLine
+	 */
+	public int getEndLine();
 }
