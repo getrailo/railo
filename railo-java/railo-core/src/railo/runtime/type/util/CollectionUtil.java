@@ -75,7 +75,7 @@ public class CollectionUtil {
 		 if(coll==null) return new Key[0];
 		Iterator<Key> it = coll.keyIterator();
 		List<Key> rtn=new ArrayList<Key>();
-		while(it.hasNext()){
+		if(it!=null)while(it.hasNext()){
 			rtn.add(it.next());
 		}
 		return rtn.toArray(new Key[rtn.size()]);*/
@@ -85,7 +85,7 @@ public class CollectionUtil {
 		if(coll==null) return new String[0];
 		Iterator<Key> it = coll.keyIterator();
 		List<String> rtn=new ArrayList<String>();
-		while(it.hasNext()){
+		if(it!=null)while(it.hasNext()){
 			rtn.add(it.next().getString());
 		}
 		return rtn.toArray(new String[rtn.size()]);
