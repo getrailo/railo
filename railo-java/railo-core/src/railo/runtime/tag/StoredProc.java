@@ -545,7 +545,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    res.set(QueryImpl.CACHED,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {
-		    	pageContext.getDebugger().addQueryExecutionTime(datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
+		    	pageContext.getDebugger().addQuery(null,datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
 			}
 		    
 		    
