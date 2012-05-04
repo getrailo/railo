@@ -107,10 +107,9 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 			sb.append("\n");
 		}
 		sb.append("\n");
-		print.e(file);
 		try {
 			IOUtil.write(file, header+sb.toString()+content.toString(), null, false);
-		} catch (IOException ioe) {print.e(ioe);
+		} catch (IOException ioe) {
 			err(pc,ioe);
 		}
 	}
