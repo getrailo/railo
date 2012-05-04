@@ -21,6 +21,8 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import com.sun.tools.javac.util.Version;
+
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -135,19 +137,14 @@ public abstract class ConfigImpl implements Config {
 		new ExtensionProviderImpl("http://www.getrailo.org/ExtensionProvider.cfc",true)
 	};
 	private static final Extension[] EXTENSIONS_EMPTY = new Extension[0];
-	public static final int CACHE_DEFAULT_NONE = 0;
-	public static final int CACHE_DEFAULT_OBJECT = 1;
-	public static final int CACHE_DEFAULT_TEMPLATE = 2;
-	public static final int CACHE_DEFAULT_QUERY = 4;
-	public static final int CACHE_DEFAULT_RESOURCE = 8;
-
+	
 	public static final int AMF_CONFIG_TYPE_XML = 1;
 	public static final int AMF_CONFIG_TYPE_MANUAL = 2;
 	
 
 	private PhysicalClassLoader rpcClassLoader;
 	private Map datasources=new HashTable();
-	private Map caches=new HashTable();
+	private Map<String,CacheConnection> caches=new HashMap<String, CacheConnection>();
 	
 	private CacheConnection defaultCacheObject=null;
 	private CacheConnection defaultCacheTemplate=null;
@@ -3059,7 +3056,7 @@ public abstract class ConfigImpl implements Config {
 		return serial;
 	}
 
-	protected void setCaches(HashTable caches) {
+	protected void setCaches(Map<String,CacheConnection> caches) {
 		this.caches=caches;
 		Iterator it = caches.entrySet().iterator();
 		Map.Entry entry;
@@ -3081,19 +3078,13 @@ public abstract class ConfigImpl implements Config {
 			}
 		}
 	}
-
-	/**
-	 * @return the caches
-	 *FUTURE add o interface
-	 */
-	public Map getCacheConnections() {
+	
+	@Override
+	public Map<String,CacheConnection> getCacheConnections() {
 		return caches;
 	}
 
-	/**
-	 * @return the defaultCache
-	 * FUTURE add o interface
-	 */
+	@Override
 	public CacheConnection getCacheDefaultConnection(int type) {
 		if(type==CACHE_DEFAULT_OBJECT)		return defaultCacheObject;
 		if(type==CACHE_DEFAULT_TEMPLATE)	return defaultCacheTemplate;
@@ -3101,12 +3092,14 @@ public abstract class ConfigImpl implements Config {
 		return defaultCacheResource;
 	}
 
-	public void setCacheDefaultConnectionName(int type,String cacheDefaultConnectionName) {
+	protected void setCacheDefaultConnectionName(int type,String cacheDefaultConnectionName) {
 		if(type==CACHE_DEFAULT_TEMPLATE)	cacheDefaultConnectionNameTemplate=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_OBJECT)		cacheDefaultConnectionNameObject=cacheDefaultConnectionName;
 		else if(type==CACHE_DEFAULT_QUERY)		cacheDefaultConnectionNameQuery=cacheDefaultConnectionName;
 		else cacheDefaultConnectionNameResource=cacheDefaultConnectionName;
 	}
+	
+	@Override
 	public String getCacheDefaultConnectionName(int type) {
 		if(type==CACHE_DEFAULT_TEMPLATE)	return cacheDefaultConnectionNameTemplate;
 		if(type==CACHE_DEFAULT_OBJECT)		return cacheDefaultConnectionNameObject;
@@ -3190,37 +3183,21 @@ public abstract class ConfigImpl implements Config {
 	public String[] getInstalledPatches() throws PageException {
 		CFMLEngineFactory factory = getConfigServerImpl().getCFMLEngine().getCFMLEngineFactory();
     	
-		// FUTURE make direct call
-		//String[] patches = factory.getInstalledPatches();
-		
 		try{
-			Method getInstalledPatches = factory.getClass().getMethod("getInstalledPatches", new Class[]{});
-			return (String[]) getInstalledPatches.invoke(factory, new Object[]{});
+			return factory.getInstalledPatches();
 		}
-		catch(NoSuchMethodException e){
+		catch(Throwable t){
 			try {
-				return getInstalledPatches(factory);
+				return getInstalledPatchesOld(factory);
 			} catch (Exception e1) {
 				throw Caster.toPageException(e1);
 			}
 		}
-		catch(Throwable t){
-			return new String[0];
-			//throw Caster.toPageException(t);
-		}
 	}
 	
-	/**
-	 * FUTURE add to interface
-	 * @return the componentMappings
-	 */
+	@Override
 	public Mapping[] getComponentMappings() {
 		return componentMappings;
-	}
-	
-	// FUTURE remove from interface
-	public Mapping getComponentMapping() {
-		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
 	}
 
 	/**
@@ -3230,7 +3207,6 @@ public abstract class ConfigImpl implements Config {
 		this.componentMappings = componentMappings;
 	}
 	
-	// FUTURE remove this
 	private String getCoreExtension() throws ServletException {
     	URL res = new TP().getClass().getResource("/core/core.rcs");
         if(res!=null) return "rcs";
@@ -3241,8 +3217,7 @@ public abstract class ConfigImpl implements Config {
         throw new ServletException("missing core file");
 	}
 	
-	// FUTURE remove this
-	private String[] getInstalledPatches(CFMLEngineFactory factory) throws ServletException, IOException {
+	private String[] getInstalledPatchesOld(CFMLEngineFactory factory) throws ServletException, IOException { 
 		File patchDir = new File(factory.getResourceRoot(),"patches");
         if(!patchDir.exists())patchDir.mkdirs();
         

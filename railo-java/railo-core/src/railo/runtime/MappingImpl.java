@@ -143,11 +143,6 @@ public final class MappingImpl implements Mapping {
         return archiveClassLoader;
     }
     
-    // FUTURE set to deprecated
-    public synchronized ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
-    	throw new PageRuntimeException(new DeprecatedException("this method is no longer supported"));
-    }
-    
     public synchronized PCLCollection touchPCLCollection() throws IOException {
     	
     	if(pclCollection==null){

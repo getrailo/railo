@@ -17,6 +17,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 
 public abstract class ComponentProxy implements Component {
@@ -566,4 +568,24 @@ public abstract class ComponentProxy implements Component {
 	public Object clone(){
 		return duplicate(true);
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	getComponent().registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+    	getComponent().registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+    	getComponent().registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+    	getComponent().registerUDF(key, props);
+    }
 }

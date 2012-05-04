@@ -20,6 +20,8 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
@@ -668,5 +670,25 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public String getWSDLFile() {
 		return comp.getWSDLFile();
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	comp.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+		comp.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+		comp.registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+		comp.registerUDF(key, props);
+    }
 	
 }

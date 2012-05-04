@@ -835,7 +835,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		if(ArrayUtil.isEmpty(arr)) return null;
 		Page p;
 		for(int i=0;i<arr.length;i++) {
-			p=arr[i].loadPage(pc,(Page)null);//FUTURE remove cast
+			p=arr[i].loadPage(pc,(Page)null);
 			if(p!=null) return p;
 		}
 		return defaultValue;

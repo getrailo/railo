@@ -1905,7 +1905,7 @@ public final class ConfigWebFactory {
      */
     private static void loadCache(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
         boolean hasCS=configServer!=null;
-        HashTable caches=new HashTable();
+        Map<String,CacheConnection> caches=new HashMap<String, CacheConnection>();
         
 
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
@@ -2067,14 +2067,12 @@ public final class ConfigWebFactory {
 		
 		// Copy Parent caches as readOnly
         if(hasCS) {
-            Map ds = configServer.getCacheConnections();
-            //print.o("PARENT");
-            //print.o(ds);
-            Iterator it = ds.entrySet().iterator();
-            Map.Entry entry;
+            Map<String, CacheConnection> ds = configServer.getCacheConnections();
+            Iterator<Entry<String, CacheConnection>> it = ds.entrySet().iterator();
+            Entry<String, CacheConnection> entry;
             while(it.hasNext()) {
-	                entry=(Entry) it.next();
-	                cc=((CacheConnection)entry.getValue());
+	                entry = it.next();
+	                cc=entry.getValue();
 	                if(!caches.containsKey(entry.getKey()))caches.put(entry.getKey(),new ServerCacheConnection(configServer,cc));
 	        }
 	    }

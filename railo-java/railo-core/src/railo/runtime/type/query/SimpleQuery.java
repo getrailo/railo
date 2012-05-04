@@ -529,7 +529,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<columnNames.length;i++) {
 			if(i>0)sb.append(',');
-			sb.append(upperCase?columnNames[i].getString().toUpperCase():columnNames[i].getString());// FUTURE getUpperString
+			sb.append(upperCase?columnNames[i].getUpperString():columnNames[i].getString());
 		}
 		return sb.toString();
 	}

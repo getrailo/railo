@@ -106,6 +106,7 @@ public final class BinaryTreeMap {
 		public char lowerCharAt(int index) {return 0;}
 		public String getUpperString() {return null;}
 		public char upperCharAt(int index) {return 0;}
+		public int length() {return 0;}
 		
 	}
 }

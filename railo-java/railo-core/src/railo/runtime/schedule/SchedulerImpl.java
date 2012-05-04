@@ -287,8 +287,7 @@ public final class SchedulerImpl implements Scheduler {
 	    su.store(doc,schedulerFile);
 	}
 	
-
-    // FUTURE add to interface
+	@Override
 	public void pauseScheduleTask(String name, boolean pause, boolean throwWhenNotExist) throws ScheduleException, IOException {
 
 	    for(int i=0;i<tasks.length;i++) {
@@ -393,11 +392,4 @@ public final class SchedulerImpl implements Scheduler {
     public LogAndSource getLogger() {
         return log;
     }
-
-    /*
-     * FUTURE remove
-     * */
-	public void execute() {
-		
-	}
 }

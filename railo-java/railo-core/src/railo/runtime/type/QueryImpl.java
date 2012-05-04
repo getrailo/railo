@@ -1412,7 +1412,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public QueryColumn getColumn(Collection.Key key, QueryColumn defaultValue) {
         int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
-        if(key.getString().length()>0) {//FUTURE add length method to Key Interface
+        if(key.length()>0) {
         	char c=key.lowerCharAt(0);
 	        if(c=='r') {
 	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);

@@ -6,7 +6,6 @@ import railo.commons.io.cache.Cache;
 import railo.runtime.config.Config;
 import railo.runtime.type.Struct;
 
-// FUTURE add to public interface
 public interface CacheConnection {
 
 	/**

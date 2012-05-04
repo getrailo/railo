@@ -92,7 +92,8 @@ public interface Scope extends Struct {
 	 * release scope for reuse
 	 */
 	public void release();
-	// public void release(PageContext pc);// FUTURE add PageContext
+	
+	//FUTURE public void release(PageContext pc);
 	
     /** 
      * @return return the scope type (SCOPE_SERVER, SCOPE_SESSION usw.) 

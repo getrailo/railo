@@ -1,8 +1,11 @@
 package railo.commons.lock;
 
+import railo.runtime.exp.PageException;
+
 
 public interface Lock {
-	public void lock(long timeout) throws LockException, LockInterruptedException;
+	
+	public void lock(long timeout) throws PageException;
 
 	public void unlock();
 	

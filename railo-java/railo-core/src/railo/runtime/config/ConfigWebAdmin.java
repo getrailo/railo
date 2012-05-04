@@ -234,7 +234,7 @@ public final class ConfigWebAdmin {
         }
         //setId(config.getId());
     }    
-    // FUTURE resources for old version of railo remove in never
+    // FUTURE resources for old version of railo remove in newer
     private void updateTo2(ConfigImpl config) throws PageException, ClassException, SAXException, IOException, TagLibException, FunctionLibException {
 //    	 Server
     	if(config instanceof ConfigServer) {
@@ -2802,18 +2802,11 @@ public final class ConfigWebAdmin {
         	CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
         	
         	if(onlyLatest){
-        		// FUTURE make direct call (see below)
-        		//factory.removeLatestUpdate(cs.getPassword());
         		try{
-        			Method removeLatestUpdate = factory.getClass().getMethod("removeLatestUpdate", new Class[]{String.class});
-        			removeLatestUpdate.invoke(factory, new Object[]{cs.getPassword()});
+        			factory.removeLatestUpdate(cs.getPassword());
         		}
-        		catch(NoSuchMethodException e)	{
-        			removeLatestUpdate(factory,cs.getPassword());
-        			//throw new SecurityException("this feature is not supported by your version, you have to update your railo.jar first");
-        		}
-        		catch(Throwable t){
-        			throw Caster.toPageException(t);
+        		catch(Throwable t)	{
+        			removeLatestUpdateOld(factory,cs.getPassword());
         		}
         	}
         	else factory.removeUpdate(cs.getPassword());
@@ -2825,7 +2818,6 @@ public final class ConfigWebAdmin {
         }
     }
     
-    // FUTURE remove this
 	private String getCoreExtension() throws ServletException {
     	URL res = new TP().getClass().getResource("/core/core.rcs");
         if(res!=null) return "rcs";
@@ -2836,13 +2828,11 @@ public final class ConfigWebAdmin {
         throw new ServletException("missing core file");
 	}
 	
-	// FUTURE remove this
 	private boolean isNewerThan(int left, int right) {
         return left>right;
     }
 	
-    // FUTURE remove this
-    private boolean removeLatestUpdate(CFMLEngineFactory factory, String password) throws IOException, ServletException {
+    private boolean removeLatestUpdateOld(CFMLEngineFactory factory, String password) throws IOException, ServletException {
     	File patchDir = new File(factory.getResourceRoot(),"patches");
         if(!patchDir.exists())patchDir.mkdirs();
         

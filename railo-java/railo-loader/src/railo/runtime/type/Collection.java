@@ -124,6 +124,7 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	public Object clone();
 	
 	public Collection duplicate(boolean deepCopy);
+	
 	// FUTURE public Collection duplicate(boolean deepCopy, Map<Object,Object> done);
 	
     /**
@@ -132,7 +133,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
      * @return returns if collection has a key with given name
      * @deprecated use instead <code>{@link #containsKey(railo.runtime.type.Collection.Key)}</code>
 	 */
-    //public String contains(String key);
     public boolean containsKey(String key);
 	
     /**
@@ -195,6 +195,12 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
     	 * @return return id for this key, this key is unique for the system but ignore case of input
     	 */
     	public int getId();
+    	
+    	/**
+    	 * Returns the length of this string.
+    	 * @return length of the string
+    	 */
+    	public int length();
 
         
     }

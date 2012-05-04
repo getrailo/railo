@@ -15,6 +15,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.CollectionUtil;
 
@@ -260,7 +261,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 		return metaCacheTimeout;
 	} 
 	
-	// FUTURE add to interface
+	@Override
 	public TimeZone getTimeZone() {
 		return timezone;
 	} 
@@ -269,7 +270,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      * @see railo.runtime.db.DataSource#getCustomValue(java.lang.String)
      */
     public String getCustomValue(String key) {
-        return Caster.toString(custom.get(key,null),"");
+        return Caster.toString(custom.get(KeyImpl.init(key),null),"");
     }
     
     /**

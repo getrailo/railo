@@ -88,12 +88,12 @@ public class Util {
 		return getCache(pc.getConfig(), cacheName);
 	}
 	public static Cache getCache(Config config,String cacheName) throws IOException {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		CacheConnection cc=  config.getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) throw noCache(config,cacheName);
 		return cc.getInstance(config);	
 	}
 	public static Cache getCache(Config config,String cacheName, Cache defaultValue) {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		CacheConnection cc= config.getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) return defaultValue;
 		try {
 			return cc.getInstance(config);
@@ -102,7 +102,7 @@ public class Util {
 		}	
 	}
 	public static CacheConnection getCacheConnection(Config config,String cacheName) throws IOException {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		CacheConnection cc= config.getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) throw noCache(config,cacheName);
 		return cc;	
 	}
@@ -121,7 +121,7 @@ public class Util {
 	}
 
 	public static CacheConnection getCacheConnection(Config config,String cacheName, CacheConnection defaultValue) {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		CacheConnection cc= config.getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) return defaultValue;
 		return cc;	
 	}
@@ -150,6 +150,8 @@ public class Util {
 	public static void remove(ConfigWeb config, CacheConnection cc) throws Throwable  {
 		Cache c = cc.getInstance(config);
 		// FUTURE no reflection needed
+		
+		
 		Method remove=null;
 		try{
 			remove = c.getClass().getMethod("remove", new Class[0]);

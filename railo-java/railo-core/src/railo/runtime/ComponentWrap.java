@@ -14,6 +14,8 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
@@ -505,4 +507,24 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	public boolean equalTo(String type) {
 		return component.equalTo(type);
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	component.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+		component.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+		component.registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+		component.registerUDF(key, props);
+    }
 }

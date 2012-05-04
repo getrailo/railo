@@ -3,7 +3,6 @@ package railo.commons.lang;
 
 
 public final class CFTypes {
-	// FUTURE sollten auch pattern wie zip unterstuetzt sein
 
     /**
      * Field <code>TYPE_ANY</code>

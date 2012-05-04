@@ -14,6 +14,7 @@ import railo.runtime.CFMLFactory;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.db.DataSource;
 import railo.runtime.dump.DumpWriter;
@@ -102,10 +103,14 @@ public interface Config {
     public static final int CUSTOM_TAG_MODE_MODERN_CLASSIC = 8;
     */
 	
-	/**
-	 * @return the inspectTemplate 
-	 * FUTURE to interface
-	 */
+	public static final int CACHE_DEFAULT_NONE = 0;
+	public static final int CACHE_DEFAULT_OBJECT = 1;
+	public static final int CACHE_DEFAULT_TEMPLATE = 2;
+	public static final int CACHE_DEFAULT_QUERY = 4;
+	public static final int CACHE_DEFAULT_RESOURCE = 8;
+
+	
+	
 	public short getInspectTemplate();
     
 
@@ -488,7 +493,24 @@ public interface Config {
 	public Resource getCacheDir();
 
 	public long getCacheDirSize();
+	
+	public Map<String,CacheConnection> getCacheConnections();
+	
+	/**
+	 * get default cache connection for a specific type
+	 * @param type default type, one of the following (CACHE_DEFAULT_NONE, CACHE_DEFAULT_OBJECT, CACHE_DEFAULT_TEMPLATE, CACHE_DEFAULT_QUERY, CACHE_DEFAULT_RESOURCE)
+	 * @return matching Cache Connection
+	 */
+	public CacheConnection getCacheDefaultConnection(int type);
 
+	/**
+	 * get name of a default cache connection for a specific type
+	 * @param type default type, one of the following (CACHE_DEFAULT_NONE, CACHE_DEFAULT_OBJECT, CACHE_DEFAULT_TEMPLATE, CACHE_DEFAULT_QUERY, CACHE_DEFAULT_RESOURCE)
+	 * @return name of matching Cache Connection
+	 */
+	public String getCacheDefaultConnectionName(int type);
+	
+	
 	/**
 	 * returns the default DumpWriter  
 	 * @param defaultType
@@ -543,12 +565,6 @@ public interface Config {
     /* *
      * @return returns the ConnectionPool
      */
-
-	
-	/**
-	 * @deprecated use <code>public Mapping[] getComponentMappings()</code> instead  
-	 */
-	public Mapping getComponentMapping();
 
 	public Mapping[] getComponentMappings();
 

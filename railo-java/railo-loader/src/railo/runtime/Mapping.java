@@ -1,7 +1,5 @@
 package railo.runtime;
 
-import java.io.IOException;
-
 import railo.commons.io.res.Resource;
 import railo.runtime.config.Config;
 import railo.runtime.dump.Dumpable;
@@ -16,15 +14,6 @@ public interface Mapping  extends Dumpable{
      * @return returns the archiveClassLoader
      */
     public abstract ClassLoader getClassLoaderForArchive();
-
-    /**
-     * return the ClassLoader that match on the physical directory
-     * @param reload reload the ClassLoader
-     * @return ClassLoader
-     * @throws IOException
-     */
-    public abstract ClassLoader getClassLoaderForPhysical(boolean reload)
-            throws IOException;
 
     /**
      * @return Returns the physical.

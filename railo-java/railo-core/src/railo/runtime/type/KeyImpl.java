@@ -472,5 +472,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		SizeOf.size(this.ucKey)+
 		SizeOf.REF_SIZE;
 	}
-	
+
+	@Override
+	public int length() {
+		return key.length();
+	}
 }
