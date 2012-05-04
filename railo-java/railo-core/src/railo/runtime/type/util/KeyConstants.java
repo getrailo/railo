@@ -299,6 +299,7 @@ public class KeyConstants {
 	public static final Key _controller=KeyImpl.intern("controller");
 	public static final Key _count=KeyImpl.intern("count");
 	public static final Key _cs=KeyImpl.intern("cs");
+	public static final Key _custom=KeyImpl.intern("custom");
 	public static final Key _custom1=KeyImpl.intern("custom1");
 	public static final Key _custom2=KeyImpl.intern("custom2");
 	public static final Key _custom3=KeyImpl.intern("custom3");
