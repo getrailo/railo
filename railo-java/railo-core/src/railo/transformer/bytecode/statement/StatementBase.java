@@ -3,6 +3,7 @@ package railo.transformer.bytecode.statement;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
@@ -12,8 +13,8 @@ import railo.transformer.bytecode.util.ExpressionUtil;
 public abstract class StatementBase implements Statement {
 
 
-	private int startLine;
-	private int endLine;
+	private Position start;
+	private Position end;
 	private Statement parent;
 	private int hasReturnChild=-1;
 	
@@ -21,13 +22,9 @@ public abstract class StatementBase implements Statement {
      * constructor of the class
      * @param line
      */
-    public StatementBase(int startLine, int endLine) {
-        this.startLine=startLine;
-        this.endLine=endLine;
-    }
-    public StatementBase(int startLine) {
-        this.startLine=startLine;
-        this.endLine=-1;
+    public StatementBase(Position start, Position end) {
+        this.start=start;
+        this.end=end;
     }
     
     /**
@@ -54,9 +51,9 @@ public abstract class StatementBase implements Statement {
      * @throws TemplateException
      */
     public final void writeOut(BytecodeContext bc) throws BytecodeException {
-    	ExpressionUtil.visitLine(bc, startLine);
+    	ExpressionUtil.visitLine(bc, start);
         _writeOut(bc);
-    	ExpressionUtil.visitLine(bc, endLine);
+    	ExpressionUtil.visitLine(bc, end);
     	
     }
     
@@ -69,39 +66,31 @@ public abstract class StatementBase implements Statement {
     public abstract void _writeOut(BytecodeContext bc) throws BytecodeException;
 
 
-    /**
-     * Returns the value of line.
-     * @return value line
-     */
-    public int getLine() {
-        return startLine;
-    }
-
 
     /**
      * sets the line value.
      * @param line The line to set.
      */
-    public void setStartLine(int startLine) {
-        this.startLine = startLine;
+    public void setStart(Position start) {
+        this.start = start;
     }
 
     /**
      * sets the line value.
      * @param line The line to set.
      */
-    public void setEndLine(int endLine) {
-        this.endLine = endLine;
+    public void setEnd(Position end) {
+        this.end = end;
     }
     
     @Override
-	public int getStartLine() {
-		return startLine;
+	public Position getStart() {
+		return start;
 	}
 	
 	@Override
-	public int getEndLine() {
-		return endLine;
+	public Position getEnd() {
+		return end;
 	}
     
     /**

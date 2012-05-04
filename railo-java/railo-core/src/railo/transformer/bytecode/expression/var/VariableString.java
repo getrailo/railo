@@ -22,7 +22,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 	private Expression expr;
 
 	public VariableString(Expression expr) {
-		super(expr.getLine());
+		super(expr.getStart(),expr.getEnd());
 		this.expr=expr;
 	}
  
@@ -37,11 +37,11 @@ public final class VariableString extends ExpressionBase implements ExprString {
 	
 	public static ExprString translateVariableToExprString(Expression expr, boolean rawIfPossible) throws BytecodeException {
 		if(expr instanceof ExprString) return (ExprString) expr;
-		return LitString.toExprString(translateVariableToString(expr,rawIfPossible), expr.getLine());
+		return LitString.toExprString(translateVariableToString(expr,rawIfPossible), expr.getStart(),expr.getEnd());
 	}
 	
 	private static String translateVariableToString(Expression expr, boolean rawIfPossible) throws BytecodeException {
-		if(!(expr instanceof Variable)) throw new BytecodeException("can't translate value to a string",expr.getLine());
+		if(!(expr instanceof Variable)) throw new BytecodeException("can't translate value to a string",expr.getStart());
 		return variableToString((Variable) expr,rawIfPossible);
 	}
 		
@@ -59,7 +59,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		Expression n;
 		while(it.hasNext()) {
 			Object o = it.next();
-			if(!(o instanceof DataMember)) throw new BytecodeException("can't translate Variable to a String",var.getLine());
+			if(!(o instanceof DataMember)) throw new BytecodeException("can't translate Variable to a String",var.getStart());
 			dm=(DataMember) o;
 			n=dm.getName();
 			if(n instanceof Literal) {
@@ -70,7 +70,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 					arr.add(((Literal) n).getString());
 				}
 			}
-			else throw new BytecodeException("argument name must be a constant value",var.getLine());
+			else throw new BytecodeException("argument name must be a constant value",var.getStart());
 		}
 		return arr.toArray(new String[arr.size()]);
 	}

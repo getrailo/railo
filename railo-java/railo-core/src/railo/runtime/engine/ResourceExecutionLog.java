@@ -107,10 +107,10 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 			sb.append("\n");
 		}
 		sb.append("\n");
-		
+		print.e(file);
 		try {
 			IOUtil.write(file, header+sb.toString()+content.toString(), null, false);
-		} catch (IOException ioe) {
+		} catch (IOException ioe) {print.e(ioe);
 			err(pc,ioe);
 		}
 	}
@@ -125,16 +125,16 @@ public class ResourceExecutionLog extends ExecutionLogSupport {
 	
 	
 	@Override
-	protected void _log(int startLine, int endLine, long startTime, long endTime) {
+	protected void _log(int startPos, int endPos, long startTime, long endTime) {
 		long diff=endTime-startTime;
 		if(unit==UNIT_MICRO)diff/=1000;
 		else if(unit==UNIT_MILLI)diff/=1000000;
 		
 		content.append(path(pc.getCurrentPageSource().getDisplayPath()));
 		content.append("\t");
-		content.append(startLine);
+		content.append(startPos);
 		content.append("\t");
-		content.append(endLine);
+		content.append(endPos);
 		content.append("\t");
 		content.append(diff);
 		content.append("\n");

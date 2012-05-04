@@ -32,7 +32,7 @@ public class BodyBase extends StatementBase implements Body {
 	 * Constructor of the class
 	 */
 	public BodyBase() {
-    	super(-1,-1);
+    	super(null,null);
 	}
 
     
@@ -83,10 +83,10 @@ public class BodyBase extends StatementBase implements Body {
 		statements.clear();
 	}
 
-	public void addPrintOut(String str, int line) {
+	public void addPrintOut(String str, Position start,Position end) {
 		if(concatPrintouts(str)) return;
 		
-		last=new PrintOut(new LitString(str,line),line);
+		last=new PrintOut(new LitString(str,start,end),start,end);
         last.setParent(this);
         this.statements.add(last);
 	}
@@ -98,7 +98,7 @@ public class BodyBase extends StatementBase implements Body {
 			if(expr instanceof LitString) {
 				LitString lit=(LitString)expr;
 				if(lit.getString().length()<1024) {
-					po.setExpr(LitString.toExprString(lit.getString().concat(str),lit.getLine()));
+					po.setExpr(LitString.toExprString(lit.getString().concat(str),lit.getStart(),lit.getEnd()));
 					return true;
 				}
 			}
@@ -135,14 +135,14 @@ public class BodyBase extends StatementBase implements Body {
 			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
 	    	Statement s = it.next();
 	    	if(_bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
-					(isOutsideMethod || !s.hasFlowController()) && s.getStartLine()!=-1) {
+					(isOutsideMethod || !s.hasFlowController()) && s.getStart()!=null) {
         		if(a!=null){
         			a.returnValue();
     				a.endMethod();
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
         		String method= ASMUtil.createOverfowMethod();
-        		ExpressionUtil.visitLine(bc, s.getStartLine());
+        		ExpressionUtil.visitLine(bc, s.getStart());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
     			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());

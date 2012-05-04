@@ -35,21 +35,21 @@ public interface Statement {
      * sets the line value.
      * @param line The line to set.
      */
-    public void setStartLine(int startLine);
+    public void setStart(Position startLine);
 
     /**
      * sets the line value.
      * @param line The line to set.
      */
-    public void setEndLine(int endLine);
+    public void setEnd(Position endLine);
     
     /**
 	 * @return the startLine
 	 */
-	public int getStartLine();
+	public Position getStart();
 	
 	/**
 	 * @return the endLine
 	 */
-	public int getEndLine();
+	public Position getEnd();
 }

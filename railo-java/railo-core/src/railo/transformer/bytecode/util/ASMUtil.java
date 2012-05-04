@@ -24,6 +24,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
@@ -357,7 +358,7 @@ public final class ASMUtil {
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getStartLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof Page)	return (Page) parent;
@@ -394,7 +395,7 @@ public final class ASMUtil {
 			parent=parent.getParent();
 			//print.ln(" - "+parent);
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getStartLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof TagComponent)
@@ -758,15 +759,15 @@ public final class ASMUtil {
 	}
 
 
-	public static Boolean toBoolean(Attribute attr, int line) throws BytecodeException {
+	public static Boolean toBoolean(Attribute attr, Position start) throws BytecodeException {
 		if(attr==null)
-			throw new BytecodeException("attribute does not exist",line);
+			throw new BytecodeException("attribute does not exist",start);
 		
 		if(attr.getValue() instanceof Literal){
 			Boolean b=((Literal)attr.getValue()).getBoolean(null);
 			if(b!=null) return b; 
 		}
-		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",line);
+		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",start);
 		
 		
 	}

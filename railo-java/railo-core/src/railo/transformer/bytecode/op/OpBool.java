@@ -103,7 +103,7 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
     
     
     private OpBool(Expression left, Expression right, int operation) {
-        super(left.getLine());
+        super(left.getStart(),right.getEnd());
         this.left=CastBoolean.toExprBoolean(left);
         this.right=CastBoolean.toExprBoolean(right);  
         this.operation=operation;
@@ -125,9 +125,9 @@ public final class OpBool extends ExpressionBase implements ExprBoolean {
         	
         	if(l!=null && r!=null) {
         		switch(operation) {
-        		case AND:	return new LitBoolean(l.booleanValue()&&r.booleanValue(),left.getLine());
-        		case OR:	return new LitBoolean(l.booleanValue()||r.booleanValue(),left.getLine());
-        		case XOR:	return new LitBoolean(l.booleanValue()^r.booleanValue(),left.getLine());
+        		case AND:	return new LitBoolean(l.booleanValue()&&r.booleanValue(),left.getStart(),right.getEnd());
+        		case OR:	return new LitBoolean(l.booleanValue()||r.booleanValue(),left.getStart(),right.getEnd());
+        		case XOR:	return new LitBoolean(l.booleanValue()^r.booleanValue(),left.getStart(),right.getEnd());
         		}
         	}
         }

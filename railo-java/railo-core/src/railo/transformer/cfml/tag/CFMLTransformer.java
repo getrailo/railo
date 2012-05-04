@@ -21,6 +21,7 @@ import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.NullExpression;
@@ -286,7 +287,7 @@ public final class CFMLTransformer {
 				if(data.cfml.forwardIfCurrent("</")){
 					TagLib tagLib=nameSpace(data);
 					if(tagLib==null){
-						page.addPrintOut("</", data.cfml.getLine());
+						page.addPrintOut("</", null,null);
 					}
 					else {
 						throw new TemplateException(cfml,"no matching start tag for end tag ["+tagLib.getNameSpaceAndSeparator()+identifier(data.cfml,true)+"]");
@@ -428,12 +429,14 @@ public final class CFMLTransformer {
 					}
 					else {
 						if(text.length()>0)	{
-							parent.addPrintOut(text.toString(),-1);
+							parent.addPrintOut(text.toString(),null,null);
 							text=new StringBuffer();
 						}
-                        int line=data.cfml.getLine();
-						parent.addStatement(new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config)),line));
-							
+                        Position line = data.cfml.getPosition();
+						PrintOut po;
+						parent.addStatement(po=new PrintOut(transformer.transform(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config)),line,null));
+						po.setEnd(data.cfml.getPosition());
+						
 						if(!data.cfml.isCurrent('#'))
 							throw new TemplateException(data.cfml,"missing terminating [#] for expression");
 					}
@@ -445,7 +448,7 @@ public final class CFMLTransformer {
 					text.append(data.cfml.getCurrent());
 			data.cfml.next();
 			}
-			if(text.length()>0)parent.addPrintOut(text.toString(), -1);
+			if(text.length()>0)parent.addPrintOut(text.toString(), null,null);
 		}
 		// no expression
 		else {
@@ -461,7 +464,7 @@ public final class CFMLTransformer {
 				text=data.cfml.substring(start,end-start);
 				data.cfml.setPos(end);
 			}
-			parent.addPrintOut(text, -1);
+			parent.addPrintOut(text, null,null);
 			
 		}
 	}
@@ -481,7 +484,7 @@ public final class CFMLTransformer {
 	    //railo.print.ln("--->"+data.cfml.getCurrent());
 	    boolean hasBody=false;
 		
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		//int column=data.cfml.getColumn();
 		int start=data.cfml.getPos();
 		data.cfml.next();
@@ -517,7 +520,7 @@ public final class CFMLTransformer {
 		// CFXD Element 
 		Tag tag;
 		try {
-			tag = tagLibTag.getTag(line,data.cfml.getLine());
+			tag = tagLibTag.getTag(line,data.cfml.getPosition());
 		} 
 		catch (Exception e) {
 			throw new TemplateException(data.cfml,e);
@@ -694,7 +697,7 @@ public final class CFMLTransformer {
 						return executeEvaluator(data,tagLibTag, tag);
 					    /// new part	
 					}
-					body.addPrintOut("</",data.cfml.getLine());
+					body.addPrintOut("</",null,null);
 					
 				}
 				tag.setBody(body);
@@ -702,7 +705,7 @@ public final class CFMLTransformer {
 			}
 		}
 		if(tag instanceof StatementBase)
-			((StatementBase)tag).setEndLine(data.cfml.getLine());
+			((StatementBase)tag).setEnd(data.cfml.getPosition());
 		// Tag Translator Evaluator
 		
 		return executeEvaluator(data,tagLibTag, tag);
@@ -832,7 +835,7 @@ public final class CFMLTransformer {
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
 				    			att.getName(),
-				    			Cast.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null), -1),att.getType()),att.getType()
+				    			Cast.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
 				    	);
 				    	parent.addAttribute(attr);
 					}
@@ -919,11 +922,11 @@ public final class CFMLTransformer {
     	if(isDefaultValue || data.cfml.forwardIfCurrent('='))	{
     		comment(data.cfml,true);
     		// Value
-    		value=attributeValue(data,tag,sbType.toString(),parseExpression[0],false,LitString.toExprString("",-1));	
+    		value=attributeValue(data,tag,sbType.toString(),parseExpression[0],false,LitString.toExprString(""));	
     	}
     	// default value boolean true
     	else {
-    		value=LitBoolean.toExprBoolean(true, -1);
+    		value=LitBoolean.TRUE;
     		if(sbType.toString().length()>0) {
     			value=Cast.toExpression(value, sbType.toString());
     		}

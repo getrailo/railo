@@ -6,6 +6,7 @@ import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.op.OpString;
@@ -20,17 +21,17 @@ public class LitString extends ExpressionBase implements Literal,ExprString {
 	public static final int TYPE_ORIGINAL = 0;
 	public static final int TYPE_UPPER = 1;
 	public static final int TYPE_LOWER = 2;
-	public static final LitString EMPTY = new LitString("",-1);
+	public static final LitString EMPTY = new LitString("",null,null);
 	private String str;
 	private boolean fromBracket;
 
 
-	public static ExprString toExprString(String str, int line) {
-		return new LitString(str,line);
+	public static ExprString toExprString(String str, Position start,Position end) {
+		return new LitString(str,start,end);
 	}
 
 	public static ExprString toExprString(String str) {
-		return new LitString(str,-1);
+		return new LitString(str,null,null);
 	}
 
     /**
@@ -38,8 +39,8 @@ public class LitString extends ExpressionBase implements Literal,ExprString {
      * @param str
      * @param line 
      */
-	public LitString(String str, int line) {
-        super(line);
+	public LitString(String str, Position start,Position end) {
+        super(start,end);
         this.str=str;
     }
     
@@ -125,7 +126,7 @@ public class LitString extends ExpressionBase implements Literal,ExprString {
 	}
 
 	public LitString duplicate() {
-		return new LitString(str,this.getLine());
+		return new LitString(str,getStart(),getEnd());
 	}
 
 	public void fromBracket(boolean fromBracket) {

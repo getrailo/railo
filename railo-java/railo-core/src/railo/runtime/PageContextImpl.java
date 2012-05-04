@@ -3081,15 +3081,15 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	/**
 	 * @see railo.runtime.PageContext#exeLogStart(int, java.lang.String)
 	 */
-	public void exeLogStart(int line,String id){
-		if(execLog!=null)execLog.start(line, id);
+	public void exeLogStart(int position,String id){
+		if(execLog!=null)execLog.start(position, id);
 	}
 	
 	/**
 	 * @see railo.runtime.PageContext#exeLogEnd(int, java.lang.String)
 	 */
-	public void exeLogEnd(int line,String id){
-		if(execLog!=null)execLog.end(line, id);
+	public void exeLogEnd(int position,String id){
+		if(execLog!=null)execLog.end(position, id);
 	}
 
 	

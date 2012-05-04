@@ -13,7 +13,7 @@ public final class UDF extends FunctionMember {
 		this.name=CastString.toExprString(name);
 	}
 	public UDF(String name) {
-		this.name=LitString.toExprString(name,-1);
+		this.name=LitString.toExprString(name);
 	}
 	
 	/**

@@ -13,6 +13,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.type.scope.Undefined;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
@@ -227,11 +228,8 @@ public final class TagLoop extends TagBase implements FlowControl {
 	private int type;
 	private LoopVisitor loopVisitor;
 
-	public TagLoop(int line) {
-		super(line);
-	}
-	public TagLoop(int sl,int el) {
-		super(sl,el);
+	public TagLoop(Position start,Position end) {
+		super(start,end);
 	}
 
 	public void setType(int type) {
@@ -267,7 +265,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			writeOutTypeQuery(bc);
 		break;
 		default:
-			throw new BytecodeException("invalid type",getLine());
+			throw new BytecodeException("invalid type",getStart());
 		}
 	}
 
@@ -379,7 +377,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			
 			
 			getBody().writeOut(bc);
-		whileVisitor.visitAfterBody(bc,getEndLine());
+		whileVisitor.visitAfterBody(bc,getEnd());
 		
 	}
 
@@ -395,7 +393,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			CastBoolean.toExprBoolean(getAttribute("condition").getValue()).writeOut(bc, Expression.MODE_VALUE);
 		whileVisitor.visitAfterExpressionBeforeBody(bc);
 			getBody().writeOut(bc);
-		whileVisitor.visitAfterBody(bc,getEndLine());
+		whileVisitor.visitAfterBody(bc,getEnd());
 		
 	}
 	
@@ -567,7 +565,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 				getBody().writeOut(bc);
 				
-			whileVisitor.visitAfterBody(bc,getEndLine());
+			whileVisitor.visitAfterBody(bc,getEnd());
 			
 		tfv.visitTryEnd(bc);
 		
@@ -702,7 +700,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 				getBody().writeOut(bc);
 			
-			forDoubleVisitor.visitEndBody(bc,getEndLine());
+			forDoubleVisitor.visitEndBody(bc,getEnd());
 				
 			
 			
@@ -838,7 +836,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			
 			
 			getBody().writeOut(bc);
-		forVisitor.visitEnd(bc, len, true,getStartLine()); 
+		forVisitor.visitEnd(bc, len, true,getStart()); 
 	}
 	
 	/**
@@ -936,7 +934,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			
 			int i=forConditionVisitor.visitBegin(adapter, start, true);
 				getBody().writeOut(bc);
-			forConditionVisitor.visitEndBeforeCondition(bc,1,false,getStartLine());
+			forConditionVisitor.visitEndBeforeCondition(bc,1,false,getStart());
 				
 				// && i<=endrow
 				if(attrEndRow!=null){

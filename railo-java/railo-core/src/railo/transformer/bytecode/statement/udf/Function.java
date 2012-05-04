@@ -22,6 +22,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprBoolean;
@@ -261,9 +262,9 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	protected int valueIndex;
 	protected int arrayIndex;
 
-	public Function(Page page,String name,int access,String returnType,Body body,int startline,int endline) {
-		super(startline,endline);
-		this.name=LitString.toExprString(name, -1);
+	public Function(Page page,String name,int access,String returnType,Body body,Position start, Position end) {
+		super(start,end);
+		this.name=LitString.toExprString(name);
 		this.access=access;
 		if(!StringUtil.isEmpty(returnType))this.returnType=LitString.toExprString(returnType);
 		this.body=body;
@@ -275,8 +276,8 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	
 	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression abstr,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
-			Expression verifyClient,Body body,int startline,int endline) {
-		super(startline,endline);
+			Expression verifyClient,Body body,Position start, Position end) {
+		super(start,end);
 		this.name=CastString.toExprString(name);
 		this.returnType=CastString.toExprString(returnType);
 		this.returnFormat=returnFormat!=null?CastString.toExprString(returnFormat):null;
@@ -311,9 +312,9 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	 * @see railo.transformer.bytecode.statement.IFunction#writeOut(railo.transformer.bytecode.BytecodeContext, int)
 	 */
 	public final void writeOut(BytecodeContext bc, int type) throws BytecodeException {
-    	ExpressionUtil.visitLine(bc, getStartLine());
+    	ExpressionUtil.visitLine(bc, getStart());
         _writeOut(bc,type);
-    	ExpressionUtil.visitLine(bc, getEndLine());
+    	ExpressionUtil.visitLine(bc, getEnd());
 	}
 	
 	/**
@@ -602,7 +603,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		String name=attr.getName().toLowerCase();
 		// name
 		if("name".equals(name))	{
-			throw new BytecodeException("name cannot be defined twice",getLine());
+			throw new BytecodeException("name cannot be defined twice",getStart());
 			//this.name=CastString.toExprString(attr.getValue());
 		}
 		else if("returntype".equals(name))	{
@@ -614,7 +615,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 			String strAccess = ls.getString();
 			int acc = ComponentUtil.toIntAccess(strAccess,-1);
 			if(acc==-1)
-				throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
+				throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
 			access=acc;
 			
 		}
@@ -637,14 +638,14 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	private final LitString toLitString(String name, Expression value) throws BytecodeException {
 		ExprString es = CastString.toExprString(value);
 		if(!(es instanceof LitString))
-			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getLine());
+			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitString) es;
 	}
 	
 	private final LitBoolean toLitBoolean(String name, Expression value) throws BytecodeException {
 		 ExprBoolean eb = CastBoolean.toExprBoolean(value);
 		if(!(eb instanceof LitBoolean))
-			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getLine());
+			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitBoolean) eb;
 	}
 

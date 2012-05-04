@@ -24,7 +24,7 @@ public final class CastInt extends ExpressionBase implements ExprInt {
     private Expression expr;
     
     private CastInt(Expression expr) {
-        super(expr.getLine());
+        super(expr.getStart(),expr.getEnd());
     	this.expr=expr;
     }
     
@@ -38,7 +38,7 @@ public final class CastInt extends ExpressionBase implements ExprInt {
     	if(expr instanceof ExprInt) return (ExprInt) expr;
         if(expr instanceof Literal) {
             Double dbl = ((Literal)expr).getDouble(null);
-            if(dbl!=null) return new LitInteger((int)dbl.doubleValue(),expr.getLine());
+            if(dbl!=null) return new LitInteger((int)dbl.doubleValue(),expr.getStart(),expr.getEnd());
         }
         return new CastInt(expr);
     }

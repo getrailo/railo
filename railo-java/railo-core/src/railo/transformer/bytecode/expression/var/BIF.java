@@ -22,7 +22,7 @@ public final class BIF extends FunctionMember {
 			this.flf=flf;
 		}
 		public BIF(String name, FunctionLibFunction flf) {
-			this.name=LitString.toExprString(name,-1);
+			this.name=LitString.toExprString(name);
 			this.flf=flf;
 		}
 

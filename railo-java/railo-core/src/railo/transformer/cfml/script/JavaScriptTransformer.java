@@ -11,8 +11,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;
-import railo.transformer.bytecode.statement.java.DataBag;
-import railo.transformer.bytecode.statement.java.JavaParserVisitor;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
@@ -41,7 +39,7 @@ public final class JavaScriptTransformer extends CFMLExprTransformer implements 
 			throws TemplateException {
 		
 		StringBuilder sb=new StringBuilder();
-		int startline=cfml.getLine();
+		//MUST add again int startline=cfml.getLine();
 		while(!cfml.isAfterLast() && !cfml.isCurrent("</",tagLibTag.getFullName())){
 			sb.append(cfml.getCurrent());
 			cfml.next();
@@ -51,22 +49,22 @@ public final class JavaScriptTransformer extends CFMLExprTransformer implements 
 			throw new TemplateException(cfml,"missing end tag"); // TODO better error message
 		
 		
+		if(true) throw new RuntimeException("not implemented");
+		//MUST add again String dummyStart="public class Susi {public static void code(){"+StringUtil.repeatString("\n", startline-1);
 		
-		String dummyStart="public class Susi {public static void code(){"+StringUtil.repeatString("\n", startline-1);
+		//MUST add again String dummyEnd="}}";
+		//MUST add again String src=dummyStart+sb+dummyEnd;
+		//MUST add again Label start=new Label();
+		//MUST add again Label end=new Label();
 		
-		String dummyEnd="}}";
-		String src=dummyStart+sb+dummyEnd;
-		Label start=new Label();
-		Label end=new Label();
-		
-		ByteArrayInputStream bais = new ByteArrayInputStream(src.getBytes());
+		//MUST add again ByteArrayInputStream bais = new ByteArrayInputStream(src.getBytes());
 		
 		try {
-			CompilationUnit cu = JavaParser.parse(bais);
-			DataBag db = new DataBag();
+			//MUST add again CompilationUnit cu = JavaParser.parse(bais);
+			//MUST add again DataBag db = new DataBag();
 			ScriptBody body=new ScriptBody();
 			tag.setBody(body);
-			new JavaParserVisitor(body,start,end).visit(cu, db);
+			//MUST add again new JavaParserVisitor(body,start,end).visit(cu, db);
 			
 		} 
 		catch (Exception e) {

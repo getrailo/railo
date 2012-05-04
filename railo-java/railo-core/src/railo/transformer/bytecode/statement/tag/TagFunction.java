@@ -11,6 +11,7 @@ import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
@@ -22,18 +23,14 @@ import railo.transformer.bytecode.statement.udf.FunctionImpl;
  
 public final class TagFunction extends TagBase implements IFunction {
 
-	private static final ExprString ANY = LitString.toExprString("any", -1);
+	private static final ExprString ANY = LitString.toExprString("any");
 
-	private static final Expression PUBLIC = LitString.toExprString("public",-1);
+	private static final Expression PUBLIC = LitString.toExprString("public");
 
-	private static final Expression EMPTY = LitString.toExprString("", -1);
-
-	public TagFunction(int startline) {
-		this(startline,-1);
-	}
+	private static final Expression EMPTY = LitString.toExprString("");
 	
-	public TagFunction(int startline,int endline) {
-		super(startline,endline);
+	public TagFunction(Position start,Position end) {
+		super(start,end);
 		
 	}
 	
@@ -178,10 +175,10 @@ public final class TagFunction extends TagBase implements IFunction {
 		String strAccess = ((LitString)access).getString();
 		int acc = ComponentUtil.toIntAccess(strAccess,-1);
 		if(acc==-1)
-			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
+			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
         
 		Function func = new FunctionImpl(page,name, returnType,returnFormat, output,abstr, acc, displayname,description,
-				hint,secureJson,verifyClient, body, getStartLine(),getEndLine());
+				hint,secureJson,verifyClient, body, getStart(),getEnd());
 		
 //		 %**%
 		Map attrs = getAttributes();

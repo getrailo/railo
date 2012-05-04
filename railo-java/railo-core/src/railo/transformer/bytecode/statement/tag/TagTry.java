@@ -14,6 +14,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
@@ -26,7 +27,7 @@ import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 public final class TagTry extends TagBase {
 
-	private static final ExprString ANY=LitString.toExprString("any", -1);
+	private static final ExprString ANY=LitString.toExprString("any");
 
 	private static final Method GET_VARIABLE = new Method(
 			"getVariable",
@@ -67,13 +68,8 @@ public final class TagTry extends TagBase {
 			new Type[]{Types.STRING});
 
 	
-
-	public TagTry(int line) {
-		super(line);
-	}
-
-	public TagTry(int sl,int el) {
-		super(sl,el);
+	public TagTry(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**
@@ -115,7 +111,7 @@ public final class TagTry extends TagBase {
 			
 			public void writeOut(BytecodeContext bc) throws BytecodeException {
 				if(_finally!=null) {
-					ExpressionUtil.visitLine(bc, _finally.getStartLine());
+					ExpressionUtil.visitLine(bc, _finally.getStart());
 					_finally.getBody().writeOut(bc);
 				}
 			}
@@ -184,7 +180,7 @@ public final class TagTry extends TagBase {
 					continue;
 				}
 				
-				ExpressionUtil.visitLine(bc, tag.getStartLine());
+				ExpressionUtil.visitLine(bc, tag.getStart());
 				
 				// if(pe.typeEqual(@type)
 				adapter.loadLocal(pe);

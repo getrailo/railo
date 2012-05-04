@@ -15,6 +15,7 @@ import railo.runtime.type.util.UDFUtil;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ClosureAsExpression;
@@ -452,15 +453,15 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private Expression notOp(Data data) throws TemplateException {
 		// And Operation
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		if (data.cfml.isCurrent('!') && !data.cfml.isCurrent("!=")) {
 			data.cfml.next();
 			comments(data);
-			return OpNegate.toExprBoolean(notOp(data),line);
+			return OpNegate.toExprBoolean(notOp(data),line,data.cfml.getPosition());
 		}
 		else if (data.cfml.forwardIfCurrentAndNoWordAfter("not")) {
 			comments(data);
-			return OpNegate.toExprBoolean(notOp(data),line);
+			return OpNegate.toExprBoolean(notOp(data),line,data.cfml.getPosition());
 		}
 		return decsionOp(data);
 	}
@@ -835,10 +836,16 @@ public abstract class AbstrCFMLExprTransformer {
 	}
 	
 	private Expression _unaryOp(Data data,Expression expr,int opr) throws TemplateException {
+		Position leftEnd = expr.getEnd(),start=null,end=null;
 		comments(data);
-		ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),opr);
+		if(leftEnd!=null){
+			start=leftEnd;
+			end=new Position(leftEnd.line, leftEnd.column+2, leftEnd.pos+2);
+		}
+		
+		ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,start,end),opr);
 		expr=new OpVariable((Variable)expr,res);
-		return OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D, -1),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
+		return OpDouble.toExprDouble(expr,LitDouble.toExprDouble(1D,start,end),opr==OpDouble.PLUS? OpDouble.MINUS:OpDouble.PLUS);
 	}
 	
 	
@@ -851,23 +858,23 @@ public abstract class AbstrCFMLExprTransformer {
 	*/
 	private Expression negatePlusMinusOp(Data data) throws TemplateException {
 		// And Operation
-		int line=data.cfml.getLine();
+		Position line=data.cfml.getPosition();
 		if (data.cfml.forwardIfCurrent('-')) {
 			if (data.cfml.forwardIfCurrent('-')) {
 				comments(data);
 				Expression expr = clip(data);
-				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),OpDouble.MINUS);
+				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.MINUS);
 				return new OpVariable((Variable)expr,res);
 			}
 			comments(data);
-			return OpNegateNumber.toExprDouble(clip(data),OpNegateNumber.MINUS,line);
+			return OpNegateNumber.toExprDouble(clip(data),OpNegateNumber.MINUS,line,data.cfml.getPosition());
 			
 		}
 		else if (data.cfml.forwardIfCurrent('+')) {
 			if (data.cfml.forwardIfCurrent('+')) {
 				comments(data);
 				Expression expr = clip(data);
-				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D,-1),OpDouble.PLUS);
+				ExprDouble res = OpDouble.toExprDouble(expr, LitDouble.toExprDouble(1D),OpDouble.PLUS);
 				return new OpVariable((Variable)expr,res);
 			}
 			comments(data);
@@ -970,7 +977,7 @@ public abstract class AbstrCFMLExprTransformer {
 		// check starting character for a string literal
 		if(!data.cfml.isCurrent('"')&& !data.cfml.isCurrent('\''))
 			return null;
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		
 		// Init Parameter
 		char quoter = data.cfml.getCurrentLower();
@@ -998,7 +1005,7 @@ public abstract class AbstrCFMLExprTransformer {
 					
 					ExprString exprStr=null;
 					if(str.length()!=0) {
-						exprStr=new LitString(str.toString(),line);
+						exprStr=new LitString(str.toString(),line,data.cfml.getPosition());
 						if(expr!=null){
 							expr = OpString.toExprString(expr, exprStr);
 						}
@@ -1034,9 +1041,9 @@ public abstract class AbstrCFMLExprTransformer {
 			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+quoter+"] not found");
 		
 		if(expr==null)
-			expr=new LitString(str.toString(),line);
+			expr=new LitString(str.toString(),line,data.cfml.getPosition());
 		else if(str.length()!=0) {
-			expr = OpString.toExprString(expr, new LitString(str.toString(),line));
+			expr = OpString.toExprString(expr, new LitString(str.toString(),line,data.cfml.getPosition()));
 		}
         comments(data);
 		return expr;
@@ -1058,7 +1065,7 @@ public abstract class AbstrCFMLExprTransformer {
 		// check first character is a number literal representation
 		if(!(data.cfml.isCurrentBetween('0','9') || data.cfml.isCurrent('.'))) return null;
 		
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		StringBuffer rtn=new StringBuffer();
 		
 		// get digit on the left site of the dot
@@ -1092,7 +1099,7 @@ public abstract class AbstrCFMLExprTransformer {
         comments(data);
         
 		try {
-			return new LitDouble(Caster.toDoubleValue(rtn.toString()),line);
+			return LitDouble.toExprDouble(Caster.toDoubleValue(rtn.toString()),line,data.cfml.getPosition());
 		} catch (CasterException e) {
 			throw new TemplateException(data.cfml,e.getMessage());
 		}
@@ -1136,7 +1143,7 @@ public abstract class AbstrCFMLExprTransformer {
 	    
 	    
 		// get First Element of the Variable
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		Identifier id = identifier(data,false,true);
 		if(id == null) {
 		    if (!data.cfml.forwardIfCurrent('(')) return null;
@@ -1159,19 +1166,19 @@ public abstract class AbstrCFMLExprTransformer {
 		// Boolean constant 
 		if(id.getString().equalsIgnoreCase("TRUE"))	{// || name.equals("YES"))	{
 			comments(data);
-			return new LitBoolean(true,line);
+			return new LitBoolean(true,line,data.cfml.getPosition());
 		}
 		else if(id.getString().equalsIgnoreCase("FALSE"))	{// || name.equals("NO"))	{
 			comments(data);
-			return new LitBoolean(false,line);
+			return new LitBoolean(false,line,data.cfml.getPosition());
 		}
 		
 		// Extract Scope from the Variable
 		//int c=data.cfml.getColumn();
-		int l=data.cfml.getLine();
+		Position l=data.cfml.getPosition();
 		var = startElement(data,id,line);
-		var.setLine(l);
-		
+		var.setStart(l);
+		var.setEnd(data.cfml.getPosition());
 		return var;
 	}
 	
@@ -1180,7 +1187,7 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression json(Data data,FunctionLibFunction flf, char start, char end) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent(start))return null;
 		
-		int line = data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		BIF bif=new BIF(flf.getName(),flf);
 		bif.setArgType(flf.getArgType());
 		bif.setClassName(flf.getCls());
@@ -1199,7 +1206,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if (!data.cfml.forwardIfCurrent(end))
 			throw new TemplateException(data.cfml,"Invalid Syntax Closing ["+end+"] not found");
 		comments(data);
-		Variable var=new Variable(line);
+		Variable var=new Variable(line,data.cfml.getPosition());
 		var.addMember(bif);
 		return var;
 	}
@@ -1207,10 +1214,10 @@ public abstract class AbstrCFMLExprTransformer {
 	private Expression closure(Data data) throws TemplateException {
 		if(!data.cfml.forwardIfCurrent("function",'('))return null;
 		data.cfml.previous();
-		return new ClosureAsExpression((Closure) closurePart(data, "closure_"+CreateUniqueId.invoke(), Component.ACCESS_PUBLIC, "any", data.cfml.getLine(),true));
+		return new ClosureAsExpression((Closure) closurePart(data, "closure_"+CreateUniqueId.invoke(), Component.ACCESS_PUBLIC, "any", data.cfml.getPosition(),true));
 	}
 	
-	protected  abstract Function closurePart(Data data, String id, int access, String rtnType, int line,boolean closure) throws TemplateException;
+	protected  abstract Function closurePart(Data data, String id, int access, String rtnType, Position line,boolean closure) throws TemplateException;
 
 	
 	protected FunctionLibFunction getFLF(Data data,String name) {
@@ -1237,13 +1244,13 @@ public abstract class AbstrCFMLExprTransformer {
 			if (data.cfml.forwardIfCurrent('.')) {
 				// Extract next Var String
                 comments(data);
-                int line=data.cfml.getLine();
+                Position line=data.cfml.getPosition();
                 name = identifier(data,true);
 				if(name==null) 
 					throw new TemplateException(data.cfml, "Invalid identifier");
                 comments(data);
-				nameProp=Identifier.toIdentifier(name,line);
-				namePropUC=Identifier.toIdentifier(name,data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL,line);
+				nameProp=Identifier.toIdentifier(name,line,data.cfml.getPosition());
+				namePropUC=Identifier.toIdentifier(name,data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL,line,data.cfml.getPosition());
 			}
 			// []
 			else if (data.cfml.forwardIfCurrent('[')) {
@@ -1285,7 +1292,7 @@ public abstract class AbstrCFMLExprTransformer {
             }
 			// Method
 			if (data.cfml.isCurrent('(')) {
-				if(nameProp==null && name!=null)nameProp=Identifier.toIdentifier(name, Identifier.CASE_ORIGNAL,-1);// properly this is never used
+				if(nameProp==null && name!=null)nameProp=Identifier.toIdentifier(name, Identifier.CASE_ORIGNAL,null,null);// properly this is never used
 				invoker.addMember(getFunctionMember(data,nameProp, false));
 			}
 			
@@ -1356,9 +1363,9 @@ public abstract class AbstrCFMLExprTransformer {
         comments(data);
         
         if (data.cfml.isCurrent('(')) {
-			FunctionMember func = getFunctionMember(data,Identifier.toIdentifier("_createComponent",Identifier.CASE_ORIGNAL,-1), true);
+			FunctionMember func = getFunctionMember(data,Identifier.toIdentifier("_createComponent",Identifier.CASE_ORIGNAL,null,null), true);
 			func.addArgument(new Argument(exprName,"string"));
-			Variable v=new Variable(expr.getLine());
+			Variable v=new Variable(expr.getStart(),expr.getEnd());
 			v.addMember(func);
             comments(data);
 			return v;
@@ -1382,7 +1389,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return CFXD Element
 	* @throws TemplateException 
 	*/
-	private Variable startElement(Data data,Identifier name, int line) throws TemplateException {
+	private Variable startElement(Data data,Identifier name, Position line) throws TemplateException {
 		
 		
 		
@@ -1391,7 +1398,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if (data.cfml.isCurrent('(')) {
 			FunctionMember func = getFunctionMember(data,name, true);
 			
-			Variable var=new Variable(line);
+			Variable var=new Variable(line,data.cfml.getPosition());
 			var.addMember(func);
             comments(data);
 			return var;
@@ -1402,7 +1409,7 @@ public abstract class AbstrCFMLExprTransformer {
 		if(var!=null) return var;
 		
 		// undefined variable
-		var=new Variable(line);
+		var=new Variable(line,data.cfml.getPosition());
 		var.addMember(new DataMember(name));
 
         comments(data);
@@ -1422,27 +1429,27 @@ public abstract class AbstrCFMLExprTransformer {
 	 * @return CFXD Variable Element oder null
 	 * @throws TemplateException 
 	*/
-	private Variable scope(Data data,Identifier id, int line) throws TemplateException {
+	private Variable scope(Data data,Identifier id, Position line) throws TemplateException {
 		String idStr=id.getUpper();
 		if(data.ignoreScopes)return null;
-		if (idStr.equals("CGI")) 				return new Variable(Scope.SCOPE_CGI,line);
-		else if (idStr.equals("ARGUMENTS"))  	return new Variable(Scope.SCOPE_ARGUMENTS,line);
-		else if (idStr.equals("REQUEST"))		return new Variable(Scope.SCOPE_REQUEST,line);
-		else if (idStr.equals("SESSION"))		return new Variable(Scope.SCOPE_SESSION,line);
-		else if (idStr.equals("APPLICATION"))	return new Variable(Scope.SCOPE_APPLICATION,line);
-		else if (idStr.equals("VARIABLES"))		return new Variable(Scope.SCOPE_VARIABLES,line);
-		else if (idStr.equals("FORM")) 			return new Variable(Scope.SCOPE_FORM,line);
-		else if (idStr.equals("URL"))			return new Variable(Scope.SCOPE_URL,line);
-		else if (idStr.equals("SERVER")) 		return new Variable(Scope.SCOPE_SERVER,line);
-		else if (idStr.equals("CLIENT"))		return new Variable(Scope.SCOPE_CLIENT,line);
-		else if (idStr.equals("COOKIE"))		return new Variable(Scope.SCOPE_COOKIE,line);
-		else if (idStr.equals("CLUSTER"))		return new Variable(Scope.SCOPE_CLUSTER,line);
-		else if (idStr.equals("LOCAL"))			return new Variable(Scope.SCOPE_LOCAL,line);
+		if (idStr.equals("CGI")) 				return new Variable(Scope.SCOPE_CGI,line,data.cfml.getPosition());
+		else if (idStr.equals("ARGUMENTS"))  	return new Variable(Scope.SCOPE_ARGUMENTS,line,data.cfml.getPosition());
+		else if (idStr.equals("REQUEST"))		return new Variable(Scope.SCOPE_REQUEST,line,data.cfml.getPosition());
+		else if (idStr.equals("SESSION"))		return new Variable(Scope.SCOPE_SESSION,line,data.cfml.getPosition());
+		else if (idStr.equals("APPLICATION"))	return new Variable(Scope.SCOPE_APPLICATION,line,data.cfml.getPosition());
+		else if (idStr.equals("VARIABLES"))		return new Variable(Scope.SCOPE_VARIABLES,line,data.cfml.getPosition());
+		else if (idStr.equals("FORM")) 			return new Variable(Scope.SCOPE_FORM,line,data.cfml.getPosition());
+		else if (idStr.equals("URL"))			return new Variable(Scope.SCOPE_URL,line,data.cfml.getPosition());
+		else if (idStr.equals("SERVER")) 		return new Variable(Scope.SCOPE_SERVER,line,data.cfml.getPosition());
+		else if (idStr.equals("CLIENT"))		return new Variable(Scope.SCOPE_CLIENT,line,data.cfml.getPosition());
+		else if (idStr.equals("COOKIE"))		return new Variable(Scope.SCOPE_COOKIE,line,data.cfml.getPosition());
+		else if (idStr.equals("CLUSTER"))		return new Variable(Scope.SCOPE_CLUSTER,line,data.cfml.getPosition());
+		else if (idStr.equals("LOCAL"))			return new Variable(Scope.SCOPE_LOCAL,line,data.cfml.getPosition());
 		else if (idStr.equals("VAR")) {
 			Identifier _id = identifier(data,false,true);
 			if(_id!=null){
 				comments(data);
-				Variable local = new Variable(ScopeSupport.SCOPE_VAR,line);
+				Variable local = new Variable(ScopeSupport.SCOPE_VAR,line,data.cfml.getPosition());
 				if(!"LOCAL".equalsIgnoreCase(_id.getString()))local.addMember(new DataMember(_id));
 				else {
 					local.ignoredFirstMember(true);
@@ -1463,7 +1470,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @return Identifier.
 	*/
 	protected Identifier identifier(Data data,boolean firstCanBeNumber,boolean upper) {
-		int start = data.cfml.getPos();
+		Position start = data.cfml.getPosition();
 		if(!data.cfml.isCurrentLetter() && !data.cfml.isCurrentSpecial() ) {
 		    if(!firstCanBeNumber) return null;
             else if(!data.cfml.isCurrentBetween('0','9'))return null;
@@ -1477,8 +1484,8 @@ public abstract class AbstrCFMLExprTransformer {
 				}
 		}
 		while (data.cfml.isValidIndex());
-		return Identifier.toIdentifier(data.cfml.substring(start,data.cfml.getPos()-start), 
-				upper && data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL, start);
+		return Identifier.toIdentifier(data.cfml.substring(start.pos,data.cfml.getPos()-start.pos), 
+				upper && data.settings.dotNotationUpper?Identifier.CASE_UPPER:Identifier.CASE_ORIGNAL, start,data.cfml.getPosition());
 	}
 	
 	protected String identifier(Data data,boolean firstCanBeNumber) {
@@ -1705,7 +1712,7 @@ public abstract class AbstrCFMLExprTransformer {
 	 */
 	private Expression simple(Data data,String[] breakConditions) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		outer:while(data.cfml.isValidIndex()) {
 			for(int i=0;i<breakConditions.length;i++){
 				if(data.cfml.isCurrent(breakConditions[i]))break outer;
@@ -1721,7 +1728,7 @@ public abstract class AbstrCFMLExprTransformer {
 		}
         comments(data);
 		
-		return LitString.toExprString(sb.toString(),line);
+		return LitString.toExprString(sb.toString(),line,data.cfml.getPosition());
 	}
     
 

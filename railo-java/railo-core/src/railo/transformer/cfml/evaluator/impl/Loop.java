@@ -34,7 +34,7 @@ public final class Loop extends EvaluatorSupport {
 	 * @see railo.transformer.cfml.evaluator.EvaluatorSupport#evaluate(railo.transformer.bytecode.statement.tag.Tag, railo.transformer.library.tag.TagLibTag, railo.transformer.library.function.FunctionLib[])
 	 */
 	public void evaluate(Tag tag,TagLibTag tagLibTag,FunctionLib[] flibs) throws EvaluatorException {
-        TagLoop loop=(TagLoop) tag;
+		TagLoop loop=(TagLoop) tag;
 		
 		// file loop      
         if(tag.containsAttribute("file")) {

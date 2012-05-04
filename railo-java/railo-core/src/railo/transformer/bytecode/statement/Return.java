@@ -7,6 +7,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMConstants;
@@ -24,8 +25,8 @@ public final class Return extends StatementBase {
 	 * Constructor of the class
 	 * @param line
 	 */
-	public Return(int line) {
-		super(line);
+	public Return(Position start,Position end) {
+		super(start,end);
 		setHasFlowController(true);
 		//expr=LitString.toExprString("", line);
 	}
@@ -35,8 +36,8 @@ public final class Return extends StatementBase {
 	 * @param expr
 	 * @param line
 	 */
-	public Return(Expression expr, int line) {
-		super(line);
+	public Return(Expression expr, Position start,Position end) {
+		super(start,end);
 		this.expr=expr;
 		setHasFlowController(true);
 		//if(expr==null)expr=LitString.toExprString("", line);

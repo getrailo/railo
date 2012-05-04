@@ -10,6 +10,7 @@ import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
@@ -23,15 +24,9 @@ public final class TagThread extends TagBase {
 	private static final Method REGISTER = new Method(
 			"register",Types.VOID,new Type[]{Types.PAGE,Types.INT_VALUE});
 
-	/**
-	 * Constructor of the class
-	 * @param line
-	 */
-	public TagThread(int line) {
-		super(line);
-	}
-	public TagThread(int sl,int el) {
-		super(sl,el);
+
+	public TagThread(Position start,Position end) {
+		super(start,end);
 	}
 	
 	

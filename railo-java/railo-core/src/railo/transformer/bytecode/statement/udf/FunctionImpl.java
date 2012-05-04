@@ -6,6 +6,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.util.Types;
@@ -14,13 +15,13 @@ public final class FunctionImpl extends Function {
 
 	public FunctionImpl(Page page, Expression name, Expression returnType, Expression returnFormat, Expression output, Expression abstr,
 			int access, Expression displayName, Expression description,Expression hint, Expression secureJson, Expression verifyClient,
-			Body body, int startline, int endline) {
-		super(page,name, returnType, returnFormat, output, abstr, access, displayName,description, hint, secureJson, verifyClient, body, startline, endline);
+			Body body, Position start,Position end) {
+		super(page,name, returnType, returnFormat, output, abstr, access, displayName,description, hint, secureJson, verifyClient, body, start, end);
 	}
 	
 
-	public FunctionImpl(Page page, String name, int access, String returnType, Body body,int startline, int endline) {
-		super(page,name, access, returnType, body, startline, endline);
+	public FunctionImpl(Page page, String name, int access, String returnType, Body body,Position start,Position end) {
+		super(page,name, access, returnType, body, start, end);
 	}
 
 	public final void _writeOut(BytecodeContext bc, int pageType) throws BytecodeException{

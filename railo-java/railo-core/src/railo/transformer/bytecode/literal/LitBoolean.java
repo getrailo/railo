@@ -7,6 +7,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Types;
@@ -26,15 +27,15 @@ public final class LitBoolean extends ExpressionBase implements Literal,ExprBool
 
 	private boolean b;
 
-	public static final LitBoolean TRUE=new LitBoolean(true,-1);
-	public static final LitBoolean FALSE=new LitBoolean(false,-1);
+	public static final LitBoolean TRUE=new LitBoolean(true,null,null);
+	public static final LitBoolean FALSE=new LitBoolean(false,null,null);
 
-	public static ExprBoolean toExprBoolean(boolean b, int line) {
-		return new LitBoolean(b,line);
+	public static ExprBoolean toExprBoolean(boolean b, Position start,Position end) {
+		return new LitBoolean(b,start,end);
 	}
 
 	public static ExprBoolean toExprBoolean(boolean b) {
-		return new LitBoolean(b,-1);
+		return new LitBoolean(b,null,null);
 	}
 	
     /**
@@ -42,8 +43,8 @@ public final class LitBoolean extends ExpressionBase implements Literal,ExprBool
      * @param b 
      * @param line 
      */
-    public LitBoolean(boolean b, int line) {
-        super(line);
+    public LitBoolean(boolean b, Position start,Position end) {
+        super(start,end);
         this.b=b;
     }
 

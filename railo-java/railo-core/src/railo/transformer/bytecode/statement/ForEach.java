@@ -10,6 +10,7 @@ import railo.runtime.util.ForEachUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableRef;
@@ -44,8 +45,8 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 	 * @param body
 	 * @param line
 	 */
-	public ForEach(Variable key,Variable value,Body body,int startline,int endline) {
-		super(startline,endline);
+	public ForEach(Variable key,Variable value,Body body,Position start, Position end) {
+		super(start,end);
 		this.key=new VariableRef(key);
 		this.value=value;
 		this.body=body;
@@ -86,7 +87,7 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 				adapter.storeLocal(item);
 			
 			// while
-				ExpressionUtil.visitLine(bc, getStartLine());
+				ExpressionUtil.visitLine(bc, getStart());
 				adapter.visitLabel(begin);
 				
 				// hasNext

@@ -6,6 +6,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
@@ -19,16 +20,8 @@ public final class TagInclude extends TagBase {
 			Type.VOID_TYPE,
 			new Type[]{Types.STRING,Types.BOOLEAN_VALUE});
 	
-
-	/**
-	 * Constructor of the class
-	 * @param line
-	 */
-	public TagInclude(int line) {
-		super(line);
-	}
-	public TagInclude(int sl,int el) {
-		super(sl,el);
+	public TagInclude(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**

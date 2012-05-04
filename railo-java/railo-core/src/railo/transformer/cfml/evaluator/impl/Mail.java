@@ -31,11 +31,11 @@ public final class Mail extends EvaluatorSupport {
 		    TagLib lib = libTag.getTagLib();
 		    TagLibTag outputTag = lib.getTag("output");
 		    
-		    TagOutput output=new TagOutput(tag.getStartLine());
+		    TagOutput output=new TagOutput(tag.getStart(),null);
 		    output.setFullname(outputTag.getFullName());
 		    output.setTagLibTag(outputTag);
-		    output.addAttribute(new Attribute(false,"output",LitBoolean.toExprBoolean(true, -1),"boolean"));
-		    output.addAttribute(new Attribute(false,"formail",LitBoolean.toExprBoolean(true, -1),"boolean"));
+		    output.addAttribute(new Attribute(false,"output",LitBoolean.TRUE,"boolean"));
+		    output.addAttribute(new Attribute(false,"formail",LitBoolean.TRUE,"boolean"));
 		    
 		    Body body=new BodyBase();//output.getBody();
 		    output.setBody(body);

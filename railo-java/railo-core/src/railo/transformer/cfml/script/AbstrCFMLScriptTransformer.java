@@ -21,6 +21,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.FunctionBody;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.Cast;
@@ -33,6 +34,7 @@ import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Condition;
+import railo.transformer.bytecode.statement.Condition.Pair;
 import railo.transformer.bytecode.statement.DoWhile;
 import railo.transformer.bytecode.statement.ExpressionAsStatement;
 import railo.transformer.bytecode.statement.For;
@@ -53,6 +55,7 @@ import railo.transformer.cfml.evaluator.impl.ProcessingDirectiveException;
 import railo.transformer.cfml.expression.AbstrCFMLExprTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLibFunction;
+import railo.transformer.library.tag.TagLibException;
 import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.library.tag.TagLibTagAttr;
 import railo.transformer.library.tag.TagLibTagScript;
@@ -211,10 +214,10 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent("if",'(')) return null;
 		
 		
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		
 		Body body=new BodyBase();
-		Condition cont=new Condition(condition(data),body,line);
+		Condition cont=new Condition(condition(data),body,line,null);
 		
 		if(!data.cfml.forwardIfCurrent(')')) throw new TemplateException(data.cfml,"if statement must end with a [)]");
 		// ex block
@@ -228,7 +231,8 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		 if(elseStatement(data,cont)) {
 			comments(data);
 		 }
-		
+
+		cont.setEnd(data.cfml.getPosition());
 		return cont;
 	}
 	
@@ -250,15 +254,15 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			return false;
 		}
 			
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		Body body=new BodyBase();
-		cont.addElseIf(condition(data), body, line);
+		Pair pair = cont.addElseIf(condition(data), body, line,null);
 
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"else if statement must end with a [)]");
 		// ex block
 		statement(data,body,CTX_ELSE_IF);
-		
+		pair.end=data.cfml.getPosition();
 		return true;
 	}
 	
@@ -279,9 +283,9 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		data.cfml.previous();
 		// ex block
 		Body body=new BodyBase();
-		cont.setElse(body, data.cfml.getLine());
+		Pair p = cont.setElse(body, data.cfml.getPosition(),null);
 		statement(data,body,CTX_ELSE);
-		
+		p.end=data.cfml.getPosition();
 		return true;
 	}
 	
@@ -294,7 +298,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		data.cfml.previous();
 		// ex block
 		Body body=new BodyBase();
-		tcf.setFinally(body, data.cfml.getLine());
+		tcf.setFinally(body, data.cfml.getPosition());
 		statement(data,body,CTX_FINALLY);
 		
 		return true;
@@ -312,15 +316,15 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent("while",'('))
 			return null;
 		
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		Body body=new BodyBase();
-		While whil=new While(condition(data),body,line,-1);
+		While whil=new While(condition(data),body,line,null);
 		
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"while statement must end with a [)]");
 		
 		statement(data,body,CTX_WHILE);
-		whil.setEndLine(data.cfml.getLine());
+		whil.setEnd(data.cfml.getPosition());
 		return whil;
 	}
 	
@@ -333,7 +337,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent("switch",'('))
 			return null;
 		
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		
 		comments(data);
 		Expression expr = super.expression(data);
@@ -346,7 +350,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent('{'))
 			throw new TemplateException(data.cfml,"switch statement must have a starting  [{]");
 
-		Switch swit=new Switch(expr,line,-1);
+		Switch swit=new Switch(expr,line,null);
 		
 		//	cases
 		 //Node child=null;
@@ -367,7 +371,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		// }
 		if(!data.cfml.forwardIfCurrent('}'))
 			throw new TemplateException(data.cfml,"invalid construct in switch statement");
-		swit.setEndLine(data.cfml.getLine());
+		swit.setEnd(data.cfml.getPosition());
 		return swit;
 	}
 	
@@ -438,7 +442,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/'))
 			return null;
 		
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		Body body=new BodyBase();
 		
 		data.cfml.previous();
@@ -449,7 +453,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent("while",'('))
 			throw new TemplateException(data.cfml,"do statement must have a while at the end");
 		
-		DoWhile doWhile=new DoWhile(condition(data),body,line,data.cfml.getLine());
+		DoWhile doWhile=new DoWhile(condition(data),body,line,data.cfml.getPosition());
 		
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"do statement must end with a [)]");
@@ -471,7 +475,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			return null;
 		Expression left=null;
 		Body body=new BodyBase();
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		comments(data);
 		if(!data.cfml.isCurrent(';')) {
 			// left
@@ -504,7 +508,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				// ex block
 				statement(data,body,CTX_FOR);
 		
-				return new For(left,cont,update,body,line,data.cfml.getLine());					
+				return new For(left,cont,update,body,line,data.cfml.getPosition());					
 			}
 		// middle foreach
 			else if(data.cfml.forwardIfCurrent("in")) {
@@ -522,7 +526,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				
 				if(!(value instanceof Variable))
 					throw new TemplateException(data.cfml,"invalid syntax in for statement, right value is invalid");
-				return new ForEach((Variable)left,(Variable)value,body,line,data.cfml.getLine());	
+				return new ForEach((Variable)left,(Variable)value,body,line,data.cfml.getPosition());	
 			}
 			else 
 				throw new TemplateException(data.cfml,"invalid syntax in for statement");
@@ -598,7 +602,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		
 		
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		
 		comments(data);
 		
@@ -621,12 +625,12 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			return closurePart(data, id,access,rtnType,line,false);
 	}
 
-	protected  final Function closurePart(Data data, String id, int access, String rtnType, int line,boolean closure) throws TemplateException {		
+	protected  final Function closurePart(Data data, String id, int access, String rtnType, Position line,boolean closure) throws TemplateException {		
 		
 		Body body=new FunctionBody();
 		Function func=closure?
-				new Closure(data.page,id,access,rtnType,body,line,-1)
-				:new FunctionImpl(data.page,id,access,rtnType,body,line,-1);
+				new Closure(data.page,id,access,rtnType,body,line,null)
+				:new FunctionImpl(data.page,id,access,rtnType,body,line,null);
 		
 			comments(data);
 			if(!data.cfml.forwardIfCurrent('('))
@@ -779,7 +783,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		finally{
 			data.insideFunction=oldInsideFunction;
 		}
-		func.setEndLine(data.cfml.getLine());
+		func.setEnd(data.cfml.getPosition());
 		//eval(tlt,data,func);
 		return func;
 	}
@@ -897,14 +901,14 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			}
 		}
 		else return null;
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		
 		TagLibTagScript script = tlt.getScript();
 		//TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,type);
 		if(script.getContext()==CTX_CFC)data.isCFC=true;
 		else if(script.getContext()==CTX_INTERFACE)data.isInterface=true;
 		//Tag tag=new TagComponent(line);
-		Tag tag=getTag(parent,tlt, line);
+		Tag tag=getTag(data,parent,tlt, line,null);
 		tag.setTagLibTag(tlt);
 		tag.setScriptBase(true);
 		
@@ -935,7 +939,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			tag.setBody(body);
 		}
 		else checkSemiColonLineFeed(data,true);
-		
+		tag.setEnd(data.cfml.getPosition());
 		eval(tlt,data,tag);
 		return tag;
 	}
@@ -981,10 +985,10 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	private final Tag _propertyStatement(Data data,Body parent) throws TemplateException  {
 		if(data.context!=CTX_CFC || !data.cfml.forwardIfCurrent("property "))
 			return null;
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		
 		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"property");
-		Tag property=new TagBase(line);
+		Tag property=new TagBase(line,null);
 		addMetaData(data, property,IGNORE_LIST_PROPERTY);
 		
 
@@ -1088,7 +1092,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		property.addAttribute(new Attribute(false,"name",LitString.toExprString(name),"string"));
 		property.addAttribute(new Attribute(false,"type",LitString.toExprString(type),"string"));
 		*/
-		
+		property.setEnd(data.cfml.getPosition());
 		
 		return property;
 	}
@@ -1110,10 +1114,10 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	private Tag _paramStatement(Data data,Body parent) throws TemplateException  {
 		if(!data.cfml.forwardIfCurrent("param "))
 			return null;
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		
 		TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,"param");
-		TagParam param=new TagParam(line);
+		TagParam param=new TagParam(line,null);
 		
 		// type
 		boolean hasType=false;
@@ -1210,6 +1214,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!hasName)
 			throw new TemplateException(data.cfml,"missing name declaration for param");
 
+		param.setEnd(data.cfml.getPosition());
 		return param;
 	}
 
@@ -1261,11 +1266,11 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	private final Return returnStatement(Data data) throws TemplateException {
 	    if(!data.cfml.forwardIfCurrentAndNoVarExt("return")) return null;
 	    
-	    int line=data.cfml.getLine();
+	    Position line = data.cfml.getPosition();
 	    Return rtn;
 	    
 	    comments(data);
-	    if(data.cfml.forwardIfCurrent(';')) rtn=new Return(line);
+	    if(data.cfml.forwardIfCurrent(';')) rtn=new Return(line,data.cfml.getPosition());
 	    else {
 	    	Expression expr = expression(data);
 	    	
@@ -1273,7 +1278,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				throw new TemplateException(data.cfml,"Missing [;] after expression");
 			
 	    	
-	    	rtn=new Return(expr,line);
+	    	rtn=new Return(expr,line,data.cfml.getPosition());
 	    }
 		comments(data);
 
@@ -1329,10 +1334,10 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		
 		
 		int pos=data.cfml.getPos()-tagName.length();
-		int line=data.cfml.getLine();
+		Position line = data.cfml.getPosition();
 		//TagLibTag tlt = CFMLTransformer.getTLT(data.cfml,tagName.equals("pageencoding")?"processingdirective":tagName);
 		
-		Tag tag=getTag(parent,tlt,line);
+		Tag tag=getTag(data,parent,tlt,line,null);
 		tag.setScriptBase(true);
 		tag.setTagLibTag(tlt);
 		
@@ -1363,7 +1368,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!StringUtil.isEmpty(tlt.getTteClassName()))data.ep.add(tlt, tag, data.fld, data.cfml);
 		
 		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.cfml, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer(), allowTwiceAttr);
-		
+		tag.setEnd(data.cfml.getPosition());
 		eval(tlt,data,tag);
 		return tag;
 	}
@@ -1426,23 +1431,28 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		}
 	}
 
-	private final Tag getTag(Body parent, TagLibTag tlt, int line) {
-		Tag tag =null;
-		if(StringUtil.isEmpty(tlt.getTttClassName()))tag= new TagBase(line);
+	private final Tag getTag(Data data,Body parent, TagLibTag tlt, Position start,Position end) throws TemplateException {
+		try {
+			Tag tag = tlt.getTag(start, end);
+			tag.setParent(parent);
+			return tag;
+		} catch (TagLibException e) {
+			throw new TemplateException(data.cfml,e);
+		}
+		/*if(StringUtil.isEmpty(tlt.getTttClassName()))tag= new TagBase(line);
 		else {
 			try {
 				Class<Tag> clazz = ClassUtil.loadClass(tlt.getTttClassName());
-				Constructor<Tag> constr = clazz.getConstructor(new Class[]{int.class});
-				tag = constr.newInstance(new Object[]{Caster.toInteger(line)});
+				Constructor<Tag> constr = clazz.getConstructor(new Class[]{Position.class});
+				tag = constr.newInstance(new Object[]{line});
 				
 			} 
 			catch (Exception e) {
 				e.printStackTrace();
 				tag= new TagBase(line);
 			}
-		}
-		tag.setParent(parent);
-		return tag;
+		}*/
+		
 	}
 	
 	
@@ -1508,7 +1518,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		data.cfml.previous();
 
 		Body body=new BodyBase();
-		TryCatchFinally tryCatchFinally=new TryCatchFinally(body,data.cfml.getLine(),-1);
+		TryCatchFinally tryCatchFinally=new TryCatchFinally(body,data.cfml.getPosition(),null);
 		
 		statement(data,body,CTX_TRY);
 		comments(data);
@@ -1521,7 +1531,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			
 			// type
 			int pos=data.cfml.getPos();
-			int line=data.cfml.getLine();
+			Position line=data.cfml.getPosition();
 			Expression name = null,type = null;
 			
 			StringBuffer sbType=new StringBuffer();
@@ -1584,7 +1594,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			throw new TemplateException(data.cfml,"a try statement must have at least one catch statement");
 		
         //if(body.isEmpty()) return null;
-		tryCatchFinally.setEndLine(data.cfml.getLine());
+		tryCatchFinally.setEnd(data.cfml.getPosition());
 		return tryCatchFinally;
 	}
 	

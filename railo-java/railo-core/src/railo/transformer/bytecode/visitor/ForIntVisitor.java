@@ -5,6 +5,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 
@@ -35,7 +36,7 @@ public final class ForIntVisitor implements Opcodes, LoopVisitor {
 		adapter.ifZCmp(Opcodes.IFEQ, afterBody);
 	}
 	
-	public void visitEndBody(BytecodeContext bc,int line) {
+	public void visitEndBody(BytecodeContext bc,Position line) {
 		bc.getAdapter().goTo(beforeUpdate);
 		ExpressionUtil.visitLine(bc, line);
 		bc.getAdapter().visitLabel(afterBody);

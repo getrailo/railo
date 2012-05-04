@@ -7,6 +7,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastInt;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
@@ -35,15 +36,9 @@ public final class TagParam extends TagBase {
 			Types.VOID,
 			new Type[]{Types.STRING,Types.STRING,Types.OBJECT,Types.INT_VALUE}
 	);
-	/**
-	 * Constructor of the class
-	 * @param line
-	 */
-	public TagParam(int line) {
-		super(line);
-	}
-	public TagParam(int sl,int el) {
-		super(sl,el);
+	
+	public TagParam(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**

@@ -35,17 +35,17 @@ public class IsDefined implements FunctionEvaluator{
 				ArrayUtil.trim(arr);
 				
 				// update first arg
-				arg.setValue(new LitDouble(scope,-1),"number");
+				arg.setValue(LitDouble.toExprDouble(scope),"number");
 				
 				// add second argument
 				
 				if(arr.length==1){
-					Expression expr = new CollectionKey(arr[0],-1);//LitString.toExprString(str);
+					Expression expr = new CollectionKey(arr[0]);//LitString.toExprString(str);
 					arg=new Argument(expr,Collection.Key.class.getName());
 					bif.addArgument(arg);	
 				}
 				else {
-					LiteralStringArray expr = new LiteralStringArray(arr,-1);
+					LiteralStringArray expr = new LiteralStringArray(arr);
 					arg=new Argument(expr,String[].class.getName());
 					bif.addArgument(arg);
 				}

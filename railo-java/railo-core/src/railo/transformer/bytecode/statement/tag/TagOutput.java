@@ -11,6 +11,7 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.util.NumberIterator;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
@@ -141,19 +142,14 @@ public final class TagOutput extends TagBase {
 	private int group=-1;
 	private int pid;
 
-
-
-	public TagOutput(int line) {
-		super(line);
-	}
-	public TagOutput(int sl,int el) {
-		super(sl,el);
+	public TagOutput(Position start,Position end) {
+		super(start,end);
 	}
 
 
 	public static TagOutput getParentTagOutputQuery(Statement stat) throws BytecodeException {
 		Statement parent=stat.getParent();
-		if(parent==null) throw new BytecodeException("there is no parent output with query",-1);
+		if(parent==null) throw new BytecodeException("there is no parent output with query",null);
 		else if(parent instanceof TagOutput) {
 			if(((TagOutput)parent).hasQuery())
 				return ((TagOutput)parent);
@@ -198,7 +194,7 @@ public final class TagOutput extends TagBase {
 		break;
 		
 		default:
-			throw new BytecodeException("invalid type",getLine());
+			throw new BytecodeException("invalid type",getStart());
 		}
 	}
 
@@ -302,7 +298,7 @@ public final class TagOutput extends TagBase {
 			adapter.visitInsn(Opcodes.IADD);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 	
-		wv.visitAfterBody(bc,getEndLine());
+		wv.visitAfterBody(bc,getEnd());
 	
 
 		//query.go(ni.current(),pc.getId())
@@ -390,7 +386,7 @@ public final class TagOutput extends TagBase {
 			adapter.visitInsn(Opcodes.IADD);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 	
-		wv.visitAfterBody(bc,getEndLine());
+		wv.visitAfterBody(bc,getEnd());
 	
 		resetCurrentrow(adapter,current);
 		
@@ -462,7 +458,7 @@ public final class TagOutput extends TagBase {
 			adapter.visitInsn(Opcodes.IADD);
 			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 	
-		wv.visitAfterBody(bc,getEndLine());
+		wv.visitAfterBody(bc,getEnd());
 	
 		
 		// ni.setCurrent(currentOuter);
@@ -713,7 +709,7 @@ public final class TagOutput extends TagBase {
 					adapter.visitInsn(Opcodes.IADD);
 					adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 			
-				wv.visitAfterBody(bc,getEndLine());
+				wv.visitAfterBody(bc,getEnd());
 			
 				tfv.visitTryEnd(bc);
 

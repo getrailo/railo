@@ -15,6 +15,7 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
@@ -45,7 +46,7 @@ public final class TagLibTag {
 	 * Definition des Attribut Type 
 	 */
 	
-	private final static Class[] CONSTRUCTOR_PARAMS=new Class[]{int.class,int.class};
+	private final static Class[] CONSTRUCTOR_PARAMS=new Class[]{Position.class,Position.class};
 	
 	private int attributeType;
 	private String name;
@@ -634,10 +635,10 @@ public final class TagLibTag {
 	 * @return
 
 	 */
-	public Tag getTag(int startline,int endline) throws TagLibException {
-		if(StringUtil.isEmpty(tttClass)) return new TagBase(startline,endline);
+	public Tag getTag(Position start,Position end) throws TagLibException {
+		if(StringUtil.isEmpty(tttClass)) return new TagBase(start,end);
 		try {
-			return _getTag(startline,endline);
+			return _getTag(start,end);
 		} 
 		catch (ClassException e) {
 			throw new TagLibException(e.getMessage());
@@ -649,12 +650,12 @@ public final class TagLibTag {
 			throw new TagLibException(e);
 		}
 	}
-	private Tag _getTag(int startline,int endline) throws ClassException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	private Tag _getTag(Position start,Position end) throws ClassException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		if(tttConstructor==null) {
 			Class clazz = ClassUtil.loadClass(tttClass);
 			tttConstructor = clazz.getConstructor(CONSTRUCTOR_PARAMS);
 		}
-		return (Tag) tttConstructor.newInstance(new Object[]{Integer.valueOf(startline),Integer.valueOf(endline)});
+		return (Tag) tttConstructor.newInstance(new Object[]{start,end});
 	}
 
 	public void setAllowRemovingLiteral(boolean allowRemovingLiteral) {

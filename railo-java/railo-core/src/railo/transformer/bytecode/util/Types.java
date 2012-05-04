@@ -318,7 +318,7 @@ public final class Types {
 		try {
 			return Type.getType(ClassUtil.loadClass(type));
 		} catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),-1);
+			throw new BytecodeException(e.getMessage(),null);
 		}
 	}
 

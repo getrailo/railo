@@ -2,6 +2,7 @@ package railo.transformer.cfml.expression;
 
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.cfml.ExprTransformer;
@@ -67,7 +68,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		StringBuffer str=new StringBuffer();
 		boolean insideSpecial=false;
 	
-		int line=cfml.getLine();
+		Position line = cfml.getPosition();
 		while(cfml.hasNext()) {
 			cfml.next();
 			// check special
@@ -98,7 +99,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		if(!cfml.forwardIfCurrent(quoter))
 			throw new TemplateException(cfml,"Invalid Syntax Closing ["+quoter+"] not found");
 	
-		LitString rtn = new LitString(str.toString(),line);
+		LitString rtn = new LitString(str.toString(),line,cfml.getPosition());
 		cfml.removeSpace();
 		return rtn;
 	}
@@ -110,7 +111,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	 */
 	public Expression simple(CFMLString cfml) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
-		int line = cfml.getLine();
+		Position line = cfml.getPosition();
 		while(cfml.isValidIndex()) {
 			if(cfml.isCurrent(' ') || cfml.isCurrent('>') || cfml.isCurrent("/>")) break;
 			else if(cfml.isCurrent('"') || cfml.isCurrent('#') || cfml.isCurrent('\'')) {
@@ -121,7 +122,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		}
 		cfml.removeSpace();
 		
-		return new LitString(sb.toString(),line);
+		return new LitString(sb.toString(),line,cfml.getPosition());
 	}
 	
 

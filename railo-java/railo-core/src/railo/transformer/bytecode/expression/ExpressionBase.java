@@ -2,9 +2,11 @@ package railo.transformer.bytecode.expression;
 
 import org.objectweb.asm.Type;
 
+import railo.print;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
 /**
@@ -12,22 +14,15 @@ import railo.transformer.bytecode.util.ExpressionUtil;
  */
 public abstract class ExpressionBase implements Expression {
 
-    private int line;
+    private Position start;
+    private Position end;
 
-    /**
-	 * @see railo.transformer.bytecode.expression.Expression#setLine(int)
-	 */
-	public void setLine(int line) {
-		this.line=line;
-	}
-
-
-	/**
-     * constructor of the class
-     * @param line
-     */
-    public ExpressionBase(int line) {
-        this.line=line;
+    public ExpressionBase(Position start,Position end) {
+        this.start=start;
+        this.end=end;
+        
+        if(start!=null && end==null)
+        	print.ds();
     }
 
 
@@ -39,8 +34,10 @@ public abstract class ExpressionBase implements Expression {
      * @throws TemplateException
      */
     public final Type writeOut(BytecodeContext bc, int mode) throws BytecodeException {
-        ExpressionUtil.visitLine(bc, line);
-    	return _writeOut(bc,mode);
+        ExpressionUtil.visitLine(bc, start);
+    	Type type = _writeOut(bc,mode);
+        ExpressionUtil.visitLine(bc, end);
+        return type;
     }
 
     /**
@@ -53,12 +50,24 @@ public abstract class ExpressionBase implements Expression {
     public abstract Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException;
 
 
-    /**
-     * Returns the value of line.
-     * @return value line
-     */
-    public int getLine() {
-        return line;
+	@Override
+    public Position getStart() {
+        return start;
     }
+    
+    @Override
+    public Position getEnd() {
+        return end;
+    }
+   
+    @Override
+    public void setStart(Position start) {
+        this.start= start;
+    }
+    @Override
+    public void setEnd(Position end) {
+        this.end= end;
+    }
+    
     
 }

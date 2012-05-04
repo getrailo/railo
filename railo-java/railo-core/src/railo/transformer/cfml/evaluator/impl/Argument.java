@@ -92,7 +92,7 @@ public final class Argument extends EvaluatorSupport {
 						if("number".equalsIgnoreCase(strType) || "numeric".equalsIgnoreCase(strType)) {
 							Double dbl = Caster.toDouble(strDefault,null);
 							if(dbl!=null) {
-								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitDouble.toExprDouble(dbl.doubleValue(), -1), _default.getType()));
+								tag.addAttribute(new Attribute(_default.isDynamicType(),_default.getName(), LitDouble.toExprDouble(dbl.doubleValue()), _default.getType()));
 							}
 						}
 					}

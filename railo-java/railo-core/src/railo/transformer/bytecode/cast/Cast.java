@@ -25,7 +25,7 @@ public final class Cast extends ExpressionBase {
     private String lcType;
     
     private Cast(Expression expr, String type, String lcType) {
-        super(expr.getLine());
+        super(expr.getStart(),expr.getEnd());
         this.expr=expr;
         this.type=type;
         this.lcType=lcType;
@@ -532,7 +532,7 @@ public final class Cast extends ExpressionBase {
 			return Type.getType(ClassUtil.loadClass(type));
 		} 
         catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),-1);
+			throw new BytecodeException(e.getMessage(),null);
 		}
 		
 	}
