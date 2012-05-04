@@ -266,8 +266,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	private void debugCascadedAccess(String name, Collection.Key key) {
-		((DebuggerImpl)pc.getDebugger()).addImplicitAccess(name,key.getString());
-		
+		pc.getDebugger().addImplicitAccess(name,key.getString());
 	}
 	
 	/**
