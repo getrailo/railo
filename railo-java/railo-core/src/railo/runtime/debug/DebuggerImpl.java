@@ -61,7 +61,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
 	
 	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
-	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
+	private List<QueryEntry> queries=new ArrayList<QueryEntry>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
 	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
@@ -74,13 +74,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	private Array historyLevel=new ArrayImpl();
 
 	private DateTimeImpl starttime;
- 
-	
-	
-	
-	/**
-     * @see railo.runtime.debug.Debugger#reset()
-     */
+
+	@Override
 	public void reset() {
 		pages.clear();
 		queries.clear();
@@ -93,26 +88,16 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		output=true;
 	}
 
-	/**
-	 * standart Constructor of the class
-	 */
-	public DebuggerImpl() {
-		
+	public DebuggerImpl() {	
 	}
 
-    /**
-     *
-     * @see railo.runtime.debug.Debugger#getEntry(railo.runtime.PageContext, railo.runtime.PageSource)
-     */
-    public DebugEntry getEntry(PageContext pc,PageSource source) {
+	@Override
+	public DebugEntry getEntry(PageContext pc,PageSource source) {
         return getEntry(pc,source,null);
     }
 
-    /**
-     *
-     * @see railo.runtime.debug.Debugger#getEntry(railo.runtime.PageContext, railo.runtime.PageSource, java.lang.String)
-     */
-    public DebugEntry getEntry(PageContext pc,PageSource source, String key) {
+	@Override
+	public DebugEntry getEntry(PageContext pc,PageSource source, String key) {
     	lastEntry = System.currentTimeMillis();
         String src=DebugEntryImpl.getSrc(source==null?"":source.getDisplayPath(),key);
         
@@ -130,9 +115,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         return de;
     }
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		if(!output) return null;
 		
@@ -374,37 +357,24 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         if(value<=0) return "0";
         return String.valueOf(value);
     }
- 
-    /**
-     * @see railo.runtime.debug.Debugger#addQueryExecutionTime(java.lang.String, java.lang.String, railo.runtime.db.SQL, int, railo.runtime.PageSource, int)
-     */
-	// FUTURE set deprecated
-	public void addQueryExecutionTime(String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
-		queries.add(new QueryEntryImpl(null,datasource,name,sql,recordcount,src.getDisplayPath(),time));
-	}
 	
+	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
 		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
 	}
 	
-	/**
-     * @see railo.runtime.debug.Debugger#setOutput(boolean)
-     */
+	@Override
 	public void setOutput(boolean output) {
 		this.output = output;
 	}
     
-    /**
-     * @see railo.runtime.debug.Debugger#getQueries()
-     */
-    public List<QueryEntryImpl> getQueries() {
+	@Override
+	public List<QueryEntry> getQueries() {
         return queries;
     }
 
-    /**
-     * @see railo.runtime.debug.Debugger#writeOut(railo.runtime.PageContext)
-     */
-    public void writeOut(PageContext pc) throws IOException {
+	@Override
+	public void writeOut(PageContext pc) throws IOException {
         //stop();
         if(!output)return;
         String addr = pc.getHttpServletRequest().getRemoteAddr();
@@ -418,8 +388,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		} 
 		
 		Struct args=new StructImpl();
-		args.setEL("custom", debugEntry.getCustom());
-		args.setEL("debugging", pc.getDebugger().getDebuggingData(pc));
+		args.setEL(KeyConstants._custom, debugEntry.getCustom());
+		args.setEL(KeyConstants._debugging, pc.getDebugger().getDebuggingData(pc));
 		
 		try {
 			PageSource[] arr = ((PageContextImpl)pc).getPageSources(debugEntry.getPath());
@@ -437,27 +407,17 @@ public final class DebuggerImpl implements Dumpable, Debugger {
             pc.handlePageException(e);
         }
     }
-    
 
-    /**
-     * @see railo.runtime.debug.Debugger#getDebuggingData()
-     */
-    public Struct getDebuggingData() {
-    	return getDebuggingData(ThreadLocalPageContext.get());
-    }
-    
-
-    public Struct getDebuggingData(PageContext pc) {
+	@Override
+	public Struct getDebuggingData(PageContext pc) {
     	return getDebuggingData(pc, false);
     }
     
-    /**
-     * @see railo.runtime.debug.Debugger#getDebuggingData(PageContext pc)
-     */
-    public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo) {
-		List<QueryEntryImpl> queries = getQueries();
+	@Override
+	public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo) {
+		List<QueryEntry> queries = getQueries();
 	    Struct qryExe=new StructImpl();
-	    ListIterator<QueryEntryImpl> qryIt = queries.listIterator();
+	    ListIterator<QueryEntry> qryIt = queries.listIterator();
         String[] cols = new String[]{"name","time","sql","src","count","datasource","usage"};
         String[] types = new String[]{"VARCHAR","DOUBLE","VARCHAR","VARCHAR","DOUBLE","VARCHAR","ANY"};
         
@@ -511,16 +471,16 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		        de=arrPages.get(i);
                 //ps = de.getPageSource();
                 
-		        qryPage.setAt("id",row,de.getId());
-		        qryPage.setAt("count",row,_toString(de.getCount()));
-                qryPage.setAt("min",row,_toString(de.getMin()));
-                qryPage.setAt("max",row,_toString(de.getMax()));
-                qryPage.setAt("avg",row,_toString(de.getExeTime()/de.getCount()));
-                qryPage.setAt("app",row,_toString(de.getExeTime()-de.getQueryTime()));
-                qryPage.setAt("load",row,_toString(de.getFileLoadTime()));
-		        qryPage.setAt("query",row,_toString(de.getQueryTime()));
-                qryPage.setAt(KeyImpl.TOTAL,row,_toString(de.getFileLoadTime()+de.getExeTime()));
-		        qryPage.setAt("src",row,de.getSrc());    
+		        qryPage.setAt(KeyConstants._id,row,de.getId());
+		        qryPage.setAt(KeyConstants._count,row,_toString(de.getCount()));
+                qryPage.setAt(KeyConstants._min,row,_toString(de.getMin()));
+                qryPage.setAt(KeyConstants._max,row,_toString(de.getMax()));
+                qryPage.setAt(KeyConstants._avg,row,_toString(de.getExeTime()/de.getCount()));
+                qryPage.setAt(KeyConstants._app,row,_toString(de.getExeTime()-de.getQueryTime()));
+                qryPage.setAt(KeyConstants._load,row,_toString(de.getFileLoadTime()));
+		        qryPage.setAt(KeyConstants._query,row,_toString(de.getQueryTime()));
+                qryPage.setAt(KeyConstants._total,row,_toString(de.getFileLoadTime()+de.getExeTime()));
+		        qryPage.setAt(KeyConstants._src,row,de.getSrc());    
 			}
 		}
 		catch(PageException dbe) {}
@@ -573,13 +533,13 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        		trace= it.next();
 	        		row++;
 	        		qryTraces.setAt(KeyImpl.TYPE,row,LogUtil.toStringType(trace.getType(), "INFO"));  
-	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt("category",row,trace.getCategory()); 
-	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt("text",row,trace.getText()); 
+	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt(KeyConstants._category,row,trace.getCategory()); 
+	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt(KeyConstants._text,row,trace.getText()); 
 	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyImpl.TEMPLATE,row,trace.getTemplate()); 
 	        		if(trace.getLine()>0)qryTraces.setAt(KeyImpl.LINE,row,new Double(trace.getLine())); 
-	        		if(!StringUtil.isEmpty(trace.getAction()))qryTraces.setAt("action",row,trace.getAction()); 
-	        		if(!StringUtil.isEmpty(trace.getVarName()))qryTraces.setAt("varname",row,trace.getVarName()); 
-	        		if(!StringUtil.isEmpty(trace.getVarValue()))qryTraces.setAt("varvalue",row,trace.getVarValue()); 
+	        		if(!StringUtil.isEmpty(trace.getAction()))qryTraces.setAt(KeyConstants._action,row,trace.getAction()); 
+	        		if(!StringUtil.isEmpty(trace.getVarName()))qryTraces.setAt(KeyImpl.init("varname"),row,trace.getVarName()); 
+	        		if(!StringUtil.isEmpty(trace.getVarValue()))qryTraces.setAt(KeyImpl.init("varvalue"),row,trace.getVarValue()); 
 	        		qryTraces.setAt(KeyImpl.TIME,row,new Double(trace.getTime())); 
 	        	}
 			}
@@ -612,15 +572,6 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 			catch(PageException dbe) {}
         }
         
-        
-        
-        
-        
-        
-        
-        
-        
-		
         Query history=new QueryImpl(new String[]{},0,"history");
         try {
 			history.addColumn(KeyConstants._id, historyId);
@@ -630,7 +581,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		
 		if(addAddionalInfo) {
 			debugging.setEL(KeyConstants._cgi,pc.cgiScope());
-			debugging.setEL("starttime",starttime);
+			debugging.setEL(KeyImpl.init("starttime"),starttime);
 			
 			
 			
@@ -647,9 +598,6 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		
 		return debugging;
     }
-
-    
-    
     
 	private static Struct getUsage(QueryEntry qe) throws PageException {
 		Query qry = ((QueryEntryImpl)qe).getQry();
@@ -672,7 +620,6 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         }
         return null;
 	}
-	
 
 	private static String getUsageList(QueryEntry qe) throws PageException  {
 		Query qry = ((QueryEntryImpl)qe).getQry();
@@ -696,18 +643,14 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         return sb.toString();
 	}
 
-	/**
-	 * @see railo.runtime.debug.Debugger#addTimer(java.lang.String, long, java.lang.String)
-	 */
+	@Override
 	public DebugTimer addTimer(String label, long time, String template) {
 		DebugTimerImpl t;
 		timers.add(t=new DebugTimerImpl(label,time,template));
 		return t;
 	}
 
-	/**
-	 * @see railo.runtime.debug.Debugger#addTrace(int, java.lang.String, java.lang.String, railo.runtime.PageSource, java.lang.String)
-	 */
+	@Override
 	public DebugTrace addTrace(int type, String category, String text, PageSource page,String varName,String varValue) {
 		
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
@@ -729,6 +672,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return t;
 	}
 	
+	@Override
 	public DebugTrace addTrace(int type, String category, String text, String template,int line,String action,String varName,String varValue) {
 		
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
@@ -739,14 +683,12 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return t;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.debug.Debugger#getTraces()
-	 */
+	@Override
 	public DebugTrace[] getTraces() {
 		return traces.toArray(new DebugTrace[traces.size()]);
 	}
 	
+	@Override
 	public void addException(Config config,PageException pe) {
 		if(exceptions.size()>1000) return;
 		try {
@@ -755,9 +697,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		catch(Throwable t){}
 	}
 	
-	/**
-	 * @see railo.runtime.debug.Debugger#getExceptions()
-	 */
+	@Override
 	public CatchBlock[] getExceptions() {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}
@@ -776,11 +716,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		this.starttime=new DateTimeImpl(config);
 	}
 
-	public void getScopes() {
-		// TODO Auto-generated method stub
-		
-	}
-
+	@Override
 	public void addImplicitAccess(String scope, String name) {
 		if(implicitAccesses.size()>1000) return;
 		try {
@@ -795,8 +731,8 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		catch(Throwable t){}
 	}
 
+	@Override
 	public ImplicitAccess[] getImplicitAccesses(int scope, String name) {
 		return implicitAccesses.values().toArray(new ImplicitAccessImpl[implicitAccesses.size()]);
 	}
-
 }

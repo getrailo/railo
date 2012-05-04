@@ -39,15 +39,12 @@ public final class DebugEntryImpl implements DebugEntry {
 		id=Caster.toString(++_id);
 	}
     
-	/**
-     * @see railo.runtime.debug.DebugEntry#getExeTime()
-     */
+    @Override
 	public int getExeTime() {
 		return positiv(exeTime);
 	}
-	/**
-     * @see railo.runtime.debug.DebugEntry#updateExeTime(int)
-     */
+    
+    @Override
 	public void updateExeTime(int exeTime) {
 		if(exeTime>=0) {
             if(count==1 || min>exeTime)min=exeTime;
@@ -56,9 +53,8 @@ public final class DebugEntryImpl implements DebugEntry {
             this.exeTime += exeTime;
         }
 	}
-	/**
-     * @see railo.runtime.debug.DebugEntry#getFileLoadTime()
-     */
+    
+    @Override
 	public int getFileLoadTime() {
         return positiv(fileLoadTime);
 	}
@@ -68,31 +64,23 @@ public final class DebugEntryImpl implements DebugEntry {
         return time;
     }
 
-
-    /**
-     * @see railo.runtime.debug.DebugEntry#updateFileLoadTime(int)
-     */
+    @Override
 	public void updateFileLoadTime(int fileLoadTime) {
 		if(fileLoadTime>0)this.fileLoadTime+= fileLoadTime;
 	}
-    /**
-     * @see railo.runtime.debug.DebugEntry#updateQueryTime(int)
-     */
-    public void updateQueryTime(int queryTime) {
+    
+    @Override
+	public void updateQueryTime(int queryTime) {
         if(queryTime>0)this.queryTime+=queryTime;
     }
-    /**
-     * @see railo.runtime.debug.DebugEntry#getSrc()
-     */
-    public String getSrc() {
+    
+    @Override
+	public String getSrc() {
         return getSrc(path,key);//source.getDisplayPath()+(key==null?"":"$"+key);
     }
     
-
-    /**
-     * @see railo.runtime.debug.DebugEntry#getPath()
-     */
-    public String getPath() {
+    @Override
+	public String getPath() {
         return path;
     }
     
@@ -101,7 +89,7 @@ public final class DebugEntryImpl implements DebugEntry {
      * @param key 
      * @return Returns the src.
      */
-    public static String getSrc(String path, String key) {
+    static String getSrc(String path, String key) {
         return 
         	path
             +
@@ -115,47 +103,33 @@ public final class DebugEntryImpl implements DebugEntry {
         count++;
         
     }
-    /**
-     * @see railo.runtime.debug.DebugEntry#getCount()
-     */
-    public int getCount() {
+    
+    @Override
+	public int getCount() {
         return count;
     }
-    /**
-     * @see railo.runtime.debug.DebugEntry#getQueryTime()
-     */
-    public int getQueryTime() {
+    
+    @Override
+	public int getQueryTime() {
         return positiv(queryTime);
     }
-    /**
-     * @see railo.runtime.debug.DebugEntry#getMax()
-     */
-    public int getMax() {
+    
+    @Override
+	public int getMax() {
         return positiv(max);
     }
-    /**
-     * @see railo.runtime.debug.DebugEntry#getMin()
-     */
-    public int getMin() {
+    
+    @Override
+	public int getMin() {
         return positiv(min);
     }
-    /**
-     * @see railo.runtime.debug.DebugEntry#resetQueryTime()
-     */
-    public void resetQueryTime() {
+    
+    @Override
+	public void resetQueryTime() {
         this.queryTime=0;
     }
 
-
-    public PageSource getPageSource() {
-        throw new PageRuntimeException(new DeprecatedException("no longer supported"));
-    	//return source;
-    }
-
-
-	/**
-	 * @return the id
-	 */
+    @Override
 	public String getId() {
 		return id;
 	}

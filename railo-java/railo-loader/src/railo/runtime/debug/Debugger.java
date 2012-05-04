@@ -27,29 +27,26 @@ public interface Debugger extends Dumpable {
      * @param source
      * @return returns a single DebugEntry without a key
      */
-    public abstract DebugEntry getEntry(PageContext pc,PageSource source);
+    public DebugEntry getEntry(PageContext pc,PageSource source);
 
     /**
      * @param source
      * @param key 
      * @return returns a single DebugEntry witho a key
      */
-    public abstract DebugEntry getEntry(PageContext pc,PageSource source, String key);
+    public DebugEntry getEntry(PageContext pc,PageSource source, String key);
 
     /**
      * add new query execution time
+     * @param query 
      * @param datasource 
      * @param name
      * @param sql
      * @param recordcount
      * @param src
      * @param time 
-     * @deprecated  use <code>addQueryExecutionTime(String datasource, String name, SQL sql, int recordcount, PageSource src, int time)</code> instead
      */
-    public abstract void addQueryExecutionTime(String datasource, String name, SQL sql, int recordcount, PageSource src, int time);
-
-
-	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
+    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
     
     /**
      * sets if toHTML print html output info or not
@@ -60,38 +57,29 @@ public interface Debugger extends Dumpable {
     /**
      * @return Returns the queries.
      */
-    public abstract List getQueries();
+    public List<QueryEntry> getQueries();
 
     /**
      * @param pc
      * @throws IOException 
      */
-    public abstract void writeOut(PageContext pc) throws IOException;
-
-
-    /**
-     * returns the Debugging Info
-     * @return debugging Info
-     * @deprecated use instead <code>getDebuggingData(PageContext pc)</code>
-     */
-    public abstract Struct getDebuggingData();
-    
+    public void writeOut(PageContext pc) throws IOException;
     
     /**
      * returns the Debugging Info
      * @return debugging Info
      */
-    public abstract Struct getDebuggingData(PageContext pc);
+    public Struct getDebuggingData(PageContext pc);
     
 
-    public abstract Struct getDebuggingData(PageContext pc, boolean addAddionalInfo);
+    public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo);
 
 	/**
 	 * adds ne Timer info to debug
 	 * @param label
 	 * @param exe
 	 */
-	public abstract DebugTimer addTimer(String label, long exe, String template);
+	public DebugTimer addTimer(String label, long exe, String template);
  
 	/**
 	 * add new Trace to debug
@@ -103,9 +91,9 @@ public interface Debugger extends Dumpable {
 	 * @param varValue
 	 * @return debug trace object
 	 */
-	public abstract DebugTrace addTrace(int type, String category, String text, PageSource page, String varName, String varValue);
+	public DebugTrace addTrace(int type, String category, String text, PageSource page, String varName, String varValue);
 	
-	public abstract DebugTrace addTrace(int type, String category, String text, String template,int line,String action,String varName,String varValue);
+	public DebugTrace addTrace(int type, String category, String text, String template,int line,String action,String varName,String varValue);
 		
 
 	public abstract DebugTrace[] getTraces();
