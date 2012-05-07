@@ -40,7 +40,7 @@ public class FDUDF extends FDValueNotMutability {
 			list.add(new FDSimpleVariable(frame,"Hint",udf.getHint(),null));
 		list.add(new FDSimpleVariable(frame,"Return Type",udf.getReturnTypeAsString(),null));
 		list.add(new FDSimpleVariable(frame,"Return Format",UDFImpl.toReturnFormat(udf.getReturnFormat(),"plain"),null));
-		list.add(new FDSimpleVariable(frame,"Source",Caster.toString(((UDFImpl)udf).getPageSource().getDisplayPath()),null));
+		list.add(new FDSimpleVariable(frame,"Source",Caster.toString(udf.getPageSource().getDisplayPath()),null));
 		list.add(new FDSimpleVariable(frame,"Secure Json",Caster.toString(udf.getSecureJson(),""),null));
 		list.add(new FDSimpleVariable(frame,"Verify Client",Caster.toString(udf.getVerifyClient(),""),null));
 		

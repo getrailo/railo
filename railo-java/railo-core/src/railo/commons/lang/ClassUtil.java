@@ -117,7 +117,7 @@ public final class ClassUtil {
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
 		
 		if(cl==null){
-			ConfigImpl config = (ConfigImpl) ThreadLocalPageContext.getConfig();
+			Config config = ThreadLocalPageContext.getConfig();
 			if(config!=null)cl=config.getClassLoader();
 		}
 		
