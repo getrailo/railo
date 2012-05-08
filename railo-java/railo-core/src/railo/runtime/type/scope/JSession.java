@@ -25,6 +25,7 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
     private long timespan=-1;
     private HttpSession httpSession;
     private long lastAccess;
+	private long created;
 
     /**
      * constructor of the class
@@ -32,6 +33,7 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
     public JSession() {
         super(true,"session",SCOPE_SESSION);
         setDisplayName("Scope Session (Type J2ee)");
+        this.created=System.currentTimeMillis();
     }
 
     /**
@@ -130,4 +132,8 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
 		lastAccess=System.currentTimeMillis();
 	}
 
+	@Override
+	public long getCreated() {
+		return created;
+	}
 }

@@ -16,6 +16,9 @@ public interface Session extends Scope,SharedScope {
      * @deprecated 
      */
     public abstract long getTimeSpan();
+    
+
+	public long getCreated();
 
 
     /**
@@ -29,4 +32,5 @@ public interface Session extends Scope,SharedScope {
 	public abstract void touch();
 	
 	public int _getId();
+
 }

@@ -549,4 +549,10 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
     public int _getId() {
         return id;
     }
+    
+
+	
+	public long getCreated() {
+		return timecreated==null?0:timecreated.getTime();
+	}
 }
