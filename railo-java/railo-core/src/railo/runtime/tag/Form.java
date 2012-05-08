@@ -212,10 +212,25 @@ public final class Form extends BodyTagImpl {
     }
     /**
      * @param name The name to set.
+     * @throws ApplicationException 
      */
-    public void setName(String name) {
+    public void setName(String name) throws ApplicationException {
         this.name=name;
+        checkName(name);
     }
+    
+    private static void checkName(String name) throws ApplicationException {
+		if(name.length()==0)return;
+		int len=name.length();
+		
+		for(int pos=0;pos<len;pos++) {
+			char c=name.charAt(pos);
+			if((c>='a' && c<='z')||(c>='A' && c<='Z')||(c>='0' && c<='9')||(c=='_')||(c=='-')||(c==':')||(c=='.'))
+				continue;
+			throw new ApplicationException("value of attribute name ["+name+"] is invalid, only the following characters are allowed [a-z,A-Z,0-9,-,_,:,.]");
+		}
+	}
+    
     /**
      * @param onreset The onreset to set.
      */
