@@ -63,7 +63,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
-import railo.runtime.debug.DebugEntry;
+import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpUtil;
@@ -766,7 +766,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             
             Page currentPage = PageSourceImpl.loadPage(this, sources);
 			if(runOnce && includeOnce.contains(currentPage.getPageSource())) return;
-            DebugEntry debugEntry=debugger.getEntry(this,currentPage.getPageSource());
+            DebugEntryTemplate debugEntry=debugger.getEntry(this,currentPage.getPageSource());
             try {
                 addPageSource(currentPage.getPageSource(),true);
                 debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));

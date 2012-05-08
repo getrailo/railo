@@ -35,7 +35,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.ScriptConverter;
-import railo.runtime.debug.DebugEntry;
+import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -560,7 +560,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		
 		// debug yes
 		if(pc.getConfig().debug()) {
-		    DebugEntry debugEntry=pc.getDebugger().getEntry(pc,pageSource,udf.getFunctionName());//new DebugEntry(src,udf.getFunctionName());
+		    DebugEntryTemplate debugEntry=pc.getDebugger().getEntry(pc,pageSource,udf.getFunctionName());//new DebugEntry(src,udf.getFunctionName());
 			int currTime=pc.getExecutionTime();
 			long time=System.nanoTime();
 			

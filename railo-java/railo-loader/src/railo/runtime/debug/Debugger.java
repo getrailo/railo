@@ -7,7 +7,6 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.db.SQL;
-import railo.runtime.dump.Dumpable;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Query;
@@ -16,7 +15,7 @@ import railo.runtime.type.Struct;
 /**
  * debugger interface
  */
-public interface Debugger extends Dumpable {
+public interface Debugger {
 
     /**
      * reset the debug object
@@ -24,17 +23,29 @@ public interface Debugger extends Dumpable {
     public abstract void reset();
 
     /**
-     * @param source
-     * @return returns a single DebugEntry without a key
+     * @param pc current PagContext
+     * @param source Page Source for the entry
+     * @return returns a single DebugEntry 
      */
-    public DebugEntry getEntry(PageContext pc,PageSource source);
+    public DebugEntryTemplate getEntry(PageContext pc,PageSource source);
 
     /**
-     * @param source
+     * @param pc current PagContext
+     * @param source Page Source for the entry
      * @param key 
-     * @return returns a single DebugEntry witho a key
+     * @return returns a single DebugEntry with a key
      */
-    public DebugEntry getEntry(PageContext pc,PageSource source, String key);
+    public DebugEntryTemplate getEntry(PageContext pc,PageSource source, String key);
+    
+    /**
+     * returns a single DebugEntry for a specific postion (startPos,endPos in the PageSource)
+     * @param pc current PagContext
+     * @param source Page Source for the entry
+     * @param startPos start position in the file
+     * @param endPos end position in the file
+     * @return
+     */
+    public DebugEntryTemplatePart getEntry(PageContext pc,PageSource source, int startPos, int endPos);
 
     /**
      * add new query execution time

@@ -22,11 +22,6 @@ import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.tag.Tag;
 
 public final class ExpressionUtil {
-
-	/*public static final Method END_LINE = new Method(
-			"exeLogEndline",
-			Types.VOID,
-			new Type[]{Types.INT_VALUE});*/
 	
 	public static final Method START = new Method(
 			"exeLogStart",

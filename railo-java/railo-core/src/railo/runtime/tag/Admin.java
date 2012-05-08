@@ -70,6 +70,7 @@ import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.SecurityException;
@@ -245,8 +246,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             return SKIP_BODY;
         }
         if(action.equals("printdebug")) {
-            doPrintDebug();
-            return SKIP_BODY;
+        	throw new DeprecatedException("action [printdebug] is no longer supported, use instead [getdebugdata]");
         }
         if(action.equals("getdebugdata")) {
             doGetDebugData();
@@ -1263,17 +1263,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         sct.setEL(CONFIG, config.getConfigFile().getAbsolutePath());
         
-    }
-
-    /**
-     * 
-     */
-    private void doPrintDebug() {
-        try {
-        	DumpWriter writer = pageContext.getConfig().getDefaultDumpWriter();
-        	DumpData data = pageContext.getDebugger().toDumpData(pageContext, 9999,DumpUtil.toDumpProperties());
-            pageContext.forceWrite(writer.toString(pageContext,data,true));
-        } catch (IOException e) {}
     }
 
     /**

@@ -23,7 +23,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.debug.DebugEntry;
+import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -354,7 +354,7 @@ public class ComponentLoader {
 	
 	public static Page loadPage(PageContext pc,PageSource ps) throws PageException  {
         if(pc.getConfig().debug()) {
-            DebugEntry debugEntry=pc.getDebugger().getEntry(pc,ps);
+            DebugEntryTemplate debugEntry=pc.getDebugger().getEntry(pc,ps);
             pc.addPageSource(ps,true);
             
             int currTime=pc.getExecutionTime();
@@ -385,7 +385,7 @@ public class ComponentLoader {
 	public static ComponentImpl loadComponent(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath) throws PageException  {
         ComponentImpl rtn=null;
         if(pc.getConfig().debug()) {
-            DebugEntry debugEntry=pc.getDebugger().getEntry(pc,ps);
+            DebugEntryTemplate debugEntry=pc.getDebugger().getEntry(pc,ps);
             pc.addPageSource(ps,true);
             
             int currTime=pc.getExecutionTime();
@@ -424,7 +424,7 @@ public class ComponentLoader {
     public static InterfaceImpl loadInterface(PageContext pc,Page page, PageSource ps,String callPath, boolean isRealPath, Map interfaceUDFs) throws PageException  {
     	InterfaceImpl rtn=null;
         if(pc.getConfig().debug()) {
-            DebugEntry debugEntry=pc.getDebugger().getEntry(pc,ps);
+            DebugEntryTemplate debugEntry=pc.getDebugger().getEntry(pc,ps);
             pc.addPageSource(ps,true);
             
             int currTime=pc.getExecutionTime();
