@@ -17,38 +17,40 @@ import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
 public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
 
-	public static Collection.Key CFID=KeyImpl.getInstance("cfid");
-	public static Collection.Key CFTOKEN=KeyImpl.getInstance("cftoken");
-	public static Collection.Key URLTOKEN=KeyImpl.getInstance("urltoken");
-	public static Collection.Key LASTVISIT=KeyImpl.getInstance("lastvisit");
-	public static Collection.Key HITCOUNT=KeyImpl.getInstance("hitcount");
-	public static Collection.Key TIMECREATED=KeyImpl.getInstance("timecreated");
-	public static Collection.Key SESSION_ID=KeyImpl.getInstance("sessionid");
+	public static Collection.Key CFID=KeyConstants._cfid;
+	public static Collection.Key CFTOKEN=KeyConstants._cftoken;
+	public static Collection.Key URLTOKEN=KeyConstants._urltoken;
+	public static Collection.Key LASTVISIT=KeyConstants._lastvisit;
+	public static Collection.Key HITCOUNT=KeyConstants._hitcount;
+	public static Collection.Key TIMECREATED=KeyConstants._timecreated;
+	public static Collection.Key SESSION_ID=KeyConstants._sessionid;
 
 
 	private static int _id=0;
 	private int id=0;
 
 	private static final long serialVersionUID = 7874930250042576053L;
-	private static Set<String> FIX_KEYS=new HashSet<String>();
+	private static Set<Collection.Key> FIX_KEYS=new HashSet<Collection.Key>();
 	static {
-		FIX_KEYS.add("cfid");
-		FIX_KEYS.add("cftoken");
-		FIX_KEYS.add("urltoken");
-		FIX_KEYS.add("lastvisit");
-		FIX_KEYS.add("hitcount");
-		FIX_KEYS.add("timecreated");
+		FIX_KEYS.add(CFID);
+		FIX_KEYS.add(CFTOKEN);
+		FIX_KEYS.add(URLTOKEN);
+		FIX_KEYS.add(LASTVISIT);
+		FIX_KEYS.add(HITCOUNT);
+		FIX_KEYS.add(TIMECREATED);
 	}
 	
 
@@ -407,15 +409,15 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		return lastvisit;
 	}
 
-	public String[] pureKeys() {
-		List keys=new ArrayList();
-		Iterator it = keyIterator();
-		String key;
+	public Collection.Key[] pureKeys() {
+		List<Collection.Key> keys=new ArrayList<Collection.Key>();
+		Iterator<Key> it = keyIterator();
+		Collection.Key key;
 		while(it.hasNext()){
-			key=Caster.toString(it.next(),"").toLowerCase();
+			key=it.next();
 			if(!FIX_KEYS.contains(key))keys.add(key);
 		}
-		return (String[]) keys.toArray(new String[keys.size()]);
+		return keys.toArray(new Collection.Key[keys.size()]);
 	}
 	
 	/**

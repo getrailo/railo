@@ -150,6 +150,7 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.scope.storage.StorageScope;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -1186,24 +1187,36 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     public Session sessionScope(boolean checkExpires) throws PageException {
 		if(session==null)	{
-			if(!applicationContext.hasName())
-				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
-			if(!applicationContext.isSetSessionManagement())
-				throw new ExpressionException("session scope is not enabled","you can enable session scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
-			session=scopeContext.getSessionScope(this,DUMMY_BOOL,false);
+			checkSessionContext();
+			session=scopeContext.getSessionScope(this,DUMMY_BOOL);
 		}
 		return session;
 	}
-    
 
-    public void invalidateSession() throws PageException {
-		if(!applicationContext.hasName())
+
+
+	public void invalidateSession() throws PageException {
+		Client extClient = scopeContext.getClientScopeEL(this);
+		scopeContext.removeSessionScope(this);
+		scopeContext.removeClientScope(this);
+		session=null;
+		client=null;
+		resetIdAndToken();
+		
+		// migrate 
+		// MUST keep existing client scope
+		Client newClient = clientScope();
+		Key[] keys = extClient.pureKeys();
+		for(int i=0;i<keys.length;i++){
+			newClient.setEL(keys[i], extClient.get(keys[i], null));
+		}
+	}
+    
+    private void checkSessionContext() throws ExpressionException {
+    	if(!applicationContext.hasName())
 			throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 		if(!applicationContext.isSetSessionManagement())
 			throw new ExpressionException("session scope is not enabled","you can enable session scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
-		
-		session=scopeContext.getSessionScope(this,DUMMY_BOOL,true);
-		
 	}
 
     /**
@@ -2376,6 +2389,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
         }
     }
+    
+
+    private void resetIdAndToken() {
+        cfid=ScopeContext.getNewCFId();
+        cftoken=ScopeContext.getNewCFToken();
+        if(applicationContext.isSetClientCookies()) {
+            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+        }
+    }
+    
 
     /**
      * @see PageContext#getId()
@@ -2800,7 +2824,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
 	    	// init session
 		    if(initSession) {
-		    	scopeContext.getSessionScope(this, DUMMY_BOOL,false);// this is needed that the session scope is initilized
+		    	scopeContext.getSessionScope(this, DUMMY_BOOL);// this is needed that the session scope is initilized
 		    	listener.onSessionStart(this);
 			}
     	}

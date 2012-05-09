@@ -16,6 +16,7 @@ import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.PageContext;
 import railo.runtime.cache.CacheConnection;
@@ -433,9 +434,9 @@ public final class ScopeContext {
 	 * @return session matching the context
 	 * @throws PageException
 	 */
-	public Session getSessionScope(PageContext pc,RefBoolean isNew, boolean doNew) throws PageException {
-        if(pc.getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew,doNew);
-		return getJSessionScope(pc,isNew,doNew);
+	public Session getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
+        if(pc.getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
+		return getJSessionScope(pc,isNew);
 	}
 	
 	public boolean hasExistingSessionScope(PageContext pc) {
@@ -496,7 +497,7 @@ public final class ScopeContext {
 	 * @return cf session matching the context
 	 * @throws PageException 
 	 */
-	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew, boolean doNew) throws PageException {
+	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
 		
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
@@ -523,11 +524,6 @@ public final class ScopeContext {
 			
 			final boolean doMemory=isMemory || !appContext.getSessionCluster();
 			Session session=doMemory?appContext.getSessionCluster()?null:(Session) context.get(pc.getCFID()):null;
-			
-			if(doNew) {
-				if(session instanceof StorageScope)((StorageScope)session).unstore(pc.getConfig());
-				session=null;
-			}
 			
 			if(!(session instanceof StorageScope) || session.isExpired() || !((StorageScope)session).getStorage().equalsIgnoreCase(storage)) {
 				if(isMemory){
@@ -571,6 +567,34 @@ public final class ScopeContext {
 			return session;
 	}
 	
+	public synchronized void removeSessionScope(PageContext pc) throws PageException {
+		
+		//CFSession
+		Session sess = getCFSessionScope(pc, new RefBooleanImpl());
+		ApplicationContext appContext = pc.getApplicationContext(); 
+		Map context=getSubMap(cfSessionContextes,appContext.getName());
+		if(context!=null) {
+			context.remove(pc.getCFID());
+			if(sess instanceof StorageScope)((StorageScope)sess).unstore(pc.getConfig());
+		}
+		
+		// JSession
+		HttpSession httpSession=pc.getSession();
+        if(httpSession!=null) {
+        	httpSession.removeAttribute(appContext.getName());
+        }
+	}
+	
+	public synchronized void removeClientScope(PageContext pc) throws PageException {
+		Client cli = getClientScope(pc);
+		ApplicationContext appContext = pc.getApplicationContext(); 
+		Map context=getSubMap(cfClientContextes,appContext.getName());
+		if(context!=null) {
+			context.remove(pc.getCFID());
+			if(cli!=null)cli.unstore(pc.getConfig());
+		}
+	}
+	
 
 	public boolean remove(int type, String appName, String cfid) {
 		Map contextes = type==Scope.SCOPE_CLIENT?cfClientContextes:cfSessionContextes;
@@ -588,7 +612,7 @@ public final class ScopeContext {
 	 * @return j session matching the context
 	 * @throws PageException
 	 */
-	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew, boolean doNew) throws PageException {
+	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
         Object session=null;// this is from type object, because it is possible that httpSession return object from prior restart
@@ -604,7 +628,6 @@ public final class ScopeContext {
         	Map context=getSubMap(cfSessionContextes,appContext.getName());
         	session=context.get(pc.getCFID());
         }
-        if(doNew) session=null;
         
         JSession jSession=null;
 		if(session instanceof JSession) {
@@ -619,7 +642,7 @@ public final class ScopeContext {
             catch(ClassCastException cce) {
             	error(getLog(), cce);
             	// if there is no HTTPSession
-    			if(httpSession==null) return getCFSessionScope(pc, isNew,doNew);
+    			if(httpSession==null) return getCFSessionScope(pc, isNew);
     			
                 jSession=new JSession();
                 httpSession.setAttribute(appContext.getName(),jSession);
@@ -628,7 +651,7 @@ public final class ScopeContext {
 		}
 		else {
 			// if there is no HTTPSession
-			if(httpSession==null) return getCFSessionScope(pc, isNew,doNew);
+			if(httpSession==null) return getCFSessionScope(pc, isNew);
 			
 			info(getLog(), "create new JSession for "+appContext.getName()+"/"+pc.getCFID());
 			jSession=new JSession();
