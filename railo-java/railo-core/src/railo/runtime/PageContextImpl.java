@@ -1190,9 +1190,20 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 			if(!applicationContext.isSetSessionManagement())
 				throw new ExpressionException("session scope is not enabled","you can enable session scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
-			session=scopeContext.getSessionScope(this,DUMMY_BOOL);
+			session=scopeContext.getSessionScope(this,DUMMY_BOOL,false);
 		}
 		return session;
+	}
+    
+
+    public void invalidateSession() throws PageException {
+		if(!applicationContext.hasName())
+			throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
+		if(!applicationContext.isSetSessionManagement())
+			throw new ExpressionException("session scope is not enabled","you can enable session scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
+		
+		session=scopeContext.getSessionScope(this,DUMMY_BOOL,true);
+		
 	}
 
     /**
@@ -2789,7 +2800,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
 	    	// init session
 		    if(initSession) {
-		    	scopeContext.getSessionScope(this, DUMMY_BOOL);// this is needed that the session scope is initilized
+		    	scopeContext.getSessionScope(this, DUMMY_BOOL,false);// this is needed that the session scope is initilized
 		    	listener.onSessionStart(this);
 			}
     	}

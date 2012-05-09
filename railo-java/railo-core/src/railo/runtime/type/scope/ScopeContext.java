@@ -433,27 +433,14 @@ public final class ScopeContext {
 	 * @return session matching the context
 	 * @throws PageException
 	 */
-	public Session getSessionScope(PageContext pc,RefBoolean isNew) throws PageException {
-        if(pc.getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew);
-		return getJSessionScope(pc,isNew);
+	public Session getSessionScope(PageContext pc,RefBoolean isNew, boolean doNew) throws PageException {
+        if(pc.getSessionType()==Config.SESSION_TYPE_CFML)return getCFSessionScope(pc,isNew,doNew);
+		return getJSessionScope(pc,isNew,doNew);
 	}
 	
 	public boolean hasExistingSessionScope(PageContext pc) {
         if(pc.getSessionType()==Config.SESSION_TYPE_CFML)return hasExistingCFSessionScope(pc);
 		return hasExistingJSessionScope(pc);
-	}
-	
-	private synchronized boolean hasExistingCFSessionScopeX(PageContext pc) {
-		ApplicationContext ac= pc.getApplicationContext();
-		String storage = ac.getSessionstorage();
-		
-		Map context=getSubMap(cfSessionContextes,ac.getName());
-		Session session=(Session) context.get(pc.getCFID());
-		if(!(session instanceof StorageScope)) return false;
-		
-		
-		
-		return ((StorageScope)session).getStorage().equalsIgnoreCase(storage);
 	}
 	
 	private synchronized boolean hasExistingJSessionScope(PageContext pc) {
@@ -509,7 +496,7 @@ public final class ScopeContext {
 	 * @return cf session matching the context
 	 * @throws PageException 
 	 */
-	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
+	private synchronized Session getCFSessionScope(PageContext pc, RefBoolean isNew, boolean doNew) throws PageException {
 		
 		ApplicationContext appContext = pc.getApplicationContext(); 
 		// get Context
@@ -536,8 +523,13 @@ public final class ScopeContext {
 			
 			final boolean doMemory=isMemory || !appContext.getSessionCluster();
 			Session session=doMemory?appContext.getSessionCluster()?null:(Session) context.get(pc.getCFID()):null;
+			
+			if(doNew) {
+				if(session instanceof StorageScope)((StorageScope)session).unstore(pc.getConfig());
+				session=null;
+			}
+			
 			if(!(session instanceof StorageScope) || session.isExpired() || !((StorageScope)session).getStorage().equalsIgnoreCase(storage)) {
-				
 				if(isMemory){
 					session=SessionMemory.getInstance(pc,isNew,getLog());
 				}
@@ -596,7 +588,7 @@ public final class ScopeContext {
 	 * @return j session matching the context
 	 * @throws PageException
 	 */
-	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew) throws PageException {
+	private synchronized Session getJSessionScope(PageContext pc, RefBoolean isNew, boolean doNew) throws PageException {
         HttpSession httpSession=pc.getSession();
         ApplicationContext appContext = pc.getApplicationContext(); 
         Object session=null;// this is from type object, because it is possible that httpSession return object from prior restart
@@ -612,6 +604,8 @@ public final class ScopeContext {
         	Map context=getSubMap(cfSessionContextes,appContext.getName());
         	session=context.get(pc.getCFID());
         }
+        if(doNew) session=null;
+        
         JSession jSession=null;
 		if(session instanceof JSession) {
 			jSession=(JSession) session;
@@ -625,7 +619,7 @@ public final class ScopeContext {
             catch(ClassCastException cce) {
             	error(getLog(), cce);
             	// if there is no HTTPSession
-    			if(httpSession==null) return getCFSessionScope(pc, isNew);
+    			if(httpSession==null) return getCFSessionScope(pc, isNew,doNew);
     			
                 jSession=new JSession();
                 httpSession.setAttribute(appContext.getName(),jSession);
@@ -634,7 +628,7 @@ public final class ScopeContext {
 		}
 		else {
 			// if there is no HTTPSession
-			if(httpSession==null) return getCFSessionScope(pc, isNew);
+			if(httpSession==null) return getCFSessionScope(pc, isNew,doNew);
 			
 			info(getLog(), "create new JSession for "+appContext.getName()+"/"+pc.getCFID());
 			jSession=new JSession();

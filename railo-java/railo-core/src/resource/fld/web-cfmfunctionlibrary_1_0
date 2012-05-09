@@ -13538,6 +13538,16 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- SessionInvalidate -->
+	<function>
+		<name>SessionInvalidate</name>
+		<class>railo.runtime.functions.system.SessionInvalidate</class>
+		<description>Invalidates or cleans up the current session.</description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- setEncoding -->
 	<function>
 		<name>setEncoding</name>
