@@ -64,7 +64,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	protected StorageScopeDatasource(PageContext pc,String datasourceName, String strType,int type,Struct sct) { 
 		super(
 				sct,
-				type==SCOPE_CLIENT?doNowIfNull(pc,Caster.toDate(sct.get(TIMECREATED,null),false,pc.getTimeZone(),null)):null,
+				doNowIfNull(pc,Caster.toDate(sct.get(TIMECREATED,null),false,pc.getTimeZone(),null)),
 				doNowIfNull(pc,Caster.toDate(sct.get(LASTVISIT,null),false,pc.getTimeZone(),null)),
 				-1, 
 				type==SCOPE_CLIENT?Caster.toIntValue(sct.get(HITCOUNT,"1"),1):0,

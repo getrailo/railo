@@ -168,21 +168,22 @@ public final class ScriptConverter {
         sb.append('}');
     }
     
-    public String serializeStruct(Struct struct, Set ignoreSet) throws ConverterException {
+    public String serializeStruct(Struct struct, Set<Collection.Key> ignoreSet) throws ConverterException {
     	StringBuffer sb =new StringBuffer();
         sb.append(goIn());
         sb.append("struct(");
         boolean hasIgnores=ignoreSet!=null;
-        Iterator it=struct.keyIterator();
+        Iterator<Key> it = struct.keyIterator();
         boolean doIt=false;
         deep++;
+        Key key;
         while(it.hasNext()) {
-            String key=Caster.toString(it.next(),"");
-            if(hasIgnores && ignoreSet.contains(key.toLowerCase())) continue;
+            key = it.next();
+            if(hasIgnores && ignoreSet.contains(key)) continue;
             if(doIt)sb.append(',');
             doIt=true;
             sb.append('\'');
-            sb.append(escape(key));
+            sb.append(escape(key.getString()));
             sb.append('\'');
             sb.append(':');
             _serialize(struct.get(key,null),sb,new HashSet<Object>());

@@ -52,11 +52,11 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 	
 
-	protected static Set<String> ignoreSet=new HashSet<String>();
+	protected static Set<Collection.Key> ignoreSet=new HashSet<Collection.Key>();
 	static {
-		ignoreSet.add("cfid");
-		ignoreSet.add("cftoken");
-		ignoreSet.add("urltoken");
+		ignoreSet.add(CFID);
+		ignoreSet.add(CFTOKEN);
+		ignoreSet.add(URLTOKEN);
 	}
 	
 	
@@ -134,11 +134,18 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		
 		if(type==SCOPE_CLIENT){
 			sct.setEL(HITCOUNT, new Double(hitcount++));
-			sct.setEL(TIMECREATED, timecreated);
 		}
 		else {
 			sct.setEL(SESSION_ID, pc.getApplicationContext().getName()+"_"+pc.getCFID()+"_"+pc.getCFToken());
 		}
+		sct.setEL(TIMECREATED, timecreated);
+	}
+
+	public void resetEnv(PageContext pc){
+		_lastvisit=new DateTimeImpl(pc.getConfig());
+		timecreated=new DateTimeImpl(pc.getConfig());
+		touchBeforeRequest(pc);
+		
 	}
 	
 	void setTimeSpan(PageContext pc) {
@@ -188,10 +195,10 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	public void touchAfterRequest(PageContext pc) {
 		
 		sct.setEL(LASTVISIT, _lastvisit);
+		sct.setEL(TIMECREATED, timecreated);
 		
 		if(type==SCOPE_CLIENT){
 			sct.setEL(HITCOUNT, new Double(hitcount));
-			sct.setEL(TIMECREATED, timecreated);
 		}
 	}
 	
@@ -208,7 +215,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @return returns if the scope is empty or not, this method ignore the "constant" entries of the scope (cfid,cftoken,urltoken)
 	 */
 	public boolean hasContent() {
-		if(sct.size()==(type==SCOPE_CLIENT?6:4) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyImpl.CFTOKEN) && sct.containsKey(KeyImpl.CFID)) {
+		if(sct.size()==(type==SCOPE_CLIENT?6:5) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyImpl.CFTOKEN) && sct.containsKey(KeyImpl.CFID)) {
 			return false;
 		}
 		return true;
@@ -217,7 +224,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	/**
 	 * @see railo.runtime.type.Collection#clear()
 	 */
-	public void clear() {
+	public void  clear() {
 		sct.clear();
 	}
 

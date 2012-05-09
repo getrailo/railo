@@ -1194,22 +1194,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 
-
-	public void invalidateSession() throws PageException {
-		Client extClient = scopeContext.getClientScopeEL(this);
-		scopeContext.removeSessionScope(this);
-		scopeContext.removeClientScope(this);
-		session=null;
-		client=null;
-		resetIdAndToken();
-		
-		// migrate 
-		// MUST keep existing client scope
-		Client newClient = clientScope();
-		Key[] keys = extClient.pureKeys();
-		for(int i=0;i<keys.length;i++){
-			newClient.setEL(keys[i], extClient.get(keys[i], null));
-		}
+	public void invalidateUserScopes(boolean migrateSessionData,boolean migrateClientData) throws PageException {
+		scopeContext.invalidateUserScope(this, migrateSessionData, migrateClientData);
 	}
     
     private void checkSessionContext() throws ExpressionException {
@@ -2391,7 +2377,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }
     
 
-    private void resetIdAndToken() {
+    public void resetIdAndToken() {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
         if(applicationContext.isSetClientCookies()) {

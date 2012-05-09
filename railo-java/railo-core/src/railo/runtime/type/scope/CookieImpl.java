@@ -296,4 +296,19 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     public String enc(String str) {
     	return ReqRspUtil.encode(str,charset);
 	}
+
+
+	@Override
+	public void resetEnv(PageContext pc) {
+	}
+
+
+	@Override
+	public void touchBeforeRequest(PageContext pc) {
+	}
+
+
+	@Override
+	public void touchAfterRequest(PageContext pc) {
+	}
 }

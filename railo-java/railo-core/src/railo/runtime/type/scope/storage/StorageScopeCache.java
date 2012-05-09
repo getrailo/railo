@@ -46,7 +46,7 @@ public abstract class StorageScopeCache extends StorageScopeImpl {
 		// !!! do not store the pagecontext or config object, this object is Serializable !!!
 		super(
 				sct,
-				type==SCOPE_CLIENT?doNowIfNull(pc.getConfig(),Caster.toDate(sct.get(TIMECREATED,null),false,pc.getTimeZone(),null)):null,
+				doNowIfNull(pc.getConfig(),Caster.toDate(sct.get(TIMECREATED,null),false,pc.getTimeZone(),null)),
 				doNowIfNull(pc.getConfig(),Caster.toDate(sct.get(LASTVISIT,null),false,pc.getTimeZone(),null)),
 				-1, 
 				type==SCOPE_CLIENT?Caster.toIntValue(sct.get(HITCOUNT,"1"),1):1

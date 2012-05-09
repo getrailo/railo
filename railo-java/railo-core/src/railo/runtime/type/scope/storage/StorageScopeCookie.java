@@ -16,6 +16,7 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.ScopeContext;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * client scope that store it's data in the cookie of the client
@@ -33,12 +34,12 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 	
 	
 	static {
-		ignoreSet.add("cfid");
-		ignoreSet.add("cftoken");
-		ignoreSet.add("urltoken");
-		ignoreSet.add("lastvisit");
-		ignoreSet.add("hitcount");
-		ignoreSet.add("timecreated");
+		ignoreSet.add(KeyConstants._cfid);
+		ignoreSet.add(KeyConstants._cftoken);
+		ignoreSet.add(KeyConstants._urltoken);
+		ignoreSet.add(KeyConstants._lastvisit);
+		ignoreSet.add(KeyConstants._hitcount);
+		ignoreSet.add(KeyConstants._timecreated);
 	}
 	
 
@@ -52,7 +53,7 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 	protected StorageScopeCookie(PageContext pc,String cookieName,String strType,int type,Struct sct) {
 		super(
 				sct,
-				type==SCOPE_CLIENT?doNowIfNull(pc,Caster.toDate(sct.get(TIMECREATED,null),false,pc.getTimeZone(),null)):null,
+				doNowIfNull(pc,Caster.toDate(sct.get(TIMECREATED,null),false,pc.getTimeZone(),null)),
 				doNowIfNull(pc,Caster.toDate(sct.get(LASTVISIT,null),false,pc.getTimeZone(),null)),
 				-1,
 				type==SCOPE_CLIENT?Caster.toIntValue(sct.get(HITCOUNT,"1"),1):0,

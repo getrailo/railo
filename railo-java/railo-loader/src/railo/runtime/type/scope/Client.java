@@ -7,7 +7,7 @@ import railo.runtime.type.scope.storage.StorageScope;
 /**
  * Interface of the scope client
  */
-public interface Client extends Scope,SharedScope,StorageScope { 
+public interface Client extends Scope,UserScope,StorageScope { 
 
     
 	/**

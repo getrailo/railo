@@ -13548,6 +13548,18 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- SessionRotate -->
+	<function>
+		<name>SessionRotate</name>
+		<class>railo.runtime.functions.system.SessionRotate</class>
+		<description>
+		invalidate current session, creates a new session and migrate the data from the old session to the new.
+		</description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- setEncoding -->
 	<function>
 		<name>setEncoding</name>

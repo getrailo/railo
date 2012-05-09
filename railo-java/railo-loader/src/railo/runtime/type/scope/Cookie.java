@@ -6,7 +6,7 @@ import railo.runtime.type.Collection;
 /**
  * interface for the cookie scope
  */
-public interface Cookie extends Scope {
+public interface Cookie extends Scope, UserScope {
 
     /**
      * set a cookie value

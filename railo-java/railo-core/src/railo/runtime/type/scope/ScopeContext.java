@@ -19,6 +19,7 @@ import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -39,6 +40,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.client.ClientCache;
 import railo.runtime.type.scope.client.ClientCookie;
 import railo.runtime.type.scope.client.ClientDatasource;
@@ -952,5 +954,30 @@ public final class ScopeContext {
 		return "0";
 	}
 
+	public synchronized void invalidateUserScope(PageContextImpl pc,boolean migrateSessionData,boolean migrateClientData) throws PageException {
+		ApplicationContext appContext = pc.getApplicationContext();
+
+		// get in memory scopes
+		Map<String, Scope> clientContext = getSubMap(cfClientContextes,appContext.getName());
+		UserScope clientScope = (UserScope) clientContext.get(pc.getCFID());
+		Map<String, Scope> sessionContext = getSubMap(cfSessionContextes,appContext.getName());
+		UserScope sessionScope = (UserScope) sessionContext.get(pc.getCFID());
+		
+		// remove  Scopes completly
+		removeSessionScope(pc);
+		removeClientScope(pc);
+		
+		pc.resetIdAndToken();
+
+		_migrate(pc,clientContext,clientScope,migrateClientData);
+		_migrate(pc,sessionContext,sessionScope,migrateSessionData);
+	}
+
+	private static void _migrate(PageContextImpl pc, Map<String, Scope> context, UserScope scope, boolean migrate) {
+		if(!migrate) scope.clear();
+		scope.resetEnv(pc);
+		context.put(pc.getCFID(), scope);
+	}
+	
 
 }

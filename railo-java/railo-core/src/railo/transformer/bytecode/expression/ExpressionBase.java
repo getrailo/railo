@@ -20,9 +20,6 @@ public abstract class ExpressionBase implements Expression {
     public ExpressionBase(Position start,Position end) {
         this.start=start;
         this.end=end;
-        
-        if(start!=null && end==null)
-        	print.ds();
     }
 
 

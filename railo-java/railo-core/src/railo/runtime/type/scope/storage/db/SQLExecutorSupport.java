@@ -1,24 +1,21 @@
 package railo.runtime.type.scope.storage.db;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import railo.commons.io.log.Log;
 import railo.runtime.config.Config;
-import railo.runtime.db.DatasourceConnection;
-import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Query;
+import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public abstract class SQLExecutorSupport implements SQLExecutor {
 	
-	protected static final  Set<String> ignoreSet=new HashSet<String>();
+	protected static final  Set<Collection.Key> ignoreSet=new HashSet<Collection.Key>();
 	static {
-		ignoreSet.add("cfid");
-		ignoreSet.add("cftoken");
-		ignoreSet.add("urltoken");
+		ignoreSet.add(KeyConstants._cfid);
+		ignoreSet.add(KeyConstants._cftoken);
+		ignoreSet.add(KeyConstants._urltoken);
 	}
 
 	
