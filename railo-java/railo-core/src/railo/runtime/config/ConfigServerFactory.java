@@ -132,5 +132,12 @@ public final class ConfigServerFactory {
         Resource f = secDir.getRealResource("cacerts");
         if(!f.exists())ConfigWebFactory.createFileFromResourceEL("/resource/security/cacerts",f);
         System.setProperty("javax.net.ssl.trustStore",f.toString());
+		
+        // ESAPI
+        Resource propDir = configDir.getRealResource("properties");
+        if(!propDir.exists())propDir.mkdirs();
+        f = propDir.getRealResource("ESAPI.properties");
+        if(!f.exists())ConfigWebFactory.createFileFromResourceEL("/resource/properties/ESAPI.properties",f);
+        System.setProperty("org.owasp.esapi.resources", propDir.toString());
 	}
 }

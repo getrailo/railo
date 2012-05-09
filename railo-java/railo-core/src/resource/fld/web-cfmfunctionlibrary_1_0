@@ -5019,6 +5019,40 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- Canonicalize -->
+	<function>
+		<name>Canonicalize</name>
+		<class>railo.runtime.functions.owasp.Canonicalize</class>
+		<description>Canonicalization is simply the operation of reducing a possibly encoded string down to its simplest form. 
+		This is important, because attackers frequently use encoding to change their input in a way that will bypass validation filters, 
+		but still be interpreted properly by the target of the attack. 
+		Note that data encoded more than once is not something that a normal user would generate and should be regarded as an attack.</description>
+		<argument>
+			<name>input</name>
+			<alias>inputString</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>the input string to encode</description>
+	    </argument>
+		<argument>
+			<name>restrictMultiple</name>
+			<alias>multiple</alias>
+			<type>boolean</type>
+			<required>Yes</required>
+			<description>true if checking for multiple encoding is desired, false otherwise.</description>
+	    </argument>
+		<argument>
+			<name>restrictMixed</name>
+			<alias>mixed</alias>
+			<type>boolean</type>
+			<required>Yes</required>
+			<description>true if checking for mixed encoding is desired, false otherwise</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	
 	<!-- GetFunctionCalledName -->
 	<function>

@@ -97,7 +97,7 @@
 	<jar version="" path="xmlparserv2.jar" comment=""/>
 	<jar version="" path="org.eclipse.jdt.launching.JRE_CONTAINER" comment=""/>
 	<jar version="0.97" path="apache-commons-sanselan.jar" comment=""/>
-	<jar version="1.4.5a" path="ESAPI.jar" comment=""/>
+	<jar version="2.0.1" path="ESAPI.jar" comment=""/>
 	<jar version="3.8" path="apache-poi-ooxml-schemas.jar" comment=""/>
 	<jar version="3.8" path="apache-poi-ooxml.jar" comment=""/>
 	<jar version="3.8" path="apache-poi.jar" comment=""/>
