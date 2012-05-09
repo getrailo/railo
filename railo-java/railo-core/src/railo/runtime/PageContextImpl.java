@@ -3030,7 +3030,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public Object getThreadScope(String name,Object defaultValue) {
 		if(threads==null)threads=new StructImpl();
 		if(name.equalsIgnoreCase(CFTHREAD.getLowerString())) return threads;
-		return threads.get(name,defaultValue);
+		return threads.get(KeyImpl.init(name),defaultValue);
 	}
 
 	/**
@@ -3039,7 +3039,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void setThreadScope(String name,Threads ct) {
 		hasFamily=true;
 		if(threads==null)	threads=new StructImpl();
-		threads.setEL(name, ct);
+		threads.setEL(KeyImpl.init(name), ct);
 	}
 	
 	public void setThreadScope(Collection.Key name,Threads ct) {
