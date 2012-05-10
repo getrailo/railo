@@ -113,7 +113,7 @@ component output="false" extends="Base" accessors="true"{
 			// If Pos marker has not changed, find any non-significant text and treat as string.
 			if (Pos EQ StartPos)
 			{
-				var Match = refind( '(?:[^:"''?/]|/(?!\*))+' , Sql , Pos , true ) ;
+ 				var Match = refind( '(?:[^:"''?/]+|/(?!\*))+' , Sql , Pos , true ) ;
 				if (ArrayLen(Match.Pos) AND Match.Pos[1] EQ Pos)
 				{
 					result.add({type='String',value=Mid(Sql,Match.Pos[1],Match.Len[1])})
