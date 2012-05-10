@@ -3,6 +3,7 @@ package railo.runtime.exp;
 import java.net.URL;
 
 import railo.runtime.config.Config;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * Exception class for the HTTP Handling
@@ -26,9 +27,9 @@ public final class HTTPException extends ApplicationException {
         this.statusText=statusText;
         this.url=url;
 
-        setAdditional("statuscode", new Double(statusCode));
-		setAdditional("statustext", statusText);
-		if(url!=null)setAdditional("url", url.toExternalForm());
+        setAdditional(KeyConstants._statuscode, new Double(statusCode));
+		setAdditional(KeyConstants._statustext, statusText);
+		if(url!=null)setAdditional(KeyConstants._url, url.toExternalForm());
     }
 
 	/**

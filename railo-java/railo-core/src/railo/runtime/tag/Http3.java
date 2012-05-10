@@ -69,6 +69,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.URLResolver;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
@@ -799,7 +800,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	private PageException toPageException(Throwable t) {
 		PageException pe = Caster.toPageException(t);
 		if(pe instanceof NativeException) {
-			((NativeException) pe).setAdditional("url", url);
+			((NativeException) pe).setAdditional(KeyConstants._url, url);
 		}
 		return pe;
 	}

@@ -16,6 +16,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public class StoreGetACL extends S3Function {
 
@@ -44,7 +45,7 @@ public class StoreGetACL extends S3Function {
 		while(it.hasNext()){
 			ac=it.next();
 			arr.appendEL(sct=new StructImpl());
-			sct.setEL(KeyImpl.ID, ac.getId());
+			sct.setEL(KeyConstants._id, ac.getId());
 			sct.setEL(PERMISSION, ac.getPermission());
 			
 			type = AccessControl.toType(ac.getType());
@@ -60,7 +61,7 @@ public class StoreGetACL extends S3Function {
 	
 	private static void setGroup(Struct sct, AccessControl ac) {
 		String uri = ac.getUri();
-		sct.setEL(KeyImpl.ID, uri);
+		sct.setEL(KeyConstants._id, uri);
 		if("http://acs.amazonaws.com/groups/global/AllUsers".equalsIgnoreCase(uri))
 			sct.setEL(GROUP, "all");
 		else if("http://acs.amazonaws.com/groups/global/AuthenticatedUsers".equalsIgnoreCase(uri))

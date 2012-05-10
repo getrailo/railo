@@ -18,6 +18,8 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
@@ -1153,7 +1155,7 @@ public final class CFMLTransformer {
 			}
 		}
 		
-		pe.setAdditional("Pattern", pattern);
+		pe.setAdditional(KeyConstants._Pattern, pattern);
 		
 		// Documentation
 		StringBuilder doc=new StringBuilder(tlt.getDescription());
@@ -1180,7 +1182,7 @@ public final class CFMLTransformer {
 		if(req.length()>0)doc.append("\nRequired:\n").append(req);
 		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
 		
-		pe.setAdditional("Documentation", doc);
+		pe.setAdditional(KeyImpl.init("Documentation"), doc);
 	}
 	
 }

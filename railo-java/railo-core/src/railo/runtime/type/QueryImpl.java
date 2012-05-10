@@ -79,6 +79,7 @@ import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.QueryUtil;
 
 /**
@@ -99,14 +100,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return template;
 	}
 
-	public static final Collection.Key COLUMNS = KeyImpl.intern("COLUMNS");
-	public static final Collection.Key SQL = KeyImpl.intern("SQL");
-	public static final Collection.Key EXECUTION_TIME = KeyImpl.intern("executionTime");
-	public static final Collection.Key RECORDCOUNT = KeyImpl.intern("RECORDCOUNT");
-	public static final Collection.Key CACHED = KeyImpl.intern("cached");
-	public static final Collection.Key COLUMNLIST = KeyImpl.intern("COLUMNLIST");
-	public static final Collection.Key CURRENTROW = KeyImpl.intern("CURRENTROW");
-	public static final Collection.Key IDENTITYCOL =  KeyImpl.intern("IDENTITYCOL");
 	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
 	
 	
@@ -290,7 +283,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	
 	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
 		generatedKeys=new QueryImpl(rs,"");
-		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,IDENTITYCOL);
+		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
 	}
 	
 	/*private void setUpdateData(Statement stat, boolean createGeneratedKeys, boolean createUpdateCount)  {
@@ -452,6 +445,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @param strColumns columns for the resultset
 	 * @param rowNumber count of rows to generate (empty fields)
 	 * @param name 
+	 * @deprecated use instead <code>QueryImpl(Collection.Key[] columnKeys, int rowNumber,String name)</code>
 	 */
 	public QueryImpl(String[] strColumns, int rowNumber,String name) {
         this.name=name;
@@ -793,11 +787,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(key.getString().length()>0) {
 	        char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
 	        }
 	        else if(c=='c') {
-	            if(key.equals(CURRENTROW)) return new Double(row);
-	            else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
 	        }
 		}
         return null;
@@ -836,11 +830,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
         if(key.getString().length()>0) {
         	char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
 			}
 	        else if(c=='c') {
-			    if(key.equals(CURRENTROW)) return new Double(row);
-			    else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+			    if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
+			    else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
 			}
         }
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
@@ -895,9 +889,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
         
         QueryColumn removed = removeColumnEL(key);
         if(removed==null) {
-            if(key.equals(RECORDCOUNT) || 
-            		key.equals(CURRENTROW) || 
-            		key.equals(COLUMNLIST))
+            if(key.equals(KeyConstants._RECORDCOUNT) || 
+            		key.equals(KeyConstants._CURRENTROW) || 
+            		key.equals(KeyConstants._COLUMNLIST))
                 throw new DatabaseException("can't remove "+key+" this is not a row","existing rows are ["+getColumnlist(false)+"]",null,null,null);
             throw new DatabaseException("can't remove row ["+key+"], this row doesn't exist",
                     "existing rows are ["+getColumnlist(false)+"]",null,null,null);
@@ -1371,11 +1365,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(key.getString().length()>0) {
         	char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 	        if(c=='c') {
-	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 		}
         throw new DatabaseException("key ["+key.getString()+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
@@ -1415,11 +1409,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
         if(key.length()>0) {
         	char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 	        if(c=='c') {
-	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
         }
         return defaultValue;
@@ -1860,12 +1854,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
         }
         
         Struct sct=new StructImpl();
-        sct.setEL(KeyImpl.NAME_UC,getName());
-        sct.setEL(COLUMNS,cols);
-        sct.setEL(SQL,sql==null?"":sql.toString());
-        sct.setEL(EXECUTION_TIME,new Double(exeTime));
-        sct.setEL(RECORDCOUNT,new Double(getRowCount()));
-        sct.setEL(CACHED,Caster.toBoolean(isCached()));
+        sct.setEL(KeyConstants._NAME,getName());
+        sct.setEL(KeyConstants._COLUMNS,cols);
+        sct.setEL(KeyConstants._SQL,sql==null?"":sql.toString());
+        sct.setEL(KeyConstants._executionTime,new Double(exeTime));
+        sct.setEL(KeyConstants._RECORDCOUNT,new Double(getRowCount()));
+        sct.setEL(KeyConstants._cached,Caster.toBoolean(isCached()));
         return sct;
         
     }

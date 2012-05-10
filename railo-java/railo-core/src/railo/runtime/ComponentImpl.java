@@ -70,6 +70,7 @@ import railo.runtime.type.UDFProperties;
 import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.cfc.ComponentAccessEntryIterator;
+import railo.runtime.type.cfc.ComponentAccessValueIterator;
 import railo.runtime.type.comparator.ArrayOfStructComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.StringIterator;
@@ -79,6 +80,7 @@ import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
@@ -113,24 +115,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
 
-	private static final Key TO_DATETIME = KeyImpl.intern("_toDateTime");
-	private static final Key TO_NUMERIC = KeyImpl.intern("_toNumeric");
-	private static final Key TO_BOOLEAN = KeyImpl.intern("_toBoolean");
-	private static final Key TO_STRING = KeyImpl.intern("_toString");
 
-	private static final Key ON_MISSING_METHOD = KeyImpl.intern("onmissingmethod");
 
-	protected static final Key EXTENDS = KeyImpl.intern("extends");
-	protected static final Key IMPLEMENTS = KeyImpl.intern("implements");
-	protected static final Key FUNCTIONS = KeyImpl.intern("functions");
-	protected static final Key FULLNAME = KeyImpl.intern("fullname");
-	protected static final Key SKELETON = KeyImpl.intern("skeleton");
-	protected static final Key PROPERTIES = KeyImpl.intern("properties");
-	private static final Key MAPPED_SUPER_CLASS = KeyImpl.intern("mappedSuperClass");
-	private static final Key PERSISTENT = KeyImpl.intern("persistent");
-	private static final Key ACCESSORS = KeyImpl.intern("accessors");
-	private static final Key SYNCRONIZED = KeyImpl.intern("synchronized");
-	protected static final Key DISPLAY_NAME = KeyImpl.intern("displayname");
 	
 	public long sizeOf() {
 		return 
@@ -517,8 +503,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     
     public Object onMissingMethod(PageContext pc, int access,Member member,String name,Object _args[],Struct _namedArgs, boolean superAccess) throws PageException {
     	Member ommm = access==-1?
-    			getMember(pc,ON_MISSING_METHOD,false, superAccess):
-    			getMember(access,ON_MISSING_METHOD,false, superAccess);
+    			getMember(pc,KeyConstants._onmissingmethod,false, superAccess):
+    			getMember(access,KeyConstants._onmissingmethod,false, superAccess);
         if(ommm instanceof UDF) {
         	Argument args=new ArgumentImpl();
         	if(_args!=null) {
@@ -748,6 +734,17 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator(int access) {
 		return new ComponentAccessEntryIterator(this, keys(access),access);
+	}
+
+	@Override
+	public Iterator<Object> valueIterator(int access) {
+		return new ComponentAccessValueIterator(this,keys(access),access);
+	}
+
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return valueIterator(getAccess(ThreadLocalPageContext.get()));
 	}
 
 	@Override
@@ -1179,7 +1176,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_STRING,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toString,true,superAccess);
 			//Object o = get(pc,"_toString",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1201,7 +1198,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_STRING,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toString,true,superAccess);
 			//Object o = get(pc,"_toString",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1235,7 +1232,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_BOOLEAN,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toBoolean,true,superAccess);
 			//Object o = get(pc,"_toBoolean",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1253,7 +1250,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_BOOLEAN,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toBoolean,true,superAccess);
 			//Object o = get(pc,"_toBoolean",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1288,7 +1285,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_NUMERIC,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toNumeric,true,superAccess);
 			//Object o = get(pc,"_toNumeric",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1305,7 +1302,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_NUMERIC,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toNumeric,true,superAccess);
 			//Object o = get(pc,"_toNumeric",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1339,7 +1336,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_DATETIME,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toDateTime,true,superAccess);
 			//Object o = get(pc,"_toDateTime",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1356,7 +1353,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	// magic function
     	PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null) {
-			Member member = getMember(pc,TO_DATETIME,true,superAccess);
+			Member member = getMember(pc,KeyConstants.__toDateTime,true,superAccess);
 			//Object o = get(pc,"_toDateTime",null);
 			if(member instanceof UDF) {
 				UDF udf = (UDF)member;
@@ -1409,19 +1406,19 @@ public final class ComponentImpl extends StructSupport implements Externalizable
             
         String hint=comp.properties.hint;
         String displayname=comp.properties.dspName;
-        if(!StringUtil.isEmpty(hint))sct.set(KeyImpl.HINT,hint);
-        if(!StringUtil.isEmpty(displayname))sct.set(DISPLAY_NAME,displayname);
+        if(!StringUtil.isEmpty(hint))sct.set(KeyConstants._hint,hint);
+        if(!StringUtil.isEmpty(displayname))sct.set(KeyConstants._displayname,displayname);
         
-        sct.set(PERSISTENT,comp.properties.persistent);
-        sct.set(ACCESSORS,comp.properties.accessors);
-        sct.set(SYNCRONIZED,comp.properties._synchronized);
+        sct.set(KeyConstants._persistent,comp.properties.persistent);
+        sct.set(KeyConstants._accessors,comp.properties.accessors);
+        sct.set(KeyConstants._synchronized,comp.properties._synchronized);
         if(comp.properties.output!=null)
         sct.set(KeyImpl.OUTPUT,comp.properties.output);
             
         // extends
         Struct ex=null;
         if(comp.base!=null) ex=getMetaData(access,pc,comp.base);
-        if(ex!=null)sct.set(EXTENDS,ex);
+        if(ex!=null)sct.set(KeyConstants._extends,ex);
         
         // implements
         InterfaceCollection ic = comp.interfaceCollection;
@@ -1435,19 +1432,19 @@ public final class ComponentImpl extends StructSupport implements Externalizable
             		//print.e("-"+interfaces[i].getCallPath());
             		imp.setEL(KeyImpl.init(interfaces[i].getCallPath()), interfaces[i].getMetaData(pc));
 	            }
-	            sct.set(IMPLEMENTS,imp);
+	            sct.set(KeyConstants._implements,imp);
             }
         }
          
         // PageSource
         PageSource ps = comp.pageSource;
-        sct.set(FULLNAME,ps.getComponentName());
+        sct.set(KeyConstants._fullname,ps.getComponentName());
         sct.set(KeyImpl.NAME,ps.getComponentName());
         sct.set(KeyImpl.PATH,ps.getDisplayPath());
         sct.set(KeyImpl.TYPE,"component");
             
         Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
-        if(skeleton !=null)sct.set(SKELETON, skeleton);
+        if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
             try {
@@ -1466,7 +1463,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		parr.add(p.getMetaData());
         	}
         	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
-        	sct.set(PROPERTIES,parr);
+        	sct.set(KeyConstants._properties,parr);
         }
         page.metaData=new SoftReference<Struct>(sct);
         return page.metaData.get();
@@ -1499,7 +1496,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
             	arr.append(udf.getMetaData(pc));
             
         }
-        if(arr.size()!=0)sct.set(FUNCTIONS,arr);
+        if(arr.size()!=0)sct.set(KeyConstants._functions,arr);
 	}
     
     
@@ -1917,7 +1914,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		
 		// MappedSuperClass  
 		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
-			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(MAPPED_SUPER_CLASS,Boolean.FALSE),false);
+			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(KeyConstants._mappedSuperClass,Boolean.FALSE),false);
 			if(msc){
 				Property p;
 				Iterator<Entry<String, Property>> it = top.base.properties.properties.entrySet().iterator();

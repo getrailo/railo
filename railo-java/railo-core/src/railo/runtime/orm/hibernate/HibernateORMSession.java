@@ -113,7 +113,7 @@ public class HibernateORMSession implements ORMSession{
 			PageException pe = HibernateException.toPageException(engine, cve);
 			if(pe instanceof PageExceptionImpl && !StringUtil.isEmpty(cve.getConstraintName())) {
 				//print.o(cve.getConstraintName());
-				((PageExceptionImpl)pe).setAdditional("constraint name", cve.getConstraintName() );
+				((PageExceptionImpl)pe).setAdditional(KeyImpl.init("constraint name"), cve.getConstraintName() );
 			}
 			throw pe;
 		}

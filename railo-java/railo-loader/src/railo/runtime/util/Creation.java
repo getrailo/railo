@@ -134,8 +134,18 @@ public interface Creation {
      * @param rows
      * @param name
      * @return created query Object
+     * @deprecated usse instead <code>createQuery(Collection.Key[] columns, int rows, String name)</code>
      */
     public abstract Query createQuery(String[] columns, int rows, String name);
+    
+    /**
+     * creates a query object with given data
+     * @param columns
+     * @param rows
+     * @param name
+     * @return created query Object
+     */
+    public abstract Query createQuery(Collection.Key[] columns, int rows, String name) throws PageException;
 
     /**
 	 * creates a query object with a resultset from a sql query

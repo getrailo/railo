@@ -87,6 +87,11 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 	public Iterator<Entry<Key, Object>> entryIterator(int access) {
 		return getComponentAccess().entryIterator(access);
 	}
+
+	@Override
+	public Iterator<Object> valueIterator(int access) {
+		return getComponentAccess().valueIterator(access);
+	}
 	
 
 	/**

@@ -226,6 +226,11 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return info().entryIterator();
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return info().valueIterator();
+	}
 
 	/**
 	 * @see railo.runtime.op.Castable#castToBooleanValue()

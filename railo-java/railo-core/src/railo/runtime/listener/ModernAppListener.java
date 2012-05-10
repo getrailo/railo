@@ -42,6 +42,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 public class ModernAppListener extends AppListenerSupport {
@@ -123,7 +124,7 @@ public class ModernAppListener extends AppListenerSupport {
 		        url.removeEL(ComponentPage.METHOD);
 		        Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
 		        Object returnFormat=url.removeEL(KeyImpl.RETURN_FORMAT);
-		        Object queryFormat=url.removeEL(ComponentPage.QUERY_FORMAT);
+		        Object queryFormat=url.removeEL(KeyConstants._queryFormat);
 		        
 		        if(args==null){
 		        	args=pc.getHttpServletRequest().getAttribute("argumentCollection");

@@ -368,7 +368,9 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 data.setEL("TagContext",PageExceptionImpl.getTagContext(pc.getConfig(),thread.getStackTrace() ));
 
                 data.setEL("urlToken", pc.getURLToken());
-                data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
+                try {
+					data.setEL("debugger", pc.getDebugger().getDebuggingData(pc));
+				} catch (PageException e2) {}
 
                 try {
 					data.setEL("id", Hash.call(pc, pc.getId()+":"+pc.getStartTime()));

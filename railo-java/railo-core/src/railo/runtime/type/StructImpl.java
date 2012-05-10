@@ -208,7 +208,7 @@ public class StructImpl extends StructSupport {
 	/**
 	 * @see railo.runtime.type.Iteratorable#iterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return values().iterator();
 	}
 
@@ -229,7 +229,7 @@ public class StructImpl extends StructSupport {
 	/**
 	 * @see java.util.Map#values()
 	 */
-	public java.util.Collection values() {
+	public java.util.Collection<Object> values() {
 		return map.values();
 	}
 

@@ -43,6 +43,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.KeyConstants;
 
 
 
@@ -541,8 +542,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    long exe;
 		    
 		    setVariable(this.result, res);
-		    res.set(QueryImpl.EXECUTION_TIME,Caster.toDouble(exe=(System.nanoTime()-startNS)));
-		    res.set(QueryImpl.CACHED,Caster.toBoolean(isFromCache));
+		    res.set(KeyConstants._executionTime,Caster.toDouble(exe=(System.nanoTime()-startNS)));
+		    res.set(KeyConstants._cached,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {
 		    	pageContext.getDebugger().addQuery(null,datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);

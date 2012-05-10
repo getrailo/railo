@@ -16,6 +16,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.KeyAsStringIterator;
 
 public abstract class StructSupport implements Map,Struct,Sizeable {
 
@@ -267,13 +268,18 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return keyIterator();
 	}
 	
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new KeyAsStringIterator(keyIterator());
+    }
+	
 
-	/**
+	/* *
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	 * /
 	public Iterator valueIterator() {
 		return values().iterator();
-	}
+	}*/
 	
 	public boolean equals(Object obj){
 		if(!(obj instanceof Collection)) return false;

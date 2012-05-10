@@ -15,12 +15,15 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.StructSupport;
 
 public final class RequestImpl extends StructSupport implements Request {
@@ -89,31 +92,46 @@ public final class RequestImpl extends StructSupport implements Request {
 	
 	@Override
 	public Iterator<Collection.Key> keyIterator() {
-		return new KeyIterator(keys());
-	}
-    
-    @Override
-	public Iterator<String> keysAsStringIterator() {
-    	return new StringIterator(keys());
-    }
-	
-	@Override
-	public Iterator<Entry<Key, Object>> entryIterator() {
-		return new EntryIterator(this,keys());
+		return keyList().iterator();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
-	public Key[] keys() {
+	
+
+	private List<Key> keyList() {
 		synchronized (_req) {
 			Enumeration<String> names = _req.getAttributeNames();
 			List<Key> list=new ArrayList<Key>();
 			while(names.hasMoreElements()){
 				list.add(KeyImpl.getInstance(names.nextElement()));
 			}
-			return list.toArray(new Key[list.size()]);
+			return list;
 		}
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		synchronized (_req) {
+			Enumeration<String> names = _req.getAttributeNames();
+			List<Object> list=new ArrayList<Object>();
+			while(names.hasMoreElements()){
+				list.add(_req.getAttribute(names.nextElement()));
+			}
+			return list.iterator();
+		}
+	}
+	
+	
+	/**
+	 * @see railo.runtime.type.Collection#keys()
+	 */
+	public Key[] keys() {
+		List<Key> list = keyList();
+		return list.toArray(new Key[list.size()]);
 	}
 
 	/**

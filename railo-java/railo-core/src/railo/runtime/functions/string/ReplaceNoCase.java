@@ -3,6 +3,7 @@
  */
 package railo.runtime.functions.string;
 
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
@@ -14,9 +15,9 @@ public final class ReplaceNoCase implements Function {
 	}
 
 	public static String call(PageContext pc , String str, String sub1, String sub2, String scope) throws ExpressionException {
-		if(sub1.length()==0)
+		if(sub1.length()==0){print.ds(str+":"+sub1+":"+sub2);
 			throw new ExpressionException("the string length of Parameter 2 of function replaceNoCase which is now ["+sub1.length()+"] must be greater than 0");
-
+		}
 		//if(sub1.equals(sub2)) return str;
 		boolean doAll=scope.equalsIgnoreCase("all");
 		

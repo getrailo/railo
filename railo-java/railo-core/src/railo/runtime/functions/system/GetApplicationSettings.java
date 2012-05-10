@@ -2,6 +2,7 @@ package railo.runtime.functions.system;
 
 import java.util.Iterator;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
@@ -23,6 +24,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.KeyConstants;
 
 public class GetApplicationSettings {
 	public static Struct call(PageContext pc) {
@@ -60,7 +62,11 @@ public class GetApplicationSettings {
 		sct.setEL("clientCluster", Caster.toBoolean(ac.getClientCluster()));
 		sct.setEL("sessionCluster", Caster.toBoolean(ac.getSessionCluster()));
 		
-		
+
+		sct.setEL("invokeImplicitAccessor", Caster.toBoolean(ac.getTriggerComponentDataMember()));
+		sct.setEL("triggerDataMember", Caster.toBoolean(ac.getTriggerComponentDataMember()));
+		Resource src = ac.getSource();
+		if(src!=null)sct.setEL(KeyConstants._source,src.getAbsolutePath());
 		
 		// orm
 		if(ac.isORMEnabled()){

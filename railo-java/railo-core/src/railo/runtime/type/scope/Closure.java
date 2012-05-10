@@ -159,6 +159,11 @@ public class Closure extends StructSupport implements Variables {
 		return var.entryIterator();
 	}
 	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return var.valueIterator();
+	}
+	
 	/**
 	 * 
 	 * @see railo.runtime.type.scope.Variables#setBind(boolean)

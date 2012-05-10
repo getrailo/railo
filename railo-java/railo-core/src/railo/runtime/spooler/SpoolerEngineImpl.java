@@ -28,6 +28,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class SpoolerEngineImpl implements SpoolerEngine {
 	
@@ -281,7 +282,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			qry.setAt(KeyImpl.TYPE, row, task.getType());
 			qry.setAt(KeyImpl.NAME, row, task.subject());
 			qry.setAt(KeyImpl.DETAIL, row, task.detail());
-			qry.setAt(KeyImpl.ID, row, task.getId());
+			qry.setAt(KeyConstants._id, row, task.getId());
 
 			
 			qry.setAt(LAST_EXECUTION, row,new DateTimeImpl(task.lastExecution(),true));

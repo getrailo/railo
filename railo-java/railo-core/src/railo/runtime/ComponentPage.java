@@ -62,16 +62,8 @@ public abstract class ComponentPage extends Page  {
 	
 	private static final long serialVersionUID = -3483642653131058030L;
 	
-	public static final railo.runtime.type.Collection.Key METHOD = KeyImpl.intern("method");
-	public static final railo.runtime.type.Collection.Key QUERY_FORMAT = KeyImpl.intern("queryFormat");
-	//public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT = KeyImpl.intern("remotePersistent");
+	public static final railo.runtime.type.Collection.Key METHOD = KeyConstants._method;
 	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.intern("Id16hohohh");
-
-	//public static final short REMOTE_PERSISTENT_REQUEST = 1;
-	//public static final short REMOTE_PERSISTENT_SESSION = 2;
-	//public static final short REMOTE_PERSISTENT_APPLICATION = 4;
-	//public static final short REMOTE_PERSISTENT_SERVER = 8;
-	
 	
 	private long lastCheck=-1;
 	
@@ -378,7 +370,7 @@ public abstract class ComponentPage extends Page  {
         url.removeEL(METHOD);
         Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
         Object returnFormat=url.get(KeyImpl.RETURN_FORMAT,null);
-        Object queryFormat=url.get(QUERY_FORMAT,null);
+        Object queryFormat=url.get(KeyConstants._queryFormat,null);
         
         if(args==null){
         	args=pc.getHttpServletRequest().getAttribute("argumentCollection");

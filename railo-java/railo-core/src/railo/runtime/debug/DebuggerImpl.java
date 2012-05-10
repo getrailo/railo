@@ -218,7 +218,9 @@ public final class DebuggerImpl implements Debugger {
 		
 		Struct args=new StructImpl();
 		args.setEL(KeyConstants._custom, debugEntry.getCustom());
-		args.setEL(KeyConstants._debugging, pc.getDebugger().getDebuggingData(pc));
+		try {
+			args.setEL(KeyConstants._debugging, pc.getDebugger().getDebuggingData(pc));
+		} catch (PageException e1) {}
 		
 		try {
 			PageSource[] arr = ((PageContextImpl)pc).getPageSources(debugEntry.getPath());
@@ -238,16 +240,23 @@ public final class DebuggerImpl implements Debugger {
     }
 
 	@Override
-	public Struct getDebuggingData(PageContext pc) {
+	public Struct getDebuggingData(PageContext pc) throws DatabaseException {
     	return getDebuggingData(pc, false);
     }
     
 	@Override
-	public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo) {
+	public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo) throws DatabaseException {
 		List<QueryEntry> queries = getQueries();
 	    Struct qryExe=new StructImpl();
 	    ListIterator<QueryEntry> qryIt = queries.listIterator();
-        String[] cols = new String[]{"name","time","sql","src","count","datasource","usage"};
+        Collection.Key[] cols = new Collection.Key[]{
+        		KeyConstants._name,
+        		KeyConstants._time,
+        		KeyConstants._sql,
+        		KeyConstants._src,
+        		KeyConstants._count,
+        		KeyConstants._datasource,
+        		KeyConstants._usage};
         String[] types = new String[]{"VARCHAR","DOUBLE","VARCHAR","VARCHAR","DOUBLE","VARCHAR","ANY"};
         
         //queries
@@ -288,7 +297,17 @@ public final class DebuggerImpl implements Debugger {
         ArrayList<DebugEntryTemplate> arrPages = toArray();
 		int len=arrPages.size();
         Query qryPage=new QueryImpl(
-                new String[]{"id","count","min","max","avg","app","load","query","total","src"},
+                new Collection.Key[]{
+                		KeyConstants._id,
+                		KeyConstants._count,
+                		KeyConstants._min,
+                		KeyConstants._max,
+                		KeyConstants._avg
+                		,KeyConstants._app,
+                		KeyConstants._load,
+                		KeyConstants._query,
+                		KeyConstants._total,
+                		KeyConstants._src},
                 len,"query");
 
 		try {
@@ -323,7 +342,16 @@ public final class DebuggerImpl implements Debugger {
 		}
 		
 		Query qryPart=new QueryImpl(
-                new String[]{"id","count","min","max","avg","total","path","start","end"},
+                new Collection.Key[]{
+                		KeyConstants._id
+                		,KeyConstants._count,
+                		KeyConstants._min,
+                		KeyConstants._max,
+                		KeyConstants._avg,
+                		KeyConstants._total,
+                		KeyConstants._path,
+                		KeyConstants._start,
+                		KeyConstants._end},
                 qrySize,"query");
 		if(hasParts) {
 			row=0;
@@ -377,7 +405,7 @@ public final class DebuggerImpl implements Debugger {
 		// timers
 		len=timers==null?0:timers.size();
         Query qryTimers=new QueryImpl(
-                new String[]{"label","time","template"},
+                new Collection.Key[]{KeyConstants._label,KeyConstants._time,KeyConstants._template},
                 len,"timers");
         if(len>0) {
         	try {
@@ -398,7 +426,16 @@ public final class DebuggerImpl implements Debugger {
 		// traces
 		len=traces==null?0:traces.size();
         Query qryTraces=new QueryImpl(
-                new String[]{"type","category","text","template","line","action","varname","varvalue","time"},
+                new Collection.Key[]{
+                		KeyConstants._type,
+                		KeyConstants._category,
+                		KeyConstants._text,
+                		KeyConstants._template,
+                		KeyConstants._line,
+                		KeyConstants._action,
+                		KeyConstants._varname,
+                		KeyConstants._varvalue,
+                		KeyConstants._time},
                 len,"traces");
         if(len>0) {
         	try {
@@ -412,7 +449,7 @@ public final class DebuggerImpl implements Debugger {
 	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt(KeyConstants._category,row,trace.getCategory()); 
 	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt(KeyConstants._text,row,trace.getText()); 
 	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyImpl.TEMPLATE,row,trace.getTemplate()); 
-	        		if(trace.getLine()>0)qryTraces.setAt(KeyImpl.LINE,row,new Double(trace.getLine())); 
+	        		if(trace.getLine()>0)qryTraces.setAt(KeyConstants._line,row,new Double(trace.getLine())); 
 	        		if(!StringUtil.isEmpty(trace.getAction()))qryTraces.setAt(KeyConstants._action,row,trace.getAction()); 
 	        		if(!StringUtil.isEmpty(trace.getVarName()))qryTraces.setAt(KeyImpl.init("varname"),row,trace.getVarName()); 
 	        		if(!StringUtil.isEmpty(trace.getVarValue()))qryTraces.setAt(KeyImpl.init("varvalue"),row,trace.getVarValue()); 
@@ -427,7 +464,12 @@ public final class DebuggerImpl implements Debugger {
 		// scope access
 		len=implicitAccesses==null?0:implicitAccesses.size();
         Query qryImplicitAccesseses=new QueryImpl(
-                new String[]{"template","line","scope","count","name"},
+                new Collection.Key[]{
+                		KeyConstants._template,
+                		KeyConstants._line,
+                		KeyConstants._scope,
+                		KeyConstants._count,
+                		KeyConstants._name},
                 len,"implicitAccess");
         if(len>0) {
         	try {

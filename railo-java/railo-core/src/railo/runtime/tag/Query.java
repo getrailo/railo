@@ -39,6 +39,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.query.SimpleQuery;
+import railo.runtime.type.util.KeyConstants;
 
 
 
@@ -453,13 +454,13 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 					}
 					if(result!=null){
 						Struct sct=new StructImpl();
-						sct.setEL(QueryImpl.CACHED, Boolean.FALSE);
-						sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(System.nanoTime()-start));
-						sct.setEL(QueryImpl.SQL, sql.getSQLString());
+						sct.setEL(KeyConstants._cached, Boolean.FALSE);
+						sct.setEL(KeyConstants._executionTime, Caster.toDouble(System.nanoTime()-start));
+						sct.setEL(KeyConstants._SQL, sql.getSQLString());
 						if(Decision.isArray(obj)){
 							
 						}
-						else sct.setEL(QueryImpl.RECORDCOUNT, Caster.toDouble(1));
+						else sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(1));
 							
 						pageContext.setVariable(result, sct);
 					}
@@ -496,13 +497,13 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(result!=null) {
 			
 			Struct sct=new StructImpl();
-			sct.setEL(QueryImpl.CACHED, Caster.toBoolean(query.isCached()));
-			if(!query.isEmpty())sct.setEL(QueryImpl.COLUMNLIST, List.arrayToList(query.getColumns(),","));
+			sct.setEL(KeyConstants._cached, Caster.toBoolean(query.isCached()));
+			if(!query.isEmpty())sct.setEL(KeyConstants._COLUMNLIST, List.arrayToList(query.getColumnNamesAsString(),","));
 			int rc=query.getRecordcount();
 			if(rc==0)rc=query.getUpdateCount();
-			sct.setEL(QueryImpl.RECORDCOUNT, Caster.toDouble(rc));
-			sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(query.executionTime()));
-			sct.setEL(QueryImpl.SQL, sql.getSQLString());
+			sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(rc));
+			sct.setEL(KeyConstants._executionTime, Caster.toDouble(query.executionTime()));
+			sct.setEL(KeyConstants._SQL, sql.getSQLString());
 			
 			// GENERATED KEYS
 			railo.runtime.type.Query qi = Caster.toQuery(query,null);

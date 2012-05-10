@@ -80,10 +80,10 @@ public interface Debugger {
      * returns the Debugging Info
      * @return debugging Info
      */
-    public Struct getDebuggingData(PageContext pc);
+    public Struct getDebuggingData(PageContext pc) throws PageException;
     
 
-    public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo);
+    public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo) throws PageException;
 
 	/**
 	 * adds ne Timer info to debug

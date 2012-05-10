@@ -21,6 +21,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 
@@ -30,16 +31,7 @@ import railo.runtime.type.util.StructUtil;
  */
 public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	
-
-	public static final Key APPLICATION = KeyImpl.intern("application");
-	public static final Key CGI = KeyImpl.intern("cgi");
-	public static final Key COOKIE = KeyImpl.intern("cookie");
-	public static final Key CLIENT = KeyImpl.intern("client");
-	public static final Key CLUSTER = KeyImpl.intern("cluster");
-	public static final Key FORM = KeyImpl.intern("form");
-	public static final Key REQUEST = KeyImpl.intern("request");
-	public static final Key SESSION = KeyImpl.intern("session");
-	public static final Key URL = KeyImpl.intern("url");
+	private static final long serialVersionUID = -4185219623238374574L;
 	
 	private String name;
     private String dspName;
@@ -191,7 +183,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
     private Struct _fill(Struct parent, String name, Object value, boolean isLast, boolean scriptProteced) {
         Object curr;
         boolean isArrayDef=false;
-        Collection.Key key=KeyImpl.getInstance(name);
+        Collection.Key key=KeyImpl.init(name);
         
         // script protect
         if(scriptProteced && value instanceof String) {

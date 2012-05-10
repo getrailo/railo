@@ -266,6 +266,11 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return sct.entryIterator();
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return sct.valueIterator();
+	}
 
 	/**
 	 * @see railo.runtime.type.Collection#keys()

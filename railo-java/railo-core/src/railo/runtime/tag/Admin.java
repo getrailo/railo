@@ -159,20 +159,25 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	//private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.intern("debugTemplate");
 	private static final Collection.Key DEBUG_SHOW_QUERY_USAGE = KeyImpl.intern("debugShowQueryUsage");
 	//private static final Collection.Key STR_DEBUG_TEMPLATE = KeyImpl.intern("strdebugTemplate");
-	private static final Collection.Key TEMPLATES = KeyImpl.intern("templates");
-	private static final Collection.Key STR = KeyImpl.intern("str");
+	private static final Collection.Key TEMPLATES = KeyConstants._templates;
+	private static final Collection.Key STR = KeyConstants._str;
 	private static final Collection.Key DO_STATUS_CODE = KeyImpl.intern("doStatusCode");
-	private static final Collection.Key LABEL = KeyImpl.intern("label");
-	private static final Collection.Key HASH = KeyImpl.intern("hash");
-	private static final Collection.Key ROOT = KeyImpl.intern("root");
-	private static final Collection.Key CONFIG = KeyImpl.intern("config");
+	private static final Collection.Key LABEL = KeyConstants._label;
+	private static final Collection.Key HASH = KeyConstants._hash;
+	private static final Collection.Key ROOT = KeyConstants._root;
+	private static final Collection.Key CONFIG = KeyConstants._config;
 	private static final Collection.Key FILE_ACCESS = KeyImpl.intern("file_access");
 	private static final Collection.Key IP_RANGE = KeyImpl.intern("ipRange");
-	private static final Collection.Key CUSTOM = KeyImpl.intern("custom");
+	private static final Collection.Key CUSTOM = KeyConstants._custom;
 	private static final Collection.Key READONLY = KeyImpl.intern("readOnly");
 	private static final Collection.Key LOG_ENABLED = KeyImpl.intern("logEnabled");
-	private static final Collection.Key CLASS = KeyImpl.intern("class");
-	
+	private static final Collection.Key CLASS = KeyConstants._class;
+
+	private static final Key HAS_OWN_SEC_CONTEXT = KeyImpl.intern("hasOwnSecContext");
+	private static final Key CONFIG_FILE = KeyImpl.intern("config_file");
+	private static final Key PROCEDURE = KeyImpl.intern("procedure");
+	private static final Key SERVER_LIBRARY = KeyImpl.intern("serverlibrary");
+	private static final Key KEEP_ALIVE = KeyImpl.intern("keepalive");
 	
 	
 	
@@ -922,7 +927,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             
             railo.runtime.type.Query qry=
             	new QueryImpl(
-            			new String[]{"path","id","hash","label","hasOwnSecContext","url","config_file"},
+            			new Collection.Key[]{
+            					KeyConstants._path,
+            					KeyConstants._id,KeyConstants._hash,
+            					KeyConstants._label,
+            					HAS_OWN_SEC_CONTEXT,
+            					KeyConstants._url,
+            					CONFIG_FILE},
             			factories.length,getString("admin",action,"returnVariable"));
             pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
             
@@ -930,16 +941,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 int row=i+1;
                 CFMLFactoryImpl factory = factories[i];
                 
-                qry.setAtEL("path",row,factory.getConfigWebImpl().getServletContext().getRealPath("/"));
+                qry.setAtEL(KeyConstants._path,row,factory.getConfigWebImpl().getServletContext().getRealPath("/"));
                 
-                qry.setAtEL("config_file",row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
-                if(factory.getURL()!=null)qry.setAtEL("url",row,factory.getURL().toExternalForm());
+                qry.setAtEL(CONFIG_FILE,row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
+                if(factory.getURL()!=null)qry.setAtEL(KeyConstants._url,row,factory.getURL().toExternalForm());
                 
 
-                qry.setAtEL("id",row,factory.getConfig().getId());
-                qry.setAtEL("hash",row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
-                qry.setAtEL("label",row,factory.getLabel());
-                qry.setAtEL("hasOwnSecContext",row,Caster.toBoolean(cs.hasIndividualSecurityManager(factory.getConfig().getId())));
+                qry.setAtEL(KeyConstants._id,row,factory.getConfig().getId());
+                qry.setAtEL(KeyConstants._hash,row,SystemUtil.hash(factory.getConfigWebImpl().getServletContext()));
+                qry.setAtEL(KeyConstants._label,row,factory.getLabel());
+                qry.setAtEL(HAS_OWN_SEC_CONTEXT,row,Caster.toBoolean(cs.hasIndividualSecurityManager(factory.getConfig().getId())));
             }
         }
     }
@@ -1089,13 +1100,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	String[] list = dir.list(new PluginFilter());
     	railo.runtime.type.Query qry=
         	new QueryImpl(
-        			new String[]{"name"},
+        			new Collection.Key[]{KeyConstants._name},
         			list.length,getString("admin",action,"returnVariable"));
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
         
         for(int i=0;i<list.length;i++) {
             int row=i+1;
-            qry.setAtEL("name",row,list[i]);
+            qry.setAtEL(KeyConstants._name,row,list[i]);
         }
      }
     
@@ -1499,13 +1510,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	
     	String rtn = getString("admin",action,"returnVariable");
     	railo.runtime.type.Query qry=
-        	new QueryImpl(new Collection.Key[]{KeyImpl.ID,LABEL,IP_RANGE,READONLY,KeyImpl.TYPE,CUSTOM},entries.length,rtn);
+        	new QueryImpl(new Collection.Key[]{KeyConstants._id,LABEL,IP_RANGE,READONLY,KeyImpl.TYPE,CUSTOM},entries.length,rtn);
         pageContext.setVariable(rtn,qry);
         DebugEntry de;
         for(int i=0;i<entries.length;i++) {
             int row=i+1;
             de=entries[i];
-            qry.setAtEL(KeyImpl.ID,row,de.getId());
+            qry.setAtEL(KeyConstants._id,row,de.getId());
             qry.setAtEL(LABEL,row,de.getLabel());
             qry.setAtEL(IP_RANGE,row,de.getIpRangeAsString());
             qry.setAtEL(KeyImpl.TYPE,row,de.getType());
@@ -1596,7 +1607,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetJavaCFXTags() throws PageException {
         Map map = config.getCFXTagPool().getClasses();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","class","name","isvalid"},0,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new Collection.Key[]{
+        		KeyConstants._displayname,
+        		KeyConstants._sourcename,
+        		KeyConstants._readonly,
+        		KeyConstants._class,
+        		KeyConstants._name,
+        		KeyConstants._isvalid},0,"query");
         Iterator it = map.keySet().iterator();
         
         int row=0;
@@ -1606,12 +1623,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 row++;
                 qry.addRow(1);
                 JavaCFXTagClass jtag =(JavaCFXTagClass) tag;
-                qry.setAt("displayname",row,tag.getDisplayType());
-                qry.setAt("sourcename",row,tag.getSourceName());
-                qry.setAt("readonly",row,Caster.toBoolean(tag.isReadOnly()));
-                qry.setAt("isvalid",row,Caster.toBoolean(tag.isValid()));
-                qry.setAt("name",row,jtag.getName());
-                qry.setAt("class",row,jtag.getStrClass());
+                qry.setAt(KeyConstants._displayname,row,tag.getDisplayType());
+                qry.setAt(KeyConstants._sourcename,row,tag.getSourceName());
+                qry.setAt(KeyConstants._readonly,row,Caster.toBoolean(tag.isReadOnly()));
+                qry.setAt(KeyConstants._isvalid,row,Caster.toBoolean(tag.isValid()));
+                qry.setAt(KeyConstants._name,row,jtag.getName());
+                qry.setAt(KeyConstants._class,row,jtag.getStrClass());
             }
             
         }
@@ -1620,7 +1637,15 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
     private void doGetCPPCFXTags() throws PageException {
         Map map = config.getCFXTagPool().getClasses();
-        railo.runtime.type.Query qry=new QueryImpl(new String[]{"displayname","sourcename","readonly","procedure","name","isvalid","serverlibrary","keepalive"},0,"query");
+        railo.runtime.type.Query qry=new QueryImpl(new Collection.Key[]{
+        		KeyConstants._displayname,
+        		KeyConstants._sourcename,
+        		KeyConstants._readonly,
+        		PROCEDURE,
+        		KeyConstants._name,
+        		KeyConstants._isvalid,
+        		SERVER_LIBRARY,
+        		KEEP_ALIVE},0,"query");
         Iterator it = map.keySet().iterator();
         
         int row=0;
@@ -1630,14 +1655,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 row++;
                 qry.addRow(1);
                 CPPCFXTagClass ctag =(CPPCFXTagClass) tag;
-                qry.setAt("displayname",row,tag.getDisplayType());
-                qry.setAt("sourcename",row,tag.getSourceName());
-                qry.setAt("readonly",row,Caster.toBoolean(tag.isReadOnly()));
-                qry.setAt("isvalid",row,Caster.toBoolean(tag.isValid()));
-                qry.setAt("name",row,ctag.getName());
-                qry.setAt("procedure",row,ctag.getProcedure());
-                qry.setAt("serverlibrary",row,ctag.getServerLibrary());
-                qry.setAt("keepalive",row,Caster.toBoolean(ctag.getKeepAlive()));
+                qry.setAt(KeyConstants._displayname,row,tag.getDisplayType());
+                qry.setAt(KeyConstants._sourcename,row,tag.getSourceName());
+                qry.setAt(KeyConstants._readonly,row,Caster.toBoolean(tag.isReadOnly()));
+                qry.setAt(KeyConstants._isvalid,row,Caster.toBoolean(tag.isValid()));
+                qry.setAt(KeyConstants._name,row,ctag.getName());
+                qry.setAt(PROCEDURE,row,ctag.getProcedure());
+                qry.setAt(SERVER_LIBRARY,row,ctag.getServerLibrary());
+                qry.setAt(KEEP_ALIVE,row,Caster.toBoolean(ctag.getKeepAlive()));
             }
             
         }

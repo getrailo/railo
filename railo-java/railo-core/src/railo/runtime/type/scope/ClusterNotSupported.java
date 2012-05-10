@@ -113,6 +113,11 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return null;
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return null;
+	}
 
 	/**
 	 * @see railo.runtime.type.scope.Scope#isInitalized()

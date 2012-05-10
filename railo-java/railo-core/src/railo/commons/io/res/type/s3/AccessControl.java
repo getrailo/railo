@@ -13,6 +13,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 public class AccessControl {
 
@@ -175,7 +176,7 @@ public class AccessControl {
         }
         
         // Canonical
-        String id = Caster.toString(sct.get(KeyImpl.ID),null);
+        String id = Caster.toString(sct.get(KeyConstants._id),null);
         String displayName = Caster.toString(sct.get(StoreGetACL.DISPLAY_NAME),null);
         if(StringUtil.isEmpty(id)) 
         	throw new S3Exception("missing id for Canonical User defintion");

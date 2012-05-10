@@ -132,6 +132,11 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return new EntryIterator(this, keys());
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return parent.valueIterator();
+	}
 
     /**
      *

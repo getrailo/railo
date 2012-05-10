@@ -117,6 +117,12 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 		return null;
 	}
 
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return null;
+	}
+
 	/**
 	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */

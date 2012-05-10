@@ -39,15 +39,12 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * 
  */
 public final class SystemUtil {
-
-	private static final Collection.Key MAX = KeyImpl.intern("max");
-	private static final Collection.Key INIT = KeyImpl.intern("init");
-	private static final Collection.Key USED = KeyImpl.intern("used");
 
 	public static final int MEMORY_TYPE_ALL=0;
 	public static final int MEMORY_TYPE_HEAP=1;
@@ -686,9 +683,9 @@ public final class SystemUtil {
 		Query qry=new QueryImpl(new Collection.Key[]{
 				KeyImpl.NAME,
 				KeyImpl.TYPE,
-				USED,
-				MAX,
-				INIT
+				KeyConstants._used,
+				KeyConstants._max,
+				KeyConstants._init
 		},0,"memory");
 		
 		int row=0;
@@ -706,9 +703,9 @@ public final class SystemUtil {
 			qry.addRow();
 			qry.setAtEL(KeyImpl.NAME, row, bean.getName());
 			qry.setAtEL(KeyImpl.TYPE, row, _type.name());
-			qry.setAtEL(MAX, row, Caster.toDouble(usage.getMax()));
-			qry.setAtEL(USED, row, Caster.toDouble(usage.getUsed()));
-			qry.setAtEL(INIT, row, Caster.toDouble(usage.getInit()));
+			qry.setAtEL(KeyConstants._max, row, Caster.toDouble(usage.getMax()));
+			qry.setAtEL(KeyConstants._used, row, Caster.toDouble(usage.getUsed()));
+			qry.setAtEL(KeyConstants._init, row, Caster.toDouble(usage.getInit()));
 			
 		}
 		return qry;

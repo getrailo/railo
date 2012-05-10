@@ -1606,6 +1606,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return _info().entryIterator();
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return _info().valueIterator();
+	}
 
 	/**
 	 *

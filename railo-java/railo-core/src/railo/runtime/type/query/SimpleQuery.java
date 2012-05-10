@@ -63,6 +63,7 @@ import railo.runtime.type.it.CollectionIterator;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.QueryUtil;
 
 public class SimpleQuery implements Query, ResultSet, Objects {
@@ -293,11 +294,11 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	public Object getAt(Key key, int row, int pid, Object defaultValue) {
 		char c=key.lowerCharAt(0);
     	if(c=='r') {
-            if(key.equals(QueryImpl.RECORDCOUNT)) return new Double(getRecordcount());
+            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
         }
     	else if(c=='c') {
-            if(key.equals(QueryImpl.CURRENTROW)) return new Double(getCurrentrow(pid));
-            else if(key.equals(QueryImpl.COLUMNLIST)) return getColumnlist();
+            if(key.equals(KeyConstants._CURRENTROW)) return new Double(getCurrentrow(pid));
+            else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist();
         }
         
         SimpleQueryColumn column = columns.get(key.getLowerString());
@@ -752,11 +753,11 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		if(key.getString().length()>0) {
         	char c=key.lowerCharAt(0);
         	if(c=='r') {
-	            if(key.equals(QueryImpl.RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
         	else if(c=='c') {
-	            if(key.equals(QueryImpl.CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(QueryImpl.COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 	        SimpleQueryColumn col = columns.get(key.getLowerString());
 	        if(col!=null) return col;

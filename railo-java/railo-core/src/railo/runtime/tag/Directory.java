@@ -35,6 +35,7 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -55,11 +56,11 @@ public final class Directory extends TagImpl  {
 	public static final ResourceFilter DIRECTORY_FILTER = new DirectoryResourceFilter();
 	public static final ResourceFilter FILE_FILTER = new FileResourceFilter();
 	
-	private static final Key MODE = KeyImpl.intern("mode");
-	private static final Key META = KeyImpl.intern("meta");
-	private static final Key DATE_LAST_MODIFIED = KeyImpl.intern("dateLastModified");
-	private static final Key ATTRIBUTES = KeyImpl.intern("attributes");
-	private static final Key DIRECTORY = KeyImpl.intern("directory");
+	private static final Key MODE = KeyConstants._mode;
+	private static final Key META = KeyConstants._meta;
+	private static final Key DATE_LAST_MODIFIED = KeyConstants._dateLastModified;
+	private static final Key ATTRIBUTES = KeyConstants._attributes;
+	private static final Key DIRECTORY = KeyConstants._directory;
 	
 	
 	public static final int LIST_INFO_QUERY_ALL = 1;

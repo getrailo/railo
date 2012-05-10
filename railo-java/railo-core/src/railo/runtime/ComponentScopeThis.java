@@ -146,6 +146,11 @@ public final class ComponentScopeThis extends StructSupport implements Component
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return component.entryIterator(access);
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return component.valueIterator(access);
+	}
     
 	/**
 	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)

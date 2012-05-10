@@ -110,6 +110,11 @@ public final class CollectionStruct extends StructSupport implements ObjectWrap,
 		return coll.entryIterator();
 	}
 	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return coll.valueIterator();
+	}
+	
 
 	/**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)

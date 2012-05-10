@@ -269,8 +269,8 @@ public abstract class PageExceptionImpl extends PageException {
 			item=new StructImpl();
 			line=trace.getLineNumber();
 			item.setEL(KeyImpl.TEMPLATE,template);
-			item.setEL(KeyImpl.LINE,new Double(line));
-			item.setEL(KeyImpl.ID,"??");
+			item.setEL(KeyConstants._line,new Double(line));
+			item.setEL(KeyConstants._id,"??");
 			item.setEL(RAW_TRACE,trace.toString());
 			item.setEL(KeyImpl.TYPE,"cfml");
 			item.setEL(KeyImpl.COLUMN,new Double(0));
@@ -588,8 +588,8 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @param key
 	 * @param value
 	 */
-	public void setAdditional(String key, Object value) {
-		additional.setEL(KeyImpl.getInstance(key),StringUtil.toStringEmptyIfNull(value));
+	public void setAdditional(Collection.Key key, Object value) {
+		additional.setEL(key,StringUtil.toStringEmptyIfNull(value));
 	}
 	
 	

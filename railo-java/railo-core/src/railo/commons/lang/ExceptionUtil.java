@@ -12,6 +12,7 @@ import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.List;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public final class ExceptionUtil {
 	
@@ -47,7 +48,7 @@ public final class ExceptionUtil {
 	}
 
 	public static PageException addHint(PageExceptionImpl pe,String hint) {
-		pe.setAdditional("Hint", hint);
+		pe.setAdditional(KeyConstants._Hint, hint);
 		return pe;
 	}
 

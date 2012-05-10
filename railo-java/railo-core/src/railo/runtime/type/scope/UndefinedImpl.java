@@ -32,7 +32,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
 	private static final long serialVersionUID = -5626787508494702023L;
 
-	private static final Collection.Key QUERY = KeyImpl.intern("query");
 	private Scope[] scopes;
 	private QueryStackImpl qryStack=new QueryStackImpl();
 	private Variables variable;
@@ -290,7 +289,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		// get data from queries
 		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
 			rtn=qryStack.getColumnFromACollection(key);
-			if(rtn!=null) sct.setEL(QUERY, rtn);
+			if(rtn!=null) sct.setEL(KeyConstants._query, rtn);
 		}
 		
 		// variable
@@ -521,6 +520,11 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return variable.entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return variable.valueIterator();
 	}
 	
 	/**

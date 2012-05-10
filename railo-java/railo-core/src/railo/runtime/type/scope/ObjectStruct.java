@@ -19,6 +19,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.StructSupport;
 
 public final class ObjectStruct extends StructSupport implements Struct,Objects {
@@ -243,6 +244,11 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return new EntryIterator(this,keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
 	}
 
 	/**

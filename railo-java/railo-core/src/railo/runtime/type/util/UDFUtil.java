@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import railo.runtime.exp.PageExceptionImpl;
+import railo.runtime.type.KeyImpl;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -40,7 +41,7 @@ public class UDFUtil {
 		pattern.append("):");
 		pattern.append(flf.getReturnTypeAsString());
 		
-		pe.setAdditional("Pattern", pattern);
+		pe.setAdditional(KeyConstants._Pattern, pattern);
 		
 		// Documentation
 		StringBuilder doc=new StringBuilder(flf.getDescription());
@@ -67,7 +68,7 @@ public class UDFUtil {
 		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
 		
 		
-		pe.setAdditional("Documentation", doc);
+		pe.setAdditional(KeyImpl.init("Documentation"), doc);
 		
 	}
 

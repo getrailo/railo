@@ -2785,15 +2785,15 @@ public final class Caster {
         if(o instanceof Query) {
             if(duplicate) {
                 Query src = (Query)o;
-                Query trg=new QueryImpl(src.getColumns(),src.getRowCount(),"query");
+                Query trg=new QueryImpl(src.getColumnNames(),src.getRowCount(),"query");
 
-                String[] keys=src.getColumns();
+                Collection.Key[] keys=src.getColumnNames();
                 QueryColumn[] columnsSrc=new QueryColumn[keys.length];
                 for(int i=0;i<columnsSrc.length;i++) {
                     columnsSrc[i]=src.getColumn(keys[i]);
                 }
 
-                keys=trg.getColumns();
+                keys=trg.getColumnNames();
                 QueryColumn[] columnsTrg=new QueryColumn[keys.length];
                 for(int i=0;i<columnsTrg.length;i++) {
                     columnsTrg[i]=trg.getColumn(keys[i]);

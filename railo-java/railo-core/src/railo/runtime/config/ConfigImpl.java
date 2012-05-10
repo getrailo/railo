@@ -106,6 +106,7 @@ import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
@@ -2550,7 +2551,7 @@ public abstract class ConfigImpl implements Config {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
 		DatabaseException de = new DatabaseException("datasource ["+datasource+"] doesn't exist",null,null,null);
-		de.setAdditional("Datasource",datasource);
+		de.setAdditional(KeyConstants._Datasource,datasource);
 		throw de;
 	}
 	

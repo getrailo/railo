@@ -164,6 +164,11 @@ public class PDFDocument extends StructSupport implements Struct {
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return getInfo().entryIterator();
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return getInfo().valueIterator();
+	}
 
 	/**
 	 * @see railo.runtime.op.Castable#castToBooleanValue()

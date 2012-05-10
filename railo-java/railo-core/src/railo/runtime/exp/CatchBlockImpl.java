@@ -26,12 +26,13 @@ import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Objects{
 	
-	public static final Key MESSAGE = KeyImpl.intern("Message");
-	public static final Key DETAIL = KeyImpl.intern("Detail");
+	public static final Key MESSAGE = KeyConstants._Message;
+	public static final Key DETAIL = KeyConstants._Detail;
 	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
 	public static final Key EXTENDEDINFO = KeyImpl.intern("ExtendedInfo");
 	public static final Key EXTENDED_INFO = KeyImpl.intern("Extended_Info");

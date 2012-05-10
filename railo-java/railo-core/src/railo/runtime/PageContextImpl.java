@@ -151,6 +151,7 @@ import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.scope.storage.StorageScope;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -165,11 +166,6 @@ import railo.runtime.writer.DevNullBodyContent;
 public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	private static final RefBoolean DUMMY_BOOL = new RefBooleanImpl(false);
-	private static final Key CFCATCH = KeyImpl.intern("cfcatch");
-	private static final Key CATCH = KeyImpl.intern("catch");
-	private static final Key CFTHREAD = KeyImpl.intern("cfthread");
-	private static final Key ERROR = KeyImpl.intern("error");
-	private static final Key CFERROR = KeyImpl.intern("cferror");
 	
 	private static int counter=0;
 	
@@ -1823,8 +1819,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			if(ep!=null) {
 				try {
 					Struct sct=pe.getErrorBlock(this,ep);
-					variablesScope().setEL(ERROR,sct);
-					variablesScope().setEL(CFERROR,sct);
+					variablesScope().setEL(KeyConstants._error,sct);
+					variablesScope().setEL(KeyConstants._cferror,sct);
 					
 					doInclude(ep.getTemplate());
 					return;
@@ -1874,8 +1870,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				if(!StringUtil.isEmpty(template)) {
 					try {
 						Struct catchBlock=pe.getCatchBlock(this);
-						variablesScope().setEL(CFCATCH,catchBlock);
-						variablesScope().setEL(CATCH,catchBlock);
+						variablesScope().setEL(KeyConstants._cfcatch,catchBlock);
+						variablesScope().setEL(KeyConstants._catch,catchBlock);
 						doInclude(template);
 					    return;
 			        } 
@@ -2371,8 +2367,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         if(setCookie && applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
-            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
         }
     }
     
@@ -2381,8 +2377,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
         if(applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
-            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
         }
     }
     
@@ -2625,11 +2621,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public PageException setCatch(Throwable t) {
     	if(t==null) {
     		exception=null;
-    		undefinedScope().removeEL(CFCATCH);
+    		undefinedScope().removeEL(KeyConstants._cfcatch);
     	}
     	else {
     		exception = Caster.toPageException(t);
-    		undefinedScope().setEL(CFCATCH,exception.getCatchBlock(config));
+    		undefinedScope().setEL(KeyConstants._cfcatch,exception.getCatchBlock(config));
     		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
     	}
     	return exception;
@@ -2638,10 +2634,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public void setCatch(PageException pe) {
     	exception = pe;
     	if(pe==null) {
-    		undefinedScope().removeEL(CFCATCH);
+    		undefinedScope().removeEL(KeyConstants._cfcatch);
     	}
     	else {
-    		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(config));
+    		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
     		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
     	}
     }
@@ -2653,10 +2649,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	exception = pe;
     	if(store){
 	    	if(pe==null) {
-	    		undefinedScope().removeEL(CFCATCH);
+	    		undefinedScope().removeEL(KeyConstants._cfcatch);
 	    	}
 	    	else {
-	    		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(config));
+	    		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
 	    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
 	    	}
     	}
@@ -2674,7 +2670,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void clearCatch() {
         exception = null;
-    	undefinedScope().removeEL(CFCATCH);
+    	undefinedScope().removeEL(KeyConstants._cfcatch);
     }
 
     /**
@@ -3009,13 +3005,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	public Object getThreadScope(Collection.Key name,Object defaultValue) {
 		if(threads==null)threads=new StructImpl();
-		if(name.equalsIgnoreCase(CFTHREAD)) return threads;
+		if(name.equalsIgnoreCase(KeyConstants._cfthread)) return threads;
 		return threads.get(name,defaultValue);
 	}
 	
 	public Object getThreadScope(String name,Object defaultValue) {
 		if(threads==null)threads=new StructImpl();
-		if(name.equalsIgnoreCase(CFTHREAD.getLowerString())) return threads;
+		if(name.equalsIgnoreCase(KeyConstants._cfthread.getLowerString())) return threads;
 		return threads.get(KeyImpl.init(name),defaultValue);
 	}
 

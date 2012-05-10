@@ -6,6 +6,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
 
+import railo.print;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.CasterException;
@@ -26,7 +27,6 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public static final Key CFID=KeyConstants._cfid;
 	public static final Key CFTOKEN=KeyConstants._cftoken;
 	public static final Key DETAIL=KeyConstants._detail;
-	public static final Key ID=KeyConstants._id;
 	public static final Key RETURN_FORMAT =KeyConstants._returnFormat;
 	public static final Key NAME=KeyConstants._name;
 	public static final Key NAME_UC=KeyConstants._NAME;
@@ -59,7 +59,6 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public static final Key PATH = KeyConstants._path;
 	public static final Key ENTRY = KeyConstants._entry;
 	public static final Key KEY = KeyConstants._key;
-	public static final Key LINE = KeyConstants._line;
 	public static final Key COLUMN = KeyConstants._column;
 	public static final Key ARGUMENTS = KeyConstants._arguments;
 	public static final Key STATUS = KeyConstants._status;
@@ -148,17 +147,24 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	}
 	
 
+	public static Collection.Key _const(String key) {
+		return new KeyImpl(key);
+	}
+	
+
 	/**
 	 * used for static iniatisation of a key object (used by compiler)
 	 * @param string
 	 * @return
 	 */
 	public synchronized static Collection.Key getInstance(String key) {
+		if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
 
 	public synchronized static Collection.Key intern(String key) {
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		/*Long l= keys.get(key);
 		String st=ExceptionUtil.getStacktrace(new Exception("Stack trace"), false);
 		String[] arr = railo.runtime.type.List.listToStringArray(st,'\n');

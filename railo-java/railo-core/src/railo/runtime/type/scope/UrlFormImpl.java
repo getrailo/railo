@@ -164,6 +164,11 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return form.entryIterator();
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return form.valueIterator();
+	}
 
 	@Override
 	public Collection.Key[] keys() {

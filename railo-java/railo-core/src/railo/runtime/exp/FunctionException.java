@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -58,7 +59,7 @@ public final class FunctionException extends ExpressionException {
 
 	public FunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message) {
         super("invalid call of the function "+functionName+", "+(badArgumentPosition)+" Argument ("+badArgumentName+") is invalid, "+message);
-        setAdditional("pattern",getFunctionInfo(pc,functionName));
+        setAdditional(KeyConstants._pattern,getFunctionInfo(pc,functionName));
     }
     
 	private static String getFunctionInfo(PageContext pc,String functionName) {

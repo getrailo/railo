@@ -25,6 +25,7 @@ import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletRequestDummy;
@@ -35,6 +36,7 @@ import railo.runtime.spooler.remote.RemoteClientTask;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -106,10 +108,13 @@ public final class CreationImpl implements Creation {
         return new StructImpl(type);
     }
 
-    /**
-     * @see railo.runtime.util.Creation#createQuery(java.lang.String[], int, java.lang.String)
-     */
+    @Override
     public Query createQuery(String[] columns, int rows, String name) {
+        return new QueryImpl(columns,rows,name);
+    }
+
+    @Override
+    public Query createQuery(Collection.Key[] columns, int rows, String name) throws DatabaseException {
         return new QueryImpl(columns,rows,name);
     }
     
