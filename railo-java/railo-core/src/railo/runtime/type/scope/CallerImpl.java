@@ -281,6 +281,11 @@ public final class CallerImpl extends StructSupport implements Caller  {
 	public Iterator<Entry<Key, Object>> entryIterator() {
 		return variablesScope.entryIterator();
 	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return variablesScope.valueIterator();
+	}
     
     /**
      * @see railo.runtime.type.Collection#duplicate(boolean)
