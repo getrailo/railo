@@ -53,11 +53,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private short sessionType;
     private boolean sessionCluster;
     private boolean clientCluster;
-
-
-
-
 	private Resource source;
+	private boolean triggerComponentDataMember;
 
     
     /**
@@ -65,24 +62,24 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
      * @param config
      */
     public ClassicApplicationContext(Config config,String name,boolean isDefault, Resource source) {
-    	ConfigImpl ci = ((ConfigImpl)config);
     	this.name=name;
     	setClientCookies=config.isClientCookies();
         setDomainCookies=config.isDomainCookies();
         setSessionManagement=config.isSessionManagement();
         setClientManagement=config.isClientManagement();
         sessionTimeout=config.getSessionTimeout();
-        clientTimeout=ci.getClientTimeout();
+        clientTimeout=config.getClientTimeout();
         applicationTimeout=config.getApplicationTimeout();
         loginStorage=Scope.SCOPE_COOKIE;
         scriptProtect=config.getScriptProtect();
         this.isDefault=isDefault;
-        this.defaultDataSource=ci.getDefaultDataSource();
+        this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
         this.sessionType=config.getSessionType();
-        this.sessionCluster=ci.getSessionCluster();
-        this.clientCluster=ci.getClientCluster();
+        this.sessionCluster=config.getSessionCluster();
+        this.clientCluster=config.getClientCluster();
         this.source=source;
+        this.triggerComponentDataMember=config.getTriggerComponentDataMember();
     }
     
     /**
@@ -121,6 +118,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.idletimeout=idletimeout;
 		dbl.localMode=localMode;
 		dbl.sessionType=sessionType;
+		dbl.triggerComponentDataMember=triggerComponentDataMember;
 		
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
@@ -471,5 +469,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public Resource getSource() {
 		return source;
+	}
+
+	@Override
+	public boolean getTriggerComponentDataMember() {
+		return triggerComponentDataMember;
+	}
+
+	@Override
+	public void setTriggerComponentDataMember(boolean triggerComponentDataMember) {
+		this.triggerComponentDataMember=triggerComponentDataMember;
 	}
 }

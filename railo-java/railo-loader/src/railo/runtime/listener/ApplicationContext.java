@@ -155,4 +155,9 @@ public interface ApplicationContext extends Serializable {
 	public void reinitORM(PageContext pc) throws PageException ;
 
 	public Resource getSource(); 
+	
+
+
+	public boolean getTriggerComponentDataMember();
+	public abstract void setTriggerComponentDataMember(boolean triggerComponentDataMember);
 }

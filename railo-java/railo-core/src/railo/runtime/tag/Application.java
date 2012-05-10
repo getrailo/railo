@@ -62,6 +62,8 @@ public final class Application extends TagImpl {
 	private Struct ormsettings;
 	private Struct s3;
 	
+	private Boolean triggerDataMember=null;
+	
      
     /**
      * @see javax.servlet.jsp.tagext.Tag#release()
@@ -97,6 +99,8 @@ public final class Application extends TagImpl {
         ormsettings=null;
         s3=null;
         //appContext=null;
+        
+        triggerDataMember=null;
     }
     
     /** set the value setclientcookies
@@ -190,6 +194,12 @@ public final class Application extends TagImpl {
 	}
 	
 
+	public void setTriggerdatamember(boolean triggerDataMember)	{
+		this.triggerDataMember=triggerDataMember?Boolean.TRUE:Boolean.FALSE;
+	}
+	public void setInvokeimplicitaccessor(boolean invokeimplicitaccessor)	{
+		setTriggerdatamember(invokeimplicitaccessor);
+	}
 
 	/**
 	 * @param ormenabled the ormenabled to set
@@ -333,6 +343,7 @@ public final class Application extends TagImpl {
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
+		if(triggerDataMember!=null) 					ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));

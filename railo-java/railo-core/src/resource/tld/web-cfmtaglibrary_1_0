@@ -498,6 +498,28 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 - host(default:"s3.amazonaws.com"): hostname of the service
 </description>
 		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>triggerDataMember</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If there is no accessible data member (property, element of the this scope) inside a component, 
+			Railo searches for available matching &amp;quot;getters&amp;quot; or &amp;quot;setters&amp;quot; for the requested property. 
+			The following example should clarify this behaviour. 
+			&amp;quot;somevar = myComponent.properyName&amp;quot;. 
+			If &amp;quot;myComponent&amp;quot; has no accessible data member named &amp;quot;propertyName&amp;quot;, 
+			Railo searches for a function member (method) named &amp;quot;getPropertyName&amp;quot;.</description>
+		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>InvokeImplicitAccessor</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for triggerDataMember</description>
+		</attribute>
+		
 	</tag>
 	<!-- Argument -->
 	<tag>

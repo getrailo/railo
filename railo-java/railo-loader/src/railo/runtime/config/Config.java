@@ -113,6 +113,7 @@ public interface Config {
 	
 	public short getInspectTemplate();
     
+	public String getDefaultDataSource();
 
     /**
      * return how railo cascade scopes
@@ -148,17 +149,22 @@ public interface Config {
     
 
     /**
-     * @return Returns the applicationTimeout.
+     * @return Returns the application Timeout.
      */
     public abstract TimeSpan getApplicationTimeout();
 
     /**
-     * @return Returns the sessionTimeout.
+     * @return Returns the session Timeout.
      */
     public abstract TimeSpan getSessionTimeout();
+    
+    /**
+     * @return Returns the client Timeout.
+     */
+    public TimeSpan getClientTimeout();
 
     /**
-     * @return Returns the requestTimeout.
+     * @return Returns the request Timeout.
      */
     public abstract TimeSpan getRequestTimeout();
 
@@ -734,5 +740,9 @@ public interface Config {
 	public Class getVideoExecuterClass();
 	
 	public ThreadQueue getThreadQueue();
+	
+	public boolean getSessionCluster();
+
+	public boolean getClientCluster();
 	
 }

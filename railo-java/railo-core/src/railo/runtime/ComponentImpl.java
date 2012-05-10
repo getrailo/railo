@@ -102,7 +102,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     
     // for all the same
     private int dataMemberDefaultAccess;
-	private boolean triggerDataMember;
+	private Boolean _triggerDataMember;
     	
 	// state control of component
 	boolean isInit=false;
@@ -138,7 +138,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			SizeOf.size(_data)+
 			SizeOf.size(scope)+
 			SizeOf.size(dataMemberDefaultAccess)+
-			SizeOf.size(triggerDataMember)+
 			SizeOf.size(false)+
 			SizeOf.size(interfaceCollection)+
 			SizeOf.size(useShadow)+
@@ -219,7 +218,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	try{
 			// attributes
 	    	trg.pageSource=pageSource;
-	        trg.triggerDataMember=triggerDataMember;
+	        trg._triggerDataMember=_triggerDataMember;
 	        trg.useShadow=useShadow;
 	        trg.afterConstructor=afterConstructor;
 	        trg.dataMemberDefaultAccess=dataMemberDefaultAccess;
@@ -380,14 +379,14 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	
 	    if(base!=null){
 	    	this.dataMemberDefaultAccess=base.dataMemberDefaultAccess;
-	    	this.triggerDataMember=base.triggerDataMember;
+	    	this._triggerDataMember=base._triggerDataMember;
 	    	_data=base._data;
 	    	_udfs=new HashMap<Key,UDF>(base._udfs);
 	    	setTop(this,base);
 	    }
 	    else {
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
-	    	this.triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
+	    	// TODO get per CFC setting this._triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
 		    _udfs=new HashMap<Key,UDF>();
 		    _data=new HashMap<Key,Member>();
 	    }
@@ -1599,9 +1598,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
      */
     public Object set(PageContext pc, Collection.Key key, Object value) throws PageException {
-    	if(triggerDataMember && isInit) {
-    		if(pc==null)pc=ThreadLocalPageContext.get();
-        	
+    	if(pc==null)pc=ThreadLocalPageContext.get();
+    	if(triggerDataMember(pc) && isInit) {
     		if(!isPrivate(pc)) {
         		return callSetter(pc, key, value);
         	}
@@ -1652,7 +1650,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(member!=null) return member.getValue();
         
         // trigger
-        if(triggerDataMember && !isPrivate(pc)) {
+        if(triggerDataMember(pc) && !isPrivate(pc)) {
         	return callGetter(pc,key);
         }
         throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
@@ -1713,8 +1711,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(member!=null) return member.getValue();
         
         // Trigger
-        if(triggerDataMember && !isPrivate(ThreadLocalPageContext.get())) {
-        	return callGetter(ThreadLocalPageContext.get(),key);
+        PageContext pc = ThreadLocalPageContext.get();
+        if(triggerDataMember(pc) && !isPrivate(pc)) {
+        	return callGetter(pc,key);
         }
         throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
     }
@@ -1734,7 +1733,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(member!=null) return member.getValue();
         
         // trigger
-        if(triggerDataMember && !isPrivate(pc)) {
+        if(triggerDataMember(pc) && !isPrivate(pc)) {
         	return callGetter(pc,key,defaultValue);
         }
         return defaultValue;
@@ -1761,8 +1760,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(member!=null) return member.getValue();
         
         // trigger
-        if(triggerDataMember && !isPrivate(ThreadLocalPageContext.get())) {
-        	return callGetter(ThreadLocalPageContext.get(),key,defaultValue);
+        PageContext pc = ThreadLocalPageContext.get();
+        if(triggerDataMember(pc) && !isPrivate(pc)) {
+        	return callGetter(pc,key,defaultValue);
         }
         return defaultValue;
     }
@@ -2032,7 +2032,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			this.properties=other.properties;
 			this.scope=other.scope;
 			this.top=this;
-			this.triggerDataMember=other.triggerDataMember;
+			this._triggerDataMember=other._triggerDataMember;
 			this.useShadow=other.useShadow;
 			
 			
@@ -2070,5 +2070,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	 */
 	public ComponentAccess _base() {
 		return base;
-	}		
+	}	
+	
+
+
+	private boolean triggerDataMember(PageContext pc) {
+		if(_triggerDataMember!=null) return _triggerDataMember.booleanValue();
+		return pc.getApplicationContext().getTriggerComponentDataMember();
+	}
 }

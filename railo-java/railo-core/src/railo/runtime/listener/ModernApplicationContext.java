@@ -7,7 +7,7 @@ import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
-import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
@@ -22,14 +22,6 @@ import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 
-/**
- * @author mic
- *
- */
-/**
- * @author mic
- *
- */
 public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private static final long serialVersionUID = -8230105685329758613L;
@@ -40,6 +32,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SESSION_STORAGE = KeyImpl.intern("sessionStorage");
 	private static final Collection.Key LOGIN_STORAGE = KeyImpl.intern("loginStorage");
 	private static final Collection.Key SESSION_TYPE = KeyImpl.intern("sessionType");
+	private static final Collection.Key TRIGGER_DATA_MEMBER = KeyImpl.intern("triggerDataMember");
+	private static final Collection.Key INVOKE_IMPLICIT_ACCESSOR = KeyImpl.intern("InvokeImplicitAccessor");
 	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.intern("sessionManagement");
 	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.intern("sessionTimeout");
 	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.intern("clientTimeout");
@@ -62,7 +56,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 	
 	private ComponentAccess component;
-	private ConfigWebImpl ci;
+	private ConfigWeb config;
 
 	private String name=null;
 	
@@ -90,6 +84,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private Mapping[] ctmappings;
 	private Mapping[] cmappings;
 	private Properties s3;
+	private boolean triggerComponentDataMember;
 	
 	private boolean initApplicationTimeout;
 	private boolean initSessionTimeout;
@@ -107,6 +102,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initClientCluster;
 	private boolean initLoginStorage;
 	private boolean initSessionType;
+	private boolean initTriggerComponentDataMember;
 	private boolean initMappings;
 	private boolean initCTMappings;
 	private boolean initCMappings;
@@ -117,20 +113,21 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private String ormDatasource;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
-		ci = ((ConfigWebImpl)pc.getConfig());
-    	setClientCookies=ci.isClientCookies();
-        setDomainCookies=ci.isDomainCookies();
-        setSessionManagement=ci.isSessionManagement();
-        setClientManagement=ci.isClientManagement();
-        sessionTimeout=ci.getSessionTimeout();
-        clientTimeout=ci.getClientTimeout();
-        applicationTimeout=ci.getApplicationTimeout();
-        scriptProtect=ci.getScriptProtect();
-        this.defaultDataSource=ci.getDefaultDataSource();
-        this.localMode=ci.getLocalMode();
-        this.sessionType=ci.getSessionType();
-        this.sessionCluster=ci.getSessionCluster();
-        this.clientCluster=ci.getClientCluster();
+		config = pc.getConfig();
+    	setClientCookies=config.isClientCookies();
+        setDomainCookies=config.isDomainCookies();
+        setSessionManagement=config.isSessionManagement();
+        setClientManagement=config.isClientManagement();
+        sessionTimeout=config.getSessionTimeout();
+        clientTimeout=config.getClientTimeout();
+        applicationTimeout=config.getApplicationTimeout();
+        scriptProtect=config.getScriptProtect();
+        this.defaultDataSource=config.getDefaultDataSource();
+        this.localMode=config.getLocalMode();
+        this.sessionType=config.getSessionType();
+        this.sessionCluster=config.getSessionCluster();
+        this.clientCluster=config.getClientCluster();
+        this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         
         
         
@@ -407,6 +404,36 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 		return sessionType;
 	}
+	
+
+
+
+
+	@Override
+	public boolean getTriggerComponentDataMember() {
+		if(!initTriggerComponentDataMember) {
+			Boolean b=null;
+			Object o = get(component,INVOKE_IMPLICIT_ACCESSOR,null);
+			if(o==null)o = get(component,TRIGGER_DATA_MEMBER,null);
+			if(o!=null){ 
+				b=Caster.toBoolean(o,null);
+				if(b!=null)triggerComponentDataMember=b.booleanValue();
+			}
+			initTriggerComponentDataMember=true; 
+		}
+		return triggerComponentDataMember;
+	}
+
+
+
+	@Override
+	public void setTriggerComponentDataMember(boolean triggerComponentDataMember) {
+		initTriggerComponentDataMember=true;
+		this.triggerComponentDataMember=triggerComponentDataMember;
+	}
+	
+	
+	
 
 	/**
 	 * @see railo.runtime.util.ApplicationContext#getMappings()
@@ -414,7 +441,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getMappings() {
 		if(!initMappings) {
 			Object o = get(component,MAPPINGS,null);
-			if(o!=null)mappings=AppListenerUtil.toMappings(ci,o,mappings);
+			if(o!=null)mappings=AppListenerUtil.toMappings(config,o,mappings);
 			initMappings=true; 
 		}
 		return mappings;
@@ -426,7 +453,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getCustomTagMappings() {
 		if(!initCTMappings) {
 			Object o = get(component,CUSTOM_TAG_PATHS,null);
-			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(ci,o,ctmappings);
+			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,ctmappings);
 			initCTMappings=true; 
 		}
 		return ctmappings;
@@ -438,7 +465,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
-			if(o!=null)cmappings=AppListenerUtil.toCustomTagMappings(ci,o,cmappings);
+			if(o!=null)cmappings=AppListenerUtil.toCustomTagMappings(config,o,cmappings);
 			initCMappings=true; 
 		}
 		return cmappings;
