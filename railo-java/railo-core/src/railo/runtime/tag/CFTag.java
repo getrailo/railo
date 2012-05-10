@@ -107,10 +107,13 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         //thistagScope = new StructImpl();
     }
 
-    /**
-     * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
-     */
+    @Override
     public void setDynamicAttribute(String uri, String name, Object value) {
+    	TagUtil.setDynamicAttribute(attributesScope,KeyImpl.init(name),value,TagUtil.UPPER_CASE);
+    }
+
+    @Override
+    public void setDynamicAttribute(String uri, Collection.Key name, Object value) {
     	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.UPPER_CASE);
     }
 

@@ -1,5 +1,6 @@
 package railo.runtime.functions.other;
 
+import railo.print;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
@@ -17,7 +18,7 @@ public class _CreateComponent {
 	private static final Object[] EMPTY = new Object[0]; 
 
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
-		
+		print.e(objArr);
 		String path = Caster.toString(objArr[objArr.length-1]);
 		Component cfc = CreateObject.doComponent(pc, path);
 		

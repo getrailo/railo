@@ -13,6 +13,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.commons.lang.ClassException;
 import railo.runtime.exp.Abort;
 import railo.runtime.tag.MissingAttribute;
@@ -52,7 +53,7 @@ public final class TagOther {
 	private static final Method SET_DYNAMIC_ATTRIBUTE = new Method(
 			"setDynamicAttribute",
 			Type.VOID_TYPE,
-			new Type[]{Types.STRING,Types.STRING,Types.OBJECT});
+			new Type[]{Types.STRING,Types.COLLECTION_KEY,Types.OBJECT});
 	
 	private static final Method SET_META_DATA = new Method(
 			"setMetaData",
@@ -258,7 +259,8 @@ public final class TagOther {
 			if(attr.isDynamicType()){
 				adapter.loadLocal(currLocal);
 				adapter.visitInsn(Opcodes.ACONST_NULL);
-				adapter.push(attr.getName());
+				//adapter.push(attr.getName());
+				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
 				attr.getValue().writeOut(bc, Expression.MODE_REF);
 				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}

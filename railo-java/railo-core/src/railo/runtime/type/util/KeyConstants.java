@@ -732,6 +732,8 @@ public class KeyConstants {
 	public static final Key _used = KeyImpl._const("used");
 	public static final Key _use = KeyImpl._const("use");
 	public static final Key _Detail = KeyImpl._const("Detail");
+	public static final Key _attributecollection = KeyImpl._const("attributecollection");
+	public static final Key _attributeCollection = KeyImpl._const("attributeCollection");
 	
 	
 	

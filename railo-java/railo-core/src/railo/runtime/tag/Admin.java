@@ -229,6 +229,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     public void setDynamicAttribute(String uri, String localName, Object value) {
         attributes.setEL(KeyImpl.getInstance(localName),value);
     }
+    public void setDynamicAttribute(String uri, Collection.Key localName, Object value) {
+        attributes.setEL(localName,value);
+    }
     
     /**
      * @see javax.servlet.jsp.tagext.Tag#doStartTag()
