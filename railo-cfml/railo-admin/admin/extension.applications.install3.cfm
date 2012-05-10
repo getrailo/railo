@@ -1,7 +1,14 @@
 <!---- load ExtensionManager ---->
 <cfset manager=createObject('component','extension.ExtensionManager')>
 
-<cfset detail=getDetailByUid(url.uid)>
+<cfif structKeyExists(url, 'uploadExt')>
+	<cfset detail = session.uploadExtDetails />
+	<cfset appendURL = "&uploadExt=1" />
+<cfelse>
+	<cfset detail=getDetailByUid(url.uid)>
+	<cfset appendURL = "" />
+</cfif>
+
 <cfset isUpdate=StructKeyExists(detail,'installed')>
 
 <!--- create config struct --->
@@ -60,13 +67,5 @@
     <cfif len(message) EQ 0><cfset message=stText.ext.installDone></cfif>
     <cfset session.confirm.text=message>    
     <cfset session.confirm.success=true>    
-    <cflocation url="#request.self#?action=#url.action#&action2=confirm">
-	
+    <cflocation url="#request.self#?action=#url.action#&action2=confirm" />
 </cfif>
-
-
-
-
-
-
-

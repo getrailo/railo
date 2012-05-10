@@ -250,6 +250,26 @@
 	<data key="ext.documentation">Documentation</data>
 	<data key="ext.installeddesc">These applications are already installed on the system.</data>
 	<data key="ext.licenseagreement">License agreement</data>
+	<data key="ext.uploadextension">Upload new extension</data>
+	<data key="ext.uploadextensiondesc">If you downloaded an extension, you can add the extension here.</data>
+	<data key="ext.upload">upload</data>
+	<data key="ext.nofileuploaded">You have not uploaded a file!&lt;br&gt;Please first choose a file.</data>
+	<data key="ext.extThumbnail">Extension thumbnail</data>
+	<data key="ext.msgAfterNotAgreed">Because you did not agree with the license, the extension was not installed.&lt;br&gt;In case you installed the extension before, you will need to uninstall it, if you do not wish to agree with it's license anymore.</data>
+	<data key="ext.extzipfile">Extension zip file</data>
+	<data key="ext.viewdetails">View details</data>
+	<data key="ext.theError">The error</data>
+	<data key="ext.errorFileUpload">The file could not be uploaded.</data>
+	<data key="ext.noConfigXMLInExtension">There is no config.xml file available in the extension!</data>
+	<data key="ext.configNotParsed">The Config xml file within the extension could not be parsed</data>
+	<data key="ext.configHasNoInfoTag">The Config xml file within the extension does not contain the necessary [info] section within the [config] tag.</data>
+	<data key="ext.reviewdocumentation">Please review the documentation for creating Railo Extensions.</data>
+	<data key="ext.requiredKeyMissing">The required field [config.info.$key$] does not exist within the Config xml file of the extension.</data>
+	<data key="ext.requiredKeyEmpty">The required field [config.info.$key$] does not contain a value within the Config xml file of the extension.</data>
+	<data key="ext.typeFieldInvalid">The field [config.info.type] within the Config xml file contains an invalid value. Only [web, server, all] are supported.</data>
+	<data key="ext.adminNotEqualsInstallType">You are trying to install a $type$ Extension into the $admintype$ Administrator...&lt;br /&gt;Do you want to go to the &lt;a href='$type$.cfm?action=$url.action$'&gt;$type$ Administrator&lt;/a&gt;?</data>
+	<data key="ext.thereisanerror">There is an error with the extension you uploaded</data>
+	<data key="ext.backtoprevpage">Go back to the previous page</data>
 	<data key="remote.url">URL</data>
 	<data key="remote.urlpathmissing">the path to the Admin.cfc is missing</data>
 	<data key="remote.downloadarchive">When calling &quot;&lt;Buttons.downloadArchive&gt;&quot;, the archive on the remote client will be created but the download ignored, In this case you shouln&apos;t include remote synchronization.</data>
@@ -416,6 +436,7 @@
 	<data key="search.last_update">Last update</data>
 	<data key="search.online">Online</data>
 	<data key="search.name">Name</data>
+	<data key="search.searchterm">Search term</data>
 	<data key="components.triggerdatamember">Magic functions</data>
 	<data key="components.componentlocalsearchdesc">Search relative to the caller directory for the component</data>
 	<data key="components.componentdumptemplate">Component &quot;dump&quot; template</data>
@@ -657,6 +678,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="buttons.create">create</data>
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">agree</data>
+	<data key="buttons.dontagree">I do not agree</data>
 	<data key="buttons.submit">submit</data>
 	<data key="buttons.stop">stop</data>
 	<data key="buttons.purge">purge</data>
