@@ -42,10 +42,10 @@ public class HMAC implements Function {
 		// algorithm
         if(StringUtil.isEmpty(algorithm,true)) algorithm = "HmacMD5";
         
-        SecretKey keyObj = new SecretKeySpec(key, algorithm);
+        SecretKey sk = new SecretKeySpec(key, algorithm);
 	    try {
             Mac mac = Mac.getInstance(algorithm);
-            mac.init(keyObj);
+            mac.init(sk);
             mac.reset();
             mac.update(msg);
             msg = mac.doFinal();
