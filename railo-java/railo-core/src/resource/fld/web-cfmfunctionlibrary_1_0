@@ -5995,6 +5995,48 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	
+	
+	<!-- HMAC -->
+	<function>
+		<name>HMAC</name>
+		<class>railo.runtime.functions.displayFormatting.HMAC</class>
+		<description>Creates Hash-based Message Authentication Code for the given string based on the algorithm and encoding. 
+		Hash-based Message Authentication Code (HMAC) is used to verify the data integrity and authenticity of a messagetransmitted. 
+		It involves a cryptographic hash function in combination with a secret key. 
+		The cryptographic hashfunction can be Message Digest 5 (MD5), Secure Hash Algorithm (SHA), and so on</description>
+		<argument>
+			<name>message</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>The message to transmit. The message can be a String or a byte array.</description>
+	    </argument>
+		<argument>
+			<name>key</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>The secret key to create HMAC. The key can be a String or a byte array.</description>
+	    </argument>
+		<argument>
+			<name>algorithm</name>
+			<type>string</type>
+			<required>no</required>
+			<default>HmacMD5</default>
+			<description>the algorithm used, default is "HmacMD5"</description>
+	    </argument>
+		<argument>
+			<name>encoding</name>
+			<alias>charset</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>the encoding used, default encoding is the web charset of the enviroment.</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	
 	<!-- hTMLCodeFormat -->
 	<function>
 		<name>hTMLCodeFormat</name>
