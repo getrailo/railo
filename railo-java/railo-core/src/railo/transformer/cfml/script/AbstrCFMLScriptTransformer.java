@@ -449,7 +449,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		statement(data,body,CTX_DO_WHILE);
 		
 		
-		data.cfml.removeSpace();
+		comments(data);
 		if(!data.cfml.forwardIfCurrent("while",'('))
 			throw new TemplateException(data.cfml,"do statement must have a while at the end");
 		
@@ -765,7 +765,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			data.docComment=null;
 		}
 
-			
+		comments(data);
 			
 		// attributes
 		Attribute[] attrs = attributes(null,null,data,SEMI_BLOCK,LitString.EMPTY,Boolean.TRUE,null,false);
