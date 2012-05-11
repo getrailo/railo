@@ -113,7 +113,7 @@ component output="false" extends="Base" accessors="true"{
 			// If Pos marker has not changed, find any non-significant text and treat as string.
 			if (Pos EQ StartPos)
 			{
-				var Match = refind( '(?:[^:"''?/]|/(?!\*))+' , Sql , Pos , true ) ;
+ 				var Match = refind( '(?:[^:"''?/]+|/(?!\*))+' , Sql , Pos , true ) ;
 				if (ArrayLen(Match.Pos) AND Match.Pos[1] EQ Pos)
 				{
 					result.add({type='String',value=Mid(Sql,Match.Pos[1],Match.Len[1])})
@@ -140,7 +140,7 @@ component output="false" extends="Base" accessors="true"{
 		var params = getParams();
 		var result = [];
 
-		for(item in params){
+		for(var item in params){
 			if(structKeyExists(item,'name')){
 				result.add(item);
 			}
@@ -157,7 +157,7 @@ component output="false" extends="Base" accessors="true"{
 		var params = getParams();
 		var result = [];
 
-		for(item in params){
+		for(var item in params){
 			if(not structKeyExists(item,'name')){
 				result.add(item);
 			}
@@ -171,13 +171,13 @@ component output="false" extends="Base" accessors="true"{
 	 * @hint Scan the passed array looking for a "name" param match.
 	 */
 	private Struct function findNamedParam(Array params,String name){
-		for(item in params){
+		for(var item in params){
 			if(structKeyExists(item,'name') && name == item.name){
 				return item;
 			}
 		}
 
-		throw(type="org.railo.cfml.query.namedParameterNotFoundException", message="The named parameter [#name#] has not been provided");
+		throw(type="org.railo.cfml.query.namedParameterNotFoundException", message="The named parameter [#arguments.name#] has not been provided");
 
 	}
 
