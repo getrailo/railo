@@ -1,5 +1,6 @@
 package railo.runtime.type.scope;
 
+import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,12 +18,15 @@ import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.security.ScriptProtect;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * Implementation of the Cookie scope
@@ -37,6 +41,15 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     private int scriptProtected=ScriptProtected.UNDEFINED;
 	private Map<String,String> raw=new HashMap<String,String>();
 	private String charset;
+
+	
+	private static final Class[] IS_HTTP_ONLY_ARGS_CLASSES = new Class[]{};
+	private static final Object[] IS_HTTP_ONLY_ARGS = new Object[]{}; 
+
+	private static final Class[] SET_HTTP_ONLY_ARGS_CLASSES = new Class[]{boolean.class};
+	private static final Object[] SET_HTTP_ONLY_ARGS = new Object[]{Boolean.TRUE}; 
+	private static Method isHttpOnly; 
+	private static Method setHttpOnly;
     
 	/**
 	 * constructor for the Cookie Scope
@@ -59,7 +72,22 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 
 	public Object set(Collection.Key key, Object value) throws PageException {
 		raw.remove(key.getLowerString());
-    	setCookie(key,value,-1,false,"/",null);
+    	
+		if(Decision.isStruct(value)) {
+			Struct sct = Caster.toStruct(value);
+			int expires=Caster.toIntValue(sct.get(KeyConstants._expires,null),-1);
+			Object val=sct.get(KeyConstants._value,null);
+			boolean secure=Caster.toBooleanValue(sct.get(KeyConstants._secure,null),false);
+			boolean httpOnly=Caster.toBooleanValue(sct.get(KeyConstants._httponly,null),false);
+			String domain=Caster.toString(sct.get(KeyConstants._domain,null),null);
+			String path=Caster.toString(sct.get(KeyConstants._path,null),null);
+			boolean preserveCase=Caster.toBooleanValue(sct.get(KeyConstants._preservecase,null),false);
+			Boolean encode=Caster.toBoolean(sct.get(KeyConstants._encode,null),null);
+			if(encode==null)encode=Caster.toBoolean(sct.get(KeyConstants._encodevalue,Boolean.TRUE),Boolean.TRUE);
+			
+			setCookie(key, val, expires, secure, path, domain,httpOnly,preserveCase,encode.booleanValue());
+		}
+		else setCookie(key,value,-1,false,"/",null,false,false,false);
 		return value;
 	}
 	
@@ -119,14 +147,25 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		cookie.setPath("/");
 		rsp.addCookie(cookie);
     }
-	
-	/**
-     * @see railo.runtime.type.scope.Cookie#setCookie(java.lang.String, java.lang.Object, java.lang.Object, boolean, java.lang.String, java.lang.String)
-     */
-    public void setCookie(String name, Object value, Object expires, boolean secure, String path, String domain) throws PageException {
-    	setCookie(KeyImpl.init(name), value, expires, secure, path, domain);
-    }
+    
+    @Override
 	public void setCookie(Collection.Key key, Object value, Object expires, boolean secure, String path, String domain) throws PageException {
+    	setCookie(key, value, expires, secure, path, domain, false, false, true);
+    }
+    
+    @Override
+	public void setCookie(Collection.Key key, Object value, int expires, boolean secure, String path, String domain) throws PageException {
+    	setCookie(key, value, expires, secure, path, domain, false, false, true);
+    }
+    
+    @Override
+	public void setCookieEL(Collection.Key key, Object value, int expires, boolean secure, String path, String domain) {
+    	setCookieEL(key, value, expires, secure, path, domain, false, false, true);
+    }
+    
+    @Override
+	public void setCookie(Collection.Key key, Object value, Object expires, boolean secure, String path, String domain, 
+			boolean httpOnly, boolean preserveCase, boolean encode) throws PageException {
 		int exp=-1;
 		
 		// expires
@@ -147,10 +186,46 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 			throw new ExpressionException("invalid type ["+Caster.toClassName(expires)+"] for expires");
 		}
 		
-		setCookie(key, value, exp, secure, path, domain);
+		setCookie(key, value, exp, secure, path, domain,httpOnly,preserveCase,encode);
+	}
+    
+    @Override
+    public void setCookie(Collection.Key key, Object value, int expires, boolean secure, String path, String domain, 
+    		boolean httpOnly, boolean preserveCase, boolean encode) throws PageException {
+    	
+    	_addCookie(key,Caster.toString(value),expires,secure,path,domain,httpOnly,preserveCase,encode);
+        super.set (key, value);
+    }
+
+
+	@Override
+    public void setCookieEL(Collection.Key key, Object value, int expires, boolean secure, String path, String domain, 
+    		boolean httpOnly, boolean preserveCase, boolean encode) {
+		
+		_addCookie(key,Caster.toString(value,""),expires,secure,path,domain,httpOnly,preserveCase,encode);
+        super.setEL (key, value);
+    }
+    
+    private void _addCookie(Key key, String value, int expires, boolean secure, String path, String domain, 
+    		boolean httpOnly, boolean preserveCase, boolean encode) {
+    	String name=preserveCase?key.getString():key.getUpperString();
+    	if(encode) {
+    		name=enc(name);
+    		value=enc(value);
+    	}
+    	 
+    	javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(name,value);
+        cookie.setMaxAge(expires);
+        cookie.setSecure(secure);
+        cookie.setPath(path);
+        if(!StringUtil.isEmpty(domain,true))cookie.setDomain(domain);
+        if(httpOnly) setHTTPOnly(cookie);
+        rsp.addCookie(cookie);
+        
 	}
 
-    private int toExpires(String expires) throws ExpressionException {
+
+	private int toExpires(String expires) throws ExpressionException {
     	String str=StringUtil.toLowerCase(expires.toString());
 		if(str.equals("now"))return 0;
 		else if(str.equals("never"))return NEVER;
@@ -181,48 +256,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	}
 
 
-	/**
-     * @see railo.runtime.type.scope.Cookie#setCookie(java.lang.String, java.lang.Object, int, boolean, java.lang.String, java.lang.String)
-     */
-	public void setCookie(String name, Object value, int expires, boolean secure, String path, String domain) throws PageException {
-		setCookie(KeyImpl.init(name), value, expires, secure, path, domain); 
-	}
-	
-    /**
-     * @see railo.runtime.type.scope.Cookie#setCookie(railo.runtime.type.Collection.Key, java.lang.Object, int, boolean, java.lang.String, java.lang.String)
-     */
-    public void setCookie(Collection.Key key, Object value, int expires, boolean secure, String path, String domain) 
-        throws PageException {
-    	
-        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(enc(key.getUpperString()),enc(Caster.toString(value)));
-        cookie.setMaxAge(expires);
-        cookie.setSecure(secure);
-        cookie.setPath(path);
-        if(domain!=null && domain.trim().length()>0)cookie.setDomain(domain);
-        
-        rsp.addCookie(cookie);
-        super.set (key, value);
-    }
 
-
-
-	/**
-     * @see railo.runtime.type.scope.Cookie#setCookieEL(java.lang.String, java.lang.Object, int, boolean, java.lang.String, java.lang.String)
-     */
-    public void setCookieEL(String name, Object value, int expires, boolean secure, String path, String domain) {
-    	setCookieEL(KeyImpl.init(name), value, expires, secure, path, domain);
-    }
-    
-    public void setCookieEL(Collection.Key key, Object value, int expires, boolean secure, String path, String domain) {
-        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(enc(key.getUpperString()),enc(Caster.toString(value,"")));// encoding removed
-       
-        cookie.setMaxAge(	expires);
-        cookie.setSecure(secure);
-        cookie.setPath(path);
-        if(domain!=null && domain.trim().length()>0)cookie.setDomain(domain);
-        rsp.addCookie(cookie);
-        super.setEL (key, value);
-    }
     
 	
 
@@ -310,5 +344,30 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 
 	@Override
 	public void touchAfterRequest(PageContext pc) {
+	}
+	
+	public static void setHTTPOnly(javax.servlet.http.Cookie cookie) {
+    	try {
+	    	if(setHttpOnly==null) {
+				  setHttpOnly=cookie.getClass().getMethod("setHttpOnly", SET_HTTP_ONLY_ARGS_CLASSES);
+			}
+	    	setHttpOnly.invoke(cookie, SET_HTTP_ONLY_ARGS);
+    	}
+		catch (Throwable t) {
+			String val = cookie.getValue();
+			cookie.setValue(val+"; HttpOnly");
+		}
+	}
+	
+	public static boolean isHTTPOnly(javax.servlet.http.Cookie cookie) {
+    	try {
+	    	if(isHttpOnly==null) {
+	    		isHttpOnly=cookie.getClass().getMethod("isHttpOnly", IS_HTTP_ONLY_ARGS_CLASSES);
+			}
+	    	return Caster.toBooleanValue(isHttpOnly.invoke(cookie, IS_HTTP_ONLY_ARGS));
+    	}
+		catch (Throwable t) {
+			return false;
+		}
 	}
 }

@@ -38,6 +38,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.scope.CookieImpl;
 
 public class DumpUtil {
 
@@ -145,6 +146,7 @@ public class DumpUtil {
 			table.appendRow(1,new SimpleDumpData("maxAge"),new SimpleDumpData(c.getMaxAge()));
 			table.appendRow(1,new SimpleDumpData("version"),new SimpleDumpData(c.getVersion()));
 			table.appendRow(1,new SimpleDumpData("domain"),new SimpleDumpData(c.getDomain()));
+			table.appendRow(1,new SimpleDumpData("httpOnly"),new SimpleDumpData(CookieImpl.isHTTPOnly(c)));
 			table.appendRow(1,new SimpleDumpData("comment"),new SimpleDumpData(c.getComment()));
 			return table;
 		}

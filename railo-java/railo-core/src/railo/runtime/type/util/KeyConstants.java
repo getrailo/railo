@@ -89,6 +89,7 @@ public class KeyConstants {
 	public static final Key _Encryption=KeyImpl._const("Encryption");
 	public static final Key _EventName=KeyImpl._const("EventName");
 	public static final Key _Expires=KeyImpl._const("Expires");
+	public static final Key _expires=KeyImpl._const("expires");
 	public static final Key _F=KeyImpl._const("F");
 	public static final Key _FATYPE=KeyImpl._const("FATYPE");
 	public static final Key _FB_=KeyImpl._const("FB_");
@@ -736,6 +737,12 @@ public class KeyConstants {
 	public static final Key _Detail = KeyImpl._const("Detail");
 	public static final Key _attributecollection = KeyImpl._const("attributecollection");
 	public static final Key _attributeCollection = KeyImpl._const("attributeCollection");
+	public static final Key _secure = KeyImpl._const("secure");
+	public static final Key _httponly = KeyImpl._const("httponly");
+	public static final Key _domain = KeyImpl._const("domain");
+	public static final Key _preservecase = KeyImpl._const("preservecase");
+	public static final Key _encode = KeyImpl._const("encode");
+	public static final Key _encodevalue = KeyImpl._const("encodevalue");
 	
 	
 	

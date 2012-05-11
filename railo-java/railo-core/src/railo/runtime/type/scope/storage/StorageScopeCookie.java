@@ -9,6 +9,7 @@ import railo.runtime.converter.ScriptConverter;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
@@ -89,13 +90,13 @@ public abstract class StorageScopeCookie extends StorageScopeImpl {
 		try {
 			String ser=serializer.serializeStruct(sct, ignoreSet);
 			if(hasChanges()){
-				cookie.setCookie(cookieName, ser,exp, false, "/", null);
+				cookie.setCookie(KeyImpl.init(cookieName), ser,exp, false, "/", null);
 			}
-			cookie.setCookie(cookieName+"_LV", Caster.toString(_lastvisit.getTime()), exp, false, "/", null);
+			cookie.setCookie(KeyImpl.init(cookieName+"_LV"), Caster.toString(_lastvisit.getTime()), exp, false, "/", null);
 			
 			if(getType()==SCOPE_CLIENT){
-				cookie.setCookie(cookieName+"_TC", Caster.toString(timecreated.getTime()),exp, false, "/", null);
-				cookie.setCookie(cookieName+"_HC", Caster.toString(sct.get(HITCOUNT,"")), exp, false, "/", null);
+				cookie.setCookie(KeyImpl.init(cookieName+"_TC"), Caster.toString(timecreated.getTime()),exp, false, "/", null);
+				cookie.setCookie(KeyImpl.init(cookieName+"_HC"), Caster.toString(sct.get(HITCOUNT,"")), exp, false, "/", null);
 			}
 			
 		} 
