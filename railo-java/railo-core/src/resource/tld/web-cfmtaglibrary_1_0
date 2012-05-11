@@ -1892,6 +1892,38 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
             This attribute sets the available subdomains on the site
             upon which the cookie can be used.</description>
     </attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>httpOnly</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+			If HttpOnly is set to true, this cookie is marked as HttpOnly, by adding the HttpOnly attribute to it.
+			HttpOnly cookies are not supposed to be exposed to client-side scripting code, and may therefore help mitigate certain kinds of cross-site scripting attacks.
+			</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>preservecase</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true Railo keep the original case for the name, otherise the name is converted to a upper case string</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>encode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, Railo url encodes the given name and value if necessary.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>encodeValue</name>
+			<status>deprecated</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for encode.</description>
+		</attribute>
 	</tag>
 	<!-- DBInfo -->
 	<tag>

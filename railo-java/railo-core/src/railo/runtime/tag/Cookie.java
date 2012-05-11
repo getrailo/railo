@@ -32,6 +32,10 @@ public final class Cookie extends TagImpl {
 
 	/** The name of the cookie variable. */
 	private String name;
+	
+	private boolean httponly;
+	private boolean preservecase;
+	private boolean encode=true;
 
 
 	/**
@@ -45,6 +49,9 @@ public final class Cookie extends TagImpl {
 		path="/";
 		expires="-1";
 		name=null;
+		httponly=false;
+		preservecase=false;
+		encode=true;
 	}
 	
 	/** set the value secure
@@ -109,12 +116,28 @@ public final class Cookie extends TagImpl {
 		this.name=name;
 	}
 
+	public void setHttponly(boolean httponly)	{
+		this.httponly=httponly;
+	}
+
+	public void setPreservecase(boolean preservecase)	{
+		this.preservecase=preservecase;
+	}
+
+	public void setEncodevalue(boolean encode)	{
+		this.encode=encode;
+	}
+
+	public void setEncode(boolean encode)	{
+		this.encode=encode;
+	}
+
 
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		pageContext.cookieScope().setCookie(KeyImpl.getInstance(name),value,expires,secure,path,domain);
+		pageContext.cookieScope().setCookie(KeyImpl.getInstance(name),value,expires,secure,path,domain,httponly,preservecase,encode);
 		return SKIP_BODY;
 	}
 

@@ -354,8 +354,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	    	setHttpOnly.invoke(cookie, SET_HTTP_ONLY_ARGS);
     	}
 		catch (Throwable t) {
-			String val = cookie.getValue();
-			cookie.setValue(val+"; HttpOnly");
+			// HTTPOnly is not supported in this enviroment
 		}
 	}
 	
