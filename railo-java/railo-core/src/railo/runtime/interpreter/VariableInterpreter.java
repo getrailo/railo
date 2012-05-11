@@ -240,7 +240,7 @@ public final class VariableInterpreter {
 	 */
 	public static Object setVariable(PageContext pc,String var, Object value) throws PageException {			
 	    StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new ExpressionException("invalid variable name declaration ["+var+"]");
 
 		if(list.size()==1) {
 			return pc.undefinedScope().set(list.next(),value);
