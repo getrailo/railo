@@ -615,6 +615,8 @@ public class KeyConstants {
 	public static final Key _s3=KeyImpl._const("s3");
 	public static final Key _super=KeyImpl._const("super");
 	public static final Key _argumentCollection=KeyImpl._const("argumentCollection");
+	public static final Key _argumentcollection=KeyImpl._const("argumentcollection");
+	public static final Key _setArgumentCollection=KeyImpl._const("setArgumentCollection");
 	public static final Key _returntype=KeyImpl._const("returntype");
 	public static final Key _description=KeyImpl._const("description");
 	public static final Key _displayname=KeyImpl._const("displayname");
