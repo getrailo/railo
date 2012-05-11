@@ -140,7 +140,6 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
 	 */
 	public final Object setEL(String key, Object value) {
-		//print.dumpStack("StructSupport.setEL");
 		return setEL(KeyImpl.init(key), value);
 	}
 
