@@ -7,6 +7,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 
+import com.jacob.com.Currency;
 import com.jacob.com.Variant;
 
 /**
@@ -53,14 +54,14 @@ public final class COMUtil {
 		
 		if(type==Variant.VariantEmpty) return null;
 		else if(type==Variant.VariantNull) return null;
-		else if(type==Variant.VariantShort) return Short.valueOf(variant.toShort());
-		else if(type==Variant.VariantInt) return Integer.valueOf(variant.toInt());
-		else if(type==Variant.VariantFloat) return new Float(variant.toFloat());
-		else if(type==Variant.VariantDouble) return new Double(variant.toDouble());
+		else if(type==Variant.VariantShort) return Short.valueOf(variant.getShort());
+		else if(type==Variant.VariantInt) return Integer.valueOf(variant.getInt());
+		else if(type==Variant.VariantFloat) return new Float(variant.getFloat());
+		else if(type==Variant.VariantDouble) return new Double(variant.getDouble());
 		else if(type==Variant.VariantCurrency) {
 			long l;
 			try{
-				l=variant.toCurrency();
+				l=variant.getCurrency().longValue();
 			}
 			// this reflection allows support for old and new jacob version
 			catch(Throwable t){
@@ -78,10 +79,10 @@ public final class COMUtil {
 			return Long.valueOf(l);
 		}
 		else if(type==Variant.VariantObject) return variant.toEnumVariant();
-		else if(type==Variant.VariantDate) return new DateTimeImpl((long)variant.toDate(),true);
+		else if(type==Variant.VariantDate) return new DateTimeImpl((long)variant.getDate(),true);
 		else if(type==Variant.VariantString) return variant.getString();
-		else if(type==Variant.VariantBoolean) return variant.toBoolean()?Boolean.TRUE:Boolean.FALSE;
-		else if(type==Variant.VariantByte) return new Byte(variant.toByte());
+		else if(type==Variant.VariantBoolean) return variant.getBoolean()?Boolean.TRUE:Boolean.FALSE;
+		else if(type==Variant.VariantByte) return new Byte(variant.getByte());
 		else if(type==Variant.VariantVariant) {
 		    throw new ExpressionException("type variant is not supported");
 		    //return toObject(variant.getV.get());

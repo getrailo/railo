@@ -30,6 +30,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.jacob.com.LibraryLoader;
+
 import railo.aprint;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
@@ -749,7 +751,7 @@ public final class ConfigWebFactory {
     private static Resource[] _loadFileAccess(Config config,Element[] fileAccesses) {
     	if(ArrayUtil.isEmpty(fileAccesses))return new Resource[0];
     	
-    	java.util.List reses=new ArrayList();
+    	java.util.List<Resource> reses=new ArrayList<Resource>();
        	String path;
        	Resource res;
        	for(int i=0;i<fileAccesses.length;i++) {
@@ -760,7 +762,7 @@ public final class ConfigWebFactory {
        	    		reses.add(res);	
        	    }
        	}
-		return (Resource[]) reses.toArray(new Resource[reses.size()]);
+		return reses.toArray(new Resource[reses.size()]);
 	}
 
 
@@ -964,14 +966,25 @@ public final class ConfigWebFactory {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 	    
-	    if(SystemUtil.isWindows()) {
+	    if(!SystemUtil.isWindows()) {
 	    	Resource systemDir=SystemUtil.getSystemDirectory();
 	        if(systemDir!=null) {
-	        	Resource jacob=systemDir.getRealResource("jacob.dll");
+	        	boolean is64=SystemUtil.getJREArch()==SystemUtil.ARCH_64;
+	        	String name;
+	        	if(is64) name="jacob-x64.dll";
+	        	else name="jacob-x86.dll";
+	            
+	        	Resource jacob=systemDir.getRealResource(name);
 	            if(!jacob.exists()) {
-	                createFileFromResourceEL("/resource/bin/jacob.dll",jacob);
-                    
+	            	createFileFromResourceEL("/resource/bin/"+name,jacob);
 	            }
+	            //SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_PATH+":"+jacob.getAbsolutePath());
+	            System.setProperty(LibraryLoader.JACOB_DLL_PATH,jacob.getAbsolutePath());
+	            //SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_NAME+":"+name);
+	            System.setProperty(LibraryLoader.JACOB_DLL_NAME,name);
+	            
+	            //jacob.dll.name.x86 & jacob.dll.name.x64
+	            
 	        }
 	    }
         

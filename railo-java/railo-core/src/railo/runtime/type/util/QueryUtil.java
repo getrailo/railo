@@ -1,9 +1,9 @@
 package railo.runtime.type.util;
 
 import java.sql.Clob;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
-
-import org.hibernate.QueryException;
 
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -174,14 +174,18 @@ public class QueryUtil {
 
 	public static void removeRows(Query query, int index, int count) throws PageException {
 		if(query.getRecordcount()==0) 
-			throw new QueryException("cannot remove rows, query is empty");
+			throw new DatabaseException("cannot remove rows, query is empty",null,null,null);
 		if(index<0 || index>=query.getRecordcount()) 
-			throw new QueryException("invalid index ["+index+"], index must be between 0 and "+(query.getRecordcount()-1));
+			throw new DatabaseException("invalid index ["+index+"], index must be between 0 and "+(query.getRecordcount()-1),null,null,null);
 		if(index+count>query.getRecordcount()) 
-			throw new QueryException("invalid count ["+count+"], count+index ["+(count+index)+"] must less or equal to "+(query.getRecordcount()));
+			throw new DatabaseException("invalid count ["+count+"], count+index ["+(count+index)+"] must less or equal to "+(query.getRecordcount()),null,null,null);
 		
 		for(int row=count;row>=1;row--){
 			query.removeRow(index+row);
 		}
+	}
+
+	public static boolean execute(Statement stat, boolean createGeneratedKeys, SQL sql) throws SQLException {
+		return createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
 	}
 }

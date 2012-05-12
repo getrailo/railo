@@ -214,7 +214,8 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		    	stat=dc.getConnection().createStatement();
 		        setAttributes(stat,maxrow,fetchsize,timeout);
 		     // some driver do not support second argument
-		        hasResult=createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+		        //hasResult=createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+		        hasResult=QueryUtil.execute(stat,createGeneratedKeys,sql);
 	        }
 	        else {
 	        	// some driver do not support second argument
@@ -328,15 +329,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(maxrow>-1) stat.setMaxRows(maxrow);
         if(fetchsize>0)stat.setFetchSize(fetchsize);
         if(timeout>0)stat.setQueryTimeout(timeout);
-	}
-
-	private ResultSet getResultSetEL(Statement stat) {
-		try {
-			return stat.getResultSet();
-		}
-		catch(SQLException sqle) {
-			return null;
-		}
 	}
 
     private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys) throws SQLException, IOException, PageException {

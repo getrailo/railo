@@ -588,6 +588,7 @@ public final class SystemUtil {
 		if(jreArch==-1) {
 			jreArch = toIntArch(System.getProperty("sun.arch.data.model"));
 			if(jreArch==ARCH_UNKNOW)jreArch = toIntArch(System.getProperty("com.ibm.vm.bitmode"));
+			if(jreArch==ARCH_UNKNOW)jreArch = toIntArch(System.getProperty("java.vm.name"));
 			if(jreArch==ARCH_UNKNOW) {
 				int addrSize = getAddressSize();
 				if(addrSize==4) return ARCH_32;
