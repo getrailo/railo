@@ -335,9 +335,9 @@ public final class FileTag extends BodyTagImpl {
 		securityManager = pageContext.getConfig().getSecurityManager();
 		
 		switch(action){
-		case ACTION_MOVE: actionMove();
+		case ACTION_MOVE: actionMove(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
 		break;
-		case ACTION_COPY: actionCopy();
+		case ACTION_COPY: actionCopy(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
 		break;
 		case ACTION_DELETE: actionDelete();
 		break;
