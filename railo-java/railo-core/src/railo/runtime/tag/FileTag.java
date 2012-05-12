@@ -399,7 +399,9 @@ public final class FileTag extends BodyTagImpl {
 	 * move source file to destination path or file
 	 * @throws PageException
 	 */
-	private void actionMove() throws PageException {
+	public static void actionMove(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -459,7 +461,9 @@ public final class FileTag extends BodyTagImpl {
 	 * copy source file to destination file or path
 	 * @throws PageException
 	 */
-	private void actionCopy() throws PageException {
+	public static void actionCopy(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -493,8 +497,6 @@ public final class FileTag extends BodyTagImpl {
 			// ERROR
 			else throw new ApplicationException("destiniation file ["+destination.toString()+"] already exist");
 		}
-        
-		
 		
         try {
             IOUtil.copy(source,destination);			
