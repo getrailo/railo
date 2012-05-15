@@ -17,9 +17,9 @@ import railo.runtime.type.util.ArrayUtil;
 
 public class MailSpoolerTask extends SpoolerTaskSupport {
 	private static final ExecutionPlan[] EXECUTION_PLANS = new ExecutionPlan[]{
-		new ExecutionPlanImpl(2,10),
-		new ExecutionPlanImpl(5,60),
-		new ExecutionPlanImpl(24,3600),
+		new ExecutionPlanImpl(1,60),
+		new ExecutionPlanImpl(1,5*60),
+		new ExecutionPlanImpl(1,3600),
 		new ExecutionPlanImpl(2,24*3600),
 	};
 	
