@@ -416,7 +416,7 @@
 	<data key="search.last_update">Last update</data>
 	<data key="search.online">Online</data>
 	<data key="search.name">Name</data>
-	<data key="components.triggerdatamember">Magic functions</data>
+	<data key="components.triggerdatamember">Implicit notation</data>
 	<data key="components.componentlocalsearchdesc">Search relative to the caller directory for the component</data>
 	<data key="components.componentdumptemplate">Component &quot;dump&quot; template</data>
 	<data key="components.basecomponent">Base/Root Component</data>
