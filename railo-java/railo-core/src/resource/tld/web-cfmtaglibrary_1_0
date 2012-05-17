@@ -9877,13 +9877,13 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<description>
 			the timezone used to convert a date object to a timestamp (string), this value is needed when your database runs in another timezone and you are not using cfqueryparam to to insert dates.</description>
 		</attribute>
-		<!-- <attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>lazy</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
-		</attribute> -->
+		</attribute>
 	</tag>
 	<!-- QueryParam -->
 	<tag>
