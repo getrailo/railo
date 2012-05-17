@@ -8,7 +8,6 @@ public class TimeoutThread extends Thread {
 
 	public void run() {
 		SystemUtil.sleep(2000);
-		print.e("end");
 	}
 	
 	
@@ -20,7 +19,6 @@ public class TimeoutThread extends Thread {
 		}
 		finally{
 			if(tt.isAlive())tt.stop();
-			print.e(tt.isAlive());
 		}
 	}
 	

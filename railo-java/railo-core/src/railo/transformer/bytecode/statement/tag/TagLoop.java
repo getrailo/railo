@@ -335,7 +335,6 @@ public final class TagLoop extends TagBase implements FlowControl {
 		
 		whileVisitor.visitAfterExpressionBeforeBody(bc);
 			if(hasIndexAndItem) {
-				print.e(index+":"+item);
 				// entry=it.next();
 				adapter.loadLocal(it);
 				adapter.invokeInterface(Types.ITERATOR, NEXT);
