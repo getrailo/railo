@@ -158,7 +158,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	 * @return
 	 */
 	public synchronized static Collection.Key getInstance(String key) {
-		if(KeyConstants.getFieldName(key)!=null)print.ds(key);
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
