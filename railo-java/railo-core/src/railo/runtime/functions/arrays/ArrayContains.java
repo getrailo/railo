@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listcontains
+ * Implements the ColdFusion Function listContains
  */
 package railo.runtime.functions.arrays;
 

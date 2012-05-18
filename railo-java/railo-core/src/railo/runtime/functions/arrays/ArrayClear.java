@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayclear
+ * Implements the ColdFusion Function arrayClear
  */
 package railo.runtime.functions.arrays;
 

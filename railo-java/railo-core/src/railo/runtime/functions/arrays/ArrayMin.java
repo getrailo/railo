@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraymin
+ * Implements the ColdFusion Function arrayMin
  */
 package railo.runtime.functions.arrays;
 

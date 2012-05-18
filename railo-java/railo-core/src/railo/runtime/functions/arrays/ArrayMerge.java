@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayMerge
+ * Implements the ColdFusion Function arrayMerge
  * Merge 2 arrays
  */
 package railo.runtime.functions.arrays;
