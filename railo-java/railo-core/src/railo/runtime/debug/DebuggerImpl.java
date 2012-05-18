@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.Page;
@@ -34,6 +36,7 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
@@ -500,9 +503,7 @@ public final class DebuggerImpl implements Debugger {
 		if(addAddionalInfo) {
 			debugging.setEL(KeyConstants._cgi,pc.cgiScope());
 			debugging.setEL(KeyImpl.init("starttime"),starttime);
-			
-			
-			
+			debugging.setEL(KeyConstants._id,pc.getId());
 		}
 
 		debugging.setEL(KeyConstants._pages,qryPage);

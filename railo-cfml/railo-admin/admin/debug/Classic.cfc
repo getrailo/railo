@@ -88,8 +88,10 @@ private function isColumnEmpty(string columnName){
     
     <cffunction name="output" returntype="void">
     	<cfargument name="custom" type="struct" required="yes">
-		<cfargument name="debugging" required="true" type="struct"><cfsilent>
+		<cfargument name="debugging" required="true" type="struct">
+		<cfargument name="context" type="string" default="web"><cfsilent>
 <cfset time=getTickCount()>
+<cfset var _cgi=structKeyExists(debugging,'cgi')?debugging.cgi:cgi>
 
 <cfset pages=debugging.pages>
 <cfset queries=debugging.queries>
@@ -120,7 +122,7 @@ millisecond:"ms"
 
 
 
-</cfsilent></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
+</cfsilent><cfif context EQ "web"></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp></cfif>
 <style type="text/css">
 <cfoutput>
 .cfdebug {color:#custom.color#;background-color:#custom.bgcolor#;font-family:"#custom.font#";
@@ -153,7 +155,7 @@ millisecond:"ms"
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Template </td>
-			<td class="cfdebug">#cgi.SCRIPT_NAME# (#getBaseTemplatePath()#)</td>
+			<td class="cfdebug">#_cgi.SCRIPT_NAME# (#expandPath(_cgi.SCRIPT_NAME)#)</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Time Stamp </td>
@@ -169,15 +171,15 @@ millisecond:"ms"
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> User Agent </td>
-			<td class="cfdebug">#cgi.http_user_agent#</td>
+			<td class="cfdebug">#_cgi.http_user_agent#</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Remote IP </td>
-			<td class="cfdebug">#cgi.remote_addr#</td>
+			<td class="cfdebug">#_cgi.remote_addr#</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Host Name </td>
-			<td class="cfdebug">#cgi.server_name#</td>
+			<td class="cfdebug">#_cgi.server_name#</td>
 		</tr>
 		<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")><tr>
 			<td class="cfdebug" nowrap> Architecture</td>
