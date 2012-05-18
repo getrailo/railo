@@ -3,7 +3,7 @@ Defaults --->
 <cfset error.message="">
 <cfset error.detail="">
 <cfparam name="form.mainAction" default="none">
-
+<cfset fullMode=structKeyExists(session,"screenMode") && session.screenMode EQ "full">
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
@@ -168,10 +168,10 @@ Error Output --->
 
 
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%" border="0">
 <tr>
-<td valign="top">
-<table class="tbl" width="300">
+<td valign="top" width="60%">
+<table class="tbl" width="100%">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Info#</h2></td>
 </tr>
@@ -308,6 +308,18 @@ Error Output --->
 		#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 	</td> 
 </tr>
+<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+<tr>
+	<td class="tblHead" width="150">Architecture</td>
+	<td class="tblContent">
+		<cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif>
+	</td> 
+</tr>
+</cfif>
+
+
+
+<!---
 <tr>
 	<td class="tblHead" width="150">Classpath</td>
 	<td class="tblContent">
@@ -320,17 +332,18 @@ Error Output --->
    </div>
 	</td> 
 </tr>
+--->
 </table>
 
 
 </td>
-<td valign="top">
+<td valign="top" width="40%">
 
 <!--- Memory Usage --->
 <cftry>
 <cfsavecontent variable="memoryInfo">
 
-<table class="tbl">
+<table class="tbl" width="100%">
 
 <tr>
 	<td><h2>Memory Usage</h2></td>
@@ -354,9 +367,6 @@ Error Output --->
 
 
 <!--- Support --->
-
-
-
 <table class="tbl" width="100%">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Support#</h2></td>
@@ -395,18 +405,30 @@ Error Output --->
     
     </td>
 </tr>
-
 </table>
 
 
 
 </td>
 </tr>
-
-
-
 </table>
+<table class="tbl" width="100%">
 
+<tr>
+	<td><h2>Classpath</h2></td>
+</tr>
+<tr>
+	<td class="tblContent">
+    	
+	<div class="tblContent" style="font-family:Courier New;font-size : #fullMode?9:8#pt;overflow:auto;width:100%;height:100px;border-style:solid;border-width:1px;padding:0px">
+    <cfset arr=getClasspath()>
+    <cfloop from="1" to="#arrayLen(arr)#" index="line">
+    <span style="background-color:###line mod 2?'d2e0ee':'ffffff'#;display:block;padding:1px 5px 1px 5px ;">#arr[line]#</span>
+    </cfloop>
+   </div>
+	</td> 
+</tr>
+</table>
 
 
 <br><br>
