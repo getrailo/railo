@@ -670,6 +670,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="buttons.verify">überprüfen</data>
 	<data key="buttons.flush">leeren</data>
 	<data key="buttons.stopstart">stop/start</data>
+	<data key="buttons.back">zurück</data>
 	<data key="buttons.previous">restart</data>
 	<data key="buttons.addarchive">dem Mapping zuweisen</data>
 	<data key="buttons.cancel">abbrechen</data>
@@ -814,9 +815,11 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
 	<data key="settings.cache.defaulttypeTemplateDesc">Diese Cache Connection wird für Template Caching verwendet (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
-	<data key="settings.cache.defaulttypeQueryDesc">Diese Cache Connection wird für für das cache von cfquery Resultsets verwendet.</data>
+	<data key="settings.cache.defaulttypeQueryDesc">Diese Cache Connection wird für für das cachen von cfquery Resultsets verwendet.</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">Diese Cache Connection wird für die Ram Resource (ram://...) verwendet.</data>
+	<data key="settings.cache.defaulttypeFunction">Function</data>
+	<data key="settings.cache.defaulttypeFunctionDesc">Diese Cache Connection wird für für das cachen von cffunction/function Resultsets verwendet.</data>
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>

@@ -644,6 +644,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="buttons.verify">verify</data>
 	<data key="buttons.flush">flush</data>
 	<data key="buttons.stopstart">stop/start</data>
+	<data key="buttons.back">back</data>
 	<data key="buttons.previous">previous</data>
 	<data key="buttons.addarchive">assign archive to mapping</data>
 	<data key="buttons.cancel">cancel</data>
@@ -1034,7 +1035,9 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
 	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for template caching (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
-	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for the caching of the tag cfquery</data>
+	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for caching the results of the tag cfquery</data>
+	<data key="settings.cache.defaulttypeFunction">Function</data>
+	<data key="settings.cache.defaulttypeFunctionDesc">This cache connection is used for caching the results of the tag cffunction/function</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">This cache connection is used for the Ram Resource (ram://...)</data>
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
