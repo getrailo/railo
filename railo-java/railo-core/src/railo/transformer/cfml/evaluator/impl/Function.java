@@ -5,14 +5,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.functions.system.CFFunction;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastString;
+import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -52,15 +56,28 @@ public final class Function extends EvaluatorSupport {
 			}
 				
 		}
-		// attribute abstract
-		Attribute attrAbstract = tag.getAttribute("abstract");
-		if(attrAbstract!=null) {
-			Expression expr = CastBoolean.toExprBoolean(attrAbstract.getValue());
-			if(!(expr instanceof LitBoolean))
-				throw new EvaluatorException("Attribute abstract of the Tag Function, must be a literal boolean value (true or false, yes or no)");
-			boolean abstr = ((LitBoolean)expr).getBooleanValue();
+		// attribute modifier
+		Attribute attrModifier = tag.getAttribute("modifier");
+		if(attrModifier!=null) {
+			ExprString expr = CastString.toExprString(attrModifier.getValue());
+			if(!(expr instanceof Literal))
+				throw new EvaluatorException("Attribute modifier of the Tag Function, must be one of the following literal string values: [abstract] or [final]");
+			String modifier=StringUtil.emptyIfNull(((Literal)expr).getString()).trim();
+			if(!StringUtil.isEmpty(modifier) && !"abstract".equalsIgnoreCase(modifier) && !"final".equalsIgnoreCase(modifier))
+				throw new EvaluatorException("Attribute modifier of the Tag Function, must be one of the following literal string values: [abstract] or [final]");
+			
+			
+			boolean abstr = "abstract".equalsIgnoreCase(modifier);
 			if(abstr)throwIfNotEmpty(tag);
 		}
+		
+		// cachedWithin
+		Attribute attrCachedWithin = tag.getAttribute("cachedwithin");
+		if(attrCachedWithin!=null) {
+			Expression val = attrCachedWithin.getValue();
+			tag.addAttribute(new Attribute(attrCachedWithin.isDynamicType(), attrCachedWithin.getName(), LitLong.toExpr(ASMUtil.timeSpanToLong(val), null, null), "numeric"));
+		}
+		
 		
 		// Attribute Output
 		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehändelt

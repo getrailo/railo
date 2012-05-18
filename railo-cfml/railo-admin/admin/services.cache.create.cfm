@@ -250,7 +250,7 @@ Error Output --->
             	<td><b>#stText.Settings.cache.default#</b><br />
                 <select name="default">
                 	<option value="">------</option>
-                    <cfloop index="type" list="object,template,query,resource">
+                    <cfloop index="type" list="object,template,query,resource,function">
                 	<option <cfif connection.default EQ type>selected="selected"</cfif> value="#type#">#stText.Settings.cache['defaultType'& type]#</option>
                     </cfloop>
                 	</select><br />

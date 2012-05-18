@@ -2,9 +2,15 @@ package railo.runtime.type.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
+import railo.runtime.op.Decision;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -70,6 +76,32 @@ public class UDFUtil {
 		
 		pe.setAdditional(KeyImpl.init("Documentation"), doc);
 		
+	}
+
+	public static String callerHash(UDF udf, Object[] args, Struct values) throws ApplicationException {
+		StringBuilder sb=new StringBuilder(udf.getPageSource().getDisplayPath())
+			.append(';')
+			.append(udf.getFunctionName())
+			.append(';');
+		
+		if(values!=null) {
+			Iterator<Entry<Key, Object>> it = values.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()){
+				e = it.next();
+				if(!Decision.isSimpleValue(e.getValue())) throw new ApplicationException("only simple values are allowed as paremter for a function with cachedWithin");
+				sb.append(e.getKey().getString()).append(':').append(e.getValue()).append(';');
+				
+			}
+		}
+		else if(args!=null){
+			for(int i=0;i<args.length;i++){
+				if(!Decision.isSimpleValue(args[i])) throw new ApplicationException("only simple values are allowed as paremter for a function with cachedWithin");
+				sb.append(args[i]).append(';');
+				
+			}
+		}
+		return sb.toString();
 	}
 
 }

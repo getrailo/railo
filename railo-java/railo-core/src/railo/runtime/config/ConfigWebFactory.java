@@ -1947,7 +1947,21 @@ public final class ConfigWebFactory {
         else 
         	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,"");
     
-     	// default query
+     // default function
+    	String defaultUDF=eCache.getAttribute("default-function");
+        if(hasAccess && !StringUtil.isEmpty(defaultUDF)){
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,defaultUDF);
+        }
+        else if(hasCS){
+        	if(eCache.hasAttribute("default-function"))
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,"");
+        	else
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION));
+        }
+        else 
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,"");
+        
+     // default query
     	String defaultQuery=eCache.getAttribute("default-query");
         if(hasAccess && !StringUtil.isEmpty(defaultQuery)){
         	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,defaultQuery);

@@ -1387,6 +1387,9 @@ public final class ConfigWebAdmin {
         else if(_default==ConfigImpl.CACHE_DEFAULT_RESOURCE){
         	parent.setAttribute("default-resource",name);
         }
+        else if(_default==ConfigImpl.CACHE_DEFAULT_FUNCTION){
+        	parent.setAttribute("default-function",name);
+        }
         
         // Update
         //boolean isUpdate=false;
@@ -1437,6 +1440,9 @@ public final class ConfigWebAdmin {
         else if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE){
         	parent.removeAttribute("default-resource");
         }
+        else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
+        	parent.removeAttribute("default-function");
+        }
     }
 	
 	public void updateCacheDefaultConnection(int type,String name) throws PageException {
@@ -1458,6 +1464,9 @@ public final class ConfigWebAdmin {
         }
         else if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE){
         	parent.setAttribute("default-resource", name);
+        }
+        else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
+        	parent.setAttribute("default-function", name);
         }
     }
 	

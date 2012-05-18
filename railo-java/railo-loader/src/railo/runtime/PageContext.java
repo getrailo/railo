@@ -136,6 +136,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      */
     public abstract Session sessionScope() throws PageException;
+    
+    public abstract void setFunctionScopes(Local local,Argument argument);
 
     /**
      * @return server scope

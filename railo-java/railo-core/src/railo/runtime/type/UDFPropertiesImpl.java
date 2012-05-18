@@ -19,8 +19,6 @@ import railo.runtime.engine.ThreadLocalPageSource;
 import railo.runtime.exp.ExpressionException;
 
 public final class UDFPropertiesImpl implements UDFProperties {
-
-
 	public  String functionName;
 	public  int returnType;
 	public  String strReturnType;
@@ -35,11 +33,11 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	public String description;
 	public Boolean secureJson;
 	public Boolean verifyClient;
-	public boolean async;
 	public String strReturnFormat;
 	public int returnFormat;
 	public Set<Collection.Key> argumentsSet;
-	public int access; 
+	public int access;
+	public long cachedWithin; 
 
 	/**
 	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
@@ -56,13 +54,13 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        String strReturnType, 
 	        String strReturnFormat, 
 	        boolean output, 
-	        boolean async, 
 	        int access, 
 	        String displayName, 
 	        String description, 
 	        String hint, 
 	        Boolean secureJson,
 	        Boolean verifyClient,
+	        long cachedWithin,
 	        StructImpl meta) throws ExpressionException {
 		
 		// this happens when a arcive is based on older source code
@@ -79,7 +77,6 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		}
 		else this.argumentsSet=null;
 		this.arguments = arguments;
-		this.async = async;
 		this.description = description;
 		this.displayName = displayName;
 		this.functionName = functionName;
@@ -99,9 +96,8 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;
 		this.access = access;
-		
+		this.cachedWithin=cachedWithin;
 	}
-	
 	
 		
 	
@@ -113,13 +109,13 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        short returnType, 
 	        String strReturnFormat, 
 	        boolean output, 
-	        boolean async, 
 	        int access, 
 	        String displayName, 
 	        String description, 
 	        String hint, 
 	        Boolean secureJson,
 	        Boolean verifyClient,
+	        long cachedWithin,
 	        StructImpl meta) throws ExpressionException {
 		
 		// this happens when a arcive is based on older source code
@@ -137,7 +133,6 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		else this.argumentsSet=null;
 		
 		this.arguments = arguments;
-		this.async = async;
 		this.description = description;
 		this.displayName = displayName;
 		this.functionName = functionName;
@@ -155,7 +150,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.secureJson = secureJson;
 		this.verifyClient = verifyClient;
 		this.access = access;
-		
+		this.cachedWithin=cachedWithin;
 	}
 	
 	
@@ -177,9 +172,9 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		SizeOf.size(description)+
 		SizeOf.size(secureJson)+
 		SizeOf.size(verifyClient)+
-		SizeOf.size(async)+
 		SizeOf.size(strReturnFormat)+
-		SizeOf.size(returnFormat);
+		SizeOf.size(returnFormat)+
+		SizeOf.size(cachedWithin);
 	}
 	
 
@@ -208,7 +203,6 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		index = in.readInt();
 		returnFormat = in.readInt();
 		returnType = in.readInt();
-		async = in.readBoolean();
 		description = ExternalizableUtil.readString(in);
 		displayName = ExternalizableUtil.readString(in);
 		functionName = ExternalizableUtil.readString(in);
@@ -219,6 +213,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		strReturnFormat = ExternalizableUtil.readString(in);
 		strReturnType = ExternalizableUtil.readString(in);
 		verifyClient = ExternalizableUtil.readBoolean(in);
+		cachedWithin = in.readLong();
 		
 		if(arguments!=null && arguments.length>0){
 			this.argumentsSet=new HashSet<Collection.Key>();
@@ -238,7 +233,6 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		out.writeInt(index);
 		out.writeInt(returnFormat);
 		out.writeInt(returnType);
-		out.writeBoolean(async);
 		ExternalizableUtil.writeString(out,description);
 		ExternalizableUtil.writeString(out,displayName);
 		ExternalizableUtil.writeString(out,functionName);
@@ -249,6 +243,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		ExternalizableUtil.writeString(out,strReturnFormat);
 		ExternalizableUtil.writeString(out,strReturnType);
 		ExternalizableUtil.writeBoolean(out,verifyClient);
+		out.writeLong(cachedWithin);
 		
 		
 	}

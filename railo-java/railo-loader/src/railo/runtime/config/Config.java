@@ -108,6 +108,7 @@ public interface Config {
 	public static final int CACHE_DEFAULT_TEMPLATE = 2;
 	public static final int CACHE_DEFAULT_QUERY = 4;
 	public static final int CACHE_DEFAULT_RESOURCE = 8;
+	public static final int CACHE_DEFAULT_FUNCTION = 16;
 
 	
 	

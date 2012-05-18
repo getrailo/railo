@@ -2477,8 +2477,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		if(def.equals("template")) return ConfigImpl.CACHE_DEFAULT_TEMPLATE;
 		if(def.equals("query")) return ConfigImpl.CACHE_DEFAULT_QUERY;
 		if(def.equals("resource")) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
+		if(def.equals("function")) return ConfigImpl.CACHE_DEFAULT_FUNCTION;
     	
-		throw new ApplicationException("invalid default type ["+def+"], valid default types are [object,template]");
+		throw new ApplicationException("invalid default type ["+def+"], valid default types are [object,template,query,resource,function]");
 	}
 
 	private void doUpdateCacheDefaultConnection() throws PageException {
@@ -2486,6 +2487,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE,getString("admin",action,"template"));
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY,getString("admin",action,"query"));
 		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE,getString("admin",action,"resource"));
+		admin.updateCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION,getString("admin",action,"function"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -2495,6 +2497,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE);
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
 		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
+		admin.removeCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3123,6 +3126,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         CacheConnection defTmp=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE);
         CacheConnection defQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
         CacheConnection defRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
+        CacheConnection defUDF=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
         int row=0;
         String def;
 		while(it.hasNext()){
@@ -3135,6 +3139,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	if(cc==defTmp)def="template";
         	if(cc==defQry)def="query";
         	if(cc==defRes)def="resource";
+        	if(cc==defUDF)def="function";
         	qry.setAtEL("class", row, cc.getClazz().getName());
         	qry.setAtEL("name", row, cc.getName());
         	qry.setAtEL("custom", row, cc.getCustom());
@@ -3159,8 +3164,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	type=ConfigImpl.CACHE_DEFAULT_QUERY;
         else if(strType.equals("resource"))
         	type=ConfigImpl.CACHE_DEFAULT_RESOURCE;
+        else if(strType.equals("function"))
+        	type=ConfigImpl.CACHE_DEFAULT_FUNCTION;
         else
-        	throw new ApplicationException("inv,query,resourcealid type defintion, valid values are [object, template]");
+        	throw new ApplicationException("inv,query,resourcealid type defintion, valid values are [object, template,query,resource,function]");
 		
         CacheConnection cc = config.getCacheDefaultConnection(type);
         if(cc!=null){
@@ -3187,6 +3194,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		CacheConnection dTmp=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_TEMPLATE);
 		CacheConnection dQry=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_QUERY);
 		CacheConnection dRes=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_RESOURCE);
+		CacheConnection dUDF=config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_FUNCTION);
 		
 		Struct sct;
 		String d;
@@ -3200,6 +3208,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 else if(cc==dTmp)d="template";
                 else if(cc==dQry)d="query";
                 else if(cc==dRes)d="resource";
+                else if(cc==dUDF)d="function";
                 sct.setEL(KeyImpl.NAME,cc.getName());
                 sct.setEL("class",cc.getClazz().getName());
                 sct.setEL("custom",cc.getCustom());

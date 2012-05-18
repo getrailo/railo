@@ -20,6 +20,7 @@
                 template="#StructKeyExists(form,'template')?form.template:''#"
                 query="#StructKeyExists(form,'query')?form.query:''#"
                 resource="#StructKeyExists(form,'resource')?form.resource:''#"
+                function="#StructKeyExists(form,'function')?form.function:''#"
                 remoteClients="#request.getRemoteClients()#">				
 		</cfcase>
     <!--- delete --->
@@ -99,8 +100,6 @@ Redirtect to entry --->
 </cfloop>
 <cfset querySort(connections,"default")>
 <cfoutput>
-
-
 
 	<cfif  access NEQ "yes"><cfset noAccess(stText.Settings.cache.noAccess)></cfif>
 
@@ -269,15 +268,12 @@ Redirtect to entry --->
 	select default cache --->
 <cfif connections.recordcount and access EQ "yes">
 <cfoutput>
-	
-	
-    
 	<table class="tbl" width="740">
     <tr>
 		<td colspan="2"><h2>#stText.Settings.cache.defaultTitle#</h2>#stText.Settings.cache.defaultDesc#</td>
 	</tr>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-    <cfloop index="type" list="object,template,query,resource"><!---  --->
+    <cfloop index="type" list="object,template,query,resource,function"><!---  --->
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.cache['defaulttype'& type]#</td>
 		<td class="tblContent" width="300"><select name="#type#">

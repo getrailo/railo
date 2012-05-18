@@ -21,6 +21,7 @@ import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
@@ -38,8 +39,10 @@ import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.util.ASMConstants;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public abstract class Function extends StatementBase implements Opcodes, IFunction,HasBody {
 
@@ -115,13 +118,13 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 					Types.STRING,
 					Types.STRING,
 					Types.BOOLEAN_VALUE,
-					Types.BOOLEAN_VALUE,
 					Types.INT_VALUE,
 					Types.STRING,
 					Types.STRING,
 					Types.STRING,
 					Types.BOOLEAN,
 					Types.BOOLEAN,
+					Types.LONG_VALUE,
 					Page.STRUCT_IMPL
 				}
     		);
@@ -136,13 +139,13 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 					Types.SHORT_VALUE,
 					Types.STRING,
 					Types.BOOLEAN_VALUE,
-					Types.BOOLEAN_VALUE,
 					Types.INT_VALUE,
 					Types.STRING,
 					Types.STRING,
 					Types.STRING,
 					Types.BOOLEAN,
 					Types.BOOLEAN,
+					Types.LONG_VALUE,
 					Page.STRUCT_IMPL
 				}
     		);
@@ -248,7 +251,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	ExprString name;
 	ExprString returnType=ANY;
 	ExprBoolean output=LitBoolean.TRUE;
-	ExprBoolean abstr=LitBoolean.FALSE;
+	//ExprBoolean abstry=LitBoolean.FALSE;
 	int access=Component.ACCESS_PUBLIC;
 	ExprString displayName=LitString.EMPTY;
 	ExprString hint=LitString.EMPTY;
@@ -261,6 +264,10 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	ExprBoolean verifyClient;
 	protected int valueIndex;
 	protected int arrayIndex;
+	private long cachedWithin;
+	private boolean _abstract;
+	private boolean _final;
+	
 
 	public Function(Page page,String name,int access,String returnType,Body body,Position start, Position end) {
 		super(start,end);
@@ -274,23 +281,24 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		arrayIndex=indexes[ARRAY_INDEX];
 	}
 	
-	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression abstr,
+	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
-			Expression verifyClient,Body body,Position start, Position end) {
+			Expression verifyClient,long cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
 		super(start,end);
+		
 		this.name=CastString.toExprString(name);
 		this.returnType=CastString.toExprString(returnType);
 		this.returnFormat=returnFormat!=null?CastString.toExprString(returnFormat):null;
 		this.output=CastBoolean.toExprBoolean(output);
-		this.abstr=CastBoolean.toExprBoolean(abstr);
 		this.access=access;
 		this.description=description!=null?CastString.toExprString(description):null;
 		this.displayName=CastString.toExprString(displayName);
 		this.hint=CastString.toExprString(hint);
 		this.secureJson=secureJson!=null?CastBoolean.toExprBoolean(secureJson):null;
 		this.verifyClient=verifyClient!=null?CastBoolean.toExprBoolean(verifyClient):null;
-		//checkNameConflict(this.name);
-
+		this.cachedWithin=cachedWithin;
+		this._abstract=_abstract;
+		this._final=_final;
 		
 		this.body=body;
 		body.setParent(this);
@@ -377,8 +385,6 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		else ASMConstants.NULL(adapter);
 		// output
 		ExpressionUtil.writeOutSilent(output,bc, Expression.MODE_VALUE);
-		// abstract
-		ExpressionUtil.writeOutSilent(abstr,bc, Expression.MODE_VALUE);
 		// access
 		writeOutAccess(bc, access);
 		// displayName
@@ -394,6 +400,10 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		// verify client
 		if(verifyClient!=null)ExpressionUtil.writeOutSilent(verifyClient,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		
+		// cachedwithin
+		adapter.push(cachedWithin<0?0:cachedWithin);
+		
 		// meta
 		Page.createMetaDataStruct(bc,metadata,null);
 		
@@ -621,13 +631,31 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		}
 		
 		else if("output".equals(name))		this.output=toLitBoolean(name,attr.getValue());
-		else if("abstract".equals(name))	this.abstr=toLitBoolean(name,attr.getValue());
 		else if("displayname".equals(name))	this.displayName=toLitString(name,attr.getValue());
 		else if("hint".equals(name))		this.hint=toLitString(name,attr.getValue());
 		else if("description".equals(name))	this.description=toLitString(name,attr.getValue());
 		else if("returnformat".equals(name))this.returnFormat=toLitString(name,attr.getValue());
 		else if("securejson".equals(name))	this.secureJson=toLitBoolean(name,attr.getValue());
 		else if("verifyclient".equals(name))	this.verifyClient=toLitBoolean(name,attr.getValue());
+		else if("cachedwithin".equals(name))	{
+			try {
+				this.cachedWithin=ASMUtil.timeSpanToLong(attr.getValue());
+			} catch (EvaluatorException e) {
+				throw new TemplateException(e.getMessage());
+			}
+		}
+		else if("modifier".equals(name))	{
+			Expression val = attr.getValue();
+			if(val instanceof Literal) {
+				Literal l=(Literal) val;
+				String str = StringUtil.emptyIfNull(l.getString()).trim();
+				if("abstract".equalsIgnoreCase(str))_abstract=true;
+				else if("final".equalsIgnoreCase(str))_final=true;
+			}
+		}
+		
+		
+		
 		else {
 			toLitString(name,attr.getValue());// needed for testing
 			if(metadata==null)metadata=new HashMap();
