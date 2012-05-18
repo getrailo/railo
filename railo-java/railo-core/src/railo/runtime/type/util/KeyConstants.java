@@ -761,7 +761,7 @@ public class KeyConstants {
 		return _____keys.contains(key)?key:null;
 	}
 	
-	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, PageException {
+	/*public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, PageException {
 	
 		
 			Field[] fields = KeyConstants.class.getFields();
@@ -774,7 +774,7 @@ public class KeyConstants {
 				if(!name.equals(value))print.e(name+":"+value);
 			}
 		
-	}
+	}*/
 	
 	
 	
