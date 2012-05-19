@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
 import railo.runtime.PageContext;
@@ -155,7 +157,7 @@ public class CFMLExpressionInterpreter {
 	protected boolean allowNullConstant=false;
 	private boolean preciseMath;
 	
-    private final static Map<String,Ref> data=new WeakHashMap();
+    private final static Map<String,Ref> data=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	
 
 	 
