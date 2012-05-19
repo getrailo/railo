@@ -2693,8 +2693,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#removeLastPageSource(boolean)
      */
     public void removeLastPageSource(boolean alsoInclude) {
-    	pathList.removeLast();
-        if(alsoInclude) 
+    	if(!pathList.isEmpty())pathList.removeLast();
+        if(alsoInclude && !includePathList.isEmpty()) 
             includePathList.removeLast();
     }
 
@@ -2711,7 +2711,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#removeLastPageSource(boolean)
      */
     public void removeUDF() {
-    	udfs.pop();
+    	if(!udfs.isEmpty())udfs.pop();
     }
 
     /**

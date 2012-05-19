@@ -6,12 +6,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.commons.io.DevNullOutputStream;
 import railo.runtime.Component;
+import railo.runtime.PageContext;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.thread.ThreadUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -24,8 +28,20 @@ import railo.runtime.type.util.ArrayUtil;
  */
 public class JavaProxy {
 	
-	public static Object call(Component cfc, String methodName, Object... arguments) {
+	public static Object call(ConfigWeb config,Component cfc, String methodName, Object... arguments) {
 		try {
+			
+			PageContext pc = ThreadLocalPageContext.get();
+			if(pc==null) {
+				//PageSource ps = cfc.getPageSource();
+				pc=ThreadUtil.createPageContext(
+						config, 
+						DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, 
+						"Railo", "/", "", null, null, null, null);
+				pc.addPageSource(cfc.getPageSource(), true);
+				
+			}
+			
 			return cfc.call(
 					ThreadLocalPageContext.get(), 
 					methodName, 
