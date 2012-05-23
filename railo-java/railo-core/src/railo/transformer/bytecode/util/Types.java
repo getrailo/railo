@@ -252,6 +252,7 @@ public final class Types {
             if("file".equals(lcType)) 								return FILE;
             if("float".equals(type))								return FLOAT_VALUE;
             if("float".equals(lcType))								return FLOAT;
+            if("function".equals(lcType))								return UDF;
         break;
         case 'i':
             if("int".equals(lcType))								return INT_VALUE;
@@ -318,7 +319,7 @@ public final class Types {
 		try {
 			return Type.getType(ClassUtil.loadClass(type));
 		} catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),null);
+			throw new BytecodeException(e,null);
 		}
 	}
 

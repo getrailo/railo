@@ -480,6 +480,7 @@ public final class Cast extends ExpressionBase {
         	if("file".equals(lcType)) 							return Types.FILE;
             if("float".equals(type)) 							return Types.FLOAT_VALUE;
             if("float".equals(lcType))							return Types.FLOAT;
+            if("function".equals(lcType))							return Types.UDF;
         break;
 
         case 'i':
