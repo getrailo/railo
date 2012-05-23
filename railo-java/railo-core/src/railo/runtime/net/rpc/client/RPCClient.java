@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -61,6 +62,7 @@ import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
@@ -70,6 +72,7 @@ import railo.runtime.type.UDFImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.ObjectsEntryIterator;
 import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
@@ -921,6 +924,12 @@ public final class RPCClient implements Objects, Iteratorable{
 	public Iterator valueIterator() {
 		return new ObjectsIterator(keyIterator(),this);
 	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new ObjectsEntryIterator(keyIterator(), this);
+	}
+	
 
 	public Call getLastCall() {
 		return last;

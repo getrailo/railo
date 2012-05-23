@@ -7,16 +7,16 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 
-public class ObjectsIterator implements Iterator {
+public class ObjectsIterator implements Iterator<Object> {
 
-	private Iterator keys;
+	private Iterator<Key> keys;
 	private Objects objs;
 
 	public ObjectsIterator(Key[] keys, Objects objs) {
 		this.keys=new KeyIterator(keys);
 		this.objs=objs;
 	}
-	public ObjectsIterator(Iterator keys, Objects objs) {
+	public ObjectsIterator(Iterator<Key> keys, Objects objs) {
 		this.keys=keys;
 		this.objs=objs;
 	}

@@ -3,6 +3,7 @@ package railo.runtime.com;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -12,11 +13,13 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
+import railo.runtime.type.it.ObjectsEntryIterator;
 
 import com.jacob.com.Dispatch;
 import com.jacob.com.Variant;
@@ -296,12 +299,13 @@ public final class COMObject implements Objects, Iteratorable {
         return new KeyAsStringIterator(keyIterator());
     }
     
-    
-
-    /**
-     * @see railo.runtime.type.Iteratorable#valueIterator()
-     */
-    public Iterator valueIterator() {
+    @Override
+	public Iterator<Object> valueIterator() {
         return new COMValueWrapperIterator(this);
     }
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new ObjectsEntryIterator(keyIterator(), this);
+	}
 }
