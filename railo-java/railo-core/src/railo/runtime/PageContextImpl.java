@@ -1252,7 +1252,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     public Client clientScopeEL() { 
 		if(client==null) {
-			if(!applicationContext.hasName()) 				return null;
+			if(applicationContext==null || !applicationContext.hasName()) 				return null;
 			if(!applicationContext.isSetClientManagement())	return null;
 			client= scopeContext.getClientScopeEL(this);
 		}

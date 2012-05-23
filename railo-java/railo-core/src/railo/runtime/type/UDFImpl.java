@@ -4,7 +4,6 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,7 +11,6 @@ import java.util.Map.Entry;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import railo.commons.io.cache.Cache;
-import railo.commons.io.cache.CacheEntry;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
@@ -21,7 +19,6 @@ import railo.runtime.ComponentImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
-import railo.runtime.cache.CacheUtil;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.component.MemberSupport;
 import railo.runtime.config.ConfigImpl;
@@ -54,7 +51,7 @@ import railo.runtime.writer.BodyContentUtil;
 public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizable {
 	
 	private static final FunctionArgument[] EMPTY = new FunctionArgument[0];
-	private final RamCache DEFAULT_CACHE=new RamCache();
+	private static final RamCache DEFAULT_CACHE=new RamCache();
 	
 	
 	
@@ -292,8 +289,8 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
     private Object _callCachedWithin(PageContext pc, Object[] args, Struct values,boolean doIncludePath) throws PageException {
     	PageContextImpl pci=(PageContextImpl) pc;
     	String id = UDFUtil.callerHash(this,args,values);
-
-		Cache cache = Util.getDefault(pc.getConfig(),ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
+    	
+		Cache cache = Util.getDefault(pc.getConfig(),ConfigImpl.CACHE_DEFAULT_FUNCTION,DEFAULT_CACHE);	
 		Object o =  cache.getValue(id,null);
 		
 		// get from cache
