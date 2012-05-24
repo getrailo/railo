@@ -426,24 +426,10 @@ public abstract class ComponentProxy implements Component {
 	}
 
 	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object get(PageContext pc, String key, Object defaultValue) {
-		return getComponent().get(pc, key, defaultValue);
-	}
-
-	/**
 	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(PageContext pc, Key key, Object defaultValue) {
 		return getComponent().get(pc, key, defaultValue);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
-	 */
-	public Object get(PageContext pc, String key) throws PageException {
-		return getComponent().get(pc, key);
 	}
 
 	/**
@@ -454,26 +440,11 @@ public abstract class ComponentProxy implements Component {
 	}
 
 	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object set(PageContext pc, String propertyName, Object value)
-			throws PageException {
-		return getComponent().set(pc, propertyName, value);
-	}
-
-	/**
 	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(PageContext pc, Key propertyName, Object value)
 			throws PageException {
 		return getComponent().set(pc, propertyName, value);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object setEL(PageContext pc, String propertyName, Object value) {
-		return getComponent().setEL(pc, propertyName, value);
 	}
 
 	/**
@@ -498,14 +469,7 @@ public abstract class ComponentProxy implements Component {
 			Struct args) throws PageException {
 		return getComponent().callWithNamedValues(pc, methodName, args);
 	}
-
-	/**
-	 * @see railo.runtime.type.Objects#isInitalized()
-	 */
-	public boolean isInitalized() {
-		return getComponent().isInitalized();
-	}
-
+	
 	/**
 	 * @see railo.runtime.Component#getProperties(boolean)
 	 */

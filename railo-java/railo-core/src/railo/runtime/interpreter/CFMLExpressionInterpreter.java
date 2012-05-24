@@ -1476,7 +1476,7 @@ public class CFMLExpressionInterpreter {
             if (checkLibrary && !isDynamic) {
                 // current attribues from library
                 FunctionLibFunctionArg funcLibAtt = (FunctionLibFunctionArg) arrFuncLibAtt.get(count);
-                short type=CFTypes.toShort(funcLibAtt.getType(),CFTypes.TYPE_UNKNOW);
+                short type=CFTypes.toShort(funcLibAtt.getTypeAsString(),CFTypes.TYPE_UNKNOW);
                 if(type==CFTypes.TYPE_VARIABLE_STRING) {
                     arr.add(functionArgDeclarationVarString());
                 }

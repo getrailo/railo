@@ -1118,15 +1118,6 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	}
 
 	/**
-	 * @see railo.runtime.type.QueryImpl#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-	 */
-	
-	public Object call(PageContext pc, String methodName, Object[] arguments)
-			throws PageException {
-		throw notSupported();
-	}
-
-	/**
 	 * @see railo.runtime.type.QueryImpl#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
 	
@@ -1135,14 +1126,6 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		throw notSupported();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
-	
-	public Object callWithNamedValues(PageContext pc, String methodName,
-			Struct args) throws PageException {
-		throw notSupported();
-	}
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
@@ -1191,15 +1174,6 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	
 	public boolean isInitalized() {
 		return true;
-	}
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	
-	public Object set(PageContext pc, String propertyName, Object value)
-			throws PageException {
-		throw notSupported();
 	}
 
 	/**

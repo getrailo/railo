@@ -472,8 +472,8 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		// first search if a argument match
 		for(int i=0;i<nargs.length;i++){
 			if(names[i]!=null && names[i].equalsIgnoreCase(flfan)) {
-				nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
-				return new VT(nargs[i].getValue(),flfa.getType(),i);
+				nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
+				return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 			}
 		}
 		
@@ -483,8 +483,8 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 			//String[] arrAlias = railo.runtime.type.List.toStringArray(railo.runtime.type.List.trimItems(railo.runtime.type.List.listToArrayRemoveEmpty(alias, ',')));
 			for(int i=0;i<nargs.length;i++){
 				if(names[i]!=null && railo.runtime.type.List.listFindNoCase(alias, names[i])!=-1){
-					nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
-					return new VT(nargs[i].getValue(),flfa.getType(),i);
+					nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
+					return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 				}
 			}
 		}

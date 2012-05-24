@@ -135,6 +135,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.documentation.label">Dokumentation</data>
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
+	<data key="menu.documentation.objRef">Object Reference</data>
 	<data key="security.customtagdescription">Custom tags können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.tagobject">Tag CFObject / Funktion createObject</data>
 	<data key="security.debugging">Debugging</data>

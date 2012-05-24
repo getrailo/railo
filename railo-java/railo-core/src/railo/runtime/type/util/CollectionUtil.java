@@ -43,13 +43,7 @@ public class CollectionUtil {
 		return arr;
 	}*/
 	
-	
-
-	public static String getKeyList(Collection coll, String delimiter) {
-		if(coll.size()==0) return "";
-		
-		
-		Iterator<Key> it = coll.keyIterator();
+	public static String getKeyList(Iterator<Key> it, String delimiter) {
 		StringBuilder sb=new StringBuilder(it.next().getString());
 		if(delimiter.length()==1) {
 			char c=delimiter.charAt(0);
@@ -67,6 +61,12 @@ public class CollectionUtil {
 		
 
 		return sb.toString();
+	}
+	
+
+	public static String getKeyList(Collection coll, String delimiter) {
+		if(coll.size()==0) return "";
+		return getKeyList(coll.keyIterator(), delimiter);
 	}
 
 	public static Key[] keys(Collection coll) { 
@@ -90,6 +90,8 @@ public class CollectionUtil {
 		}
 		return rtn.toArray(new String[rtn.size()]);
 	}
+
+	
 	
 	
 

@@ -444,13 +444,6 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	}
 
     /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
-    public boolean isInitalized() {
-        return component.isInitalized();
-    }
-
-    /**
      *
      * @see railo.runtime.Component#getAccess()
      */

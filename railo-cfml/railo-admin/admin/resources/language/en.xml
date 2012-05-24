@@ -199,6 +199,7 @@
 	<data key="menu.documentation.label">Documentation</data>
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
+	<data key="menu.documentation.objRef">Object Reference</data>
 	<data key="charset.templatecharsetdescription">Default character set for templates (*.cfm and *.cfc files)</data>
 	<data key="charset.webcharsetdescription">Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header</data>
 	<data key="charset.webcharset">Web charset</data>

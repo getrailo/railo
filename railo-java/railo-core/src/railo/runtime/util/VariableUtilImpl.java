@@ -20,7 +20,6 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
@@ -61,7 +60,7 @@ public final class VariableUtilImpl implements VariableUtil {
 	public Object get(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).get(pc,key,defaultValue);
+            return ((Objects)coll).get(pc,KeyImpl.init(key),defaultValue);
         }
 		// Collection
         else if(coll instanceof Collection) {
@@ -191,7 +190,7 @@ public final class VariableUtilImpl implements VariableUtil {
 	public Object getLight(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).get(pc,key,defaultValue);
+            return ((Objects)coll).get(pc,KeyImpl.init(key),defaultValue);
         }
 		// Collection
         else if(coll instanceof Collection) {
@@ -435,7 +434,7 @@ public final class VariableUtilImpl implements VariableUtil {
     public Object set(PageContext pc, Object coll, String key,Object value) throws PageException {
         // Objects
         if(coll instanceof Objects) { 
-            ((Objects)coll).set(pc,key,value);
+            ((Objects)coll).set(pc,KeyImpl.init(key),value);
             return value;
         }
         // Collection
@@ -494,12 +493,12 @@ public final class VariableUtilImpl implements VariableUtil {
     public Object setEL(PageContext pc, Object coll, String key,Object value) {
         // Objects
         if(coll instanceof Objects) { 
-            ((Objects)coll).setEL(pc,key,value);
+            ((Objects)coll).setEL(pc,KeyImpl.init(key),value);
             return value;
         }
         // Collection
         else if(coll instanceof Collection) { 
-			((Collection)coll).setEL(key,value);
+			((Collection)coll).setEL(KeyImpl.init(key),value);
 			return value;
 		}
 		// Map
@@ -721,12 +720,12 @@ public final class VariableUtilImpl implements VariableUtil {
 	public Object callFunctionWithoutNamedValues(PageContext pc, Object coll, Collection.Key key, Object[] args) throws PageException {
 		// Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).call(pc,key,args);
+        	return ((Objects)coll).call(pc,key,args);
         }
         // call UDF
 	    Object prop=getLight(pc,coll,key,null);	
 	    if(prop instanceof UDF) {
-			return ((UDF)prop).call(pc,args,false);
+	    	return ((UDF)prop).call(pc,args,false);
 		}
         // call Object Wrapper      
 	    if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {

@@ -377,13 +377,6 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	}
 
 	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
-		return set(KeyImpl.init(propertyName), value);
-	}
-
-	/**
 	 *
 	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */

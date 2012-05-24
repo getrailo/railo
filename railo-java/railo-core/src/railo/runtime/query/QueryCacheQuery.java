@@ -102,24 +102,10 @@ public class QueryCacheQuery extends QueryImpl {
 	}
 
 	/**
-	 * @see railo.runtime.type.QueryImpl#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-	 */
-	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
-		return query.call(pc, methodName, arguments);
-	}
-
-	/**
 	 * @see railo.runtime.type.QueryImpl#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
 	public Object call(PageContext pc, Collection.Key methodName, Object[] arguments) throws PageException {
 		return query.call(pc, methodName, arguments);
-	}
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
-	public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
-		return query.callWithNamedValues(pc, methodName, args);
 	}
 
 	/**

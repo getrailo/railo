@@ -18,7 +18,8 @@ public final class LFunctionValue extends RefSupport implements Ref {
 
 
     private Ref name;
-    private Ref value;
+    private Ref refValue;
+    private Object objValue;
 
     /**
      * constructor of the class
@@ -27,7 +28,11 @@ public final class LFunctionValue extends RefSupport implements Ref {
      */
     public LFunctionValue(Ref name, Ref value) {
     	this.name=name;
-        this.value=value;
+        this.refValue=value;
+    }
+    public LFunctionValue(Ref name, Object value) {
+    	this.name=name;
+        this.objValue=value;
     }
     
 
@@ -52,15 +57,15 @@ public final class LFunctionValue extends RefSupport implements Ref {
     public Object getValue() throws PageException {
         
         if(name instanceof Variable){
-        	return new FunctionValueImpl(toStringArray((Set)name),value.getValue());
+        	return new FunctionValueImpl(toStringArray((Set)name),refValue==null?objValue:refValue.getValue());
         }
         if(name instanceof Literal) {
-        	return new FunctionValueImpl(((Literal)name).getString(),value.getValue());
+        	return new FunctionValueImpl(((Literal)name).getString(),refValue==null?objValue:refValue.getValue());
         }
         
         // TODO no idea if this is ever used
         if(name instanceof Set){
-        	return new FunctionValueImpl(railo.runtime.type.List.arrayToList(toStringArray((Set)name),"."),value.getValue());
+        	return new FunctionValueImpl(railo.runtime.type.List.arrayToList(toStringArray((Set)name),"."),refValue==null?objValue:refValue.getValue());
         }
         throw new ExpressionException("invalid syntax in named argument");
         //return new FunctionValueImpl(key,value.getValue());

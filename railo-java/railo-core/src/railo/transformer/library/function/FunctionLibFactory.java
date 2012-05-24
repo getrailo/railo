@@ -248,9 +248,12 @@ public final class FunctionLibFactory extends DefaultHandler {
 				else if(inside.equals("tte-class"))
 					function.setTteClass(value);
     			
-				
+
 				else if(inside.equals("description"))
 					function.setDescription(value);
+
+				else if(inside.equals("member-name"))
+					function.setMemberName(value);
 				
 				else if(inside.equals("status"))
 					function.setStatus(TagLibFactory.toStatus(value));

@@ -6,18 +6,29 @@ import java.util.List;
 
 import org.apache.poi.ss.formula.functions.T;
 
+import railo.commons.lang.CFTypes;
+import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.functions.arrays.ArrayEach;
+import railo.runtime.functions.closure.Each;
 import railo.runtime.op.Caster;
+import railo.runtime.reflection.Reflector;
+import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Objects;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.Struct;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.scope.Undefined;
 
-public abstract class ArraySupport extends AbstractList implements Array,List,Sizeable {
+public abstract class ArraySupport extends AbstractList implements Array,List,Sizeable,Objects {
 
 	
 	public static final short TYPE_OBJECT = 0;
@@ -342,6 +353,36 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	public boolean equals(Object obj){
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key, defaultValue);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
 	}
 	
 }

@@ -80,6 +80,7 @@ import railo.runtime.type.sql.ClobImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.QueryUtil;
 
 /**
@@ -1933,33 +1934,18 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-	 */
-	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
-		return Reflector.callMethod(this,methodName,arguments);
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
-		return Reflector.callMethod(this,methodName,arguments);
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
-	public Object callWithNamedValues(PageContext pc, String methodName,Struct args) throws PageException {		
-		throw new ExpressionException("No matching Method/Function ["+methodName+"] for call with named arguments found");
+		return MemberUtil.call(pc, this, methodName, arguments, railo.commons.lang.CFTypes.TYPE_QUERY, "query");
+		//return Reflector.callMethod(this,methodName,arguments);
 	}
 
 	/**
 	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
 	 */
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {	
-		throw new ExpressionException("No matching Method/Function ["+methodName.getString()+"] for call with named arguments found");
+		return MemberUtil.callWithNamedValues(pc, this, methodName, args,railo.commons.lang.CFTypes.TYPE_QUERY, "query");
 	}
 
 	/**

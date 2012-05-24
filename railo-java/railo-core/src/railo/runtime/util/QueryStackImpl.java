@@ -3,6 +3,7 @@ package railo.runtime.util;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -74,7 +75,7 @@ public final class QueryStackImpl implements QueryStack {
 		
 		// get data from queries
 		for(int i=start;i<queries.length;i++) {
-			rtn=((Objects)queries[i]).get(pc,key,"");
+			rtn=((Objects)queries[i]).get(pc,KeyImpl.init(key),"");
 			if(rtn!=null) {
 				return rtn;
 			}

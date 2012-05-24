@@ -4,17 +4,21 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.KeyAsStringIterator;
 
@@ -38,9 +42,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	}
 	
 	
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return StructUtil.sizeOf(this);
 	}
@@ -52,30 +54,22 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return StructUtil.entrySet(this);
 	}
 
-	/**
-	 * @see java.util.Map#get(java.lang.Object)
-	 */
+	@Override
 	public final Object get(Object key) {
 		return get(KeyImpl.toKey(key,null), null);
 	}
 
-	/**
-	 * @see java.util.Map#isEmpty()
-	 */
+	@Override
 	public final boolean isEmpty() {
 		return size()==0;
 	}
 
-	/**
-	 * @see java.util.Map#keySet()
-	 */
+	@Override
 	public Set keySet() {
 		return StructUtil.keySet(this);
 	}
 
-	/**
-	 * @see java.util.Map#put(K, V)
-	 */
+	@Override
 	public final Object put(Object key, Object value) {
 		return setEL(KeyImpl.toKey(key,null), value);
 	}
@@ -87,160 +81,113 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		StructUtil.putAll(this, t);
 	}
 
-	/**
-	 * @see java.util.Map#remove(java.lang.Object)
-	 */
+	@Override
 	public final Object remove(Object key) {
 		return removeEL(KeyImpl.toKey(key,null));
 	}
 
-	/**
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public final Object clone(){
 		return duplicate(true);
 	}
 	
-	/**
-	 * @see java.util.Map#containsKey(java.lang.Object)
-	 */
+	@Override
 	public final boolean containsKey(Object key) {
 		return containsKey(KeyImpl.toKey(key,null));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-	 */
+	@Override
 	public final boolean containsKey(String key) {
 		return containsKey(KeyImpl.init(key));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public final Object get(String key, Object defaultValue) {
 		return get(KeyImpl.init(key), defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public final Object get(String key) throws PageException {
 		return get(KeyImpl.init(key));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public final Object set(String key, Object value) throws PageException {
 		return set(KeyImpl.init(key), value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public final Object setEL(String key, Object value) {
 		return setEL(KeyImpl.init(key), value);
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
 		return StructUtil.toDumpTable(this,"Struct",pageContext,maxlevel,properties);
 	}
 
-	/**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
-    public boolean castToBooleanValue() throws PageException {
+	@Override
+	public boolean castToBooleanValue() throws PageException {
         throw new ExpressionException("can't cast Complex Object Type Struct to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
-    public Boolean castToBoolean(Boolean defaultValue) {
+    @Override
+	public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
-    public double castToDoubleValue() throws PageException {
+    @Override
+	public double castToDoubleValue() throws PageException {
         throw new ExpressionException("can't cast Complex Object Type Struct to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
-    public double castToDoubleValue(double defaultValue) {
+    @Override
+	public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
-
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
-    public DateTime castToDateTime() throws PageException {
+    @Override
+	public DateTime castToDateTime() throws PageException {
         throw new ExpressionException("can't cast Complex Object Type Struct to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
-    public DateTime castToDateTime(DateTime defaultValue) {
+    @Override
+	public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
-    public String castToString() throws PageException {
+    @Override
+	public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
           "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString(java.lang.String)
-     */
-    public String castToString(String defaultValue) {
+    @Override
+	public String castToString(String defaultValue) {
         return defaultValue;
     }
 
-
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+    @Override
 	public int compareTo(boolean b) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a String");
 	}
 	
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return LazyConverter.serialize(this);
 	}
@@ -252,9 +199,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return StructUtil.values(this);
 	}
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return values().contains(value);
 	}
@@ -272,16 +217,47 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     	return new KeyAsStringIterator(keyIterator());
     }
 	
-
-	/* *
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 * /
-	public Iterator valueIterator() {
-		return values().iterator();
-	}*/
-	
+    @Override
 	public boolean equals(Object obj){
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);
+	}
+
+    @Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key, defaultValue);
+	}
+
+    @Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+    @Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+    @Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+    @Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).call(pc,args,false);
+		}
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_STRUCT, "struct");
+	}
+
+    @Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		}
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_STRUCT, "struct");
 	}
 }

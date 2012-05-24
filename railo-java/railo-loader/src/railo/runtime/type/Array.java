@@ -6,7 +6,7 @@ import railo.runtime.exp.PageException;
 /**
  * 
  */
-public interface Array extends Collection,Cloneable {
+public interface Array extends Collection,Cloneable,Objects {
 		
 	/**
 	 * return dimension of the array

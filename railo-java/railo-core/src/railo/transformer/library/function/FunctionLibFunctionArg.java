@@ -2,6 +2,7 @@ package railo.transformer.library.function;
 
 import java.io.IOException;
 
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.Md5;
 import railo.transformer.library.tag.TagLib;
 
@@ -12,6 +13,9 @@ import railo.transformer.library.tag.TagLib;
  */
 public final class FunctionLibFunctionArg {
 	
+
+	private static final short UNDEFINED = -12553; 
+
 
 	/**
 	 * @return the hidden
@@ -28,6 +32,7 @@ public final class FunctionLibFunctionArg {
 	private String defaultValue=null;
 	private boolean hidden;	
 	private short status=TagLib.STATUS_IMPLEMENTED;
+	private short type=UNDEFINED;
 
 	
 	/**
@@ -50,8 +55,11 @@ public final class FunctionLibFunctionArg {
 	 * Gibt den Typ des Argument zurück (query, struct, string usw.)
 	 * @return Typ des Argument
 	 */
-	public String getType() {
-		return strType;
+	public short getType() {
+		if(type==UNDEFINED) {
+			type=CFTypes.toShort(strType,CFTypes.TYPE_UNKNOW);
+		}
+		return type;
 	}
 
 	/**
@@ -167,7 +175,7 @@ public final class FunctionLibFunctionArg {
 		sb.append(this.getDefaultValue());
 		sb.append(this.getName());
 		sb.append(this.getRequired());
-		sb.append(this.getType());
+		sb.append(this.getTypeAsString());
 		sb.append(this.getTypeAsString());
 		sb.append(this.getAlias());
 		

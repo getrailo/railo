@@ -2,24 +2,43 @@ package railo.runtime.type.util;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.ArrayUtilException;
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.arrays.ArrayAppend;
+import railo.runtime.functions.arrays.ArrayEach;
+import railo.runtime.functions.arrays.ArrayLen;
+import railo.runtime.interpreter.ref.Ref;
+import railo.runtime.interpreter.ref.cast.Casting;
+import railo.runtime.interpreter.ref.func.BIFCall;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
+import railo.runtime.reflection.Reflector;
+import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.runtime.type.comparator.SortRegister;
+import railo.transformer.library.function.FunctionLib;
+import railo.transformer.library.function.FunctionLibFunction;
+import railo.transformer.library.function.FunctionLibFunctionArg;
 
 /**
  * Util for diffrent methods to manipulate arrays

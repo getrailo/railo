@@ -40,7 +40,7 @@ public class UDFUtil {
 			if(c++>0)pattern.append(", ");
 			pattern.append(arg.getName());
 			pattern.append(":");
-			pattern.append(arg.getType());
+			pattern.append(arg.getTypeAsString());
 			
 		}
 		pattern.append(end);
@@ -64,7 +64,7 @@ public class UDFUtil {
 			tmp.append("- ");
 			tmp.append(arg.getName());
 			tmp.append(" (");
-			tmp.append(arg.getType());
+			tmp.append(arg.getTypeAsString());
 			tmp.append("): ");
 			tmp.append(arg.getDescription());
 			tmp.append("\n");
