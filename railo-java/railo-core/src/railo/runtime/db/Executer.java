@@ -21,7 +21,6 @@ import railo.runtime.sql.old.ZOrderBy;
 import railo.runtime.sql.old.ZQuery;
 import railo.runtime.sql.old.ZSelectItem;
 import railo.runtime.sql.old.ZqlParser;
-import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;

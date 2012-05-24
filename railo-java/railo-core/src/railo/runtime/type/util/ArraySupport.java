@@ -12,21 +12,14 @@ import railo.runtime.converter.LazyConverter;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.functions.arrays.ArrayEach;
-import railo.runtime.functions.closure.Each;
 import railo.runtime.op.Caster;
-import railo.runtime.reflection.Reflector;
-import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.Undefined;
 
 public abstract class ArraySupport extends AbstractList implements Array,List,Sizeable,Objects {
 

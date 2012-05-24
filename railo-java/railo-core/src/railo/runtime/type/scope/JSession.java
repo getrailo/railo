@@ -14,10 +14,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 import railo.runtime.PageContext;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.storage.MemoryScope;
-import railo.runtime.type.scope.storage.StorageScopeImpl;
 import railo.runtime.type.util.KeyConstants;
 
 /**

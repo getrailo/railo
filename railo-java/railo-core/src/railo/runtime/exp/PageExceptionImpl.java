@@ -7,7 +7,6 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;

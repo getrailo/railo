@@ -3,12 +3,10 @@ package railo.runtime.type.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Struct;
 
 public class CollectionUtil {
 

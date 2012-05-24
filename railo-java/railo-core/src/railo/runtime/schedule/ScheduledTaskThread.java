@@ -1,6 +1,5 @@
 package railo.runtime.schedule;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
 

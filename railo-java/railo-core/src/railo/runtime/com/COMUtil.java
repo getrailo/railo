@@ -7,7 +7,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 
-import com.jacob.com.Currency;
 import com.jacob.com.Variant;
 
 /**

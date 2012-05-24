@@ -4,7 +4,6 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;
 
 /**

@@ -30,8 +30,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.jacob.com.LibraryLoader;
-
 import railo.aprint;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
@@ -125,7 +123,6 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.text.xml.XMLCaster;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -139,6 +136,8 @@ import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
+
+import com.jacob.com.LibraryLoader;
 
 /**
  * 

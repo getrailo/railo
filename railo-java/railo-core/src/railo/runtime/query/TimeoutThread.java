@@ -1,6 +1,5 @@
 package railo.runtime.query;
 
-import railo.print;
 import railo.commons.io.SystemUtil;
 
 public class TimeoutThread extends Thread {

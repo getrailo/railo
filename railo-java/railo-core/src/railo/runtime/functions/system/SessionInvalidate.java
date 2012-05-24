@@ -1,6 +1,5 @@
 package railo.runtime.functions.system;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.exp.PageException;

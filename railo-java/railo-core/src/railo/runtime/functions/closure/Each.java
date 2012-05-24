@@ -13,13 +13,10 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.functions.arrays.ArrayAppend;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Iteratorable;
-import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 
 

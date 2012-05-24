@@ -11,7 +11,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.functions.s3.StoreGetACL;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.KeyConstants;
 

@@ -7,7 +7,6 @@ import java.sql.Types;
 
 import railo.commons.io.log.Log;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.DatasourceConnection;

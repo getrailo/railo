@@ -3,7 +3,6 @@ package railo.runtime.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +19,6 @@ import java.util.TimeZone;
 import javax.servlet.ServletException;
 
 import org.apache.commons.collections.map.ReferenceMap;
-
-import com.sun.tools.javac.util.Version;
 
 import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
@@ -71,7 +68,6 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;

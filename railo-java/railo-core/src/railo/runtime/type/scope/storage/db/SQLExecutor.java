@@ -4,12 +4,10 @@ import java.sql.SQLException;
 
 import railo.commons.io.log.Log;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
-import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.StorageScopeListener;
 import railo.runtime.type.scope.storage.clean.DatasourceStorageScopeCleaner;

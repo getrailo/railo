@@ -3,7 +3,6 @@ package railo.runtime.security;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 

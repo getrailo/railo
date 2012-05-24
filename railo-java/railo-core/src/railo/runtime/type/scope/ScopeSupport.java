@@ -21,7 +21,6 @@ import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 

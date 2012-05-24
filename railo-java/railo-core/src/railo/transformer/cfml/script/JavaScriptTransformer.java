@@ -1,13 +1,5 @@
 package railo.transformer.cfml.script;
 
-import japa.parser.JavaParser;
-import japa.parser.ast.CompilationUnit;
-
-import java.io.ByteArrayInputStream;
-
-import org.objectweb.asm.Label;
-
-import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;

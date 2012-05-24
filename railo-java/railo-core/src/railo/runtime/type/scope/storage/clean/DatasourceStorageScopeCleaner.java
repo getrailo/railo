@@ -1,7 +1,6 @@
 package railo.runtime.type.scope.storage.clean;
 
 import java.sql.SQLException;
-import java.sql.Types;
 
 import railo.commons.io.log.Log;
 import railo.runtime.config.ConfigImpl;
@@ -11,16 +10,7 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.db.SQL;
-import railo.runtime.db.SQLImpl;
-import railo.runtime.db.SQLItem;
-import railo.runtime.db.SQLItemImpl;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
-import railo.runtime.type.scope.storage.StorageScopeDatasource;
 import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.StorageScopeListener;
 import railo.runtime.type.scope.storage.db.SQLExecutionFactory;

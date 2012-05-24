@@ -1,40 +1,27 @@
 package railo.runtime.type.scope.storage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 
 import railo.commons.io.log.Log;
-import railo.commons.lang.ExceptionUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.converter.ConverterException;
-import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.db.SQL;
-import railo.runtime.db.SQLCaster;
-import railo.runtime.db.SQLImpl;
-import railo.runtime.db.SQLItem;
-import railo.runtime.db.SQLItemImpl;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ScopeContext;
-import railo.runtime.type.scope.storage.db.SQLExecutor;
 import railo.runtime.type.scope.storage.db.SQLExecutionFactory;
+import railo.runtime.type.scope.storage.db.SQLExecutor;
 
 /**
  * client scope that store it's data in a datasource

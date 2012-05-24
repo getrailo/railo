@@ -7,7 +7,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
-import railo.runtime.type.Array;
 import railo.runtime.type.Struct;
 
 public class ORMExecuteQuery {

@@ -23,7 +23,6 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.statement.udf.FunctionImpl;
-import railo.transformer.bytecode.util.ASMUtil;
  
 public final class TagFunction extends TagBase implements IFunction {
 

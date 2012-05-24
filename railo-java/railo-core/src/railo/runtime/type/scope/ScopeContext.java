@@ -40,7 +40,6 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.scope.client.ClientCache;
 import railo.runtime.type.scope.client.ClientCookie;
 import railo.runtime.type.scope.client.ClientDatasource;

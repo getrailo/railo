@@ -2,7 +2,6 @@ package railo.runtime.interpreter;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.apache.commons.collections.map.ReferenceMap;
 

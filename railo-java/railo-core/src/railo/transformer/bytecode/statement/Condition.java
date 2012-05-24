@@ -11,7 +11,6 @@ import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
-import railo.transformer.bytecode.statement.Condition.Pair;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
 
