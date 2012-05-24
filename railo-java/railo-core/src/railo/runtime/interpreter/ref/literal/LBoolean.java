@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.literal;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
@@ -48,42 +49,32 @@ public final class LBoolean extends RefSupport implements Literal {
 	}
 	
 	
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getValue()
-	 */
-	public Object getValue() {
+	@Override
+	public Object getValue(PageContext pc) {
 		return literal;
 	}
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public String getTypeName() {
+	@Override
+    public String getTypeName() {
 		return "literal";
 	}
 
-    /**
-     * @see railo.runtime.interpreter.ref.literal.Literal#getString()
-     */
-    public String getString() {
-        return Caster.toString(literal.booleanValue());
+	@Override
+    public String getString(PageContext pc) {
+        return toString();
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
+	@Override
     public String toString() {
-        return getString(); 
+        return Caster.toString(literal.booleanValue()); 
     }
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#eeq(railo.runtime.interpreter.ref.Ref)
-	 */
-	public boolean eeq(Ref other) throws PageException {
+    @Override
+	public boolean eeq(PageContext pc,Ref other) throws PageException {
 		if(other instanceof LNumber){
 			return literal.booleanValue()==((LBoolean)other).literal.booleanValue();
 		}
-		return RefUtil.eeq(this,other);
+		return RefUtil.eeq(pc,this,other);
 	}
 
 }

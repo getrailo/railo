@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.literal;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.util.RefUtil;
@@ -34,57 +35,42 @@ public final class LNumber implements Literal {
         this.literal=Caster.toDouble(literal);
     }
     
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() {
+    @Override
+	public Object getValue(PageContext pc) {
         return literal;
     }
     
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getCollection()
-     */
-    public Object getCollection() {
-        return getValue();
+    @Override
+	public Object getCollection(PageContext pc) {
+        return getValue(pc);
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-     */
+    @Override
     public String getTypeName() {
         return "number";
     }
     
-
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#touchValue()
-     */
-    public Object touchValue() {
-        return getValue();
+    @Override
+    public Object touchValue(PageContext pc) {
+        return getValue(pc);
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.literal.Literal#getString()
-     */
-    public String getString() {
+    @Override
+    public String getString(PageContext pc) {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
         return Caster.toString(literal.doubleValue());
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return getString();
-    }
-
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#eeq(railo.runtime.interpreter.ref.Ref)
-	 */
-	public boolean eeq(Ref other) throws PageException {
+    @Override
+	public boolean eeq(PageContext pc,Ref other) throws PageException {
 		if(other instanceof LNumber){
 			return literal.doubleValue()==((LNumber)other).literal.doubleValue();
 		}
 		// TODO Auto-generated method stub
-		return RefUtil.eeq(this,other);
+		return RefUtil.eeq(pc,this,other);
 	}
 }

@@ -10,6 +10,7 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
@@ -168,11 +169,11 @@ public class CFMLExpressionInterpreter {
 
     public Object interpret(PageContext pc,String str, boolean preciseMath) throws PageException { 
     	Ref ref = data.get(str+":"+preciseMath);
-    	if(ref!=null)return ref.getValue();
+    	if(ref!=null)return ref.getValue(pc);
     	
     	this.cfml=new ParserString(str);
     	this.preciseMath = preciseMath;
-    	this.pc=pc;
+    	this.pc=ThreadLocalPageContext.get(pc);
         if(pc!=null)fld=((ConfigImpl)pc.getConfig()).getCombinedFLDs();
         
         if(JSON_ARRAY==null)JSON_ARRAY=fld.getFunction("_jsonArray");
@@ -184,7 +185,7 @@ public class CFMLExpressionInterpreter {
         
         if(cfml.isAfterLast()) {
         	data.put(str+":"+preciseMath,ref);
-            return ref.getValue();
+            return ref.getValue(pc);
         }
         throw new ExpressionException("Syntax Error, invalid Expression ["+cfml.toString()+"]");
     }
@@ -203,11 +204,11 @@ public class CFMLExpressionInterpreter {
     
     protected Object interpretPart(PageContext pc,ParserString cfml) throws PageException { 
         this.cfml = cfml;
-        this.pc=pc;
+        this.pc=ThreadLocalPageContext.get(pc);
         if(pc!=null)fld=((ConfigImpl)pc.getConfig()).getCombinedFLDs();
         
         cfml.removeSpace();
-        return assignOp().getValue();
+        return assignOp().getValue(pc);
     }
 
     /**
@@ -268,7 +269,7 @@ public class CFMLExpressionInterpreter {
         if (cfml.forwardIfCurrent('=')) {
             cfml.removeSpace();
             if(mode==STATIC || ref instanceof Literal) {
-                ref=new DynAssign(pc,ref,assignOp());
+                ref=new DynAssign(ref,assignOp());
             }
             else {
                 ref=new Assign(ref,assignOp());
@@ -752,12 +753,12 @@ public class CFMLExpressionInterpreter {
 		if (cfml.forwardIfCurrent('=')) {
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new  Concat(pc,ref,right);
+			Ref res = new  Concat(ref,right);
 			ref=new Assign(ref,res);
 		}
 		else {	
             cfml.removeSpace();
-            ref=new Concat(pc,ref,plusMinusOp());
+            ref=new Concat(ref,plusMinusOp());
 		}
 		return ref;
 	}
@@ -906,7 +907,7 @@ public class CFMLExpressionInterpreter {
 				return new Assign(expr,res);
 			}
         	cfml.removeSpace();
-	        return new Casting(pc,"numeric",CFTypes.TYPE_NUMERIC,clip());
+	        return new Casting("numeric",CFTypes.TYPE_NUMERIC,clip());
         	
         }
         return clip();
@@ -998,7 +999,7 @@ public class CFMLExpressionInterpreter {
 		//if (!cfml.forwardIfCurrent(end))
 		//	throw new ExpressionException("Invalid Syntax Closing ["+end+"] not found");
 		
-		return new BIFCall(pc,flf,args);
+		return new BIFCall(flf,args);
 	}
     
     /**
@@ -1056,7 +1057,7 @@ public class CFMLExpressionInterpreter {
         mode=STATIC;
         if(value!=null) {
             if(str.isEmpty()) return value;
-            return new Concat(pc,value,str);
+            return new Concat(value,str);
         }
         return str;
     }
@@ -1215,12 +1216,12 @@ public class CFMLExpressionInterpreter {
                 name = identifier(true);
                 if(name==null) throw new ExpressionException("Invalid identifier");
                 cfml.removeSpace();
-                ref=new Variable(pc,ref,name);
+                ref=new Variable(ref,name);
             }
             // []
             else if (cfml.forwardIfCurrent('[')) {
             	cfml.removeSpace();
-                ref=new Variable(pc,ref,assignOp());
+                ref=new Variable(ref,assignOp());
                 cfml.removeSpace();
                 if (!cfml.forwardIfCurrent(']'))
                     throw new ExpressionException("Invalid Syntax Closing []] not found");
@@ -1235,7 +1236,7 @@ public class CFMLExpressionInterpreter {
             if (cfml.isCurrent('(')) {
                 if(!(ref instanceof Set)) throw new ExpressionException("invalid syntax "+ref.getTypeName()+" can't called as function");
                 Set set=(Set) ref;
-                ref=new UDFCall(pc,set.getParent(),set.getKey(),functionArg(name,false, null,')'));
+                ref=new UDFCall(set.getParent(pc),set.getKey(pc),functionArg(name,false, null,')'));
             }
         }
         if(ref instanceof railo.runtime.interpreter.ref.var.Scope) { 
@@ -1264,10 +1265,10 @@ public class CFMLExpressionInterpreter {
             FunctionLibFunction function = fld.getFunction(name);
             Ref[] arguments = functionArg(name,true, function,')');
         	//print.out(name+":"+(function!=null));
-            if(function!=null) return new BIFCall(pc,function,arguments);
+            if(function!=null) return new BIFCall(function,arguments);
 
-            Ref ref = new railo.runtime.interpreter.ref.var.Scope(pc,Scope.SCOPE_UNDEFINED);
-            return new UDFCall(pc,ref,name,arguments);
+            Ref ref = new railo.runtime.interpreter.ref.var.Scope(Scope.SCOPE_UNDEFINED);
+            return new UDFCall(ref,name,arguments);
         }
         //check scope
         return scope(name);
@@ -1316,7 +1317,7 @@ public class CFMLExpressionInterpreter {
             	args[i]=arguments[i];
             }
             args[args.length-1]=refName;
-            BIFCall bif = new BIFCall(pc,function,args);
+            BIFCall bif = new BIFCall(function,args);
         	cfml.removeSpace();
         	return bif;
         	
@@ -1346,14 +1347,14 @@ public class CFMLExpressionInterpreter {
             String name=identifier(false);
             if(name!=null){
                 cfml.removeSpace();
-                return new Variable(pc,new railo.runtime.interpreter.ref.var.Scope(pc,ScopeSupport.SCOPE_VAR),name);
+                return new Variable(new railo.runtime.interpreter.ref.var.Scope(ScopeSupport.SCOPE_VAR),name);
             }
         }
         int scope = VariableInterpreter.scopeString2Int(idStr);
         if(scope==Scope.SCOPE_UNDEFINED) {
-            return new Variable(pc,new railo.runtime.interpreter.ref.var.Scope(pc,Scope.SCOPE_UNDEFINED),idStr);
+            return new Variable(new railo.runtime.interpreter.ref.var.Scope(Scope.SCOPE_UNDEFINED),idStr);
         }
-        return new railo.runtime.interpreter.ref.var.Scope(pc,scope);
+        return new railo.runtime.interpreter.ref.var.Scope(scope);
         
     }
     
@@ -1482,7 +1483,7 @@ public class CFMLExpressionInterpreter {
                 }
                 else {
                 	ref = functionArgDeclaration();
-                	arr.add(new Casting(pc,funcLibAtt.getTypeAsString(),type,ref));
+                	arr.add(new Casting(funcLibAtt.getTypeAsString(),type,ref));
                 }
             } 
             else {

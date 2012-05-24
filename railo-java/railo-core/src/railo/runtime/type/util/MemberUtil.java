@@ -67,12 +67,12 @@ public class MemberUtil {
 			FunctionLibFunctionArg arg;
 			if(args.length<_args.size()){
 				ArrayList<Ref> refs=new ArrayList<Ref>();
-				refs.add(new Casting(pc,strType,type,coll));
+				refs.add(new Casting(strType,type,coll));
 				for(int y=0;y<args.length;y++){
 					arg = _args.get(y+1);
-					refs.add(new Casting(pc,arg.getTypeAsString(),arg.getType(),args[y]));
+					refs.add(new Casting(arg.getTypeAsString(),arg.getType(),args[y]));
 				}
-				return new BIFCall(pc, member, refs.toArray(new Ref[refs.size()])).getValue();
+				return new BIFCall( member, refs.toArray(new Ref[refs.size()])).getValue(pc);
 			}
 			
 		}
@@ -94,7 +94,7 @@ public class MemberUtil {
 				Object val;
 				ArrayList<Ref> refs=new ArrayList<Ref>();
 				arg=_args.get(0);
-				refs.add(new Casting(pc,arg.getTypeAsString(),arg.getType(),new LFunctionValue(new LString(arg.getName()),coll)));
+				refs.add(new Casting(arg.getTypeAsString(),arg.getType(),new LFunctionValue(new LString(arg.getName()),coll)));
 				for(int y=1;y<_args.size();y++){
 					arg = _args.get(y);
 					
@@ -119,12 +119,12 @@ public class MemberUtil {
 						}
 					}
 					else{
-						refs.add(new Casting(pc,arg.getTypeAsString(),arg.getType(),new LFunctionValue(new LString(arg.getName()),val)));
+						refs.add(new Casting(arg.getTypeAsString(),arg.getType(),new LFunctionValue(new LString(arg.getName()),val)));
 						//refs.add(new LFunctionValue(new LString(arg.getName()),new Casting(pc,arg.getTypeAsString(),arg.getType(),val)));
 					}
 					
 				}
-				return new BIFCall(pc, member, refs.toArray(new Ref[refs.size()])).getValue();
+				return new BIFCall(member, refs.toArray(new Ref[refs.size()])).getValue(pc);
 			}
 			
 		}

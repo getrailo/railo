@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.var;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
@@ -24,17 +25,13 @@ public final class Assign extends RefSupport implements Ref {
         this.value=value;
     }
 	
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getValue()
-	 */
-	public Object getValue() throws PageException {
-        return coll.setValue(value.getValue());
+    @Override
+    public Object getValue(PageContext pc) throws PageException {
+        return coll.setValue(pc,value.getValue(pc));
 	}
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public String getTypeName() {
+    @Override
+    public String getTypeName() {
 		return "operation";
 	}
 }

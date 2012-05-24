@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.literal;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 
@@ -13,6 +14,6 @@ public interface Literal extends Ref {
      * @return casted string
      * @throws PageException
      */
-    String getString() throws PageException;
+    String getString(PageContext pc) throws PageException;
 
 }

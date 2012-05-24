@@ -2,6 +2,7 @@ package railo.runtime.interpreter.ref.op;
 
 import java.math.BigDecimal;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
@@ -28,23 +29,21 @@ public abstract class Big extends RefSupport implements Ref {
 		this.right=right;
 	}
 
-	protected static BigDecimal toBigDecimal(Ref ref) throws PageException {
+	protected static BigDecimal toBigDecimal(PageContext pc,Ref ref) throws PageException {
 		if(ref instanceof LBigDecimal) return ((LBigDecimal)ref).getBigDecimal();
-		return new BigDecimal(Caster.toString(ref.getValue()));
+		return new BigDecimal(Caster.toString(ref.getValue(pc)));
 	}
 
-	protected final BigDecimal getLeft() throws PageException {
-		return toBigDecimal(left);
+	protected final BigDecimal getLeft(PageContext pc) throws PageException {
+		return toBigDecimal(pc,left);
 	}
 	
-	protected final BigDecimal getRight() throws PageException {
-		return toBigDecimal(right);
+	protected final BigDecimal getRight(PageContext pc) throws PageException {
+		return toBigDecimal(pc,right);
 	}
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public final String getTypeName() {
+	@Override
+    public final String getTypeName() {
 		return "operation";
 	}
 

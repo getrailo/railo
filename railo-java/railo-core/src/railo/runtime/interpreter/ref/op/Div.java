@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.op;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
@@ -23,18 +24,14 @@ public final class Div extends RefSupport implements Ref {
         this.right=right;
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() throws PageException {
-    	double r=Caster.toDoubleValue(right.getValue());
+    @Override
+	public Object getValue(PageContext pc) throws PageException {
+    	double r=Caster.toDoubleValue(right.getValue(pc));
     	if(r==0d)throw new ArithmeticException("Division by zero is not possible");
-        return new Double(Caster.toDoubleValue(left.getValue())/r);
+        return new Double(Caster.toDoubleValue(left.getValue(pc))/r);
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-     */
+    @Override
     public String getTypeName() {
         return "operation";
     }

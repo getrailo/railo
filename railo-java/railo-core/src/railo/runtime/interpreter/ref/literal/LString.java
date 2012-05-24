@@ -1,5 +1,7 @@
 package railo.runtime.interpreter.ref.literal;
 
+import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
@@ -25,38 +27,28 @@ public final class LString extends RefSupport implements Literal {
 	}
 	
 
-    /**
-	 * @see railo.runtime.interpreter.ref.Ref#getValue()
-	 */
-	public Object getValue() {
+	@Override
+	public Object getValue(PageContext pc) {
 		return str;
 	}	
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		return getString();
+	@Override
+    public String toString() {
+		return str;
 	}
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public String getTypeName() {
+	@Override
+    public String getTypeName() {
 		return "literal";
 	}
 
-    /**
-     * @see railo.runtime.interpreter.ref.literal.Literal#getString()
-     */
-    public String getString() {
-        return str;
+	@Override
+    public String getString(PageContext pc) {
+        return toString();
     }
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#eeq(railo.runtime.interpreter.ref.Ref)
-	 */
-	public boolean eeq(Ref other) throws PageException {
-		return RefUtil.eeq(this,other);
+	@Override
+    public boolean eeq(PageContext pc,Ref other) throws PageException {
+		return RefUtil.eeq(pc,this,other);
 	}
 }

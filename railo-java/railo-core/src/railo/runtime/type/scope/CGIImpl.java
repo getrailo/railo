@@ -7,11 +7,14 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import railo.print;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
@@ -123,10 +126,9 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Collection.Key key, Object defaultValue) {
-
+		
 		if(req==null) {
-			req=pc. getHttpServletRequest();
-			
+			req=pc.getHttpServletRequest();
 			https=new StructImpl();
 			headers=new StructImpl();
 			String k,v;
@@ -291,7 +293,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	public void initialize(PageContext pc) {
 		isInit=true;
 		this.pc=pc;
-
+		
         if(scriptProtected==ScriptProtected.UNDEFINED) {
 			scriptProtected=((pc.getApplicationContext().getScriptProtect()&ApplicationContext.SCRIPT_PROTECT_CGI)>0)?
 					ScriptProtected.YES:ScriptProtected.NO;
