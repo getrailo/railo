@@ -355,7 +355,7 @@ All elements in the array must contain values that can be automatically converte
 		<argument>
 			<name>closure</name>
 			<alias>udf,function</alias>
-			<type>UDF</type>
+			<type>function</type>
 			<required>Yes</required>
 			<description>UDF/Closure that call with the values from array</description>
 		</argument>
@@ -377,7 +377,7 @@ All elements in the array must contain values that can be automatically converte
 		</argument>
 		<argument>
 			<name>filter</name>
-			<type>UDF</type>
+			<type>function</type>
 			<required>Yes</required>
 			<description>filter can be a function/closure that implements the following constructor [function(any arg):boolean].</description>
 		</argument>
@@ -2770,8 +2770,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
-	
-	
 	
 	<!-- Empty -->
 	<function>
@@ -10694,7 +10692,7 @@ The value determines whether the image is blurred or sharpened:
 		</argument>
 		<argument>
 			<name>filter</name>
-			<type>UDF</type>
+			<type>function</type>
 			<required>Yes</required>
 			<description>filter can be a function/closure that implements the following constructor [function(any value):boolean].</description>
 		</argument>
@@ -14259,7 +14257,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>closure</name>
 			<alias>udf,function</alias>
-			<type>UDF</type>
+			<type>function</type>
 			<required>Yes</required>
 			<description>UDF/Closure that call with the entries from struct</description>
 		</argument>
@@ -14281,7 +14279,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</argument>
 		<argument>
 			<name>filter</name>
-			<type>UDF</type>
+			<type>function</type>
 			<required>Yes</required>
 			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
 		</argument>

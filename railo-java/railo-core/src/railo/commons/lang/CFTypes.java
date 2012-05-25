@@ -257,6 +257,7 @@ public final class CFTypes {
 	        	case 'u':
 	        	    if(type.equals("uuid")) return TYPE_UUID;
 	                if("usdate".equals(type))return TYPE_DATETIME;
+	                if("udf".equals(type))return TYPE_FUNCTION;
 	        	    break;
 	        	case 'v':
 	        	    if(type.equals("variablename")) return TYPE_VARIABLE_NAME;
