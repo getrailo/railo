@@ -206,23 +206,23 @@ public final class Application extends TagImpl {
 	}
 	
 
-	public void setCacheFunction(String cacheFunction)	{
+	public void setCachefunction(String cacheFunction)	{
 		if(StringUtil.isEmpty(cacheFunction,true)) return;
 		this.cacheFunction=cacheFunction.trim();
 	}
-	public void setCacheQuery(String cacheQuery)	{
+	public void setCachequery(String cacheQuery)	{
 		if(StringUtil.isEmpty(cacheQuery,true)) return;
 		this.cacheQuery=cacheQuery.trim();
 	}
-	public void setCacheTemplate(String cacheTemplate)	{
+	public void setCachetemplate(String cacheTemplate)	{
 		if(StringUtil.isEmpty(cacheTemplate,true)) return;
 		this.cacheTemplate=cacheTemplate.trim();
 	}
-	public void setCacheObject(String cacheObject)	{
+	public void setCacheobject(String cacheObject)	{
 		if(StringUtil.isEmpty(cacheObject,true)) return;
 		this.cacheObject=cacheObject.trim();
 	}
-	public void setCacheResource(String cacheResource)	{
+	public void setCacheresource(String cacheResource)	{
 		if(StringUtil.isEmpty(cacheResource,true)) return;
 		this.cacheResource=cacheResource.trim();
 	}

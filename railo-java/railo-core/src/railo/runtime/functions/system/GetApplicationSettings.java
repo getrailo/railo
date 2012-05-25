@@ -3,11 +3,13 @@ package railo.runtime.functions.system;
 import java.util.Iterator;
 
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.AppListenerUtil;
@@ -19,6 +21,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -42,7 +45,7 @@ public class GetApplicationSettings {
 		sct.setEL("clientstorage", ac.getClientstorage());
 		sct.setEL("sessionstorage", ac.getSessionstorage());
 		sct.setEL("customtagpaths", toArray(ac.getCustomTagMappings()));
-		sct.setEL("datasource", ac.getDefaultDataSource());
+		sct.setEL(KeyConstants._datasource, ac.getDefaultDataSource());
 		sct.setEL("loginstorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
 		sct.setEL("mappings", toStruct(ac.getMappings()));
 		sct.setEL(KeyImpl.NAME, ac.getName());
@@ -79,17 +82,32 @@ public class GetApplicationSettings {
 			sct.setEL("s3", props.toStruct());
 		}
 		
+		//cache
+		String func = ac.getDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION);
+		String obj = ac.getDefaultCacheName(Config.CACHE_DEFAULT_OBJECT);
+		String qry = ac.getDefaultCacheName(Config.CACHE_DEFAULT_QUERY);
+		String res = ac.getDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE);
+		String tmp = ac.getDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE);
+		if(func!=null || obj!=null || qry!=null || res!=null || tmp!=null) {
+			Struct cache=new StructImpl();
+			sct.setEL(KeyConstants._cache, cache);
+			if(func!=null)cache.setEL(KeyConstants._function, func);
+			if(obj!=null)cache.setEL(KeyConstants._object, obj);
+			if(qry!=null)cache.setEL(KeyConstants._query, qry);
+			if(res!=null)cache.setEL(KeyConstants._resource, res);
+			if(tmp!=null)cache.setEL(KeyConstants._template, tmp);
+		}
 		
 		if(cfc!=null){
-			sct.setEL("component", cfc.getPageSource().getDisplayPath());
+			sct.setEL(KeyConstants._component, cfc.getPageSource().getDisplayPath());
 			
 			try {
 				ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
-				Iterator it=cw.keyIterator();
+				Iterator<Key> it = cw.keyIterator();
 				Collection.Key key;
 				Object value;
 		        while(it.hasNext()) {
-		            key=KeyImpl.toKey(it.next());
+		            key=it.next();
 		            value=cw.get(key);
 		            if(suppressFunctions && value instanceof UDF) continue;
 		            if(!sct.containsKey(key))sct.setEL(key, value);
