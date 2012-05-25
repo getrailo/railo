@@ -742,6 +742,7 @@ public class KeyConstants {
 	public static final Key _each = KeyImpl._const("each");
 	public static final Key _member = KeyImpl._const("member");
 	public static final Key _resource = KeyImpl._const("resource");
+	public static final Key _img = KeyImpl._const("img");
 	
 	
 	

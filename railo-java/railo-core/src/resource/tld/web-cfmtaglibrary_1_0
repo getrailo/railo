@@ -3270,9 +3270,14 @@ If omitted, the file's attributes are maintained.</description>
 			<name>accept</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
-accept = "image/jpg, application/msword"
-The browser uses file extension to determine file type. </description>
+			<description>list of supported extensions or/and mimetypes.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>strict</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true (default), only mimetypes are supported.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
