@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayappend
+ * Implements the ColdFusion Function arrayAppend
  */
 package railo.runtime.functions.arrays;
 

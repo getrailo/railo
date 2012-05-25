@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraylen
+ * Implements the ColdFusion Function arrayLen
  */
 package railo.runtime.functions.arrays;
 

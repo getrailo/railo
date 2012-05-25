@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayinsertat
+ * Implements the ColdFusion Function arrayInsertAt
  */
 package railo.runtime.functions.arrays;
 

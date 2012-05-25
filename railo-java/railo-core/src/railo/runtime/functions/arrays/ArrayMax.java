@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraymax
+ * Implements the ColdFusion Function arrayMax
  */
 package railo.runtime.functions.arrays;
 

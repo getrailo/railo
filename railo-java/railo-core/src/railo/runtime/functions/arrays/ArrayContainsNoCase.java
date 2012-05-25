@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listcontainsnocase
+ * Implements the ColdFusion Function listContainsNoCase
  */
 package railo.runtime.functions.arrays;
 

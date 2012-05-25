@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayavg
+ * Implements the ColdFusion Function arrayAvg
  */
 package railo.runtime.functions.arrays;
 

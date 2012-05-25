@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayswap
+ * Implements the ColdFusion Function arraySwap
  */
 package railo.runtime.functions.arrays;
 
