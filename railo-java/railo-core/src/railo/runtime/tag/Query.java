@@ -432,10 +432,10 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		if(clearCache) {
 			hasCached=false;
-			pageContext.getQueryCache().remove(sql,datasource!=null?datasource.getName():null,username,password);
+			pageContext.getQueryCache().remove(pageContext,sql,datasource!=null?datasource.getName():null,username,password);
 		}
 		else if(hasCached) {
-			query=pageContext.getQueryCache().getQuery(sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
+			query=pageContext.getQueryCache().getQuery(pageContext,sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
 		}
 		
 		
@@ -476,7 +476,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				DateTimeImpl cachedBefore = null;
 				//if(cachedWithin!=null)
 					cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
-	                pageContext.getQueryCache().set(sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
+	                pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
                 
                 
 			}

@@ -1,6 +1,13 @@
 package railo.runtime.listener;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.collections.MapUtils;
+
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -8,9 +15,11 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
+import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * 
@@ -54,6 +63,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     private boolean clientCluster;
 	private Resource source;
 	private boolean triggerComponentDataMember;
+	private Map<Integer,String> defaultCaches=new HashMap<Integer, String>();
 
     
     /**
@@ -118,6 +128,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.localMode=localMode;
 		dbl.sessionType=sessionType;
 		dbl.triggerComponentDataMember=triggerComponentDataMember;
+		dbl.defaultCaches=Duplicator.duplicateMap(defaultCaches, new HashMap<Integer, String>(),false );
 		
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
@@ -478,5 +489,16 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void setTriggerComponentDataMember(boolean triggerComponentDataMember) {
 		this.triggerComponentDataMember=triggerComponentDataMember;
+	}
+
+	@Override
+	public void setDefaultCacheName(int type,String name) {
+		if(StringUtil.isEmpty(name,true)) return;
+		defaultCaches.put(type, name.trim());
+	}
+	
+	@Override
+	public String getDefaultCacheName(int type) {
+		return defaultCaches.get(type);
 	}
 }

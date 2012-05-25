@@ -9,9 +9,8 @@ import railo.runtime.type.Sizeable;
 
 public abstract class QueryCacheSupport implements QueryCache,Sizeable,Serializable {
 	
-	public static QueryCacheSupport getInstance(Config config){
-		return new CacheQueryCache(config);
+	public static QueryCacheSupport getInstance(){
+		return new CacheQueryCache();
 		//return new MemoryQueryCache();
 	}
-	public abstract void setConfigWeb(ConfigWeb config);
 }

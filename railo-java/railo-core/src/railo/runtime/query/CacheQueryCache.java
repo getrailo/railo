@@ -8,6 +8,7 @@ import java.util.List;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.lang.KeyGenerator;
+import railo.runtime.PageContext;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.util.CacheKeyFilterAll;
 import railo.runtime.config.Config;
@@ -21,42 +22,27 @@ import railo.runtime.type.Query;
 	
 	private static final long serialVersionUID = -2321532150542424070L;
 	
-	private Config config;
 	private final RamCache DEFAULT_CACHE=new RamCache();
 
-	public CacheQueryCache(Config config){
-		this.config=config;
-		
+	public CacheQueryCache(){
 	}
 
-	/**
-	 * @see railo.runtime.query.QueryCacheSupport#setConfigWeb(railo.runtime.config.ConfigWeb)
-	 */
-	public void setConfigWeb(ConfigWeb config) {
-		this.config=config;
-	}
 	
-	
-	/**
-	 * @see railo.runtime.query.QueryCache#clear()
-	 */
-	public void clear() {
+	@Override
+	public void clear(PageContext pc) {
 		try {
-			getCache().remove(CacheKeyFilterAll.getInstance());
+			getCache(pc).remove(CacheKeyFilterAll.getInstance());
 		} catch (IOException e) {}
 	}
 
-
-	/**
-	 * @see railo.runtime.query.QueryCache#clearUnused()
-	 */
-	public void clearUnused() throws IOException {
+	@Override
+	public void clearUnused(PageContext pc) throws IOException {
 		
-		Cache c = getCache();
-		List entries = c.entries();
+		Cache c = getCache(pc);
+		List<CacheEntry> entries = c.entries();
 		if(entries.size()<100) return;
 		
-		Iterator it = entries.iterator();
+		Iterator<CacheEntry> it = entries.iterator();
 		while(it.hasNext()){
 			it.next(); // touch them to makes sure the cache remove them, not really good, cache must do this by itself
 			/*qce=(QueryCacheEntry) entry.getValue();
@@ -67,10 +53,10 @@ import railo.runtime.type.Query;
 		}
 	}
 
-	
-	public Object get(SQL sql, String datasource, String username,String password, Date cacheAfter) {
+	@Override
+	public Object get(PageContext pc,SQL sql, String datasource, String username,String password, Date cacheAfter) {
 		String key=key(sql,datasource,username,password);
-		Object obj= getCache().getValue(key,null);
+		Object obj= getCache(pc).getValue(key,null);
 		if(obj instanceof QueryCacheEntry) {
 			QueryCacheEntry entry=(QueryCacheEntry) obj;
 			if(entry.isCachedAfter(cacheAfter)) {
@@ -81,25 +67,28 @@ import railo.runtime.type.Query;
 		return null;
 	}
 
-	public Query getQuery(SQL sql, String datasource, String username,String password, Date cacheAfter) {
-		Object o=get(sql, datasource, username, password, cacheAfter);
+	@Override
+	public Query getQuery(PageContext pc,SQL sql, String datasource, String username,String password, Date cacheAfter) {
+		Object o=get(pc,sql, datasource, username, password, cacheAfter);
 		if(o instanceof Query) return (Query) o;
 		return null;
 	}
 
-	public void remove(SQL sql, String datasource, String username,String password) {
+	@Override
+	public void remove(PageContext pc,SQL sql, String datasource, String username,String password) {
 		try {
-			getCache().remove(key(sql, datasource, username, password));
+			getCache(pc).remove(key(sql, datasource, username, password));
 		} catch (IOException e) {}
 	}
 
-	public void set(SQL sql, String datasource, String username,String password, Object value, Date cacheBefore) {
+	@Override
+	public void set(PageContext pc,SQL sql, String datasource, String username,String password, Object value, Date cacheBefore) {
 		long timeSpan = ((cacheBefore.getTime()-System.currentTimeMillis())+1);
-		getCache().put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), Long.valueOf(timeSpan), Long.valueOf(timeSpan));
+		getCache(pc).put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), Long.valueOf(timeSpan), Long.valueOf(timeSpan));
 	}
 
-	private Cache getCache() {
-		Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
+	private Cache getCache(PageContext pc) {
+		Cache c = Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
 		return c;
 	}
 
@@ -113,14 +102,15 @@ import railo.runtime.type.Query;
 		}
 	}
     
-    public void clear(QueryCacheFilter filter) {
+    @Override
+    public void clear(PageContext pc,QueryCacheFilter filter) {
     	try {
-			_clear(filter);
+			_clear(pc,filter);
 		} catch (IOException e) {}
     }
 
-	public void _clear(QueryCacheFilter filter) throws IOException {
-		Cache c = getCache();
+	private void _clear(PageContext pc,QueryCacheFilter filter) throws IOException {
+		Cache c = getCache(pc);
 		Iterator it = c.entries().iterator();
     	String key;
     	CacheEntry entry;
@@ -139,13 +129,10 @@ import railo.runtime.type.Query;
     	}
 	}
 
-
-	/**
-	 * @see railo.runtime.query.QueryCacheSupport#size()
-	 */
-	public int size() {
+	@Override
+	public int size(PageContext pc) {
 		try {
-			return getCache().keys().size();
+			return getCache(pc).keys().size();
 		} catch (IOException e) {
 			return 0;
 		}

@@ -908,11 +908,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         if(threads!=null){
         	synchronized (threads) {
 				
-	        	java.util.Iterator it2 = threads.entrySet().iterator();
-	        	Map.Entry entry;
+	        	java.util.Iterator<Entry<Key, Object>> it2 = threads.entryIterator();
+	        	Entry<Key, Object> entry;
 	        	while(it2.hasNext()) {
-	        		entry=(Entry) it2.next();
-	        		other.setThreadScope((String)entry.getKey(), (Threads)entry.getValue());
+	        		entry = it2.next();
+	        		other.setThreadScope(entry.getKey(), (Threads)entry.getValue());
 	        	}
 			}
         }

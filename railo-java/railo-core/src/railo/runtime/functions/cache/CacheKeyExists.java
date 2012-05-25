@@ -21,7 +21,7 @@ public final class CacheKeyExists implements Function {
 	
 	public static boolean call(PageContext pc, String key,String cacheName) throws PageException {
 		try {
-			return Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT).contains(Util.key(key));
+			return Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT).contains(Util.key(key));
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}

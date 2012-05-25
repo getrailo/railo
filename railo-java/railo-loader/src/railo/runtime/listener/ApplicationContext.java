@@ -159,5 +159,14 @@ public interface ApplicationContext extends Serializable {
 
 
 	public boolean getTriggerComponentDataMember();
-	public abstract void setTriggerComponentDataMember(boolean triggerComponentDataMember);
+	public void setTriggerComponentDataMember(boolean triggerComponentDataMember);
+
+	/**
+	 * return the default cache name for a certain type 
+	 * @param type can be one of the following constants Config.CACHE_DEFAULT_OBJECT, Config.CACHE_DEFAULT_TEMPLATE, Config.CACHE_DEFAULT_QUERY, Config.CACHE_DEFAULT_RESOURCE, Config.CACHE_DEFAULT_FUNCTION
+	 * @return name of the cache defined
+	 */
+	public String getDefaultCacheName(int type);
+	
+	public void setDefaultCacheName(int type, String cacheName);
 }

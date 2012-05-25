@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
+import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -63,6 +64,11 @@ public final class Application extends TagImpl {
 	private Struct s3;
 	
 	private Boolean triggerDataMember=null;
+	private String cacheFunction;
+	private String cacheQuery;
+	private String cacheTemplate;
+	private String cacheObject;
+	private String cacheResource;
 	
      
     /**
@@ -101,6 +107,12 @@ public final class Application extends TagImpl {
         //appContext=null;
         
         triggerDataMember=null;
+
+    	cacheFunction=null;
+    	cacheQuery=null;
+    	cacheTemplate=null;
+    	cacheObject=null;
+    	cacheResource=null;
     }
     
     /** set the value setclientcookies
@@ -191,6 +203,28 @@ public final class Application extends TagImpl {
 	
 	public void setClienttimeout(TimeSpan clientTimeout)	{
 		this.clientTimeout=clientTimeout;
+	}
+	
+
+	public void setCacheFunction(String cacheFunction)	{
+		if(StringUtil.isEmpty(cacheFunction,true)) return;
+		this.cacheFunction=cacheFunction.trim();
+	}
+	public void setCacheQuery(String cacheQuery)	{
+		if(StringUtil.isEmpty(cacheQuery,true)) return;
+		this.cacheQuery=cacheQuery.trim();
+	}
+	public void setCacheTemplate(String cacheTemplate)	{
+		if(StringUtil.isEmpty(cacheTemplate,true)) return;
+		this.cacheTemplate=cacheTemplate.trim();
+	}
+	public void setCacheObject(String cacheObject)	{
+		if(StringUtil.isEmpty(cacheObject,true)) return;
+		this.cacheObject=cacheObject.trim();
+	}
+	public void setCacheResource(String cacheResource)	{
+		if(StringUtil.isEmpty(cacheResource,true)) return;
+		this.cacheResource=cacheResource.trim();
 	}
 	
 
@@ -343,7 +377,14 @@ public final class Application extends TagImpl {
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
-		if(triggerDataMember!=null) 					ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
+		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
+		
+		if(cacheFunction!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION, cacheFunction);
+		if(cacheObject!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_OBJECT, cacheObject);
+		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);
+		if(cacheResource!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE, cacheResource);
+		if(cacheTemplate!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE, cacheTemplate);
+		
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));

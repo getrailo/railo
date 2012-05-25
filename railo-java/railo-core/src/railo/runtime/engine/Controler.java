@@ -151,7 +151,7 @@ public final class Controler extends Thread {
 					try{cfmlFactory.getScopeContext().clearUnused();}catch(Throwable t){}
 					// Memory usage
 					// clear Query Cache
-					try{cfmlFactory.getQueryCache().clearUnused();}catch(Throwable t){}
+					try{cfmlFactory.getDefaultQueryCache().clearUnused(null);}catch(Throwable t){}
 					// contract Page Pool
 					//try{doClearPagePools((ConfigWebImpl) config);}catch(Throwable t){}
 					//try{checkPermGenSpace((ConfigWebImpl) config);}catch(Throwable t){}

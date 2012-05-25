@@ -26,7 +26,7 @@ public class UDFCacheEntry implements Serializable,Dumpable {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties properties) {
 		DumpTable table = new DumpTable("#669999","#ccffff","#000000");
 		table.setTitle("UDFCacheEntry");
-		table.appendRow(1,new SimpleDumpData("Value"),DumpUtil.toDumpData(returnValue, pageContext, maxlevel, properties));
+		table.appendRow(1,new SimpleDumpData("Return Value"),DumpUtil.toDumpData(returnValue, pageContext, maxlevel, properties));
 		table.appendRow(1,new SimpleDumpData("Output"),DumpUtil.toDumpData(new SimpleDumpData(output), pageContext, maxlevel, properties));
 		return table;
 	}

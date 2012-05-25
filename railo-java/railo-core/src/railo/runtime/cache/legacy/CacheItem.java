@@ -21,7 +21,7 @@ public abstract class CacheItem {
 	protected final String fileName;
 	public static CacheItem getInstance(PageContext pc, String id, String key, boolean useId, Resource dir, String cacheName, TimeSpan timespan) throws IOException{
 		HttpServletRequest req = pc. getHttpServletRequest();
-        Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_TEMPLATE,null);	
+        Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_TEMPLATE,null);	
 		if(cache!=null) 
 			return new CacheItemCache(pc, req, id, key, useId, cache,timespan);
 		return new CacheItemFS(pc, req, id, key, useId, dir);
@@ -66,13 +66,13 @@ public abstract class CacheItem {
 	//protected abstract void _flush(PageContext pc, Resource dir, String expireurl) throws IOException;
 	
 	public static void flushAll(PageContext pc, Resource dir, String cacheName) throws IOException {
-		Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_TEMPLATE,null);	
+		Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_TEMPLATE,null);	
 		if(cache!=null) CacheItemCache._flushAll(pc, cache);
 		else CacheItemFS._flushAll(pc, dir);
 	}
 
 	public static void flush(PageContext pc, Resource dir, String cacheName,String expireurl) throws IOException, MalformedPatternException {
-		Cache cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_TEMPLATE,null);	
+		Cache cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_TEMPLATE,null);	
 		if(cache!=null) CacheItemCache._flush(pc, cache,expireurl);
 		else CacheItemFS._flush(pc, dir, expireurl);
 	}

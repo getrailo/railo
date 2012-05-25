@@ -67,8 +67,7 @@ public final class SystemCacheClear implements Function {
 	}
 	
 	private static void queryCache(PageContext pc) {
-		QueryCacheSupport qc = ((QueryCacheSupport)pc.getQueryCache());
-		qc.clear();
+		pc.getQueryCache().clear(pc);
 	}
 
 	private static void tagCache(PageContext pc) {

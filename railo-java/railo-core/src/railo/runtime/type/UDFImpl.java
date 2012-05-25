@@ -290,7 +290,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
     	PageContextImpl pci=(PageContextImpl) pc;
     	String id = UDFUtil.callerHash(this,args,values);
     	
-		Cache cache = Util.getDefault(pc.getConfig(),ConfigImpl.CACHE_DEFAULT_FUNCTION,DEFAULT_CACHE);	
+		Cache cache = Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_FUNCTION,DEFAULT_CACHE);	
 		Object o =  cache.getValue(id,null);
 		
 		// get from cache

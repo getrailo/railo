@@ -520,6 +520,42 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 			<description>alias for triggerDataMember</description>
 		</attribute>
 		
+		<attribute>
+			<type>string</type>
+			<name>cacheObject</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for object caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheFunction</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for function caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheQuery</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for query caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheTemplate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for template caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheResource</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used to store data from ram resource in this context</description>
+		</attribute>
+		
 	</tag>
 	<!-- Argument -->
 	<tag>

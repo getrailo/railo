@@ -461,10 +461,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    Object cacheValue=null;
 			if(clearCache) {
 				hasCached=false;
-				pageContext.getQueryCache().remove(_sql,datasource,username,password);
+				pageContext.getQueryCache().remove(pageContext,_sql,datasource,username,password);
 			}
 			else if(hasCached) {
-				cacheValue = pageContext.getQueryCache().get(_sql,datasource,username,password,cachedafter);
+				cacheValue = pageContext.getQueryCache().get(pageContext,_sql,datasource,username,password,cachedafter);
 			}
 			int count=0;
 			if(cacheValue==null){
@@ -519,7 +519,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				}
 			    if(hasCached){
 			    	cache.set(COUNT, Caster.toDouble(count));
-			    	pageContext.getQueryCache().set(_sql,datasource,username,password,cache,cachedbefore);
+			    	pageContext.getQueryCache().set(pageContext,_sql,datasource,username,password,cache,cachedbefore);
 			    }
 			    
 			}

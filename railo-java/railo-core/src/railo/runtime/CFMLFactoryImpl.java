@@ -67,7 +67,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	 */
 	public CFMLFactoryImpl(CFMLEngineImpl engine,QueryCache queryCache) {
 		this.engine=engine; 
-		this.queryCache=queryCache; 
+		this.queryCache=queryCache;
 	}
     
     /**
@@ -242,12 +242,6 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		return info;
 	}
 
-	/**
-	 * @return returns the query cache
-	 */
-	public QueryCache getQueryCache() {
-		return queryCache;
-	}
 
 	/**
 	 * @return returns count of pagecontext in use
@@ -434,5 +428,10 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 
             }
         }
+	}
+
+	@Override
+	public QueryCache getDefaultQueryCache() {
+		return queryCache;
 	}
 }

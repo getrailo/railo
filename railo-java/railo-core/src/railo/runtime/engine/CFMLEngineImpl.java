@@ -181,10 +181,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
             // Load Config
             Resource configDir=getConfigDirectory(sg,configServer,countExistingContextes);
             
-            QueryCacheSupport queryCache=QueryCacheSupport.getInstance(configServer);
+            QueryCacheSupport queryCache=QueryCacheSupport.getInstance();
             CFMLFactoryImpl factory=new CFMLFactoryImpl(this,queryCache);
             ConfigWebImpl config=ConfigWebFactory.newInstance(factory,configServer,configDir,sg);
-            queryCache.setConfigWeb(config);
             factory.setConfig(config);
             return factory;
         }
@@ -432,7 +431,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		            try{cfmlFactory.resetPageContext();}catch(Throwable t){t.printStackTrace();}
 		            
 		            // Query Cache
-		            try{ cfmlFactory.getQueryCache().clear();}catch(Throwable t){t.printStackTrace();}
+		            try{ cfmlFactory.getDefaultQueryCache().clear(null);}catch(Throwable t){t.printStackTrace();}
 		            
 		            // Gateway
 		            try{ cfmlFactory.getConfigWebImpl().getGatewayEngine().reset();}catch(Throwable t){t.printStackTrace();}
