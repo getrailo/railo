@@ -76,33 +76,33 @@ Error Output --->
 <cffunction name="printMemory" output="yes">
 	<cfargument name="usage" type="query" required="yes">
 	
-    <cfset height=6>
-    <cfset width=100>
-    	<cfset var used=evaluate(ValueList(usage.used,'+'))>
-    	<cfset var max=evaluate(ValueList(usage.max,'+'))>
-    	<cfset var init=evaluate(ValueList(usage.init,'+'))>
+    <cfset var height=6>
+    <cfset var width=100>
+    	<cfset var used=evaluate(ValueList(arguments.usage.used,'+'))>
+    	<cfset var max=evaluate(ValueList(arguments.usage.max,'+'))>
+    	<cfset var init=evaluate(ValueList(arguments.usage.init,'+'))>
         
-		<cfset var qry=QueryNew(usage.columnlist)>
+		<cfset var qry=QueryNew(arguments.usage.columnlist)>
 		<cfset QueryAddRow(qry)>
-        <cfset QuerySetCell(qry,"type",usage.type)>
-        <cfset QuerySetCell(qry,"name",pool[usage.type])>
+        <cfset QuerySetCell(qry,"type",arguments.usage.type)>
+        <cfset QuerySetCell(qry,"name",variables.pool[arguments.usage.type])>
         <cfset QuerySetCell(qry,"init",init,qry.recordcount)>
         <cfset QuerySetCell(qry,"max",max,qry.recordcount)>
         <cfset QuerySetCell(qry,"used",used,qry.recordcount)>
         
-        <cfset usage=qry>
-    	<b>#pool[usage.type]#</b>
-        <cfif StructKeyExists(pool,usage.type& "_desc")><br /><span class="comment">#pool[usage.type& "_desc"]#</span></cfif>
+        <cfset arguments.usage=qry>
+    	<b>#variables.pool[arguments.usage.type]#</b>
+        <cfif StructKeyExists(variables.pool,arguments.usage.type& "_desc")><br /><span class="comment">#variables.pool[arguments.usage.type& "_desc"]#</span></cfif>
         
         
         
         <table cellpadding="0" cellspacing="0">
-        <cfloop query="usage">
-        	<cfset _used=int(width/usage.max*usage.used)>
-        	<cfset _free=width-_used> 
+        <cfloop query="#arguments.usage#">
+        	<cfset local._used=int(width/arguments.usage.max*arguments.usage.used)>
+        	<cfset local._free=width-_used> 
             
-			<cfset pused=int(100/usage.max*usage.used)>
-        	<cfset pfree=100-pused> 
+			<cfset local.pused=int(100/arguments.usage.max*arguments.usage.used)>
+        	<cfset local.pfree=100-pused> 
             
             
             
@@ -114,8 +114,8 @@ Error Output --->
                 	<td colspan="2"><cfmodule template="tp.cfm" height="1" width="#width#" /></td>
                 </tr>
                 <tr>
-                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#" title="#int(usage.used/1024)#kb (#pused#%)"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
-                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#" title="#int((usage.max-usage.used)/1024)#kb (#pfree#%)"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
+                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#" title="#int(arguments.usage.used/1024)#kb (#pused#%)"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
+                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#" title="#int((arguments.usage.max-arguments.usage.used)/1024)#kb (#pfree#%)"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
                 </tr>
                 </table>
                 </td>

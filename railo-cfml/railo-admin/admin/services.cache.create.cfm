@@ -3,7 +3,7 @@
  <!---   <while len(str) LT 2>
     	<cfset str="0"&str>
     </while>--->
-    <cfreturn str>
+    <cfreturn arguments.str>
 </cffunction>
 <cftry>
 	<cfset stVeritfyMessages = StructNew()>
