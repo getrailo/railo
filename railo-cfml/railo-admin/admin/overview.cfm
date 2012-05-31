@@ -134,28 +134,7 @@ Error Output --->
 	max:[server.java.totalMemory],
 	init:[0]
 )>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <cfoutput>
-
 
 
 
@@ -338,6 +317,11 @@ Error Output --->
 
 </td>
 <td valign="top" width="40%">
+
+<!--- Update Info --->
+<cfdiv bind="url:update.cfm" bindonload="true"/>
+
+
 
 <!--- Memory Usage --->
 <cftry>
