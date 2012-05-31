@@ -8,11 +8,12 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
+import railo.transformer.Context;
 import railo.transformer.bytecode.extern.StringExternalizerWriter;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.visitor.OnFinally;
 
-public class BytecodeContext {
+public class BytecodeContext implements Context {
 	
 
 	private ClassWriter classWriter;
