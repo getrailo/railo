@@ -1,6 +1,6 @@
 <cfcomponent><cfscript>
 
-this.name="railo_context";
+this.name="webadmin";
 this.clientmanagement="no";
 this.clientstorage="file"; 
 this.scriptprotect="none";

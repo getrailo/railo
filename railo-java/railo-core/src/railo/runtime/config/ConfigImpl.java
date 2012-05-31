@@ -3204,17 +3204,18 @@ public abstract class ConfigImpl implements Config {
 		this.componentMappings = componentMappings;
 	}
 	
-	private String getCoreExtension() throws ServletException {
+	private String getCoreExtension()  {
     	URL res = new TP().getClass().getResource("/core/core.rcs");
         if(res!=null) return "rcs";
         
         res = new TP().getClass().getResource("/core/core.rc");
         if(res!=null) return "rc";
         
-        throw new ServletException("missing core file");
+        return "rc";
+        //throw new ServletException("missing core file");
 	}
 	
-	private String[] getInstalledPatchesOld(CFMLEngineFactory factory) throws ServletException, IOException { 
+	private String[] getInstalledPatchesOld(CFMLEngineFactory factory) throws IOException { 
 		File patchDir = new File(factory.getResourceRoot(),"patches");
         if(!patchDir.exists())patchDir.mkdirs();
         

@@ -318,9 +318,11 @@ Error Output --->
 </td>
 <td valign="top" width="40%">
 
-<!--- Update Info --->
-<cfdiv bind="url:update.cfm" bindonload="true"/>
-
+<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
+<script>
+function doNothing(){return true;}
+</script>
+<cfdiv onBindError="doNothing" bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
 
 
 <!--- Memory Usage --->
