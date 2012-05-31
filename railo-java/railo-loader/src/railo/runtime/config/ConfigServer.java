@@ -5,6 +5,9 @@ import java.net.URL;
 import java.util.Map;
 
 import railo.loader.engine.CFMLEngine;
+import railo.runtime.exp.PageException;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.security.SecurityManager;
 
 /**
@@ -86,6 +89,14 @@ public interface ConfigServer extends Config {
 	public void setConfigListener(ConfigListener configListener);
 
 	public RemoteClient[] getRemoteClients();
+	
+	public RequestMonitor[] getRequestMonitors();
+	
+	public RequestMonitor getRequestMonitor(String name) throws PageException;
+	
+	public IntervallMonitor[] getIntervallMonitors();
+
+	public IntervallMonitor getIntervallMonitor(String name) throws PageException;
 
 
 }

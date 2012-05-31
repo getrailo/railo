@@ -3028,7 +3028,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		RequestMonitor[] requests = cs.getRequestMonitors();
 		
 		railo.runtime.type.Query qry=
-			new QueryImpl(new Collection.Key[]{KeyImpl.NAME,KeyImpl.TYPE,LOG_ENABLED,CLASS}, 0, "monitorså");
+			new QueryImpl(new Collection.Key[]{KeyImpl.NAME,KeyImpl.TYPE,LOG_ENABLED,CLASS}, 0, "monitors");
 		doGetMonitors(qry,intervalls);
 		doGetMonitors(qry,requests);
 		
