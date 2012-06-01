@@ -20,6 +20,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
+import com.jezhumble.javasysmon.JavaSysMon;
+
 import railo.commons.digest.MD5;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -132,6 +134,7 @@ public final class SystemUtil {
 	}
 	
     private static Boolean isFSCaseSensitive;
+	private static JavaSysMon jsm;
 
     /**
      * returns if the file system case sensitive or not
@@ -779,5 +782,15 @@ public final class SystemUtil {
 		public String toString(){
 			return template+":"+line;
 		}
+	}
+
+	public synchronized static long getFreeBytes() {
+		if(jsm==null) jsm=new JavaSysMon();
+		return jsm.physical().getFreeBytes();
+	}
+
+	public synchronized static long getTotalBytes() {
+		if(jsm==null) jsm=new JavaSysMon();
+		return jsm.physical().getTotalBytes();
 	}
 }

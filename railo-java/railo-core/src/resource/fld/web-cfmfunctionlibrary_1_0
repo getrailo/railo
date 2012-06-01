@@ -5830,17 +5830,27 @@ if this attribute is not provided all types are returned.</description>
 			<type>string</type>
 		</return>
 	</function>
-	<!-- GetSystemInfo
+
+	<!-- getSystemFreeMemory -->
 	<function>
-		<name>GetSystemInfo</name>
-		<class>railo.runtime.functions.system.GetSystemInfo</class>
-		<status>deprecated</status>
-		<description>This function is deprecated. </description>
+		<name>GetSystemFreeMemory</name>
+		<class>railo.runtime.functions.system.GetSystemFreeMemory</class>
+		<description>The amount of memory that is currently free, in bytes.</description>
 		<return>
-			<type>struct</type>
+			<type>number</type>
 		</return>
 	</function>
-	 -->
+
+	<!-- getSystemTotalMemory -->
+	<function>
+		<name>GetSystemTotalMemory</name>
+		<class>railo.runtime.functions.system.GetSystemTotalMemory</class>
+		<description>The amount of memory that is available to the operating system, in bytes.</description>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
 	<!-- getTempFile -->
 	<function>
 		<name>getTempFile</name>
