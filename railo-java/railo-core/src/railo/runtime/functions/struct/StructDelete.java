@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structdelete
+ * Implements the CFML Function structdelete
  */
 package railo.runtime.functions.struct;
 

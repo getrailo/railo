@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gettickcount
+ * Implements the CFML Function gettickcount
  */
 package railo.runtime.functions.other;
 

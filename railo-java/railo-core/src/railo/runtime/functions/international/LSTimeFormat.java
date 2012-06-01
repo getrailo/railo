@@ -17,7 +17,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
 /**
- * Implements the Cold Fusion Function dateformat
+ * Implements the CFML Function dateformat
  */
 public final class LSTimeFormat implements Function {
 	

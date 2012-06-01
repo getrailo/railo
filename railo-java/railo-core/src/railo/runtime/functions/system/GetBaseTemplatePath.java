@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getbasetemplatepath
+ * Implements the CFML Function getbasetemplatepath
  */
 package railo.runtime.functions.system;
 

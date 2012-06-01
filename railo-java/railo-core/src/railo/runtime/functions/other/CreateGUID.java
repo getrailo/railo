@@ -8,7 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function createGuid
+ * Implements the CFML Function createGuid
  */
 public final class CreateGUID implements Function {
     private static UUIDGenerator generator = UUIDGenerator.getInstance();

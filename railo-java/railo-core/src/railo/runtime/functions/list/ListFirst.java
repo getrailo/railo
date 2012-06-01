@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listfirst
+ * Implements the CFML Function listfirst
  */
 package railo.runtime.functions.list;
 

@@ -12,7 +12,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
 
 /**
- * Implements the Cold Fusion Function lsparsecurrency
+ * Implements the CFML Function lsparsecurrency
  */
 public final class LSParseNumber implements Function {
 	

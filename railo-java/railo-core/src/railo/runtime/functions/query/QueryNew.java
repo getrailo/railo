@@ -20,7 +20,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.util.QueryUtil;
 
 /**
- * Implements the Cold Fusion Function querynew
+ * Implements the CFML Function querynew
  */
 public final class QueryNew implements Function {
 	public static railo.runtime.type.Query call(PageContext pc , String columnList) throws DatabaseException {

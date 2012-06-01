@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function replacenocase
+ * Implements the CFML Function replacenocase
  */
 package railo.runtime.functions.string;
 

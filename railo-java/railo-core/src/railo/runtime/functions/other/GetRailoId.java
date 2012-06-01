@@ -16,7 +16,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
 
 /**
- * Implements the Cold Fusion Function createGuid
+ * Implements the CFML Function createGuid
  */
 public final class GetRailoId implements Function {
 

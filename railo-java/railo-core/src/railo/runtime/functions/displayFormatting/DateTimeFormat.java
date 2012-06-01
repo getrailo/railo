@@ -13,7 +13,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 
 /**
- * Implements the Cold Fusion Function dateformat
+ * Implements the CFML Function dateformat
  */
 public final class DateTimeFormat implements Function {
 

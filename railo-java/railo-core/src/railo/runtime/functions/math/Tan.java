@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function tan
+ * Implements the CFML Function tan
  */
 package railo.runtime.functions.math;
 

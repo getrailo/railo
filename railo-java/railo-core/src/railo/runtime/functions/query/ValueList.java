@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function valuelist
+ * Implements the CFML Function valuelist
  */
 package railo.runtime.functions.query;
 

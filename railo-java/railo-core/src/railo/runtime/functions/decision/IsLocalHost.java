@@ -8,7 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function isleapyear
+ * Implements the CFML Function isleapyear
  */
 public final class IsLocalHost implements Function {
 	

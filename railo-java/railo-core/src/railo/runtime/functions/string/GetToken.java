@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gettoken
+ * Implements the CFML Function gettoken
  */
 package railo.runtime.functions.string;
 

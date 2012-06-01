@@ -4,7 +4,7 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function xmlformat
+ * Implements the CFML Function xmlformat
  */
 public final class XMLFormat implements Function {
 	public static String call(PageContext pc , String xmlString) {

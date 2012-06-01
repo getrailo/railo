@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gethttprequestdata
+ * Implements the CFML Function gethttprequestdata
  */
 package railo.runtime.functions.other;
 

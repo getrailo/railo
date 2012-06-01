@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structcopy
+ * Implements the CFML Function structcopy
  */
 package railo.runtime.functions.struct;
 

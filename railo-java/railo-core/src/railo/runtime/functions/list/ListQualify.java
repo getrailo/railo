@@ -8,7 +8,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.List;
 
 /**
- * Implements the Cold Fusion Function listqualify
+ * Implements the CFML Function listqualify
  */
 public final class ListQualify implements Function {
 	

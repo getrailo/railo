@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listtoarray
+ * Implements the CFML Function listtoarray
  */
 package railo.runtime.functions.list;
 

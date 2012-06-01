@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getmetadata
+ * Implements the CFML Function getmetadata
  */
 package railo.runtime.functions.other;
 

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function sin
+ * Implements the CFML Function sin
  */
 package railo.runtime.functions.math;
 

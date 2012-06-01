@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function encrypt
+ * Implements the CFML Function encrypt
  */
 package railo.runtime.functions.other;
 

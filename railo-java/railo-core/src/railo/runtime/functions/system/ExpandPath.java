@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function expandpath
+ * Implements the CFML Function expandpath
  */
 package railo.runtime.functions.system;
 

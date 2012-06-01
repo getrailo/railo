@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lsparsedatetime
+ * Implements the CFML Function lsparsedatetime
  */
 package railo.runtime.functions.international;
 

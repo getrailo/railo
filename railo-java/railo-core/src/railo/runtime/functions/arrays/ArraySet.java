@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayset
+ * Implements the CFML Function arrayset
  */
 package railo.runtime.functions.arrays;
 

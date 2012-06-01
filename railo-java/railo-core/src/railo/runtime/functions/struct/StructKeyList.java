@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structkeylist
+ * Implements the CFML Function structkeylist
  */
 package railo.runtime.functions.struct;
 

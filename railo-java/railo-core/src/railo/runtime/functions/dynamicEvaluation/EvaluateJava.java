@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function UnserializeJava
+ * Implements the CFML Function UnserializeJava
  */
 package railo.runtime.functions.dynamicEvaluation;
 

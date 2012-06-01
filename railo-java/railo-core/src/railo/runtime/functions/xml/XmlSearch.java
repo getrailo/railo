@@ -20,7 +20,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
 /**
- * Implements the Cold Fusion Function xmlsearch
+ * Implements the CFML Function xmlsearch
  */
 public final class XmlSearch implements Function {
 

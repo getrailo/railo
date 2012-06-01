@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getk2serverdoccount
+ * Implements the CFML Function getk2serverdoccount
  */
 package railo.runtime.functions.other;
 

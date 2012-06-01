@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getbasetaglist
+ * Implements the CFML Function getbasetaglist
  */
 package railo.runtime.functions.other;
 

@@ -5,7 +5,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.List;
 
 /**
- * Implements the Cold Fusion Function listlast
+ * Implements the CFML Function listlast
  */
 public final class ListLast implements Function {
 	

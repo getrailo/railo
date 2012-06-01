@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getpagecontext
+ * Implements the CFML Function getpagecontext
  */
 package railo.runtime.functions.other;
 

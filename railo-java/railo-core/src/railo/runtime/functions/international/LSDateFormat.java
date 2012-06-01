@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lsdateformat
+ * Implements the CFML Function lsdateformat
  */
 package railo.runtime.functions.international;
 

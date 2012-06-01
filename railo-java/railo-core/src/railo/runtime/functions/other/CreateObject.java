@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function createobject
+ * Implements the CFML Function createobject
  * FUTURE neue attr unterstützen
  */
 package railo.runtime.functions.other;

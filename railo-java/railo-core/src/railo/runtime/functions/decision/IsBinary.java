@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isbinary
+ * Implements the CFML Function isbinary
  */
 package railo.runtime.functions.decision;
 

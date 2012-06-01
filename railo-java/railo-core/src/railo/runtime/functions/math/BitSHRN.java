@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function bitshrn
+ * Implements the CFML Function bitshrn
  */
 package railo.runtime.functions.math;
 

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isk2serverabroker
+ * Implements the CFML Function isk2serverabroker
  */
 package railo.runtime.functions.decision;
 

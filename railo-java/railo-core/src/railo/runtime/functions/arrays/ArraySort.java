@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraysort
+ * Implements the CFML Function arraysort
  */
 package railo.runtime.functions.arrays;
 

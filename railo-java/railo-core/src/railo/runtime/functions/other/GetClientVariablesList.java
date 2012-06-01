@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getclientvariableslist
+ * Implements the CFML Function getclientvariableslist
  */
 package railo.runtime.functions.other;
 

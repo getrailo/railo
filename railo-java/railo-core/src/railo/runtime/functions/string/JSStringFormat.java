@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function jsstringformat
+ * Implements the CFML Function jsstringformat
  */
 package railo.runtime.functions.string;
 

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayavg
+ * Implements the CFML Function arrayavg
  */
 package railo.runtime.functions.closure;
 

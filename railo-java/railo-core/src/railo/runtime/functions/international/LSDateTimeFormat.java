@@ -10,7 +10,7 @@ import railo.runtime.functions.displayFormatting.DateTimeFormat;
 import railo.runtime.i18n.LocaleFactory;
 
 /**
- * Implements the Cold Fusion Function dateformat
+ * Implements the CFML Function dateformat
  */
 public final class LSDateTimeFormat implements Function {
 

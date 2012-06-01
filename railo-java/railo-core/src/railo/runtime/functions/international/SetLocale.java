@@ -8,7 +8,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
 
 /**
- * Implements the Cold Fusion Function setlocale
+ * Implements the CFML Function setlocale
  */
 public final class SetLocale implements Function {
 	

@@ -10,7 +10,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.regex.Perl5Util;
 
 /**
- * Implements the Cold Fusion Function refindnocase
+ * Implements the CFML Function refindnocase
  */
 public final class REFindNoCase implements Function {
 	

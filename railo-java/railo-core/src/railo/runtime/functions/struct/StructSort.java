@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structsort
+ * Implements the CFML Function structsort
  */
 package railo.runtime.functions.struct;
 

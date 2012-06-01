@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getfunctiondescription
+ * Implements the CFML Function getfunctiondescription
  */
 package railo.runtime.functions.other;
 

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function preservesinglequotes
+ * Implements the CFML Function preservesinglequotes
  */
 package railo.runtime.functions.other;
 

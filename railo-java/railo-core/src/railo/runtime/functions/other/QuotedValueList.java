@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function quotedvaluelist
+ * Implements the CFML Function quotedvaluelist
  */
 package railo.runtime.functions.other;
 

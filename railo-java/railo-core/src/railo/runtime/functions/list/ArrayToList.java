@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraytolist
+ * Implements the CFML Function arraytolist
  */
 package railo.runtime.functions.list;
 

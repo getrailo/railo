@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function writeoutput
+ * Implements the CFML Function writeoutput
  */
 package railo.runtime.functions.other;
 

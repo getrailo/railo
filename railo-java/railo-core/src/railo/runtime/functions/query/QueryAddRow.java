@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function queryaddrow
+ * Implements the CFML Function queryaddrow
  */
 package railo.runtime.functions.query;
 

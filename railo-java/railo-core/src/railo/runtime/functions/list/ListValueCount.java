@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listvaluecount
+ * Implements the CFML Function listvaluecount
  */
 package railo.runtime.functions.list;
 

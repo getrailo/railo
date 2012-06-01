@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function dollarformat
+ * Implements the CFML Function dollarformat
  */
 package railo.runtime.functions.displayFormatting;
 

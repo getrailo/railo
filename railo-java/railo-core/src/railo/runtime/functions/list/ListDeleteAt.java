@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listdeleteat
+ * Implements the CFML Function listdeleteat
  */
 package railo.runtime.functions.list;
 

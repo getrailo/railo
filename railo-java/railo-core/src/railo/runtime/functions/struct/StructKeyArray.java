@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structkeyarray
+ * Implements the CFML Function structkeyarray
  */
 package railo.runtime.functions.struct;
 

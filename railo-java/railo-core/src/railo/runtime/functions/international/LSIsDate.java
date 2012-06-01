@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lsisdate
+ * Implements the CFML Function lsisdate
  */
 package railo.runtime.functions.international;
 

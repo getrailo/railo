@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gettimezoneinfo
+ * Implements the CFML Function gettimezoneinfo
  */
 package railo.runtime.functions.international;
 
