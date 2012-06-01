@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import javax.servlet.ServletContext;
 
 import com.jezhumble.javasysmon.JavaSysMon;
+import com.jezhumble.javasysmon.MemoryStats;
 
 import railo.commons.digest.MD5;
 import railo.commons.io.res.Resource;
@@ -31,6 +32,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -784,13 +786,21 @@ public final class SystemUtil {
 		}
 	}
 
-	public synchronized static long getFreeBytes() {
-		if(jsm==null) jsm=new JavaSysMon();
-		return jsm.physical().getFreeBytes();
+	public static long getFreeBytes() throws ApplicationException {
+		return physical().getFreeBytes();
 	}
 
-	public synchronized static long getTotalBytes() {
-		if(jsm==null) jsm=new JavaSysMon();
-		return jsm.physical().getTotalBytes();
+	public static long getTotalBytes() throws ApplicationException {
+		return physical().getTotalBytes();
 	}
+	
+
+	private synchronized static MemoryStats physical() throws ApplicationException {
+		if(jsm==null) jsm=new JavaSysMon();
+		MemoryStats p = jsm.physical();
+		if(p==null) throw new ApplicationException("Memory information are not available for this OS");
+		return p;
+	}
+	
+	
 }
