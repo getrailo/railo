@@ -12,6 +12,7 @@ import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.SystemOut;
+import railo.runtime.CFMLFactory;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
 import railo.transformer.library.function.FunctionLibException;
@@ -37,7 +38,7 @@ public final class ConfigServerFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */
-    public static ConfigServerImpl newInstance(CFMLEngineImpl engine,Map initContextes, Map contextes, Resource configDir) 
+    public static ConfigServerImpl newInstance(CFMLEngineImpl engine,Map<String,CFMLFactory> initContextes, Map<String,CFMLFactory> contextes, Resource configDir) 
         throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	SystemOut.print(SystemUtil.PRINTWRITER_OUT,
     			"===================================================================\n"+

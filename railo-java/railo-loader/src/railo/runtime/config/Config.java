@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
@@ -23,6 +24,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.schedule.Scheduler;
@@ -395,13 +398,6 @@ public interface Config {
      */ 
     public abstract ConfigServer getConfigServer(String password) throws PageException;
     
-
-    /**
-     * @deprecated replaced with <code>getConfigServer(String password)</code>
-     * @return
-     */
-    public abstract ConfigServer getConfigServer();
-    
     /**
      * @return Returns the mailLogger.
      */
@@ -745,5 +741,26 @@ public interface Config {
 	public boolean getSessionCluster();
 
 	public boolean getClientCluster();
+	
+	public Resource getSecurityDirectory();
+	
+	public boolean isMonitoringEnabled();
+	
+	public RequestMonitor[] getRequestMonitors();
+	
+	public RequestMonitor getRequestMonitor(String name) throws PageException;
+	
+	public IntervallMonitor[] getIntervallMonitors();
+
+	public IntervallMonitor getIntervallMonitor(String name) throws PageException;
+	
+	/**
+	 * if free permspace gen is lower than 10000000 bytes, railo shrinks all classloaders 
+	 * @param cs
+	 */
+    public void checkPermGenSpace(boolean check);
+    
+
+    public abstract CFMLEngine getCFMLEngine();
 	
 }

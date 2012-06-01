@@ -88,7 +88,6 @@ public final class ScopeContext {
 	
 	public ScopeContext(CFMLFactoryImpl factory) {
 		this.factory=factory;
-		
 	}
 
 	/**
@@ -168,29 +167,10 @@ public final class ScopeContext {
 	 * @return
 	 * @throws PageException 
 	 */
-	public static Cluster getClusterScope(ConfigServer cs, boolean create) throws PageException {
-	    if(cluster==null && create) {
-	    	try {
-	    		if(Reflector.isInstaneOf(cs.getClusterClass(), Cluster.class)){
-	    			cluster=(Cluster) ClassUtil.loadInstance(
-							cs.getClusterClass(),
-							ArrayUtil.OBJECT_EMPTY
-							);
-	    			cluster.init(cs);
-	    		}
-	    		else if(Reflector.isInstaneOf(cs.getClusterClass(), ClusterRemote.class)){
-	    			ClusterRemote cb=(ClusterRemote) ClassUtil.loadInstance(
-							cs.getClusterClass(),
-							ArrayUtil.OBJECT_EMPTY
-							);
-		    		
-	    			cluster=new ClusterWrap(cs,cb);
-		    		//cluster.init(cs);
-	    		}
-			} 
-	    	catch (Exception e) {
-				throw Caster.toPageException(e);
-			} 
+	public static Cluster getClusterScope(Config config, boolean create) throws PageException {
+		if(cluster==null && create) {
+	    	cluster=((ConfigImpl)config).createClusterScope();
+	    	 
 	    }
 		return cluster;
 	}

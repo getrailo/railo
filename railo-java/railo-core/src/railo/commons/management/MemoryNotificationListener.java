@@ -9,6 +9,7 @@ import javax.management.NotificationListener;
 import javax.management.openmbean.CompositeDataSupport;
 
 import railo.aprint;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.engine.Controler;
 
@@ -35,7 +36,7 @@ public class MemoryNotificationListener implements NotificationListener {
 			}
 			else if(type==MemoryType.NON_HEAP) {
 				// clear none-heap
-				Controler.checkPermGenSpace((ConfigServer) handback,false);
+				((Config) handback).checkPermGenSpace(false);
 			}
 			
 			/*CompositeDataSupport usage=(CompositeDataSupport) data.get("usage");

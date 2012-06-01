@@ -4,10 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import railo.loader.engine.CFMLEngine;
-import railo.runtime.exp.PageException;
-import railo.runtime.monitor.IntervallMonitor;
-import railo.runtime.monitor.RequestMonitor;
+import railo.runtime.CFMLFactory;
 import railo.runtime.security.SecurityManager;
 
 /**
@@ -29,7 +26,7 @@ public interface ConfigServer extends Config {
     /**
      * @return Returns the contextes.
      */
-    public abstract Map getJSPFactoriesAsMap();
+    public abstract Map<String,CFMLFactory> getJSPFactoriesAsMap();
 
     /**
      * @param id
@@ -48,11 +45,6 @@ public interface ConfigServer extends Config {
      * @return Returns the securityManager.
      */
     public abstract SecurityManager getDefaultSecurityManager();
-
-    /**
-     * @return Returns the engine.
-     */
-    public abstract CFMLEngine getCFMLEngine();
 
     /**
      * @param updateType The updateType to set.
@@ -89,14 +81,6 @@ public interface ConfigServer extends Config {
 	public void setConfigListener(ConfigListener configListener);
 
 	public RemoteClient[] getRemoteClients();
-	
-	public RequestMonitor[] getRequestMonitors();
-	
-	public RequestMonitor getRequestMonitor(String name) throws PageException;
-	
-	public IntervallMonitor[] getIntervallMonitors();
-
-	public IntervallMonitor getIntervallMonitor(String name) throws PageException;
 
 
 }

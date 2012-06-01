@@ -1,5 +1,6 @@
 package railo.runtime.config;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Map;
@@ -8,6 +9,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.xml.sax.SAXException;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -17,8 +19,10 @@ import railo.commons.io.log.LogConsole;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lock.KeyLock;
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -37,9 +41,14 @@ import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
+import railo.runtime.type.scope.Cluster;
+import railo.transformer.library.function.FunctionLibException;
+import railo.transformer.library.tag.TagLibException;
 
 /**
  * Web Context
@@ -145,12 +154,12 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     /**
      * @see railo.runtime.config.ConfigImpl#getConfigServerImpl()
      */
-    public ConfigServerImpl getConfigServerImpl() {
+    protected ConfigServerImpl getConfigServerImpl() {
         return configServer;
     }
     
 
-    public ConfigServer getConfigServer() {
+    public ConfigServer getConfigServerX() {
     	//throw new PageRuntimeException(new SecurityException("access on server config without password denied"));
         return configServer;
     }
@@ -406,5 +415,80 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public boolean getLoginCaptcha() {
 			return configServer.getLoginCaptcha();
 		}
+		
+		@Override
+		public Resource getSecurityDirectory(){
+			return configServer.getSecurityDirectory();
+		}
+		
+		@Override
+		public boolean isMonitoringEnabled(){
+			return configServer.isMonitoringEnabled();
+		}
+		
 
+		
+		public RequestMonitor[] getRequestMonitors(){
+			return configServer.getRequestMonitors();
+		}
+		
+		public RequestMonitor getRequestMonitor(String name) throws PageException{
+			return configServer.getRequestMonitor(name);
+		}
+		
+		public IntervallMonitor[] getIntervallMonitors(){
+			return configServer.getIntervallMonitors();
+		}
+
+		public IntervallMonitor getIntervallMonitor(String name) throws PageException{
+			return configServer.getIntervallMonitor(name);
+		}
+		
+		@Override
+		public void checkPermGenSpace(boolean check) {
+			configServer.checkPermGenSpace(check);
+		}
+
+		@Override
+		public Cluster createClusterScope() throws PageException {
+			return configServer.createClusterScope();
+		}
+		
+		@Override
+		public CFMLEngine getCFMLEngine(){
+			return configServer.getCFMLEngine();
+		}
+
+		@Override
+		public boolean hasServerPassword() {
+			return configServer.hasPassword();
+		}
+		
+		public void setPassword(boolean server, String passwordOld, String passwordNew) 
+			throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
+	    	ConfigImpl config=server?configServer:this;
+	    	    
+		    if(!config.hasPassword()) { 
+		        config.setPassword(passwordNew);
+		        
+		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordNew);
+		        admin.setPassword(passwordNew);
+		        admin.store();
+		    }
+		    else {
+		    	ConfigWebUtil.checkGeneralWriteAccess(config,passwordOld);
+		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordOld);
+		        admin.setPassword(passwordNew);
+		        admin.store();
+		    }
+		}
+
+		@Override
+		public Resource getConfigServerDir() {
+			return configServer.getConfigDir();
+		}
+
+		public Map<String, String> getAllLabels() {
+			return configServer.getLabels();
+		}
 }

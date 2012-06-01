@@ -50,8 +50,6 @@ public interface CFMLEngine {
      */
     public abstract void addServletConfig(ServletConfig config) throws ServletException;
     
-    //public ConfigServer getConfigServer();
-    
     /**
      * method to invoke the engine for CFML
      * @param servlet

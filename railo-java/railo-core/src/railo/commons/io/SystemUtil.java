@@ -427,20 +427,6 @@ public final class SystemUtil {
         	path = addPlaceHolder(dir,file,"{web-root-directory}");
         	if(!StringUtil.isEmpty(path)) return path;
 
-        	
-        
-        	/* TODO
-        else if(str.startsWith("{railo-server")) {
-            cs=((ConfigImpl)config).getConfigServerImpl();
-            //if(config instanceof ConfigServer && cs==null) cs=(ConfigServer) cw;
-            if(cs!=null) {
-                if(str.startsWith("}",13)) str=cs.getConfigDir().getReal(str.substring(14));
-                else if(str.startsWith("-dir}",13)) str=cs.getConfigDir().getReal(str.substring(18));
-                else if(str.startsWith("-directory}",13)) str=cs.getConfigDir().getReal(str.substring(24));
-            }
-        }*/
-        
-    	
         return addPlaceHolder(file, defaultValue);
     }
 	

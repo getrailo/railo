@@ -277,24 +277,23 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */
-    public static void reloadInstance(ConfigImpl config, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
-        // first sleep a little bit
-    	
-    	Resource configFile=config.getConfigFile();
-        Resource configDir=config.getConfigDir();
+    public static void reloadInstance(ConfigServerImpl cs, ConfigWebImpl cw, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
+        Resource configFile=cw.getConfigFile();
+        Resource configDir=cw.getConfigDir();
         
         boolean doNew=doNew(configDir);
         
         if(configFile==null) return ;
         
-        if(second(config.getLoadTime())>second(configFile.lastModified()) && !force) return ;
+        if(second(cw.getLoadTime())>second(configFile.lastModified()) && !force) return ;
         
         Document doc=loadDocument(configFile);
         createContextFiles(configDir,null,doNew);
-        config.reset();
+        cw.reset();
         
-		load(config.getConfigServerImpl(),config,doc,true,doNew);
-		createContextFilesPost(configDir,config,null,false,doNew);
+        
+		load(cs,cw,doc,true,doNew);
+		createContextFilesPost(configDir,cw,null,false,doNew);
     }
     
     

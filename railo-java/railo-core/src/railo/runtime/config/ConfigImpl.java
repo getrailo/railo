@@ -100,6 +100,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
+import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.KeyConstants;
@@ -761,13 +762,6 @@ public abstract class ConfigImpl implements Config {
      */
     public boolean passwordEqual(String password) {
         return this.password.equals(password);
-    }
-    
-    /**
-     * @see railo.runtime.config.Config#hasServerPassword()
-     */
-    public boolean hasServerPassword() {
-        return getConfigServerImpl().hasPassword();
     }
 
     /**
@@ -1894,17 +1888,6 @@ public abstract class ConfigImpl implements Config {
         this.componentDumpTemplate = template;
     }
 
-    /**
-     * @return Returns the configServer Implementation.
-     */
-    protected abstract ConfigServerImpl getConfigServerImpl();
-    
-    /**
-     * @see railo.runtime.config.Config#getId()
-     */
-    
-
-
     public String getSecurityToken() {
     	if(securityToken==null){
     		try {
@@ -1917,6 +1900,7 @@ public abstract class ConfigImpl implements Config {
     	return securityToken;
 	}
 
+    @Override
     public String getId() {
     	if(id==null){
     		id = getId(getSecurityKey(),getSecurityToken(),securityKey);
@@ -3178,7 +3162,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	public String[] getInstalledPatches() throws PageException {
-		CFMLEngineFactory factory = getConfigServerImpl().getCFMLEngine().getCFMLEngineFactory();
+		CFMLEngineFactory factory = getCFMLEngine().getCFMLEngineFactory();
     	
 		try{
 			return factory.getInstalledPatches();
@@ -3480,6 +3464,8 @@ public abstract class ConfigImpl implements Config {
 	public boolean getDotNotationUpperCase() {
 		return dotNotationUpperCase;
 	}
+
+	public abstract Cluster createClusterScope() throws PageException;
 
 	
 }

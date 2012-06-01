@@ -16,6 +16,8 @@ import railo.runtime.type.Struct;
 
 public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable {
 
+	private static final long serialVersionUID = -4952656252539755770L;
+	
 	private ClusterRemote core;
 	private int offset;
 	private ConfigServer configServer;

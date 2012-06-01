@@ -283,7 +283,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         // update Password
         else if(action.equals("updatepassword")) {
             try {
-                ConfigWebAdmin.setPassword((ConfigImpl)pageContext.getConfig(),type!=TYPE_WEB,
+            	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
                         getString("oldPassword",null),getString("admin",action,"newPassword"));
             } 
             catch (Exception e) {
@@ -751,7 +751,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void doRunUpdate() throws PageException {
     	doUpdateJars();
-    	admin.runUpdate();
+    	admin.runUpdate(password);
         adminSync.broadcast(attributes, config);
     }
     
@@ -759,13 +759,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	boolean onlyLatest = getBoolV("onlyLatest", false);
     	
 
-        if(onlyLatest)	admin.removeLatestUpdate();
-        else 			admin.removeUpdate();
+        if(onlyLatest)	admin.removeLatestUpdate(password);
+        else 			admin.removeUpdate(password);
         adminSync.broadcast(attributes, config);
     }
     
     private void doRestart() throws PageException {
-        admin.restart();
+        admin.restart(password);
         adminSync.broadcast(attributes, config);
     }
     
@@ -1281,12 +1281,12 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * 
      */
     private void doCreateSecurityManager() throws  PageException {
-        admin.createSecurityManager(getString("admin",action,"id"));
+        admin.createSecurityManager(password,getString("admin",action,"id"));
         store();
     }
     
     private void doRemoveSecurityManager() throws  PageException {
-        admin.removeSecurityManager(getString("admin",action,"id"));
+        admin.removeSecurityManager(password,getString("admin",action,"id"));
         store();
     }
     
@@ -1690,13 +1690,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             
             if(tag instanceof CPPCFXTagClass) {
                 CPPCFXTagClass ctag =(CPPCFXTagClass) tag;
-                qry.setAt("name",row,ctag.getName());
+                qry.setAt(KeyConstants._name,row,ctag.getName());
                 qry.setAt("procedure_class",row,ctag.getProcedure());
                 qry.setAt("keepalive",row,Caster.toBoolean(ctag.getKeepAlive()));
             }
             else if(tag instanceof JavaCFXTagClass) {
                 JavaCFXTagClass jtag =(JavaCFXTagClass) tag;
-                qry.setAt("name",row,jtag.getName());
+                qry.setAt(KeyConstants._name,row,jtag.getName());
                 qry.setAt("procedure_class",row,jtag.getStrClass());
             }
             
@@ -3942,11 +3942,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateSSLCertificate() throws PageException {
     	String host=getString("admin", "UpdateSSLCertificateInstall", "host");
     	int port = getInt("port", 443);
-    	updateSSLCertificate((ConfigServer)config, host, port);
+    	updateSSLCertificate(config, host, port);
     }
     
-    public static void updateSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
-    	Resource cacerts=getCacerts(cs);
+    public static void updateSSLCertificate(Config config,String host, int port) throws PageException {
+    	Resource cacerts=config.getSecurityDirectory();
     	 
     	try {
 			CertificateInstaller installer = new CertificateInstaller(cacerts,host,port);
@@ -3959,11 +3959,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetSSLCertificate() throws PageException {
     	String host=getString("admin", "GetSSLCertificate", "host");
     	int port = getInt("port", 443);
-    	pageContext.setVariable(getString("admin",action,"returnVariable"),getSSLCertificate((ConfigServer)config,host,port));
+    	pageContext.setVariable(getString("admin",action,"returnVariable"),getSSLCertificate(config,host,port));
     }
     
-    public static Query getSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
-    	Resource cacerts=getCacerts(cs);
+    public static Query getSSLCertificate(Config config,String host, int port) throws PageException {
+    	Resource cacerts=config.getSecurityDirectory();
     	CertificateInstaller installer;
 		try {
 			installer = new CertificateInstaller(cacerts,host,port);
@@ -3983,20 +3983,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
     
     
-    private static Resource getCacerts(ConfigServer cs) {
-    	Resource cacerts=null;
-    	// javax.net.ssl.trustStore
-    	String trustStore = SystemUtil.getPropertyEL("javax.net.ssl.trustStore");
-    	if(trustStore!=null){
-    		cacerts = ResourcesImpl.getFileResourceProvider().getResource(trustStore);
-    	}
-    	
-    	// security/cacerts
-    	if(cacerts==null || !cacerts.exists()) {
-    		cacerts = cs.getConfigDir().getRealResource("security/cacerts");
-    	}
-    	return cacerts;
-    }
     
     
 

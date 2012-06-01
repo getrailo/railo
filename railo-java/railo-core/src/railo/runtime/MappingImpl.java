@@ -146,7 +146,7 @@ public final class MappingImpl implements Mapping {
     	if(pclCollection==null){
     		pclCollection=new PCLCollection(this,getClassRootDirectory(),getClass().getClassLoader(),classLoaderMaxElements);
 		}
-    	Controler.checkPermGenSpace(((ConfigWebImpl)getConfig()).getConfigServerImpl(),true);
+    	getConfig().checkPermGenSpace(true);
     	return pclCollection;
     }
 	public synchronized PCLCollection getPCLCollection() {

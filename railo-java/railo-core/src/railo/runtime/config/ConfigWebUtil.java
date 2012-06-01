@@ -3,6 +3,7 @@ package railo.runtime.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
@@ -97,7 +98,6 @@ public final class ConfigWebUtil {
     	if(StringUtil.isEmpty(str)) return str;
     	
     	if(StringUtil.startsWith(str,'{')){
-            ConfigServer cs;
             
             
             // Config Server
@@ -108,13 +108,13 @@ public final class ConfigWebUtil {
             }
             
             
-            else if(str.startsWith("{railo-server")) {
-                cs=((ConfigImpl)config).getConfigServerImpl();
+            else if(config!=null && str.startsWith("{railo-server")) {
+            	Resource dir=config instanceof ConfigWeb?((ConfigWeb)config).getConfigServerDir():config.getConfigDir();
                 //if(config instanceof ConfigServer && cs==null) cs=(ConfigServer) cw;
-                if(cs!=null) {
-                    if(str.startsWith("}",13)) str=cs.getConfigDir().getReal(str.substring(14));
-                    else if(str.startsWith("-dir}",13)) str=cs.getConfigDir().getReal(str.substring(18));
-                    else if(str.startsWith("-directory}",13)) str=cs.getConfigDir().getReal(str.substring(24));
+                if(dir!=null) {
+                    if(str.startsWith("}",13)) str=dir.getReal(str.substring(14));
+                    else if(str.startsWith("-dir}",13)) str=dir.getReal(str.substring(18));
+                    else if(str.startsWith("-directory}",13)) str=dir.getReal(str.substring(24));
                 }
             }
             // Config Web
@@ -141,7 +141,18 @@ public final class ConfigWebUtil {
                 else if(str.startsWith("-dir}",5)) str=config.getTempDirectory().getRealResource(str.substring(10)).toString();
                 else if(str.startsWith("-directory}",5)) str=config.getTempDirectory().getRealResource(str.substring(16)).toString();
             }
-            else if(config instanceof ServletConfig)str=SystemUtil.parsePlaceHolder(str,((ServletConfig)config).getServletContext(),((ConfigImpl)config).getConfigServerImpl().getLabels());
+            else if(config instanceof ServletConfig){
+            	Map<String,String> labels=null;
+            	// web
+            	if(config instanceof ConfigWebImpl){
+            		labels=((ConfigWebImpl)config).getAllLabels();
+            	}
+            	// server
+            	else if(config instanceof ConfigServerImpl){
+            		labels=((ConfigServerImpl)config).getLabels();
+            	}
+            	if(labels!=null)str=SystemUtil.parsePlaceHolder(str,((ServletConfig)config).getServletContext(),labels);
+            }
             else str=SystemUtil.parsePlaceHolder(str);
             
             if(StringUtil.startsWith(str,'{')){

@@ -1,5 +1,6 @@
 package railo.runtime.config;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.lock.LockManager;
 
 /**
@@ -20,4 +21,6 @@ public interface ConfigWeb extends Config {
 	public abstract String getServerId();
 
 	public String getLabel();
+
+	public abstract Resource getConfigServerDir();
 }
