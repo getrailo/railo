@@ -1,6 +1,7 @@
 package railo.runtime.text.xml.struct;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -179,6 +180,23 @@ public class XMLMultiElementArray extends ArraySupport {
 			last=current;
 		}// MUST testen
 	}
+
+	public void sort(Comparator comp) throws PageException {
+		if(size()<=1) return;
+		
+		struct.getInnerArray().sort(comp);
+		
+		Object[] nodes = struct.getInnerArray().toArray();
+		Node last=(Node) nodes[nodes.length-1],current;
+		Node parent=last.getParentNode();
+		for(int i=nodes.length-2;i>=0;i--) {
+			current=(Node) nodes[i];
+			parent.insertBefore(current, last);
+			last=current;
+		}// MUST testen
+	}
+	
+	
 	/**
 	 *
 	 * @see railo.runtime.type.Array#toArray()

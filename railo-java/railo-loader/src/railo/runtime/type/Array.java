@@ -1,4 +1,5 @@
 package railo.runtime.type;
+import java.util.Comparator;
 import java.util.List;
 
 import railo.runtime.exp.PageException;
@@ -90,8 +91,13 @@ public interface Array extends Collection,Cloneable,Objects {
 	 * @param sortType search type (text,textnocase,numeric)
 	 * @param sortOrder (asc,desc)
 	 * @throws PageException
+	 * @deprecated use instead <code>sort(Comparator comp)</code>
 	 */
 	public void sort(String sortType, String sortOrder) throws PageException;
+	
+	
+	public void sort(Comparator comp) throws PageException;
+	
 	/**
 	 * @return return arra as native (Java) Object Array
 	 */

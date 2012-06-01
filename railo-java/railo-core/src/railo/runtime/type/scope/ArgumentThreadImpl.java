@@ -1,5 +1,6 @@
 package railo.runtime.type.scope;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.CasterException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
@@ -523,6 +525,10 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	 * @see railo.runtime.type.Array#sort(java.lang.String, java.lang.String)
 	 */
 	public void sort(String sortType, String sortOrder) throws PageException {
+		throw new CasterException(sct,"Array");
+	}
+
+	public void sort(Comparator com) throws ExpressionException {
 		throw new CasterException(sct,"Array");
 	}
 

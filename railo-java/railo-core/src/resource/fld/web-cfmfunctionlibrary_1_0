@@ -804,14 +804,24 @@ Remember CFML arrays start at 1 not 0.</description>
 		<description>Name of an array </description>
     </argument>
 		<argument>
-			<name>sort_type</name>
-			<type>string</type>
+			<name>sorttype_or_closure</name>
+			<alias>sort_type,sortType,closure,function,udf</alias>
+			<type>object</type>
 			<required>Yes</required>
 		<description>
-		define one of the following:
-- numeric: sorts numbers
-- text: sorts text alphabetically, taking case into account (case sensitive)
-- textnocase: sorts text alphabetically, without regard to case (case insensitive)</description>
+value can be a string or a closure/function.
+		
+a string must be one of the following values:
+- "numeric": sorts numbers
+- "text": sorts text alphabetically, taking case into account (case sensitive)
+- "textnocase": sorts text alphabetically, without regard to case (case insensitive)
+
+if you define a closure/function, the closure/function must accept 2 parameters of any type and return:
+-1, if first parameter is "smaller" than second parameter
+0, if first parameter is equal to second parameter
+1, first parameter is "bigger" than second parameter
+
+</description>
     </argument>
 		<argument>
 			<name>sort_order</name>

@@ -535,8 +535,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		}
 			
 	}
-	
-	
+
 	public synchronized void sort(Comparator comp) throws PageException {
 		if(getDimension()>1)
 			throw new ExpressionException("only 1 dimensional arrays can be sorted");

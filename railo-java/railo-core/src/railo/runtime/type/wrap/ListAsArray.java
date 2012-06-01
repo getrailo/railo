@@ -1,7 +1,9 @@
 package railo.runtime.type.wrap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -241,6 +243,13 @@ public class ListAsArray implements Array,List,Sizeable {
 		if(ee!=null) {
 			throw new ExpressionException("can only sort arrays with simple values",ee.getMessage());
 		}
+	}
+
+	@Override
+	public synchronized void sort(Comparator comp) throws PageException {
+		if(getDimension()>1)
+			throw new ExpressionException("only 1 dimensional arrays can be sorted");
+		Collections.sort(list,comp);
 	}
 
 	/**

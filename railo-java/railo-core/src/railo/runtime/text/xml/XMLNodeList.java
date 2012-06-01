@@ -1,6 +1,7 @@
 package railo.runtime.text.xml;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -428,6 +429,12 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	public void sort(String sortType, String sortOrder)
 			throws ExpressionException {
 		throw new ExpressionException("can't sort a XML Node List Array","sorttype:"+sortType+";sortorder:"+sortOrder);
+	}
+	
+	@Override
+	public void sort(Comparator comp)
+			throws ExpressionException {
+		throw new ExpressionException("can't sort a XML Node List Array");
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package railo.runtime.type.scope;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -333,6 +334,11 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	public void sort(String sortType, String sortOrder) throws ExpressionException {
 		// TODO Impl.
 		throw new ExpressionException("can't sort ["+sortType+"-"+sortOrder+"] Argument Scope","not Implemnted Yet");
+	}
+
+	public void sort(Comparator com) throws ExpressionException {
+		// TODO Impl.
+		throw new ExpressionException("can't sort Argument Scope","not Implemnted Yet");
 	}
 
 	/**

@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -539,8 +540,14 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		}
 		if(ee!=null) {
 			throw new ExpressionException("can only sort arrays with simple values",ee.getMessage());
-		}
-			
+		}	
+	}
+
+	@Override
+	public synchronized void sort(Comparator comp) throws PageException {
+		if(getDimension()>1)
+			throw new ExpressionException("only 1 dimensional arrays can be sorted");
+		Arrays.sort(arr,offset,offset+size,comp);	
 	}
 	
 	/**
