@@ -1518,6 +1518,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			case Types.TINYINT: return "TINYINT";
 			case Types.VARBINARY: return "VARBINARY";
 			case Types.NVARCHAR: return "NVARCHAR";
+			case Types.SQLXML: return "SQLXML";
 			case Types.VARCHAR: return "VARCHAR";
 			default : return "VARCHAR";
 		}
