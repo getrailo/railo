@@ -3,6 +3,7 @@ package railo.runtime.listener;
 import java.util.HashMap;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -93,6 +94,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private Properties s3;
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches;
+	private Map<Integer,Boolean> sameFieldAsArrays;
 	
 	private boolean initApplicationTimeout;
 	private boolean initSessionTimeout;
@@ -113,6 +115,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initTriggerComponentDataMember;
 	private boolean initMappings;
 	private boolean initDefaultCaches;
+	private boolean initSameFieldAsArrays;
 	private boolean initCTMappings;
 	private boolean initCMappings;
 	private boolean initLocalMode;
@@ -439,6 +442,28 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public void setTriggerComponentDataMember(boolean triggerComponentDataMember) {
 		initTriggerComponentDataMember=true;
 		this.triggerComponentDataMember=triggerComponentDataMember;
+	}
+	
+
+
+	@Override
+	public boolean getSameFieldAsArray(int scope) {
+		if(!initSameFieldAsArrays) {
+			if(sameFieldAsArrays==null)sameFieldAsArrays=new HashMap<Integer, Boolean>();
+			
+			// Form
+			Object o = get(component,KeyImpl.init("sameformfieldsasarray"),null);
+			if(o!=null && Decision.isBoolean(o))
+				sameFieldAsArrays.put(Scope.SCOPE_FORM, Caster.toBooleanValue(o,false));
+			
+			// URL
+			o = get(component,KeyImpl.init("sameurlfieldsasarray"),null);
+			if(o!=null && Decision.isBoolean(o))
+				sameFieldAsArrays.put(Scope.SCOPE_URL, Caster.toBooleanValue(o,false));
+			
+			initSameFieldAsArrays=true; 
+		}
+		return Caster.toBooleanValue(sameFieldAsArrays.get(scope),false);
 	}
 	
 

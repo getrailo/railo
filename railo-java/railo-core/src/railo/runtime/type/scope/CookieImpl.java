@@ -301,12 +301,8 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		return scriptProtected==ScriptProtected.YES;
 	}
 
-
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ScriptProtected#setScriptProtecting(boolean)
-	 */
-	public void setScriptProtecting(boolean scriptProtected) {
+	@Override
+	public void setScriptProtecting(ApplicationContext ac,boolean scriptProtected) {
 		int _scriptProtected = scriptProtected?ScriptProtected.YES:ScriptProtected.NO;
 		if(isInitalized() && _scriptProtected!=this.scriptProtected) {
 			Iterator<Entry<String, String>> it = raw.entrySet().iterator();

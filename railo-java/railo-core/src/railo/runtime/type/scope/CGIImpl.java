@@ -334,7 +334,8 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return scriptProtected==ScriptProtected.YES;
 	}
 	
-	public void setScriptProtecting(boolean scriptProtecting) {
+	@Override
+	public void setScriptProtecting(ApplicationContext ac,boolean scriptProtecting) {
 		scriptProtected=scriptProtecting?ScriptProtected.YES:ScriptProtected.NO;
 	}
 

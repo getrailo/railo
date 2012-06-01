@@ -76,16 +76,14 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
     public String getEncoding() {
         return encoding;
     }
-
-    /**
-     * @see railo.runtime.type.scope.Form#setEncoding(java.lang.String)
-     */
-    public void setEncoding(String encoding) throws UnsupportedEncodingException {
+    
+    @Override
+    public void setEncoding(ApplicationContext ac,String encoding) throws UnsupportedEncodingException {
         encoding=encoding.trim().toUpperCase();
         if(encoding.equals(this.encoding)) return;
         this.encoding = encoding;
         if(!isInitalized()) return;
-        fillDecoded(raw,encoding,isScriptProtected());
+        fillDecoded(raw,encoding,isScriptProtected(),ac.getSameFieldAsArray(Scope.SCOPE_FORM));
         setFieldNames();
     }
 
@@ -175,12 +173,12 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 			}
 			
 			raw=(URLItem[]) list.toArray(new URLItem[list.size()]);
-			fillDecoded(raw,encoding,scriptProteced);
+			fillDecoded(raw,encoding,scriptProteced,pc.getApplicationContext().getSameFieldAsArray(SCOPE_FORM));
 		} 
     	catch (Exception e) {
 			
         	//throw new PageRuntimeException(Caster.toPageException(e));
-        	fillDecodedEL(new URLItem[0],encoding,scriptProteced);
+        	fillDecodedEL(new URLItem[0],encoding,scriptProteced,pc.getApplicationContext().getSameFieldAsArray(SCOPE_FORM));
 			initException=e;
 		}
 	}
@@ -241,11 +239,11 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		try {
 			reader = pc.getHttpServletRequest().getReader();
 			raw=setFrom___(IOUtil.toString(reader,false),delimiter);
-			fillDecoded(raw,encoding,scriptProteced);
+			fillDecoded(raw,encoding,scriptProteced,pc.getApplicationContext().getSameFieldAsArray(SCOPE_FORM));
 		} 
         catch (Exception e) {
         	
-        	fillDecodedEL(new URLItem[0],encoding,scriptProteced);
+        	fillDecodedEL(new URLItem[0],encoding,scriptProteced,pc.getApplicationContext().getSameFieldAsArray(SCOPE_FORM));
 			initException=e;
         }
         finally {
@@ -348,25 +346,14 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		return null;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#setScriptProtecting(boolean)
-	 */
-	public void setScriptProtecting(boolean scriptProtected) {
+	@Override
+	public void setScriptProtecting(ApplicationContext ac,boolean scriptProtected) {
 		int _scriptProtected = scriptProtected?ScriptProtected.YES:ScriptProtected.NO;
 		if(isInitalized() && _scriptProtected!=this.scriptProtected) {
-			fillDecodedEL(raw,encoding,scriptProtected);
+			fillDecodedEL(raw,encoding,scriptProtected,ac.getSameFieldAsArray(SCOPE_FORM));
 			setFieldNames();
 		}
 		this.scriptProtected=_scriptProtected;
-		/*if(isScriptProtected()) return;
-		if(scriptProtected) {
-			if(isInitalized()) {
-				fillDecodedEL(raw,encoding,scriptProtected);
-			}
-			this.scriptProtected=ScriptProtected.YES;
-		}
-		else this.scriptProtected=ScriptProtected.NO;*/
 	}
 
 	/**
@@ -384,7 +371,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		return raw;
 	}
 
-	public void addRaw(URLItem[] raw) {
+	public void addRaw(ApplicationContext ac,URLItem[] raw) {
 		URLItem[] nr=new URLItem[this.raw.length+raw.length];
 		for(int i=0;i<this.raw.length;i++) {
 			nr[i]=this.raw[i];
@@ -395,7 +382,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		this.raw=nr;
 		
 		if(!isInitalized()) return;
-        fillDecodedEL(this.raw,encoding,isScriptProtected());
+        fillDecodedEL(this.raw,encoding,isScriptProtected(),ac.getSameFieldAsArray(SCOPE_FORM));
         setFieldNames();
 	}
 

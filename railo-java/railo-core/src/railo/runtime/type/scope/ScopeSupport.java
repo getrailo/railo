@@ -137,12 +137,12 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
         }
     }
     
-    protected void fillDecodedEL(URLItem[] raw, String encoding, boolean scriptProteced) {
+    protected void fillDecodedEL(URLItem[] raw, String encoding, boolean scriptProteced, boolean sameAsArray) {
     	try {
-			fillDecoded(raw, encoding,scriptProteced);
+			fillDecoded(raw, encoding,scriptProteced,sameAsArray);
 		} catch (UnsupportedEncodingException e) {
 			try {
-				fillDecoded(raw, "iso-8859-1",scriptProteced);
+				fillDecoded(raw, "iso-8859-1",scriptProteced,sameAsArray);
 			} catch (UnsupportedEncodingException e1) {}
 		}
     }
@@ -154,7 +154,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
      * @param encoding
      * @throws UnsupportedEncodingException
      */
-    protected void fillDecoded(URLItem[] raw, String encoding, boolean scriptProteced) throws UnsupportedEncodingException {
+    protected void fillDecoded(URLItem[] raw, String encoding, boolean scriptProteced, boolean sameAsArray) throws UnsupportedEncodingException {
     	clear();
     	String name,value;
         //Object curr;
@@ -170,18 +170,18 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
                 StringList list=List.listToStringListRemoveEmpty(name,'.');
                 Struct parent=this;
                 while(list.hasNextNext()) {
-                    parent=_fill(parent,list.next(),new CastableStruct(),false,scriptProteced);
+                    parent=_fill(parent,list.next(),new CastableStruct(),false,scriptProteced,sameAsArray);
                 }
-                _fill(parent,list.next(),value,true,scriptProteced);
+                _fill(parent,list.next(),value,true,scriptProteced,sameAsArray);
             } 
             //else 
-                _fill(this,name,value,true,scriptProteced);
+                _fill(this,name,value,true,scriptProteced,sameAsArray);
         }
     }
     
-    private Struct _fill(Struct parent, String name, Object value, boolean isLast, boolean scriptProteced) {
-        Object curr;
-        boolean isArrayDef=false;
+    private Struct _fill(Struct parent, String name, Object value, boolean isLast, boolean scriptProteced, boolean sameAsArray) {
+    	Object curr;
+        boolean isArrayDef=sameAsArray;
         Collection.Key key=KeyImpl.init(name);
         
         // script protect

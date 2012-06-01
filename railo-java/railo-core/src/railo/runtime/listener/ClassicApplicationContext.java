@@ -64,6 +64,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private Resource source;
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches=new HashMap<Integer, String>();
+	private Map<Integer,Boolean> sameFieldAsArrays=new HashMap<Integer, Boolean>();
 
     
     /**
@@ -129,6 +130,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.sessionType=sessionType;
 		dbl.triggerComponentDataMember=triggerComponentDataMember;
 		dbl.defaultCaches=Duplicator.duplicateMap(defaultCaches, new HashMap<Integer, String>(),false );
+		dbl.sameFieldAsArrays=Duplicator.duplicateMap(sameFieldAsArrays, new HashMap<Integer, Boolean>(),false );
 		
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
@@ -500,5 +502,17 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public String getDefaultCacheName(int type) {
 		return defaultCaches.get(type);
+	}
+
+	public void setSameFieldAsArray(int scope, boolean sameFieldAsArray) {
+		sameFieldAsArrays.put(scope, sameFieldAsArray);
+	}
+	
+	
+	@Override
+	public boolean getSameFieldAsArray(int scope) {
+		Boolean b= sameFieldAsArrays.get(scope);
+		if(b==null) return false;
+		return b.booleanValue();
 	}
 }

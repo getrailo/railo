@@ -169,4 +169,11 @@ public interface ApplicationContext extends Serializable {
 	public String getDefaultCacheName(int type);
 	
 	public void setDefaultCacheName(int type, String cacheName);
+
+	/**
+	 * merge the field with same name to array if true, otherwise to a comma separated string list
+	 * @param scope scope type, one of the following: Scope.SCOPE_FORM or Scope.SCOPE_URL
+	 * @return
+	 */
+	public boolean getSameFieldAsArray(int scope);
 }

@@ -35,14 +35,12 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
         return encoding;
     }
 
-    /**
-     * @see railo.runtime.type.scope.URL#setEncoding(java.lang.String)
-     */
-    public void setEncoding(String encoding) throws UnsupportedEncodingException {
+    @Override
+    public void setEncoding(ApplicationContext ac,String encoding) throws UnsupportedEncodingException {
         encoding=encoding.trim().toUpperCase();
         if(encoding.equals(this.encoding)) return;
         this.encoding = encoding;
-        if(isInitalized())fillDecoded(raw,encoding,isScriptProtected());
+        if(isInitalized())fillDecoded(raw,encoding,isScriptProtected(),ac.getSameFieldAsArray(SCOPE_URL));
     }
 
 	/**
@@ -59,7 +57,7 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
 			super.initialize(pc); 
             raw=setFromQueryString(ReqRspUtil.getQueryString(pc.getHttpServletRequest()));
             
-            fillDecoded(raw,encoding,isScriptProtected());
+            fillDecoded(raw,encoding,isScriptProtected(),pc.getApplicationContext().getSameFieldAsArray(SCOPE_URL));
             
             if(raw.length>0 && pc.getConfig().isAllowURLRequestTimeout()){
             	Object o=get(REQUEST_TIMEOUT,null);
@@ -82,26 +80,15 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
         super.release();
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#setScriptProtecting(boolean)
-	 */
-	public void setScriptProtecting(boolean scriptProtected) {
+    @Override
+	public void setScriptProtecting(ApplicationContext ac,boolean scriptProtected) {
 		
 		int _scriptProtected = scriptProtected?ScriptProtected.YES:ScriptProtected.NO;
 		//print.out(isInitalized()+"x"+(_scriptProtected+"!="+this.scriptProtected));
 		if(isInitalized() && _scriptProtected!=this.scriptProtected) {
-			fillDecodedEL(raw,encoding,scriptProtected);
+			fillDecodedEL(raw,encoding,scriptProtected,ac.getSameFieldAsArray(SCOPE_URL));
 		}
 		this.scriptProtected=_scriptProtected;
-		/*if(isScriptProtected()) return;
-		if(scriptProtected) {
-			if(isInitalized()) {
-				fillDecodedEL(raw,encoding,scriptProtected);
-			}
-			this.scriptProtected=ScriptProtected.YES;
-		}
-		else this.scriptProtected=ScriptProtected.NO;*/
 	}
 	
 

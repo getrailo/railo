@@ -14,6 +14,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.scope.FormImpl.Item;
@@ -42,7 +43,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 		form.initialize(pc);
 		url.initialize(pc);
 		//print.ln(">>>"+List.arrayToList(url.keys(),","));
-		form.addRaw(url.getRaw());
+		form.addRaw(pc.getApplicationContext(),url.getRaw());
 		
 		/*String[] keys = url.keys();
 		for(int i=0;i<keys.length;i++) {
@@ -83,12 +84,9 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 		return form.getEncoding();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#setEncoding(java.lang.String)
-	 */
-	public void setEncoding(String encoding)throws UnsupportedEncodingException {
-		form.setEncoding(encoding);
+	@Override
+	public void setEncoding(ApplicationContext ac, String encoding)throws UnsupportedEncodingException {
+		form.setEncoding(ac,encoding);
 	}
 
 	/**
@@ -326,13 +324,9 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 		return form.duplicate(deepCopy);
 	}
 	
-
-
-	/**
-	 * @see railo.runtime.type.scope.URL#setScriptProtecting(boolean)
-	 */
-	public void setScriptProtecting(boolean b) {
-		form.setScriptProtecting(b);
+	@Override
+	public void setScriptProtecting(ApplicationContext ac,boolean b) {
+		form.setScriptProtecting(ac,b);
 	}
 
 	/**

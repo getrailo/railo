@@ -2746,17 +2746,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         
         // ScriptProtecting
         if(config.mergeFormAndURL()) {
-        	form.setScriptProtecting(
+        	form.setScriptProtecting(applicationContext,
         			(scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0 
         			|| 
         			(scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0);
         }
         else {
-            form.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0);
-            url.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0);
+            form.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0);
+            url.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0);
         }
-        cookie.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0);
-        cgi.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0);
+        cookie.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0);
+        cgi.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0);
         undefined.reinitialize(this);
     }
     

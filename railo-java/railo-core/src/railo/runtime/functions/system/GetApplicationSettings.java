@@ -26,6 +26,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.KeyConstants;
 
@@ -68,6 +69,10 @@ public class GetApplicationSettings {
 
 		sct.setEL("invokeImplicitAccessor", Caster.toBoolean(ac.getTriggerComponentDataMember()));
 		sct.setEL("triggerDataMember", Caster.toBoolean(ac.getTriggerComponentDataMember()));
+		sct.setEL("sameformfieldsasarray", Caster.toBoolean(ac.getSameFieldAsArray(Scope.SCOPE_FORM)));
+		sct.setEL("sameurlfieldsasarray", Caster.toBoolean(ac.getSameFieldAsArray(Scope.SCOPE_URL)));
+		
+		
 		Resource src = ac.getSource();
 		if(src!=null)sct.setEL(KeyConstants._source,src.getAbsolutePath());
 		
