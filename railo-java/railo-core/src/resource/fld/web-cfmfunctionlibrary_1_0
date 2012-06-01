@@ -5007,6 +5007,23 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	<!-- GetCPUUsage -->
+	<function>
+		<name>GetCPUUsage</name>
+		<class>railo.runtime.functions.system.GetCPUUsage</class>
+		<description>returns the CPU usage for a defined time range (default: 1000ms).</description>
+		<argument>
+			<name>time</name>
+			<alias>interval</alias>
+			<type>number</type>
+			<required>no</required>
+			<default>1000</default>
+			<description>time range for a certain range.</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
 	<!-- getClientVariablesList -->
 	<function>
 		<name>getClientVariablesList</name>

@@ -22,6 +22,7 @@ import javax.servlet.ServletContext;
 
 import com.jezhumble.javasysmon.JavaSysMon;
 import com.jezhumble.javasysmon.MemoryStats;
+import com.jezhumble.javasysmon.CpuTimes;
 
 import railo.commons.digest.MD5;
 import railo.commons.io.res.Resource;
@@ -793,6 +794,17 @@ public final class SystemUtil {
 	public static long getTotalBytes() throws ApplicationException {
 		return physical().getTotalBytes();
 	}
+	
+	public static double getCpuUsage(long time) throws ApplicationException {
+		if(time<1) throw new ApplicationException("time has to be bigger than 0");
+		if(jsm==null) jsm=new JavaSysMon();
+		CpuTimes cput = jsm.cpuTimes();
+		if(cput==null) throw new ApplicationException("CPU information are not available for this OS");
+		CpuTimes previous = new CpuTimes(cput.getUserMillis(),cput.getSystemMillis(),cput.getIdleMillis());
+        sleep(time);
+        
+        return jsm.cpuTimes().getCpuUsage(previous)*100D;
+    }
 	
 
 	private synchronized static MemoryStats physical() throws ApplicationException {
