@@ -115,19 +115,19 @@ settings --->
 
 <cfoutput><cfform action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.useCaptcha#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Login.useCaptcha#</th>
+	<td>
 		
-		<cfinput type="checkbox" name="captcha" checked="#settings.captcha#" value="true"><br /><span class="comment">#stText.Login.useCaptchaDesc#</span>
+		<cfinput type="checkbox" name="captcha" checked="#settings.captcha#" value="true"><br /><div class="comment">#stText.Login.useCaptchaDesc#</div>
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Login.delay#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Login.delay#</th>
+	<td>
 		<select name="delay"><cfset hasDelay=false>
         	<cfloop list="0,1,5,10,30,60" index="i"><option <cfif settings.delay EQ i><cfset hasDelay=true>selected="selected"</cfif>>#i#</option></cfloop>
             <cfif not hasDelay><option selected="selected">#settings.delay#</option></cfif>
-        </select> #stText.Login.seconds#<br /><span class="comment">#stText.Login.delayDesc#</span>
+        </select> #stText.Login.seconds#<br /><div class="comment">#stText.Login.delayDesc#</div>
 	</td>
 </tr>
 <tr>
@@ -152,25 +152,25 @@ change password --->
 
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.OldPassword#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Login.OldPasswordDescription#</span><br>
+	<th scope="row">#stText.Login.OldPassword#</th>
+	<td>
+		<div class="comment">#stText.Login.OldPasswordDescription#</div><br>
 		<cfinput type="password" name="_old_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.OldPasswordMissing#">
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Login.NewPassword#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Login.NewPasswordDescription#</span><br>
+	<th scope="row">#stText.Login.NewPassword#</th>
+	<td>
+		<div class="comment">#stText.Login.NewPasswordDescription#</div><br>
 		<cfinput type="password" name="_new_password" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.NewPasswordMissing#">
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Login.RetypePassword#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Login.RetypeNewPassword#</span><br>
+	<th scope="row">#stText.Login.RetypePassword#</th>
+	<td>
+		<div class="comment">#stText.Login.RetypeNewPassword#</div><br>
 		<cfinput type="password" name="_new_password_re" value="" passthrough='autocomplete="off"' 
 		style="width:200px" required="yes" message="#stText.Login.RetypeNewPasswordMissing#">
 	</td>
@@ -213,9 +213,9 @@ Set default password --->
 </tr>
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.Password#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Login.NewPasswordDescription#</span><br>
+	<th scope="row">#stText.Login.Password#</th>
+	<td>
+		<div class="comment">#stText.Login.NewPasswordDescription#</div><br>
 		<cfinput type="text" name="_new_password" value="#defaultPassword#" 
 		style="width:200px" required="no" message="#stText.Login.NewPasswordMissing#">
 	</td>
@@ -258,8 +258,8 @@ Reset Password --->
 </tr>
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Login.web#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Login.web#</th>
+	<td>
 		<cfsilent>
 		<cfset size=0>
 		<cfset QueryAddColumn(contextes,"text",array())>

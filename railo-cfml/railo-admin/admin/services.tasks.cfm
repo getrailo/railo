@@ -216,11 +216,11 @@ Error Output--->
 	</tr>
 	</cfif>
 	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.lastExecution#<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span></td>
+		<td width="100" class="tblHead" nowrap>#stText.remote.ot.lastExecution#<br /><div class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</div></td>
 		<td class="tblContent#css#" title="" nowrap>#dateFormat(tasks.lastExecution,'mm/dd/yyyy')# #timeFormat(tasks.lastExecution,'HH:mm:ss')#</td>
 	</tr>
 	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.nextExecution#<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span></td>
+		<td width="100" class="tblHead" nowrap>#stText.remote.ot.nextExecution#<br /><div class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</div></td>
 		<td class="tblContent#css#" title="" nowrap><cfif tasks.closed> <center>-</center> <cfelse>
 		#dateFormat(tasks.nextExecution,'mm/dd/yyyy')# #timeFormat(tasks.nextExecution,'HH:mm:ss')#</cfif></td>
 	</tr>
@@ -258,7 +258,7 @@ Error Output--->
 	</tr>
 
 	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.exetime#<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span></td>
+		<td width="100" class="tblHead" nowrap>#stText.remote.ot.exetime#<br /><div class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</div></td>
 		<td class="tblHead" title="" nowrap>#stText.remote.ot.error#</td>
 	</tr>
 	<cfset exp=tasks.exceptions>
@@ -269,7 +269,7 @@ Error Output--->
 			#dateFormat(exp[i].time,'mm/dd/yyyy')# #timeFormat(exp[i].time,'HH:mm:ss')#<cfelse>-</cfif><br /></td>
 		<td class="tblContent#css#" title="">
         	<cfif structKeyExists(exp[i],"message")><b>#exp[i].message#</b></cfif>
-			<cfif structKeyExists(exp[i],"stacktrace")><br /><span class="comment"> #replace(exp[i].stacktrace,chr(13),'<br />','all')#</span></cfif>
+			<cfif structKeyExists(exp[i],"stacktrace")><br /><div class="comment"> #replace(exp[i].stacktrace,chr(13),'<br />','all')#</div></cfif>
         </td>
 	</tr>
 	</cfloop>
@@ -373,7 +373,7 @@ Error Output--->
                 <cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#url.startrow-url.maxrow#" class="comment"><img src="resources/img/arrow-left.gif.cfm" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
                 
                 </td>
-            	<td align="center"><span class="comment">#url.startrow# #stText.remote.to# #to# #stText.remote.from# #result.open+result.closed#</span></td>
+            	<td align="center"><div class="comment">#url.startrow# #stText.remote.to# #to# #stText.remote.from# #result.open+result.closed#</div></td>
             	<td width="100" align="right">
                 <cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#url.startrow+url.maxrow#" class="comment">#stText.remote.next#<img src="resources/img/arrow-right.gif.cfm" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
                 </td>

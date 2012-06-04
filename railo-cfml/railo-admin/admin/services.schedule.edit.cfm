@@ -145,7 +145,7 @@ ACTIONS --->
 <!--- 
 Error Output--->
 <cfset printError(error)>
-<cfschedule action="list" returnVariable="tasks" >
+<cfschedule action="list" returnvariable="tasks" >
 <cfset task=struct()>
 <cfloop query="tasks">
 	<cfif hash((tasks.task)) EQ trim(url.task)>
@@ -166,41 +166,41 @@ Error Output--->
     </colgroup>
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=#url.action2#&task=#url.task#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Name#</td>
-	<td class="tblContent"><input type="hidden" name="name" value="#trim(task.task)#">#task.task#</td>
+	<th scope="row">#stText.Schedule.Name#</th>
+	<td><input type="hidden" name="name" value="#trim(task.task)#">#task.task#</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.URL#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.URL#</th>
+	<td>
 		
 		<cfinput type="text" name="url" value="#task.url#" style="width:400px" required="yes" 
-		message="#stText.Schedule.URLMissing#"><br><span class="comment">#stText.Schedule.NameDescEdit#</span></td>
+		message="#stText.Schedule.URLMissing#"><br><div class="comment">#stText.Schedule.NameDescEdit#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Port#</td>
-	<td class="tblContent">
-		<cfinput type="text" name="port" value="#task.port#" style="width:40px" required="no" validate="integer"><br><span class="comment">#stText.Schedule.PortDescription#</span></td>
+	<th scope="row">#stText.Schedule.Port#</th>
+	<td>
+		<cfinput type="text" name="port" value="#task.port#" style="width:40px" required="no" validate="integer"><br><div class="comment">#stText.Schedule.PortDescription#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Timeout#</td>
-	<td class="tblContent"><br>
+	<th scope="row">#stText.Schedule.Timeout#</th>
+	<td><br>
 		<cfinput type="text" name="timeout" value="#task.timeout#" style="width:40px" required="no" validate="integer">&nbsp;<br />
-        <span class="comment">#stText.Schedule.TimeoutDescription#</span></td>
+        <div class="comment">#stText.Schedule.TimeoutDescription#</div></td>
 </tr>
 
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Username#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.Username#</th>
+	<td>
 		
 		<cfinput type="text" name="username" value="#task.username#" style="width:150px" 
-		required="no"><br><span class="comment">#stText.Schedule.UserNameDescription#</span></td>
+		required="no"><br><div class="comment">#stText.Schedule.UserNameDescription#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Password#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.Password#</th>
+	<td>
 		
 		<cfinput type="text" name="password" value="#task.password#" style="width:150px" 
-		required="no"><br /><span class="comment">#stText.Schedule.PasswordDescription#</span></td>
+		required="no"><br /><div class="comment">#stText.Schedule.PasswordDescription#</div></td>
 </tr>
 </table>
 <br>
@@ -212,27 +212,27 @@ Error Output--->
 	<td colspan="2"><h2>#stText.Schedule.Proxy#</h2>#stText.Schedule.ProxyDesc#</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Server#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.Server#</th>
+	<td>
     	<cfinput type="text" name="proxyserver" value="#task.proxyserver#" style="width:300px" 
 		required="no">
-        <br /><span class="comment">#stText.Schedule.ProxyServerDesc#</span></td>
+        <br /><div class="comment">#stText.Schedule.ProxyServerDesc#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Port#</td>
-	<td class="tblContent"><cfinput type="text" name="proxyport" value="#task.proxyport#" style="width:40px" validate="integer"
+	<th scope="row">#stText.Schedule.Port#</th>
+	<td><cfinput type="text" name="proxyport" value="#task.proxyport#" style="width:40px" validate="integer"
 		required="no"><br>
-        <span class="comment">#stText.Schedule.ProxyPort#</span></td>
+        <div class="comment">#stText.Schedule.ProxyPort#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Username#</td>
-	<td class="tblContent"><cfinput type="text" name="proxyuser" value="#task.proxyuser#" style="width:150px" 
-		required="no"><br><span class="comment">#stText.Schedule.ProxyUserName#</span></td>
+	<th scope="row">#stText.Schedule.Username#</th>
+	<td><cfinput type="text" name="proxyuser" value="#task.proxyuser#" style="width:150px" 
+		required="no"><br><div class="comment">#stText.Schedule.ProxyUserName#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Password#</td>
-	<td class="tblContent"><cfinput type="text" name="proxypassword" value="#task.proxypassword#" style="width:150px" 
-		required="no"><br><span class="comment">#stText.Schedule.ProxyPassword#</span></td>
+	<th scope="row">#stText.Schedule.Password#</th>
+	<td><cfinput type="text" name="proxypassword" value="#task.proxypassword#" style="width:150px" 
+		required="no"><br><div class="comment">#stText.Schedule.ProxyPassword#</div></td>
 </tr>
 </table>
 <br>
@@ -245,19 +245,19 @@ Error Output--->
 	<td colspan="2"><h2>#stText.Schedule.Output#</h2>#stText.Schedule.OutputDesc#</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Publish#</td>
-	<td class="tblContent"><input type="checkbox" class="checkbox" name="publish" value="yes" <cfif task.publish>checked</cfif>>
-		<span class="comment">#stText.Schedule.StoreResponse#</span></td>
+	<th scope="row">#stText.Schedule.Publish#</th>
+	<td><input type="checkbox" class="checkbox" name="publish" value="yes" <cfif task.publish>checked</cfif>>
+		<div class="comment">#stText.Schedule.StoreResponse#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.File#</td>
-	<td class="tblContent"><span class="comment">#stText.Schedule.FileDescription#</span><br><cfinput type="text" name="file" value="#toFile(task.path,task.file)#" style="width:400px" 
+	<th scope="row">#stText.Schedule.File#</th>
+	<td><div class="comment">#stText.Schedule.FileDescription#</div><br><cfinput type="text" name="file" value="#toFile(task.path,task.file)#" style="width:400px" 
 		required="no"></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Resolve_URL#</td>
-	<td class="tblContent"><input type="checkbox" class="checkbox" name="resolveurl" value="yes" <cfif task.resolveurl>checked</cfif>>
-		<span class="comment">#stText.Schedule.ResolveDescription#</span></td>
+	<th scope="row">#stText.Schedule.Resolve_URL#</th>
+	<td><input type="checkbox" class="checkbox" name="resolveurl" value="yes" <cfif task.resolveurl>checked</cfif>>
+		<div class="comment">#stText.Schedule.ResolveDescription#</div></td>
 </tr>
 </table>
 <br>
@@ -300,8 +300,8 @@ Error Output--->
 	<input type="hidden" name="end_year" value="#task.end.year#">
 
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.ExecuteAt#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.ExecuteAt#</th>
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Day#</td>
@@ -322,7 +322,7 @@ Error Output--->
 			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table>
-        <span class="comment">#stText.Schedule.ExecuteAtDesc#</span></td>
+        <div class="comment">#stText.Schedule.ExecuteAtDesc#</div></td>
 </tr>
 	</cfcase>
 	<cfcase value="daily,weekly,monthly">
@@ -331,8 +331,8 @@ Error Output--->
 	<input type="hidden" name="end_minute" value="#task.end.minute#">
 	<input type="hidden" name="end_second" value="#task.end.second#">
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.StartsAt#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.StartsAt#</th>
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Day#</td>
@@ -345,11 +345,11 @@ Error Output--->
 			<td><cfinput type="text" name="start_year" value="#task.start.year#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table>
-        <span class="comment">#stText.Schedule.StartsAtDesc#</span></td>
+        <div class="comment">#stText.Schedule.StartsAtDesc#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.ExecutionTime#</td>	
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.ExecutionTime#</th>	
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Hour#</td>
@@ -365,8 +365,8 @@ Error Output--->
         <span class="comment">#stText.Schedule['ExecutionTimeDesc'& task.interval ]#</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.EndsAt#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.EndsAt#</th>
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Day#</td>
@@ -379,14 +379,14 @@ Error Output--->
 			<td><cfinput type="text" name="end_year" value="#task.end.year#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 		</tr>
 		</table>
-        <span class="comment">#stText.Schedule['EndsAtDesc'& task.interval ]#</span>
+        <div class="comment">#stText.Schedule['EndsAtDesc'& task.interval ]#</div>
         </td>
 </tr>
 	</cfcase>
 	<cfdefaultcase>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.StartDate#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.StartDate#</th>
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Day#</td>
@@ -399,12 +399,12 @@ Error Output--->
 			<td><cfinput type="text" name="start_year" value="#task.start.year#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table>
-        <span class="comment">#stText.Schedule.StartDateDesc#</span>
+        <div class="comment">#stText.Schedule.StartDateDesc#</div>
          </td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.StartTime#</td>	
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.StartTime#</th>	
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Hour#</td>
@@ -417,11 +417,11 @@ Error Output--->
 			<td><cfinput type="text" name="start_second" value="#task.start.second#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
 		</tr>
 		</table>
-        <span class="comment" style="color:red">#stText.Schedule.StartTimeDesc#</span></td>
+        <div class="comment" style="color:red">#stText.Schedule.StartTimeDesc#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.EndDate#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.EndDate#</th>
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Day#</td>
@@ -434,11 +434,11 @@ Error Output--->
 			<td><cfinput type="text" name="end_year" value="#task.end.year#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 		</tr>
 		</table>
-        <span class="comment">#stText.Schedule.endDateDesc#</span></td>
+        <div class="comment">#stText.Schedule.endDateDesc#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.EndTime#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.EndTime#</th>
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Hour#</td>
@@ -451,11 +451,11 @@ Error Output--->
 			<td><cfinput type="text" name="end_second" value="#task.end.second#" style="width:40px" required="no" validate="integer">&nbsp;</td>
 		</tr>
 		</table>
-        <span class="comment" style="color:red">#stText.Schedule.endTimeDesc#</span></td>
+        <div class="comment" style="color:red">#stText.Schedule.endTimeDesc#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.Interval#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Schedule.Interval#</th>
+	<td>
 	<cfset interval=toStructInterval(task.interval)>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
@@ -474,7 +474,7 @@ Error Output--->
 		required="no" validate="integer"
 		message="#stText.General.SecondError#"></td>
 		</tr>
-		</table> <span class="comment">#stText.Schedule.IntervalDesc#</span></td>
+		</table> <div class="comment">#stText.Schedule.IntervalDesc#</div></td>
 </tr>
 
 
@@ -483,9 +483,9 @@ Error Output--->
 
 
 <tr>
-	<td class="tblHead" width="150">#stText.Schedule.paused#</td>	
-	<td class="tblContent"><input type="checkbox" name="paused" value="true"<cfif task.paused> checked="checked"</cfif> />
-    <span class="comment">#stText.Schedule.pauseDesc#</span></td>
+	<th scope="row">#stText.Schedule.paused#</th>	
+	<td><input type="checkbox" name="paused" value="true"<cfif task.paused> checked="checked"</cfif> />
+    <div class="comment">#stText.Schedule.pauseDesc#</div></td>
 </tr>
 
 <tr>
@@ -496,7 +496,7 @@ Error Output--->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
+		<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
 		<input type="submit" class="submit" name="run" value="#stText.Buttons.Update#"></td>
 </tr>
 </cfform>

@@ -179,7 +179,7 @@ function checkTheBox(field) {
 					</cfif>
 			</td>
 			<cfelse>
-			<td class="tblContent">&nbsp;</td>			
+			<td>&nbsp;</td>			
 			</cfif>
 		</tr>
 		</cfloop>

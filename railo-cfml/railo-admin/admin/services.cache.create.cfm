@@ -87,13 +87,13 @@ Error Output --->
 <cfinput type="hidden" name="_name" value="#connection.name#" >
 	<tr>
 		<td width="150" class="tblHead" nowrap>#stText.Settings.cache.Name#</td>
-		<td width="450" class="tblContent" nowrap>#connection.name#</td>
+		<td width="450" nowrap>#connection.name#</td>
 	</tr>
     <tr>
-	<td class="tblHead" width="150">#stText.Settings.cache.storage#</td>
-	<td class="tblContent" width="450">
+	<th scope="row">#stText.Settings.cache.storage#</th>
+	<td width="450">
 		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#connection.storage#">
-		<span class="comment">#stText.Settings.cache.storageDesc#</span>
+		<div class="comment">#stText.Settings.cache.storageDesc#</div>
 	</td>
 </tr>
 	<tr>
@@ -121,8 +121,8 @@ Error Output --->
         </cfif>
         <cfset type=field.getType()>
         <tr>
-            <td class="tblHead" width="150">#field.getDisplayName()#</td>
-            <td class="tblContent" width="300">
+            <th scope="row">#field.getDisplayName()#</th>
+            <td width="300">
 <cfif type EQ "text" or type EQ "password">
             <cfinput type="#type#" 
                 name="custom_#field.getName()#" 
@@ -172,19 +172,19 @@ Error Output --->
 		</tr>
 		
 		<tr>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_d_#field.getName()#" 
                 value="#addZero(d)#" style="width:40px" required="#field.getRequired()#"   validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_h_#field.getName()#" 
                 value="#addZero(h)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_m_#field.getName()#" 
                 value="#addZero(m)#" style="width:40px" required="#field.getRequired()#"  maxlength="2" validate="integer" 
                 message="Missing value for field #field.getDisplayName()#"></td>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_s_#field.getName()#" 
                 value="#addZero(s)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
@@ -237,7 +237,7 @@ Error Output --->
                 <cfif isStruct(desc) and StructKeyExists(desc,'_bottom')><div class="comment" style="padding-top:4px">#desc._bottom#</div></cfif>
                 </cfoutput>
             </cfif>
-			<cfif isSimpleValue(field.getDescription()) and len(trim(field.getDescription()))><cfif doBr><br /></cfif><span class="comment">#field.getDescription()#</span></cfif>
+			<cfif isSimpleValue(field.getDescription()) and len(trim(field.getDescription()))><cfif doBr><br /></cfif><div class="comment">#field.getDescription()#</div></cfif>
             </td>
         </tr>
         </cfloop>
@@ -254,7 +254,7 @@ Error Output --->
                 	<option <cfif connection.default EQ type>selected="selected"</cfif> value="#type#">#stText.Settings.cache['defaultType'& type]#</option>
                     </cfloop>
                 	</select><br />
-                <span class="comment">#stText.Settings.cache.defaultDesc#</span></td>
+                <div class="comment">#stText.Settings.cache.defaultDesc#</div></td>
             </tr>
             </table>
         

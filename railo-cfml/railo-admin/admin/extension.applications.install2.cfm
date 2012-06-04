@@ -281,7 +281,7 @@
                             <td valign="top">
                             	<table border="0" cellpadding="5" cellspacing="0" class="tbl">
                                 <tr>
-                                	<td>#option.getLabel()#<cfif len(trim(option.getDescription()))><br /><span class="comment">#option.getDescription()#</span></cfif></td>
+                                	<td>#option.getLabel()#<cfif len(trim(option.getDescription()))><br /><div class="comment">#option.getDescription()#</div></cfif></td>
                                 </tr>
                                 
                                 </table>
@@ -303,7 +303,7 @@
                 </cfif>
                 
                 <cfif len(trim(item.getDescription()))>
-                    <cfif doBR><br /></cfif><span class="comment">#item.getDescription()#</span>
+                    <cfif doBR><br /></cfif><div class="comment">#item.getDescription()#</div>
                 </cfif>
             </td>
         </tr>

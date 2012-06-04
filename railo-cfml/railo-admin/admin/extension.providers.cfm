@@ -146,7 +146,7 @@ list all mappings and display necessary edit fields --->
         </table></td>
         
         <!--- url --->
-        <td height="30" class="tblContent" title="#providers.url#" nowrap>
+        <td height="30" title="#providers.url#" nowrap>
             <input type="hidden" name="url_#providers.currentrow#" value="#providers.url#">#providers.url#
          </td>
          
@@ -154,13 +154,13 @@ list all mappings and display necessary edit fields --->
          <cfset hasData= StructKeyExists(infos,providers.url)>
          
         <!--- title --->
-        <td height="30" class="tblContent" nowrap>
+        <td height="30" nowrap>
 			<cfif hasData and StructKeyExists(infos[providers.url],"image")><cfset dn=getDumpNail(infos[providers.url].image,100,30)><cfif len(dn)><img src="#dn#" border="0"/>&nbsp;&nbsp;</cfif></cfif>
 			<cfif hasData and StructKeyExists(infos[providers.url],"title") and len(trim(infos[providers.url].title))>#infos[providers.url].title#<cfelse>&nbsp;</cfif></td>
         <!--- mode --->
-        <cfif doMode><td height="30" class="tblContent" nowrap><cfif hasData><cfif StructKeyExists(infos[providers.url],"mode") and len(trim(infos[providers.url].mode))>#infos[providers.url].mode#<cfelse>production</cfif></cfif></td></cfif>
+        <cfif doMode><td height="30" nowrap><cfif hasData><cfif StructKeyExists(infos[providers.url],"mode") and len(trim(infos[providers.url].mode))>#infos[providers.url].mode#<cfelse>production</cfif></cfif></td></cfif>
         <!--- check --->
-        <td class="tblContent" nowrap valign="middle" align="center">
+        <td nowrap valign="middle" align="center">
             <cfif StructKeyExists(stVeritfyMessages, providers.url)>
                 #stVeritfyMessages[providers.url].label#
                 <cfif stVeritfyMessages[providers.url].label neq "OK">
@@ -189,9 +189,9 @@ list all mappings and display necessary edit fields --->
 		</tr>
 		</table></td>
 		
-		<td class="tblContent" nowrap colspan="#columns-1#"><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap colspan="#columns-1#"><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="url_#providers.recordcount+1#" value="" required="no"  style="width:100%">
-            <br /><span class="comment">&nbsp;&nbsp;#stText.ext.prov.urlDesc#</span></td>
+            <br /><div class="comment">&nbsp;&nbsp;#stText.ext.prov.urlDesc#</div></td>
 	</tr>
 </cfif>
 <cfif hasAccess>

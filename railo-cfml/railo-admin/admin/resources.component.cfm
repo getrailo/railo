@@ -185,11 +185,11 @@ Create Datasource --->
 
 <!--- Base Component ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.BaseComponent#</td>
+	<th scope="row">#stText.Components.BaseComponent#</th>
 	<cfset css=iif(len(component.baseComponentTemplate) EQ 0 and len(component.strBaseComponentTemplate) NEQ 0,de('Red'),de(''))>
 	<td class="tblContent#css#" title="#component.strBaseComponentTemplate#
 #component.BaseComponentTemplate#">
-		<span class="comment">#stText.Components.BaseComponentDescription#</span><br>
+		<div class="comment">#stText.Components.BaseComponentDescription#</div><br>
 		<cfif hasAccess>
 		<cfinput type="text" name="baseComponentTemplate" value="#component.strBaseComponentTemplate#" style="width:350px" 
 			required="no" 
@@ -202,9 +202,9 @@ Create Datasource --->
 
 <!--- Auto Import ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.AutoImport#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Components.AutoImportDescription#</span><br>
+	<th scope="row">#stText.Components.AutoImport#</th>
+	<td>
+		<div class="comment">#stText.Components.AutoImportDescription#</div><br>
 		<cfif hasAccess>
 		<cfinput type="text" name="componentDefaultImport" value="#component.componentDefaultImport#" style="width:350px" 
 			required="no" 
@@ -217,55 +217,55 @@ Create Datasource --->
 
 <!--- Search Local ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.componentLocalSearch#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Components.componentLocalSearch#</th>
+	<td>
 		<cfif hasAccess>
 			<input type="checkbox" class="checkbox" name="componentLocalSearch" value="yes" <cfif component.componentLocalSearch>checked</cfif>>
 			
 		<cfelse>
 			<b>#YesNoFormat(component.componentLocalSearch)#</b><br />
-		</cfif><span class="comment">#stText.Components.componentLocalSearchDesc#</span>
+		</cfif><div class="comment">#stText.Components.componentLocalSearchDesc#</div>
 	</td>
 </tr>
 
 <!--- Search Mappings ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.componentMappingSearch#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Components.componentMappingSearch#</th>
+	<td>
 		
 		<b>Yes (coming soon)</b><br />
-		<span class="comment">#stText.Components.componentMappingSearchDesc#</span>
+		<div class="comment">#stText.Components.componentMappingSearchDesc#</div>
 	</td>
 </tr>
 
 <!--- Deep Search ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.componentDeepSearch#</td>
-	<td class="tblContent" colspan="4">
+	<th scope="row">#stText.Components.componentDeepSearch#</th>
+	<td colspan="4">
 	<cfif hasAccess>
     	<input type="checkbox" class="checkbox" name="componentDeepSearchDesc" value="yes" <cfif component.deepsearch>checked</cfif>>
     <cfelse>
     	<b>#yesNoFormat(setting.deepsearch)#</b>
 	</cfif>
     
-    <span class="comment">#stText.Components.componentDeepSearchDesc#</span></td>
+    <div class="comment">#stText.Components.componentDeepSearchDesc#</div></td>
 </tr>
 
 
 <!--- component path cache ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.componentPathCache#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Components.componentPathCache#</th>
+	<td>
 		<cfif hasAccess>
 			<input type="checkbox" class="checkbox" name="componentPathCache" value="yes" <cfif component.componentPathCache>checked</cfif>>
-            <span class="comment">#stText.Components.componentPathCacheDesc#</span>
+            <div class="comment">#stText.Components.componentPathCacheDesc#</div>
             <cfif component.componentPathCache><br />
             <input type="submit" class="submit" name="mainAction" value="#flushName#">
             </cfif>
             
 		<cfelse>
 			<b>#YesNoFormat(component.componentPathCache)#</b><br />
-            <span class="comment">#stText.Components.componentPathCacheDesc#</span>
+            <div class="comment">#stText.Components.componentPathCacheDesc#</div>
 		</cfif>
 		
 	</td>
@@ -278,11 +278,11 @@ Create Datasource --->
 
 <!--- Component Dump Template ---->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.ComponentDumpTemplate#</td>
+	<th scope="row">#stText.Components.ComponentDumpTemplate#</th>
 	<cfset css=iif(len(component.componentDumpTemplate) EQ 0 and len(component.strComponentDumpTemplate) NEQ 0,de('Red'),de(''))>
 	<td class="tblContent#css#" title="#component.strcomponentDumpTemplate#
 #component.componentDumpTemplate#">
-		<span class="comment">#stText.Components.ComponentDumpTemplateDescription#</span><br>
+		<div class="comment">#stText.Components.ComponentDumpTemplateDescription#</div><br>
 		<cfif hasAccess>
 			<cfinput type="text" name="componentDumpTemplate" value="#component.strcomponentDumpTemplate#" style="width:350px" 
 				required="no" 
@@ -293,10 +293,10 @@ Create Datasource --->
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Components.DataMemberAccessType#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Components.DataMemberAccessType#</th>
+	<td>
 		<cfset access=component.componentDataMemberDefaultAccess>  
-		<span class="comment">#stText.Components.DataMemberAccessTypeDescription#</span><br>
+		<div class="comment">#stText.Components.DataMemberAccessTypeDescription#</div><br>
       	<cfif hasAccess>
 		<select name="componentDataMemberDefaultAccess" style="width:200px">
 				<option value="private" <cfif access EQ "private">selected</cfif>>#stText.Components.DMATPrivate#</option>
@@ -312,30 +312,30 @@ Create Datasource --->
 <!---
 Trigger Data Member --->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.triggerDataMember#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Components.triggerDataMember#</th>
+	<td>
 		<cfif hasAccess>
 		<input class="checkbox" type="checkbox" class="checkbox" name="triggerDataMember" 
 			value="yes" <cfif component.triggerDataMember>checked</cfif>>
 		<cfelse>
 		<br><b>#iif(component.triggerDataMember,de('Yes'),de('No'))#</b>
 		</cfif>
-		<span class="comment">#stText.Components.triggerDataMemberDescription#</span><br>
+		<div class="comment">#stText.Components.triggerDataMemberDescription#</div><br>
       	
 	</td>
 </tr>
 <!---
 Use Shadow --->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.useShadow#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Components.useShadow#</th>
+	<td>
 		<cfif hasAccess>
 		<input class="checkbox" type="checkbox" class="checkbox" name="useShadow" 
 			value="yes" <cfif component.useShadow>checked</cfif>>
 		<cfelse>
 		<br><b>#iif(component.useShadow,de('Yes'),de('No'))#</b>
 		</cfif>
-		<span class="comment">#stText.Components.useShadowDescription#</span><br>
+		<div class="comment">#stText.Components.useShadowDescription#</div><br>
       	
 	</td>
 </tr>
@@ -404,12 +404,12 @@ Use Shadow --->
 			style="width:270px" 
 			message="#stText.Components.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
-		<td class="tblContent" nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
+		<td nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 			<option value="physical" <cfif mappings.physicalFirst>selected</cfif>>#stText.Components.physical#</option>
 			<option value="archive" <cfif not mappings.physicalFirst>selected</cfif>>#stText.Components.archive#</option>
 		</select></cfif></td>
 		
-		<td class="tblContent" nowrap>
+		<td nowrap>
 		<cfif mappings.readOnly>
             	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
 			<cfelse>
@@ -433,15 +433,15 @@ Use Shadow --->
 		</table>
 		
 		</td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:270px"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:270px" ></td>
-		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
+		<td nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
 			<option value="physical" selected>#stText.Components.physical#</option>
 			<option value="archive">#stText.Components.archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap>
+		<td nowrap>
         <select name="trusted_#mappings.recordcount+1#" onchange="checkTheBox(this)">
                 <option value="true">#stText.setting.inspecttemplateneverShort#</option>
                 <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>

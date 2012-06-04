@@ -24,41 +24,41 @@
 <input type="hidden"  name="row_#mapping.id#" value="#mapping.id#">
 
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.VirtualHead#</td>
-	<td class="tblContent" title="#mapping.virtual#" nowrap><input type="hidden" 
+	<th scope="row">#stText.Mappings.VirtualHead#</th>
+	<td title="#mapping.virtual#" nowrap><input type="hidden" 
 			name="virtual_#mapping.id#" value="#mapping.virtual#">#mapping.virtual#</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.PhysicalHead#</td>
+	<th scope="row">#stText.Mappings.PhysicalHead#</th>
 	<cfset css=iif(len(mapping.physical) EQ 0 and len(mapping.strPhysical) NEQ 0,de('Red'),de(''))>
 	<td class="tblContent#css#" nowrap <cfif len(mapping.strPhysical)>title="#mapping.strPhysical##newLine()##mapping.Physical#"</cfif>><cfif mapping.readOnly>#cut(mapping.strPhysical,72)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mapping.id#" value="#mapping.strPhysical#" required="no"  
 			style="width:100%" message="#stText.Mappings.PhysicalMissing##mapping.id#)"></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.ArchiveHead#</td>
+	<th scope="row">#stText.Mappings.ArchiveHead#</th>
 	<cfset css=iif(len(mapping.archive) EQ 0 and len(mapping.strArchive) NEQ 0,de('Red'),de(''))>
 	<td class="tblContent#css#" nowrap <cfif len(mapping.strArchive)>title="#mapping.strArchive##newLine()##mapping.Archive#"</cfif>><cfif mapping.readOnly>#cut(mappings.strArchive,72)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 		name="archive_#mapping.id#" value="#mapping.strArchive#" required="no"  
 		style="width:100%" message="#stText.Mappings.ArchiveMissing##mapping.id#)"></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.PrimaryHead#</td>
-	<td class="tblContent" nowrap><cfif mapping.readOnly><cfif mapping.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mapping.id#" onChange="checkTheBox(this)">
+	<th scope="row">#stText.Mappings.PrimaryHead#</th>
+	<td nowrap><cfif mapping.readOnly><cfif mapping.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mapping.id#" onchange="checkTheBox(this)">
 		<option value="physical" <cfif mapping.PhysicalFirst>selected</cfif>>#stText.Mappings.Physical#</option>
 		<option value="archive" <cfif not mapping.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
 	</select></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.setting.inspecttemplate#</td>
-	<td class="tblContent"><cfif mapping.readOnly>
+	<th scope="row">#stText.setting.inspecttemplate#</th>
+	<td><cfif mapping.readOnly>
     	<cfif mapping.Trusted>
         	#stText.setting.inspecttemplatenever#
-            <br /><span class="comment">#stText.setting.inspecttemplateneverdesc#</span>
+            <br /><div class="comment">#stText.setting.inspecttemplateneverdesc#</div>
             
         <cfelse>
         	#stText.setting.inspecttemplatealways#
-            <br /><span class="comment">#stText.setting.inspecttemplatealwaysdesc#</span>
+            <br /><div class="comment">#stText.setting.inspecttemplatealwaysdesc#</div>
         </cfif>
     	
 	
@@ -66,20 +66,20 @@
     	<!--- never --->
     	<input class="radio" type="radio" name="trusted_#mapping.id#" value="true"<cfif mapping.Trusted> checked="checked"</cfif>>
     	<b>#stText.setting.inspectTemplateNever#</b><br />
-		<span class="comment">#stText.setting.inspectTemplateNeverDesc#</span><br>
+		<div class="comment">#stText.setting.inspectTemplateNeverDesc#</div><br>
     	<!--- always --->
     	<input class="radio" type="radio" name="trusted_#mapping.id#" value="false"<cfif not mapping.Trusted> checked="checked"</cfif>>
     	<b>#stText.setting.inspectTemplateAlways#</b><br />
-		<span class="comment">#stText.setting.inspectTemplateAlwaysDesc#</span>
+		<div class="comment">#stText.setting.inspectTemplateAlwaysDesc#</div>
     </cfif></td>
 </tr>
 
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.ToplevelHead#</td>
-	<td class="tblContent" nowrap><cfif mapping.readOnly>#iif(mapping.toplevel,de("Yes"),de("No"))#<cfelse><input 
+	<th scope="row">#stText.Mappings.ToplevelHead#</th>
+	<td nowrap><cfif mapping.readOnly>#iif(mapping.toplevel,de("Yes"),de("No"))#<cfelse><input 
 	type="checkbox" class="checkbox" name="toplevel_#mapping.id#" 
 	value="yes" <cfif mapping.toplevel>checked</cfif>></cfif>
-    <br /><span class="comment">#stText.Mappings.ToplevelDesc#</span></td>
+    <br /><div class="comment">#stText.Mappings.ToplevelDesc#</div></td>
 </tr>
 
 <cfif hasAccess>
@@ -87,7 +87,7 @@
 <tr>
 	<td colspan="2">
 		<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
-		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
+		<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfif>
@@ -105,16 +105,16 @@
 
 
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.compileStopOnError#</td>
-	<td class="tblContent" nowrap><input 
-	type="checkbox" class="checkbox" name="stopOnError_#mapping.id#" value="yes" checked="checked"> <span class="comment">#stText.Mappings.compileStopOnErrorDesc#</span></td>
+	<th scope="row">#stText.Mappings.compileStopOnError#</th>
+	<td nowrap><input 
+	type="checkbox" class="checkbox" name="stopOnError_#mapping.id#" value="yes" checked="checked"> <div class="comment">#stText.Mappings.compileStopOnErrorDesc#</div></td>
 </tr>
 <cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
 		<input type="submit" class="submit" name="subAction" value="#stText.Buttons.compileAll#">
-		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
+		<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfif>
@@ -133,9 +133,9 @@ Create Archive --->
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.Mappings.archiveSecure#</td>
-	<td class="tblContent" nowrap><input 
-	type="checkbox" class="checkbox" name="secure_#mapping.id#" value="yes" checked> <span class="comment">#stText.Mappings.archiveSecureDesc#</span></td>
+	<th scope="row">#stText.Mappings.archiveSecure#</th>
+	<td nowrap><input 
+	type="checkbox" class="checkbox" name="secure_#mapping.id#" value="yes" checked> <div class="comment">#stText.Mappings.archiveSecureDesc#</div></td>
 </tr>
 
 <cfif hasAccess>
@@ -144,7 +144,7 @@ Create Archive --->
 	<td colspan="2">
 		<input type="submit" class="submit" name="subAction" value="#stText.Buttons.downloadArchive#">
 		<input type="submit" class="submit" name="subAction" value="#stText.Buttons.addArchive#">
-		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
+		<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfif>

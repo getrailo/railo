@@ -58,7 +58,7 @@
             <table class="tbl">
             
                 <tr>
-                    <td class="tblContent" width="400">
+                    <td width="400">
                     <textarea readonly="readonly" style="width:600px;height:200px;font-family:Courier New;font-size : 8pt;color:##595F73;border-style:solid;border-width:1px;border-color:##666666;">#license#</textarea>
                     </td>
                 </tr>

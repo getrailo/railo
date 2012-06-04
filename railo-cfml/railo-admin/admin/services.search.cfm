@@ -172,13 +172,13 @@ function selectAll(field) {
 				</table>
 				
 				</td>
-				<td class="tblContent" title="#collections.name#" nowrap>#cut(collections.name,16)#</td>
-				<td class="tblContent" nowrap>#collections.mapped#</td>
-				<td class="tblContent" nowrap>#collections.online#</td>
-				<td class="tblContent" nowrap>#collections.external#</td>
-				<td class="tblContent" nowrap>#collections.language#</td>
-				<td class="tblContent" nowrap>#DateFormat(collections.LastModified,"yyyy-mm-dd")# #TimeFormat(collections.LastModified,"HH:mm")#</td>
-				<!---<td class="tblContent" width="400" style=" white-space: nowrap;
+				<td title="#collections.name#" nowrap>#cut(collections.name,16)#</td>
+				<td nowrap>#collections.mapped#</td>
+				<td nowrap>#collections.online#</td>
+				<td nowrap>#collections.external#</td>
+				<td nowrap>#collections.language#</td>
+				<td nowrap>#DateFormat(collections.LastModified,"yyyy-mm-dd")# #TimeFormat(collections.LastModified,"HH:mm")#</td>
+				<!---<td width="400" style=" white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;" nowrap<cfif len(collections.path) GT 40> title="#collections.path#"</cfif>>#collections.path##collections.path#</td>--->
 			</tr>
@@ -228,16 +228,16 @@ function selectAll(field) {
 		<cfoutput>
 		<tr>
 			<td class="tblHead" width="50">#stText.Search.Name#</td>
-			<td class="tblContent" width="300"><cfinput type="text" name="collName" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Name#"></td>
+			<td width="300"><cfinput type="text" name="collName" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Name#"></td>
 		</tr>
 		<tr>
 			<td class="tblHead" width="50">#stText.Search.Path#</td>
-			<td class="tblContent" width="300"><cfinput type="text" name="collPath" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Path#"></td>
+			<td width="300"><cfinput type="text" name="collPath" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Path#"></td>
 		</tr>
 		</cfoutput>
 		<tr>
 			<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
-			<td class="tblContent" width="300"><select name="collLanguage">
+			<td width="300"><select name="collLanguage">
 				<cfset aLangs = StructKeyArray(stText.SearchLng)>
 				<cfset ArraySort(aLangs, "text")>
 				<cfoutput>
@@ -276,31 +276,31 @@ function selectAll(field) {
             </colgroup>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.Name#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.name#</td>
+				<td nowrap>#collection.name#</td>
 			</tr>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.Mapped#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.mapped#</td>
+				<td nowrap>#collection.mapped#</td>
 			</tr>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.Online#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.online#</td>
+				<td nowrap>#collection.online#</td>
 			</tr>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.External#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.external#</td>			
+				<td nowrap>#collection.external#</td>			
 			</tr>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.Language#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.language#</td>			
+				<td nowrap>#collection.language#</td>			
 			</tr>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.Last_Update#</cfoutput></td>
-				<td class="tblContent" nowrap>#DateFormat(collection.LastModified,"yyyy-mm-dd")# #TimeFormat(collection.LastModified,"HH:mm")#</td>
+				<td nowrap>#DateFormat(collection.LastModified,"yyyy-mm-dd")# #TimeFormat(collection.LastModified,"HH:mm")#</td>
 			</tr>
 			<tr>
 				<td class="tblHead"><cfoutput>#stText.Search.Path#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.path#</td>
+				<td nowrap>#collection.path#</td>
 			</tr>
 			</table><br><br>
 			</cfoutput>
@@ -315,23 +315,23 @@ function selectAll(field) {
 			<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#" method="post">
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.FileExtensions#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="extensions" value=".html, .htm, .cfm, .cfml" style="width:450px" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
+				<td width="300"><cfinput type="text" name="extensions" value=".html, .htm, .cfm, .cfml" style="width:450px" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
 			</tr>
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.DirectoryPath#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="path" value="" style="width:450px" required="yes" message="#stText.Search.DirectoryPathMissing#"></td>
+				<td width="300"><cfinput type="text" name="path" value="" style="width:450px" required="yes" message="#stText.Search.DirectoryPathMissing#"></td>
 			</tr>
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.IndexSubdirs#</cfoutput></td>
-				<td class="tblContent" width="300"><input type="checkbox" class="checkbox" name="recurse" value="yes"></td>
+				<td width="300"><input type="checkbox" class="checkbox" name="recurse" value="yes"></td>
 			</tr>
 			<tr>
 				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.URL#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="url" value="" style="width:450px" required="no"></td>
+				<td width="300"><cfinput type="text" name="url" value="" style="width:450px" required="no"></td>
 			</tr>
 			<tr>
 				<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
-				<td class="tblContent" width="300"><select name="language">
+				<td width="300"><select name="language">
 						<cfoutput>
 							<cfloop collection="#stText.SearchLng#" item="key">
 								<option value="#key#" <cfif key eq "english">selected</cfif>>#stText.SearchLng[key]#</option>
@@ -361,7 +361,7 @@ function selectAll(field) {
 				</tr>
 				<tr>
 					<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.SearchTerm#</cfoutput></td>
-					<td class="tblContent" width="300">
+					<td width="300">
 					<cfif StructKeyExists(form,"searchterm")><cfset session.searchterm=form.searchterm></cfif>
 					<cfparam name="session.searchterm" default="">
 					<cfinput type="text" 
@@ -370,7 +370,7 @@ function selectAll(field) {
 				</tr>
 				<!--- <tr>
 					<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
-					<td class="tblContent" width="300"><select name="language">
+					<td width="300"><select name="language">
 							<cfoutput>
 								<cfloop from="1" to="25" index="iLng">
 									<option value="#stText.SearchLng[iLng][1]#" <cfif stText.SearchLng[iLng][1] eq "english">selected</cfif>>#stText.SearchLng[iLng][2]#</option>
@@ -421,9 +421,9 @@ function selectAll(field) {
 					</cfoutput>
 					<cfoutput query="result" startrow="#url.startrow#" maxrows="10">
 					<tr>
-						<td class="tblContent" colspan="3">
+						<td colspan="3">
 						<b><cfif len(trim(result.title)) EQ 0>{no title}<cfelse>#result.title#</cfif></b><br>
-						<span class="comment">#result.summary#</span>
+						<div class="comment">#result.summary#</div>
 						</td>
 					</tr>
 					</cfoutput>

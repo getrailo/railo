@@ -33,9 +33,9 @@
 		)>
 <!--- Access Read --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.accessRead#</td>
+	<th scope="row">#stText.Security.accessRead#</th>
 	<td class="tblContent#def('access_read')#">
-		<span class="comment">#stText.Security.accessReadDesc#</span>
+		<div class="comment">#stText.Security.accessReadDesc#</div>
 		
 		<br /><select name="#prefix#access_read">
 			<cfoutput><cfloop collection="#values#" item="idx" ><option value="#idx#" <cfif access.access_read eq idx>selected="selected"</cfif>><cfif structKeyExists(stText.Security.DatasourceTextes,idx)>#stText.Security.DatasourceTextes[idx]#<cfelse>#values[idx]#</cfif></option></cfloop></cfoutput>
@@ -48,9 +48,9 @@
 
 <!--- Access Write --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.accessWrite#</td>
+	<th scope="row">#stText.Security.accessWrite#</th>
 	<td class="tblContent#def('access_write')#">
-		<span class="comment">#stText.Security.accessWriteDesc#</span>
+		<div class="comment">#stText.Security.accessWriteDesc#</div>
 		<br /><select name="#prefix#access_write">
 			<cfoutput><cfloop collection="#values#" item="idx" ><option value="#idx#" <cfif access.access_write eq idx>selected="selected"</cfif>><cfif structKeyExists(stText.Security.DatasourceTextes,idx)>#stText.Security.DatasourceTextes[idx]#<cfelse>#values[idx]#</cfif></option></cfloop></cfoutput>
 		</select>
@@ -72,27 +72,27 @@
 
 <!--- Setting --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Settings#</td>
+	<th scope="row">#stText.Security.Settings#</th>
 	<td class="tblContent#def('setting')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Setting" value="yes" <cfif access.setting>checked</cfif>>
-		<span class="comment">#stText.Security.SettingsDescription#</span>
+		<div class="comment">#stText.Security.SettingsDescription#</div>
 	</td>
 </tr>
 
 <!--- Mail --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Mail#</td>
+	<th scope="row">#stText.Security.Mail#</th>
 	<td class="tblContent#def('mail')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Mail" value="yes" <cfif access.mail>checked</cfif>>
-		<span class="comment">#stText.Security.MailDescription#</span>
+		<div class="comment">#stText.Security.MailDescription#</div>
 	</td>
 </tr> 
 
 <!--- Datasource --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Datasource#</td>
+	<th scope="row">#stText.Security.Datasource#</th>
 	<td class="tblContent#def('datasource')#">
-		<span class="comment">#stText.Security.DatasourceDescription#</span>
+		<div class="comment">#stText.Security.DatasourceDescription#</div>
 		<cfset values=struct(
 			'-1':"yes",
 			'0':"no",
@@ -117,76 +117,76 @@
 
 <!--- Mapping --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Mapping#</td>
+	<th scope="row">#stText.Security.Mapping#</th>
 	<td class="tblContent#def('mapping')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Mapping" value="yes" <cfif access.mapping>checked</cfif>>
-		<span class="comment">#stText.Security.MappingDescription#</span>
+		<div class="comment">#stText.Security.MappingDescription#</div>
 	</td>
 </tr>
 
 <!--- Remote --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Remote#</td>
+	<th scope="row">#stText.Security.Remote#</th>
 	<td class="tblContent#def('remote')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Remote" value="yes" <cfif access.remote>checked</cfif>>
-		<span class="comment">#stText.Security.RemoteDescription#</span>
+		<div class="comment">#stText.Security.RemoteDescription#</div>
 	</td>
 </tr>
 <!--- CustomTag --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.CustomTag#</td>
+	<th scope="row">#stText.Security.CustomTag#</th>
 	<td class="tblContent#def('custom_tag')#">
 		<input type="checkbox" class="checkbox" name="#prefix#CustomTag" value="yes" <cfif access.custom_tag>checked</cfif>>
-		<span class="comment">#stText.Security.CustomTagDescription#</span>
+		<div class="comment">#stText.Security.CustomTagDescription#</div>
 	</td>
 </tr>
 
 <!--- CFX Setting --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.CFX#</td>
+	<th scope="row">#stText.Security.CFX#</th>
 	<td class="tblContent#def('cfx_setting')#">
 		<input type="checkbox" class="checkbox" name="#prefix#CFXSetting" value="yes" <cfif access.cfx_setting>checked</cfif>>
-		<span class="comment">#stText.Security.CFXDescription#</span>
+		<div class="comment">#stText.Security.CFXDescription#</div>
 	</td>
 </tr>
 
 <!--- Cache --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Cache#</td>
+	<th scope="row">#stText.Security.Cache#</th>
 	<td class="tblContent#def('cache')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Cache" value="yes" <cfif access.cache>checked</cfif>>
-		<span class="comment">#stText.Security.CacheDescription#</span>
+		<div class="comment">#stText.Security.CacheDescription#</div>
 	</td>
 </tr>
 
 <!--- Gateway --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Gateway#</td>
+	<th scope="row">#stText.Security.Gateway#</th>
 	<td class="tblContent#def('gateway')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Gateway" value="yes" <cfif access.gateway>checked</cfif>>
-		<span class="comment">#stText.Security.GatewayDescription#</span>
+		<div class="comment">#stText.Security.GatewayDescription#</div>
 	</td>
 </tr>
 <!--- ORM --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.orm#</td>
+	<th scope="row">#stText.Security.orm#</th>
 	<td class="tblContent#def('orm')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Orm" value="yes" <cfif access.orm>checked</cfif>>
-		<span class="comment">#stText.Security.ormDescription#</span>
+		<div class="comment">#stText.Security.ormDescription#</div>
 	</td>
 </tr>
 <!--- Debugging --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.Debugging#</td>
+	<th scope="row">#stText.Security.Debugging#</th>
 	<td class="tblContent#def('debugging')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Debugging" value="yes" <cfif access.debugging>checked</cfif>>
-		<span class="comment">#stText.Security.DebuggingDescription#</span>
+		<div class="comment">#stText.Security.DebuggingDescription#</div>
 	</td>
 </tr>
 <!--- Search
 <tr>
-	<td class="tblHead" width="150">#stText.security.search#</td>
-	<td class="tblContent" style="#def('search')#">
+	<th scope="row">#stText.security.search#</th>
+	<td style="#def('search')#">
 		<input type="checkbox" class="checkbox" name="#prefix#Search" value="yes" <cfif access.search>checked</cfif>>
 		<span class="comment">#stText.Security.SearchDescription#</span>
 	</td>
@@ -194,8 +194,8 @@
 <input type="hidden" name="#prefix#Search" value="yes">
 <!--- Scheduled Task 
 <tr>
-	<td class="tblHead" width="150">#stText.Security.ScheduledTask#</td>
-	<td class="tblContent" style="#def('scheduled_task')#">
+	<th scope="row">#stText.Security.ScheduledTask#</th>
+	<td style="#def('scheduled_task')#">
 		<input type="checkbox" class="checkbox" name="#prefix#ScheduledTask" value="yes" <cfif access.scheduled_task>checked</cfif>>
 		<span class="comment">#stText.Security.ScheduledTaskDescription#</span>
 	</td>
@@ -216,8 +216,8 @@
 </tr>
 <!--- File --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.File#</td>
-	<td class="tblContent"><span class="comment">#stText.Security.FileDescription#</span><select name="#prefix#File" onChange="changeFileAccessVisibility('fileAccess',this)">
+	<th scope="row">#stText.Security.File#</th>
+	<td><div class="comment">#stText.Security.FileDescription#</div><select name="#prefix#File" onchange="changeFileAccessVisibility('fileAccess',this)">
 			<option value="all" <cfif access.file EQ "all">selected</cfif>>#stText.Security.FileAll#</option>
 			<option value="local" <cfif access.file EQ "local">selected</cfif>>#stText.Security.FileLocal#</option>
 			<option value="none" <cfif access.file EQ "none">selected</cfif>>#stText.Security.FileNone#</option>
@@ -253,7 +253,7 @@ function changeFileAccessVisibility(name,field){
 </tr>
 <tr  name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
 	<td colspan="5">#stText.Security.FileCustom#<br />
-<span class="comment">#stText.Security.FileCustomDesc#</span></td>
+<div class="comment">#stText.Security.FileCustomDesc#</div></td>
 </tr>
 <tr name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
 	<td width="350" class="tblHead" nowrap>#stText.Security.FilePath#</td>
@@ -262,7 +262,7 @@ function changeFileAccessVisibility(name,field){
 	<cfloop index="idx" from="1" to="#arrayLen(access.file_access)#">
 		<tr name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
 		<!--- path --->
-			<td class="tblContent" nowrap><cfinput 
+			<td nowrap><cfinput 
 				type="text" name="path_#idx#" 
 				value="#access.file_access[idx]#" required="no"  style="width:400px"></td>
 		
@@ -271,7 +271,7 @@ function changeFileAccessVisibility(name,field){
 	<!--- INSERT --->
 	
 		<tr name="fileAccess" style="display:#access.file EQ 'local'?'':'none'#">
-			<td class="tblContent" nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no" style="width:400px"></td>
+			<td nowrap><cfinput type="text" name="path_#arrayLen(access.file_access)+1#" value="" required="no" style="width:400px"></td>
 		</tr>
 	
 </table>
@@ -282,18 +282,18 @@ function changeFileAccessVisibility(name,field){
 
 <!--- Direct Java Access --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.JavaAccess#</td>
+	<th scope="row">#stText.Security.JavaAccess#</th>
 	<td class="tblContent#def('direct_java_access')#">
 		<input type="checkbox" class="checkbox" name="#prefix#DirectJavaAccess" value="yes" <cfif access.direct_java_access>checked</cfif>>
-		<span class="comment">#stText.Security.JavaAccessDescription#</span>
+		<div class="comment">#stText.Security.JavaAccessDescription#</div>
 	</td>
 </tr>
 
 
 <!--- CFX Usage 
 <tr>
-	<td class="tblHead" width="150">CFX Usage</td>
-	<td class="tblContent">
+	<th scope="row">CFX Usage</th>
+	<td>
 		<input type="checkbox" class="checkbox" name="#prefix#CFXUsage" value="yes" <cfif access.cfx_usage>checked</cfif>>
 		<span class="comment">Enable or disable the CFX functionality for the instaces</span>
 	</td>
@@ -307,42 +307,42 @@ function changeFileAccessVisibility(name,field){
 <!--- Tags --->
 <tr>
 	<!--- Execute --->
-	<td class="tblHead" width="150">#stText.Security.TagExecute#</td>
+	<th scope="row">#stText.Security.TagExecute#</th>
 	<td class="tblContent#def('tag_execute')#">
 		<input type="checkbox" class="checkbox" name="#prefix#TagExecute" value="yes" <cfif access.tag_execute>checked</cfif>>
-		<span class="comment">#stText.Security.TagExecuteDescription#</span>
+		<div class="comment">#stText.Security.TagExecuteDescription#</div>
 	</td>
 </tr>
 		<!--- Import --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.TagImport#</td>
+	<th scope="row">#stText.Security.TagImport#</th>
 	<td class="tblContent#def('tag_import')#">
 		<input type="checkbox" class="checkbox" name="#prefix#TagImport" value="yes" <cfif access.tag_import>checked</cfif>>
-		<span class="comment">#stText.Security.TagImportDescription#</span>
+		<div class="comment">#stText.Security.TagImportDescription#</div>
 	</td>
 </tr>
 		<!--- Object --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.TagObject#</td>
+	<th scope="row">#stText.Security.TagObject#</th>
 	<td class="tblContent#def('tag_object')#">
 		<input type="checkbox" class="checkbox" name="#prefix#TagObject" value="yes" <cfif access.tag_object>checked</cfif>>
-		<span class="comment">#stText.Security.TagObjectDescription#</span>
+		<div class="comment">#stText.Security.TagObjectDescription#</div>
 	</td>
 </tr>
 		<!--- Registry --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.TagRegistry#</td>
+	<th scope="row">#stText.Security.TagRegistry#</th>
 	<td class="tblContent#def('tag_registry')#">
 		<input type="checkbox" class="checkbox" name="#prefix#TagRegistry" value="yes" <cfif access.tag_registry>checked</cfif>>
-		<span class="comment">#stText.Security.TagRegistryDescription#</span>
+		<div class="comment">#stText.Security.TagRegistryDescription#</div>
 	</td>
 </tr>
 		<!--- CFX --->
 <tr>
-	<td class="tblHead" width="150">#stText.Security.CFXTags#</td>
+	<th scope="row">#stText.Security.CFXTags#</th>
 	<td class="tblContent#def('cfx_usage')#">
 		<input type="checkbox" class="checkbox" name="#prefix#CFXUsage" value="yes" <cfif access.cfx_usage>checked</cfif>>
-		<span class="comment">#stText.Security.CFXTagsDescription#</span>
+		<div class="comment">#stText.Security.CFXTagsDescription#</div>
 	</td>
 </tr>
 
@@ -357,7 +357,7 @@ function changeFileAccessVisibility(name,field){
 	<td colspan="2">
 		<input type="hidden" name="mainAction" value="#prefix#Udpate">
 		<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
-		<input onClick="window.location='#go(url.action)#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
+		<input onclick="window.location='#go(url.action)#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfform></cfoutput>

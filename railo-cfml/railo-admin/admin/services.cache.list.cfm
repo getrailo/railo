@@ -133,10 +133,10 @@ Redirtect to entry --->
 		</tr>
 		</table>
 		</td></cfif>
-		<td class="tblContent" nowrap><input type="hidden" name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
-		<td class="tblContent" nowrap>#driver.getLabel()#</td>
-		<td class="tblContent" nowrap>#yesNoFormat(srcGlobal.storage)#</td>
-		<td class="tblContent" nowrap valign="middle" align="center">
+		<td nowrap><input type="hidden" name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
+		<td nowrap>#driver.getLabel()#</td>
+		<td nowrap>#yesNoFormat(srcGlobal.storage)#</td>
+		<td nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
 					<cfif stVeritfyMessages[srcGlobal.name].label eq "OK">
 						<span class="CheckOk">#stVeritfyMessages[srcGlobal.name].label#</span>
@@ -214,10 +214,10 @@ Redirtect to entry --->
 		</tr>
 		</table>
 		</td>
-		<td class="tblContent" nowrap><input type="hidden" name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
-		<td class="tblContent" nowrap>#driver.getLabel()#</td>
-		<td class="tblContent" nowrap>#yesNoFormat(srcLocal.storage)#</td>
-		<td class="tblContent" nowrap valign="middle" align="center">
+		<td nowrap><input type="hidden" name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
+		<td nowrap>#driver.getLabel()#</td>
+		<td nowrap>#yesNoFormat(srcLocal.storage)#</td>
+		<td nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcLocal.name)>
 					<cfif stVeritfyMessages[srcLocal.name].label eq "OK">
 						<span class="CheckOk">#stVeritfyMessages[srcLocal.name].label#</span>
@@ -280,13 +280,13 @@ Redirtect to entry --->
     <cfloop index="type" list="object,template,query,resource"><!---  --->
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.cache['defaulttype'& type]#</td>
-		<td class="tblContent" width="300"><select name="#type#">
+		<td width="300"><select name="#type#">
 					<option value="">------</option>
                     <cfloop query="connections">
                     <option value="#connections.name#" <cfif connections.default EQ type>selected="selected"</cfif>>#connections.name#</option>
 					</cfloop>
 				</select>
-                <br /><span class="comment">#stText.Settings.cache['defaulttype' &type& 'Desc']#</span></td>
+                <br /><div class="comment">#stText.Settings.cache['defaulttype' &type& 'Desc']#</div></td>
 	</tr>
     </cfloop>
 	<tr>
@@ -316,13 +316,13 @@ Redirtect to entry --->
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.cache.Name#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="_name" value="" style="width:300px" required="yes" 
+		<td width="300"><cfinput type="text" name="_name" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.cache.nameMissing#"></td>
 	</tr>
 	
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.cache.type#</td>
-		<td class="tblContent" width="300"><select name="class">
+		<td width="300"><select name="class">
 					<cfloop list="#_drivers#" index="key">
                     <cfset driver=drivers[key]>
                     <cfset v=trim(driver.getClass())>

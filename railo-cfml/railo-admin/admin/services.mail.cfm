@@ -208,9 +208,9 @@ Mail Settings
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfset css=iif(len(mail.logfile) EQ 0 and len(mail.strlogfile) NEQ 0,de('Red'),de(''))>
 <tr>
-	<td class="tblHead" width="150">#stText.mail.DefaultEncoding#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.mail.DefaultEncodingDescription#</span><br />
+	<th scope="row">#stText.mail.DefaultEncoding#</th>
+	<td>
+		<div class="comment">#stText.mail.DefaultEncodingDescription#</div><br />
 		<cfif hasAccess>
 		<cfinput type="text" name="defaultencoding" value="#mail.defaultEncoding#" 
 			style="width:200px" required="no" message="#stText.mail.missingEncoding#">
@@ -231,7 +231,7 @@ Mail Settings
 </tr>
 <tr>
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.Level#</td>
-	<td class="tblContent" width="450"><cfif hasAccess>
+	<td width="450"><cfif hasAccess>
 	<cfset levels=array("INFO","DEBUG","WARN","ERROR","FATAL")>
 	<select name="logLevel">
 		<cfloop index="idx" from="1" to="#arrayLen(levels)#"><option<cfif levels[idx] EQ mail.logLevel> selected</cfif>>#levels[idx]#</option></cfloop>
@@ -240,18 +240,18 @@ Mail Settings
 </tr>
 <tr>
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.SpoolEnabled#</td>
-	<td class="tblContent" width="450"><cfif hasAccess><input <cfif mail.spoolEnable>checked</cfif> 
+	<td width="450"><cfif hasAccess><input <cfif mail.spoolEnable>checked</cfif> 
 	type="checkbox" class="checkbox" name="spoolEnable" value="yes"><cfelse><b>#iif(mail.spoolEnable,de('Yes'),de('No'))#</b></cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.SpoolInterval#</td>
-	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="spoolInterval" 
+	<td width="450"><cfif hasAccess><cfinput type="text" name="spoolInterval" 
 	value="#mail.spoolInterval#" validate="integer" style="width:50px" 
 	required="no"><cfelse><b>#mail.spoolInterval#</b></cfif></td>
 </tr>
 <tr>
 	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.Timeout#</td>
-	<td class="tblContent" width="450"><cfif hasAccess><cfinput type="text" name="timeout" 
+	<td width="450"><cfif hasAccess><cfinput type="text" name="timeout" 
 	value="#mail.timeout#" validate="integer" style="width:50px" required="no"><cfelse><b>#mail.timeout#</b></cfif></td>
 </tr>
 <cfif hasAccess>
@@ -305,37 +305,37 @@ Existing Collection --->
 			
 			</td>
 		<!--- host --->
-			<td class="tblContent" nowrap><input type="hidden" name="hostName_#ms.currentrow#" 
+			<td nowrap><input type="hidden" name="hostName_#ms.currentrow#" 
 			value="#ms.hostName#">#ms.hostName#</td>
 		<!--- username --->
-			<td class="tblContent" nowrap><cfif ms.readonly>#ms.username#&nbsp;<cfelse><cfinput 
+			<td nowrap><cfif ms.readonly>#ms.username#&nbsp;<cfelse><cfinput 
 				onKeyDown="checkTheBox(this)" type="text" name="username_#ms.currentrow#" 
 				value="#ms.username#" required="no"  style="width:100%" 
 				message="#stText.Mail.UserNameMissing##ms.currentrow#)"></cfif></td>
 		<!--- password --->
-			<td class="tblContent" nowrap><cfif ms.readonly>***********&nbsp;<cfelse>
+			<td nowrap><cfif ms.readonly>***********&nbsp;<cfelse>
             
             <cfinput 
 				onKeyDown="checkTheBox(this)" type="password" passthrough='autocomplete="off"' onClick="this.value='';"
 				name="password_#ms.currentrow#" value="#stars#" required="no"  
 				style="width:100%" message="#stText.Mail.PasswordMissing##ms.currentrow#)"></cfif></td>
 		<!--- port --->
-			<td class="tblContent" nowrap><cfif ms.readonly>#ms.port#&nbsp;<cfelse><cfinput onKeyDown="checkTheBox(this)" 
+			<td nowrap><cfif ms.readonly>#ms.port#&nbsp;<cfelse><cfinput onKeyDown="checkTheBox(this)" 
 				type="text" name="port_#ms.currentrow#" value="#ms.port#" required="no"  
 				style="width:100%" validate="integer" 
 				message="#stText.Mail.PortErrorFirst##ms.currentrow##stText.Mail.PortErrorLast#"></cfif></td>
 		<!--- tls --->
-			<td class="tblContent" nowrap><cfif ms.readonly>#ms.tls#&nbsp;<cfelse>
+			<td nowrap><cfif ms.readonly>#ms.tls#&nbsp;<cfelse>
 			<cfinput onClick="checkTheBox(this)" 
 				type="checkbox" name="tls_#ms.currentrow#" value="true" required="no"   checked="#ms.tls#"
 				></cfif></td>
 		<!--- ssl --->
-			<td class="tblContent" nowrap><cfif ms.readonly>#ms.ssl#&nbsp;<cfelse>
+			<td nowrap><cfif ms.readonly>#ms.ssl#&nbsp;<cfelse>
 			<cfinput onClick="checkTheBox(this)" 
 				type="checkbox" name="ssl_#ms.currentrow#" value="true" required="no"   checked="#ms.ssl#"
 				></cfif></td>
 		<!--- check --->
-			<td class="tblContent" nowrap valign="middle" align="center">
+			<td nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, ms.hostName)>
 					<cfif stVeritfyMessages[ms.hostName].label eq "OK">
 						<span class="CheckOk">#stVeritfyMessages[ms.hostName].label#</span>
@@ -363,16 +363,16 @@ Existing Collection --->
 			</table>
 			<input type="hidden" name="id_#ms.recordcount+1#" value="new">
 			</td>
-			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)"  
+			<td nowrap><cfinput onKeyDown="checkTheBox(this)"  
 			type="text" name="hostName_#ms.recordcount+1#" value="" required="no"  style="width:100%"></td>
-			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_#ms.recordcount+1#" value="" required="no"  style="width:100%"></td>
-			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="password" name="password_#ms.recordcount+1#" passthrough='autocomplete="off"' value="" required="no"  style="width:100%"></td>
-			<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" 
+			<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_#ms.recordcount+1#" value="" required="no"  style="width:100%"></td>
+			<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="password" name="password_#ms.recordcount+1#" passthrough='autocomplete="off"' value="" required="no"  style="width:100%"></td>
+			<td nowrap><cfinput onKeyDown="checkTheBox(this)" 
 			type="text" name="port_#ms.recordcount+1#" value="" required="no" validate="integer" 
 			message="Value for Port (Row #ms.recordcount+1#) must be of type number" style="width:100%"></td>
-			<td class="tblContent" nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="tls_#ms.recordcount+1#" value="true" required="no"></td>
-			<td class="tblContent" nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="ssl_#ms.recordcount+1#" value="true" required="no"></td>
-			<td class="tblContent" nowrap valign="middle" align="center">&nbsp;</td>
+			<td nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="tls_#ms.recordcount+1#" value="true" required="no"></td>
+			<td nowrap><cfinput onClick="checkTheBox(this)" type="checkbox" name="ssl_#ms.recordcount+1#" value="true" required="no"></td>
+			<td nowrap valign="middle" align="center">&nbsp;</td>
 			
 		</tr>
 	</cfif>

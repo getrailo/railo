@@ -161,10 +161,10 @@ Settings --->
 </colgroup>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.rest.list#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.rest.list#</th>
+	<td>
 	<cfif hasAccess NEQ 0><input type="checkbox" class="checkbox" name="list" value="yes" <cfif settings.list>checked</cfif>><cfelse><b>#yesNoFormat(settings.list)#</b></cfif>
-	<span class="comment">#stText.rest.listDesc#</span></td>
+	<div class="comment">#stText.rest.listDesc#</div></td>
 	
 </tr>
 <cfif hasAccess NEQ 0>
@@ -221,7 +221,7 @@ Mappings --->
 		<img src="resources/img/edit.png.cfm" border="0"></a></cfif></td>
 		
 		<!--- virtual --->
-		<td height="30" class="tblContent" title="#rest.virtual#" nowrap><input type="hidden" 
+		<td height="30" title="#rest.virtual#" nowrap><input type="hidden" 
 			name="virtual_#rest.currentrow#" value="#rest.virtual#">#cut(rest.virtual,14)#</td>
 		
 		<!--- physical --->
@@ -234,7 +234,7 @@ Mappings --->
 		
 		
 		<!--- default --->
-		<td class="tblContent" nowrap>
+		<td nowrap>
 			<cfif rest.readOnly>
             	#yesNoFormat(rest.default)#
 			<cfelse>
@@ -254,12 +254,12 @@ Mappings --->
 		</table></td>
 		
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="virtual_#rest.recordcount+1#" value="" required="no" style="width:100%"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#rest.recordcount+1#" value="" required="no"  style="width:100%"></td>
 		
-		<td class="tblContent" nowrap>
+		<td nowrap>
         	<input type="radio" name="default" value="#rest.recordcount+1#" onchange="changeDefault(this)"/>
 		</td>
 	</tr>

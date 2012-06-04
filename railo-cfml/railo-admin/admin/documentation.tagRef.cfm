@@ -43,7 +43,7 @@ function formatDesc(string desc){
 </cfloop>
 </select>
 </td>
-<td class="tblContent">
+<td>
 <input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.OK#"> 
 </td>
 </tr>
@@ -171,10 +171,10 @@ multiple
 <cfset attr=data.attributes[key]>
 <cfif attr.status EQ "hidden"><cfcontinue></cfif>
 <tr>
-	<td class="tblContent">#key#</td>
-	<td class="tblContent"><cfif attr.type EQ "object">any<cfelse>#attr.type#</cfif></td>
-	<td class="tblContent">#YesNoFormat(attr.required)#</td>
-	<td class="tblContent"><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depAttr#</b><cfelse>#formatDesc(attr.description)#</cfif>&nbsp;</td>
+	<td>#key#</td>
+	<td><cfif attr.type EQ "object">any<cfelse>#attr.type#</cfif></td>
+	<td>#YesNoFormat(attr.required)#</td>
+	<td><cfif attr.status EQ "deprecated"><b class="error">#stText.doc.depAttr#</b><cfelse>#formatDesc(attr.description)#</cfif>&nbsp;</td>
 </tr>
 </cfloop>
 

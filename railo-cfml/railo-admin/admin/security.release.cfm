@@ -178,8 +178,8 @@ Alle Webs können Railo verwenden.
 </tr>
 <cfoutput><cfloop collection="#contextes#" item="key">
 <tr>
-	<td class="tblContent" align="center"><input type="Checkbox" class="checkbox" name="access" value="#qry.id#" <cfif qry.access>checked</cfif>></td>
-	<td class="tblContent">#contextes[key].text#</td>
+	<td align="center"><input type="Checkbox" class="checkbox" name="access" value="#qry.id#" <cfif qry.access>checked</cfif>></td>
+	<td>#contextes[key].text#</td>
 </tr>
 </cfloop></cfoutput>
 </table></form>

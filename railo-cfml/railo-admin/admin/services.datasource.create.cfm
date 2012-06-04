@@ -206,8 +206,8 @@ Error Output--->
 <cfif typePassword EQ TYPE_HIDDEN><input type="hidden" name="password" value="#datasource.password#"></cfif>
 
 <tr>
-	<td class="tblHead" width="150">Name</td>
-	<td class="tblContent" width="300"><cfinput type="text" name="newName" 
+	<th scope="row">Name</th>
+	<td width="300"><cfinput type="text" name="newName" 
 		value="#datasource.name#" style="width:300px" ></td>
 </tr>
 <!--- 
@@ -215,9 +215,9 @@ Error Output--->
 Host --->
 <cfif typeHost NEQ TYPE_HIDDEN>
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbHost#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbHostDesc#</span><br>
+	<th scope="row">#stText.Settings.dbHost#</th>
+	<td width="300">
+		<div class="comment">#stText.Settings.dbHostDesc#</div><br>
 		<cfinput type="text" name="host" 
 		value="#datasource.host#" style="width:300px" required="#typeHost EQ TYPE_REQUIRED#"></td>
 </tr>
@@ -227,9 +227,9 @@ Host --->
 DataBase --->
 <cfif typeDataBase NEQ TYPE_HIDDEN>
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbDatabase#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbDatabaseDesc#</span><br>
+	<th scope="row">#stText.Settings.dbDatabase#</th>
+	<td width="300">
+		<div class="comment">#stText.Settings.dbDatabaseDesc#</div><br>
 		<cfinput type="text" name="database" 
 		value="#datasource.database#" style="width:300px" required="#typeDataBase EQ TYPE_REQUIRED#"></td>
 </tr>
@@ -239,9 +239,9 @@ DataBase --->
 Port --->
 <cfif typePort NEQ TYPE_HIDDEN>
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbPort#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbPortDesc#</span><br>
+	<th scope="row">#stText.Settings.dbPort#</th>
+	<td width="300">
+		<div class="comment">#stText.Settings.dbPortDesc#</div><br>
 		<cfinput type="text" name="port" validate="integer" 
 		value="#datasource.port#" style="width:60px" required="#typePort EQ TYPE_REQUIRED#"></td>
 </tr>
@@ -250,9 +250,9 @@ Port --->
 
 Timezone --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbtimezone#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbtimezoneDesc#</span><br>
+	<th scope="row">#stText.Settings.dbtimezone#</th>
+	<td width="300">
+		<div class="comment">#stText.Settings.dbtimezoneDesc#</div><br>
        <select name="timezone">
         	<option value=""> ---- #stText.Settings.dbtimezoneSame# ---- </option>
 			<cfoutput query="timezones">
@@ -277,9 +277,9 @@ If you have any problems while using this Implementation, please post the bugs a
 Username --->
 <cfif typeUsername NEQ TYPE_HIDDEN>
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbUser#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbUserDesc#</span><br>
+	<th scope="row">#stText.Settings.dbUser#</th>
+	<td width="300">
+		<div class="comment">#stText.Settings.dbUserDesc#</div><br>
 		<cfinput type="text" name="username" 
 		value="#datasource.username#" style="width:300px" required="#typeUsername EQ TYPE_REQUIRED#"></td>
 </tr>
@@ -291,9 +291,9 @@ Username --->
 Password --->
 <cfif typePassword NEQ TYPE_HIDDEN>
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbPass#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbPassDesc#</span><br>
+	<th scope="row">#stText.Settings.dbPass#</th>
+	<td width="300">
+		<div class="comment">#stText.Settings.dbPassDesc#</div><br>
 		<cfinput type="password" name="Password"  passthrough='autocomplete="off"'
 		value="#datasource.password#" style="width:300px" onClick="this.value='';" required="#typePassword EQ TYPE_REQUIRED#"></td>
 </tr>
@@ -306,28 +306,28 @@ Password --->
 Connection Limit --->
 <tr>
 	<td class="tblHead" >#stText.Settings.dbConnLimit#</td>
-	<td class="tblContent">
+	<td>
 		<select name="ConnectionLimit" class="select">
 			<option value="-1" <cfif datasource.ConnectionLimit EQ -1>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
 			<cfloop index="idx" from="1" to="10"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
 			<cfloop index="idx" from="20" to="100" step="10"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
 			<cfloop index="idx" from="200" to="1000" step="100"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
 		</select>
-		<span class="comment">#stText.Settings.dbConnLimitDesc#</span>
+		<div class="comment">#stText.Settings.dbConnLimitDesc#</div>
 	</td>
 </tr>
 <!--- 
 
 Connection Timeout --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbConnTimeout#</td>
-	<td class="tblContent" width="300">
+	<th scope="row">#stText.Settings.dbConnTimeout#</th>
+	<td width="300">
 		<select name="ConnectionTimeout" class="select">
 			<cfloop index="idx" from="0" to="20"><option  <cfif datasource.ConnectionTimeout EQ idx>selected</cfif>>#idx#</option></cfloop>
 		</select>
 		<!--- <cfinput type="text" name="ConnectionTimeout" 
 		validate="integer" value="#datasource.ConnectionTimeout#" style="width:60px"> --->
-		<span class="comment">#stText.Settings.dbConnTimeoutDesc#</span>
+		<div class="comment">#stText.Settings.dbConnTimeoutDesc#</div>
 	</td>
 </tr>
 
@@ -336,10 +336,10 @@ Connection Timeout --->
 
 validate --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbValidate#</td>
-	<td class="tblContent" width="300">
+	<th scope="row">#stText.Settings.dbValidate#</th>
+	<td width="300">
 		<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
-		<span class="comment">#stText.Settings.dbValidateDesc#</span>
+		<div class="comment">#stText.Settings.dbValidateDesc#</div>
 	</td>
 </tr>
 
@@ -350,8 +350,8 @@ validate --->
 Meta Cache--->
 <cfif datasource.type EQ "oracle">
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbMetaCacheTimeout#</td>
-	<td class="tblContent" width="300">
+	<th scope="row">#stText.Settings.dbMetaCacheTimeout#</th>
+	<td width="300">
     	<cfset selected=false>
 		<select name="metaCacheTimeout" class="select">
 			<option value="-1" <cfif datasource.metaCacheTimeout EQ -1><cfset selected=true>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
@@ -366,7 +366,7 @@ Meta Cache--->
             <optgroup label="#stText.Settings.days#">
             <cfloop index="idx" from="1" to="30"><option value="#idx*60000*60*24#"  <cfif datasource.metaCacheTimeout EQ idx*60000*60*24><cfset selected=true>selected</cfif>>#idx# #stText.Settings.days#</option></cfloop></optgroup>
 		</select>
-		<br /><span class="comment">#stText.Settings.dbMetaCacheTimeoutDesc#</span>
+		<br /><div class="comment">#stText.Settings.dbMetaCacheTimeoutDesc#</div>
         
 	<cfif actionType EQ "update"><br /><br /><input type="submit" class="submit" name="_run" value="#stText.Settings.flushCache#"></cfif>
 	</td>
@@ -376,20 +376,20 @@ Meta Cache--->
 
 Blob --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbBlob#</td>
-	<td class="tblContent" width="300">
+	<th scope="row">#stText.Settings.dbBlob#</th>
+	<td width="300">
 		<cfinput type="checkbox" class="checkbox" name="blob" value="yes" checked="#datasource.blob#">
-		<span class="comment">#stText.Settings.dbBlobDesc#</span>
+		<div class="comment">#stText.Settings.dbBlobDesc#</div>
 	</td>
 </tr>
 <!--- 
 
 Clob --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.dbClob#</td>
-	<td class="tblContent" width="300">
+	<th scope="row">#stText.Settings.dbClob#</th>
+	<td width="300">
 		<cfinput type="checkbox" class="checkbox" name="clob" value="yes" checked="#datasource.clob#">
-		<span class="comment">#stText.Settings.dbClobDesc#</span>
+		<div class="comment">#stText.Settings.dbClobDesc#</div>
 	</td>
 </tr>
 <!--- 
@@ -397,7 +397,7 @@ Clob --->
 Allow --->
 <tr>
 	<td class="tblHead">#stText.Settings.dbAllowed#</td>
-	<td class="tblContent">
+	<td>
 		<table width="100%">
 		
         <tr>
@@ -430,10 +430,10 @@ Allow --->
 
 storage --->
 <tr>
-	<td class="tblHead" width="150"><b>#stText.Settings.dbStorage#</b></td>
-	<td class="tblContent" width="300">
+	<th scope="row"><b>#stText.Settings.dbStorage#</b></th>
+	<td width="300">
 		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
-		<span class="comment">#stText.Settings.dbStorageDesc#</span>
+		<div class="comment">#stText.Settings.dbStorageDesc#</div>
 	</td>
 </tr>
 
@@ -452,8 +452,8 @@ storage --->
 </cfif>
 <cfset type=field.getType()>
 <tr>
-	<td class="tblHead" width="150">#field.getDisplayName()#</td>
-	<td class="tblContent" width="300"><cfif len(trim(field.getDescription()))><span class="comment">#field.getDescription()#</span><br /></cfif>
+	<th scope="row">#field.getDisplayName()#</th>
+	<td width="300"><cfif len(trim(field.getDescription()))><div class="comment">#field.getDescription()#</div><br /></cfif>
 	<cfif type EQ "text" or type EQ "password">
 	<cfinput type="#type#" 
 		name="custom_#field.getName()#" 
@@ -490,7 +490,7 @@ storage --->
 	<td class="tblHead" colspan="2">
     	 <table class="tbl" width="100%">
          <tr>
-         	<td class="tblContent" bgcolor="white"><input type="checkbox" checked="checked" name="verify" value="true" /> &nbsp;# stText.Settings.verifyConnection#</td>
+         	<td bgcolor="white"><input type="checkbox" checked="checked" name="verify" value="true" /> &nbsp;# stText.Settings.verifyConnection#</td>
          </tr>
          </table>
          
@@ -501,7 +501,7 @@ storage --->
     <input type="hidden" name="mark" value="#structKeyExists(form,'mark')?form.mark:"update"#">
 	<input type="hidden" name="run" value="create2">
 	<input type="submit" class="submit" name="_run" value="#stText.Buttons[actionType]#">
-	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
+	<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
 </tr>
 </cfform>
 </table>

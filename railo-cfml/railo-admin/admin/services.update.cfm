@@ -142,27 +142,27 @@ Settings --->
 
 <cfform onerror="customError" action="#go(url.action,"settings")#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.services.update.provider#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.services.update.provider#</th>
+	<td>
 	<cfif hasAccess>
     <cfset isCustom=true>
     <table class="tbl">
     <tr>
     	<td valign="top"><input type="radio" name="location" value="http://www.getrailo.org"<cfif update.location EQ 'http://www.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
-        <td>#stText.services.update.location_www#<br /><span class="comment">#stText.services.update.location_wwwdesc#</span></td>
+        <td>#stText.services.update.location_www#<br /><div class="comment">#stText.services.update.location_wwwdesc#</div></td>
     </tr>
     <tr>
     	<td valign="top"><input type="radio" name="location" value="http://preview.getrailo.org"<cfif update.location EQ 'http://preview.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
-        <td>#stText.services.update.location_preview#<br /><span class="comment">#stText.services.update.location_previewdesc#</span></td>
+        <td>#stText.services.update.location_preview#<br /><div class="comment">#stText.services.update.location_previewdesc#</div></td>
     </tr>
     <tr>
     	<td valign="top"><input type="radio" name="location" value="http://dev.getrailo.org"<cfif update.location EQ 'http://dev.getrailo.org'> <cfset isCustom=false>checked="checked"</cfif> /></td>
-        <td>#stText.services.update.location_dev#<br /><span class="comment">#stText.services.update.location_devdesc#</span></td>
+        <td>#stText.services.update.location_dev#<br /><div class="comment">#stText.services.update.location_devdesc#</div></td>
     </tr>
     <tr>
     	<td valign="top"><input type="radio" name="location"<cfif isCustom> checked="checked"</cfif> value="" /></td>
         <td>#stText.services.update.location_custom# <input onkeydown="checkTheBox(this)"  onclick="checkTheBox(this)" type="text" class="text" name="locationCustom" size="40" value="<cfif isCustom>#update.location#</cfif>"><br />
-        <span class="comment">#stText.services.update.location_customDesc#</span></td>
+        <div class="comment">#stText.services.update.location_customDesc#</div></td>
     </tr>
     </table>
      
@@ -175,8 +175,8 @@ Settings --->
 	
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.services.update.type#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.services.update.type#</th>
+	<td>
 	<cfif hasAccess>
 	<select name="type">
 		<option value="manual" <cfif update.type EQ "manual">selected</cfif>>#stText.services.update.type_manually#</option>
@@ -185,7 +185,7 @@ Settings --->
 	<cfelse>
 	<b>#update.type#</b>
 	</cfif><br>
-	<span class="comment">#stText.services.update.typeDesc#</span></td>
+	<div class="comment">#stText.services.update.typeDesc#</div></td>
 	
 </tr>
 <cfif hasAccess>
@@ -232,7 +232,7 @@ catch(e){}
 
 </cfscript>
 
-<div class="tblContent" style="overflow:auto;width:740px;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
+<div style="overflow:auto;width:740px;height:200px;border-style:solid;border-width:1px;padding:10px"><pre>#trim(content)#</pre></div>
 #jira#
 
 <cfelseif not needNewJars>
@@ -312,7 +312,7 @@ remove update --->
 
 <cfloop index="i" from="1" to="#size#">
 <tr>
-	<td class="tblContent" colspan="2">#patches[i]#</td>
+	<td colspan="2">#patches[i]#</td>
 	
 </tr><cfset version=patches[i]>
 </cfloop>

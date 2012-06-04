@@ -105,7 +105,7 @@ Redirtect to entry --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
 	<td class="tblHead" width="160">#stText.debug.maxLogs#</td>
-	<td class="tblContent" width="90"><select name="maxLogs">
+	<td width="90"><select name="maxLogs">
    <cfset selected=false><cfloop list="10,20,50,100,200,500,1000" index="idx"><option <cfif idx EQ setting.maxLogs><cfset selected=true>selected="selected"</cfif> value="#idx#">#idx#</option></cfloop>
    <cfif !selected><option selected="selected" value="#setting.maxLogs#">#setting.maxLogs#</option></cfif>
     </select></td>
@@ -113,11 +113,11 @@ Redirtect to entry --->
 <!---
 <tr>
 	<td class="tblHead">#stText.debug.minExeTime#</td>
-	<td class="tblContent"><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.minExeTimeDesc#</span></td>
+	<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.minExeTimeDesc#</span></td>
 </tr>
 <tr>
 	<td class="tblHead">#stText.debug.pathRestriction#</td>
-	<td class="tblContent"><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
+	<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
 </tr>
 --->
 <cfmodule template="remoteclients.cfm" colspan="2">
@@ -141,20 +141,20 @@ Redirtect to entry --->
 
 <tr>
 	<td class="tblHead">#stText.debug.minExeTime#</td>
-	<td class="tblContent">
+	<td>
     	<table class="tbl">
         <tr>
             <td class="tblHead" >Total</td
         </tr>
         <tr>
-            <td class="tblContent"><input name="minExeTimeTotal" value="0" style="width:60px"/></td>
+            <td><input name="minExeTimeTotal" value="0" style="width:60px"/></td>
         </tr>
     	</table>
     </td>
 </tr>
 <tr>
 	<td class="tblHead">#stText.debug.pathRestriction#</td>
-	<td class="tblContent"><textarea name="pathRestriction" cols="60" rows="10" style="width:100%"></textarea><br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
+	<td><textarea name="pathRestriction" cols="60" rows="10" style="width:100%"></textarea><br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
 </tr>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
@@ -198,7 +198,7 @@ Redirtect to entry --->
 </tr>
 <tr>
     <td class="tblHead" nowrap><input type="text" name="path" style="width:100%" value="#session.debugFilter.path#" /><br />
-    	<span class="comment">#stText.Debug.filterPath#</span></td>
+    	<div class="comment">#stText.Debug.filterPath#</div></td>
     <td class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:100%" value="#session.debugFilter.path#" /></td>
     <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
     <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
@@ -225,11 +225,11 @@ Redirtect to entry --->
 <cfset _query=0><cfloop query="el.pages"><cfset _query+=el.pages.query></cfloop>
 <cfset _app=0><cfloop query="el.pages"><cfset _app+=el.pages.app></cfloop>	
 <tr>
-	<td class="tblContent"><a href="#request.self#?action=#url.action#">#el.cgi.SCRIPT_NAME##len(el.cgi.QUERY_STRING)?"?"& el.cgi.QUERY_STRING:""#</a></td>
-	<td class="tblContent">#LSDateFormat(el.starttime)# #LSTimeFormat(el.starttime)#</td>
-	<td class="tblContent">#_query#</td>
-	<td class="tblContent">#_app#</td>
-	<td class="tblContent">#_total#</td>
+	<td><a href="#request.self#?action=#url.action#">#el.cgi.SCRIPT_NAME##len(el.cgi.QUERY_STRING)?"?"& el.cgi.QUERY_STRING:""#</a></td>
+	<td>#LSDateFormat(el.starttime)# #LSTimeFormat(el.starttime)#</td>
+	<td>#_query#</td>
+	<td>#_app#</td>
+	<td>#_total#</td>
 </tr>
 </cfloop>
 
@@ -282,7 +282,3 @@ Redirtect to entry --->
 
 </cfif>
 </cfoutput>
-<br><br>
-
-
-

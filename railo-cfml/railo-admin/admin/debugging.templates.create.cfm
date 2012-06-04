@@ -104,17 +104,17 @@ Error Output--->
 <cfinput type="hidden" name="label" value="#entry.label#" >
 	<tr>
 		<td width="150" class="tblHead" nowrap>#stText.debug.label#</td>
-		<td width="450" class="tblContent" nowrap>#entry.label#</td>
+		<td width="450" nowrap>#entry.label#</td>
 	</tr>
     <tr>
 		<td width="150" class="tblHead" nowrap>#stText.debug.iprange#</td>
-		<td width="450" class="tblContent" nowrap>
+		<td width="450" nowrap>
         <cfinput type="text" 
                 name="iprange" 
                 value="#entry.iprange#" style="width:350px" required="yes"
                 message="#stText.debug.iprangeMissing#"><input type="button" name="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="submit">
-        <br /><span class="comment">#replace(stText.debug.iprangeDesc,"
-","<br />","all")#</span>
+        <br /><div class="comment">#replace(stText.debug.iprangeDesc,"
+","<br />","all")#</div>
 
 
 </td>
@@ -146,8 +146,8 @@ Error Output--->
         <cfset type=field.getType()>
 <cfif type NEQ "hidden">
         <tr>
-            <td class="tblHead" width="150">#field.getDisplayName()#</td>
-            <td class="tblContent" width="300">
+            <th scope="row">#field.getDisplayName()#</th>
+            <td width="300">
 
 </cfif><cfif type EQ "text" or type EQ "password">
             <cfinput type="#type#" 
@@ -202,19 +202,19 @@ Error Output--->
 		</tr>
 		
 		<tr>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_d_#field.getName()#" 
                 value="#addZero(d)#" style="width:40px" required="#field.getRequired()#"   validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_h_#field.getName()#" 
                 value="#addZero(h)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_m_#field.getName()#" 
                 value="#addZero(m)#" style="width:40px" required="#field.getRequired()#"  maxlength="2" validate="integer" 
                 message="Missing value for field #field.getDisplayName()#"></td>
-			<td class="tblContent"><cfinput type="text" 
+			<td><cfinput type="text" 
                 name="custompart_s_#field.getName()#" 
                 value="#addZero(s)#" style="width:40px" required="#field.getRequired()#"  maxlength="2"  validate="integer"
                 message="Missing value for field #field.getDisplayName()#"></td>
@@ -280,7 +280,7 @@ Error Output--->
 					<cfset _comment=_desc._bottom>
                 </cfif>
 			</cfif>
-            <cfif len(trim(_comment))><cfif doBr><br /></cfif><span class="comment">#trim(_comment)#</span></cfif>
+            <cfif len(trim(_comment))><cfif doBr><br /></cfif><div class="comment">#trim(_comment)#</div></cfif>
             </td>
         </tr>
 </cfif>

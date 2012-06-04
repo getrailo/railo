@@ -166,38 +166,38 @@ function checkTheRadio(field) {
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <input type="hidden" name="subAction" value="setting" />
 <tr>
-	<td class="tblHead" width="150">#stText.CustomTags.customTagDeepSearch#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.CustomTags.customTagDeepSearch#</th>
+	<td>
 	<cfif hasAccess>
     	<input type="checkbox" class="checkbox" name="customTagDeepSearchDesc" value="yes" <cfif setting.deepsearch>checked</cfif>>
     <cfelse>
     	<b>#yesNoFormat(setting.deepsearch)#</b>
 	</cfif>
     
-    <span class="comment">#stText.CustomTags.customTagDeepSearchDesc#</span></td>
+    <div class="comment">#stText.CustomTags.customTagDeepSearchDesc#</div></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.CustomTags.customTagLocalSearch#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.CustomTags.customTagLocalSearch#</th>
+	<td>
 	<cfif hasAccess>
     	<input type="checkbox" class="checkbox" name="customTagLocalSearchDesc" value="yes" <cfif setting.localsearch>checked</cfif>>
     <cfelse>
     	<b>#yesNoFormat(setting.localsearch)#</b>
 	</cfif>
-	<span class="comment">#stText.CustomTags.customTagLocalSearchDesc#</span></td>
+	<div class="comment">#stText.CustomTags.customTagLocalSearchDesc#</div></td>
 	
 </tr>
 
 <!--- component path cache ---->
 <tr>
-	<td class="tblHead" width="150">#stText.CustomTags.customTagPathCache#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.CustomTags.customTagPathCache#</th>
+	<td>
 	<cfif hasAccess>
     	<input type="checkbox" class="checkbox" name="customTagPathCache" value="yes" <cfif setting.customTagPathCache>checked</cfif>>
     <cfelse>
     	<b>#yesNoFormat(setting.customTagPathCache)#</b>
 	</cfif>
-	<span class="comment">#stText.CustomTags.customTagPathCacheDesc#</span>
+	<div class="comment">#stText.CustomTags.customTagPathCacheDesc#</div>
 	<cfif setting.customTagPathCache><br /><input type="submit" class="submit" name="mainAction" value="#flushName#"></cfif></td>
 </tr>
 
@@ -206,8 +206,8 @@ function checkTheRadio(field) {
 <cfset arrExt=array('cfc','cfm','cfml')>
 <cfset lstSetExt=ArrayToList(setting.extensions)>
 <tr>
-	<td class="tblHead" width="150">#stText.CustomTags.extensions#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.CustomTags.extensions#</th>
+	<td>
     
     	<cfset modes=array(
 			struct(mode:'classic',ext:'cfm'),
@@ -224,7 +224,7 @@ function checkTheRadio(field) {
             <td><input type="radio" class="checkbox" name="extensions" value="#mode.ext#"<cfif mode.ext EQ lstSetExt> checked="checked"<cfset has=true></cfif>></td>
             <td><table class="tbl">
                     <tr>
-                        <td class="tblContent" style="width:100px"><b>#mode.ext#</b></td>
+                        <td style="width:100px"><b>#mode.ext#</b></td>
                         <td class="comment"><span >#stText.CustomTags.mode[mode.mode]#</span></td>
                     </tr>
                 </table></td>
@@ -233,13 +233,13 @@ function checkTheRadio(field) {
         <tr>
             <td><input type="radio" class="checkbox" name="extensions" value="custom"<cfif not has> checked="checked"</cfif>></td>
             <td><input type="text"  onclick="checkTheRadio(this)" name="extensions_custom" value="#ArrayToList(setting.extensions)#" required="no"  style="width:113px">
-            <span class="comment">#stText.CustomTags.mode.custom#</span></td>
+            <div class="comment">#stText.CustomTags.mode.custom#</div></td>
         </tr>
         </table>
         <cfelse>
         <b>#lstSetExt#</b><br />
         </cfif>
-        <span class="comment">#stText.CustomTags.extensionsDesc#</span>
+        <div class="comment">#stText.CustomTags.extensionsDesc#</div>
     
     
     </td>
@@ -314,12 +314,12 @@ function checkTheRadio(field) {
 			style="width:100%" 
 			message="#stText.CustomTags.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
-		<td class="tblContent" nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
+		<td nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 			<option value="physical" <cfif mappings.physicalFirst>selected</cfif>>#stText.CustomTags.physical#</option>
 			<option value="archive" <cfif not mappings.physicalFirst>selected</cfif>>#stText.CustomTags.archive#</option>
 		</select></cfif></td>
 		
-		<td class="tblContent" nowrap>
+		<td nowrap>
 		<cfif mappings.readOnly>
             	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
 			<cfelse>
@@ -342,15 +342,15 @@ function checkTheRadio(field) {
 		</table>
 		
 		</td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:100%"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:100%" ></td>
-		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
+		<td nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
 			<option value="physical" selected>#stText.CustomTags.physical#</option>
 			<option value="archive">#stText.CustomTags.archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap>
+		<td nowrap>
         
         <select name="trusted_#mappings.recordcount+1#" onchange="checkTheBox(this)">
                 <option value="true">#stText.setting.inspecttemplateneverShort#</option>

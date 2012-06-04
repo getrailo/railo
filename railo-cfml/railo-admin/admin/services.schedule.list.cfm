@@ -284,19 +284,19 @@ Create Task --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
 	<td class="tblHead" width="100">#stText.Schedule.Name#</td>
-	<td class="tblContent" width="500"><cfinput type="text" name="name" value="" style="width:200px" required="yes" 
+	<td width="500"><cfinput type="text" name="name" value="" style="width:200px" required="yes" 
 		message="#stText.Schedule.NameMissing#"></td>
 </tr>
 <tr>
 	<td class="tblHead">#stText.Schedule.URL#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Schedule.URLDescription#</span><br>
+	<td>
+		<div class="comment">#stText.Schedule.URLDescription#</div><br>
 		<cfinput type="text" name="url" value="" style="width:100%" required="yes" 
 		message="#stText.Schedule.URLMissing#"></td>
 </tr>
 <tr>
 	<td class="tblHead">#stText.Schedule.IntervalType#</td>
-	<td class="tblContent"><span class="comment">#stText.Schedule.IntervalTypeDesc#</span><br><select name="interval">
+	<td><div class="comment">#stText.Schedule.IntervalTypeDesc#</div><br><select name="interval">
 		<option value="3600">#stText.Schedule.Every# ...</option>
 		<option value="once">#stText.Schedule.Once#</option>
 		<option value="daily">#stText.Schedule.Daily#</option>
@@ -306,7 +306,7 @@ Create Task --->
 </tr>
 <tr>
 	<td class="tblHead">#stText.Schedule.StartDate#</td>
-	<td class="tblContent">
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Day#</td>
@@ -322,7 +322,7 @@ Create Task --->
 </tr>
 <tr>
 	<td class="tblHead">#stText.Schedule.StartTime#</td>	
-	<td class="tblContent">
+	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="comment">#stText.General.Hour#</td>
@@ -339,7 +339,7 @@ Create Task --->
 </tr>
 <tr>
 	<td class="tblHead">#stText.Schedule.paused#</td>	
-	<td class="tblContent"><input type="checkbox" name="paused" value="true" /></td>
+	<td><input type="checkbox" name="paused" value="true" /></td>
 </tr>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>

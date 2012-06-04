@@ -28,23 +28,23 @@
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
 	<td class="tblHead">#stText.log.level#</td>
-	<td class="tblContent">
+	<td>
     <select name="#logs.name#_level">
     	<cfloop list="Info,Debug,Warn,Error,Fatal" index="l"><option <cfif l EQ level>selected</cfif>>#l#</option></cfloop>
 	</select></td>
 </tr>
 <tr>
 	<td class="tblHead">#stText.log.source#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_source" title="#logs.path#" value="#logs.virtualpath#" style="width:300px" required="yes" message=""></td>
+	<td><cfinput type="text" name="#logs.name#_source" title="#logs.path#" value="#logs.virtualpath#" style="width:300px" required="yes" message=""></td>
 </tr>
 
 <tr>
 	<td class="tblHead">#stText.log.maxFile#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFile" value="#logs.maxFile#" style="width:60px" required="yes" message=""></td>
+	<td><cfinput type="text" name="#logs.name#_maxFile" value="#logs.maxFile#" style="width:60px" required="yes" message=""></td>
 </tr>
 <tr>
 	<td class="tblHead">#stText.log.maxFileSize#</td>
-	<td class="tblContent"><cfinput type="text" name="#logs.name#_maxFileSize" value="#isNumeric(logs.maxFileSize)?logs.maxFileSize/1024:''#" style="width:60px" required="yes" message=""></td>
+	<td><cfinput type="text" name="#logs.name#_maxFileSize" value="#isNumeric(logs.maxFileSize)?logs.maxFileSize/1024:''#" style="width:60px" required="yes" message=""></td>
 </tr>
 
 

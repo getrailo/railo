@@ -62,7 +62,7 @@ Installed Applications --->
             <cfset dn=getDumpNail(extensions.image,130,50)>
 			<cfset hasUpdate=updateAvailable(extensions)>
             
-            <div class="tblContent" style="width:130px;height:80px;margin:2px;float:left" align="center">
+            <div style="width:130px;height:80px;margin:2px;float:left" align="center">
             <cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
             <a href="#link#" style="text-decoration:none;"><b>#cut(extensions.label,20)#</b><br />
             #cut(extensions.category,20)#</a><cfif hasUpdate><br /><span class="CheckError">Update Available</span></cfif>
@@ -136,13 +136,13 @@ Not Installed Applications --->
             <cfset dn=getDumpNail(data.image,130,50)>
 			<!----<table class="tbl" width="148">
             <td>
-            <td height="80" class="tblContent" nowrap align="center"><cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
+            <td height="80" nowrap align="center"><cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
             <a href="#link#" style="text-decoration:none;"><b>#cut(data.label,20)#</b><br />
             #cut(data.category,20)#</a>
             </td>
 			</tr>
 			</table>--->
-			<div class="tblContent" style="width:130px;height:80px;margin:2px;float:left" align="center">
+			<div style="width:130px;height:80px;margin:2px;float:left" align="center">
             <cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
             <a href="#link#" style="text-decoration:none;"><b>#cut(data.label,20)#</b><br />
             #cut(data.category,20)#</a>
@@ -241,7 +241,7 @@ Not Installed Applications --->
 			</table>
 			</td>
             <cfset dn=getDumpNail(data.image)>
-			<td class="tblContent" nowrap>
+			<td nowrap>
             <table border="0" cellpadding="0" cellspacing="0">
             <tr>
             	<td width="80" height="40" align="center"><cfif len(dn)><img src="#dn#" border="0"/><cfelse>&nbsp;</cfif></td>
@@ -253,8 +253,8 @@ Not Installed Applications --->
             
             
             </td>
-			<td class="tblContent" nowrap>#data.category#</td>
-			<td class="tblContent" colspan="2" nowrap><a href="#request.self#?action=#url.action#&action2=provider&hashProvider=#hash(data.provider)#">#data.info[data.currentrow].title#</a></td>
+			<td nowrap>#data.category#</td>
+			<td colspan="2" nowrap><a href="#request.self#?action=#url.action#&action2=provider&hashProvider=#hash(data.provider)#">#data.info[data.currentrow].title#</a></td>
 		</tr>
         </cfif>
 </cfoutput>	

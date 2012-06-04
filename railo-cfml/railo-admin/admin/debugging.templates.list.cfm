@@ -97,11 +97,11 @@ function setDesc(id,key){
 <table class="tbl" width="740">
 <cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
-	<td class="tblHead" width="150">#stText.Debug.EnableDebugging#</td>
-	<td class="tblContent" height="28">
+	<th scope="row">#stText.Debug.EnableDebugging#</th>
+	<td height="28">
 		<cfset lbl=iif(_debug.debug,de(stText.general.yes),de(stText.general.no))>
 	
-		<span class="comment">#stText.Debug.EnableDescription#</span><br />
+		<div class="comment">#stText.Debug.EnableDescription#</div><br />
 		<cfif hasAccess>
 			<select name="debug">
 				<cfif request.admintype EQ "web">
@@ -177,9 +177,9 @@ function setDesc(id,key){
 		</table>
 		</td>
      </cfif>
-		<td class="tblContent" nowrap>#qry.label#</td>
-		<td class="tblContent" nowrap>#replace(qry.ipRange,",","<br />","all")#</td>
-		<td class="tblContent" nowrap>#qry.driver.getLabel()#</td>
+		<td nowrap>#qry.label#</td>
+		<td nowrap>#replace(qry.ipRange,",","<br />","all")#</td>
+		<td nowrap>#qry.driver.getLabel()#</td>
 		
 	</tr>
 	</cfloop>
@@ -225,13 +225,13 @@ function setDesc(id,key){
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.debug.label#</td>
-		<td class="tblContent" width="370"><cfinput type="text" name="label" value="" style="width:370px" required="yes" 
+		<td width="370"><cfinput type="text" name="label" value="" style="width:370px" required="yes" 
 			message="#stText.debug.labelMissing#"></td>
 	</tr>
 	
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.gateway.type#</td>
-		<td class="tblContent" width="300"><select name="type" onchange="setDesc('typeDesc',this.value);" on>
+		<td width="300"><select name="type" onchange="setDesc('typeDesc',this.value);" on>
 					<cfloop list="#_drivers#" index="key">
                     <cfset driver=drivers[key]>
                     <option value="#trim(driver.getId())#">#trim(driver.getLabel())#</option>

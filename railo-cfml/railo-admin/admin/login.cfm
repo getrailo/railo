@@ -31,7 +31,7 @@ function doFocus() {<cfoutput>
 
 <tr>
 	<td class="tblHead" width="120" align="right">#stText.Login.Password#</td>
-	<td class="tblContent" width="200"><cfinput type="password" name="login_password#request.adminType#" value=""   passthrough='autocomplete="off"'
+	<td width="200"><cfinput type="password" name="login_password#request.adminType#" value=""   passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.Login.PasswordMissing#"></td>
 </tr>
 <cfoutput>
@@ -41,7 +41,7 @@ function doFocus() {<cfoutput>
 		<td class="tblHead" width="100" align="right">#stText.Login.language#</td>
 		<cfset aLangKeys = structKeyArray(languages)>
 		<cfset arraySort(aLangKeys, "text")>
-		<td class="tblContent" width="200"><select name="lang">
+		<td width="200"><select name="lang">
 		<cfloop from="1" to="#arrayLen(aLangKeys)#" index="iKey">
 			<cfset key = aLangKeys[iKey]>
 			<option value="#key#" <cfif key EQ session.railo_admin_lang>selected</cfif>>#languages[key]#</option>
@@ -54,14 +54,14 @@ function doFocus() {<cfoutput>
     <tr>
     	<td class="tblHead" width="100" align="right">#stText.login.captchaHelp#</td>
         
-		<td class="tblContent" width="200">
+		<td width="200">
         <cfimage action="captcha" width="160" height="30" text="#cap#" difficulty="medium">
         <a style="font-size : 10px" href="#request.self#<cfif structKeyExists(url,"action")>?action=#url.action#</cfif>">Reload</a><br />
         
         
         <cfinput type="text" name="captcha" value="" passthrough='autocomplete="off"'
 		style="width:200px" required="yes" message="#stText.login.captchaHelpMiss#">
-        <br /><span class="comment">#stText.login.captchaHelpDesc#</span>
+        <br /><div class="comment">#stText.login.captchaHelpDesc#</div>
         </td>
 	</tr>
     <cfelse>
@@ -69,7 +69,7 @@ function doFocus() {<cfoutput>
     </cfif>
 	<tr>
 		<td class="tblHead" width="100" align="right">#stText.Login.rememberMe#</td>
-		<td class="tblContent" width="200"><select name="rememberMe">
+		<td width="200"><select name="rememberMe">
 		<option value="s">#stText.Login.s#</option>
 		<option value="d">#stText.Login.d#</option>
 		<option value="ww">#stText.Login.ww#</option>

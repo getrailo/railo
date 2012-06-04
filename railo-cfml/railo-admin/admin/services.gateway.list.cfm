@@ -78,28 +78,27 @@
 					</cfif>
 				</cfloop>
 		</cfcase>
-		<cfcase value="#stText.Buttons.verify#">
-			<cfset data.id=toArrayFromForm("id")>
-				<cfset data.rows=toArrayFromForm("row")>
-				<cfloop index="idx" from="1" to="#arrayLen(data.ids)#">
-					<cfif isDefined("data.rows[#idx#]") and data.names[idx] NEQ "">
-						<cftry>
-							<cfadmin 
-								action="verifyCacheConnection"
-								type="#request.adminType#"
-								password="#session["password"&request.adminType]#"
-								name="#data.ids[idx]#">
-								<cfset stVeritfyMessages["#data.ids[idx]#"].Label = "OK">
-							<cfcatch>
-								<!--- <cfset error.message=error.message&data.ids[idx]&": "&cfcatch.message&"<br>"> --->
-								<cfset stVeritfyMessages[data.ids[idx]].Label = "Error">
-								<cfset stVeritfyMessages[data.ids[idx]].message = cfcatch.message>
-							</cfcatch>
-						</cftry>
-					</cfif>
-				</cfloop>
-				
-		</cfcase>
+		<!---<cfcase value="#stText.Buttons.verify#">
+			<cfset data.ids=toArrayFromForm("id")>
+			<cfset data.rows=toArrayFromForm("row")>
+			<cfloop index="idx" from="1" to="#arrayLen(data.ids)#">
+				<cfif isDefined("data.rows[#idx#]") and data.names[idx] NEQ "">
+					<cftry>
+						<cfadmin 
+							action="verifyCacheConnection"
+							type="#request.adminType#"
+							password="#session["password"&request.adminType]#"
+							name="#data.ids[idx]#">
+							<cfset stVeritfyMessages["#data.ids[idx]#"].Label = "OK">
+						<cfcatch>
+							<!--- <cfset error.message=error.message&data.ids[idx]&": "&cfcatch.message&"<br>"> --->
+							<cfset stVeritfyMessages[data.ids[idx]].Label = "Error">
+							<cfset stVeritfyMessages[data.ids[idx]].message = cfcatch.message>
+						</cfcatch>
+					</cftry>
+				</cfif>
+			</cfloop>
+		</cfcase>--->
 	</cfswitch>
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
@@ -131,222 +130,197 @@ Redirtect to entry --->
     <cfset QuerySetCell(tmp,"driver",entries.driver)>
     <cfset QuerySetCell(tmp,"state",entries.state)>
 </cfloop>
+
+<cfsavecontent variable="headText">
+	<script type="text/javascript">
+		$(function(){
+			$('#instancelist input.checkbox').change(function(){
+				var chkd = $('#instancelist input.checkbox:checked').length > 0;
+				$('#instancelist_btns input.instbtn').prop('disabled', chkd ? '':'disabled').css('opacity', (chkd ? 1:.5));
+			}).triggerHandler('change');
+		});
+	</script>
+</cfsavecontent>
+<cfhtmlhead text="#headText#" />
+
 <cfoutput>
+	<!--- Error Output--->
+	<cfset printError(error)>
 
-
-<!--- 
-Error Output--->
-<cfset printError(error)>
-
-<!---- READ ONLY ---->
-<cfif request.adminType EQ "web" and srcGlobal.recordcount>
-	<h2>#stText.Settings.gateway.titleReadOnly#</h2>
-	#stText.Settings.cache.descReadOnly#
-<table class="tbl" width="570">
-
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-	<tr>
-		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
-		<td width="250" class="tblHead" nowrap>#stText.Settings.gateway.id#</td>
-		<td width="250" class="tblHead" nowrap># stText.Settings.gateway.type#</td>
-		<td width="250" class="tblHead" nowrap># stText.Settings.gateway.state#</td>
-		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
-	</tr>
-	<cfloop query="srcGlobal">
-    
-    <cfswitch expression="#srcGlobal.state#">
-    	<cfcase value="running"><cfset css="Green"></cfcase>
-    	<cfcase value="failed,stopped"><cfset css="Red"></cfcase>
-    	<cfdefaultcase><cfset css="Yellow"></cfdefaultcase>
-    </cfswitch>
-    	<cfset driver=drivers[srcGlobal.class]>
-	<tr>
-		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td>
-			<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" value="#srcGlobal.currentrow#">
-			</td>
-		</tr>
-		</table>
-		</td>
-		<td class="tblContent#css#" nowrap><input type="hidden" name="id_#srcGlobal.currentrow#" value="#srcGlobal.id#">#srcGlobal.id#</td>
-		<td class="tblContent#css#" nowrap>#driver.getLabel()#</td>
-		<td class="tblContent#css#" nowrap>#srcGlobal.state#</td>
-		<td class="tblContent#css#" nowrap valign="middle" align="center">
-				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.id)>
-					<cfif stVeritfyMessages[srcGlobal.id].label eq "OK">
-						<span class="CheckOk">#stVeritfyMessages[srcGlobal.id].label#</span>
-					<cfelse>
-						<span class="CheckError" title="#stVeritfyMessages[srcGlobal.id].message##Chr(13)#">#stVeritfyMessages[srcGlobal.id].label#</span>
-						&nbsp;<img src="resources/img/red-info.gif.cfm" 
-							width="9" 
-							height="9" 
-							border="0" 
-							title="#stVeritfyMessages[srcGlobal.id].message##Chr(13)#">
-					</cfif>
-				<cfelse>
-					&nbsp;				
-				</cfif>
-			</td>
-	</tr>
-	</cfloop>
-	<tr>
-		<td colspan="5">
-		 <table border="0" cellpadding="0" cellspacing="0">
-		 <tr>
-			<td><img src="resources/img/tp.gif.cfm" width="8" height="1"></td>		
-			<td><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="20"></td>
-			<td></td>
-		 </tr>
-		 <tr>
-			<td></td>
-			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
-			<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.verify#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			</td>	
-		</tr>
-		 </table>
-		 </td>
-	</tr>
-</cfform>
-</table>
-</cfif>
-
-<!--- LIST --->
-<cfif srcLocal.recordcount>
-	<h2>#stText.Settings.gateway.titleExisting#</h2>
-	#stText.Settings.gateway.descExisting#
-    
-<table class="tbl" width="570">
-
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-	<tr>
-		<td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
-		<td width="240" class="tblHead" nowrap>#stText.Settings.gateway.id#</td>
-		<td width="180" class="tblHead" nowrap># stText.Settings.gateway.type#</td>
-		<td width="100" class="tblHead" nowrap># stText.Settings.gateway.state#</td>
-		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
-	</tr>
-	<cfloop query="srcLocal">
-    <cfif IsSimpleValue(srcLocal.driver)><cfcontinue></cfif>
-    <cfswitch expression="#srcLocal.state#">
-    	<cfcase value="running"><cfset css="Green"></cfcase>
-    	<cfcase value="failed,stopped"><cfset css="Red"></cfcase>
-    	<cfdefaultcase><cfset css="Yellow"></cfdefaultcase>
-    </cfswitch>
+	<!---- READ ONLY ---->
+	<cfif request.adminType EQ "web" and srcGlobal.recordcount>
+		<h2>#stText.Settings.gateway.titleReadOnly#</h2>
 		
-    <tr>
-		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td>
-			<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
-			</td>
-            <td>
-            <a href="#request.self#?action=#url.action#&action2=create&id=#Hash(srcLocal.id)#">
-			<img src="resources/img/edit.png.cfm" hspace="2" border="0"></a>
-            </td>
-		</tr>
-		</table>
-		</td>
-		<td class="tblContent#css#" nowrap><input type="hidden" name="id_#srcLocal.currentrow#" value="#srcLocal.id#">#srcLocal.id#</td>
-		<td class="tblContent#css#" nowrap>#srcLocal.driver.getLabel()#</td>
-		<td class="tblContent#css#" nowrap>#srcLocal.state#</td>
-		<td class="tblContent#css#" nowrap valign="middle" align="center">
-				<cfif StructKeyExists(stVeritfyMessages, srcLocal.id)>
-					<cfif stVeritfyMessages[srcLocal.id].label eq "OK">
-						<span class="CheckOk">#stVeritfyMessages[srcLocal.id].label#</span>
-					<cfelse>
-						<span class="CheckError" title="#stVeritfyMessages[srcLocal.id].message##Chr(13)#">#stVeritfyMessages[srcLocal.id].label#</span>
-						&nbsp;<img src="resources/img/red-info.gif.cfm" 
-							width="9" 
-							height="9" 
-							border="0" 
-							title="#stVeritfyMessages[srcLocal.id].message##Chr(13)#">
-					</cfif>
-				<cfelse>
-					&nbsp;				
-				</cfif>
-			</td>
-	</tr>
-	</cfloop>
-	<tr>
-		<td colspan="5">
-		 <table border="0" cellpadding="0" cellspacing="0">
-		 <tr>
-			<td><img src="resources/img/tp.gif.cfm" width="8" height="1"></td>		
-			<td><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="20"></td>
-			<td></td>
-		 </tr>
-		 <tr>
-			<td></td>
-			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
-			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.refresh#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.restart#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.stopstart#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			</td>	
-		</tr>
-		 </table>
-		 </td>
-	</tr>
-</cfform>
-</table>
-<br><br>
-</cfif>
+		<div class="pageintro">#stText.Settings.cache.descReadOnly#</div>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl">
+				<thead>
+					<tr>
+						<th width="3%"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></th>
+						<th width="31%">#stText.Settings.gateway.id#</th>
+						<th width="31%">#stText.Settings.gateway.type#</th>
+						<th width="31%">#stText.Settings.gateway.state#</th>
+						<th width="4%">#stText.Settings.DBCheck#</th>
+					</tr>
+				</thead>
+				<tbody id="instancelist">
+					<cfloop query="srcGlobal">
+						<cfswitch expression="#srcGlobal.state#">
+							<cfcase value="running"><cfset css="Green"></cfcase>
+							<cfcase value="failed,stopped"><cfset css="Red"></cfcase>
+							<cfdefaultcase><cfset css="Yellow"></cfdefaultcase>
+						</cfswitch>
+						<cfset driver=drivers[srcGlobal.class]>
+						<tr>
+							<td>
+								<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" value="#srcGlobal.currentrow#">
+							</td>
+							<td class="tblContent#css#"><input type="hidden" name="id_#srcGlobal.currentrow#" value="#srcGlobal.id#">#srcGlobal.id#</td>
+							<td class="tblContent#css#">#driver.getLabel()#</td>
+							<td class="tblContent#css#">#srcGlobal.state#</td>
+							<td class="tblContent#css# center">
+								<cfif StructKeyExists(stVeritfyMessages, srcGlobal.id)>
+									<cfif stVeritfyMessages[srcGlobal.id].label eq "OK">
+										<span class="CheckOk">#stVeritfyMessages[srcGlobal.id].label#</span>
+									<cfelse>
+										<span class="CheckError" title="#stVeritfyMessages[srcGlobal.id].message##Chr(13)#">#stVeritfyMessages[srcGlobal.id].label#</span>
+										&nbsp;<img src="resources/img/red-info.gif.cfm" 
+											width="9" 
+											height="9" 
+											border="0" 
+											title="#stVeritfyMessages[srcGlobal.id].message##Chr(13)#">
+									</cfif>
+								<cfelse>
+									&nbsp;				
+								</cfif>
+							</td>
+						</tr>
+					</cfloop>
+				</tbody>
+				<tfoot id="instancelist_btns">
+					<tr>
+						<td></td>
+						<td colspan="3">
+							<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.refresh#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+						</td>	
+					</tr>
+				</tfoot>
+			</table>
+		</cfform>
+	</cfif>
 
-
+	<!--- LIST --->
+	<cfif srcLocal.recordcount>
+		<h2>#stText.Settings.gateway.titleExisting#</h2>
+		<div class="itemintro">#stText.Settings.gateway.descExisting#</div>
+    
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl">
+				<thead>
+					<tr>
+						<cfif srcLocal.recordcount gt 1>
+							<th width="3%"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></th>
+						<cfelse>
+							<th width="3%">&nbsp;</th>
+						</cfif>
+						<th width="30%">#stText.Settings.gateway.id#</th>
+						<th width="30%">#stText.Settings.gateway.type#</th>
+						<th width="30%">#stText.Settings.gateway.state#</th>
+						<th width="4%">#stText.Settings.DBCheck#</th>
+						<th width="3%">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody id="instancelist">
+					<cfloop query="srcLocal">
+						<cfif IsSimpleValue(srcLocal.driver)>
+							<cfcontinue>
+						</cfif>
+						<cfswitch expression="#srcLocal.state#">
+							<cfcase value="running"><cfset css="Green"></cfcase>
+							<cfcase value="failed,stopped"><cfset css="Red"></cfcase>
+							<cfdefaultcase><cfset css="Yellow"></cfdefaultcase>
+						</cfswitch>
+						<tr>
+							<td>
+								<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
+							</td>
+							<td><input type="hidden" name="id_#srcLocal.currentrow#" value="#srcLocal.id#">#srcLocal.id#</td>
+							<td>#srcLocal.driver.getLabel()#</td>
+							<td class="tblContent#css#" nowrap>#srcLocal.state#</td>
+							<cfif StructKeyExists(stVeritfyMessages, srcLocal.id)>
+								<td class="tblContent#css# center">
+									<cfif stVeritfyMessages[srcLocal.id].label eq "OK">
+										<span class="CheckOk">#stVeritfyMessages[srcLocal.id].label#</span>
+									<cfelse>
+										<span class="CheckError" title="#stVeritfyMessages[srcLocal.id].message##Chr(13)#">#stVeritfyMessages[srcLocal.id].label#</span>
+										&nbsp;<img src="resources/img/red-info.gif.cfm" width="9" height="9" title="#stVeritfyMessages[srcLocal.id].message##Chr(13)#" />
+									</cfif>
+								</td>
+							<cfelse>
+								<td>&nbsp;</td>
+							</cfif>
+							<td>
+								<a href="#request.self#?action=#url.action#&action2=create&id=#Hash(srcLocal.id)#"><img src="resources/img/edit.png.cfm" hspace="2" border="0"></a>
+							</td>
+						</tr>
+					</cfloop>
+				</tbody>
+				<tfoot id="instancelist_btns">
+					<tr>
+						<td></td>
+						<td colspan="4" id="btns">
+							<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.refresh#">
+							<input type="submit" class="submit instbtn" name="mainAction" value="#stText.Buttons.delete#">
+							<input type="submit" class="submit instbtn" name="mainAction" value="#stText.Buttons.restart#">
+							<input type="submit" class="submit instbtn" name="mainAction" value="#stText.Buttons.stopstart#">
+						</td>	
+					</tr>
+				</tfoot>
+			</table>
+		</cfform>
+	</cfif>
 </cfoutput>
 
-
-<!--- 
-	Create gateway entry --->
+<!--- Create gateway entry --->
 <cfif access EQ "yes">
-<cfoutput>
-	<cfset _drivers=ListSort(StructKeyList(drivers),'textnocase')>
-	
-    <cfif listLen(_drivers)>
-    <h2>#stText.Settings.gateway.titleCreate#</h2>
-	<table class="tbl" width="350">
-	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-	<tr>
-		<td class="tblHead" width="50">#stText.Settings.gateway.id#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="_id" value="" style="width:300px" required="yes" 
-			message="#stText.Settings.gateway.nameMissing#"></td>
-	</tr>
-	
-	<tr>
-		<td class="tblHead" width="50">#stText.Settings.gateway.type#</td>
-		<td class="tblContent" width="300"><select name="name">
-					<cfloop list="#_drivers#" index="key">
-                    <cfset driver=drivers[key]>
-                    <option value="#key#">#trim(driver.getLabel())#</option>
-					</cfloop>
-				</select></td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<input type="submit" class="submit" name="run" value="#stText.Buttons.create#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		</td>
-	</tr>
-	</cfform>
-	</table>   
-	<br><br>
-    <cfelse>
-    #stText.Settings.gateway.noDriver#
-    </cfif>
-    
+	<cfoutput>
+		<cfset _drivers=ListSort(StructKeyList(drivers),'textnocase')>
+	    <cfif listLen(_drivers)>
+			<h2>#stText.Settings.gateway.titleCreate#</h2>
+			<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
+				<table class="maintbl">
+					<tbody>
+						<tr>
+							<th scope="row">#stText.Settings.gateway.id#</th>
+							<td><cfinput type="text" name="_id" value="" class="medium" required="yes" message="#stText.Settings.gateway.nameMissing#"></td>
+						</tr>
+						<tr>
+							<th scope="row">#stText.Settings.gateway.type#</th>
+							<td>
+								<select name="name" class="medium">
+									<cfloop list="#_drivers#" index="key">
+										<cfset driver=drivers[key]>
+										<option value="#key#">#trim(driver.getLabel())#</option>
+									</cfloop>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2">
+								<input type="submit" class="submit" name="run" value="#stText.Buttons.create#">
+								<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							</td>
+						</tr>
+					</tfoot>
+				</table>   
+			</cfform>
+	    <cfelse>
+    		<div class="txt">#stText.Settings.gateway.noDriver#</div>
+    	</cfif>
 	</cfoutput>
 <cfelse>
  	<cfset noAccess(stText.Settings.gateway.noAccess)>
-
-
 </cfif>
-
-    
-    

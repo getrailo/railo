@@ -53,7 +53,7 @@ function checkTheBox(field) {
 		
 		
 		<!--- virtual --->
-		<td height="30" class="tblContent" title="#mappings.virtual#" nowrap><input type="hidden" 
+		<td height="30" title="#mappings.virtual#" nowrap><input type="hidden" 
 			name="virtual_#mappings.currentrow#" value="#mappings.virtual#">#cut(mappings.virtual,14)#</td>
 		
 		<!--- physical --->
@@ -70,13 +70,13 @@ function checkTheBox(field) {
 			style="width:100%" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<!--- primary --->
-		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
+		<td nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 			<option value="physical" <cfif mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Physical#</option>
 			<option value="archive" <cfif not mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
 		</select></cfif></td>
 		
 		<!--- trusted --->
-		<td class="tblContent" nowrap>
+		<td nowrap>
 			<cfif mappings.readOnly>
             	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
 			<cfelse>
@@ -102,17 +102,17 @@ function checkTheBox(field) {
 		</table></td>
 		
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="virtual_#mappings.recordcount+1#" value="" required="no" style="width:100%"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:100%"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:100%" ></td>
-		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
+		<td nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
 			<option value="physical" selected>#stText.Mappings.Physical#</option>
 			<option value="archive">#stText.Mappings.Archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap>
+		<td nowrap>
         
          <select name="trusted_#mappings.recordcount+1#" onchange="checkTheBox(this)">
                 <option value="true">#stText.setting.inspecttemplateneverShort#</option>

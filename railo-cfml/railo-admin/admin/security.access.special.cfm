@@ -90,8 +90,8 @@ Overview
 			</tr>
 			</table>
 			</td>
-			<td class="tblContent" nowrap>#contextes.label#&nbsp;</td>
-			<td class="tblContent" nowrap>#contextes.path#</td>
+			<td nowrap>#contextes.label#&nbsp;</td>
+			<td nowrap>#contextes.path#</td>
 		</tr>
 		<cfelse>
 		<cfset hasNoneIndividual=true>
@@ -133,7 +133,7 @@ Overview
 		</tr>
 		<cfform onerror="customError" action="#go(url.action,'createSecurityManager')#" method="post">
 			<td class="tblHead"  nowrap>#stText.Security.specListWebContext#</td>
-			<td class="tblContent"><select name="id">
+			<td><select name="id">
 						<cfoutput><cfloop query="contextes"><cfif not contextes.hasOwnSecContext>
 							<option value="#contextes.id#">#contextes.text#</option>
 						</cfif></cfloop></cfoutput>

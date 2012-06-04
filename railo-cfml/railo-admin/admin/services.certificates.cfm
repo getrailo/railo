@@ -80,18 +80,18 @@ Create Datasource --->
 <cfform action="#request.self#?action=#url.action#" method="post">
 
 <tr>
-	<td class="tblHead" width="150">#stText.services.certificate.host#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.services.certificate.host#</th>
+	<td>
     	<cfinput type="text" name="host" value="#_host#" style="width:200px" required="yes"><br />
-		<span class="comment">#stText.services.certificate.hostDesc#</span><br>
+		<div class="comment">#stText.services.certificate.hostDesc#</div><br>
 		
 	</td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">#stText.services.certificate.port#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.services.certificate.port#</th>
+	<td>
     	<cfinput type="text" name="port" value="#_port#" style="width:40px" required="yes" validate="integer"><br />
-		<span class="comment">#stText.services.certificate.portDesc#</span><br>
+		<div class="comment">#stText.services.certificate.portDesc#</div><br>
 		
 	</td>
 </tr>
@@ -127,8 +127,8 @@ Create Datasource --->
 </tr>
 <cfloop query="qry">
 <tr>
-	<td class="tblContent">#qry.subject#</td>
-	<td class="tblContent">#qry.issuer#</td>
+	<td>#qry.subject#</td>
+	<td>#qry.issuer#</td>
 </tr>
 </cfloop>
 </table>

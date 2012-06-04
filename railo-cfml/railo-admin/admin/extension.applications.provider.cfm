@@ -18,7 +18,7 @@
         
         <tr>
             <td class="tblHead">#stText.ext.provider#</td>
-            <td class="tblContent"><a href="#info.url#" target="_blank">#info.url#</a></td>
+            <td><a href="#info.url#" target="_blank">#info.url#</a></td>
         </tr>
         </table>
     
@@ -63,22 +63,22 @@
                     <cfif isInstalled>
                     <tr>
                         <td class="tblHead">#stText.ext.installedVersion#</td>
-                        <td class="tblContent">#app.version#</td>
+                        <td>#app.version#</td>
                     </tr>
                     <cfelse>
                     <tr>
                         <td class="tblHead">#stText.ext.availableVersion#</td>
-                        <td class="tblContent">#app.version#</td>
+                        <td>#app.version#</td>
                     </tr>
                     </cfif>
                     <tr>
                         <td class="tblHead">#stText.ext.category#</td>
-                        <td class="tblContent">#app.category#</td>
+                        <td>#app.category#</td>
                     </tr>
                     
                     <tr>
                         <td class="tblHead">#stText.ext.provider#</td>
-                        <td class="tblContent"><a href="#info.url#" target="_blank">#info.title#</a></td>
+                        <td><a href="#info.url#" target="_blank">#info.title#</a></td>
                     </tr>
                     </table>
                 
@@ -96,14 +96,14 @@
                 <table class="tbl" width="600">
                 <tr>
                     <td class="tblHead">#stText.ext.installedVersion#</td>
-                    <td class="tblContent" width="300">#detail.installed.version#</td>
+                    <td width="300">#detail.installed.version#</td>
                 </tr>
                 <tr>
                     <td class="tblHead">#stText.ext.availableVersion#</td>
-                    <td class="tblContent">#detail.app.version#</td>
+                    <td>#detail.app.version#</td>
                 </tr>
                 <tr>
-                    <td class="tblContent" colspan="2">
+                    <td colspan="2">
                     <textarea cols="80" rows="20">TODO get Update info</textarea>
                     
                     </td>

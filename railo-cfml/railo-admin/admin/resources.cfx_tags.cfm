@@ -186,7 +186,7 @@ Error Output--->
 		</tr>
 		</table>
 		</td>
-		<td class="tblContent" nowrap height="28"><input type="hidden" 
+		<td nowrap height="28"><input type="hidden" 
 			name="name_#jtags.currentrow#" value="#jtags.name#">&lt;cfx_<b>#jtags.name#</b>&gt;</td>
 		<cfset css=iif(not jtags.isvalid,de(' style="background-color:####E3D1D6"'),de(''))>
 		
@@ -196,7 +196,7 @@ Error Output--->
         
         
 		<!--- check --->
-        <td class="tblContent" nowrap valign="middle" align="center">
+        <td nowrap valign="middle" align="center">
             <cfif StructKeyExists(stVeritfyMessages, jtags.name)>
                 <cfif stVeritfyMessages[jtags.name].label eq "OK">
                     <span class="CheckOk">#stVeritfyMessages[jtags.name].label#</span>
@@ -225,9 +225,9 @@ Error Output--->
 		</tr>
 		</table>
 		</td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="name_#idx#" value="" required="no" style="width:100%"></td>
-		<td class="tblContent" nowrap colspan="2"><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap colspan="2"><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="class_#idx#" value="" required="no" style="width:100%"></td>
 	</tr>
 </cfif>
@@ -310,7 +310,7 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 		</td>
 		
         <!--- name --->
-        <td class="tblContent" nowrap height="28"><input type="hidden" 
+        <td nowrap height="28"><input type="hidden" 
 			name="name_#ctags.currentrow#" value="#ctags.name#">&lt;cfx_<b>#ctags.name#</b>&gt;</td>
 		<cfset css=iif(not ctags.isvalid,de(' style="background-color:####E3D1D6"'),de(''))>
 		
@@ -335,7 +335,7 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
         
         
 		<!--- check --->
-        <td class="tblContent" nowrap valign="middle" align="center">
+        <td nowrap valign="middle" align="center">
             <cfif StructKeyExists(stVeritfyMessages, ctags.name)>
                 <cfif stVeritfyMessages[ctags.name].label eq "OK">
                     <span class="CheckOk">#stVeritfyMessages[ctags.name].label#</span>
@@ -364,13 +364,13 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 		</tr>
 		</table>
 		</td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="name_#idx#" value="" required="no" style="width:100%"></td>
-		<td class="tblContent" nowrap ><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap ><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="serverlibrary_#idx#" value="" required="no" style="width:100%"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="procedure_#idx#" value="ProcessTagRequest" required="no" style="width:100%"></td>
-		<td class="tblContent" nowrap colspan="2">
+		<td nowrap colspan="2">
         	<input type="checkbox" class="checkbox" onclick="checkTheBox(this)" name="keepalive_#idx#" value="true"></td>
 	</tr>
 	<tr>
@@ -385,7 +385,7 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
     </cfif>
     <cfset archText=replace(archText,"{os-arch}",server.os.archModel,"all")>
     <cfset archText=replace(archText,"{jre-arch}",server.java.archModel,"all")>	
-	<cfoutput><span class="comment"  style="color:red">#archText#</span></cfoutput>
+	<cfoutput><div class="comment"  style="color:red">#archText#</div></cfoutput>
         </td>
 	</tr>
     

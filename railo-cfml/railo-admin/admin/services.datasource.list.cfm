@@ -111,10 +111,10 @@ Create Datasource --->
 
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.PreserveSingleQuotes#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Settings.PreserveSingleQuotes#</th>
+	<td>
 	<cfif access NEQ 0><input type="checkbox" class="checkbox" name="psq" value="yes" <cfif dbSetting.psq>checked</cfif>><cfelse><b>#yesNoFormat(dbSetting.psq)#</b></cfif>
-	<span class="comment">#stText.Settings.PreserveSingleQuotesDescription#</span></td>
+	<div class="comment">#stText.Settings.PreserveSingleQuotesDescription#</div></td>
 	
 </tr>
 <cfif access NEQ 0>
@@ -215,11 +215,11 @@ list all mappings and display necessary edit fields --->
 			</tr>
 			</table>
 			</td>
-			<td class="tblContent" nowrap><input type="hidden" 
+			<td nowrap><input type="hidden" 
 				name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
-			<td class="tblContent" nowrap>#getTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
-			<td class="tblContent" nowrap>#yesNoFormat(srcGlobal.storage)#</td>
-			<td class="tblContent" nowrap valign="middle" align="center">
+			<td nowrap>#getTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
+			<td nowrap>#yesNoFormat(srcGlobal.storage)#</td>
+			<td nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
 					#stVeritfyMessages[srcGlobal.name].label#
 					<cfif stVeritfyMessages[srcGlobal.name].label neq "OK">
@@ -292,11 +292,11 @@ list all mappings and display necessary edit fields --->
 			</tr>
 			</table>
 			</td>
-			<td class="tblContent" nowrap><input type="hidden" 
+			<td nowrap><input type="hidden" 
 				name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
-			<td class="tblContent" nowrap>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#</td>
-			<td class="tblContent" nowrap>#yesNoFormat(srcLocal.storage)#</td>
-			<td class="tblContent" nowrap valign="middle" align="center">
+			<td nowrap>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#</td>
+			<td nowrap>#yesNoFormat(srcLocal.storage)#</td>
+			<td nowrap valign="middle" align="center">
 				<cfif StructKeyExists(stVeritfyMessages, srcLocal.name)>
 					<cfif stVeritfyMessages[srcLocal.name].label eq "OK">
 						<span class="CheckOk">#stVeritfyMessages[srcLocal.name].label#</span>
@@ -354,14 +354,14 @@ list all mappings and display necessary edit fields --->
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.Name#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="name" value="" style="width:300px" required="yes" 
+		<td width="300"><cfinput type="text" name="name" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.NameMissing#"></td>
 	</tr>
 	<cfset keys=StructKeyArray(drivers)>
 	<cfset ArraySort(keys,"textNoCase")>
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.Type#</td>
-		<td class="tblContent" width="300"><select name="type">
+		<td width="300"><select name="type">
 					<cfoutput><cfloop collection="#keys#" item="idx">
 					<cfset key=keys[idx]>
 					<cfset driver=drivers[key]>
