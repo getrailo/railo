@@ -103,7 +103,7 @@ Error Output --->
 				<cfloop list="500,404" index="statusCode">
 					<cfset css=iif(len(err.templates[statusCode]) EQ 0 and len(err.templates[statusCode]) NEQ 0,de('Red'),de(''))>
 					<tr>
-						<td class="tblHead" width="150" height="28">#stText.err.errorTemplate[statusCode]#</td>
+						<th scope="row">#stText.err.errorTemplate[statusCode]#</th>
 						<td class="tblContent#css#" title="#err.str[statusCode]##chr(10)##err.str[statusCode]#">
 							<cfif LCase(left(err.templates[statusCode], 41)) eq "#cgi.context_path#/railo-context/admin/templates/error/">
 								<cfset bDisableFile = True>

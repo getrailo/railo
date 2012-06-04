@@ -39,6 +39,9 @@ body, td, th {
 	font-size : 12px;
 	color:#3c3e40;
 }
+table {
+	border-collapse:collapse;
+}
 h1, h2, h3, h4, h5 {
 	font-weight:normal;
 	font-size : 18px;
@@ -219,7 +222,13 @@ div.pageintro {
 
 /* tables */
 table {empty-cells:show;}
-td, th { padding:2px; vertical-align:top; }
+td, th {
+	padding:3px;
+	vertical-align:top;
+}
+.tbl td, .tbl th {
+	border:1px solid #ddd;
+}
 th {/* like .tblHead */
 	background-color:#f2f2f2;
 	color:#3c3e40;
@@ -238,7 +247,9 @@ table.nospacing {
 /* tables */
 .maintbl {
 	width:100%;
-	border-collapse:collapse;
+}
+.autowidth {
+	width: auto;
 }
 .maintbl td, .maintbl th {
 	padding: 3px 5px;
@@ -356,6 +367,9 @@ label:hover {
 }
 .radiolist .comment {
 	padding-left:20px;
+}
+.radiolist label + table {
+	margin-left:20px;
 }
 .InputError{
 	background:#fae2e2 url('../img/input-shadow-error.png.cfm') repeat-x 0 0;

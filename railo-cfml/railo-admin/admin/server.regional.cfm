@@ -118,14 +118,14 @@ Create Datasource --->
 		</cfif>
 	</div>
 	
-	<div class="txt">
-		Your current time settings are:
-	</div>
+	<h4>
+		Current time settings
+	</h4>
 
 	<table class="tbl">
 		<tbody>
 			<tr>
-				<th scope="row">#stText.Overview.ServerTime#</th>
+				<th scope="row" nowrap="nowrap">#stText.Overview.ServerTime#</th>
 				<td>#lsdateFormat(date:now(),timezone:"jvm")#
 					#lstimeFormat(time:now(),timezone:"jvm")#
 				</td>

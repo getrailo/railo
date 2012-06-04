@@ -231,7 +231,7 @@ Redirtect to entry --->
 								<cfif listLen(field.getValues()) GT 1>
 									<li>
 										<label>
-											<cfinput type="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
+											<cfinput type="#type#" class="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 											<b>#item#</b>
 										</label>
 										<cfif isStruct(desc) and StructKeyExists(desc,item)>
@@ -239,7 +239,7 @@ Redirtect to entry --->
 										</cfif>
 									</li>
 								<cfelse>
-									<cfinput type="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
+									<cfinput type="#type#" class="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 								</cfif>
 							</cfloop>
 							<cfif isStruct(desc) and StructKeyExists(desc,'_bottom')>
