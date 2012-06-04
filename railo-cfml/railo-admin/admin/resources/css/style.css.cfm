@@ -345,15 +345,69 @@ input {
 	border-color: #aaa #ddd #ddd #aaa;
 }
 select {font-size : 11px;color:#3c3e40;margin:3px 0px 3px 0px;}
+.button {
+	display: inline-block;
+	outline: none;
+	text-align: center;
+	text-decoration: none;
+	padding:3px 10px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border-color: #777;
+	color:#3c3e40;
+	font-weight:bold;
+
+	background: #f2f2f2;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
+	background: -moz-linear-gradient(top,  #fff,  #ddd);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#ddd');
+}
+input.reset {
+	display:none;
+}
+.button:hover {
+	text-decoration: none;
+}
+.button:active {
+	position: relative;
+	top: 1px;
+}
+/*
 .button,.submit,.reset {
-	background: url('../img/input-button.png.cfm') repeat-x 0 0;
-	background-color:#f2f2f2;
+	background:#f2f2f2 url('../img/input-button.png.cfm') repeat-x 0 0;
 	color:#3c3e40;
 	font-weight:bold;
 	padding:3px 10px;
 	margin:0px;
 	border-color: #777;
 	border-radius:5px;
+}
+*/
+a.btn-mini {
+	display:inline-block;
+	outline:none;
+	height:18px;
+	border:1px solid #aaa;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	background: #f2f2f2;
+}
+a.edit {
+	background-image: url(../img/edit.png.cfm); /* fallback */
+	background-image: url(../img/edit.png.cfm), -webkit-linear-gradient(top, #fff,#ddd); /* Chrome 10+, Saf5.1+ */
+	background-image: url(../img/edit.png.cfm),    -moz-linear-gradient(top, #fff,#ddd); /* FF3.6+ */
+	background-image: url(../img/edit.png.cfm),     -ms-linear-gradient(top, #fff,#ddd); /* IE10 */
+	background-image: url(../img/edit.png.cfm),      -o-linear-gradient(top, #fff,#ddd); /* Opera 11.10+ */
+	background-image: url(../img/edit.png.cfm),         linear-gradient(top, #fff,#ddd); /* W3C */
+	background-repeat: no-repeat;
+	background-position: center;
+	line-height:18px;
+	width:20px;
+}
+a.btn-mini span {
+	display:none;
 }
 label:hover {
 	background-color:#f6f6f6;
@@ -440,8 +494,6 @@ div.percentagebar div {
 	border-right:1px solid #999;
 	padding-left:2px;
 }
-
-
 
 
 

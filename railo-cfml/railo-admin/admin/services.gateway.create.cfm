@@ -258,7 +258,7 @@ Redirtect to entry --->
 			<tfoot>
 				<tr>
 					<td colspan="2">
-						<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.submit#">
+						<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.submit#">
 					</td>
 				</tr>
 			</tfoot>

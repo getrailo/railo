@@ -249,10 +249,10 @@ Error Output--->
 			<td>&nbsp;
 			<input type="hidden" name="type_#idx#" value="java">
 			<input type="hidden" name="mainAction" value="updateJava">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Verify#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.save#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>
@@ -414,10 +414,10 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 			<td>&nbsp;
 			<input type="hidden" name="type_#idx#" value="cpp">
 			<input type="hidden" name="mainAction" value="updateJava">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Verify#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.save#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

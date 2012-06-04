@@ -132,7 +132,7 @@ settings --->
 </tr>
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.save#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
@@ -178,7 +178,7 @@ change password --->
 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Change#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Change#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
@@ -222,8 +222,8 @@ Set default password --->
 </tr>
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.delete#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
@@ -278,7 +278,7 @@ Reset Password --->
 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Reset#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Reset#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>

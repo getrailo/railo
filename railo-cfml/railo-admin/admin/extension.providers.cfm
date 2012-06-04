@@ -208,9 +208,9 @@ list all mappings and display necessary edit fields --->
 			<td></td>
 			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="54" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.save#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.verify#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.verify#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>

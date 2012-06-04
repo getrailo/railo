@@ -259,7 +259,7 @@ Mail Settings
 <tr>
 	<td colspan="2"><cfoutput>
 		<input type="hidden" name="mainAction" value="#stText.Buttons.Setting#">
-		<input type="submit" class="submit" name="_mainAction" value="#stText.Buttons.Update#">
+		<input type="submit" class="button submit" name="_mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="canel" value="#stText.Buttons.Cancel#">
 		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</cfoutput></td>
@@ -391,10 +391,10 @@ Existing Collection --->
 				<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 				<td>&nbsp;
 				<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
-				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Verify#">
-				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
+				<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Verify#">
+				<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Update#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+				<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>

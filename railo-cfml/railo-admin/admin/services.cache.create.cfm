@@ -264,7 +264,7 @@ Error Output --->
     
     <tr>
 	<td colspan="2">
-	<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.submit#"></td>
+	<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.submit#"></td>
 </tr>
 
 

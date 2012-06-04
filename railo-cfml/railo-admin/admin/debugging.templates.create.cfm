@@ -112,7 +112,7 @@ Error Output--->
         <cfinput type="text" 
                 name="iprange" 
                 value="#entry.iprange#" style="width:350px" required="yes"
-                message="#stText.debug.iprangeMissing#"><input type="button" name="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="submit">
+                message="#stText.debug.iprangeMissing#"><input type="button" name="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="button submit">
         <br /><div class="comment">#replace(stText.debug.iprangeDesc,"
 ","<br />","all")#</div>
 
@@ -291,7 +291,7 @@ Error Output--->
     
     <tr>
 	<td colspan="2">
-	<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.submit#"></td>
+	<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.submit#"></td>
 </tr>
 
 

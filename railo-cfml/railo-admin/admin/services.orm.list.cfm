@@ -243,7 +243,7 @@ makes no sense to define this here
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		<input class="submit" type="submit" class="submit" name="mainAction" value="#resetLabel#">
 	</td>

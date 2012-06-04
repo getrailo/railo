@@ -23,7 +23,7 @@ Installed Applications --->
 
 <tr>
 		<td class="tblHead" nowrap><input type="text" name="filter" style="width:100%" value="#session.extFilter.filter#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
+		<td class="tblHead" width="50" nowrap><input type="submit" class="button submit" name="mainAction" value="filter"></td>
 	</tr>
 	<tr>
 		<td width="380" colspan="2" align="right"></td>
@@ -103,7 +103,7 @@ Not Installed Applications --->
 
 <tr>
 		<td class="tblHead" nowrap><input type="text" name="filter2" style="width:100%" value="#session.extFilter.filter2#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
+		<td class="tblHead" width="50" nowrap><input type="submit" class="button submit" name="mainAction" value="filter"></td>
 	</tr>
 	<tr>
 		<td width="380" colspan="2" align="right"></td>

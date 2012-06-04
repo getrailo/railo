@@ -81,7 +81,7 @@ function doFocus() {<cfoutput>
 
 </cfoutput>
 <tr>
-	<td colspan="2" align="right"><input class="submit" type="submit" name="submit" value="#stText.Buttons.Submit#"></td>
+	<td colspan="2" align="right"><input class="button submit" type="submit" name="submit" value="#stText.Buttons.Submit#"></td>
 </tr>
 </cfform>
 </table>

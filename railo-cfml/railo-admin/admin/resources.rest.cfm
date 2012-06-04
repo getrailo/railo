@@ -171,7 +171,7 @@ Settings --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
@@ -278,9 +278,9 @@ Mappings --->
 			<td></td>
 			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="54" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.save#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

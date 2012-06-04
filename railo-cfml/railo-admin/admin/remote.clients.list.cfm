@@ -197,9 +197,9 @@ function checkTheBox(field) {
 				<td></td>
 				<td valign="top"><img src="#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 				<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Verify#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
 				</td>	
 			</tr>
 			 </table>
@@ -219,7 +219,7 @@ function checkTheBox(field) {
 	<!--- 
 	Create Remote Client --->
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-		<input type="submit" class="submit" name="run" value="#stText.remote.newClient#">
+		<input type="submit" class="button submit" name="run" value="#stText.remote.newClient#">
 	</cfform>
 	</cfoutput>
 </cfif>

@@ -140,3 +140,12 @@ function checkTheBox(field) {
 	var box=field.form['row_'+apendix];
 	box.checked=true;
 }
+
+function enableBtnsWhenChecked(btns, checkboxes)
+{
+	checkboxes.change(function(){
+		var chkd = checkboxes.filter(':checked').length > 0;
+		btns.prop('disabled', chkd ? '':'disabled').css('opacity', (chkd ? 1:.5));
+	})
+	.filter(':first').triggerHandler('change');
+}

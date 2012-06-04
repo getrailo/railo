@@ -260,7 +260,7 @@ Create Datasource --->
 			<input type="checkbox" class="checkbox" name="componentPathCache" value="yes" <cfif component.componentPathCache>checked</cfif>>
             <div class="comment">#stText.Components.componentPathCacheDesc#</div>
             <cfif component.componentPathCache><br />
-            <input type="submit" class="submit" name="mainAction" value="#flushName#">
+            <input type="submit" class="button submit" name="mainAction" value="#flushName#">
             </cfif>
             
 		<cfelse>
@@ -344,7 +344,7 @@ Use Shadow --->
 
 <tr>
 	<td colspan="2">
-		<input class="submit" type="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.cancel#">
 		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
@@ -463,9 +463,9 @@ Use Shadow --->
 			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Update#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

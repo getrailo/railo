@@ -189,7 +189,7 @@ List --->
 		<td class="tblHead" nowrap><input type="text" name="nameFilter" style="width:100%" value="#session.st.nameFilter#" /></td>
 		<td class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:100%" value="#session.st.IntervalFilter#" /></td>
 		<td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:100%" value="#session.st.urlFilter#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
+		<td class="tblHead" nowrap><input type="submit" class="button submit" name="mainAction" value="filter"></td>
 	</tr>
 	<tr>
 		<td width="380" colspan="5" align="right"></td>
@@ -257,11 +257,11 @@ List --->
 			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<cfoutput>
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Execute#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Schedule.pause#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Schedule.resume#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Schedule.pause#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Schedule.resume#">
 			</cfoutput>
 			</td>	
 		</tr>
@@ -345,7 +345,7 @@ Create Task --->
 <tr>
 	<td colspan="2">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
+		<input type="submit" class="button submit" name="run" value="#stText.Buttons.Create#">
 	</td>
 </tr>
 </cfform>

@@ -27,7 +27,7 @@
 
 
 <tr>
-	<td colspan="2" width="100"><input type="submit" class="submit" name="submit" value="#stText.Buttons.Submit#"></td>
+	<td colspan="2" width="100"><input type="submit" class="button submit" name="submit" value="#stText.Buttons.Submit#"></td>
 </tr>
 </cfoutput>
 </cfform>

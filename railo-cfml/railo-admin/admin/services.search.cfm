@@ -200,11 +200,11 @@ function selectAll(field) {
 					<td>&nbsp;
 					
 					<input type="hidden" name="run" value="action">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Repair#">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Optimize#">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Purge#">
+					<input type="submit" class="button submit" name="action" value="#stText.Buttons.Repair#">
+					<input type="submit" class="button submit" name="action" value="#stText.Buttons.Optimize#">
+					<input type="submit" class="button submit" name="action" value="#stText.Buttons.Purge#">
 					<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Delete#">
+					<input type="submit" class="button submit" name="action" value="#stText.Buttons.Delete#">
 					</cfoutput>
 					</td>	
 				</tr>
@@ -250,7 +250,7 @@ function selectAll(field) {
 		<cfmodule template="remoteclients.cfm" colspan="2">
 		<tr>
 			<cfoutput><td colspan="2">
-				<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
+				<input type="submit" class="button submit" name="run" value="#stText.Buttons.Create#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td></cfoutput>
 		</tr>
@@ -348,7 +348,7 @@ function selectAll(field) {
 					<input onclick="window.location='#request.self#?action=#url.action#';" 
 						type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
 					<input type="hidden" name="run" value="index">
-					<input type="submit" class="submit" name="_run" value="#stText.Buttons.Update#">
+					<input type="submit" class="button submit" name="_run" value="#stText.Buttons.Update#">
 				</cfoutput></td>
 			</tr>
 			</cfform>
@@ -380,7 +380,7 @@ function selectAll(field) {
 				</tr> --->
 				<tr><td colspan="2">
 					<cfoutput>
-					<input type="submit" class="submit" name="search" value="#stText.Buttons.Search#">
+					<input type="submit" class="button submit" name="search" value="#stText.Buttons.Search#">
 					</cfoutput>
 				</td></tr>
 				</cfform>

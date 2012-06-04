@@ -139,10 +139,10 @@ function checkTheBox(field) {
 			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="54" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.save#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.compileAll#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.compileAll#">
 			</td>	
 		</tr>
 		 </table>

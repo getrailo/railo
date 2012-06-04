@@ -56,7 +56,7 @@
 <tr>
 	<td colspan="2">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<input type="submit" class="submit" name="run" value="#stText.Buttons.update#">
+		<input type="submit" class="button submit" name="run" value="#stText.Buttons.update#">
 	</td>
 </tr>
 </cfform>

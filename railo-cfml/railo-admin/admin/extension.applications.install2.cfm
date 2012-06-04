@@ -330,15 +330,15 @@
     
     
     <cfif stepLen EQ 1>
-    	<input type="submit" class="submit" name="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
+    	<input type="submit" class="button submit" name="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
     <cfelseif isFirst>
-    	<input type="submit" class="submit" name="next" value="#stText.Buttons.next#">
+    	<input type="submit" class="button submit" name="next" value="#stText.Buttons.next#">
     <cfelseif isLast>
-    	<input type="submit" class="submit" name="previous" value="#stText.Buttons.previous#">
-    	<input type="submit" class="submit" name="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
+    	<input type="submit" class="button submit" name="previous" value="#stText.Buttons.previous#">
+    	<input type="submit" class="button submit" name="install" value="#stText.Buttons[iif(not StructKeyExists(detail,"installed"),de('install'),de('update'))]#">
     <cfelse>
-    	<input type="submit" class="submit" name="previous" value="#stText.Buttons.previous#">
-    	<input type="submit" class="submit" name="next" value="#stText.Buttons.next#">
+    	<input type="submit" class="button submit" name="previous" value="#stText.Buttons.previous#">
+    	<input type="submit" class="button submit" name="next" value="#stText.Buttons.next#">
     	
     </cfif>
     </td>

@@ -123,7 +123,7 @@ Redirtect to entry --->
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
@@ -205,7 +205,7 @@ Redirtect to entry --->
     <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
 </tr>
 <tr>
-    <td class="tblHead" colspan="5"><input type="submit" name="filter" class="submit" value="#stText.Debug.filter#" style="width:100%"/></td>
+    <td class="tblHead" colspan="5"><input type="submit" name="filter" class="button submit" value="#stText.Debug.filter#" style="width:100%"/></td>
 </tr>
 <tr>
     <td colspan="5"></td>

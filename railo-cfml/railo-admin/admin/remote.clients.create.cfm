@@ -301,7 +301,7 @@ function removeStars(field) {
 <tr>
 	<td colspan="2">
 	<input type="hidden" name="run" value="create2">
-	<input type="submit" class="submit" name="_run" value="#stText.Buttons[actionType]#">
+	<input type="submit" class="button submit" name="_run" value="#stText.Buttons[actionType]#">
 	<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
 </tr>
 

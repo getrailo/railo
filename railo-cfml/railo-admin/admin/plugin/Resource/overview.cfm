@@ -69,7 +69,7 @@ function selectAll(field) {
             <td></td>
             <td valign="top"><cfmodule template="/railo-context/admin/img.cfm" src="#request.adminType#-bgcolor.gif" width="1" height="14"><cfmodule template="/railo-context/admin/img.cfm" src="#request.adminType#-bgcolor.gif" width="36" height="1"></td>
              <td>&nbsp;
-            <input type="submit" class="submit" name="delete" value="#lang.btnDelete#">
+            <input type="submit" class="button submit" name="delete" value="#lang.btnDelete#">
             </td>	
         </tr>
          </table>

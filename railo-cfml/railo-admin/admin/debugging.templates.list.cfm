@@ -126,7 +126,7 @@ function setDesc(id,key){
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</td>
@@ -196,7 +196,7 @@ function setDesc(id,key){
 			<td></td>
 			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.delete#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>
@@ -245,7 +245,7 @@ function setDesc(id,key){
 	</tr>
 	<tr>
 		<td colspan="2">
-			<input type="submit" class="submit" name="run" value="#stText.Buttons.create#">
+			<input type="submit" class="button submit" name="run" value="#stText.Buttons.create#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		</td>
 	</tr>

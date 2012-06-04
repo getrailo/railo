@@ -71,7 +71,7 @@ Create Datasource --->
 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Change#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Change#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>

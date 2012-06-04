@@ -167,7 +167,7 @@ Redirtect to entry --->
 			<td></td>
 			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.verify#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.verify#">
 				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>
@@ -247,8 +247,8 @@ Redirtect to entry --->
 			<td></td>
 			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.verify#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.verify#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.delete#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 			</td>	
 		</tr>
@@ -291,7 +291,7 @@ Redirtect to entry --->
     </cfloop>
 	<tr>
 		<td colspan="2">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.update#">
 		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 		</td>
 	</tr>
@@ -332,7 +332,7 @@ Redirtect to entry --->
 	</tr>
 	<tr>
 		<td colspan="2">
-			<input type="submit" class="submit" name="run" value="#stText.Buttons.create#">
+			<input type="submit" class="button submit" name="run" value="#stText.Buttons.create#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 		</td>
 	</tr>

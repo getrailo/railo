@@ -134,10 +134,7 @@ Redirtect to entry --->
 <cfsavecontent variable="headText">
 	<script type="text/javascript">
 		$(function(){
-			$('#instancelist input.checkbox').change(function(){
-				var chkd = $('#instancelist input.checkbox:checked').length > 0;
-				$('#instancelist_btns input.instbtn').prop('disabled', chkd ? '':'disabled').css('opacity', (chkd ? 1:.5));
-			}).triggerHandler('change');
+			enableBtnsWhenChecked($('#instancelist_btns input.instbtn'), $('#instancelist input.checkbox'));
 		});
 	</script>
 </cfsavecontent>
@@ -201,7 +198,7 @@ Redirtect to entry --->
 					<tr>
 						<td></td>
 						<td colspan="3">
-							<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.refresh#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.refresh#">
 							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 						</td>	
 					</tr>
@@ -270,10 +267,10 @@ Redirtect to entry --->
 					<tr>
 						<td></td>
 						<td colspan="4" id="btns">
-							<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.refresh#">
-							<input type="submit" class="submit instbtn" name="mainAction" value="#stText.Buttons.delete#">
-							<input type="submit" class="submit instbtn" name="mainAction" value="#stText.Buttons.restart#">
-							<input type="submit" class="submit instbtn" name="mainAction" value="#stText.Buttons.stopstart#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.refresh#">
+							<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.delete#">
+							<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.restart#">
+							<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.stopstart#">
 						</td>	
 					</tr>
 				</tfoot>
@@ -310,7 +307,7 @@ Redirtect to entry --->
 					<tfoot>
 						<tr>
 							<td colspan="2">
-								<input type="submit" class="submit" name="run" value="#stText.Buttons.create#">
+								<input type="submit" class="button submit" name="run" value="#stText.Buttons.create#">
 								<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 							</td>
 						</tr>

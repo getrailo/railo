@@ -273,15 +273,15 @@ Error Output--->
 	<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 	<tr><cfset css="background-color:white;background: url('');">
 		<td><input style="tbl#iif(task.interval EQ 'once','css',de(''))#" 
-			type="submit" class="submit" name="interval" value="once">&nbsp;</td>
+			type="submit" class="button submit" name="interval" value="once">&nbsp;</td>
 		<td>&nbsp;<input style="tbl#iif(task.interval EQ 'daily','css',de(''))#" 
-			type="submit" class="submit" name="interval" value="daily">&nbsp;</td>
+			type="submit" class="button submit" name="interval" value="daily">&nbsp;</td>
 		<td>&nbsp;<input style="tbl#iif(task.interval EQ 'weekly','css',de(''))#"  
-			type="submit" class="submit" name="interval" value="weekly">&nbsp;</td>
+			type="submit" class="button submit" name="interval" value="weekly">&nbsp;</td>
 		<td>&nbsp;<input style="tbl#iif(task.interval EQ 'monthly','css',de(''))#" 
-			type="submit" class="submit" name="interval" value="monthly">&nbsp;</td>
+			type="submit" class="button submit" name="interval" value="monthly">&nbsp;</td>
 		<td>&nbsp;<input style="tbl#iif(isNumeric(task.interval),'css',de(''))#" 
-			type="submit" class="submit" name="interval" value="every ..."></td>
+			type="submit" class="button submit" name="interval" value="every ..."></td>
 	</tr>
 	</table>
 	
@@ -497,7 +497,7 @@ Error Output--->
 <tr>
 	<td colspan="2">
 		<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
-		<input type="submit" class="submit" name="run" value="#stText.Buttons.Update#"></td>
+		<input type="submit" class="button submit" name="run" value="#stText.Buttons.Update#"></td>
 </tr>
 </cfform>
 </table>

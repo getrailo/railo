@@ -281,8 +281,8 @@ Error Output--->
 		<input type="hidden" name="id_#tasks.currentrow#" value="#tasks.id#">
 		
 		<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Execute#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
 		
 		</td>
 </tr>
@@ -475,9 +475,9 @@ Error Output--->
 			<td>&nbsp;
 			<cfoutput>
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.DeleteAll#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Execute#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.DeleteAll#">
 			</cfoutput>
 			</td>	
 		</tr>

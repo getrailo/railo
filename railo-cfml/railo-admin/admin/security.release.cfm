@@ -147,7 +147,7 @@ Error Output --->
 	<option value="yes" <cfif access.web_access>selected</cfif>>Alle Webs dürfen Railo verwenden</option>
 	<option value="no" <cfif not access.web_access>selected</cfif>>Nur folgende Webs dürfen Railo verwenden</option>
 </select>
-<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
+<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Update#">
 	</td>
 </tr>
 </form>
