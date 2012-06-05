@@ -171,7 +171,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		// datasource
 		Object o = get(component,KeyImpl.DATA_SOURCE,null);
 		if(o!=null) {
-			String ds = Caster.toString(o);
+			String ds;
+			if(Decision.isStruct(o)) {
+				Struct sct = Caster.toStruct(o);
+				ds=Caster.toString(sct.get(KeyConstants._name));
+			}
+			else ds = Caster.toString(o);
 			this.defaultDataSource = ds;
 			this.ormDatasource = ds;
 		}
