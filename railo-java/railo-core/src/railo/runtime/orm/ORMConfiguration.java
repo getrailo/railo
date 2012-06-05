@@ -255,19 +255,19 @@ public class ORMConfiguration {
 						pc, 
 						ac==null?null:ac.getMappings(), path, 
 						false, false, true);
-				if(res.isDirectory()) return res;
+				if(res!=null && res.isDirectory()) return res;
 			}
 			// real path
 			else {
 				Resource src= ac!=null?ac.getSource():null;
 				if(src!=null) {
 					res=src.getParentResource().getRealResource(path);
-					if(res.isDirectory()) return res;
+					if(res!=null && res.isDirectory()) return res;
 				}
 				// happens when this is called from within the application.cfc (init)
 				else {
 					res=ResourceUtil.toResourceNotExisting(pc, path);
-					if(res.isDirectory()) return res;
+					if(res!=null && res.isDirectory()) return res;
 				}
 			}
 		}
@@ -276,12 +276,12 @@ public class ORMConfiguration {
 		
 		// then in the webroot
 		res=config.getRootDirectory().getRealResource(path);
-		if(res.isDirectory()) return res;
+		if(res!=null && res.isDirectory()) return res;
 		
 		// then absolute
 		res = ResourceUtil.toResourceNotExisting(config, path);
-
-		if(res.isDirectory()) return res;
+		
+		if(res!=null && res.isDirectory()) return res;
 		return null;
 	}
 
