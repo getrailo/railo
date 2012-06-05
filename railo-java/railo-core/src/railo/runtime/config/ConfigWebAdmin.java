@@ -2640,7 +2640,20 @@ public final class ConfigWebAdmin {
         }
         else rest.setAttribute("list", Caster.toString(list.booleanValue()));
 	}
-
+	
+	public void updateRestAllowChanges(Boolean allowChanges) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        if(!hasAccess) throw new SecurityException("no access to update rest setting");
+        
+        
+        Element rest=_getRootElement("rest");
+        if(allowChanges==null) {
+        	if(rest.hasAttribute("allow-changes"))rest.removeAttribute("allow-changes");
+        }
+        else rest.setAttribute("allow-changes", Caster.toString(allowChanges.booleanValue()));
+	}
+	
 
     /**
      * updates update settingd for railo
