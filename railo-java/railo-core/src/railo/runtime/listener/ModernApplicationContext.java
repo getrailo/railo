@@ -22,6 +22,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * @author mic
@@ -163,7 +164,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		// datasource
 		Object o = get(component,KeyImpl.DATA_SOURCE,null);
 		if(o!=null) {
-			String ds = Caster.toString(o);
+			String ds;
+			if(Decision.isStruct(o)) {
+				Struct sct = Caster.toStruct(o);
+				ds=Caster.toString(sct.get(KeyConstants._name));
+			}
+			else ds = Caster.toString(o);
 			this.defaultDataSource = ds;
 			this.ormDatasource = ds;
 		}
