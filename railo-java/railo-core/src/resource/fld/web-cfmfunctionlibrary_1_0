@@ -2253,10 +2253,57 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>datetime</type>
 		</return>
 	</function>
+
+	<!-- _dateAdd (used only as member function) -->
+	<function>
+		<name>_dateAdd</name>
+		<class>railo.runtime.functions.dateTime.DateAddMember</class>
+		<member-name>add</member-name>
+		<description>Adds units of time to a date.
+        [datepart - quicky]
+        yyyy: Year; q: Quarter; m: Month; y: Day of year; d: Day
+        w: Weekday; ww: Week; h: Hour; n: Minute; s: Second;
+        l: Millisecond</description>
+		<argument>
+			<name>date</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>a datetime object</description>
+	    </argument>
+		<argument>
+			<name>datepart</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>one of the following:
+- yyyy: Year
+- q: Quarter
+- m: Month
+- y: Day of year
+- d: Day
+- w: Weekday
+- ww: Week
+- h: Hour
+- n: Minute
+- s: Second
+- l: Millisecond
+			</description>
+	    </argument>
+		<argument>
+			<name>number</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>Number of units of datepart to add to date (positive, to get dates in the future; negative, to get dates in the past). Number must be an integer.</description>
+	    </argument>
+		<return>
+			<type>datetime</type>
+		</return>
+	</function>
+	
 	<!-- dateCompare -->
 	<function>
 		<name>dateCompare</name>
 		<class>railo.runtime.functions.dateTime.DateCompare</class>
+		<member-name>compare</member-name>
 		<description>Compares to date, to the given optional resolution. Returns -1 if date1 is before date2. Returns 1 if date1 is after date2. Returns 0 if equal</description>
 		<argument>
 			<name>date1</name>
@@ -2350,6 +2397,49 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	
+	<!-- _dateDiff (only for member types) -->
+	<function>
+		<name>_dateDiff</name>
+		<class>railo.runtime.functions.dateTime.DateDiffMember</class>
+		<member-name>diff</member-name>
+		<description>Determines the number of given date parts between two different dates</description>
+		<argument>
+			<name>date1</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>date time object to compare</description>
+	    </argument>
+		<argument>
+			<name>date2</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>date time object to compare</description>
+	    </argument>
+		<argument>
+			<name>datepart</name>
+			<type>string</type>
+			<required>no</required>
+			<default>s</default>
+		<description>String that specifies the units in which to count:
+- yyyy: Years
+- q: Quarters
+- m: Months
+- y: Days of year (same as d)
+- d: Days
+- w: Weekdays (same as ww)
+- ww: Weeks
+- h: Hours
+- n: Minutes
+- s (Default): Seconds
+			</description>
+   	 	</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
+	
 	<!-- dateFormat -->
 	<function>
 		<name>dateFormat</name>
@@ -2408,6 +2498,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dateTimeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateTimeFormat</class>
+		<member-name>format</member-name>
 		<description>Formats a date/time string to a given output</description>
 		<argument>
 			<name>datetime</name>
@@ -2444,7 +2535,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	 -->
-	
 	<!-- datePart -->
 	<function>
 		<name>datePart</name>
@@ -2491,11 +2581,60 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<return>
 			<type>number</type>
 		</return>
+	</function>	
+	<!-- _datePart (used only as member function) -->
+	<function>
+		<name>_datePart</name>
+		<class>railo.runtime.functions.dateTime.DatePartMember</class>
+		<member-name>part</member-name>
+		<description>Extracts the given date part from the date object</description>
+		<argument>
+			<name>date</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>dateobject the get part from</description>
+	    </argument>
+		<argument>
+			<name>datepart</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>one of the following:
+- yyyy: Year
+- q: Quarter
+- m: Month
+- y: Day of year
+- d: Day
+- w: Weekday
+- ww: Week
+- h: Hour
+- n: Minute
+- s: Second
+- l: Millisecond
+			</description>
+    	</argument>
+		<argument>
+			<name>timezone</name>
+			<type>string</type>
+			<required>No</required>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
+    </argument>
+		<return>
+			<type>number</type>
+		</return>
 	</function>
 	<!-- day -->
 	<function>
 		<name>day</name>
 		<class>railo.runtime.functions.dateTime.Day</class>
+		<member-name>day</member-name>
 		<description>Determines the day of the month, in a date.
         The ordinal for the day of the month, ranging from 1 to 31.</description>
 		<argument>
@@ -2526,6 +2665,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dayOfWeek</name>
 		<class>railo.runtime.functions.dateTime.DayOfWeek</class>
+		<member-name>dayOfWeek</member-name>
 		<description>Determines the day of the week, in a date.</description>
 		<argument>
 			<name>date</name>
@@ -2555,6 +2695,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lsdayOfWeek</name>
 		<class>railo.runtime.functions.international.LSDayOfWeek</class>
+		<member-name>lsDayOfWeek</member-name>
 		<description>Returns the day of the week the date represents in locale format</description>
 		<argument>
 			<name>date</name>
@@ -2632,6 +2773,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dayOfYear</name>
 		<class>railo.runtime.functions.dateTime.DayOfYear</class>
+		<member-name>dayOfYear</member-name>
 		<description>Determines the day of the year, in a date.</description>
 		<argument>
 			<name>date</name>
@@ -2661,6 +2803,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>daysInMonth</name>
 		<class>railo.runtime.functions.dateTime.DaysInMonth</class>
+		<member-name>daysInMonth</member-name>
 		<description>Determines the number of days in a month.</description>
 		<argument>
 			<name>date</name>
@@ -2690,6 +2833,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>daysInYear</name>
 		<class>railo.runtime.functions.dateTime.DaysInYear</class>
+		<member-name>daysInYear</member-name>
 		<description>Determines the number of days in a year.</description>
 		<argument>
 			<name>date</name>
@@ -4809,6 +4953,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>firstDayOfMonth</name>
 		<class>railo.runtime.functions.dateTime.FirstDayOfMonth</class>
+		<member-name>firstDayOfMonth</member-name>
 		<description>Determines the ordinal (day number, in the year) of the first
         day of the month in which a given date falls.</description>
 		<argument>
@@ -6042,6 +6187,7 @@ Default list delimiter: comma character.</description>
 	<function>
 		<name>hour</name>
 		<class>railo.runtime.functions.dateTime.Hour</class>
+		<member-name>hour</member-name>
 		<description>Gets the current hour of the day.
         Ordinal value of the hour, in the range 0 - 23.</description>
 		<argument>
@@ -11956,6 +12102,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>minute</name>
 		<class>railo.runtime.functions.dateTime.Minute</class>
+		<member-name>minute</member-name>
 		<description>Extracts the minute value from a date/time object.</description>
 		<argument>
 			<name>date</name>
@@ -11985,6 +12132,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>millisecond</name>
 		<class>railo.runtime.functions.dateTime.MilliSecond</class>
+		<member-name>millisecond</member-name>
 		<description>Returns the milliseconds of the referenced date</description>
 		<argument>
 			<name>date</name>
@@ -12014,6 +12162,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>month</name>
 		<class>railo.runtime.functions.dateTime.Month</class>
+		<member-name>month</member-name>
 		<description>Extracts the month value from a date/time object.</description>
 		<argument>
 			<name>Date</name>
@@ -12521,6 +12670,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>quarter</name>
 		<class>railo.runtime.functions.dateTime.Quarter</class>
+		<member-name>quarter</member-name>
 		<description>Calculates the quarter of the year in which a date falls.</description>
 		<argument>
 			<name>date</name>
@@ -13570,6 +13720,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>second</name>
 		<class>railo.runtime.functions.dateTime.Second</class>
+		<member-name>second</member-name>
 		<description>Extracts the ordinal for the second from a date/time object.</description>
 		<argument>
 			<name>date</name>
@@ -15149,6 +15300,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>week</name>
 		<class>railo.runtime.functions.dateTime.Week</class>
+		<member-name>week</member-name>
 		<description>From a date/time object, determines the week number within
         the year. An integer in the range 1-53; the ordinal of the
         week, within the year.</description>
@@ -15523,6 +15675,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>year</name>
 		<class>railo.runtime.functions.dateTime.Year</class>
+		<member-name>year</member-name>
 		<description>From a date/time object, gets the year value.</description>
 		<argument>
 			<name>date</name>

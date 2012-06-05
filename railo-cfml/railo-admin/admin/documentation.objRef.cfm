@@ -50,7 +50,7 @@ function formatDesc(string desc){
 		<cfset ArraySort(arrr,'textnocase')>
         <optgroup label="#type#">
     	<cfloop array="#arrr#" index="key">
-		<cfif left(key,1) NEQ "_"><option value="#key#" <cfif url.func EQ key>selected="selected"</cfif>>#ucFirst(type)#.#sct[key]#</option></cfif>
+		<option value="#key#" <cfif url.func EQ key>selected="selected"</cfif>>#ucFirst(type)#.#sct[key]#</option>
         </cfloop>
         </optgroup>
 	</cfloop>
