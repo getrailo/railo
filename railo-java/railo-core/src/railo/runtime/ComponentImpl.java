@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
@@ -2073,6 +2074,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	private boolean triggerDataMember(PageContext pc) {
 		if(_triggerDataMember!=null) return _triggerDataMember.booleanValue();
+		if(pc==null || pc.getApplicationContext()==null){
+			
+			print.ds(""+(pc==null));// TODO why this is true sometimes?
+			return false;
+		}
 		return pc.getApplicationContext().getTriggerComponentDataMember();
 	}
 }
