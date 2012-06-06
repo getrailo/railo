@@ -13582,6 +13582,30 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- RestDeleteApplication -->
+	<function>
+		<name>RestDeleteApplication</name>
+		<class>railo.runtime.functions.rest.RestDeleteApplication</class>
+		<description>Deletes a existing REST mapping.</description>
+		<argument>
+			<name>dirPath</name>
+			<alias>dir,directory,path</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path to the directory to be registered or reseted.</description>
+	    </argument>
+		<argument>
+			<name>password</name>
+			<alias>webAdminPassword</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>password for the web administrator, this is needed delete a REST mapping.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- RestInitApplication -->
 	<function>
 		<name>RestInitApplication</name>
@@ -13602,6 +13626,19 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 			<required>no</required>
 			<description>Alternate string to be used for application name while calling the REST service.</description>
+	    </argument>
+		<argument>
+			<name>default</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>set if the mapping is a default mapping or not</description>
+	    </argument>
+		<argument>
+			<name>password</name>
+			<alias>webAdminPassword</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>password for the web administrator, this is needed when you update/create a REST mapping.</description>
 	    </argument>
 		<return>
 			<type>void</type>

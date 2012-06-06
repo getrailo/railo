@@ -1,30 +1,38 @@
 package railo.runtime.functions.rest;
 
+
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigWebAdmin;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.SecurityException;
 import railo.runtime.op.Caster;
 import railo.runtime.rest.Mapping;
 
 public class RestInitApplication {
 
 	public static String call(PageContext pc , String dirPath) throws PageException {
-		return call(pc, dirPath, null);
+		return _call(pc, dirPath, null,null,null);
 	}
+	
 	public static String call(PageContext pc , String dirPath, String serviceMapping) throws PageException {
+		return _call(pc, dirPath, serviceMapping, null,null);
+	}
+
+	public static String call(PageContext pc , String dirPath, String serviceMapping, boolean defaultMapping) throws PageException {
+		return _call(pc, dirPath, serviceMapping, defaultMapping, null);
+	}
+
+	public static String call(PageContext pc , String dirPath, String serviceMapping, boolean defaultMapping, String webAdminPassword) throws PageException {
+		return _call(pc, dirPath, serviceMapping, defaultMapping, webAdminPassword);
+	}
+	
+	public static String _call(PageContext pc , String dirPath, String serviceMapping, Boolean defaultMapping, String webAdminPassword) throws PageException {
 		if(StringUtil.isEmpty(serviceMapping,true)){
 			serviceMapping=pc.getApplicationContext().getName();
 		}
-		
-		
-		Resource dir = Caster.toResource(dirPath,false);
-		pc.getConfig().getSecurityManager().checkFileLocation(dir);
-		if(!dir.isDirectory())
-			throw new FunctionException(pc, "RestInitApplication", 1, "dirPath", "argument value ["+dirPath+"] must contain a existing directory");
+		Resource dir=RestDeleteApplication.toResource(pc,dirPath);
 		
 		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
 		Mapping[] mappings = config.getRestMappings();
@@ -40,24 +48,29 @@ public class RestInitApplication {
 			mapping=mappings[i];
 			if(mapping.getVirtualWithSlash().equals(virtual)){
 				// directory has changed
-				if(!dir.equals(mapping.getPhysical())) {
-					change(mapping,dir);
+				if(!dir.equals(mapping.getPhysical()) || (defaultMapping!=null && mapping.isDefault()!=defaultMapping.booleanValue())) {
+					update(pc,dir,virtual,RestDeleteApplication.getPassword(pc,webAdminPassword),defaultMapping==null?mapping.isDefault():defaultMapping.booleanValue());
 				}
 				mapping.reset(pc);
 				hasResetted=true;
 			}
 		}
 		if(!hasResetted) {
-			create(dir,serviceMapping);
+			update(pc,dir,virtual,RestDeleteApplication.getPassword(pc,webAdminPassword),defaultMapping==null?false:defaultMapping.booleanValue());
 		}
 	
 		return null;
 	}
-	private static void create(Resource dir, String serviceMapping) throws SecurityException {
-		throw new SecurityException("You cannot create REST mappings by using the function RestInitApplication, instead; please use the Railo Administrator");
-	}
-	private static void change(Mapping mapping, Resource dir) throws SecurityException {
-		throw new SecurityException("You cannot modify REST mappings by using the function RestInitApplication, instead; please use the Railo Administrator");
+
+	private static void update(PageContext pc,Resource dir, String virtual, String webAdminPassword, boolean defaultMapping) throws PageException {
+		try {
+			ConfigWebAdmin admin = ConfigWebAdmin.newInstance((ConfigWebImpl)pc.getConfig(),webAdminPassword);
+			admin.updateRestMapping(virtual, dir.getAbsolutePath(), defaultMapping);
+			admin.store();
+		} 
+		catch (Exception e) {
+			throw Caster.toPageException(e);
+		}
 	}
 	
 }

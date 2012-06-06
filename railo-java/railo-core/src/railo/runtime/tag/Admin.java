@@ -2017,7 +2017,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetRestSettings() throws PageException {
 		Struct sct=new StructImpl();
 		sct.set(KeyConstants._list, Caster.toBoolean(config.getRestList()));
-		sct.set(KeyImpl.init("allowChanges"), Caster.toBoolean(config.getRestAllowChanges()));
+		//sct.set(KeyImpl.init("allowChanges"), Caster.toBoolean(config.getRestAllowChanges()));
 		pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         
     }
@@ -3574,7 +3574,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateRestSettings() throws PageException {
 
         admin.updateRestList(getBool("list", null));
-        admin.updateRestAllowChanges(getBool("allowChanges", null));
+        //admin.updateRestAllowChanges(getBool("allowChanges", null));
         store();
         adminSync.broadcast(attributes, config);
     }

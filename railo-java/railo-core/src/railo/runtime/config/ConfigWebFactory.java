@@ -1601,13 +1601,13 @@ public final class ConfigWebFactory {
         config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
 
         // allow-changes
-        Boolean allowChanges=Caster.toBoolean(el.getAttribute("allow-changes"),null);
+        /*Boolean allowChanges=Caster.toBoolean(el.getAttribute("allow-changes"),null);
         if(allowChanges!=null){
             config.setRestAllowChanges(allowChanges.booleanValue());
         }
         else if(hasCS){
         	config.setRestAllowChanges(configServer.getRestAllowChanges());
-        }
+        }*/
 
         // list
         Boolean list=Caster.toBoolean(el.getAttribute("list"),null);

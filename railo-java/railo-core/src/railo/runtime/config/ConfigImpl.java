@@ -227,7 +227,7 @@ public abstract class ConfigImpl implements Config {
     //private Page baseComponentPage;
     private String baseComponentTemplate;
     private boolean restList=false;
-    private boolean restAllowChanges=false;
+    //private boolean restAllowChanges=false;
     
     private LogAndSource mailLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
     private LogAndSource restLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_ERROR),"");
@@ -1813,13 +1813,13 @@ public abstract class ConfigImpl implements Config {
         return restList;
     }
 
-    protected void setRestAllowChanges(boolean restAllowChanges) {
+    /*protected void setRestAllowChanges(boolean restAllowChanges) {
         this.restAllowChanges=restAllowChanges;
     }
 
     public boolean getRestAllowChanges() {
         return restAllowChanges;
-    }
+    }*/
     
     
 

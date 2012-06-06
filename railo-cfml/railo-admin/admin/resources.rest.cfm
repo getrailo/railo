@@ -17,7 +17,7 @@
                 remoteClients="#request.getRemoteClients()#"
                 
                 list="#structKeyExists(form,'list') and form.list#"
-                allowChanges="#structKeyExists(form,'allowChanges') and form.allowChanges#">				
+                >				
 		</cfcase>
         <!--- reset/settings --->
 		<cfcase value="#stText.Buttons.resetServerAdmin#">
@@ -28,7 +28,7 @@
                 remoteClients="#request.getRemoteClients()#"
                 
                 list=""
-                allowChanges="">				
+                >				
 		</cfcase>
         <!--- save/mapping --->
 		<cfcase value="#stText.Buttons.save#">
@@ -169,12 +169,13 @@ Settings --->
 	<cfif hasAccess NEQ 0><input type="checkbox" class="checkbox" name="list" value="yes" <cfif settings.list>checked</cfif>><cfelse><b>#yesNoFormat(settings.list)#</b></cfif>
 	<span class="comment">#stText.rest.listDesc#</span></td>
 </tr>
+<!---
 <tr>
 	<td class="tblHead" width="150">#stText.rest.changes#</td>
 	<td class="tblContent">
 	<cfif hasAccess NEQ 0><input type="checkbox" class="checkbox" name="allowChanges" value="yes" <cfif settings.allowChanges>checked</cfif>><cfelse><b>#yesNoFormat(settings.allowChanges)#</b></cfif>
 	<span class="comment">#stText.rest.changesDesc#</span></td>
-</tr>
+</tr>--->
 
 
 <cfif hasAccess NEQ 0>

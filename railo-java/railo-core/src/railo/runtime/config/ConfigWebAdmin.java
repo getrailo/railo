@@ -603,7 +603,6 @@ public final class ConfigWebAdmin {
     public void updateRestMapping(String virtual, String physical,boolean _default) throws ExpressionException, SecurityException {
     	checkWriteAccess();
     	boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
-        
         virtual=virtual.trim(); 
         physical=physical.trim();
         if(!hasAccess)
@@ -2641,7 +2640,7 @@ public final class ConfigWebAdmin {
         else rest.setAttribute("list", Caster.toString(list.booleanValue()));
 	}
 	
-	public void updateRestAllowChanges(Boolean allowChanges) throws SecurityException {
+	/*public void updateRestAllowChanges(Boolean allowChanges) throws SecurityException {
 		checkWriteAccess();
         boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
         if(!hasAccess) throw new SecurityException("no access to update rest setting");
@@ -2652,7 +2651,7 @@ public final class ConfigWebAdmin {
         	if(rest.hasAttribute("allow-changes"))rest.removeAttribute("allow-changes");
         }
         else rest.setAttribute("allow-changes", Caster.toString(allowChanges.booleanValue()));
-	}
+	}*/
 	
 
     /**
