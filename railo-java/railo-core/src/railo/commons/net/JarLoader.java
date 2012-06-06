@@ -17,6 +17,7 @@ import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 
@@ -57,10 +58,9 @@ public class JarLoader {
 	private static Resource download(PageContext pc,String jarName, short whenExists) throws IOException {
     	// some variables nned later
 		ConfigWebImpl config=(ConfigWebImpl) pc.getConfig();
-    	CFMLEngine engine=config.getCFMLEngineImpl();
-		PrintWriter out = pc.getConfig().getOutWriter();
+    	PrintWriter out = pc.getConfig().getOutWriter();
 		
-		URL dataUrl=toURL(engine,jarName);
+		URL dataUrl=toURL(config,jarName);
         
 		// destination file
 		ClassLoader mainClassLoader = new TP().getClass().getClassLoader();
@@ -96,8 +96,8 @@ public class JarLoader {
         return jar;
     }
 
-	private static URL toURL(CFMLEngine engine, String jarName) throws MalformedURLException {
-		URL hostUrl=engine.getUpdateLocation();
+	private static URL toURL(Config config, String jarName) throws MalformedURLException {
+		URL hostUrl=config.getUpdateLocation();
         if(hostUrl==null)hostUrl=new URL("http://www.getrailo.org");
         return new URL(hostUrl,"/railo/remote/jars/"+jarName);
 	}
@@ -144,9 +144,8 @@ public class JarLoader {
     		return true;
     	}
     	
-    	CFMLEngine engine=((ConfigWebImpl)config).getCFMLEngineImpl();
-		try {
-			URL dataUrl = toURL(engine,jarName);
+    	try {
+			URL dataUrl = toURL(config,jarName);
 			boolean changed=res.length()!=HTTPUtil.length(dataUrl);
 			
 			return changed;

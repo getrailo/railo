@@ -2850,7 +2850,7 @@ public final class ConfigWebAdmin {
     public void restart(String password) throws PageException {
     	checkWriteAccess();
         ConfigServerImpl cs = (ConfigServerImpl) config.getConfigServer(password);
-        CFMLEngineFactory factory = config.getCFMLEngine().getCFMLEngineFactory();
+        CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
         synchronized(factory){
 	        try {
 	            factory.restart(cs.getPassword());

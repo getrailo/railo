@@ -2115,7 +2115,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     private void listPatches() throws PageException  {
     	try {
-			pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toArray(config.getInstalledPatches()));
+    		
+			pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toArray(((ConfigServerImpl)config).getInstalledPatches()));
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
@@ -2816,7 +2817,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		path=(String) it.next();
     		ResourceUtil.toResourceExisting(config, path);
     	}
-    	settings.set(ORMConfigurationImpl.CFC_LOCATION, arrCfclocation);
+    	settings.set(KeyConstants._cfcLocation, arrCfclocation);
     	
     	admin.updateORMSetting(ORMConfigurationImpl.load(config, null, settings, null, oc));
         

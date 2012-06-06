@@ -54,6 +54,7 @@ import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
@@ -460,7 +461,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
          
         psq=config.getPSQL();
 		
-		fdEnabled=!config.getCFMLEngineImpl().allowRequestTimeout();
+		fdEnabled=!config.allowRequestTimeout();
 		
 		if(config.getExecutionLogEnabled())
 			this.execLog=config.getExecutionLogFactory().getInstance(this);

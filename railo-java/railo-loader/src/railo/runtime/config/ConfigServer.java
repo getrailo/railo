@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
+import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactory;
 import railo.runtime.security.SecurityManager;
 
@@ -82,5 +83,6 @@ public interface ConfigServer extends Config {
 
 	public RemoteClient[] getRemoteClients();
 
+    public abstract CFMLEngine getCFMLEngine();
 
 }

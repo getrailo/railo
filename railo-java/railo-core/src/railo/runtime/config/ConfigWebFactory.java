@@ -81,6 +81,7 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.dump.SimpleHTMLDumpWriter;
 import railo.runtime.dump.TextDumpWriter;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ConsoleExecutionLog;
 import railo.runtime.engine.ExecutionLog;
 import railo.runtime.engine.ExecutionLogFactory;
@@ -3526,7 +3527,7 @@ public final class ConfigWebFactory {
       	}
       	configServer.setRequestMonitors(requests.toArray(new RequestMonitor[requests.size()]));
       	configServer.setIntervallMonitors(intervalls.toArray(new IntervallMonitor[intervalls.size()]));
-        configServer.getCFMLEngineImpl().touchMonitor(configServer);
+        ((CFMLEngineImpl)configServer.getCFMLEngine()).touchMonitor(configServer);
     }
 
     /**

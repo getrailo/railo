@@ -499,7 +499,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		return new FDControllerImpl(engine,engine.getConfigServerImpl().getSerialNumber());
 	}
 
-	public Map getCFMLFactories() {
+	public Map<String,CFMLFactory> getCFMLFactories() {
 		return initContextes;
 	}
 

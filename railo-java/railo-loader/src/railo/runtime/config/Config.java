@@ -10,7 +10,6 @@ import java.util.TimeZone;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
-import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
@@ -760,7 +759,5 @@ public interface Config {
 	 */
     public void checkPermGenSpace(boolean check);
     
-
-    public abstract CFMLEngine getCFMLEngine();
-	
+    public boolean allowRequestTimeout();
 }

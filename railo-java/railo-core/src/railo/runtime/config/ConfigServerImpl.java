@@ -1,9 +1,14 @@
 package railo.runtime.config;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import railo.commons.collections.HashTable;
@@ -14,7 +19,10 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.PCLCollection;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
@@ -222,9 +230,6 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
      * @see railo.runtime.config.ConfigServer#getCFMLEngine()
      */
     public CFMLEngine getCFMLEngine() {
-        return engine;
-    }
-    public CFMLEngineImpl getCFMLEngineImpl() {
         return engine;
     }
 
@@ -534,4 +539,53 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		return hasPassword();
 	}
 
+	public String[] getInstalledPatches() throws PageException {
+		CFMLEngineFactory factory = getCFMLEngine().getCFMLEngineFactory();
+    	
+		try{
+			return factory.getInstalledPatches();
+		}
+		catch(Throwable t){
+			try {
+				return getInstalledPatchesOld(factory);
+			} catch (Exception e1) {
+				throw Caster.toPageException(e1);
+			}
+		}
+	}
+	
+	private String[] getInstalledPatchesOld(CFMLEngineFactory factory) throws IOException { 
+		File patchDir = new File(factory.getResourceRoot(),"patches");
+        if(!patchDir.exists())patchDir.mkdirs();
+        
+		File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        
+        List<String> list=new ArrayList<String>();
+        String name;
+        int extLen=getCoreExtension().length()+1;
+        for(int i=0;i<patches.length;i++) {
+        	name=patches[i].getName();
+        	name=name.substring(0, name.length()-extLen);
+        	 list.add(name);
+        }
+        String[] arr = list.toArray(new String[list.size()]);
+    	Arrays.sort(arr);
+        return arr;
+	}
+
+	
+	private String getCoreExtension()  {
+    	URL res = new TP().getClass().getResource("/core/core.rcs");
+        if(res!=null) return "rcs";
+        
+        res = new TP().getClass().getResource("/core/core.rc");
+        if(res!=null) return "rc";
+        
+        return "rc";
+	}
+
+	@Override
+	public boolean allowRequestTimeout() {
+		return engine.allowRequestTimeout();
+	}
 }

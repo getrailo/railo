@@ -22,7 +22,6 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lock.KeyLock;
-import railo.loader.engine.CFMLEngine;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -32,7 +31,6 @@ import railo.runtime.PageSourceImpl;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
 import railo.runtime.debug.DebuggerPool;
-import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -274,11 +272,11 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    	}
 			return serverFunctionMapping;
 		}
-	    private Map applicationMappings=new ReferenceMap();
+	    private Map<String,Mapping> applicationMappings=new ReferenceMap();
 		private TagHandlerPool tagHandlerPool=new TagHandlerPool();
 		public Mapping getApplicationMapping(String virtual, String physical) {
 			String key=virtual.toLowerCase()+physical.toLowerCase();
-			Mapping m=(Mapping) applicationMappings.get(key);
+			Mapping m= applicationMappings.get(key);
 			if(m==null){
 				m=new MappingImpl(this,
 					virtual,
@@ -288,10 +286,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				applicationMappings.put(key, m);
 			}
 			return m;
-		}
-
-		public CFMLEngineImpl getCFMLEngineImpl() {
-			return getConfigServerImpl().getCFMLEngineImpl();
 		}
 
 		public String getLabel() {
@@ -348,45 +342,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    public void setGatewayLogger(LogAndSource gatewayLogger) {
 	    	this.gatewayLogger=gatewayLogger;
 	    }
-		/* *
-		 * this is a config web that reflect the configServer, this allows to run cfml code on server level
-		 * @param gatewayEngine 
-		 * @return
-		 * @throws PageException
-		 * /
-		public ConfigWeb createGatewayConfig(GatewayEngineImpl gatewayEngine) {
-			QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
-			CFMLEngineImpl engine = getConfigServerImpl().getCFMLEngineImpl();
-			CFMLFactoryImpl factory = new CFMLFactoryImpl(engine,cqc);
-			
-			ServletContextDummy sContext = new ServletContextDummy(
-					this,
-					getRootDirectory(),
-					new StructImpl(),
-					new StructImpl(),
-					1,1);
-			ServletConfigDummy sConfig = new ServletConfigDummy(sContext,"CFMLServlet");
-			ConfigWebImpl cwi = new ConfigWebImpl(
-					factory,
-					getConfigServerImpl(),
-					sConfig,
-					getConfigDir(),
-					getConfigFile(),true);
-			cqc.setConfigWeb(cwi);
-			try {
-				ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
-		        ConfigWebFactory.load(getConfigServerImpl(), cwi, ConfigWebFactory.loadDocument(getConfigFile()),true);
-		        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi,sConfig,true);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			cwi.setGatewayEngine(gatewayEngine);
-			
-			//cwi.setGatewayMapping(new MappingImpl(cwi,"/",gatewayEngine.getCFCDirectory().getAbsolutePath(),null,false,true,false,false,false));
-			return cwi;
-		}*/
 
 		public TagHandlerPool getTagHandlerPool() {
 			return tagHandlerPool;
@@ -453,11 +408,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public Cluster createClusterScope() throws PageException {
 			return configServer.createClusterScope();
 		}
-		
-		@Override
-		public CFMLEngine getCFMLEngine(){
-			return configServer.getCFMLEngine();
-		}
 
 		@Override
 		public boolean hasServerPassword() {
@@ -490,5 +440,10 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 
 		public Map<String, String> getAllLabels() {
 			return configServer.getLabels();
+		}
+
+		@Override
+		public boolean allowRequestTimeout() {
+			return configServer.allowRequestTimeout();
 		}
 }

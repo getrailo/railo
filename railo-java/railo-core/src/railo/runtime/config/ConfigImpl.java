@@ -3169,21 +3169,6 @@ public abstract class ConfigImpl implements Config {
 	public Class<ORMEngine> getORMEngineClass() {
 		return ormEngineClass; 
 	}
-
-	public String[] getInstalledPatches() throws PageException {
-		CFMLEngineFactory factory = getCFMLEngine().getCFMLEngineFactory();
-    	
-		try{
-			return factory.getInstalledPatches();
-		}
-		catch(Throwable t){
-			try {
-				return getInstalledPatchesOld(factory);
-			} catch (Exception e1) {
-				throw Caster.toPageException(e1);
-			}
-		}
-	}
 	
 	@Override
 	public Mapping[] getComponentMappings() {
@@ -3197,36 +3182,6 @@ public abstract class ConfigImpl implements Config {
 		this.componentMappings = componentMappings;
 	}
 	
-	private String getCoreExtension()  {
-    	URL res = new TP().getClass().getResource("/core/core.rcs");
-        if(res!=null) return "rcs";
-        
-        res = new TP().getClass().getResource("/core/core.rc");
-        if(res!=null) return "rc";
-        
-        return "rc";
-        //throw new ServletException("missing core file");
-	}
-	
-	private String[] getInstalledPatchesOld(CFMLEngineFactory factory) throws IOException { 
-		File patchDir = new File(factory.getResourceRoot(),"patches");
-        if(!patchDir.exists())patchDir.mkdirs();
-        
-		File[] patches=patchDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
-        
-        List<String> list=new ArrayList<String>();
-        String name;
-        int extLen=getCoreExtension().length()+1;
-        for(int i=0;i<patches.length;i++) {
-        	name=patches[i].getName();
-        	name=name.substring(0, name.length()-extLen);
-        	 list.add(name);
-        }
-        String[] arr = list.toArray(new String[list.size()]);
-    	Arrays.sort(arr);
-        return arr;
-	}
-
 	protected void setORMEngineClass(Class<ORMEngine> ormEngineClass) {
 		this.ormEngineClass=ormEngineClass;
 	}
