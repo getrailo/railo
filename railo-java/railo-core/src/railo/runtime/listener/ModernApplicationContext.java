@@ -1,6 +1,7 @@
 package railo.runtime.listener;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import railo.print;
@@ -14,11 +15,15 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
+import railo.runtime.rest.RestSetting;
+import railo.runtime.rest.RestSettingImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -61,7 +66,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key ORM_ENABLED = KeyImpl.intern("ormenabled");
 	private static final Collection.Key ORM_SETTINGS = KeyImpl.intern("ormsettings");
 	private static final Collection.Key IN_MEMORY_FILESYSTEM = KeyImpl.intern("inmemoryfilesystem");
-	
+	private static final Collection.Key REST_SETTING = KeyImpl.intern("restsettings");
+
 	
 	private ComponentAccess component;
 	private ConfigWeb config;
@@ -122,6 +128,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initS3;
 	private boolean ormEnabled;
 	private ORMConfiguration ormConfig;
+	private boolean initRestSetting;
+	private RestSetting restSetting;
 	private String ormDatasource;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
@@ -140,7 +148,6 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
-        
         
         
 		this.component=cfc;
@@ -800,5 +807,38 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	@Override
 	public Resource getSource() {
 		return component.getPageSource().getPhyscalFile();
+	}
+
+
+
+	@Override
+	public RestSetting getRestSettings() {
+		if(!initRestSetting) {
+			Object o = get(component,REST_SETTING,null);
+			if(o!=null && Decision.isStruct(o)){
+				Struct sct = Caster.toStruct(o,null);
+				
+				// cfclocation
+				Object obj = sct.get(KeyConstants._cfcLocation,null);
+				List<Resource> list = ORMConfigurationImpl.loadCFCLocation(config, null, obj);
+				Resource[] cfcLocations=list==null?new Resource[0]:list.toArray(new Resource[list.size()]);
+				
+				// skipCFCWithError
+				boolean skipCFCWithError=Caster.toBooleanValue(sct.get(KeyConstants._skipCFCWithError,null),true);
+				
+				restSetting=new RestSettingImpl(cfcLocations,skipCFCWithError);
+				
+			}
+			initRestSetting=true; 
+		}
+		return restSetting;
+	}
+
+
+
+	@Override
+	public void setRestSettings(RestSetting restSetting) {
+		initRestSetting=true;
+		this.restSetting=restSetting;
 	}
 }

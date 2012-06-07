@@ -17,6 +17,7 @@ import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.rest.RestSetting;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.CollectionUtil;
@@ -25,12 +26,8 @@ import railo.runtime.type.util.CollectionUtil;
  * 
  */
 public class ClassicApplicationContext extends ApplicationContextSupport {
-   
 
 	private static final long serialVersionUID = 940663152793150953L;
-
-	
-	
 
 	private String name;
     private boolean setClientCookies;
@@ -65,6 +62,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches=new HashMap<Integer, String>();
 	private Map<Integer,Boolean> sameFieldAsArrays=new HashMap<Integer, Boolean>();
+
+	private RestSetting restSettings;
 
     
     /**
@@ -129,6 +128,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.localMode=localMode;
 		dbl.sessionType=sessionType;
 		dbl.triggerComponentDataMember=triggerComponentDataMember;
+		dbl.restSettings=restSettings;
 		dbl.defaultCaches=Duplicator.duplicateMap(defaultCaches, new HashMap<Integer, String>(),false );
 		dbl.sameFieldAsArrays=Duplicator.duplicateMap(sameFieldAsArrays, new HashMap<Integer, Boolean>(),false );
 		
@@ -514,5 +514,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		Boolean b= sameFieldAsArrays.get(scope);
 		if(b==null) return false;
 		return b.booleanValue();
+	}
+
+	@Override
+	public RestSetting getRestSettings() {
+		return restSettings;
+	}
+
+	@Override
+	public void setRestSettings(RestSetting restSettings) {
+		this.restSettings=restSettings;
 	}
 }

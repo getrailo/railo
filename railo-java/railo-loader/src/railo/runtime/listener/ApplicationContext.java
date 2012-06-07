@@ -8,6 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.rest.RestSetting;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
@@ -87,9 +88,6 @@ public interface ApplicationContext extends Serializable {
 
 	public boolean getSecureJson();
 
-	//public abstract boolean hasOnSessionStart();
-	//public abstract boolean hasOnApplicationStart();
-	
 
 	public String getDefaultDataSource();
 	
@@ -176,4 +174,7 @@ public interface ApplicationContext extends Serializable {
 	 * @return
 	 */
 	public boolean getSameFieldAsArray(int scope);
+
+	public RestSetting getRestSettings();
+	public void setRestSettings(RestSetting setting);
 }

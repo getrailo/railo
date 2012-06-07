@@ -27,6 +27,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public class ORMConfigurationImpl implements ORMConfiguration {
 	public static final int DBCREATE_NONE=0;
@@ -35,7 +36,6 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	
 	public static final Collection.Key AUTO_GEN_MAP = KeyImpl.intern("autogenmap");
 	public static final Collection.Key CATALOG = KeyImpl.intern("catalog");
-	public static final Collection.Key CFC_LOCATION = KeyImpl.intern("cfcLocation");
 	public static final Collection.Key IS_DEFAULT_CFC_LOCATION = KeyImpl.intern("isDefaultCfclocation");
 	public static final Collection.Key DB_CREATE = KeyImpl.intern("dbCreate");
 	public static final Collection.Key DIALECT = KeyImpl.intern("dialect");
@@ -52,7 +52,6 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	public static final Collection.Key EVENT_HANDLING = KeyImpl.intern("eventHandling");
 	public static final Collection.Key EVENT_HANDLER = KeyImpl.intern("eventHandler");
 	public static final Collection.Key AUTO_MANAGE_SESSION = KeyImpl.intern("autoManageSession");
-	public static final Collection.Key SKIP_WITH_ERROR = KeyImpl.intern("skipCFCWithError");
 	public static final Collection.Key NAMING_STRATEGY = KeyImpl.intern("namingstrategy");
 	
 	
@@ -111,33 +110,14 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		c.catalog=StringUtil.trim(Caster.toString(settings.get(CATALOG,dc.getCatalog()),dc.getCatalog()),dc.getCatalog());
 		
 		// cfclocation
-		Object obj = settings.get(CFC_LOCATION,null);
+		Object obj = settings.get(KeyConstants._cfcLocation,null);
+		
 		if(obj!=null){
-			Resource res;
-			if(!Decision.isArray(obj)){
-				String list = Caster.toString(obj,null);
-				if(!StringUtil.isEmpty(list)) {
-					obj=List.listToArray(list, ',');
-				}
-			}
+			java.util.List<Resource> list=loadCFCLocation(config,ac,obj);
 			
-			if(Decision.isArray(obj)) {
-				Array arr=Caster.toArray(obj,null);
-				java.util.List<Resource> list=new ArrayList<Resource>();
-				//c.cfcLocations=new Resource[arr.size()];
-				Iterator it = arr.valueIterator();
-				
-				while(it.hasNext()){
-					try	{
-						res=toResourceExisting(config,ac,it.next());
-						if(res!=null) list.add(res);
-					}
-					catch(Throwable t){}
-				}
-				if(list.size()>0){
-					c.cfcLocations=list.toArray(new Resource[list.size()]);
-					c.isDefaultCfcLocation=false;
-				}
+			if(list!=null && list.size()>0){
+				c.cfcLocations=list.toArray(new Resource[list.size()]);
+				c.isDefaultCfcLocation=false;
 			}
 		}
 		if(c.cfcLocations == null)
@@ -180,7 +160,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		c.autoManageSession=Caster.toBooleanValue(settings.get(AUTO_MANAGE_SESSION,dc.autoManageSession()),dc.autoManageSession());
 		
 		// skipCFCWithError
-		c.skipCFCWithError=Caster.toBooleanValue(settings.get(SKIP_WITH_ERROR,dc.skipCFCWithError()),dc.skipCFCWithError());
+		c.skipCFCWithError=Caster.toBooleanValue(settings.get(KeyConstants._skipCFCWithError,dc.skipCFCWithError()),dc.skipCFCWithError());
 		
 		// savemapping
 		c.saveMapping=Caster.toBooleanValue(settings.get(SAVE_MAPPING,dc.saveMapping()),dc.saveMapping());
@@ -229,6 +209,40 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		
 		return c;
 	}	
+
+	public static java.util.List<Resource> loadCFCLocation(Config config, ApplicationContext ac,Object obj) {
+		
+		Resource res;
+		if(!Decision.isArray(obj)){
+			String list = Caster.toString(obj,null);
+			if(!StringUtil.isEmpty(list)) {
+				obj=List.listToArray(list, ',');
+			}
+		}
+		
+		if(Decision.isArray(obj)) {
+			Array arr=Caster.toArray(obj,null);
+			java.util.List<Resource> list=new ArrayList<Resource>();
+			Iterator<Object> it = arr.valueIterator();
+			
+			while(it.hasNext()){
+				try	{
+					res=toResourceExisting(config,ac,it.next());
+					if(res!=null) list.add(res);
+				}
+				catch(Throwable t){}
+			}
+			return list;
+		}
+		
+		
+		return null;
+	}
+
+
+
+
+
 
 	private static Resource toRes(Config config, Object obj, boolean existing) throws ExpressionException {
 		PageContext pc = ThreadLocalPageContext.get();
@@ -503,7 +517,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		Struct sct=new StructImpl();
 		sct.setEL(AUTO_GEN_MAP,this.autogenmap());
 		sct.setEL(CATALOG,StringUtil.emptyIfNull(getCatalog()));
-		sct.setEL(CFC_LOCATION,arrLocs);
+		sct.setEL(KeyConstants._cfcLocation,arrLocs);
 		sct.setEL(IS_DEFAULT_CFC_LOCATION,isDefaultCfcLocation());
 		sct.setEL(DB_CREATE,dbCreateAsString(getDbCreate()));
 		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));
