@@ -22,6 +22,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * implementation of the form tag 
@@ -417,7 +418,7 @@ public final class Form extends BodyTagImpl {
         attributes.setEL(KeyImpl.NAME,name);
         
         if(action==null) 	action=ReqRspUtil.self(pageContext. getHttpServletRequest());
-        attributes.setEL(KeyImpl.ACTION,action);
+        attributes.setEL(KeyConstants._action,action);
         
         String suffix=StringUtil.isEmpty(name)?""+count:StringUtil.toVariableName(name);
         String funcName="railo_form_"+count;

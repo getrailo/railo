@@ -28,6 +28,7 @@ import railo.runtime.type.scope.storage.StorageScopeDatasource;
 import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.StorageScopeListener;
 import railo.runtime.type.scope.storage.clean.DatasourceStorageScopeCleaner;
+import railo.runtime.type.util.KeyConstants;
 
 public class Ansi92 extends SQLExecutorSupport {
 	
@@ -132,7 +133,7 @@ public class Ansi92 extends SQLExecutorSupport {
 		
 		String cfid,name;
 		for(int row=1;row<=recordcount;row++){
-			cfid=Caster.toString(query.getAt(KeyImpl.CFID, row, null),null);
+			cfid=Caster.toString(query.getAt(KeyConstants._cfid, row, null),null);
 			name=Caster.toString(query.getAt(KeyImpl.NAME, row, null),null);
 			
 			if(listener!=null)listener.doEnd(engine, cleaner,name, cfid);

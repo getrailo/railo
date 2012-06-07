@@ -14,6 +14,7 @@ import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -99,7 +100,7 @@ public final class Select extends BodyTagImpl {
      * @param name The name to set.
      */
     public void setName(String name) {
-        attributes.setEL(KeyImpl.NAME,name);
+        attributes.setEL(KeyConstants._name,name);
         input.setName(name);
     }
     /**

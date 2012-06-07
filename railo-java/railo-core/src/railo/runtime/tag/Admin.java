@@ -30,7 +30,6 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogResource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.DirectoryResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.OrResourceFilter;
@@ -237,7 +236,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	//adminSync = pageContext.getAdminSync();
     	
     	// Action
-        Object objAction=attributes.get(KeyImpl.ACTION);
+        Object objAction=attributes.get(KeyConstants._action);
         if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
         action=StringUtil.toLowerCase(Caster.toString(objAction)).trim();
         

@@ -674,7 +674,7 @@ public final class SystemUtil {
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
 		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		Query qry=new QueryImpl(new Collection.Key[]{
-				KeyImpl.NAME,
+				KeyConstants._name,
 				KeyImpl.TYPE,
 				KeyConstants._used,
 				KeyConstants._max,
@@ -694,7 +694,7 @@ public final class SystemUtil {
 				
 			row++;
 			qry.addRow();
-			qry.setAtEL(KeyImpl.NAME, row, bean.getName());
+			qry.setAtEL(KeyConstants._name, row, bean.getName());
 			qry.setAtEL(KeyImpl.TYPE, row, _type.name());
 			qry.setAtEL(KeyConstants._max, row, Caster.toDouble(usage.getMax()));
 			qry.setAtEL(KeyConstants._used, row, Caster.toDouble(usage.getUsed()));

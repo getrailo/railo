@@ -123,7 +123,7 @@ public class ModernAppListener extends AppListenerSupport {
 		        url.removeEL(KeyImpl.FIELD_NAMES);
 		        url.removeEL(ComponentPage.METHOD);
 		        Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
-		        Object returnFormat=url.removeEL(KeyImpl.RETURN_FORMAT);
+		        Object returnFormat=url.removeEL(KeyConstants._returnFormat);
 		        Object queryFormat=url.removeEL(KeyConstants._queryFormat);
 		        
 		        if(args==null){

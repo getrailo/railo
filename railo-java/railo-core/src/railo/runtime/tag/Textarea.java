@@ -148,7 +148,7 @@ public final class Textarea extends Input  implements BodyTag {
         }
         // id
 		if(StringUtil.isEmpty(attributes.get(KeyConstants._id,null)))
-			attributes.set(KeyConstants._id,StringUtil.toVariableName((String)attributes.get(KeyImpl.NAME)));
+			attributes.set(KeyConstants._id,StringUtil.toVariableName((String)attributes.get(KeyConstants._name)));
 		
 		// start output
         pageContext.forceWrite("<textarea");

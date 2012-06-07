@@ -137,7 +137,7 @@ public final class GetFunctionData implements Function {
 			max++;
 			_arg.set(KeyImpl.REQUIRED,fa.isRequired()?Boolean.TRUE:Boolean.FALSE);
 			_arg.set(KeyImpl.TYPE,StringUtil.emptyIfNull(fa.getTypeAsString()));
-			_arg.set(KeyImpl.NAME,StringUtil.emptyIfNull(fa.getName()));
+			_arg.set(KeyConstants._name,StringUtil.emptyIfNull(fa.getName()));
 			_arg.set(KeyImpl.DESCRIPTION,StringUtil.emptyIfNull(fa.getHint()));
 			
 			String status;

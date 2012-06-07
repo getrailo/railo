@@ -26,6 +26,7 @@ import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
@@ -40,7 +41,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	
 	private static final Key[] DEFAULT_KEYS=new Key[]{
 		KEY_ELAPSEDTIME,
-		KeyImpl.NAME_UC,
+		KeyConstants._NAME,
 		KEY_OUTPUT,
 		KEY_PRIORITY,
 		KEY_STARTTIME,
@@ -120,7 +121,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 
 	private Object getMeta(Key key) {
 		if(KEY_ELAPSEDTIME.equalsIgnoreCase(key)) return new Double(System.currentTimeMillis()-ct.getStartTime());
-		if(KeyImpl.NAME_UC.equalsIgnoreCase(key)) return ct.getTagName();
+		if(KeyConstants._NAME.equalsIgnoreCase(key)) return ct.getTagName();
 		if(KEY_OUTPUT.equalsIgnoreCase(key)) return getOutput();
 		if(KEY_PRIORITY.equalsIgnoreCase(key)) return ThreadUtil.toStringPriority(ct.getPriority());
 		if(KEY_STARTTIME.equalsIgnoreCase(key)) return new DateTimeImpl(ct.getStartTime(),true);

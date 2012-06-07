@@ -369,7 +369,7 @@ public abstract class ComponentPage extends Page  {
         url.removeEL(KeyImpl.FIELD_NAMES);
         url.removeEL(METHOD);
         Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
-        Object returnFormat=url.get(KeyImpl.RETURN_FORMAT,null);
+        Object returnFormat=url.get(KeyConstants._returnFormat,null);
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
         
         if(args==null){

@@ -692,10 +692,10 @@ public final class ComponentUtil {
         
 	    	   
 	    int format = udf.returnFormat;
-        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyImpl.RETURN_FORMAT, "wddx");
-        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
-        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
-        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
+        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyConstants._returnFormat, "wddx");
+        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyConstants._returnFormat, "plain");
+        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyConstants._returnFormat, "json");
+        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyConstants._returnFormat, "serialize");
         
         
         FunctionArgument[] args =  udf.arguments;

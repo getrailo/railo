@@ -1061,7 +1061,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	        while(it.hasNext()){
 	        	sqc=it.next();
 	        	column=new StructImpl();
-	        	column.setEL(KeyImpl.NAME,sqc.getKey());
+	        	column.setEL(KeyConstants._name,sqc.getKey());
 	        	column.setEL("isCaseSensitive",Boolean.FALSE);
 	        	column.setEL("typeName",sqc.getTypeAsString());
 	        	cols.appendEL(column);

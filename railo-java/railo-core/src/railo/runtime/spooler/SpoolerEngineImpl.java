@@ -280,8 +280,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
     	int row = qry.addRow();
 		try{
 			qry.setAt(KeyImpl.TYPE, row, task.getType());
-			qry.setAt(KeyImpl.NAME, row, task.subject());
-			qry.setAt(KeyImpl.DETAIL, row, task.detail());
+			qry.setAt(KeyConstants._name, row, task.subject());
+			qry.setAt(KeyConstants._detail, row, task.detail());
 			qry.setAt(KeyConstants._id, row, task.getId());
 
 			

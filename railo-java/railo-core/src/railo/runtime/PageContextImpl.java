@@ -54,8 +54,6 @@ import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigServer;
-import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
@@ -2342,13 +2340,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private void initIdAndToken() {
         boolean setCookie=true;
         // From URL
-        Object oCfid = urlScope().get(KeyImpl.CFID,null);
-        Object oCftoken = urlScope().get(KeyImpl.CFTOKEN,null);
+        Object oCfid = urlScope().get(KeyConstants._cfid,null);
+        Object oCftoken = urlScope().get(KeyConstants._cftoken,null);
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
-            oCfid = cookieScope().get(KeyImpl.CFID,null);
-            oCftoken = cookieScope().get(KeyImpl.CFTOKEN,null);
+            oCfid = cookieScope().get(KeyConstants._cfid,null);
+            oCftoken = cookieScope().get(KeyConstants._cftoken,null);
         }
         if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
         	oCfid=null;
@@ -2365,8 +2363,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         if(setCookie && applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
-            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
         }
     }
     
@@ -2375,8 +2373,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         cfid=ScopeContext.getNewCFId();
         cftoken=ScopeContext.getNewCFToken();
         if(applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
-            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
         }
     }
     

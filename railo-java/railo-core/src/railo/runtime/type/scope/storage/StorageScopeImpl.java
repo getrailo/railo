@@ -125,8 +125,8 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		
 		//lastvisit=System.currentTimeMillis();
 		if(sct==null) sct=new StructImpl();
-		sct.setEL(KeyImpl.CFID, pc.getCFID());
-		sct.setEL(KeyImpl.CFTOKEN, pc.getCFToken());
+		sct.setEL(KeyConstants._cfid, pc.getCFID());
+		sct.setEL(KeyConstants._cftoken, pc.getCFToken());
 		sct.setEL(URLTOKEN, pc.getURLToken());
 		sct.setEL(LASTVISIT, _lastvisit);
 		_lastvisit=new DateTimeImpl(pc.getConfig());
@@ -215,7 +215,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @return returns if the scope is empty or not, this method ignore the "constant" entries of the scope (cfid,cftoken,urltoken)
 	 */
 	public boolean hasContent() {
-		if(sct.size()==(type==SCOPE_CLIENT?6:5) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyImpl.CFTOKEN) && sct.containsKey(KeyImpl.CFID)) {
+		if(sct.size()==(type==SCOPE_CLIENT?6:5) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyConstants._cftoken) && sct.containsKey(KeyConstants._cfid)) {
 			return false;
 		}
 		return true;

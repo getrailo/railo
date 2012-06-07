@@ -13,6 +13,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -183,7 +184,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		if(metadata!=null)
 			StructUtil.copy(metadata, sct, true);
 		
-		sct.setEL(KeyImpl.NAME,name);
+		sct.setEL(KeyConstants._name,name);
 		if(!StringUtil.isEmpty(hint,true))sct.setEL(KeyImpl.HINT,hint);
 		if(!StringUtil.isEmpty(displayname,true))sct.setEL("displayname",displayname);
 		if(!StringUtil.isEmpty(type,true))sct.setEL(KeyImpl.TYPE,type);

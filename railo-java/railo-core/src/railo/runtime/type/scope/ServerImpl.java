@@ -112,7 +112,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		super.setEL (COLDFUSION,coldfusion);
 		
 		ReadOnlyStruct os=new ReadOnlyStruct();
-			os.setEL(KeyImpl.NAME,System.getProperty("os.name") );
+			os.setEL(KeyConstants._name,System.getProperty("os.name") );
 			os.setEL(ARCH,System.getProperty("os.arch") );
 			int arch=SystemUtil.getOSArch();
 			if(arch!=SystemUtil.ARCH_UNKNOW)os.setEL(ARCH_MODEL,new Double(arch) );
@@ -158,7 +158,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 				name=pc.getServletContext().getServerInfo();
 			}
 			catch(Throwable t){}
-			servlet.setEL(KeyImpl.NAME,name);
+			servlet.setEL(KeyConstants._name,name);
 			servlet.setReadOnly(true);
 			
 			

@@ -19,16 +19,8 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.KeyConstants;
 
 public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable {
-	//public static HashMap<String,RefIntegerImpl> log=new HashMap<String,RefIntegerImpl>();
 	
-
-	public static final Collection.Key ACTION=KeyConstants._action;
-	public static final Key CFID=KeyConstants._cfid;
-	public static final Key CFTOKEN=KeyConstants._cftoken;
-	public static final Key DETAIL=KeyConstants._detail;
-	public static final Key RETURN_FORMAT =KeyConstants._returnFormat;
 	public static final Key NAME=KeyConstants._name;
-	public static final Key NAME_UC=KeyConstants._NAME;
 	public static final Key DATA=KeyConstants._data;
 	public static final Key S3=KeyConstants._s3;
 	public static final Key SIZE=KeyConstants._size;

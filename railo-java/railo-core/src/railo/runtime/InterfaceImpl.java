@@ -255,7 +255,7 @@ public class InterfaceImpl implements Interface {
         
         if(arr.size()!=0)sct.set(KeyConstants._functions,arr);
         PageSource ps = icfc.pageSource;
-        sct.set(KeyImpl.NAME,ps.getComponentName());
+        sct.set(KeyConstants._name,ps.getComponentName());
         sct.set(KeyConstants._fullname,ps.getComponentName());
        
         sct.set(KeyImpl.PATH,ps.getDisplayPath());

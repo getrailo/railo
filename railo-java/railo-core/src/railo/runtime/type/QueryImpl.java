@@ -1831,7 +1831,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
     	Struct column;
         for(int i=0;i<columns.length;i++) {
         	column=new StructImpl();
-        	column.setEL(KeyImpl.NAME,columnNames[i].getString());
+        	column.setEL(KeyConstants._name,columnNames[i].getString());
         	column.setEL("isCaseSensitive",Boolean.FALSE);
         	column.setEL("typeName",columns[i].getTypeAsString());
         	cols.appendEL(column);

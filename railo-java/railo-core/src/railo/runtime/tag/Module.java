@@ -12,6 +12,7 @@ import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Invokes a custom tag for use in CFML application pages.
@@ -28,7 +29,7 @@ public final class Module extends CFTag {
 		//String[] filenames=getFileNames(config,getAppendix());// = appendix+'.'+config.getCFMLExtension();
         
 	    Object objTemplate =attributesScope.get(KeyImpl.TEMPLATE,null);
-	    Object objName =attributesScope.get(KeyImpl.NAME,null);
+	    Object objName =attributesScope.get(KeyConstants._name,null);
 	    source=null;
 	    if(objTemplate!=null) {
 			attributesScope.removeEL(KeyImpl.TEMPLATE);
@@ -53,7 +54,7 @@ public final class Module extends CFTag {
             setAppendix(source.getPageSource());
 	    }
 	    else if(objName!=null) {
-			attributesScope.removeEL(KeyImpl.NAME);
+			attributesScope.removeEL(KeyConstants._name);
 	        String[] filenames = toRealPath(config,objName.toString());
 	        boolean exist=false;
 	        

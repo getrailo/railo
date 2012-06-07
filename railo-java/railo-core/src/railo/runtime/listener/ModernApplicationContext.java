@@ -220,7 +220,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 */
 	public String getName() {
 		if(this.name==null) {
-			this.name=Caster.toString(get(component,KeyImpl.NAME,""),"");
+			this.name=Caster.toString(get(component,KeyConstants._name,""),"");
 		}
 		return name;
 	}
