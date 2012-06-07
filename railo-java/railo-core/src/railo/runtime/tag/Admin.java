@@ -3983,10 +3983,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	}
     	return qry;
     }
-    
-    
-    
-    
 
     private void doRemoveJar() throws PageException {
     	try {

@@ -380,7 +380,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	public boolean getLoginCaptcha() {
 		return captcha;
 	}
-	
+
     public void reset() {
     	super.reset();
     	getThreadQueue().clear();
