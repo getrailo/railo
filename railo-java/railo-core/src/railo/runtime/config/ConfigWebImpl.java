@@ -278,10 +278,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return m;
 		}
 
-		public CFMLEngineImpl getCFMLEngineImpl() {
-			return getConfigServerImpl().getCFMLEngineImpl();
-		}
-
 		public String getLabel() {
 			String hash=getHash();
 			String label=hash;
@@ -388,6 +384,10 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		@Override
 		public boolean getLoginCaptcha() {
 			return configServer.getLoginCaptcha();
+		}
+
+		public boolean allowRequestTimeout() {
+			return configServer.getCFMLEngineImpl().allowRequestTimeout();
 		}
 
 }

@@ -436,7 +436,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
          
         psq=config.getPSQL();
 		
-		fdEnabled=!config.getCFMLEngineImpl().allowRequestTimeout();
+		fdEnabled=!config.allowRequestTimeout();
 		
 		if(config.getExecutionLogEnabled())
 			this.execLog=config.getExecutionLogFactory().getInstance(this);
