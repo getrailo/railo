@@ -1,10 +1,7 @@
 package railo.runtime.listener;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.collections.MapUtils;
 
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
@@ -20,7 +17,6 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSetting;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
-import railo.runtime.type.util.CollectionUtil;
 
 /**
  * 

@@ -1,7 +1,6 @@
 package railo.runtime.functions.other;
 
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.tag.Admin;

@@ -1,23 +1,9 @@
 package railo.transformer.bytecode.reflection;
 
 
-import railo.runtime.type.util.ArrayUtil;
-import sun.reflect.MethodAccessor;
-import sun.reflect.Reflection;
-import sun.reflect.generics.repository.MethodRepository;
-import sun.reflect.generics.factory.CoreReflectionFactory;
-import sun.reflect.generics.factory.GenericsFactory;
-import sun.reflect.generics.scope.MethodScope;
-import sun.reflect.annotation.AnnotationType;
-import sun.reflect.annotation.AnnotationParser;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.AnnotationFormatError;
-import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
-import java.nio.ByteBuffer;
-import java.util.Map;
 
 /**
  * A {@code Method} provides information about, and access to, a single method

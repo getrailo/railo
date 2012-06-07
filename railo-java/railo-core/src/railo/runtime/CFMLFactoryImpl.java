@@ -17,7 +17,6 @@ import railo.commons.io.log.Log;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.SystemOut;
-import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.CFMLEngineImpl;

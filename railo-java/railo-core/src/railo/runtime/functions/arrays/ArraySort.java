@@ -13,7 +13,6 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Closure;
 import railo.runtime.type.UDF;
 

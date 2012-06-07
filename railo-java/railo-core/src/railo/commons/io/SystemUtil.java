@@ -20,10 +20,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
-import com.jezhumble.javasysmon.JavaSysMon;
-import com.jezhumble.javasysmon.MemoryStats;
-import com.jezhumble.javasysmon.CpuTimes;
-
 import railo.commons.digest.MD5;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -45,6 +41,10 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+
+import com.jezhumble.javasysmon.CpuTimes;
+import com.jezhumble.javasysmon.JavaSysMon;
+import com.jezhumble.javasysmon.MemoryStats;
 
 /**
  * 

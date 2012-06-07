@@ -20,11 +20,11 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Operator;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.Objects;
 import railo.runtime.type.SimpleValue;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.MemberUtil;
 
 /**
  * Printable and Castable DateTime Object

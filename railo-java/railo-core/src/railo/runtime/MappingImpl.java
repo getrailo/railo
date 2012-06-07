@@ -22,7 +22,6 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.engine.Controler;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 

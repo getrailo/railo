@@ -3,7 +3,6 @@ package railo.runtime.functions.system;
 import java.util.Iterator;
 
 import railo.commons.io.res.Resource;
-import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;

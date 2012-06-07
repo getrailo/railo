@@ -16,7 +16,6 @@ import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.ram.RamCache;
-import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.cache.Util;

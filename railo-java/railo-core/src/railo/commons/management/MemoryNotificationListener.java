@@ -10,8 +10,6 @@ import javax.management.openmbean.CompositeDataSupport;
 
 import railo.aprint;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigServer;
-import railo.runtime.engine.Controler;
 
 public class MemoryNotificationListener implements NotificationListener {
 

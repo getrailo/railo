@@ -14,7 +14,6 @@ import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SystemOut;
 import railo.loader.TP;
-import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;

@@ -11,7 +11,6 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.functions.component.ComponentCacheClear;
 import railo.runtime.functions.other.CTCacheClear;
-import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;

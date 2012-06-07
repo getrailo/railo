@@ -1,6 +1,5 @@
 package railo.runtime.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -15,8 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
-
-import javax.servlet.ServletException;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
@@ -42,10 +39,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.IPRange;
 import railo.commons.net.JarLoader;
-import railo.loader.TP;
 import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.ExtensionFilter;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Component;
 import railo.runtime.Mapping;

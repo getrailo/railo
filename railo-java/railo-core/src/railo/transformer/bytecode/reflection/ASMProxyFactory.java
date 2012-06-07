@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Map;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -15,17 +14,12 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.print;
 import railo.commons.io.IOUtil;
-import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.reflection.Reflector;
-import railo.runtime.type.scope.CGIImpl;
-import railo.runtime.type.scope.ServerImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;

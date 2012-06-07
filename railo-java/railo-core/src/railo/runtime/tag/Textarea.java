@@ -14,7 +14,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;
 
 // TODO tag textarea
