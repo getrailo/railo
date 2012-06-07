@@ -1206,7 +1206,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     public Cluster clusterScope(boolean create) throws PageException { 
     	if(cluster==null && create) {
-    		cluster=ScopeContext.getClusterScope(config.getConfigServerImpl(),create);
+    		cluster=ScopeContext.getClusterScope(config,create);
     		//cluster.initialize(this);
     	}
     	//else if(!cluster.isInitalized()) cluster.initialize(this);
@@ -2064,9 +2064,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 	
 	private void log(boolean error) {
-		ConfigServerImpl cs = config.getConfigServerImpl();
-		if(!isGatewayContext() && cs.isMonitoringEnabled()) {
-            RequestMonitor[] monitors = cs.getRequestMonitors();
+		if(!isGatewayContext() && config.isMonitoringEnabled()) {
+            RequestMonitor[] monitors = config.getRequestMonitors();
             if(monitors!=null)for(int i=0;i<monitors.length;i++){
             	if(monitors[i].isLogEnabled()){
 	            	try {

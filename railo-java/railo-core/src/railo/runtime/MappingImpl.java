@@ -16,6 +16,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
+import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.dump.DumpData;
@@ -157,7 +158,7 @@ public final class MappingImpl implements Mapping {
     	if(pclCollection==null){
     		pclCollection=new PCLCollection(this,getClassRootDirectory(),getClass().getClassLoader(),classLoaderMaxElements);
 		}
-    	Controler.checkPermGenSpace(((ConfigWebImpl)getConfig()).getConfigServerImpl(),true);
+    	ConfigServerImpl.checkPermGenSpace(getConfig(),true);
     	return pclCollection;
     }
 	public synchronized PCLCollection getPCLCollection() {
