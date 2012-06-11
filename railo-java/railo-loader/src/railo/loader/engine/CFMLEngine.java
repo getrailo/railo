@@ -214,5 +214,7 @@ public interface CFMLEngine {
 
 	public abstract void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException, JspException, ServletException;
 
+	public abstract void registerThreadPageContext(PageContext pc);
+
 	
 }

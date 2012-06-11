@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.w3c.dom.Document;
 
 import railo.commons.io.res.Resource;
+import railo.runtime.PageContext;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -221,7 +222,11 @@ public interface Creation {
 
 	public abstract HttpServletRequest createHttpServletRequest(File contextRoot,String serverName, String scriptName,String queryString, 
 			Cookie[] cookies, Map<String,Object> headers, Map<String, String> parameters, Map<String,Object> attributes, HttpSession session);
+	
 	public abstract HttpServletResponse createHttpServletResponse(OutputStream io);
+
+
+	public abstract PageContext createPageContext(HttpServletRequest req, HttpServletResponse rsp, OutputStream out);
 	
 
 		

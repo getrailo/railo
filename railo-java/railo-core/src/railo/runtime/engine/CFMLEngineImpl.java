@@ -480,7 +480,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @see railo.loader.engine.CFMLEngine#getCreationUtil()
      */
     public Creation getCreationUtil() {
-        return CreationImpl.getInstance();
+        return CreationImpl.getInstance(this);
     }
 
 	/**
@@ -517,11 +517,14 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		return HTTPUtilImpl.getInstance();
 	}
 
-	/**
-	 * @see railo.loader.engine.CFMLEngine#getThreadPageContext()
-	 */
+	@Override
 	public PageContext getThreadPageContext() {
 		return ThreadLocalPageContext.get();
+	}
+
+	@Override
+	public void registerThreadPageContext(PageContext pc) {
+		ThreadLocalPageContext.register(pc);
 	}
 
 	/**

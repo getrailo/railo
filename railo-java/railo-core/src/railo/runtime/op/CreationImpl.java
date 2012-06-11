@@ -21,6 +21,11 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Pair;
+import railo.loader.engine.CFMLEngine;
+import railo.runtime.CFMLFactory;
+import railo.runtime.CFMLFactoryImpl;
+import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -62,12 +67,17 @@ import railo.runtime.util.Creation;
 public final class CreationImpl implements Creation {
 
     private static CreationImpl singelton;
+	private CFMLEngine engine;
 
-    /**
+    private CreationImpl(CFMLEngine engine) {
+		this.engine=engine;
+	}
+
+	/**
      * @return singleton instance
      */
-    public static Creation getInstance() {
-        if(singelton==null)singelton=new CreationImpl();
+    public static Creation getInstance(CFMLEngine engine) { 
+        if(singelton==null)singelton=new CreationImpl(engine);
         return singelton;
     }
 
@@ -280,6 +290,12 @@ public final class CreationImpl implements Creation {
 
 	public HttpServletResponse createHttpServletResponse(OutputStream io) {
 		return new HttpServletResponseDummy(io);
+	}
+
+	@Override
+	public PageContext createPageContext(HttpServletRequest req, HttpServletResponse rsp, OutputStream out) {
+		Config config = ThreadLocalPageContext.getConfig();
+		return (PageContext) ((CFMLFactoryImpl)config.getFactory()).getPageContext(config.getFactory().getServlet(), req, rsp, null, false, -1, false);
 	}
 
 
