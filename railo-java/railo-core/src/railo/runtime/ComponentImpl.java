@@ -2075,7 +2075,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	private boolean triggerDataMember(PageContext pc) {
 		if(_triggerDataMember!=null) return _triggerDataMember.booleanValue();
 		if(pc==null || pc.getApplicationContext()==null){
-			
 			print.ds(""+(pc==null));// TODO why this is true sometimes?
 			return false;
 		}
