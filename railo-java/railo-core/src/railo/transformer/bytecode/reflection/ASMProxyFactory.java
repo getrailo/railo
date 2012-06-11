@@ -12,7 +12,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
-import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -151,11 +150,6 @@ public class ASMProxyFactory {
 		className=className.replace('.',File.separatorChar);
 		Resource classFile=classRoot.getRealResource(className+".class");
 
-		
-		print.e("+++++++");
-		print.e(className);
-		print.e(classFile);
-		
 		ClassWriter cw = ASMUtil.getClassWriter();
 	    cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, ASM_METHOD.getInternalName(), null);
 		
