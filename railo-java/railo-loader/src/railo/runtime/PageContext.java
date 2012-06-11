@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.Tag;
 
@@ -522,6 +523,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @return returns the page context id
      */
     public abstract int getId();
+    
+    public abstract JspWriter getRootWriter();
 
     /**
      * @return Returns the locale.
