@@ -249,4 +249,9 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	public void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException, JspException, ServletException {
 		engine.cli(config, servletConfig);
 	}
+
+	@Override
+	public void registerThreadPageContext(PageContext pc) {
+		engine.registerThreadPageContext(pc);
+	}
 }
