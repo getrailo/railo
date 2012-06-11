@@ -46,7 +46,8 @@ public final class ExpandPath implements Function {
         if(res.isAbsolute()) return toReturnValue(realPath,res);
         
         res=ResourceUtil.getResource(pc,pc.getBasePageSource());
-        res = res.getParentResource().getRealResource(realPath);
+        if(!res.isDirectory())res=res.getParentResource();
+        res = res.getRealResource(realPath);
         return toReturnValue(realPath,res);
         
 	}
