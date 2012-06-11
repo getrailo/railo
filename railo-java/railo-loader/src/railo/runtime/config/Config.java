@@ -27,6 +27,7 @@ import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.rest.RestSetting;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
@@ -485,7 +486,8 @@ public interface Config {
 	 */
 	public boolean getTriggerComponentDataMember();
 	
-
+	public RestSetting getRestSetting();
+	
 	public abstract Resource getClientScopeDir();
 
 	public abstract long getClientScopeDirSize();

@@ -744,6 +744,7 @@ public class KeyConstants {
 	public static final Key _resource = KeyImpl._const("resource");
 	public static final Key _img = KeyImpl._const("img");
 	public static final Key _cfcLocation = KeyImpl._const("cfcLocation");
+	public static final Key _cfcLocations = KeyImpl._const("cfcLocations");
 	public static final Key _skipCFCWithError = KeyImpl._const("skipCFCWithError");
 	
 	

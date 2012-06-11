@@ -176,5 +176,6 @@ public interface ApplicationContext extends Serializable {
 	public boolean getSameFieldAsArray(int scope);
 
 	public RestSetting getRestSettings();
-	public void setRestSettings(RestSetting setting);
+	
+	public Resource[] getRestCFCLocations();
 }

@@ -83,6 +83,8 @@ import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
+import railo.runtime.rest.RestSetting;
+import railo.runtime.rest.RestSettingImpl;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.schedule.SchedulerImpl;
 import railo.runtime.search.SearchEngine;
@@ -3425,5 +3427,15 @@ public abstract class ConfigImpl implements Config {
 
 	public abstract Cluster createClusterScope() throws PageException;
 
+
+	private RestSetting restSetting=new RestSettingImpl(false,UDF.RETURN_FORMAT_JSON);
+	protected void setRestSetting(RestSetting restSetting){
+		this.restSetting= restSetting;
+	}
+	
+	@Override
+	public RestSetting getRestSetting(){
+		return restSetting; 
+	}
 	
 }

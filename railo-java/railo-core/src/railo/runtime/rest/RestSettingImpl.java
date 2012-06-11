@@ -1,25 +1,23 @@
 package railo.runtime.rest;
 
-import railo.commons.io.res.Resource;
-
 public class RestSettingImpl implements RestSetting {
 
-	private final Resource[] cfcLocations;
 	private final boolean skipCFCWithError;
+	private int returnFormat;
 
-	public RestSettingImpl(Resource[] cfcLocations, boolean skipCFCWithError) {
-		this.cfcLocations=cfcLocations;
+	public RestSettingImpl(boolean skipCFCWithError, int returnFormat) {
 		this.skipCFCWithError=skipCFCWithError;
+		this.returnFormat=returnFormat;
 	}
 
 	@Override
-	public boolean skipCFCWithError() {
+	public boolean getSkipCFCWithError() {
 		return skipCFCWithError;
 	}
 
 	@Override
-	public Resource[] getCfcLocations() {
-		return cfcLocations;
+	public int getReturnFormat() {
+		return returnFormat;
 	}
 
 }

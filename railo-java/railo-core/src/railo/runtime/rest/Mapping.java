@@ -1,8 +1,10 @@
 package railo.runtime.rest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import railo.commons.io.FileUtil;
 import railo.commons.io.res.Resource;
@@ -21,6 +23,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.type.util.ArrayUtil;
 
 public class Mapping {
 
@@ -36,22 +39,18 @@ public class Mapping {
 
 
 	
-	private Resource physical;
 	private String virtual;
-	
+	private Resource physical;
 	private String strPhysical;
 	private boolean hidden;
 	private boolean readonly;
 	private boolean _default;
 
 
-	private Config config;
-
-
-	private List<Source> sources;
+	private List<Source> baseSources;
+	private Map<Resource,List<Source>> customSources=new HashMap<Resource, List<Source>>();
 
 	public Mapping(Config config, String virtual, String physical, boolean hidden, boolean readonly, boolean _default) {
-		this.config=config;
 		if(!virtual.startsWith("/"))this.virtual="/"+virtual;
 		if(virtual.endsWith("/"))this.virtual=virtual.substring(0,virtual.length()-1);
         else this.virtual=virtual;
@@ -70,22 +69,67 @@ public class Mapping {
 	}
 
 
-	private void init(PageContext pc, boolean reset) throws PageException {
-		if(!reset && sources!=null) return;
-		if(this.physical!=null && this.physical.isDirectory()) {
-			Resource[] children = this.physical.listResources(FILTER);
-			sources = new ArrayList<Source>(); 
-			for(int i=0;i<children.length;i++){
-				//ps=config.toPageSource(null, children[i],null);
-				PageSource ps = pc.toPageSource(children[i],null);
-				ComponentAccess cfc = ComponentLoader.loadComponent(pc, null, ps, children[i].getName(), true,true);
-				Struct meta = cfc.getMetaData(pc);
+	private List<Source> init(PageContext pc, boolean reset) throws PageException {
+		if(reset)release();
+		
+		Resource[] locations = pc.getApplicationContext().getRestCFCLocations();
+		
+		// base source
+		if(ArrayUtil.isEmpty(locations)) {
+			if(baseSources==null && this.physical!=null && this.physical.isDirectory()) {
+				baseSources=_init(pc,this, this.physical);
+			}
+			return baseSources;
+		}
+		
+		// custom sources
+		List<Source> rtn = new ArrayList<Source>(); 
+		List<Source> list;
+		for(int i=0;i<locations.length;i++){
+			list = customSources.get(locations[i]);
+			if(list==null && locations[i].isDirectory()) {
+				list=_init(pc,this, locations[i]);
+				customSources.put(locations[i], list);
+			}
+			copy(list,rtn);
+		}
+		return rtn;
+	}
+	
+	private void copy(List<Source> src, List<Source> trg) { 
+		if(src==null) return;
+		Iterator<Source> it = src.iterator();
+		while(it.hasNext()){
+			trg.add(it.next());
+		}
+	}
+
+
+	private static ArrayList<Source> _init(PageContext pc, Mapping mapping, Resource dir) throws PageException{
+		Resource[] children = dir.listResources(FILTER);
+		
+		RestSetting settings = pc.getApplicationContext().getRestSettings();
+		ArrayList<Source> sources = new ArrayList<Source>(); 
+	
+		PageSource ps;
+		ComponentAccess cfc;
+		Struct meta;
+		String path;
+		for(int i=0;i<children.length;i++){
+			try{
+				ps = pc.toPageSource(children[i],null);
+				cfc = ComponentLoader.loadComponent(pc, null, ps, children[i].getName(), true,true);
+				meta = cfc.getMetaData(pc);
 				if(Caster.toBooleanValue(meta.get(RestUtil.REST,null),false)){
-					String path = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
-					sources.add(new Source(this, cfc.getPageSource(), path));
+					path = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
+					sources.add(new Source(mapping, cfc.getPageSource(), path));
 				}
 			}
+			catch(Throwable t){
+				if(!settings.getSkipCFCWithError()) throw Caster.toPageException(t);
+			}
 		}
+		return sources;
 	}
 
 
@@ -141,7 +185,7 @@ public class Mapping {
 
 
 	public Result getResult(PageContext pc,String path,int format,Struct matrix, Result defaultValue) throws PageException {
-		init(pc,false);
+		List<Source> sources = init(pc,false);
 		Iterator<Source> it = sources.iterator();
 		Source src;
 		String[] arrPath,subPath;
@@ -172,7 +216,11 @@ public class Mapping {
 	}
 
 
-	public void release() {
-		sources = null; 
+	public synchronized void release() {
+		if(baseSources!=null) {
+			baseSources.clear();
+			baseSources = null; 
+		}
+		customSources.clear();
 	}
 }

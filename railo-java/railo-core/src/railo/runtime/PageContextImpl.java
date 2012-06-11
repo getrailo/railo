@@ -99,6 +99,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.query.QueryCache;
+import railo.runtime.rest.RestRequestListener;
 import railo.runtime.rest.RestUtil;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
@@ -2015,15 +2016,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         return before;
 	}
     
-    /**
-     * @see railo.runtime.PageContext#getDebugger()
-     */
+
+    @Override
     public Debugger getDebugger() {
 		return debugger;
 	}
     
+    @Override
     public void executeRest(String realPath, boolean throwExcpetion) throws PageException  {
-    	try{
+    	ApplicationListener listener=config.getApplicationListener();
+	    try{
     	String pathInfo = req.getPathInfo();
     	
     	// charset
@@ -2081,9 +2083,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	
     	// check for format extension
-    	int format = UDF.RETURN_FORMAT_JSON;
+    	int format = getApplicationContext().getRestSettings().getReturnFormat();
     	if(StringUtil.endsWithIgnoreCase(pathInfo, ".json")) {
     		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
+    		format = UDF.RETURN_FORMAT_JSON;
     	}
     	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".wddx")) {
     		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
@@ -2099,16 +2102,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	
     	// loop all mappings
-    	railo.runtime.rest.Result result = null;//config.getRestSource(pathInfo, null);
+    	//railo.runtime.rest.Result result = null;//config.getRestSource(pathInfo, null);
+    	RestRequestListener rl=null;
     	railo.runtime.rest.Mapping[] restMappings = config.getRestMappings();
     	railo.runtime.rest.Mapping m,mapping=null,defaultMapping=null;
-    	String callerPath=null;
+    	//String callerPath=null;
     	if(restMappings!=null)for(int i=0;i<restMappings.length;i++) {
             m = restMappings[i];
             if(m.isDefault())defaultMapping=m;
             if(pathInfo.startsWith(m.getVirtualWithSlash(),0)) {
             	mapping=m;
-            	result = m.getResult(this,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
+            	//result = m.getResult(this,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
+            	rl=new RestRequestListener(m,pathInfo.substring(m.getVirtual().length()),format,matrix,null);
             	break;
             }
         }
@@ -2116,30 +2121,63 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	// default mapping
     	if(mapping==null && defaultMapping!=null) {
     		mapping=defaultMapping;
-            result = mapping.getResult(this,callerPath=pathInfo,format,matrix,null);
+            //result = mapping.getResult(this,callerPath=pathInfo,format,matrix,null);
+        	rl=new RestRequestListener(mapping,pathInfo,format,matrix,null);
     	}
     	
     	
+    	//base = PageSourceImpl.best(config.getPageSources(this,null,realPath,true,false,true));
+    	
+    	
+    	if(mapping==null){
+    		RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
+    	}
+    	else {
+    		base=config.toPageSource(null, mapping.getPhysical(), null);
+    		listener.onRequest(this, base,rl);
+    	}
+    	
+    	
+    	
+    	//RestRequestListener rl = new RestRequestListener(mapping,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
+    	
+    	/*if(result!=null){
+    		//railo.runtime.rest.Source source=result.getSource();
+    		//print.e(source.getPageSource());
 
-    	if(result!=null){
-    		railo.runtime.rest.Source source=result.getSource();
-    		base=source.getPageSource();
-    		req.setAttribute("client", "railo-rest-1-0");
-    		req.setAttribute("rest-path", callerPath);
-    		req.setAttribute("rest-result", result);
-    		
-    		doInclude(source.getPageSource());
+    		//base=source.getPageSource();
+    		//req.setAttribute("client", "railo-rest-1-0");
+    		//req.setAttribute("rest-path", callerPath);
+    		//req.setAttribute("rest-result", result);
+    		listener.onRequest(this, base);
+    		//doInclude(source.getPageSource());
     	}
     	else {
     		if(mapping==null)RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
     		else RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found in mapping ["+mapping.getVirtual()+"]");
-    	}
+    	}*/
     	
     	
     	}
-    	catch(Throwable t){
-    		t.printStackTrace();
-    	}
+	    catch(Throwable t) {
+	    	PageException pe = Caster.toPageException(t);
+	    	if(!Abort.isSilentAbort(pe)){
+	    		log(true);
+	    		if(fdEnabled){
+	        		FDSignal.signal(pe, false);
+	        	}
+	    		listener.onError(this,pe);	
+	    	}
+	    	else log(false);
+
+	    	if(throwExcpetion) throw pe;
+	    }
+	    finally {
+	    	if(enablecfoutputonly>0){
+            	setCFOutputOnly((short)0);
+            }
+            base=null;
+	    }
     }
     
     
@@ -2183,7 +2221,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    else base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
 	    
 	    try {
-	    	listener.onRequest(this,base);
+	    	listener.onRequest(this,base,null);
 	    	log(false);
 	    }
 	    catch(Throwable t) {
@@ -2391,6 +2429,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * 
      */
     public CFMLWriter getRootOut() {
+		return bodyContentStack.getBase();
+	}
+    public JspWriter getRootWriter() {
 		return bodyContentStack.getBase();
 	}
 

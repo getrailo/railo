@@ -61,6 +61,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 
 	private RestSetting restSettings;
 
+	private Resource[] restCFCLocations;
+
     
     /**
      * constructor of the class
@@ -85,6 +87,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.clientCluster=config.getClientCluster();
         this.source=source;
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
+        this.restSettings=config.getRestSetting();
     }
     
     /**
@@ -517,8 +520,17 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		return restSettings;
 	}
 
-	@Override
 	public void setRestSettings(RestSetting restSettings) {
 		this.restSettings=restSettings;
+	}
+	
+
+	public void setRestCFCLocations(Resource[] restCFCLocations) {
+		this.restCFCLocations = restCFCLocations;
+	}
+
+	@Override
+	public Resource[] getRestCFCLocations() {
+		return restCFCLocations;
 	}
 }

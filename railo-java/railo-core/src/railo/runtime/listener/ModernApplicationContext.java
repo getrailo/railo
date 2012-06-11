@@ -129,6 +129,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initRestSetting;
 	private RestSetting restSetting;
 	private String ormDatasource;
+
+	private Resource[] restCFCLocations;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
 		config = pc.getConfig();
@@ -146,9 +148,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
-        
-        
-		this.component=cfc;
+        this.restSetting=config.getRestSetting();
+        this.component=cfc;
 		
 		pc.addPageSource(component.getPageSource(), true);
 		try {
@@ -811,6 +812,17 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public RestSetting getRestSettings() {
+		initRest();
+		return restSetting;
+	}
+
+	@Override
+	public Resource[] getRestCFCLocations() {
+		initRest();
+		return restCFCLocations;
+	}
+	
+	private void initRest() {
 		if(!initRestSetting) {
 			Object o = get(component,REST_SETTING,null);
 			if(o!=null && Decision.isStruct(o)){
@@ -818,25 +830,20 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 				
 				// cfclocation
 				Object obj = sct.get(KeyConstants._cfcLocation,null);
+				if(obj==null) obj = sct.get(KeyConstants._cfcLocations,null);
 				List<Resource> list = ORMConfigurationImpl.loadCFCLocation(config, null, obj);
-				Resource[] cfcLocations=list==null?new Resource[0]:list.toArray(new Resource[list.size()]);
+				restCFCLocations=list==null?null:list.toArray(new Resource[list.size()]);
 				
 				// skipCFCWithError
-				boolean skipCFCWithError=Caster.toBooleanValue(sct.get(KeyConstants._skipCFCWithError,null),true);
+				boolean skipCFCWithError=Caster.toBooleanValue(sct.get(KeyConstants._skipCFCWithError,null),restSetting.getSkipCFCWithError());
 				
-				restSetting=new RestSettingImpl(cfcLocations,skipCFCWithError);
+				// returnFormat
+				int returnFormat=Caster.toIntValue(sct.get(KeyConstants._returnFormat,null),restSetting.getReturnFormat());
+				
+				restSetting=new RestSettingImpl(skipCFCWithError,returnFormat);
 				
 			}
 			initRestSetting=true; 
 		}
-		return restSetting;
-	}
-
-
-
-	@Override
-	public void setRestSettings(RestSetting restSetting) {
-		initRestSetting=true;
-		this.restSetting=restSetting;
 	}
 }
