@@ -8,6 +8,7 @@ import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.system.ContractPath;
 
 public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 
@@ -252,5 +253,10 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 
 	public String toString(Resource r, String charset) throws IOException {
 		return IOUtil.toString(r, charset);
+	}
+
+	@Override
+	public String contractPath(PageContext pc, String path) {
+		return ContractPath.call(pc, path);
 	}
 }

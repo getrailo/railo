@@ -261,4 +261,7 @@ public interface ResourceUtil {
 
 		public String toString(Resource r, String charset) throws IOException;
 
+
+		public String contractPath(PageContext pc, String path);
+
 }
