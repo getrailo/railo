@@ -22,8 +22,10 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Pair;
 import railo.loader.engine.CFMLEngine;
+import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.config.RemoteClient;
@@ -33,6 +35,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.system.ContractPath;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.spooler.ExecutionPlan;
@@ -296,6 +299,30 @@ public final class CreationImpl implements Creation {
 	public PageContext createPageContext(HttpServletRequest req, HttpServletResponse rsp, OutputStream out) {
 		Config config = ThreadLocalPageContext.getConfig();
 		return (PageContext) ((CFMLFactoryImpl)config.getFactory()).getPageContext(config.getFactory().getServlet(), req, rsp, null, false, -1, false);
+	}
+
+	@Override
+	public Component createComponentFromName(PageContext pc, String fullName) throws PageException {
+		return pc.loadComponent(fullName);
+	}
+
+	@Override
+	public Component createComponentFromPath(PageContext pc, String path) throws PageException {	
+		path=path.trim();
+		String pathContracted=ContractPath.call(pc, path);
+    	
+		if(pathContracted.toLowerCase().endsWith(".cfc"))
+			pathContracted=pathContracted.substring(0,pathContracted.length()-4);
+		
+    	pathContracted=pathContracted
+			.replace(File.pathSeparatorChar, '.')
+			.replace('/', '.')
+			.replace('\\', '.');
+    	
+    	while(pathContracted.toLowerCase().startsWith("."))
+			pathContracted=pathContracted.substring(1);
+    	
+		return createComponentFromName(pc, pathContracted);
 	}
 
 

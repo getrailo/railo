@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.w3c.dom.Document;
 
 import railo.commons.io.res.Resource;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
@@ -227,6 +228,24 @@ public interface Creation {
 
 
 	public abstract PageContext createPageContext(HttpServletRequest req, HttpServletResponse rsp, OutputStream out);
+
+	/**
+	 * creates a component object from (Full)Name, for example railo.extensions.net.HTTPUtil
+	 * @param pc Pagecontext for loading the CFC
+	 * @param fullname fullanem of the cfc example:railo.extensions.net.HTTPUtil
+	 * @return loaded cfc
+	 * @throws PageException 
+	 */
+	public abstract Component createComponentFromName(PageContext pc, String fullName) throws PageException;
+	
+	/**
+	 * creates a component object from a absolute local path, for example /Users/susi/Projects/Sorglos/wwwrooot/railo/extensions/net/HTTPUtil.cfc
+	 * @param pc Pagecontext for loading the CFC
+	 * @param path path of the cfc example:/Users/susi/Projects/Sorglos/wwwrooot/railo/extensions/net/HTTPUtil.cfc
+	 * @return loaded cfc
+	 * @throws PageException 
+	 */
+	public abstract Component createComponentFromPath(PageContext pc, String path) throws PageException; 
 	
 
 		
