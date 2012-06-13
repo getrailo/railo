@@ -82,7 +82,7 @@
 <!--- new pw Form --->
 <cfif StructKeyExists(form,"new_password") and StructKeyExists(form,"new_password_re")>
 	<cfif len(form.new_password) LT 6>
-		<cfset login_error="password is to short, it must have at least 6 chars">
+		<cfset login_error="password is too short, it must have at least 6 chars">
 	<cfelseif form.new_password NEQ form.new_password_re>
 		<cfset login_error="password and password retype are not equal">
 	<cfelse>
