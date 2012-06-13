@@ -850,7 +850,7 @@ public final class CFMLTransformer {
 			if(!hasAttributeCollection && min>count)
 				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" must have "+min+" attributes at least",tag);
 			
-			// to much attributes
+			// too much attributes
 			if(!hasAttributeCollection && max>0 && max<count)
 				throw createTemplateException(data.cfml,"the tag "+tag.getFullName()+" can have "+max+" attributes maximal",tag);
 			

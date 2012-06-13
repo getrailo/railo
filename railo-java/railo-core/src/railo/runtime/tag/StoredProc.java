@@ -612,8 +612,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	/**
 	 * @param timeout the timeout to set
 	 */
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
+	public void setTimeout(double timeout) {
+		this.timeout = (int) timeout;
 	}
 	
 	

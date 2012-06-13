@@ -51,11 +51,12 @@ public final class LSParseDateTime implements Function {
 	
 	private static railo.runtime.type.dt.DateTime _call(PageContext pc , Object oDate,Locale locale,TimeZone tz, String format) throws PageException {
 		if(oDate instanceof Date) return Caster.toDate(oDate, tz);
+
 		String strDate = Caster.toString(oDate);
 		
 		// regular parse date time
 		if(StringUtil.isEmpty(format,true))
-			return Caster.toDateTime(locale,strDate,tz,false);
+			return Caster.toDateTime(locale,strDate,tz,locale.equals(Locale.US));
 		
 		
 		// with java based format

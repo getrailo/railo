@@ -167,8 +167,9 @@ public class CFMLExpressionInterpreter {
     
 
     public Object interpret(PageContext pc,String str, boolean preciseMath) throws PageException { 
-    	Ref ref = data.get(str+":"+preciseMath);
-    	if(ref!=null)return ref.getValue(pc);
+
+    	//Ref ref = data.get(str+":"+preciseMath);
+    	//if(ref!=null)return ref.getValue();
     	
     	this.cfml=new ParserString(str);
     	this.preciseMath = preciseMath;
@@ -179,11 +180,11 @@ public class CFMLExpressionInterpreter {
 		if(JSON_STRUCT==null)JSON_STRUCT=fld.getFunction("_jsonStruct");
         
         cfml.removeSpace();
-        ref=assignOp();
+        Ref ref = assignOp();
         cfml.removeSpace();
         
         if(cfml.isAfterLast()) {
-        	data.put(str+":"+preciseMath,ref);
+        	//data.put(str+":"+preciseMath,ref);
             return ref.getValue(pc);
         }
         throw new ExpressionException("Syntax Error, invalid Expression ["+cfml.toString()+"]");
