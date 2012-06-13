@@ -2631,7 +2631,6 @@ public final class Caster {
         
     	DateTime dt=toDateTime(locale, str, tz,null,useCommomDateParserAsWell);
         if(dt==null){
-        	if(useCommomDateParserAsWell)return toDateTime(str, tz);
         	throw new ExpressionException("can't cast ["+str+"] to date value");
         }
         return dt;
@@ -2699,7 +2698,7 @@ public final class Caster {
 	            catch (ParseException e) {}
 	        }
         //}
-        if(useCommomDateParserAsWell)return toDate(str, false, tz, defaultValue);
+        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false, tz, defaultValue);
         return defaultValue;
     }
     
