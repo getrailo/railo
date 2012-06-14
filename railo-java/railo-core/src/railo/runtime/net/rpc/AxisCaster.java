@@ -354,7 +354,7 @@ public final class AxisCaster {
         Entry<Key, Object> e;
         while(it.hasNext()) {
         	e = it.next();
-            trg.put(e.getKey().getString(),_toAxisType(tm,null,null,e.getValue(),targetClass));
+            trg.put(e.getKey().getString(),_toAxisType(tm,null,null,e.getValue(),targetClass,done));
 
         }
         return trg;
