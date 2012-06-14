@@ -154,7 +154,7 @@ Redirtect to entry --->
 						value="#default#" class="large" required="#field.getRequired()#" 
 						message="Missing value for field #field.getDisplayName()#">
 					<cfelseif type EQ "textarea">
-						<textarea style="height:100px;" class="large" name="custom_#field.getName()#">#default#</textarea>
+						<textarea style="height:70px;" class="large" name="custom_#field.getName()#">#default#</textarea>
 					<cfelseif type EQ "hidden">
 						<cfinput type="hidden" name="custom_#field.getName()#" value="#default#">
 					<cfelseif type EQ "time">
@@ -226,9 +226,9 @@ Redirtect to entry --->
 						<cfif isStruct(desc) and StructKeyExists(desc,'_top')>
 							<div class="comment" style="padding-bottom:4px">#desc._top#</div>
 						</cfif>
-						<ul class="radiolist">
-							<cfloop index="item" list="#field.getValues()#">
-								<cfif listLen(field.getValues()) GT 1>
+						<cfif listLen(field.getValues()) GT 1>
+							<ul class="radiolist">
+								<cfloop index="item" list="#field.getValues()#">
 									<li>
 										<label>
 											<cfinput type="#type#" class="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
@@ -238,13 +238,14 @@ Redirtect to entry --->
 											<div class="comment" style="padding-bottom:4px">#desc[item]#</div>
 										</cfif>
 									</li>
-								<cfelse>
-									<cfinput type="#type#" class="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
-								</cfif>
-							</cfloop>
-							<cfif isStruct(desc) and StructKeyExists(desc,'_bottom')>
-								<div class="comment" style="padding-top:4px">#desc._bottom#</div>
-							</cfif>
+								</cfloop>
+							</ul>
+						<cfelse>
+							<cfinput type="#type#" class="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
+						</cfif>
+						<cfif isStruct(desc) and StructKeyExists(desc,'_bottom')>
+							<div class="comment" style="padding-top:4px">#desc._bottom#</div>
+						</cfif>
 					</cfif>
 					<cfif type NEQ "hidden">
 						<cfif isSimpleValue(field.getDescription()) and len(trim(field.getDescription()))>

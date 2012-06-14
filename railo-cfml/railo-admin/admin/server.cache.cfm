@@ -153,7 +153,7 @@ Create Datasource --->
 				<tr>
 					<th scope="row">#stText.setting.templateCache#</th>
 					<td class="fieldPadded">
-						<input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearTemplateCache#">
+						<input class="button submit" type="submit" name="mainAction" value="#btnClearTemplateCache#">
 						<div class="comment">#stText.setting.templateCacheClearDesc#</div>
 					</td>
 				</tr>
@@ -162,7 +162,7 @@ Create Datasource --->
 				<tr>
 					<th scope="row">#stText.setting.queryCache#</th>
 					<td class="fieldPadded">
-						<input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearQueryCache#">
+						<input class="button submit" type="submit" name="mainAction" value="#btnClearQueryCache#">
 						<div class="comment">#stText.setting.queryCacheClearDesc#</div>
 					</td>
 				</tr>
@@ -171,7 +171,7 @@ Create Datasource --->
 				<tr>
 					<th scope="row">#stText.setting.componentCache#</th>
 					<td class="fieldPadded">
-						<input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearComponentCache#">
+						<input class="button submit" type="submit" name="mainAction" value="#btnClearComponentCache#">
 						<div class="comment">#stText.setting.componentCacheClearDesc#</div>
 					</td>
 				</tr>
@@ -180,7 +180,7 @@ Create Datasource --->
 				<tr>
 					<th scope="row">#stText.setting.ctCache#</th>
 					<td class="fieldPadded">
-						<input class="submit" type="submit" class="submit" name="mainAction" value="#btnClearCTCache#">
+						<input class="button submit" type="submit" name="mainAction" value="#btnClearCTCache#">
 						<div class="comment">#stText.setting.ctCacheClearDesc#</div>
 					</td>
 				</tr>
@@ -192,9 +192,9 @@ Create Datasource --->
 				<tfoot>
 					<tr>
 						<td colspan="2">
-							<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
+							<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.update#">
 							<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-							<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+							<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 						</td>
 					</tr>
 				</tfoot>

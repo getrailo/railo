@@ -25,7 +25,10 @@
 	
 </cfsilent><!---
 
---->body {
+--->html, body {
+	height:100%;
+}
+body {
 	min-width:600px;
 	background:#f7f7f7 url(../img/web-back.png.cfm) repeat-x top;
 	margin:0;
@@ -80,6 +83,7 @@ form, div { margin:0; padding:0; }
 
 /* site main layout */
 #layout {
+	height: 100%;
 	width: 1030px;
 	margin:0px auto;
 	position:relative;
@@ -128,16 +132,26 @@ body.full #admintypetabs {
 	top:7px;
 }
 #mainholder {
+	height:100%;
 	width:100%;
 	display:table;
-	padding:113px 0 0 0;
-}
-body.full #mainholder {
-	padding-top:44px;
 }
 #mainholder > div {
+	display:table-row;
+}
+#toprow {
+	height:113px;
+}
+body.full #toprow {
+	heightm:44px;
+}
+#bottomrow {
+	height:40px;
+}
+#mainrow > div {
 	display:table-cell;
 	vertical-align:top;
+	margin-top:113px;
 }
 
 #leftshadow, #rightshadow {
@@ -178,7 +192,8 @@ body.full #resizewin {
 }
 
 #copyright {
-	padding: 5px 0px 30px 221px;
+	padding-left: 221px;
+	margin-top:-35px;
 	text-align:left;
 	font-size : 8pt;
 	color:#666;
@@ -253,12 +268,12 @@ table.nospacing {
 }
 .maintbl td, .maintbl th {
 	padding: 3px 5px;
-	text-align:left;
 	font-weight:normal;
 	empty-cells:show;
-}
-.maintbl td, .maintbl th {/* like .tblContent */
 	border:1px solid #e0e0e0;
+}
+.maintbl th {
+	text-align:left;
 }
 .maintbl > tbody > tr > th {/* like .tblHead */
 	width: 30%;
@@ -335,16 +350,26 @@ td.tabtop {border-style:solid;border-color:#e0e0e0;border-width:0px 0px 1px 0px 
 
 
 /* forms */
+input,select,textarea {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
 input {
 	background: url('../img/input-shadow.png.cfm') repeat-x 0 0;
 	background-color:white;
 	padding:3px 2px 3px 3px;
-	margin:3px 1px 3px 1px;
+	margin:3px 1px;
 	color:#3c3e40;
 	border:1px solid;
 	border-color: #aaa #ddd #ddd #aaa;
 }
-select {font-size : 11px;color:#3c3e40;margin:3px 0px 3px 0px;}
+select {
+	font-size:11px;
+	color:#3c3e40;
+	margin:3px 0px;
+	padding:1px 2px 0px 3px;
+}
 .button {
 	display: inline-block;
 	outline: none;
@@ -422,13 +447,16 @@ label:hover {
 .radiolist .comment {
 	padding-left:20px;
 }
+.radiolist label b {
+	color:#666;
+}
 .radiolist label + table {
 	margin-left:20px;
 }
 .InputError{
 	background:#fae2e2 url('../img/input-shadow-error.png.cfm') repeat-x 0 0;
 }
-.xlarge {width:99%}
+.xlarge {width:96%}
 .large  {width:60%}
 .medium {width:40%}
 .small  {width:20%}

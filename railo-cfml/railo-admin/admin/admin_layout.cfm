@@ -25,12 +25,20 @@
 	<script src="resources/js/jquery.blockUI.js.cfm"></script>
 	<script src="resources/js/admin.js.cfm"></script>
 	<script>
+		function resizemid()
+		{
+			return;
+			var mh = $('#mainholder');
+			mh.css('height', $(document).height() - parseInt(mh.css('padding-top'), 10) - $('#copyright').height() - 15);
+		}
 		$(function(){
 			$('#resizewin').click(resizelayout);
+			resizemid();
 		});
 		function resizelayout(e)
 		{
 			$('body').toggleClass('full');
+			setTimeout(resizemid, 100);
 			e.preventDefault();
 			return false;
 		};
@@ -48,25 +56,29 @@
 		</div>
 		
 		<div id="mainholder">
-			<div id="leftshadow"></div>
-			<div id="nav">
-				<a href="##" id="resizewin" title="resize window"><span>Resize window</span></a>
-				<cfif hasNavigation>
-					#attributes.navigation#
-				</cfif>
-			</div>
-			<div id="content">
-				<div id="maintitle">
-					<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
+			<div id="toprow"></div>
+			<div id="mainrow">
+				<div id="leftshadow"></div>
+				<div id="nav">
+					<a href="##" id="resizewin" title="resize window"><span>Resize window</span></a>
 					<cfif hasNavigation>
-						<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">Logout</a>
+						#attributes.navigation#
 					</cfif>
 				</div>
-				<div id="innercontent">
-					#thistag.generatedContent#
+				<div id="content">
+					<div id="maintitle">
+						<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
+						<cfif hasNavigation>
+							<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">Logout</a>
+						</cfif>
+					</div>
+					<div id="innercontent">
+						#thistag.generatedContent#
+					</div>
 				</div>
+				<div id="rightshadow"></div>
 			</div>
-			<div id="rightshadow"></div>
+			<div id="bottomrow"></div>
 		</div>
 		<div id="copyright" class="copy">
 			&copy; #year(Now())#

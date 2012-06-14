@@ -232,7 +232,7 @@ Error Output --->
 					<th scope="row">#stText.Scopes.SessionTimeout#</th>
 					<td>
 						<cfset timeout=scope.sessionTimeout>
-						<table class="maintbl" style="width:auto">
+						<table class="maintbl autowidth">
 							<thead>
 								<tr>
 									<th>#stText.General.Days#</td>
@@ -341,7 +341,7 @@ Error Output --->
 							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
 							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 							<cfif request.adminType EQ "web">
-								<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#">
+								<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#">
 							</cfif>
 						</td>
 					</tr>

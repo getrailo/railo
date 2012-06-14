@@ -261,7 +261,7 @@ Mail Settings
 		<input type="hidden" name="mainAction" value="#stText.Buttons.Setting#">
 		<input type="submit" class="button submit" name="_mainAction" value="#stText.Buttons.Update#">
 		<input type="reset" class="reset" name="canel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="_mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
 	</cfoutput></td>
 </tr></cfif>
 </cfform>

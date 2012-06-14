@@ -44,7 +44,7 @@ function formatDesc(string desc){
 </select>
 </td>
 <td>
-<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.OK#"> 
+<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.OK#"> 
 </td>
 </tr>
 </table>
