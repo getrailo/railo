@@ -9,6 +9,10 @@ import java.util.WeakHashMap;
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.io.res.type.datasource.Attr;
 import railo.runtime.db.DatasourceConnection;
+import railo.runtime.db.DatasourceConnectionImpl;
+import railo.runtime.db.DatasourceConnectionPool;
+import railo.runtime.db.DatasourceConnectionPro;
+import railo.runtime.db.SQLImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 
 public abstract class CoreSupport implements Core {
@@ -44,20 +48,8 @@ public abstract class CoreSupport implements Core {
 		//aprint.out(s1+";"+s2+";"+s3+";"+s4);
 	}
 
-	private Map statements=new WeakHashMap();
-	
 	PreparedStatement prepareStatement(DatasourceConnection dc,String sql) throws SQLException {
-		PreparedStatement ps=(PreparedStatement) statements.get(sql);
-		if(ps!=null && ps.getConnection()==dc.getConnection()){
-			//print.out("c");
-			
-		}
-		else{
-			ps= dc.getConnection().prepareStatement(sql);
-			statements.put(sql,ps);
-			//print.out("n");
-		}
-		return ps;
+		return ((DatasourceConnectionPro)dc).getPreparedStatement(new SQLImpl(sql), false, true);
 	}
 
 }
