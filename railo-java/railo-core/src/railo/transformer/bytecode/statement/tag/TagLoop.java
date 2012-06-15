@@ -9,13 +9,11 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.type.scope.Undefined;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.ForEach;
 import railo.transformer.bytecode.util.ASMConstants;
@@ -23,11 +21,10 @@ import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Methods_Caster;
 import railo.transformer.bytecode.util.Types;
-import railo.transformer.bytecode.visitor.AndVisitor;
 import railo.transformer.bytecode.visitor.DecisionDoubleVisitor;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 import railo.transformer.bytecode.visitor.DecisionObjectVisitor;
-import railo.transformer.bytecode.visitor.ForConditionIntVisitor;
+import railo.transformer.bytecode.visitor.DoWhileVisitor;
 import railo.transformer.bytecode.visitor.ForDoubleVisitor;
 import railo.transformer.bytecode.visitor.ForVisitor;
 import railo.transformer.bytecode.visitor.LoopVisitor;
@@ -35,16 +32,20 @@ import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
 
-public final class TagLoop extends TagBase implements FlowControl {
+public final class TagLoop extends TagGroup implements FlowControl {
 
 
-	public static final int TYPE_FILE = 0;
-	public static final int TYPE_LIST = 1;
-	public static final int TYPE_INDEX = 2;
-	public static final int TYPE_CONDITION = 3;
-	public static final int TYPE_QUERY = 4;
-	public static final int TYPE_COLLECTION = 5;
-	public static final int TYPE_ARRAY = 6;
+	public static final int TYPE_FILE = 1;
+	public static final int TYPE_LIST = 2;
+	public static final int TYPE_INDEX = 3;
+	public static final int TYPE_CONDITION = 4;
+	public static final int TYPE_QUERY = 5;
+	public static final int TYPE_COLLECTION = 6;
+	public static final int TYPE_ARRAY = 7;
+	public static final int TYPE_GROUP = 8;
+	public static final int TYPE_INNER_GROUP = 9;
+	public static final int TYPE_INNER_QUERY = 10;
+	public static final int TYPE_NOTHING = 11;
 	
 
 	
@@ -69,10 +70,10 @@ public final class TagLoop extends TagBase implements FlowControl {
 
 	
 
-	private static final Method KEYS = new Method(
+	/*private static final Method KEYS = new Method(
 			"keyIterator",
 			Types.COLLECTION_KEY_ARRAY,
-			new Type[]{});
+			new Type[]{});*/
 
 	private static final Method GET = new Method(
 			"get",
@@ -178,7 +179,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{Types.INT_VALUE});
 
 	// double range(double number, double from)
-	private static final Method RANGE = new Method(
+	/*private static final Method RANGE = new Method(
 			"range",
 			Types.DOUBLE_VALUE,
 			new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
@@ -191,7 +192,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			UNDEFINED,
 			new Type[]{});
 
-	// void addCollection(Query coll)
+	// void addQuery(Query coll)
 	private static final Method ADD_QUERY = new Method(
 			"addQuery",
 			Types.VOID,
@@ -201,7 +202,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 	private static final Method REMOVE_QUERY = new Method(
 			"removeQuery",
 			Types.VOID,
-			new Type[]{});
+			new Type[]{});*/
 
 	static final Method GO = new Method(
 			"go",
@@ -241,6 +242,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+		boolean old;
 		switch(type) {
 		case TYPE_COLLECTION:
 			writeOutTypeCollection(bc);
@@ -261,8 +263,45 @@ public final class TagLoop extends TagBase implements FlowControl {
 			writeOutTypeListArray(bc,true);
 		break;
 		case TYPE_QUERY:
-			writeOutTypeQuery(bc);
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeQuery(this,bc);
+			bc.changeDoSubFunctions(old);
+			//writeOutTypeQuery(bc);
 		break;
+		
+		case TYPE_GROUP:
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeGroup(this,bc);
+			bc.changeDoSubFunctions(old);
+			//writeOutTypeQuery(bc);
+		break;
+		
+		case TYPE_INNER_GROUP:
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeInnerGroup(this,bc);
+			bc.changeDoSubFunctions(old);
+		break;
+
+		case TYPE_INNER_QUERY:
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeInnerQuery(this,bc);
+			bc.changeDoSubFunctions(old);
+		break;
+		case TYPE_NOTHING:
+			GeneratorAdapter a = bc.getAdapter();
+			DoWhileVisitor dwv=new DoWhileVisitor();
+			setLoopVisitor(dwv);
+			dwv.visitBeginBody(a);
+				getBody().writeOut(bc);
+			dwv.visitEndBodyBeginExpr(a);
+				a.push(false);
+			dwv.visitEndExpr(a);
+			
+			
+		break;
+		
+		
+		
 		default:
 			throw new BytecodeException("invalid type",getStart());
 		}
@@ -837,11 +876,11 @@ public final class TagLoop extends TagBase implements FlowControl {
 		forVisitor.visitEnd(bc, len, true,getStart()); 
 	}
 	
-	/**
+	/* *
 	 * write out query loop
 	 * @param adapter
 	 * @throws TemplateException
-	 */
+	 * /
 	private void writeOutTypeQuery(BytecodeContext bc) throws BytecodeException {
 		ForConditionIntVisitor forConditionVisitor = new ForConditionIntVisitor();// TODO replace with ForIntVisitor 
 		loopVisitor=forConditionVisitor;
@@ -872,11 +911,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_1);
 		adapter.storeLocal(startAt);
-		/* OLD
-		adapter.loadLocal(query);
-		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_0);
-		adapter.storeLocal(startAt);
-		*/
+		
 		
 		// startrow
 		int start=adapter.newLocal(Types.INT_VALUE);
@@ -943,12 +978,9 @@ public final class TagLoop extends TagBase implements FlowControl {
 						
 						adapter.loadArg(0);
 						adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-						adapter.invokeVirtual(Types.QUERY, GO); 
+						adapter.invokeInterface(Types.QUERY, GO);
 						
-						/* OLD
-						adapter.invokeInterface(Types.QUERY, GO_1); 
-						 */
-						av.visitMiddle(bc);
+					av.visitMiddle(bc);
 						//LitBoolean.TRUE.writeOut(bc, Expression.MODE_VALUE);
 						DecisionIntVisitor dv=new DecisionIntVisitor();
 						dv.visitBegin();
@@ -966,10 +998,6 @@ public final class TagLoop extends TagBase implements FlowControl {
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 					adapter.invokeInterface(Types.QUERY, GO);
 					
-					/* OLD
-					adapter.invokeInterface(Types.QUERY, GO_1);
-					*/
-				
 				
 				}
 				
@@ -978,7 +1006,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 
 		// Finally
 		tfv.visitTryEnd(bc);
-	}
+	}*/
 
 	/**
 	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
@@ -986,12 +1014,21 @@ public final class TagLoop extends TagBase implements FlowControl {
 	public Label getBreakLabel() {
 		return loopVisitor.getBreakLabel();
 	}
-
+	
 	/**
 	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
 	 */
 	public Label getContinueLabel() {
 		return loopVisitor.getContinueLabel();
+	}
+
+	@Override
+	public short getType() {
+		return TAG_LOOP;
+	}
+
+	public void setLoopVisitor(LoopVisitor loopVisitor) {
+		this.loopVisitor=loopVisitor;
 	}
 
 

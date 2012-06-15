@@ -7987,8 +7987,17 @@ Valid only for cfinput type="text".</description>
 			<name>endRow</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description> Last row of query that is included in the loop.</description>
+			<description> Last row of query that is included in the loop. You cannot use this attribute together with the attribute maxRows.</description>
 		</attribute>
+		
+		<attribute>
+			<type>number</type>
+			<name>maxRows</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies the maximum number of rows to display in the output section. You cannot use this attribute together with the attribute endrow.</description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>list</name>
@@ -8063,6 +8072,28 @@ Railo uses the number of characters in the file.</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>charset for read the file</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>group</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies the query column to use when you group sets of records together to send as an e-mail
+		message. For example, if you send a set of billing statements to customers, you might group on
+		"Customer_ID." The group attribute, which is case sensitive, eliminates adjacent duplicates when the
+		data is sorted by the specified field. See the Usage section for exceptions.</description>
+		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>groupCaseSensitive</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		    <status>implemented</status>
+			<description>Boolean indicating whether to group with regard to case or not. The default value is NO;
+		case is considered while grouping. If the query attribute specifies a query object that was generated
+		by a case-insensitive SQL query, set the groupCaseSensitive attribute to NO to keep the recordset
+		intact.</description>
 		</attribute>
 	</tag>
 	<!-- Mail -->
@@ -8178,8 +8209,8 @@ Railo uses the number of characters in the file.</description>
 			<name>groupCaseSensitive</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		    <status>unimplemented</status>
-			<description>Boolean indicating whether to group with regard to case or not. The default value is YES;
+		    <status>implemented</status>
+			<description>Boolean indicating whether to group with regard to case or not. The default value is NO;
 		case is considered while grouping. If the query attribute specifies a query object that was generated
 		by a case-insensitive SQL query, set the groupCaseSensitive attribute to NO to keep the recordset
 		intact.</description>
@@ -8767,7 +8798,14 @@ Each type-value pair must start with a hyphen.</description>
 			<name>maxRows</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies the maximum number of rows to display in the output section.</description>
+			<description>Specifies the maximum number of rows to display in the output section. You cannot use this attribute together with the attribute endRow.</description>
+		</attribute>
+		<attribute>
+			<type>number</type>
+			<name>endrow</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Last row of query that is included. You cannot use this attribute together with the attribute maxRows.</description>
 		</attribute>
 	</tag>
 	<!-- Param -->
