@@ -762,7 +762,7 @@ public final class Decision {
 	}
 
 	/**
-	 * returns if object is a cold fusion object
+	 * returns if object is a CFML object
 	 * @param o Object to check
 	 * @return is or not
 	 */

@@ -1,5 +1,5 @@
 /**
- * Implements the CFML Function arraymin
+ * Implements the CFML Function arrayToStruct
  */
 package railo.runtime.functions.arrays;
 

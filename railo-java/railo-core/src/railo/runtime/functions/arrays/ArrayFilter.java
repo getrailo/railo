@@ -1,5 +1,5 @@
 /**
- * Implements the CFML Function arrayavg
+ * Implements the CFML Function ArrayFilter
  */
 package railo.runtime.functions.arrays;
 
@@ -25,12 +25,12 @@ public final class ArrayFilter implements Function {
 		// check UDF return type
 		int type = filter.getReturnType();
 		if(type!=CFTypes.TYPE_BOOLEAN && type!=CFTypes.TYPE_ANY)
-			throw new ExpressionException("invalid return type ["+filter.getReturnTypeAsString()+"] for UDF Filter, valid return types are [boolean,any]");
+			throw new ExpressionException("invalid return type ["+filter.getReturnTypeAsString()+"] for UDF Filter; valid return types are [boolean,any]");
 		
 		// check UDF arguments
 		FunctionArgument[] args = filter.getFunctionArguments();
 		if(args.length>1)
-			throw new ExpressionException("UDF filter has to many arguments ["+args.length+"], should have at maximum 1 argument");
+			throw new ExpressionException("UDF filter has too many arguments ["+args.length+"], should have at maximum 1 argument");
 		
 		
 		Array rtn=new ArrayImpl();

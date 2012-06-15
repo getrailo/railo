@@ -18,7 +18,7 @@ import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
- * cold fusion data type struct
+ * CFML data type struct
  */
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;

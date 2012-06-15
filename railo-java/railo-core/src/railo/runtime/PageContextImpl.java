@@ -157,7 +157,7 @@ import railo.runtime.writer.DevNullBodyContent;
 
 /**
  * page context for every page object. 
- * the PageContext is a jsp page context expanded by cold fusion functionality.
+ * the PageContext is a jsp page context expanded by CFML functionality.
  * for example you have the method getSession to get jsp combatible session object (HTTPSession)
  *  and with sessionScope() you get CFML combatible session object (Struct,Scope).
  */
@@ -331,7 +331,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * default Constructor
 	 * @param factoryImpl 
 	 * @param scopeContext
-	 * @param config Configuration of the Cold Fusion Container
+	 * @param config Configuration of the CFML Container
 	 * @param compiler CFML Compiler
 	 * @param queryCache Query Cache Object
 	 * @param id identity of the pageContext

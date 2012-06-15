@@ -25,7 +25,7 @@ import railo.runtime.type.util.CollectionUtil;
 
 
 /**
- * class to serialize to Convert Cold Fusion Objects (query,array,struct usw) to a JavaScript representation
+ * class to serialize to Convert CFML Objects (query,array,struct usw) to a JavaScript representation
  */
 public final class JSConverter {
 
@@ -34,7 +34,7 @@ public final class JSConverter {
 	private boolean useWDDX=true;
 
 	/**
-	 * serialize a Cold Fusion object to a JavaScript Object
+	 * serialize a CFML object to a JavaScript Object
 	 * @param object object to serialize
 	 * @param clientVariableName name of the variable to create 
 	 * @return vonverte Javascript Code as String

@@ -4,7 +4,7 @@ import railo.runtime.PageContext;
 import railo.runtime.type.Struct;
 
 /**
- * abstract class for all cold fusion scopes 
+ * abstract class for all scopes 
  */
 public interface Scope extends Struct {
 	

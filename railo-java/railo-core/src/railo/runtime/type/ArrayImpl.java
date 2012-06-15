@@ -29,7 +29,7 @@ import railo.runtime.type.util.ListIteratorImpl;
 
 
 /**
- * cold fusion array object
+ * CFML array object
  */
 public class ArrayImpl extends ArraySupport implements Sizeable {
 	

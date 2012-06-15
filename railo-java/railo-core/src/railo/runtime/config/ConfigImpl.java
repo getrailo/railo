@@ -115,7 +115,7 @@ import flex.messaging.config.ConfigMap;
 
 
 /**
- * Hold the definitions of the railo cold fusion configuration.
+ * Hold the definitions of the railo configuration.
  */
 public abstract class ConfigImpl implements Config {
 

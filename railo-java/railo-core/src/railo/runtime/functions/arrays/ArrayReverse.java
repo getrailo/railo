@@ -1,6 +1,5 @@
 /**
- * Implements the CFML Function arrayMerge
- * Merge 2 arrays
+ * Implements the CFML Function ArrayReverse
  */
 package railo.runtime.functions.arrays;
 

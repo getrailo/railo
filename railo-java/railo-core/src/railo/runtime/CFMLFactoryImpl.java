@@ -62,7 +62,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 	/**
 	 * constructor of the JspFactory
 	 * @param config Railo specified Configuration
-	 * @param compiler Cold Fusion compiler
+	 * @param compiler CFML compiler
 	 * @param engine
 	 */
 	public CFMLFactoryImpl(CFMLEngineImpl engine,QueryCache queryCache) {

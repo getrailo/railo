@@ -15,7 +15,7 @@ import railo.transformer.util.CFMLString;
 
 
 /**	
- * Innerhalb des Tag script kann in Cold Fusion eine eigene Scriptsprache verwendet werden, 
+ * Innerhalb des Tag script kann in CFML eine eigene Scriptsprache verwendet werden, 
  * welche sich an Javascript orientiert. 
  * Da der data.cfml Transformer keine Spezialfälle zulässt, 
  * also Tags einfach anhand der eingegeben TLD einliest und transformiert, 

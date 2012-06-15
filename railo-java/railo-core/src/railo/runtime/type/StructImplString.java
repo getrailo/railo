@@ -17,7 +17,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
 /**
- * cold fusion data type struct
+ * CFML data type struct
  */
 public final class StructImplString extends StructImpl implements Struct {
 

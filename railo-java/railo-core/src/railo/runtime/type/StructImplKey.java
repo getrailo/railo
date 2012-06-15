@@ -22,7 +22,7 @@ import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
- * cold fusion data type struct
+ * CFML data type struct
  */
 public final class StructImplKey extends StructSupport implements Struct {
 

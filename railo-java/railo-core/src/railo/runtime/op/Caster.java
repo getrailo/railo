@@ -110,7 +110,7 @@ import railo.runtime.util.IteratorWrapper;
 
 
 /**
- * This class can cast object of one type to a other by cold fusion rules
+ * This class can cast object of one type to a other by CFML rules
  */
 public final class Caster { 
     private Caster(){
