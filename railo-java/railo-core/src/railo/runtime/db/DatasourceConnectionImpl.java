@@ -1,16 +1,10 @@
 package railo.runtime.db;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import railo.commons.digest.MD5;
 import railo.runtime.op.Caster;
 
 /**
@@ -18,7 +12,7 @@ import railo.runtime.op.Caster;
  */
 public final class DatasourceConnectionImpl implements DatasourceConnection {
     
-    private static final int MAX_PS = 100;
+    //private static final int MAX_PS = 100;
 	private Connection connection;
     private DataSource datasource;
     private long time;
@@ -149,13 +143,18 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		return supportsGetGeneratedKeys.booleanValue();
 	}
 	
-	private Map<String,PreparedStatement> preparedStatements=new HashMap<String, PreparedStatement>();
+	//private Map<String,PreparedStatement> preparedStatements=new HashMap<String, PreparedStatement>();
 	
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
 	 */
 	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys,boolean allowCaching) throws SQLException {
-		allowCaching=false;
+		if(createGeneratedKeys)	return getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS);
+		return getConnection().prepareStatement(sql.getSQLString());
+	}
+	
+	
+	/*public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys,boolean allowCaching) throws SQLException {
 		// create key
 		String strSQL=sql.getSQLString();
 		String key=strSQL.trim()+":"+createGeneratedKeys;
@@ -176,12 +175,19 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
 		if(allowCaching)preparedStatements.put(key,ps);
 		return ps;
-	}
+	}*/
+	
 	
 
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
 	 */
+	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException {
+		return getConnection().prepareStatement(sql.getSQLString(),resultSetType,resultSetConcurrency);
+	}
+	
+	/*
+	 
 	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException {
 		boolean allowCaching=false;
 		// create key
@@ -203,18 +209,19 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		if(allowCaching)preparedStatements.put(key,ps);
 		return ps;
 	}
+	 */
 	
 
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#close()
 	 */
 	public void close() throws SQLException {
-		closePreparedStatements(-1);
+		//closePreparedStatements(-1);
 		getConnection().close();
 	}
 	
 
-	public void closePreparedStatements(int maxDelete) {
+	/*public void closePreparedStatements(int maxDelete) throws SQLException {
 		Iterator<Entry<String, PreparedStatement>> it = preparedStatements.entrySet().iterator();
 		int count=0;
 		while(it.hasNext()){
@@ -227,7 +234,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 			catch (SQLException e) {}
 		}
 		
-	}
+	}*/
 	
 	
 	/*protected void finalize() throws Throwable {

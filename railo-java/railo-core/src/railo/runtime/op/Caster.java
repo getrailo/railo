@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -2671,49 +2672,59 @@ public final class Caster {
         //synchronized(c){
         	
 	        // datetime
+        	ParsePosition pp=new ParsePosition(0);
 	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
+	        Date d;
 	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	
-	            	synchronized(c) {
-		            	optimzeDate(c,tz,df[i].parse(str));
-		            	return new DateTimeImpl(c.getTime());
-	            	}
-	            }
-	            catch (ParseException e) {}
+	    		pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+            	d = df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+				
+            	synchronized(c) {
+	            	optimzeDate(c,tz,d);
+	            	return new DateTimeImpl(c.getTime());
+            	}
+	            //}catch (ParseException e) {}
 	        }
 	        // date
 	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
 	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	optimzeDate(c,tz,df[i].parse(str));
-		            	return new DateTimeImpl(c.getTime());
-	            	}
-	        }
-	            catch (ParseException e) {}
+	    		pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+				d=df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+            	
+				synchronized(c) {
+	            	optimzeDate(c,tz,d);
+	            	return new DateTimeImpl(c.getTime());
+            	}
+				//}catch (ParseException e) {}
 	        }
 	    	
 	        // time
 	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
 	        for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	c.setTimeZone(tz);
-		            	c.setTime(df[i].parse(str));
-		
-	        
-		            	c.set(Calendar.YEAR,1899);
-		                c.set(Calendar.MONTH,11);
-		                c.set(Calendar.DAY_OF_MONTH,30);
-		            	c.setTimeZone(tz);
-	            	}
-	                return new DateTimeImpl(c.getTime());
-	            } 
-	            catch (ParseException e) {}
+	        	pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+            	d=df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+            	synchronized(c) {
+	            	c.setTimeZone(tz);
+	            	c.setTime(d);
+	            	c.set(Calendar.YEAR,1899);
+	                c.set(Calendar.MONTH,11);
+	                c.set(Calendar.DAY_OF_MONTH,30);
+	            	c.setTimeZone(tz);
+            	}
+                return new DateTimeImpl(c.getTime());
+	            //}catch (ParseException e) {}
 	        }
         //}
         if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false, tz, defaultValue);
