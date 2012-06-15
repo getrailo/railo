@@ -197,11 +197,10 @@ list all mappings and display necessary edit fields --->
 				<thead>
 					<tr>
 						<th width="3%"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)" /></th>
-						<th width="25%">#stText.Settings.Name#</th>
+						<th width="28%">#stText.Settings.Name#</th>
 						<th width="55%">#stText.Settings.Type#</th>
 						<th width="8%">#stText.Settings.dbStorage#</th>
 						<th width="6%">#stText.Settings.DBCheck#</th>
-						<th width="3%">&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -234,13 +233,12 @@ list all mappings and display necessary edit fields --->
 									&nbsp;				
 								</cfif>
 							</td>
-							<td>&nbsp;</td>
 						</tr>
 					</cfloop>
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="6">
+						<td colspan="5">
 							<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.Verify#">
 							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 						 </td>
@@ -319,11 +317,11 @@ list all mappings and display necessary edit fields --->
 		<!--- Create Datasource --->
 		<h2>#stText.Settings.DatasourceModify#</h2>
 		<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-			<table class="maintbl">
+			<table class="maintbl autowidth">
 				<tbody>
 					<tr>
 						<th scope="row">#stText.Settings.Name#</th>
-						<td><cfinput type="text" name="name" value="" class="medium" required="yes" 
+						<td><cfinput type="text" name="name" value="" class="large" required="yes" 
 							message="#stText.Settings.NameMissing#">
 						</td>
 					</tr>

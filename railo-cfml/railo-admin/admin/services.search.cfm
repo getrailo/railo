@@ -167,7 +167,9 @@ function selectAll(field) {
 				<table border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td><input type="checkbox" class="checkbox" name="name[]" value="#collections.name#"></td>
-					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><img src="resources/img/edit.png.cfm" hspace="2" border="0"></a></td>
+					<td>
+						<a href="#request.self#?action=#url.action#&collection=#collections.name#" class="btn-mini edit"><span>edit</span></a>
+					</td>
 				</tr>
 				</table>
 				

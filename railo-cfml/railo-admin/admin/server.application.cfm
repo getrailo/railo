@@ -179,6 +179,7 @@ Error Output --->
 										<input type="radio" class="radio" name="scriptProtect" id="sp_radio_custom" value="custom" <cfif isCustom>checked="checked"</cfif>>
 										<b>custom:</b>
 									</label>
+									<div class="comment">#stText.application.scriptProtectCustom#</div>
 									<table class="maintbl autowidth" id="customoptionstbl">
 										<thead>
 											<tr>
@@ -201,7 +202,6 @@ Error Output --->
 											</tr>
 										</tbody>
 									</table>
-									<div class="comment">#stText.application.scriptProtectCustom#</div>
 								</li>
 								<li>
 									<label>

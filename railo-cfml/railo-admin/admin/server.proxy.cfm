@@ -222,7 +222,7 @@ function doEnableProxy(enableProxy) {
 <tr>
 	<td colspan="2">
 		<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+		<input class="button reset" type="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfif>

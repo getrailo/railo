@@ -5,11 +5,11 @@
 	</cfif>
 	
 	<!--- the string to be used as an Etag - in the response header --->
-	<cfset etag = "CEBF20ABEE6FFC800C9620844B053D05" />
+	<cfset etag = "8A90A1E8AD336F684F47BA5F73F0B5DE" />
 	<cfset mimetype = "image/png" />
 	
 	<!--- check if the content was cached on the browser, and set the ETag header. --->
-	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype, expireDays=1000)>
+	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype, expireDays=100)>
 		<cfexit method="exittemplate" />
 	</cfif>
 </cfsilent>

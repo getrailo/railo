@@ -135,6 +135,7 @@ Redirtect to entry --->
 	<script type="text/javascript">
 		$(function(){
 			enableBtnsWhenChecked($('#instancelist_btns input.instbtn'), $('#instancelist input.checkbox'));
+			enableBtnsWhenChecked($('#instancelist2_btns input.instbtn'), $('#instancelist2 input.checkbox'));
 		});
 	</script>
 </cfsavecontent>
@@ -150,7 +151,7 @@ Redirtect to entry --->
 		
 		<div class="pageintro">#stText.Settings.cache.descReadOnly#</div>
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl">
+			<table class="maintbl" id="instancelist">
 				<thead>
 					<tr>
 						<th width="3%"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></th>
@@ -160,7 +161,7 @@ Redirtect to entry --->
 						<th width="4%">#stText.Settings.DBCheck#</th>
 					</tr>
 				</thead>
-				<tbody id="instancelist">
+				<tbody>
 					<cfloop query="srcGlobal">
 						<cfswitch expression="#srcGlobal.state#">
 							<cfcase value="running"><cfset css="Green"></cfcase>
@@ -213,7 +214,7 @@ Redirtect to entry --->
 		<div class="itemintro">#stText.Settings.gateway.descExisting#</div>
     
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl">
+			<table class="maintbl" id="instancelist2">
 				<thead>
 					<tr>
 						<cfif srcLocal.recordcount gt 1>
@@ -228,7 +229,7 @@ Redirtect to entry --->
 						<th width="3%">&nbsp;</th>
 					</tr>
 				</thead>
-				<tbody id="instancelist">
+				<tbody>
 					<cfloop query="srcLocal">
 						<cfif IsSimpleValue(srcLocal.driver)>
 							<cfcontinue>
@@ -258,12 +259,12 @@ Redirtect to entry --->
 								<td>&nbsp;</td>
 							</cfif>
 							<td>
-								<a href="#request.self#?action=#url.action#&action2=create&id=#Hash(srcLocal.id)#"><img src="resources/img/edit.png.cfm" hspace="2" border="0"></a>
+								<a href="#request.self#?action=#url.action#&action2=create&id=#Hash(srcLocal.id)#" class="btn-mini edit"><span>edit</span></a>
 							</td>
 						</tr>
 					</cfloop>
 				</tbody>
-				<tfoot id="instancelist_btns">
+				<tfoot id="instancelist2_btns">
 					<tr>
 						<td></td>
 						<td colspan="4" id="btns">

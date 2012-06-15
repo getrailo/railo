@@ -170,8 +170,7 @@ function setDesc(id,key){
 			<input type="checkbox" class="checkbox" name="row_#qry.currentrow#" value="#qry.currentrow#">
 			</td>
             <td>
-            <a href="#request.self#?action=#url.action#&action2=create&id=#qry.id#">
-			<img src="resources/img/edit.png.cfm" hspace="2" border="0"></a>
+	            <a href="#request.self#?action=#url.action#&action2=create&id=#qry.id#" class="btn-mini edit"><span>edit</span></a>
             </td>
 		</tr>
 		</table>

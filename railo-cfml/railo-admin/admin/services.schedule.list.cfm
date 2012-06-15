@@ -230,8 +230,9 @@ List --->
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td><input type="checkbox" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#"></td>
-			<td><a href="#request.self#?action=#url.action#&action2=edit&task=#hash(tasks.task)#">
-			<img src="resources/img/edit.png.cfm" hspace="2" border="0"></a></td>
+			<td>
+				<a href="#request.self#?action=#url.action#&action2=edit&task=#hash(tasks.task)#" class="btn-mini edit"><span>edit</span></a>
+			</td>
 		</tr>
 		</table>
 		</td>

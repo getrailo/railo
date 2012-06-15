@@ -35,12 +35,12 @@
 	</script>
 
 	<cfform name="login" action="#request.self#" method="post"><!--- onerror="customError"--->
-		<table class="maintbl" style="width:300px">
+		<table class="maintbl autowidth">
 			<tbody>
 				<tr>
 					<th scope="row" class="right">#stText.Login.Password#</th>
 					<td><cfinput type="password" name="login_password#request.adminType#" value="" passthrough='autocomplete="off"'
-						class="xlarge" required="yes" message="#stText.Login.PasswordMissing#">
+						class="medium" required="yes" message="#stText.Login.PasswordMissing#">
 					</td>
 				</tr>
 				<cfset f="">
@@ -54,7 +54,7 @@
 					<cfset aLangKeys = structKeyArray(languages)>
 					<cfset arraySort(aLangKeys, "text")>
 					<td>
-						<select name="lang" class="xlarge">
+						<select name="lang" class="medium">
 							<cfloop from="1" to="#arrayLen(aLangKeys)#" index="iKey">
 								<cfset key = aLangKeys[iKey]>
 								<option value="#key#" <cfif key EQ session.railo_admin_lang>selected</cfif>>#languages[key]#</option>
@@ -71,7 +71,7 @@
 							<cfimage action="captcha" width="160" height="30" text="#cap#" difficulty="medium">
 							<a style="font-size : 10px" href="#request.self#<cfif structKeyExists(url,"action")>?action=#url.action#</cfif>">Reload</a><br />
 							<cfinput type="text" name="captcha" value="" passthrough='autocomplete="off"'
-								class="xlarge" required="yes" message="#stText.login.captchaHelpMiss#">
+								class="medium" required="yes" message="#stText.login.captchaHelpMiss#">
 							<div class="comment">#stText.login.captchaHelpDesc#</div>
 						</td>
 					</tr>
@@ -81,7 +81,7 @@
 				<tr>
 					<th scope="row" class="right" nowrap="nowrap">#stText.Login.rememberMe#</th>
 					<td>
-						<select name="rememberMe" class="xlarge">
+						<select name="rememberMe" class="medium">
 							<cfloop list="s,d,ww,m,yyyy" index="i">
 								<option value="#i#"<cfif i eq form.rememberMe> selected</cfif>>#stText.Login[i]#</option>
 							</cfloop>

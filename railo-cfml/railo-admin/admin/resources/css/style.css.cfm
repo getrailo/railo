@@ -444,23 +444,27 @@ label:hover {
 	padding:0;
 	margin:0;
 }
+.radiolist.float li {
+	float:left;
+	padding-right:0px;
+}
 .radiolist .comment {
 	padding-left:20px;
 }
 .radiolist label b {
 	color:#666;
 }
-.radiolist label + table {
+.radiolist table {
 	margin-left:20px;
 }
 .InputError{
 	background:#fae2e2 url('../img/input-shadow-error.png.cfm') repeat-x 0 0;
 }
-.xlarge {width:96%}
-.large  {width:60%}
-.medium {width:40%}
-.small  {width:20%}
-.xsmall {width:10%}
+.xlarge {width:96%} .autowidth .xlarge {width:400px;}
+.large  {width:60%} .autowidth .large {width:250px;}
+.medium {width:40%} .autowidth .medium {width:150px;}
+.small  {width:20%} .autowidth .small {width:80px;}
+.xsmall {width:10%} .autowidth .xsmall {width:40px;}
 .number { width:40px; text-align:right }
 
 /* menu */
@@ -616,4 +620,60 @@ div.classpaths div {
 }
 div.classpaths div:nth-child(odd) {
 	background-color:#d2e0ee;
+}
+
+
+/* tooltips */
+.helptextimage {
+	width:16px;
+	height:16px;
+	display:inline-block;
+	background: url(../img/info.png.cfm) no-repeat;
+	vertical-align:text-bottom;
+}
+.helptextimage .inner {
+	display:none;
+}
+th .helptextimage {
+	float:right;
+}
+.radiolist li .helptextimage {
+	float:left;
+	padding-right:10px;
+}
+div.tooltip {
+	position: absolute;
+	background-color: #4D4D4D;
+	padding: 2px 6px 2px 6px;
+	color: #FFFFFF;
+	z-index: 100;
+	max-width:400px;
+}
+.tooltip .arrow {
+	content: '';
+	background: transparent url(../img/arrow_tooltip.png.cfm) no-repeat left top;
+	width: 7px;
+	height: 4px;
+	position: absolute;
+	left: 16px;
+	bottom: -4px;
+}
+.removeClickOverlay {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 99;	
+}
+.tooltip form {
+	margin: 10px 10px 10px 10px;	
+}
+.tooltip table {
+	color: #FFFFFF;
+	width: 100%;	
+}
+.tooltip table tr td:first-child {
+	font-weight: bold;	
+}
+.tooltip table td {
+	padding: 5px 3px;
 }

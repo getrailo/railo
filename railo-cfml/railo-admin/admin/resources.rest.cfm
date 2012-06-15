@@ -217,8 +217,11 @@ Mappings --->
 		</table></td>
 		
 		<!--- edit --->
-		<td><cfif not rest.readOnly><a href="#request.self#?action=#url.action#&action2=create&virtual=#rest.virtual#">
-		<img src="resources/img/edit.png.cfm" border="0"></a></cfif></td>
+		<td>
+			<cfif not rest.readOnly>
+				<a href="#request.self#?action=#url.action#&action2=create&virtual=#rest.virtual#" class="btn-mini edit"><span>edit</span></a>
+			</cfif>
+		</td>
 		
 		<!--- virtual --->
 		<td height="30" title="#rest.virtual#" nowrap><input type="hidden" 

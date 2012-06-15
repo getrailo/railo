@@ -45,8 +45,11 @@ function checkTheBox(field) {
 		</table></td>
 		
 		<!--- edit --->
-		<td><cfif not mappings.readOnly><a href="#request.self#?action=#url.action#&action2=create&virtual=#mappings.virtual#">
-		<img src="resources/img/edit.png.cfm" border="0"></a></cfif></td>
+		<td>
+			<cfif not mappings.readOnly>
+				<a href="#request.self#?action=#url.action#&action2=create&virtual=#mappings.virtual#" class="btn-mini edit"><span>edit</span></a>
+			</cfif>
+		</td>
 		
 		
 		

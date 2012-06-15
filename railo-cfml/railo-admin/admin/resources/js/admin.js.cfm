@@ -25,7 +25,8 @@
 //</cfsilent>
 /* init functions */
 $(function(){
-	scrollToEl('div.error,div.warning');
+	initTooltips();
+	scrollToEl('div.error,div.warning:not(.nofocus)');
 });
 
 function scrollToEl(selector)
@@ -37,6 +38,8 @@ function scrollToEl(selector)
 	}
 }
 
+
+/* older functions */
 function initMenu() {
 	$('#menu ul').show();
 	$('#menu li a').click(
@@ -47,20 +50,20 @@ function initMenu() {
 }
 
 function initMenu2() {
-  $('#menu ul').hide();
-  $('#menu ul:first').show();
-  $('#menu li a').click(
+	$('#menu ul').hide();
+	$('#menu ul:first').show();
+	$('#menu li a').click(
 	function() {
-	  var checkElement = $(this).next();
-	  if((checkElement.is('ul')) && (checkElement.is(':visible'))) {
+		var checkElement = $(this).next();
+		if((checkElement.is('ul')) && (checkElement.is(':visible'))) {
 		return false;
 		}
-	  if((checkElement.is('ul')) && (!checkElement.is(':visible'))) {
+		if((checkElement.is('ul')) && (!checkElement.is(':visible'))) {
 		$('#menu ul:visible').slideUp('normal');
 		checkElement.slideDown('normal');
 		return false;
 		}
-	  }
+		}
 	);
 }
 
@@ -103,30 +106,33 @@ function customError(errors){
 	disableBlockUI=true;
 }
 
-function createWaitBlockUI(msg){
-  var _blockUI=function() { 
-	  if(!disableBlockUI)
-	  $.blockUI(
-		{ 
-		  message:msg,
-		  css: { 
-			  border: 'none', 
-			  padding: '15px', 
-			  backgroundColor: '#000', 
-			  '-webkit-border-radius': '10px', 
-			  '-moz-border-radius': '10px', 
-			  opacity: .5, 
-			  color: '#fff' ,
-			  fontSize : "18pt"
-			},
-		  fadeIn: 1000 
+function createWaitBlockUI(msg)
+{
+	var _blockUI=function() { 
+		if(!disableBlockUI)
+		{
+			$.blockUI({ 
+				message:msg,
+				css: { 
+					border: 'none', 
+					padding: '15px', 
+					backgroundColor: '#000', 
+					'-webkit-border-radius': '10px', 
+					'-moz-border-radius': '10px', 
+					opacity: .5, 
+					color: '#fff' ,
+					fontSize : "18pt"
+				},
+				fadeIn: 1000 
+			}); 
 		}
-	  ); 
 	}
-  return _blockUI;
+	return _blockUI;
 }
 
-function selectAll(field) {
+/* form helpers */
+function selectAll(field)
+{
 	var form=field.form;
 	for(var key in form.elements){
 		if(form.elements[key] && (""+form.elements[key].name).indexOf("row_")==0){
@@ -148,4 +154,105 @@ function enableBtnsWhenChecked(btns, checkboxes)
 		btns.prop('disabled', chkd ? '':'disabled').css('opacity', (chkd ? 1:.5));
 	})
 	.filter(':first').triggerHandler('change');
+}
+
+
+/* tooltips */
+function createTooltip(element, text, x, y, mouseAction )
+{
+	element.bind(mouseAction, function (event) {
+		// detect max x position
+		containerRight = $('#mainholder').offset().left + $('#mainholder').width() - 20;
+		// if you remove() an element it is deleted from the DOM, but the element.tooltip var stays where it is. 
+		// When an tooltip has been shown before, just re-add the tooltip DOM element. 
+		// If the tooltip is never created before, create it and add it to the DOM
+		if (typeof element.tooltip == 'undefined') { 
+			element.tooltip = $('<div class="tooltip tooltip_'+mouseAction+'">'+ text +'<div class="arrow"></div></div>');
+			$('body').append( element.tooltip );
+		} else if (typeof element.tooltip == 'object') {
+			$('body').append( element.tooltip );
+			element.tooltip.removeClass('stayput');
+		}
+		// Recalculate the position every time the tooltip is added to a page.
+		// This is needed due to the clicked/hovered elements keep changing position when rows ar folded and unfolded
+		if (x == 0) {
+			var elWidth = element.width();
+			if (elWidth > 40) {
+				var xPos = element.offset().left;
+			} else {
+				var xPos = element.offset().left - 20 + (elWidth / 2);
+			}
+		} else {
+			var xPos = x;
+		}
+		if (y == 0) {
+			var yPos = element.offset().top - element.tooltip.outerHeight() - 4;
+		} else {
+			var yPos = y - 4;	
+		}
+		// if rightside is out of the sitecontainer, shift it left
+		var outerRight = xPos + element.tooltip.width();
+
+		if (outerRight > containerRight)
+		{
+			oldXPos = xPos;
+			xPos = 	containerRight - $(element.tooltip).width();
+			offset = oldXPos - xPos + 20;
+			$(element.tooltip).find('.arrow').css({
+				left: offset
+			});
+		}
+		// Set the tooltip position
+		$(element.tooltip).css({
+			left : xPos,
+			top: yPos
+		});
+		if (mouseAction == 'mouseover') {
+			$(this)
+				.mouseout(function(){
+					var tt = $(element.tooltip);
+					if (!tt.hasClass('stayput'))
+						tt.remove();
+				})
+				.click(function(e){ $(element.tooltip).toggleClass('stayput'); e.stopPropagation(); });
+		} else if (mouseAction == 'click') {
+			var overlay = $('<div class="removeClickOverlay"></div>');
+			$('body').prepend(overlay);
+			$(overlay).click(function(){ $(element.tooltip).remove(); $(overlay).remove(); });
+		}
+		return false;
+	})
+}
+function initTooltips()
+{
+	// lookup all elements with a class "tooltipMe" and add a tooltip to them. 
+	// Use the title attribute when available over the alt atribute
+	// images most likely will only have alt 
+	$('.tooltipMe').each(function(){
+		var tooltipText = '';
+		var title = $(this).prop('title');
+		var alt = $(this).prop('alt');
+		if (typeof title !== 'undefined' && title !== false && title !== '') {
+			tooltipText = title;
+		} else if (typeof alt !== 'undefined' && alt !== false && alt !== '') {
+			tooltipText = alt;
+		}
+		if (tooltipText !== '')
+		{
+			createTooltip( $(this), tooltipText, 0, 0, 'mouseover' );
+		}
+	});
+	
+	$('table.maintbl div.comment').each(function(){
+		var $this = $(this).addClass('helptextimage').removeClass('comment');
+		var parent = $this.parent('td');
+		if (parent.length && parent.prev('th').length)
+		{
+			parent.prev().append($this);
+		}
+		var html = $this.html();
+		$this.html('<div class="inner">' + html + "</div>");
+		createTooltip($this, html, 0, 0, 'mouseover');
+	});
+	$('body').live('click', function(){ $('div.tooltip.stayput').remove() });
 }

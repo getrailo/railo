@@ -146,8 +146,10 @@ function checkTheBox(field) {
 				<!--- <input type="hidden" name="password_#clients.currentrow#" value="#clients.Password#">--->
 				</td>
 				<td>
-<cfif hasAccess><a href="#request.self#?action=#url.action#&action2=create&url=#hash(clients.url)#">
-			<img src="resources/img/edit.png.cfm" hspace="2" border="0"></a></cfif></td>
+					<cfif hasAccess>
+						<a href="#request.self#?action=#url.action#&action2=create&url=#hash(clients.url)#" class="btn-mini edit"><span>edit</span></a>
+					</cfif>
+				</td>
 			</tr>
 			</table>
 			</td>
