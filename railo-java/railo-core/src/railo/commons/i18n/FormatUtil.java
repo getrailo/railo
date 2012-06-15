@@ -83,8 +83,9 @@ public class FormatUtil {
 		if(df==null) {
 			df= new SimpleDateFormat[]{
 					  new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy",Locale.ENGLISH)
-					 ,new SimpleDateFormat("MMM dd, yyyy H:mm:ss a",Locale.ENGLISH)	 
 					 ,new SimpleDateFormat("MMMM dd, yyyy HH:mm:ss a zzz",Locale.ENGLISH)
+					 ,new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a",Locale.ENGLISH)	 
+					 ,new SimpleDateFormat("MMM dd, yyyy HH:mm:ss",Locale.ENGLISH)	 
 					 ,new SimpleDateFormat("MMMM d yyyy HH:mm:ssZ",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM d yyyy HH:mm:ss",Locale.ENGLISH)
 					 ,new SimpleDateFormat("MMMM d yyyy HH:mm",Locale.ENGLISH)
@@ -101,9 +102,10 @@ public class FormatUtil {
 					 ,new SimpleDateFormat("yyyy/MM/dd HH:mm:ss zz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH)
 					 ,new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'ZZ (z)",Locale.ENGLISH)
+					 ,new SimpleDateFormat("dd MMM, yyyy HH:mm:ss",Locale.ENGLISH)
 					 //,new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.ENGLISH)
 				};
-
+			
 			for(int i=0;i<df.length;i++){
 				df[i].setLenient(lenient);
 				df[i].setTimeZone(tz);
