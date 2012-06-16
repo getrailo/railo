@@ -23,122 +23,114 @@ Defaults --->
 	returnVariable="ms">
 
 <cfscript>
-stars="*********";
-function toPassword(host,pw){
-	var i=1;
-	if(pw EQ stars){
-		for(i=ms.recordcount;i>0;i--){
-			if(host EQ ms.hostname[i]) return ms.password[i];
+	variables.stars = "*********";
+	function toPassword(host,pw, ms)
+	{
+		var i=1;
+		if(arguments.pw EQ variables.stars)
+		{
+			for(i=arguments.ms.recordcount;i>0;i--)
+			{
+				if(arguments.host EQ arguments.ms.hostname[i])
+					return arguments.ms.password[i];
+			}
 		}
+		return arguments.pw;
 	}
-	return pw;
-}
 </cfscript>
 
-<!--- 
-ACTIONS --->
+<!--- ACTIONS --->
 <cftry>
-<cfswitch expression="#form.mainAction#">
-
-<!--- Setting --->
-	<cfcase value="#stText.Buttons.Setting#">
-		<cfif form._mainAction EQ stText.Buttons.update>
-		<cfadmin 
-			action="updateMailSetting"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#"
-			
-			logfile="#form.logFile#"
-			loglevel="#form.loglevel#"
-			spoolEnable="#isDefined("form.spoolenable") and form.spoolenable#"
-			spoolInterval="#form.spoolInterval#"
-			timeout="#form.timeout#"
-			defaultEncoding="#form.defaultEncoding#"
-			remoteClients="#request.getRemoteClients()#">
-         <cfelseif form._mainAction EQ stText.Buttons.resetServerAdmin>
-		<!--- reset to server setting --->
-        <cfadmin 
-			action="updateMailSetting"
-			type="#request.adminType#"
-			password="#session["password"&request.adminType]#"
-			
-			logfile=""
-			loglevel=""
-			spoolEnable=""
-			spoolInterval=""
-			timeout=""
-			defaultEncoding=""
-            
-			remoteClients="#request.getRemoteClients()#">
-         </cfif>
-	</cfcase>
-        
-
-<!--- UPDATE --->
-	<cfcase value="#stText.Buttons.Update#">
-	<!--- update --->
-		<cfif form.subAction EQ "#stText.Buttons.Update#">
-						
-			<cfset data.hosts=toArrayFromForm("hostname")>
-			<cfset data.usernames=toArrayFromForm("username")>
-			<cfset data.passwords=toArrayFromForm("password")>
-			<cfset data.ports=toArrayFromForm("port")>
-			<cfset data.tlss=toArrayFromForm("tls")>
-			<cfset data.ssls=toArrayFromForm("ssl")>
-			<cfset data.rows=toArrayFromForm("row")>
-			<cfset data.ids=toArrayFromForm("id")>
-            
-			<cfloop index="idx" from="1" to="#arrayLen(data.hosts)#">
-			
+	<cfswitch expression="#form.mainAction#">
+		<!--- Setting --->
+		<cfcase value="#stText.Buttons.Setting#">
+			<cfif form._mainAction EQ stText.Buttons.update>
+				<cfadmin 
+					action="updateMailSetting"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
 					
-				<cfif isDefined("data.rows[#idx#]") and data.hosts[idx] NEQ "">
-					<cfparam name="data.ports[#idx#]" default="25">
-					<cfif trim(data.ports[idx]) EQ ""><cfset data.ports[idx]=25></cfif>
+					logfile="#form.logFile#"
+					loglevel="#form.loglevel#"
+					spoolEnable="#isDefined("form.spoolenable") and form.spoolenable#"
+					spoolInterval="#form.spoolInterval#"
+					timeout="#form.timeout#"
+					defaultEncoding="#form.defaultEncoding#"
+					remoteClients="#request.getRemoteClients()#">
+			<cfelseif form._mainAction EQ stText.Buttons.resetServerAdmin>
+				<!--- reset to server setting --->
+				<cfadmin 
+					action="updateMailSetting"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
 					
-					<cfadmin 
-						action="updateMailServer"
-						type="#request.adminType#"
-						password="#session["password"&request.adminType]#"
-						
-						hostname="#data.hosts[idx]#"
-						dbusername="#data.usernames[idx]#"
-						dbpassword="#toPassword(data.hosts[idx],data.passwords[idx])#"
-						port="#data.ports[idx]#"
-						id="#isDefined("data.ids[#idx#]")?data.ids[idx]:''#"
-						tls="#isDefined("data.tlss[#idx#]") and data.tlss[idx]#"
-						ssl="#isDefined("data.ssls[#idx#]") and data.ssls[idx]#"
-						remoteClients="#request.getRemoteClients()#">
-				</cfif>
-			</cfloop>
-	<!--- delete --->
-		
-		<cfelseif form.subAction EQ "#stText.Buttons.Delete#">
-			<cfset data.rows=toArrayFromForm("row")>
-			<cfset data.hosts=toArrayFromForm("hostname")>
-			<!---  @todo
-			<cflock type="exclusive" scope="application" timeout="5"></cflock> --->
+					logfile=""
+					loglevel=""
+					spoolEnable=""
+					spoolInterval=""
+					timeout=""
+					defaultEncoding=""
+					
+					remoteClients="#request.getRemoteClients()#">
+			 </cfif>
+		</cfcase>
+		<!--- UPDATE --->
+		<cfcase value="#stText.Buttons.Update#">
+			<!--- update --->
+			<cfif form.subAction EQ "#stText.Buttons.Update#">
+							
+				<cfset data.hosts=toArrayFromForm("hostname")>
+				<cfset data.usernames=toArrayFromForm("username")>
+				<cfset data.passwords=toArrayFromForm("password")>
+				<cfset data.ports=toArrayFromForm("port")>
+				<cfset data.tlss=toArrayFromForm("tls")>
+				<cfset data.ssls=toArrayFromForm("ssl")>
+				<cfset data.rows=toArrayFromForm("row")>
+				<cfset data.ids=toArrayFromForm("id")>
+				<cfloop index="idx" from="1" to="#arrayLen(data.hosts)#">
+					<cfif isDefined("data.rows[#idx#]") and data.hosts[idx] NEQ "">
+						<cfparam name="data.ports[idx]" default="25">
+						<cfif trim(data.ports[idx]) EQ "">
+							<cfset data.ports[idx]=25>
+						</cfif>
+						<cfadmin 
+							action="updateMailServer"
+							type="#request.adminType#"
+							password="#session["password"&request.adminType]#"
+							hostname="#data.hosts[idx]#"
+							dbusername="#data.usernames[idx]#"
+							dbpassword="#toPassword(data.hosts[idx],data.passwords[idx], ms)#"
+							port="#data.ports[idx]#"
+							id="#isDefined("data.ids[#idx#]")?data.ids[idx]:''#"
+							tls="#isDefined("data.tlss[#idx#]") and data.tlss[idx]#"
+							ssl="#isDefined("data.ssls[#idx#]") and data.ssls[idx]#"
+							remoteClients="#request.getRemoteClients()#">
+					</cfif>
+				</cfloop>
+			<!--- delete --->
+			<cfelseif form.subAction EQ "#stText.Buttons.Delete#">
+				<cfset data.rows=toArrayFromForm("row")>
+				<cfset data.hosts=toArrayFromForm("hostname")>
+				<!---  @todo
+				<cflock type="exclusive" scope="application" timeout="5"></cflock> --->
 				<cfset len=arrayLen(data.hosts)>
 				<cfloop index="idx" from="1" to="#len#">
 					<cfif isDefined("data.rows[#idx#]") and data.hosts[idx] NEQ "">
-						
-					<cfadmin 
-						action="removeMailServer"
-						type="#request.adminType#"
-						password="#session["password"&request.adminType]#"
-						
-						hostname="#data.hosts[idx]#"
-						remoteClients="#request.getRemoteClients()#">
+						<cfadmin 
+							action="removeMailServer"
+							type="#request.adminType#"
+							password="#session["password"&request.adminType]#"
+							
+							hostname="#data.hosts[idx]#"
+							remoteClients="#request.getRemoteClients()#">
 					</cfif>
 				</cfloop>
-		
-		<cfelseif form.subAction EQ "#stText.Buttons.Verify#">
-			<cfset data.rows=toArrayFromForm("row")>
-			<cfset data.hosts=toArrayFromForm("hostName")>
-			<cfset data.usernames=toArrayFromForm("username")>
-			<cfset data.passwords=toArrayFromForm("password")>
-			<cfset data.ports=toArrayFromForm("port")>
-				
-				
+			<cfelseif form.subAction EQ "#stText.Buttons.Verify#">
+				<cfset data.rows=toArrayFromForm("row")>
+				<cfset data.hosts=toArrayFromForm("hostName")>
+				<cfset data.usernames=toArrayFromForm("username")>
+				<cfset data.passwords=toArrayFromForm("password")>
+				<cfset data.ports=toArrayFromForm("port")>
 				<cfset doNotRedirect=true>
 				<cfloop index="idx" from="1" to="#arrayLen(data.rows)#">
 					<cfif isDefined("data.rows[#idx#]") and isDefined("data.hosts[#idx#]") and data.hosts[idx] NEQ "">
@@ -150,8 +142,8 @@ ACTIONS --->
 								hostname="#data.hosts[idx]#"
 								port="#data.ports[idx]#"
 								mailusername="#data.usernames[idx]#"
-								mailpassword="#toPassword(data.hosts[idx],data.passwords[idx])#">
-								<cfset stVeritfyMessages[data.hosts[idx]].Label = "OK">
+								mailpassword="#toPassword(data.hosts[idx],data.passwords[idx], ms)#">
+							<cfset stVeritfyMessages[data.hosts[idx]].Label = "OK">
 							<cfcatch>
 								<cfset stVeritfyMessages[data.hosts[idx]].Label = "Error">
 								<cfset stVeritfyMessages[data.hosts[idx]].message = cfcatch.message>
@@ -159,34 +151,23 @@ ACTIONS --->
 						</cftry>
 					</cfif>
 				</cfloop>
-				
-				
-				
-		</cfif>
-	</cfcase>
-</cfswitch>
+			</cfif>
+		</cfcase>
+	</cfswitch>
 	<cfcatch>
 		<cfset error.message=cfcatch.message>
 		<cfset error.detail=cfcatch.Detail>
 	</cfcatch>
 </cftry>
-<!--- 
-Redirtect to entry --->
+
+<!--- Redirtect to entry --->
 <cfif cgi.request_method EQ "POST" and error.message EQ "" and not isDefined('doNotRedirect')>
 	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
 </cfif>
 
-<!--- 
-Error Output--->
+<!--- Error Output--->
 <cfset printError(error)>
 
-<script>
-function checkTheBox(field) {
-	var apendix=field.name.split('_')[1];
-	var box=field.form['row_'+apendix];
-	box.checked=true;
-}
-</script>
 <!---
 Mail Settings
 		
@@ -197,8 +178,8 @@ Mail Settings
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 <table class="tbl">
 <colgroup>
-    <col width="150">
-    <col>
+	<col width="150">
+	<col>
 </colgroup>
 
 <tr>
@@ -275,7 +256,7 @@ Existing Collection --->
 
 <table class="tbl" width="100%">
 <colgroup>
-    <col width="10">
+	<col width="10">
 </colgroup>
 <tr>
 	<td colspan="8"><h2>#stText.Mail.MailServers#</h2>
@@ -295,7 +276,7 @@ Existing Collection --->
 	<cfloop query="ms">
 		<tr>
 			<td height="26">
-            <input type="hidden" name="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
+			<input type="hidden" name="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td><cfif not ms.readonly><input type="checkbox" class="checkbox" name="row_#ms.currentrow#" 
@@ -314,10 +295,10 @@ Existing Collection --->
 				message="#stText.Mail.UserNameMissing##ms.currentrow#)"></cfif></td>
 		<!--- password --->
 			<td nowrap><cfif ms.readonly>***********&nbsp;<cfelse>
-            
-            <cfinput 
+			
+			<cfinput 
 				onKeyDown="checkTheBox(this)" type="password" passthrough='autocomplete="off"' onClick="this.value='';"
-				name="password_#ms.currentrow#" value="#stars#" required="no"  
+				name="password_#ms.currentrow#" value="#variables.stars#" required="no"  
 				style="width:100%" message="#stText.Mail.PasswordMissing##ms.currentrow#)"></cfif></td>
 		<!--- port --->
 			<td nowrap><cfif ms.readonly>#ms.port#&nbsp;<cfelse><cfinput onKeyDown="checkTheBox(this)" 

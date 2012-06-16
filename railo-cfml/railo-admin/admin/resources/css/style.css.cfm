@@ -60,6 +60,10 @@ h5 {font-size:10px;}
 * + h1, * + h2 {
 	padding-top: 20px;
 }
+div.pageintro + h2 {
+	padding-top:0;
+}
+
 table + h3, div + h3 {
 	padding-top: 10px;
 }
@@ -227,7 +231,6 @@ body.full #resizewin {
 div.pageintro {
 	margin: 0 0 20px 0;
 }
-
 /* intro text for a section (i.e. under an h2; above a table) */	
 .itemintro {
 	font-style:italic;

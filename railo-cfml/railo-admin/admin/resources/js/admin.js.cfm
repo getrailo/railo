@@ -133,12 +133,7 @@ function createWaitBlockUI(msg)
 /* form helpers */
 function selectAll(field)
 {
-	var form=field.form;
-	for(var key in form.elements){
-		if(form.elements[key] && (""+form.elements[key].name).indexOf("row_")==0){
-			form.elements[key].checked=field.checked;
-		}
-	}
+	$(field).parents('table:first').find('tbody input:checkbox').prop('checked', field.checked);
 }
 
 function checkTheBox(field) {
@@ -228,10 +223,11 @@ function initTooltips()
 	// lookup all elements with a class "tooltipMe" and add a tooltip to them. 
 	// Use the title attribute when available over the alt atribute
 	// images most likely will only have alt 
-	$('.tooltipMe').each(function(){
+	$('.tooltipMe,abbr').each(function(){
+		var $this = $(this);
 		var tooltipText = '';
-		var title = $(this).prop('title');
-		var alt = $(this).prop('alt');
+		var title = $this.prop('title');
+		var alt = $this.prop('alt');
 		if (typeof title !== 'undefined' && title !== false && title !== '') {
 			tooltipText = title;
 		} else if (typeof alt !== 'undefined' && alt !== false && alt !== '') {
@@ -239,7 +235,15 @@ function initTooltips()
 		}
 		if (tooltipText !== '')
 		{
-			createTooltip( $(this), tooltipText, 0, 0, 'mouseover' );
+			createTooltip( $this, tooltipText, 0, 0, 'mouseover');
+		}
+	});
+	$('a.btn-mini').each(function(){
+		var $this = $(this);
+		var tooltipText = $this.find('span').html();
+		if (tooltipText !== '')
+		{
+			createTooltip($this, tooltipText, 0, 0, 'mouseover');
 		}
 	});
 	
@@ -256,3 +260,4 @@ function initTooltips()
 	});
 	$('body').live('click', function(){ $('div.tooltip.stayput').remove() });
 }
+
