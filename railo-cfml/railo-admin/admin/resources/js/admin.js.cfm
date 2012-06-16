@@ -133,13 +133,18 @@ function createWaitBlockUI(msg)
 /* form helpers */
 function selectAll(field)
 {
-	$(field).parents('table:first').find('tbody input:checkbox').prop('checked', field.checked);
+	$(field).parents('table:first').find('tbody tr td:first-child input:checkbox').prop('checked', field.checked)
+		.filter(':first').triggerHandler('change');
 }
 
 function checkTheBox(field) {
 	var apendix=field.name.split('_')[1];
-	var box=field.form['row_'+apendix];
-	box.checked=true;
+	var box = $(field.form['row_'+apendix]);
+	if (box.filter(':checked').length==0)
+	{
+		// calls the click handlers as well
+		$(box).click();
+	}
 }
 
 function enableBtnsWhenChecked(btns, checkboxes)
@@ -148,7 +153,7 @@ function enableBtnsWhenChecked(btns, checkboxes)
 		var chkd = checkboxes.filter(':checked').length > 0;
 		btns.prop('disabled', chkd ? '':'disabled').css('opacity', (chkd ? 1:.5));
 	})
-	.filter(':first').triggerHandler('change');
+		.filter(':first').triggerHandler('change');
 }
 
 
@@ -156,13 +161,15 @@ function enableBtnsWhenChecked(btns, checkboxes)
 function createTooltip(element, text, x, y, mouseAction )
 {
 	element.bind(mouseAction, function (event) {
+		// remove title from element, so we won't see the default tooltip as well
+		element.data('title', element.prop('title')).prop('title', '');
 		// detect max x position
 		containerRight = $('#mainholder').offset().left + $('#mainholder').width() - 20;
 		// if you remove() an element it is deleted from the DOM, but the element.tooltip var stays where it is. 
 		// When an tooltip has been shown before, just re-add the tooltip DOM element. 
 		// If the tooltip is never created before, create it and add it to the DOM
-		if (typeof element.tooltip == 'undefined') { 
-			element.tooltip = $('<div class="tooltip tooltip_'+mouseAction+'">'+ text +'<div class="arrow"></div></div>');
+		if (typeof element.tooltip == 'undefined') {
+			element.tooltip = $('<div class="tooltip tooltip_'+mouseAction+'">'+ text +'<div class="arrow"></div></div>').data('parent', element);
 			$('body').append( element.tooltip );
 		} else if (typeof element.tooltip == 'object') {
 			$('body').append( element.tooltip );
@@ -205,9 +212,13 @@ function createTooltip(element, text, x, y, mouseAction )
 		if (mouseAction == 'mouseover') {
 			$(this)
 				.mouseout(function(){
-					var tt = $(element.tooltip);
+					var tt = element.tooltip;
 					if (!tt.hasClass('stayput'))
+					{
 						tt.remove();
+						// re-add title to element
+						element.prop('title', element.data('title'));
+					}
 				})
 				.click(function(e){ $(element.tooltip).toggleClass('stayput'); e.stopPropagation(); });
 		} else if (mouseAction == 'click') {
@@ -258,6 +269,12 @@ function initTooltips()
 		$this.html('<div class="inner">' + html + "</div>");
 		createTooltip($this, html, 0, 0, 'mouseover');
 	});
-	$('body').live('click', function(){ $('div.tooltip.stayput').remove() });
+	$('body').live('click', function(){
+		$('div.tooltip.stayput').each(function(){
+			// re-add title to element
+			var parent = $(this).remove().data('parent');
+			parent.prop('title', parent.data('title'));
+		});
+	});
 }
 
