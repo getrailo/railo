@@ -171,7 +171,7 @@ function removeStars(field) {
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.url'),de('&url=##url.url##'),de(''))#" method="post">
 
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.label#</td>
+		<th scope="row">#stText.remote.label#</th>
 		<td width="450">
 			<cfinput type="text" name="label" value="#rc.label#" style="width:300px" required="yes" message="#stText.remote.LabelMissing#">
 			
@@ -185,7 +185,7 @@ function removeStars(field) {
 		<td width="200" colspan="2"><br /></td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.usage.title#</td>
+		<th scope="row">#stText.remote.usage.title#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.usage.desc#</div><br />
             
@@ -204,7 +204,7 @@ function removeStars(field) {
 	
 <cfif actionType EQ "create">
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.urlServer#</td>
+		<th scope="row">#stText.remote.urlServer#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.urlServerDesc#</div><br />
 			<cfinput type="text" name="url_server" value="#rc.url_server#" style="width:450px" required="yes" message="#stText.remote.urlServerMissing#">
@@ -212,7 +212,7 @@ function removeStars(field) {
 	</tr>
 
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.urlPath#</td>
+		<th scope="row">#stText.remote.urlPath#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.urlPathDesc#</div><br />
 			<cfinput type="text" name="url_path" value="#rc.url_path#" style="width:450px" required="yes" message="#stText.remote.urlPathMissing#">
@@ -221,7 +221,7 @@ function removeStars(field) {
 <cfelse>
 
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.url#</td>
+		<th scope="row">#stText.remote.url#</th>
 		<td width="450">
 			<input type="hidden" name="url" value="#rc.url#">
 			<b>#rc.url#</b>
@@ -229,14 +229,14 @@ function removeStars(field) {
 	</tr>
 </cfif>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.serverusername#</td>
+		<th scope="row">#stText.remote.serverusername#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.serverusernameDesc#</div><br />
 			<cfinput type="text" name="serverusername" value="#rc.serverusername#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.serverpassword#</td>
+		<th scope="row">#stText.remote.serverpassword#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.serverpasswordDesc#</div><br />
 			<input type="hidden" name="serverpasswordh" value="#rc.serverpasswordh#">
@@ -247,7 +247,7 @@ function removeStars(field) {
 		<td width="150" colspan="2" ><br /><b>#stText.remote.adminAccess#</b><br /><div class="comment">#stText.remote.adminAccessDesc#</div></td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.adminPassword[request.adminType]#</td>
+		<th scope="row">#stText.remote.adminPassword[request.adminType]#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.adminPasswordDesc[request.adminType]#</div><br />
 			<input type="hidden" name="adminPasswordh" value="#rc.adminPasswordh#">
@@ -255,7 +255,7 @@ function removeStars(field) {
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.securityKey#</td>
+		<th scope="row">#stText.remote.securityKey#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.securityKeyDesc#</div><br />
 			<input type="hidden" name="securityKeyh" value="#rc.securityKeyh#">
@@ -266,27 +266,27 @@ function removeStars(field) {
 		<td width="150" colspan="2"><br /><b>#stText.remote.proxy#</b><br /><div class="comment">#stText.remote.proxyDesc#</div></td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyServer#</td>
+		<th scope="row">#stText.remote.proxyServer#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.proxyServerDesc#</div><br />
 			<cfinput type="text" name="proxyServer" value="#rc.proxyServer#" style="width:250px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyPort#</td>
+		<th scope="row">#stText.remote.proxyPort#</th>
 		<td width="450">
 			<div class="comment">#stText.remote.proxyPortDesc#</div><br />
 			<cfinput type="text" name="proxyPort" value="#rc.proxyPort#" style="width:50px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyUsername#</td>
+		<th scope="row">#stText.remote.proxyUsername#</th>
 		<td width="450">
 			<cfinput type="text" name="proxyUsername" value="#rc.proxyUsername#" style="width:200px">
 		</td>
 	</tr>
 	<tr>
-		<td class="tblHead" width="200">#stText.remote.proxyPassword#</td>
+		<th scope="row">#stText.remote.proxyPassword#</th>
 		<td width="450">
 			<input type="hidden" name="proxyPasswordh" value="#rc.proxyPasswordh#">
 			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="proxyPassword" value="#rc.proxyPassword#" style="width:200px">

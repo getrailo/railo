@@ -98,19 +98,19 @@ Mail Settings
 		<table class="tbl" width="550">
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
+			<th scope="row">#stText.Mail.LogFile#</th>
 			<td width="450"><cfinput type="text" name="logFile" value="#config.mailLogger.file#" required="yes"  style="width:450px" message="#stText.Mail.LogFileMissing#"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.SpoolEnabled#</td>
+			<th scope="row">#stText.Mail.SpoolEnabled#</th>
 			<td width="450"><input <cfif config.isMailSpoolEnable()>checked</cfif> type="checkbox" class="checkbox" name="spoolEnable" value="yes"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.SpoolInterval#</td>
+			<th scope="row">#stText.Mail.SpoolInterval#</th>
 			<td width="450"><cfinput type="text" name="spoolInterval" value="#config.mailSpoolInterval#" validate="integer" style="width:50px" required="yes"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.Timeout#</td>
+			<th scope="row">#stText.Mail.Timeout#</th>
 			<td width="450"><cfinput type="text" name="timeout" value="#config.mailTimeout#" validate="integer" style="width:50px" required="yes"></td>
 		</tr>
 		<tr>
@@ -130,10 +130,10 @@ Existing Collection --->
 <table class="tbl">
 	<tr>
 		<td></td>
-		<td class="tblHead" nowrap>#stText.Mail.Server#</td>
-		<td class="tblHead" nowrap>#stText.Mail.Username#</td>
-		<td class="tblHead" nowrap>#stText.Mail.Password#</td>
-		<td class="tblHead" nowrap>#stText.Mail.Port#</td>
+		<th scope="row">#stText.Mail.Server#</th>
+		<th scope="row">#stText.Mail.Username#</th>
+		<th scope="row">#stText.Mail.Password#</th>
+		<th scope="row">#stText.Mail.Port#</th>
 	</tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>

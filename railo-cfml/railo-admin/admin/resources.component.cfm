@@ -369,10 +369,10 @@ Use Shadow --->
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
 			name="rro" onclick="selectAll(this)"></cfif></td>
-		<td class="tblHead" nowrap>#stText.Components.Physical#</td>
-		<td class="tblHead" nowrap>#stText.Components.Archive#</td>
-		<td class="tblHead" nowrap>#stText.Components.Primary#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.TrustedHead#</td>
+		<th scope="row">#stText.Components.Physical#</th>
+		<th scope="row">#stText.Components.Archive#</th>
+		<th scope="row">#stText.Components.Primary#</th>
+		<th scope="row">#stText.Mappings.TrustedHead#</th>
 	</tr>
 	<cfset count=0>
 

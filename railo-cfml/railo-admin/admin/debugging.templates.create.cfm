@@ -195,10 +195,10 @@ Error Output--->
             
             <table class="tbl">
 		<tr>
-			<td class="tblHead">#stText.General.Days#</td>
-			<td class="tblHead">#stText.General.Hours#</td>
-			<td class="tblHead">#stText.General.Minutes#</td>
-			<td class="tblHead">#stText.General.Seconds#</td>
+			<th scope="row">#stText.General.Days#</th>
+			<th scope="row">#stText.General.Hours#</th>
+			<th scope="row">#stText.General.Minutes#</th>
+			<th scope="row">#stText.General.Seconds#</th>
 		</tr>
 		
 		<tr>

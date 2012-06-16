@@ -107,10 +107,10 @@ function formatDesc(string desc){
 	<col width="450" />
 </colgroup>
 <tr>
-	<td class="tblHead">#stText.doc.arg.name#</td>
-	<td class="tblHead">#stText.doc.arg._type#</td>
-	<td class="tblHead">#stText.doc.arg.required#</td>
-	<td class="tblHead">#stText.doc.arg.description#</td>
+	<th scope="row">#stText.doc.arg.name#</th>
+	<th scope="row">#stText.doc.arg._type#</th>
+	<th scope="row">#stText.doc.arg.required#</th>
+	<th scope="row">#stText.doc.arg.description#</th>
 </tr>
 
 <cfloop array="#data.arguments#" index="attr"><cfif attr.status EQ "hidden"><cfcontinue></cfif>

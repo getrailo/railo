@@ -26,11 +26,11 @@ function checkTheBox(field) {
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<td class="tblHead" nowrap>#stText.Mappings.VirtualHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.PhysicalHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.ArchiveHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.PrimaryHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.TrustedHead#</td>
+		<th scope="row">#stText.Mappings.VirtualHead#</th>
+		<th scope="row">#stText.Mappings.PhysicalHead#</th>
+		<th scope="row">#stText.Mappings.ArchiveHead#</th>
+		<th scope="row">#stText.Mappings.PrimaryHead#</th>
+		<th scope="row">#stText.Mappings.TrustedHead#</th>
 	</tr>
 	<cfloop query="mappings">
 		<cfif not mappings.hidden>

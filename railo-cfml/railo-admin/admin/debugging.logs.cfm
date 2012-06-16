@@ -104,7 +104,7 @@ Redirtect to entry --->
 <table class="tbl" width="480">
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 <tr>
-	<td class="tblHead" width="160">#stText.debug.maxLogs#</td>
+	<th scope="row">#stText.debug.maxLogs#</th>
 	<td width="90"><select name="maxLogs">
    <cfset selected=false><cfloop list="10,20,50,100,200,500,1000" index="idx"><option <cfif idx EQ setting.maxLogs><cfset selected=true>selected="selected"</cfif> value="#idx#">#idx#</option></cfloop>
    <cfif !selected><option selected="selected" value="#setting.maxLogs#">#setting.maxLogs#</option></cfif>
@@ -112,11 +112,11 @@ Redirtect to entry --->
 </tr>
 <!---
 <tr>
-	<td class="tblHead">#stText.debug.minExeTime#</td>
+	<th scope="row">#stText.debug.minExeTime#</th>
 	<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.minExeTimeDesc#</span></td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.debug.pathRestriction#</td>
+	<th scope="row">#stText.debug.pathRestriction#</th>
 	<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
 </tr>
 --->
@@ -140,7 +140,7 @@ Redirtect to entry --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
 
 <tr>
-	<td class="tblHead">#stText.debug.minExeTime#</td>
+	<th scope="row">#stText.debug.minExeTime#</th>
 	<td>
     	<table class="tbl">
         <tr>
@@ -153,7 +153,7 @@ Redirtect to entry --->
     </td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.debug.pathRestriction#</td>
+	<th scope="row">#stText.debug.pathRestriction#</th>
 	<td><textarea name="pathRestriction" cols="60" rows="10" style="width:100%"></textarea><br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
 </tr>
 <cfmodule template="remoteclients.cfm" colspan="2">
@@ -182,14 +182,14 @@ Redirtect to entry --->
 
 
 <tr>
-	<td class="tblHead" rowspan="2">#stText.Debug.path#</td>
-	<td class="tblHead" rowspan="2">#stText.Debug.reqTime#</td>
-	<td class="tblHead" colspan="3" align="center">#stText.Debug.exeTime#</td>
+	<th scope="row">#stText.Debug.path#</th>
+	<th scope="row">#stText.Debug.reqTime#</th>
+	<th scope="row">#stText.Debug.exeTime#</th>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Debug.exeTimeQuery#</td>
-	<td class="tblHead">#stText.Debug.exeTimeApp#</td>
-	<td class="tblHead">#stText.Debug.exeTimeTotal#</td>
+	<th scope="row">#stText.Debug.exeTimeQuery#</th>
+	<th scope="row">#stText.Debug.exeTimeApp#</th>
+	<th scope="row">#stText.Debug.exeTimeTotal#</th>
 </tr>
 
 
@@ -199,13 +199,13 @@ Redirtect to entry --->
 <tr>
     <td class="tblHead" nowrap><input type="text" name="path" style="width:100%" value="#session.debugFilter.path#" /><br />
     	<div class="comment">#stText.Debug.filterPath#</div></td>
-    <td class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:100%" value="#session.debugFilter.path#" /></td>
-    <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
-    <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
-    <td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></td>
+    <th scope="row"><input type="text" name="IntervalFilter" style="width:100%" value="#session.debugFilter.path#" /></th>
+    <th scope="row"><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></th>
+    <th scope="row"><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></th>
+    <th scope="row"><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></th>
 </tr>
 <tr>
-    <td class="tblHead" colspan="5"><input type="submit" name="filter" class="button submit" value="#stText.Debug.filter#" style="width:100%"/></td>
+    <th scope="row"><input type="submit" name="filter" class="button submit" value="#stText.Debug.filter#" style="width:100%"/></th>
 </tr>
 <tr>
     <td colspan="5"></td>

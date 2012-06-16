@@ -307,7 +307,7 @@ remove update --->
 #stText.services.update.removeDesc#</td>
 </tr>
 <tr>
-	<td class="tblHead" colspan="2">#stText.services.update.patch#</td>
+	<th scope="row">#stText.services.update.patch#</th>
 </tr>
 
 <cfloop index="i" from="1" to="#size#">

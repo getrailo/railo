@@ -242,7 +242,7 @@
         <cfelse>
         <tr>
     		<td>&nbsp;</td>
-            <cfif len(trim(item.getLabel()))><td class="tblHead" width="100">#item.getLabel()#</td></cfif>
+            <cfif len(trim(item.getLabel()))><th scope="row">#item.getLabel()#</th></cfif>
             <td <cfif len(trim(item.getLabel())) EQ 0>colspan="2" width="500"<cfelse> width="400"</cfif> class="#iif(isError,de('tblContentRed'),de('tblContent'))#">
             <cfif isError><span class="CheckError">#err[item.getName()]#</span><br /></cfif>
                 

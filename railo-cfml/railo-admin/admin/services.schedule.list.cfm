@@ -186,10 +186,10 @@ List --->
 	<cfoutput>
 	<tr>
 		<td></td>
-		<td class="tblHead" nowrap><input type="text" name="nameFilter" style="width:100%" value="#session.st.nameFilter#" /></td>
-		<td class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:100%" value="#session.st.IntervalFilter#" /></td>
-		<td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:100%" value="#session.st.urlFilter#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="button submit" name="mainAction" value="filter"></td>
+		<th scope="row"><input type="text" name="nameFilter" style="width:100%" value="#session.st.nameFilter#" /></th>
+		<th scope="row"><input type="text" name="IntervalFilter" style="width:100%" value="#session.st.IntervalFilter#" /></th>
+		<th scope="row"><input type="text" name="urlFilter" style="width:100%" value="#session.st.urlFilter#" /></th>
+		<th scope="row"><input type="submit" class="button submit" name="mainAction" value="filter"></th>
 	</tr>
 	<tr>
 		<td width="380" colspan="5" align="right"></td>
@@ -204,7 +204,7 @@ List --->
 		<cfif session.st.sortName EQ "interval" and len(session.st.sortOrder)><img src="resources/img/arrow-#session.st.sortOrder EQ 'asc' ? 'up':'down'#.gif.cfm" hspace="4" vspace="2" border="0"></cfif></a></td>
 		<td class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=url">#stText.Schedule.URL#
 		<cfif session.st.sortName EQ "url" and len(session.st.sortOrder)><img src="resources/img/arrow-#session.st.sortOrder EQ 'asc' ? 'up':'down'#.gif.cfm" hspace="4" vspace="2" border="0"></cfif></a></td>
-		<td class="tblHead" nowrap>#stText.Schedule.paused#</td>
+		<th scope="row">#stText.Schedule.paused#</th>
 	</tr>
 	
 	<cfloop query="tasks">
@@ -284,19 +284,19 @@ Create Task --->
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
-	<td class="tblHead" width="100">#stText.Schedule.Name#</td>
+	<th scope="row">#stText.Schedule.Name#</th>
 	<td width="500"><cfinput type="text" name="name" value="" style="width:200px" required="yes" 
 		message="#stText.Schedule.NameMissing#"></td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Schedule.URL#</td>
+	<th scope="row">#stText.Schedule.URL#</th>
 	<td>
 		<div class="comment">#stText.Schedule.URLDescription#</div><br>
 		<cfinput type="text" name="url" value="" style="width:100%" required="yes" 
 		message="#stText.Schedule.URLMissing#"></td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Schedule.IntervalType#</td>
+	<th scope="row">#stText.Schedule.IntervalType#</th>
 	<td><div class="comment">#stText.Schedule.IntervalTypeDesc#</div><br><select name="interval">
 		<option value="3600">#stText.Schedule.Every# ...</option>
 		<option value="once">#stText.Schedule.Once#</option>
@@ -306,7 +306,7 @@ Create Task --->
 	</select></td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Schedule.StartDate#</td>
+	<th scope="row">#stText.Schedule.StartDate#</th>
 	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
@@ -322,7 +322,7 @@ Create Task --->
 		</table></td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Schedule.StartTime#</td>	
+	<th scope="row">#stText.Schedule.StartTime#</th>	
 	<td>
 		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
 		<tr>
@@ -339,7 +339,7 @@ Create Task --->
 		</table></td>
 </tr>
 <tr>
-	<td class="tblHead">#stText.Schedule.paused#</td>	
+	<th scope="row">#stText.Schedule.paused#</th>	
 	<td><input type="checkbox" name="paused" value="true" /></td>
 </tr>
 <cfmodule template="remoteclients.cfm" colspan="2">

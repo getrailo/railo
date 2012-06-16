@@ -133,7 +133,7 @@ Overview
 			<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 		</tr>
 		<cfform onerror="customError" action="#go(url.action,'createSecurityManager')#" method="post">
-			<td class="tblHead"  nowrap>#stText.Security.specListWebContext#</td>
+			<th scope="row">#stText.Security.specListWebContext#</th>
 			<td><select name="id">
 						<cfoutput><cfloop query="contextes"><cfif not contextes.hasOwnSecContext>
 							<option value="#contextes.id#">#contextes.text#</option>

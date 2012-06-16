@@ -169,12 +169,12 @@ Alle Webs können Railo verwenden.
 	</td>
 </tr>
 <tr>
-	<td class="tblHead">Freigegeben</td>
-	<td class="tblHead">Web</td>
+	<th scope="row">Freigegeben</th>
+	<th scope="row">Web</th>
 </tr>
 <tr>
-	<td class="tblHead" align="center"><input type="Checkbox" class="checkbox" name="selection" value="#qry.id#" onclick="doOthers(this)"></td>
-	<td class="tblHead">&nbsp;</td>
+	<th scope="row"><input type="Checkbox" class="checkbox" name="selection" value="#qry.id#" onclick="doOthers(this)"></th>
+	<th scope="row">&nbsp;</th>
 </tr>
 <cfoutput><cfloop collection="#contextes#" item="key">
 <tr>

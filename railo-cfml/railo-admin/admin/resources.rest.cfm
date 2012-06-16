@@ -200,9 +200,9 @@ Mappings --->
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<td class="tblHead" nowrap>#stText.rest.VirtualHead#</td>
-		<td class="tblHead" nowrap>#stText.rest.PhysicalHead#</td>
-		<td class="tblHead" nowrap>#stText.rest.DefaultHead#</td>
+		<th scope="row">#stText.rest.VirtualHead#</th>
+		<th scope="row">#stText.rest.PhysicalHead#</th>
+		<th scope="row">#stText.rest.DefaultHead#</th>
 	</tr>
 	<cfloop query="rest">
 		<cfif not rest.hidden>

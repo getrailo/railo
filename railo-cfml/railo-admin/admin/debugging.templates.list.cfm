@@ -223,13 +223,13 @@ function setDesc(id,key){
 	<table class="tbl" width="420">
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 	<tr>
-		<td class="tblHead" width="50">#stText.debug.label#</td>
+		<th scope="row">#stText.debug.label#</th>
 		<td width="370"><cfinput type="text" name="label" value="" style="width:370px" required="yes" 
 			message="#stText.debug.labelMissing#"></td>
 	</tr>
 	
 	<tr>
-		<td class="tblHead" width="50">#stText.Settings.gateway.type#</td>
+		<th scope="row">#stText.Settings.gateway.type#</th>
 		<td width="300"><select name="type" onchange="setDesc('typeDesc',this.value);" on>
 					<cfloop list="#_drivers#" index="key">
                     <cfset driver=drivers[key]>

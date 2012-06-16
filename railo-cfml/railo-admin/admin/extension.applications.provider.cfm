@@ -17,7 +17,7 @@
         <table class="tbl" width="300">
         
         <tr>
-            <td class="tblHead">#stText.ext.provider#</td>
+            <th scope="row">#stText.ext.provider#</th>
             <td><a href="#info.url#" target="_blank">#info.url#</a></td>
         </tr>
         </table>
@@ -62,22 +62,22 @@
                 	<table class="tbl" width="300">
                     <cfif isInstalled>
                     <tr>
-                        <td class="tblHead">#stText.ext.installedVersion#</td>
+                        <th scope="row">#stText.ext.installedVersion#</th>
                         <td>#app.version#</td>
                     </tr>
                     <cfelse>
                     <tr>
-                        <td class="tblHead">#stText.ext.availableVersion#</td>
+                        <th scope="row">#stText.ext.availableVersion#</th>
                         <td>#app.version#</td>
                     </tr>
                     </cfif>
                     <tr>
-                        <td class="tblHead">#stText.ext.category#</td>
+                        <th scope="row">#stText.ext.category#</th>
                         <td>#app.category#</td>
                     </tr>
                     
                     <tr>
-                        <td class="tblHead">#stText.ext.provider#</td>
+                        <th scope="row">#stText.ext.provider#</th>
                         <td><a href="#info.url#" target="_blank">#info.title#</a></td>
                     </tr>
                     </table>
@@ -95,11 +95,11 @@
                 
                 <table class="tbl" width="600">
                 <tr>
-                    <td class="tblHead">#stText.ext.installedVersion#</td>
+                    <th scope="row">#stText.ext.installedVersion#</th>
                     <td width="300">#detail.installed.version#</td>
                 </tr>
                 <tr>
-                    <td class="tblHead">#stText.ext.availableVersion#</td>
+                    <th scope="row">#stText.ext.availableVersion#</th>
                     <td>#detail.app.version#</td>
                 </tr>
                 <tr>

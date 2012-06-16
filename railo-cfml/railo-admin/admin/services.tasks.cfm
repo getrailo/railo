@@ -259,7 +259,7 @@ Error Output--->
 
 	<tr>
 		<td width="100" class="tblHead" nowrap>#stText.remote.ot.exetime#<br /><div class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</div></td>
-		<td class="tblHead" title="" nowrap>#stText.remote.ot.error#</td>
+		<th scope="row">#stText.remote.ot.error#</th>
 	</tr>
 	<cfset exp=tasks.exceptions>
 	<cfloop collection="#exp#" item="i">
@@ -334,7 +334,7 @@ Error Output--->
 		<td width="250" class="tblHead" nowrap><input type="text" name="nameFilter" style="width:250px" value="#session.filter.name#" /></td>
 		<td width="100" class="tblHead" nowrap><input type="text" name="nextFilter" style="width:90px" value="#session.filter.next#" /></td>
 		<td width="100" class="tblHead" nowrap><input type="text" name="triesFilter" style="width:90px" value="#session.filter.tries#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="#stText.Buttons.filter#"></td>
+		<th scope="row"><input type="submit" class="submit" name="mainAction" value="#stText.Buttons.filter#"></th>
 	</tr>
 	--->
 	<tr>
@@ -349,11 +349,11 @@ Error Output--->
 		</tr>
 		</table>
 		</td>
-		<td class="tblHead" nowrap>#stText.remote.ot.type#</td>
+		<th scope="row">#stText.remote.ot.type#</th>
 		<td width="250" class="tblHead" nowrap>#stText.remote.ot.name#</td>
 		<td width="100" class="tblHead" nowrap>#stText.remote.ot.nextExecution#<!---<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span>---></td>
 		<td width="100" class="tblHead" nowrap>#stText.remote.ot.tries#</td>
-		<td class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+		<th scope="row">#stText.Settings.DBCheck#</th>
 	</tr>
 
 <cfsavecontent variable="browse">

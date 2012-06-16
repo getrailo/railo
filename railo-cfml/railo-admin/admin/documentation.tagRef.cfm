@@ -161,10 +161,10 @@ multiple
 	<col width="450" />
 </colgroup>
 <tr>
-	<td class="tblHead">#stText.doc.attr.name#</td>
-	<td class="tblHead">#stText.doc.attr._type#</td>
-	<td class="tblHead">#stText.doc.attr.required#</td>
-	<td class="tblHead">#stText.doc.attr.description#</td>
+	<th scope="row">#stText.doc.attr.name#</th>
+	<th scope="row">#stText.doc.attr._type#</th>
+	<th scope="row">#stText.doc.attr.required#</th>
+	<th scope="row">#stText.doc.attr.description#</th>
 </tr>
 
 <cfloop array="#arrAttrNames#" index="key">

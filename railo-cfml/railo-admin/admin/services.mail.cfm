@@ -165,53 +165,43 @@ Defaults --->
 	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
 </cfif>
 
-<!--- Error Output--->
-<cfset printError(error)>
-
-<!---
-Mail Settings
-		
-		@todo help text --->
 <cfoutput>
-
-
-<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
-<table class="tbl">
-<colgroup>
-	<col width="150">
-	<col>
-</colgroup>
-
+	<!--- Error Output--->
+	<cfset printError(error)>
+	
+	<!--- Mail Settings
+	@todo help text --->
+	
+	<cfif not hasAccess>
+		<cfset noAccess(stText.setting.noAccess)>
+	</cfif>
+	
+	<h2>#stText.Mail.Settings#</h2>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<cfset css=iif(len(mail.logfile) EQ 0 and len(mail.strlogfile) NEQ 0,de('Red'),de(''))>
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.mail.DefaultEncoding#</th>
+					<td>
+						<cfif hasAccess>
+							<cfinput type="text" name="defaultencoding" value="#mail.defaultEncoding#" class="medium" required="no" message="#stText.mail.missingEncoding#">
+						<cfelse>
+							<input type="hidden" name="defaultencoding" value="#mail.defaultEncoding#">
+							<b>#mail.defaultEncoding#</b>
+						</cfif>
+						<div class="comment">#stText.mail.DefaultEncodingDescription#</div>
+					</td>
+				</tr>
 <tr>
-	<td colspan="2"><h2>#stText.Mail.Settings#</h2></td>
-</tr>
-
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<cfset css=iif(len(mail.logfile) EQ 0 and len(mail.strlogfile) NEQ 0,de('Red'),de(''))>
-<tr>
-	<th scope="row">#stText.mail.DefaultEncoding#</th>
-	<td>
-		<div class="comment">#stText.mail.DefaultEncodingDescription#</div><br />
-		<cfif hasAccess>
-		<cfinput type="text" name="defaultencoding" value="#mail.defaultEncoding#" 
-			style="width:200px" required="no" message="#stText.mail.missingEncoding#">
-		
-		<cfelse>
-			<input type="hidden" name="defaultencoding" value="#mail.defaultEncoding#">
-		
-			<b>#mail.defaultEncoding#</b>
-		</cfif>
-	</td>
-</tr>
-<tr>
-	<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
+	<th scope="row">#stText.Mail.LogFile#</th>
 	<td class="tblContent#css#" width="450" height="28" title="#mail.strlogfile#
 #mail.logfile#"><cfif hasAccess><cfinput type="text" name="logFile" 
 	value="#mail.strlogfile#" required="no"  
 	style="width:450px" message="#stText.Mail.LogFileMissing#"><cfelse><b>#mail.strlogfile#</b></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.Level#</td>
+	<th scope="row">#stText.Mail.Level#</th>
 	<td width="450"><cfif hasAccess>
 	<cfset levels=array("INFO","DEBUG","WARN","ERROR","FATAL")>
 	<select name="logLevel">
@@ -220,18 +210,18 @@ Mail Settings
 	<cfelse><b>#mail.logLevel#</b></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.SpoolEnabled#</td>
+	<th scope="row">#stText.Mail.SpoolEnabled#</th>
 	<td width="450"><cfif hasAccess><input <cfif mail.spoolEnable>checked</cfif> 
 	type="checkbox" class="checkbox" name="spoolEnable" value="yes"><cfelse><b>#iif(mail.spoolEnable,de('Yes'),de('No'))#</b></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.SpoolInterval#</td>
+	<th scope="row">#stText.Mail.SpoolInterval#</th>
 	<td width="450"><cfif hasAccess><cfinput type="text" name="spoolInterval" 
 	value="#mail.spoolInterval#" validate="integer" style="width:50px" 
 	required="no"><cfelse><b>#mail.spoolInterval#</b></cfif></td>
 </tr>
 <tr>
-	<td class="tblHead" width="100" height="28" nowrap>#stText.Mail.Timeout#</td>
+	<th scope="row">#stText.Mail.Timeout#</th>
 	<td width="450"><cfif hasAccess><cfinput type="text" name="timeout" 
 	value="#mail.timeout#" validate="integer" style="width:50px" required="no"><cfelse><b>#mail.timeout#</b></cfif></td>
 </tr>
@@ -264,12 +254,12 @@ Existing Collection --->
 </tr>
 <tr>
 	<td></td>
-	<td class="tblHead" nowrap>#stText.Mail.Server#</td>
-	<td class="tblHead" nowrap>#stText.Mail.Username#</td>
-	<td class="tblHead" nowrap>#stText.Mail.Password#</td>
-	<td class="tblHead" nowrap>#stText.Mail.Port#</td>
-	<td class="tblHead" nowrap>#stText.Mail.tls#</td>
-	<td class="tblHead" nowrap>#stText.Mail.ssl#</td>
+	<th scope="row">#stText.Mail.Server#</th>
+	<th scope="row">#stText.Mail.Username#</th>
+	<th scope="row">#stText.Mail.Password#</th>
+	<th scope="row">#stText.Mail.Port#</th>
+	<th scope="row">#stText.Mail.tls#</th>
+	<th scope="row">#stText.Mail.ssl#</th>
 			<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">

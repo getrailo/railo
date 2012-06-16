@@ -55,47 +55,47 @@
                 	<table class="tbl" width="300">
                     <cfif isInstalled>
                     <tr>
-                        <td class="tblHead">#stText.ext.installedVersion#</td>
+                        <th scope="row">#stText.ext.installedVersion#</th>
                         <td>#app.version#</td>
                     </tr>
                     <cfelse>
                     <tr>
-                        <td class="tblHead">#stText.ext.availableVersion#</td>
+                        <th scope="row">#stText.ext.availableVersion#</th>
                         <td>#app.version#</td>
                     </tr>
                     </cfif>
 					<!--- category --->
                     <cfif len(trim(app.category))>
                     <tr>
-                        <td class="tblHead">#stText.ext.category#</td>
+                        <th scope="row">#stText.ext.category#</th>
                         <td>#app.category#</td>
                     </tr>
                     </cfif>
                     <!--- author --->
                     <cfif len(trim(app.author))>
                     <tr>
-                        <td class="tblHead">#stText.ext.author#</td>
+                        <th scope="row">#stText.ext.author#</th>
                         <td>#app.author#</td>
                     </tr>
                     </cfif>
                     <!--- codename --->
                     <cfif len(trim(app.codename))>
                     <tr>
-                        <td class="tblHead">#stText.ext.codename#</td>
+                        <th scope="row">#stText.ext.codename#</th>
                         <td>#app.codename#</td>
                     </tr>
                     </cfif>
                     <!--- created --->
                     <cfif len(trim(app.created))>
                     <tr>
-                        <td class="tblHead">#stText.ext.created#</td>
+                        <th scope="row">#stText.ext.created#</th>
                         <td>#LSDateFormat(app.created)#</td>
                     </tr>
                     </cfif>
                     <!--- provider --->
                     <cfif len(trim(info.title))>
                     <tr>
-                        <td class="tblHead">#stText.ext.provider#</td>
+                        <th scope="row">#stText.ext.provider#</th>
                         <td><a href="#info.url#" target="_blank">#info.title#</a></td>
                     </tr>
                     </cfif>
@@ -105,28 +105,28 @@
                     <!--- documentation --->
                     <cfif len(trim(app.documentation))>
                     <tr>
-                        <td class="tblHead">#stText.ext.documentation#</td>
+                        <th scope="row">#stText.ext.documentation#</th>
                         <td><a href="#app.documentation#" target="_blank">#replace(replace(app.documentation,'http://',''),'https://','')#</a></td>
                     </tr>
                     </cfif>
                     <!--- support --->
                     <cfif len(trim(app.support))>
                     <tr>
-                        <td class="tblHead">#stText.ext.support#</td>
+                        <th scope="row">#stText.ext.support#</th>
                         <td><a href="#app.support#" target="_blank">#replace(replace(app.support,'http://',''),'https://','')#</a></td>
                     </tr>
                     </cfif>
                     <!--- forum --->
                     <cfif len(trim(app.forum))>
                     <tr>
-                        <td class="tblHead">#stText.ext.forum#</td>
+                        <th scope="row">#stText.ext.forum#</th>
                         <td><a href="#app.forum#" target="_blank">#replace(replace(app.forum,'http://',''),'https://','')#</a></td>
                     </tr>
                     </cfif>
                     <!--- mailinglist --->
                     <cfif len(trim(app.mailinglist))>
                     <tr>
-                        <td class="tblHead">#stText.ext.mailinglist#</td>
+                        <th scope="row">#stText.ext.mailinglist#</th>
                         <td><a href="#app.mailinglist#" target="_blank">#replace(replace(app.mailinglist,'http://',''),'https://','')#</a></td>
                     </tr>
                     </cfif>
@@ -144,11 +144,11 @@
                 
                 <table class="tbl" width="600">
                 <tr>
-                    <td class="tblHead">#stText.ext.installedVersion#</td>
+                    <th scope="row">#stText.ext.installedVersion#</th>
                     <td width="300">#detail.installed.version#</td>
                 </tr>
                 <tr>
-                    <td class="tblHead">#stText.ext.availableVersion#</td>
+                    <th scope="row">#stText.ext.availableVersion#</th>
                     <td>#detail.data.version#</td>
                 </tr>
                 <!---<tr>

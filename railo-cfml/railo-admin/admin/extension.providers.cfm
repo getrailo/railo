@@ -130,10 +130,10 @@ list all mappings and display necessary edit fields --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"><cfmodule template="tp.cfm"  width="10" height="1"></td>
-		<td class="tblHead" nowrap>#stText.ext.prov.url#</td>
-		<td class="tblHead" nowrap>#stText.ext.prov.title#</td>
-		<cfif doMode><td class="tblHead" nowrap>#stText.ext.prov.mode#</td></cfif>
-		<td class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
+		<th scope="row">#stText.ext.prov.url#</th>
+		<th scope="row">#stText.ext.prov.title#</th>
+		<cfif doMode><th scope="row">#stText.ext.prov.mode#</th></cfif>
+		<th scope="row">#stText.Settings.DBCheck#</th>
 	</tr>
     
 	<cfloop query="providers">

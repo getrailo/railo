@@ -122,8 +122,8 @@ Create Datasource --->
 <cfif qry.recordcount>
 <table class="tbl" width="740">
 <tr>
-	<td class="tblHead">#stText.services.certificate.subject#</td>
-	<td class="tblHead">#stText.services.certificate.issuer#</td>
+	<th scope="row">#stText.services.certificate.subject#</th>
+	<th scope="row">#stText.services.certificate.issuer#</th>
 </tr>
 <cfloop query="qry">
 <tr>

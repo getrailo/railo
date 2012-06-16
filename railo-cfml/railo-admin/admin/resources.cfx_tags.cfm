@@ -170,8 +170,8 @@ Error Output--->
 <cfoutput>
 	<tr>
 		<td><cfif has.cfx_setting ><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif></td>
-		<td class="tblHead" nowrap>#stText.CFX.Name#</td>
-		<td class="tblHead" nowrap>#stText.CFX.Class#</td>
+		<th scope="row">#stText.CFX.Name#</th>
+		<th scope="row">#stText.CFX.Class#</th>
 		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
 	<cfloop query="jtags">
@@ -289,10 +289,10 @@ If you have any problems while using the C++ CFX tags Implementation, please pos
 <cfoutput>
 	<tr>
 		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
-		<td class="tblHead" nowrap>#stText.CFX.Name#</td>
-		<td class="tblHead" nowrap>#stText.CFX.serverlibrary#</td>
-		<td class="tblHead" nowrap>#stText.CFX.procedure#</td>
-		<td class="tblHead" nowrap>#stText.CFX.keepAlive#</td>
+		<th scope="row">#stText.CFX.Name#</th>
+		<th scope="row">#stText.CFX.serverlibrary#</th>
+		<th scope="row">#stText.CFX.procedure#</th>
+		<th scope="row">#stText.CFX.keepAlive#</th>
 		<td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
 	</tr>
 	<cfloop query="ctags">

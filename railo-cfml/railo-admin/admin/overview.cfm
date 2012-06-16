@@ -374,7 +374,7 @@ Error Output --->
 		<table class="tbl">
 			<tr>
 				<th scope="row">#stText.Overview.ShortLabel#</th>
-				<td class="tblHead" width="400">#stText.Overview.LanguageName#</td>
+				<th scope="row">#stText.Overview.LanguageName#</th>
 			</tr>
 			<cfset stLangs = readLanguages()>
 			<cfset aLangs = structKeyArray(stLangs)>
@@ -386,7 +386,7 @@ Error Output --->
 				</tr>
 			</cfloop>
 			<tr>
-				<td class="tblHead">#stText.Overview.AddNewLanguage#</td>
+				<th scope="row">#stText.Overview.AddNewLanguage#</th>
 				<form action="#cgi.script_name#?#cgi.query_string#" method="post" enctype="multipart/form-data">
 				<td><input type="File" name="newLangFile"><br>
 				<input type="submit" value="#stText.Overview.Submit#"></td>

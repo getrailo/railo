@@ -22,8 +22,8 @@ Installed Applications --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <tr>
-		<td class="tblHead" nowrap><input type="text" name="filter" style="width:100%" value="#session.extFilter.filter#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="button submit" name="mainAction" value="filter"></td>
+		<th scope="row"><input type="text" name="filter" style="width:100%" value="#session.extFilter.filter#" /></th>
+		<th scope="row"><input type="submit" class="button submit" name="mainAction" value="filter"></th>
 	</tr>
 	<tr>
 		<td width="380" colspan="2" align="right"></td>
@@ -102,8 +102,8 @@ Not Installed Applications --->
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <tr>
-		<td class="tblHead" nowrap><input type="text" name="filter2" style="width:100%" value="#session.extFilter.filter2#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="button submit" name="mainAction" value="filter"></td>
+		<th scope="row"><input type="text" name="filter2" style="width:100%" value="#session.extFilter.filter2#" /></th>
+		<th scope="row"><input type="submit" class="button submit" name="mainAction" value="filter"></th>
 	</tr>
 	<tr>
 		<td width="380" colspan="2" align="right"></td>
@@ -196,7 +196,7 @@ Not Installed Applications --->
 		<td width="225" class="tblHead" nowrap><input type="text" name="nameFilter2" style="width:225px" value="#session.extFilter2.name#" /></td>
 		<td width="130" class="tblHead" nowrap><input type="text" name="categoryFilter2" style="width:130px" value="#session.extFilter2.category#" /></td>
 		<td width="225" class="tblHead" nowrap><input type="text" name="providerFilter2" style="width:225px" value="#session.extFilter2.provider#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
+		<th scope="row"><input type="submit" class="submit" name="mainAction" value="filter"></th>
 	</tr>
 	<tr>
 		<td width="380" colspan="7" align="right"></td>
