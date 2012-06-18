@@ -372,7 +372,7 @@
 						<td width="250" class="tblHead"><input type="text" name="nameFilter" style="width:250px" value="#session.filter.name#" /></td>
 						<th scope="row"><input type="text" name="nextFilter" style="width:90px" value="#session.filter.next#" /></th>
 						<th scope="row"><input type="text" name="triesFilter" style="width:90px" value="#session.filter.tries#" /></th>
-						<th scope="row"><input type="submit" class="submit" name="mainAction" value="#stText.Buttons.filter#"></th>
+						<th scope="row"><input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.filter#"></th>
 					</tr>
 					--->
 					<cfloop query="tasks">

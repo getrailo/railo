@@ -115,9 +115,9 @@
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.update#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             
             
@@ -128,8 +128,8 @@
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             <cfelse>
             
@@ -138,8 +138,8 @@
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.install#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             </cfif>
             
