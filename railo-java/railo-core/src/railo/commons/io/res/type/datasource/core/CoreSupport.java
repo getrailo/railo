@@ -3,15 +3,10 @@ package railo.commons.io.res.type.datasource.core;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.io.res.type.datasource.Attr;
 import railo.runtime.db.DatasourceConnection;
-import railo.runtime.db.DatasourceConnectionImpl;
-import railo.runtime.db.DatasourceConnectionPool;
-import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 
@@ -49,7 +44,7 @@ public abstract class CoreSupport implements Core {
 	}
 
 	PreparedStatement prepareStatement(DatasourceConnection dc,String sql) throws SQLException {
-		return ((DatasourceConnectionPro)dc).getPreparedStatement(new SQLImpl(sql), false, true);
+		return dc.getPreparedStatement(new SQLImpl(sql), false, true);
 	}
 
 }
