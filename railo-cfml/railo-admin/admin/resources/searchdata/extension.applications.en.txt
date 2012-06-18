@@ -1,0 +1,9 @@
+ filter install uninstall update
+ OK
+ Installed version Available version Category Author Code Name Release Date Provider Documentation Support Forum Mailinglist Update available Installed version Available version update uninstall cancel uninstall cancel install cancel
+ cancel License agreement Please read the following license agreement carefully. agree
+ next previous previous next
+
+ Installed These applications are already installed on the system. Not installed These applications are not yet installed on the system. Not installed These applications are not yet installed on the system. Application Category Provider install
+ Provider Installed version Available version Category Provider Update available Installed version Available version update uninstall cancel uninstall cancel install cancel
+

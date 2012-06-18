@@ -4,13 +4,14 @@
 
 
 <cfif request.setCFApplication>
-<cfapplication name="webadmin" 
-	sessionmanagement="yes" 
-	clientmanagement="no" 
-	setclientcookies="yes" 
-	setdomaincookies="no">
+	<cfapplication name="webadmin" 
+		sessionmanagement="yes" 
+		clientmanagement="no" 
+		setclientcookies="yes" 
+		setdomaincookies="no">
 </cfif>
 
+<!--- todo: remember screenwidth, so images have the correct width etc. --->
 <cfparam name="session.screenWidth" default="825">
 <cfparam name="session.screenMode" default="compact">
 <cfif structKeyExists(url,'screenmode')>
@@ -129,7 +130,9 @@
 <cfset request.self = request.adminType & ".cfm">
 <!--- includes several functions --->
 <cfinclude template="web_functions.cfm">
-
+<cfif not structKeyExists(application, "adminfunctions") or (structKeyExists(session,"alwaysNew") and session.alwaysNew)>
+	<cfset application.adminfunctions = new adminfunctions() />
+</cfif>
 
 <!--- Load Plugins --->
 <cffunction name="loadPluginLanguage" output="false">
@@ -268,6 +271,7 @@ isRestricted=isRestrictedLevel and request.adminType EQ "server";
 // Navigation
 // As a Set of Array and Structures, so that it is sorted
 
+favoriteLis = "";
 
 context=''; 
 // write Naviagtion
@@ -300,7 +304,13 @@ for(i=1;i lte arrayLen(navigation);i=i+1) {
 				if(structKeyExists(stCld,'_action'))_action=stCld._action;
 				else _action=stNavi.action & '.' & stCld.action;
 				
-				subNav = subNav & '<li><a '&(isActive?'class="menu_active"':'class="menu_inactive"')&' href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></li>';
+				isfavorite = application.adminfunctions.isfavorite(_action);
+				li = '<li' & (isfavorite ? ' class="favorite"':'') & '><a '&(isActive?'class="menu_active"':'class="menu_inactive"')&' href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></li>';
+				if (isfavorite)
+				{
+					favoriteLis &= li;
+				}
+				subNav = subNav & li;
 				//subNav = subNav & '<div class="navsub">'&arrow&'<a class="#sClass#" href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></div>';
 			}
 		}
@@ -316,6 +326,10 @@ for(i=1;i lte arrayLen(navigation);i=i+1) {
 		//strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";
 	}
 	//strNav = strNav ;
+}
+if (favoriteLis neq "")
+{
+	strNav = '<li id="favorites"><a href="##">Favorites</a><ul>' & favoriteLis & "</ul></li>" & strNav;
 }
 strNav ='<ul id="menu">'& strNav&'</ul>' ;
 

@@ -1,4 +1,5 @@
 <cfif thistag.executionmode EQ "end" or not thistag.hasendtag>
+	<cfset variables.stText = application.stText[session.railo_admin_lang] />
 	<cfparam name="attributes.navigation" default="">
 	<cfparam name="attributes.title" default="">
 	<cfparam name="attributes.content" default="">
@@ -21,11 +22,11 @@
 	<title>Railo #ucFirst(request.adminType)# Administrator</title>
 </cfoutput>
 	<link rel="stylesheet" href="resources/css/style.css.cfm" type="text/css" />
-	<script src="resources/js/jquery-1.7.2.min.js.cfm"></script>
-	<script src="resources/js/jquery.blockUI.js.cfm"></script>
-	<script src="resources/js/admin.js.cfm"></script>
-	<script>
-		function resizemid()
+	<script src="resources/js/jquery-1.7.2.min.js.cfm" type="text/javascript"></script>
+	<script src="resources/js/jquery.blockUI.js.cfm" type="text/javascript"></script>
+	<script src="resources/js/admin.js.cfm" type="text/javascript"></script>
+	<script type="text/javascript">
+<!---		function resizemid()
 		{
 			return;
 			var mh = $('#mainholder');
@@ -35,10 +36,14 @@
 			$('#resizewin').click(resizelayout);
 			resizemid();
 		});
+--->
+		$(function(){
+			$('#resizewin').click(resizelayout);
+		});
 		function resizelayout(e)
 		{
 			$('body').toggleClass('full');
-			setTimeout(resizemid, 100);
+			<!---setTimeout(resizemid, 100);--->
 			e.preventDefault();
 			return false;
 		};
@@ -62,6 +67,11 @@
 				<div id="nav">
 					<a href="##" id="resizewin" title="resize window"><span>Resize window</span></a>
 					<cfif hasNavigation>
+						<form method="get" action="#cgi.SCRIPT_NAME#">
+							<input type="hidden" name="action" value="admin.search" />
+							<input type="text" name="q" size="15" id="navsearch" />
+							<input type="submit" class="button submit" value="Search" style="padding-left:0; padding-right:0;" />
+						</form>
 						#attributes.navigation#
 					</cfif>
 				</div>
@@ -69,7 +79,16 @@
 					<div id="maintitle">
 						<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
 						<cfif hasNavigation>
-							<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">Logout</a>
+							<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">#variables.stText.help.logout#</a>
+							<!--- make favorite --->
+							<cfparam name="url.action" default="" />
+							<cfif url.action neq "">
+								<cfif application.adminfunctions.isFavorite(url.action)>
+									<a href="#request.self#?action=internal.savedata&action2=removefavorite&favorite=#url.action#" class="favorite tooltipMe" title="Remove this page from your favorites"><span>remove favorite</span></a>
+								<cfelse>
+									<a href="#request.self#?action=internal.savedata&action2=addfavorite&favorite=#url.action#" class="favorite tooltipMe favorite_inactive" title="Add this page to your favorites"><span>add favorite</span></a>
+								</cfif>
+							</cfif>
 						</cfif>
 					</div>
 					<div id="innercontent">
