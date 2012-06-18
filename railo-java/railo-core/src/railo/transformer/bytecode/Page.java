@@ -1201,7 +1201,12 @@ public final class Page extends BodyBase {
         
 	}
 	
-	
+	public static boolean hasMetaDataStruct(Map attrs, Map meta) {
+		if((attrs==null || attrs.size()==0) && (meta==null || meta.size()==0)){
+			return false;
+		}
+		return true;
+	}
 	
 	public static void createMetaDataStruct(BytecodeContext bc, Map attrs, Map meta) throws BytecodeException {
 		

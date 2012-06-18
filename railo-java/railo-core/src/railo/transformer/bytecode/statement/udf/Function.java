@@ -149,6 +149,20 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 					Page.STRUCT_IMPL
 				}
     		);
+	private static final Method INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.PAGE_SOURCE,
+					FUNCTION_ARGUMENT_ARRAY,
+					Types.INT_VALUE,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.STRING,
+					Types.BOOLEAN_VALUE,
+					Types.INT_VALUE
+				}
+    		);
 
 
 	// FunctionArgumentImpl(String name,String type,boolean required,int defaultType,String dspName,String hint,StructImpl meta)
@@ -380,23 +394,45 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		short type=ExpressionUtil.toShortType(returnType,CFTypes.TYPE_UNKNOW);
 		if(type==CFTypes.TYPE_UNKNOW) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
 		else adapter.push(type);
+		
 		// return format
 		if(returnFormat!=null)ExpressionUtil.writeOutSilent(returnFormat,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		
 		// output
 		ExpressionUtil.writeOutSilent(output,bc, Expression.MODE_VALUE);
+		
 		// access
 		writeOutAccess(bc, access);
+		
+		boolean light=type!=-1;
+		if(light && !LitString.EMPTY.equals(displayName))light=false;
+		if(light && description!=null && !LitString.EMPTY.equals(description))light=false;
+		if(light && !LitString.EMPTY.equals(hint))light=false;
+		if(light && secureJson!=null)light=false;
+		if(light && verifyClient!=null)light=false;
+		if(light && cachedWithin>0)light=false;
+		if(light && Page.hasMetaDataStruct(metadata, null))light=false;
+		
+		if(light){
+			adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT);
+			return;
+		}
+		
 		// displayName
 		ExpressionUtil.writeOutSilent(displayName,bc, Expression.MODE_REF);// displayName;
+		
 		// description
 		if(description!=null)ExpressionUtil.writeOutSilent(description,bc, Expression.MODE_REF);// displayName;
 		else adapter.push("");
+		
 		// hint
 		ExpressionUtil.writeOutSilent(hint,bc, Expression.MODE_REF);// hint;
+		
 		// secureJson
 		if(secureJson!=null)ExpressionUtil.writeOutSilent(secureJson,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		
 		// verify client
 		if(verifyClient!=null)ExpressionUtil.writeOutSilent(verifyClient,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
@@ -658,7 +694,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		
 		else {
 			toLitString(name,attr.getValue());// needed for testing
-			if(metadata==null)metadata=new HashMap();
+			if(metadata==null)metadata=new HashMap<String,Attribute>();
 			metadata.put(attr.getName(), attr);
 		}
 	}

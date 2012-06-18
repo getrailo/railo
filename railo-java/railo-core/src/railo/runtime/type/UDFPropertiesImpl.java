@@ -99,6 +99,19 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.cachedWithin=cachedWithin;
 	}
 	
+
+	public UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        short returnType, 
+	        String strReturnFormat, 
+	        boolean output, 
+	        int access) throws ExpressionException {
+		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, 
+				"","", "", null, null, 0L, null);
+	}
 		
 	
 	public UDFPropertiesImpl(
