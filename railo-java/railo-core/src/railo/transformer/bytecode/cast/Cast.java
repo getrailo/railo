@@ -49,7 +49,7 @@ public final class Cast extends ExpressionBase {
     		if("double".equals(type))							return CastDouble.toExprDouble(expr);
     	break;
     	case 'n':
-        	if("number".equals(lcType))							return CastDouble.toExprDouble(expr);
+        	if("number".equals(lcType) || "numeric".equals(lcType))return CastDouble.toExprDouble(expr);
         break;
     	case 'o':
         	if("object".equals(lcType))							{
@@ -410,7 +410,6 @@ public final class Cast extends ExpressionBase {
             }
         }
         Type t=getType(type);
-        
         
         expr.writeOut(bc,MODE_REF);
         adapter.checkCast(t);

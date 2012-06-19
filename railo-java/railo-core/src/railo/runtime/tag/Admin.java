@@ -2658,7 +2658,7 @@ private void doGetMappings() throws PageException {
     	}
     	settings.set(ORMConfiguration.CFC_LOCATION, arrCfclocation);
     	
-    	admin.updateORMSetting(ORMConfiguration.load(config, settings, null, oc));
+    	admin.updateORMSetting(ORMConfiguration.load(config,null, settings, null, oc));
         
     	
     	store();
@@ -3753,8 +3753,8 @@ private void doGetMappings() throws PageException {
     	updateSSLCertificate((ConfigServer)config, host, port);
     }
     
-    public static void updateSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
-    	Resource cacerts=getCacerts(cs);
+    public static void updateSSLCertificate(Config config,String host, int port) throws PageException {
+    	Resource cacerts=getCacerts(config);
     	 
     	try {
 			CertificateInstaller installer = new CertificateInstaller(cacerts,host,(int)port);
@@ -3770,8 +3770,8 @@ private void doGetMappings() throws PageException {
     	pageContext.setVariable(getString("admin",action,"returnVariable"),getSSLCertificate((ConfigServer)config,host,port));
     }
     
-    public static Query getSSLCertificate(ConfigServer cs,String host, int port) throws PageException {
-    	Resource cacerts=getCacerts(cs);
+    public static Query getSSLCertificate(Config config,String host, int port) throws PageException {
+    	Resource cacerts=getCacerts(config);
     	CertificateInstaller installer;
 		try {
 			installer = new CertificateInstaller(cacerts,host,(int)port);
@@ -3791,7 +3791,7 @@ private void doGetMappings() throws PageException {
     }
     
     
-    private static Resource getCacerts(ConfigServer cs) throws PageException {
+    private static Resource getCacerts(Config config) throws PageException {
     	Resource cacerts=null;
     	// javax.net.ssl.trustStore
     	String trustStore = SystemUtil.getPropertyEL("javax.net.ssl.trustStore");
@@ -3801,7 +3801,7 @@ private void doGetMappings() throws PageException {
     	
     	// security/cacerts
     	if(cacerts==null || !cacerts.exists()) {
-    		cacerts = cs.getConfigDir().getRealResource("security/cacerts");
+    		cacerts = ((ConfigImpl)config).getConfigServerDir().getRealResource("security/cacerts");
     	}
     	return cacerts;
     }

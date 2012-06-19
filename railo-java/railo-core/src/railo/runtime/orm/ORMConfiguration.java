@@ -14,6 +14,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.listener.ApplicationContextPro;
@@ -89,15 +90,15 @@ public class ORMConfiguration {
 	
 
 
-	public static ORMConfiguration load(Config config, Element el, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
-		return _load(config, new _GetElement(el),defaultCFCLocation,defaultConfig);
+	public static ORMConfiguration load(Config config,ApplicationContextPro ac, Element el, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
+		return _load(config,ac, new _GetElement(el),defaultCFCLocation,defaultConfig);
 	}
 	
-	public static ORMConfiguration load(Config config,Struct settings, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
-		return _load(config, new _GetStruct(settings),defaultCFCLocation,defaultConfig);
+	public static ORMConfiguration load(Config config,ApplicationContextPro ac,Struct settings, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
+		return _load(config,ac, new _GetStruct(settings),defaultCFCLocation,defaultConfig);
 	}
 
-	private static ORMConfiguration _load(Config config,_Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
+	private static ORMConfiguration _load(Config config,ApplicationContextPro ac, _Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
 		
 		if(dc==null)dc=new ORMConfiguration();
 		ORMConfiguration c = dc.duplicate();
@@ -128,7 +129,7 @@ public class ORMConfiguration {
 				
 				while(it.hasNext()){
 					try	{
-						res=toResourceExisting(config,it.next());
+						res=toResourceExisting(config,ac,it.next());
 						if(res!=null) list.add(res);
 					}
 					catch(Throwable t){}
@@ -138,17 +139,6 @@ public class ORMConfiguration {
 					c.isDefaultCfcLocation=false;
 				}
 			}
-			/*else {
-				try	{
-					res = toResourceExisting(config, obj);
-					if(res!=null) {
-						c.cfcLocations=new Resource[]{res};//Caster.toResource(config, obj, true);
-						c.isDefaultCfcLocation=false;
-					}
-				}
-				catch(Throwable t){}
-			}*/
-			
 		}
 		if(c.cfcLocations == null)
 			c.cfcLocations=defaultCFCLocation==null?new Resource[0]:new Resource[]{defaultCFCLocation};
@@ -246,38 +236,52 @@ public class ORMConfiguration {
 		return Caster.toResource(config, obj, existing);
 	}
 
-	private static Resource toResourceExisting(Config config, Object obj) {
+	private static Resource toResourceExisting(Config config, ApplicationContextPro ac,Object obj) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(path,true)) return null;
 		path=path.trim();
 		Resource res;
-		
 		PageContext pc = ThreadLocalPageContext.get();
 		
 		// first check relative to application.cfc
 		if(pc!=null) {
-			ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
-			Resource src= ac!=null?ac.getSource():null;
-			if(src!=null) {
-				res=src.getParentResource().getRealResource(path);
-				if(res.isDirectory()) return res;
+			if(ac==null) ac=(ApplicationContextPro) pc.getApplicationContext();
+			
+			// abs path
+			if(path.startsWith("/")){
+				ConfigWebImpl cwi=(ConfigWebImpl) config;
+				res=cwi.getPhysicalResourceExisting(
+						pc, 
+						ac==null?null:ac.getMappings(), path, 
+						false, false, true);
+				if(res!=null && res.isDirectory()) return res;
 			}
-			// happens when this is called from within the application.cfc (init)
+			// real path
 			else {
-				res=ResourceUtil.toResourceNotExisting(pc, path);
-				if(res.isDirectory()) return res;
+				Resource src= ac!=null?ac.getSource():null;
+				if(src!=null) {
+					res=src.getParentResource().getRealResource(path);
+					if(res!=null && res.isDirectory()) return res;
+				}
+				// happens when this is called from within the application.cfc (init)
+				else {
+					res=ResourceUtil.toResourceNotExisting(pc, path);
+					if(res!=null && res.isDirectory()) return res;
+				}
 			}
 		}
 		
+		
+		
 		// then in the webroot
 		res=config.getRootDirectory().getRealResource(path);
-		if(res.isDirectory()) return res;
+		if(res!=null && res.isDirectory()) return res;
 		
 		// then absolute
 		res = ResourceUtil.toResourceNotExisting(config, path);
-
-		if(res.isDirectory()) return res;
+		
+		if(res!=null && res.isDirectory()) return res;
 		return null;
 	}
 

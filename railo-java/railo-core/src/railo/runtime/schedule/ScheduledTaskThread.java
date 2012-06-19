@@ -1,5 +1,6 @@
 package railo.runtime.schedule;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -36,13 +37,15 @@ public class ScheduledTaskThread extends Thread {
 	private String charset;
 	private final CFMLEngineImpl engine;
 	private TimeZone timeZone;
+	private SchedulerImpl scheduler;
 
 
 
 	
-	public ScheduledTaskThread(CFMLEngineImpl engine,Config config, LogAndSource log, ScheduleTask task, String charset) {
+	public ScheduledTaskThread(CFMLEngineImpl engine,SchedulerImpl scheduler, Config config, LogAndSource log, ScheduleTask task, String charset) {
 		util = DateTimeUtil.getInstance();
 		this.engine=engine;
+		this.scheduler=scheduler;
 		this.config=config;
 		this.log=log;
 		this.task=task;
@@ -72,6 +75,11 @@ public class ScheduledTaskThread extends Thread {
 		}
 		finally{
 			task.setValid(false);
+			try {
+				scheduler.removeIfNoLonerValid(task);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
 		}
 		
 	}

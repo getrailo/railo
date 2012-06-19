@@ -78,6 +78,7 @@ import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
@@ -3445,6 +3446,12 @@ public abstract class ConfigImpl implements Config {
 	public abstract int getLoginDelay();
 	
 	public abstract boolean getLoginCaptcha();
+
+	public abstract Resource getConfigServerDir();
+
+	public abstract boolean isMonitoringEnabled();
+
+	public abstract RequestMonitor[] getRequestMonitors() ;
 
 	
 }

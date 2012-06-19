@@ -309,9 +309,9 @@ public final class FileTag extends TagImpl {
 		if(StringUtil.isEmpty(charset)) charset=pageContext.getConfig().getResourceCharset();
 		
 	    securityManager = pageContext.getConfig().getSecurityManager();
-		if(action.equals("move")) actionMove();
-		else if(action.equals("rename")) actionMove();
-		else if(action.equals("copy")) actionCopy();
+		if(action.equals("move")) actionMove(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
+		else if(action.equals("rename")) actionMove(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
+		else if(action.equals("copy")) actionCopy(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
 		else if(action.equals("delete")) actionDelete();
 		else if(action.equals("read")) actionRead();
 		else if(action.equals("readbinary")) actionReadBinary();
@@ -338,7 +338,9 @@ public final class FileTag extends TagImpl {
 	 * move source file to destination path or file
 	 * @throws PageException
 	 */
-	private void actionMove() throws PageException {
+	public static void actionMove(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -398,7 +400,9 @@ public final class FileTag extends TagImpl {
 	 * copy source file to destination file or path
 	 * @throws PageException
 	 */
-	private void actionCopy() throws PageException {
+	public static void actionCopy(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -432,8 +436,6 @@ public final class FileTag extends TagImpl {
 			// ERROR
 			else throw new ApplicationException("destiniation file ["+destination.toString()+"] already exist");
 		}
-        
-		
 		
         try {
             IOUtil.copy(source,destination);			

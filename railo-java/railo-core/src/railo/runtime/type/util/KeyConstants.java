@@ -616,6 +616,8 @@ public class KeyConstants {
 	public static Key _fieldnames=KeyImpl.intern("fieldnames");
 	public static Key _local=KeyImpl.intern("local");
 	public static Key _exceptions=KeyImpl.intern("exceptions");
+	public static Key _task=KeyImpl.intern("task");
+	public static Key _port=KeyImpl.intern("port");
 	
 	
 	

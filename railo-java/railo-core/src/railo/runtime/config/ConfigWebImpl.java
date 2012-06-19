@@ -30,11 +30,13 @@ import railo.runtime.compiler.CFMLCompilerImpl;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
@@ -141,14 +143,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     /**
      * @see railo.runtime.config.ConfigImpl#getConfigServerImpl()
      */
-    public ConfigServerImpl getConfigServerImpl() {
+    protected ConfigServerImpl getConfigServerImpl() {
         return configServer;
     }
     
 
     public ConfigServer getConfigServer() {
-    	//throw new PageRuntimeException(new SecurityException("access on server config without password denied"));
-        return configServer;
+    	throw new PageRuntimeException(new SecurityException("access on server config without password denied"));
+        //return configServer;
     }
     
     /**
@@ -278,10 +280,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return m;
 		}
 
-		public CFMLEngineImpl getCFMLEngineImpl() {
-			return getConfigServerImpl().getCFMLEngineImpl();
-		}
-
 		public String getLabel() {
 			String hash=getHash();
 			String label=hash;
@@ -388,6 +386,24 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		@Override
 		public boolean getLoginCaptcha() {
 			return configServer.getLoginCaptcha();
+		}
+
+		public boolean allowRequestTimeout() {
+			return configServer.getCFMLEngineImpl().allowRequestTimeout();
+		}
+
+		public Resource getConfigServerDir() {
+			return configServer.getConfigDir();
+		}
+
+		@Override
+		public boolean isMonitoringEnabled() {
+			return configServer.isMonitoringEnabled();
+		}
+
+		@Override
+		public RequestMonitor[] getRequestMonitors() {
+			return configServer.getRequestMonitors();
 		}
 
 }

@@ -33,6 +33,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.util.ApplicationContext;
 
 
@@ -463,12 +464,14 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		}
 		
 		int size=0;
-		for(int i=0;i<raw.length;i++) {
-			size+=raw[i].getName().length;
-			size+=raw[i].getValue().length;
-			size+=2;
+		if(!ArrayUtil.isEmpty(raw)){
+			for(int i=0;i<raw.length;i++) {
+				size+=raw[i].getName().length;
+				size+=raw[i].getValue().length;
+				size+=2;
+			}
+			size--;
 		}
-		size--;
 		byte[] barr = new byte[size],bname,bvalue;
 		int count=0;
 		

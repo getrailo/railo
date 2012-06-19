@@ -113,7 +113,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Object get(Key key) throws PageException {
 		Object o = get(key,null);
 		if(o!=null) return o;
-        throw new ExpressionException("Component ["+component.getCallName()+"] has no acessible Member with name ["+key+"]");
+        throw new ExpressionException("Component ["+component.getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
 	
 	/**

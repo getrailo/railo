@@ -20,6 +20,7 @@ import railo.runtime.PageSource;
 import railo.runtime.PageSourcePool;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
+import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.lock.LockManagerImpl;
@@ -93,7 +94,7 @@ public final class Controler extends Thread {
 			}
             
             if(doHour) {
-            	try{checkPermGenSpace(configServer,true);}catch(Throwable t){}
+            	try{ConfigServerImpl.checkPermGenSpace(configServer,true);}catch(Throwable t){}
             }
             
             for(int i=0;i<factories.length;i++) {
@@ -372,110 +373,5 @@ public final class Controler extends Thread {
     	
     }
 
-	/**
-	 * if free permspace gen is lower than 10000000 bytes, railo shrinks all classloaders 
-	 * @param cs
-	 */
-    public static void checkPermGenSpace(ConfigServer cs, boolean check) {
-    	//print.e(Runtime.getRuntime().freeMemory());
-		// Runtime.getRuntime().freeMemory()<200000 || 
-    	// long pgs=SystemUtil.getFreePermGenSpaceSize();
-    	int promille=SystemUtil.getFreePermGenSpacePromille();
-    	
-    	// Pen Gen Space info not available 
-    	if(promille==-1) {//if(pgs==-1) {
-    		if(countLoadedPages(cs)>500)
-    			shrink(cs);
-    	}
-    	else if(!check || promille<50){//else if(!check || pgs<1024*1024){
-			SystemOut.printDate(cs.getErrWriter(),"+Free Perm Gen Space is less than 1mb (free:"+((SystemUtil.getFreePermGenSpaceSize())/1024)+"kb), shrink all template classloaders");
-			// first just call GC and check if it help
-			System.gc();
-			//if(SystemUtil.getFreePermGenSpaceSize()>1024*1024) 
-			if(SystemUtil.getFreePermGenSpacePromille()>50) 
-				return;
-			
-			shrink(cs);
-		}
-	}
-    
-    private static void shrink(ConfigServer cs) {
-    	ConfigWeb[] webs = cs.getConfigWebs();
-		int count=0;
-		for(int i=0;i<webs.length;i++){
-			count+=shrink((ConfigWebImpl) webs[i],false);
-		}
-		if(count==0) {
-			for(int i=0;i<webs.length;i++){
-				shrink((ConfigWebImpl) webs[i],true);
-			}
-		}
-	}
-
-	private static int shrink(ConfigWebImpl config, boolean force) {
-		int count=0;
-		count+=shrink(config.getMappings(),force);
-		count+=shrink(config.getCustomTagMappings(),force);
-		count+=shrink(config.getComponentMappings(),force);
-		count+=shrink(config.getFunctionMapping(),force);
-		count+=shrink(config.getServerFunctionMapping(),force);
-		count+=shrink(config.getTagMapping(),force);
-		count+=shrink(config.getServerTagMapping(),force);
-		count+=shrink(((ConfigWebImpl)config).getServerTagMapping(),force);
-		return count;
-	}
-
-	private static int shrink(Mapping[] mappings, boolean force) {
-		int count=0;
-		for(int i=0;i<mappings.length;i++){
-			count+=shrink(mappings[i],force);
-		}
-		return count;
-	}
-
-	private static int shrink(Mapping mapping, boolean force) {
-		try {
-			PCLCollection pcl = ((MappingImpl)mapping).getPCLCollection();
-			if(pcl!=null)return pcl.shrink(force);
-		} 
-		catch (Throwable t) {
-			t.printStackTrace();
-		}
-		return 0;
-	}
-	
-	 public static long countLoadedPages(ConfigServer cs) {
-		 long count=0;
-		 ConfigWeb[] webs = cs.getConfigWebs();
-			for(int i=0;i<webs.length;i++){
-	    	count+=_count((ConfigWebImpl) webs[i]);
-		}	
-		return count;
-	 }
-	 private static long _count(ConfigWebImpl config) {
-		 long count=0;
-		count+=_count(config.getMappings());
-		count+=_count(config.getCustomTagMappings());
-		count+=_count(config.getComponentMappings());
-		count+=_count(config.getFunctionMapping());
-		count+=_count(config.getServerFunctionMapping());
-		count+=_count(config.getTagMapping());
-		count+=_count(config.getServerTagMapping());
-		count+=_count(((ConfigWebImpl)config).getServerTagMapping());
-		return count;
-	}
-
-	 private static long _count(Mapping[] mappings) {
-		 long count=0;
-		for(int i=0;i<mappings.length;i++){
-			count+=_count(mappings[i]);
-		}
-		return count;
-	}
-
-	private static long _count(Mapping mapping) {
-		PCLCollection pcl = ((MappingImpl)mapping).getPCLCollection();
-		return pcl==null?0:pcl.count();
-	}
 
 }

@@ -20,6 +20,7 @@ import railo.runtime.type.ReadOnlyStruct;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 import railo.runtime.util.ApplicationContext;
 
@@ -234,16 +235,15 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
                 
             }
             else if(first=='p') {
-            	if(key.equals(PATH_INFO)) {
+            	if(key.equals(KeyConstants._path_info)) {
             		String pathInfo = Caster.toString(req.getAttribute("javax.servlet.include.path_info"),null);
-            	    if(StringUtil.isEmpty(pathInfo)) pathInfo = req.getPathInfo();
-            	    if(!StringUtil.isEmpty(pathInfo,true)) return pathInfo;
-            	     
-            	  //return StringUtil.replace(StringUtil.emptyIfNull(req.getRequestURI()), StringUtil.emptyIfNull(req.getServletPath()),"", true);
+            		if(StringUtil.isEmpty(pathInfo)) pathInfo = Caster.toString(req.getHeader("xajp-path-info"),null);
+            		if(StringUtil.isEmpty(pathInfo)) pathInfo = req.getPathInfo();
+            	    
+            		if(!StringUtil.isEmpty(pathInfo,true)) return pathInfo;
             	    return "";
             	}
-                //if(lkey.equals(PATH_INFO))		return toString(req.getAttribute("javax.servlet.include.path_info"));
-            	if(key.equals(PATH_TRANSLATED))	{
+                if(key.equals(PATH_TRANSLATED))	{
             		try {
 						return toString(ResourceUtil.getResource(pc, pc.getBasePageSource()));
 					} catch (Throwable t) {

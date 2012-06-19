@@ -258,7 +258,7 @@ public final class List {
 		    for(int i=0;i<del.length;i++) {
 		        if(c==del[i]) {
 		            list=list.substring(1);
-		            list.length();
+		            len=list.length();
 		            continue outer;
 		        }
 		    }

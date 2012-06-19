@@ -60,7 +60,7 @@ public class CFCGetter implements Getter {
 			Type type = HibernateUtil.getPropertyType(metaData, key.getString());
 			
 			Object rtn = ComponentUtil.toComponentPro(cfc).getComponentScope().get(key,null);
-			return HibernateCaster.toSQL(engine, type, rtn);
+			return HibernateCaster.toSQL(engine, type, rtn,null);
 		} 
 		catch (PageException e) {
 			throw new HibernateRuntimeException(e);

@@ -23,6 +23,7 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
+import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.exp.ApplicationException;
@@ -168,29 +169,9 @@ public final class ScopeContext {
 	 * @return
 	 * @throws PageException 
 	 */
-	public static Cluster getClusterScope(ConfigServer cs, boolean create) throws PageException {
+	public static Cluster getClusterScope(Config config, boolean create) throws PageException {
 	    if(cluster==null && create) {
-	    	try {
-	    		if(Reflector.isInstaneOf(cs.getClusterClass(), Cluster.class)){
-	    			cluster=(Cluster) ClassUtil.loadInstance(
-							cs.getClusterClass(),
-							ArrayUtil.OBJECT_EMPTY
-							);
-	    			cluster.init(cs);
-	    		}
-	    		else if(Reflector.isInstaneOf(cs.getClusterClass(), ClusterRemote.class)){
-	    			ClusterRemote cb=(ClusterRemote) ClassUtil.loadInstance(
-							cs.getClusterClass(),
-							ArrayUtil.OBJECT_EMPTY
-							);
-		    		
-	    			cluster=new ClusterWrap(cs,cb);
-		    		//cluster.init(cs);
-	    		}
-			} 
-	    	catch (Exception e) {
-				throw Caster.toPageException(e);
-			} 
+	    	cluster=ConfigServerImpl.createClusterScope(config);
 	    }
 		return cluster;
 	}

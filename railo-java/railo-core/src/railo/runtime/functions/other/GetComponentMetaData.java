@@ -47,8 +47,13 @@ public final class GetComponentMetaData implements Function {
 		}
 		// TODO better solution
 		catch(ApplicationException ae){
-			InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
-			return inter.getMetaData(pc);
+			try{
+				InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
+				return inter.getMetaData(pc);
+			}
+			catch(PageException pe){
+				throw ae;
+			}
 		}
 	}
 }

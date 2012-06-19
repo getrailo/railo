@@ -1,6 +1,10 @@
 package railo.runtime.interpreter;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
@@ -152,41 +156,34 @@ public class CFMLExpressionInterpreter {
     private FunctionLib fld;
 	protected boolean allowNullConstant=false;
 	private boolean preciseMath;
-    //private Null nulls=Null.getInstance();
-    
-    
-    /**
-     * Wird aufgerufen um aus dem ￼bergebenen CFMLString einen Ausdruck auszulesen 
-     * und diese zu interpretieren.
-     * <br />
-     * Beispiel eines ￼bergebenen String:<br />
-     * <code>session.firstName</code> oder <code>trim(left('test'&var1,3))</code>
-     * <br />
-     * EBNF:<br />
-     * <code>spaces impOp;</code>
-     * 
-     * @param pc
-     * @param cfml
-     * @return
-     * @throws PageException
-     */
-    public Object interpret(PageContext pc,ParserString cfml) throws PageException { 
-    	return interpret(pc, cfml, false);
+	
+    private final static Map<String,Ref> data=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+	
+
+	 
+    public Object interpret(PageContext pc,String str) throws PageException {
+    	return interpret(pc,str,false);
     }
-    public Object interpret(PageContext pc,ParserString cfml, boolean preciseMath) throws PageException {    
+    
+
+    public Object interpret(PageContext pc,String str, boolean preciseMath) throws PageException { 
+    	Ref ref = data.get(str+":"+preciseMath);
+    	if(ref!=null)return ref.getValue();
+    	
+    	this.cfml=new ParserString(str);
     	this.preciseMath = preciseMath;
-    	this.cfml = cfml;
-        this.pc=pc;
+    	this.pc=pc;
         if(pc!=null)fld=((ConfigImpl)pc.getConfig()).getCombinedFLDs();
         
         if(JSON_ARRAY==null)JSON_ARRAY=fld.getFunction("_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=fld.getFunction("_jsonStruct");
         
         cfml.removeSpace();
-        Ref ref=assignOp();
+        ref=assignOp();
         cfml.removeSpace();
         
         if(cfml.isAfterLast()) {
+        	data.put(str+":"+preciseMath,ref);
             return ref.getValue();
         }
         throw new ExpressionException("Syntax Error, invalid Expression ["+cfml.toString()+"]");
@@ -212,30 +209,7 @@ public class CFMLExpressionInterpreter {
         cfml.removeSpace();
         return assignOp().getValue();
     }
-    
-    /**
-     * Wird aufgerufen um aus dem ￼bergebenen String einen Ausdruck auszulesen 
-     * und diesen zu interpretieren.
-     * <br />
-     * Beispiel eines ￼bergebenen String:<br />
-     * <code>session.firstName</code> oder <code>trim(left('test'&var1,3))</code>
-     * <br />
-     * EBNF:<br />
-     * <code>spaces impOp;</code>
-     * 
-     * @param pc
-     * @param str
-     * @return
-     * @throws PageException
-     */
-    public Object interpret(PageContext pc,String str) throws PageException {
-    	return interpret(pc,new ParserString(str));
-    }
-    
-    public Object interpret(PageContext pc,String str, boolean preciseMath) throws PageException {
-    	return interpret(pc,new ParserString(str),preciseMath);
-    }
-    
+
     /**
     * Liest einen gelableten  Funktionsparamter ein
     * <br />
