@@ -105,7 +105,7 @@ public final class ClassUtil {
 	public static Class loadClass(String className) throws ClassException {
 		Class clazz = loadClass(null,className,null);
 		if(clazz!=null) return clazz;
-		throw new ClassException("can not load class through its string name, because no definition for the class with the specifed name ["+className+"] could be found");
+		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
 
 	/**
@@ -155,7 +155,7 @@ public final class ClassUtil {
 	public static Class loadClass(ClassLoader cl,String className) throws ClassException {
 		Class clazz = loadClass(cl,className,null);
 		if(clazz!=null) return clazz;
-		throw new ClassException("can not load class through its string name, because no definition for the class with the specifed name ["+className+"] could be found");
+		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
 
 	/**

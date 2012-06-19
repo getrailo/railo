@@ -212,7 +212,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		boolean hasResult=false;
-		boolean closeStatement=true;
+		//boolean closeStatement=true;
 		try {	
 			SQLItem[] items=sql.getItems();
 			if(items.length==0) {
@@ -224,7 +224,7 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 	        else {
 	        	// some driver do not support second argument
 	        	PreparedStatement preStat = ((DatasourceConnectionPro)dc).getPreparedStatement(sql, createGeneratedKeys,allowToCachePreperadeStatement);
-	        	closeStatement=false;
+	        	//closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
@@ -258,7 +258,8 @@ public class QueryImpl implements QueryPro,Objects,Sizeable {
 			throw Caster.toPageException(e);
 		}
         finally {
-        	if(closeStatement)DBUtil.closeEL(stat);
+        	//if(closeStatement)
+        		DBUtil.closeEL(stat);
         }  
 		exeTime=stopwatch.time();
 	}

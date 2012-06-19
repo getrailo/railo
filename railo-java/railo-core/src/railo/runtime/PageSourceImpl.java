@@ -270,7 +270,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         catch(ClassFormatError e) {
         	String msg=StringUtil.emptyIfNull(e.getMessage());
         	if(StringUtil.indexOfIgnoreCase(msg, "Invalid method Code length")!=-1) {
-        		throw new TemplateException("There is to much code inside the template ["+getDisplayPath()+"], Railo was not able to break it into pieces, move parts of your code to an include or a extrenal component/function",msg);
+        		throw new TemplateException("There is too much code inside the template ["+getDisplayPath()+"], Railo was not able to break it into pieces, move parts of your code to an include or a external component/function",msg);
         	}
         	throw Caster.toPageException(e);
         }

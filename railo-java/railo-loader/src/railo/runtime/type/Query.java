@@ -28,7 +28,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	// FUTURE public Query getGeneratedKeys();
 	
 	/**
-	 * return a value of the resultset by specifed colmn and row
+	 * return a value of the resultset by specified column and row
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
@@ -38,7 +38,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	public Object getAt(String key,int row) throws PageException;
 	
 	/**
-	 * return a value of the resultset by specifed colmn and row
+	 * return a value of the resultset by specified column and row
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
@@ -47,7 +47,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	public Object getAt(Collection.Key key,int row) throws PageException;
 	
 	/**
-	 * return a value of the resultset by specifed colmn and row, otherwise to getAt this method throw no exception if value dont exist (return null)
+	 * return a value of the resultset by specified column and row, otherwise to getAt this method throw no exception if value dont exist (return null)
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
@@ -56,7 +56,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	public Object getAt(String key,int row, Object defaultValue);
 	
 	/**
-	 * return a value of the resultset by specifed colmn and row, otherwise to getAt this method throw no exception if value dont exist (return null)
+	 * return a value of the resultset by specified column and row, otherwise to getAt this method throw no exception if value dont exist (return null)
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
