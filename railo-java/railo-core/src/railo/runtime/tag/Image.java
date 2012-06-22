@@ -319,7 +319,7 @@ public final class Image extends TagImpl {
 		try {
 			if(this.oSource!=null){
 				if(isbase64) this.source=new railo.runtime.img.Image(Caster.toString(oSource));
-				else this.source=railo.runtime.img.Image.createImage(pageContext, oSource, false, false,true);
+				else this.source=railo.runtime.img.Image.createImage(pageContext, oSource, false, false,true,null);
 			}
 			
 			if(action==ACTION_BORDER)		doActionBorder();

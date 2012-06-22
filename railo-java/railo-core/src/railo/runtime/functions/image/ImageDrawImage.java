@@ -12,7 +12,7 @@ public class ImageDrawImage {
 		Image img = Image.toImage(name);
 		
 		
-		img.drawImage(Image.createImage(pc, image, true, false,true), (int)x, (int)y);
+		img.drawImage(Image.createImage(pc, image, true, false,true,null), (int)x, (int)y);
 		return null;
 	}
 	

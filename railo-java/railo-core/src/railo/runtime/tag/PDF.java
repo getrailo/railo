@@ -706,7 +706,7 @@ public class PDF extends BodyTagImpl  {
 		// image
 		Image img=null;
 		if(image!=null) {
-			railo.runtime.img.Image ri = railo.runtime.img.Image.createImage(pageContext,image,false,false,true);
+			railo.runtime.img.Image ri = railo.runtime.img.Image.createImage(pageContext,image,false,false,true,null);
 			img=Image.getInstance(ri.getBufferedImage(),null,false);
 		}
 		// copy From

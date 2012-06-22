@@ -174,19 +174,24 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	}
 
 	public Image(byte[] binary) throws IOException {
-		this(binary, ImageUtil.getFormat(binary,null)); 
+		this(binary, null); 
 	}
 	
 	public Image(byte[] binary, String format) throws IOException {
+		if(StringUtil.isEmpty(format))format=ImageUtil.getFormat(binary,null);
 		checkRestriction();
 		this.format=format;
 		_image=ImageUtil.toBufferedImage(binary,format);
 		if(_image==null) throw new IOException("can not read in image");
 	}
-	
+
 	public Image(Resource res) throws IOException {
+		this(res,null);
+	}
+	public Image(Resource res, String format) throws IOException {
+		if(StringUtil.isEmpty(format))format=ImageUtil.getFormat(res);
 		checkRestriction();
-		format=ImageUtil.getFormat(res);
+		this.format=format;
 		_image=ImageUtil.toBufferedImage(res,format);
 		this.source=res;
 		if(_image==null) throw new IOException("can not read in file "+res);
@@ -200,7 +205,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	
 
 	public Image(String b64str) throws IOException, ExpressionException {
-		this(ImageUtil.readBase64(b64str));
+		this(ImageUtil.readBase64(b64str),null);
+	}
+	
+	public Image(String b64str, String format) throws IOException, ExpressionException {
+		this(ImageUtil.readBase64(b64str),format);
 	}
 
 	public Image(int width, int height, int imageType, Color canvasColor) throws ExpressionException {
@@ -1330,25 +1339,25 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		return false;
 	}
 
-	public static Image createImage(PageContext pc,Object obj, boolean check4Var, boolean clone, boolean checkAccess) throws PageException {
+	public static Image createImage(PageContext pc,Object obj, boolean check4Var, boolean clone, boolean checkAccess, String format) throws PageException {
 		try {
 			if(obj instanceof String || obj instanceof Resource || obj instanceof File) {
 				try {
 					Resource res = Caster.toResource(obj);
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
-					return new Image(res);
+					return new Image(res,format);
 				} 
 				catch (ExpressionException ee) {
 					if(check4Var && Decision.isVariableName(Caster.toString(obj))) {
 						try {
-							return createImage(pc, pc.getVariable(Caster.toString(obj)), false,clone,checkAccess);
+							return createImage(pc, pc.getVariable(Caster.toString(obj)), false,clone,checkAccess,format);
 						}
 						catch (Throwable t) {
 							throw ee;
 						}
 					}
 					try {
-						return new Image(Caster.toString(obj));
+						return new Image(Caster.toString(obj),format);
 					}
 					catch (Throwable t) {
 						throw ee;
@@ -1359,7 +1368,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 				if(clone)return (Image) ((Image)obj).clone();
 				return (Image)obj;
 			}
-			if(Decision.isBinary(obj))			return new Image(Caster.toBinary(obj));
+			if(Decision.isBinary(obj))			return new Image(Caster.toBinary(obj),format);
 			if(obj instanceof BufferedImage)	return new Image(((BufferedImage) obj));
 			if(obj instanceof java.awt.Image)	return new Image(toBufferedImage((java.awt.Image) obj));
 			
