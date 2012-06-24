@@ -269,9 +269,6 @@ td, th {
 	padding:3px;
 	vertical-align:top;
 }
-.tbl td, .tbl th {
-	border:1px solid #ddd;
-}
 th {/* like .tblHead */
 	background-color:#f2f2f2;
 	color:#3c3e40;
@@ -284,8 +281,10 @@ table.nospacing {
 /*.tblHead{padding-left:5px;padding-right:5px;border:1px solid #e0e0e0;background-color:#f2f2f2;color:#3c3e40}
 .tblContent			{padding-left:5px;padding-right:5px;border:1px solid #e0e0e0;}
 */
-.tblContentRed		{padding-left:5px;padding-right:5px;border:1px solid #cc0000;background-color:#f9e0e0;}
-.tblContentGreen	{padding-left:5px;padding-right:5px;border:1px solid #009933;background-color:#e0f3e6;}
+tr.OK td {background-color:#e0f3e6;}
+tr.notOK td {background-color:#f9e0e0;}
+.tblContentRed		{padding-left:5px;padding-right:5px;border:1px solid #cc0000;b}
+.tblContentGreen	{padding-left:5px;padding-right:5px;border:1px solid #009933;}
 .tblContentYellow	{padding-left:5px;padding-right:5px;border:1px solid #ccad00;background-color:#fff9da;}
 /* tables */
 .maintbl {
@@ -325,6 +324,9 @@ td.fieldPadded {
 	color:#787a7d;
 	text-decoration:none;
 	padding:2px 0 5px 0;
+}
+.important {
+	color:red !important;
 }
 .commentHead{font-size : 11px;color:#DFE9F6;}
 div.comment + * {
@@ -563,7 +565,8 @@ label:hover {
 /* server admin */
 body.server {background-image:url('../img/server-back.png.cfm')}
 body.server .box, body.server h1, body.server h2, body.server h3, body.server h4, body.server a, body.server #menu li ul li a
-, body.server #menu li ul li a:hover, body.server #menu li ul li a.menu_active, body.server .extensionthumb a:hover {color:#9c0000}
+, body.server #menu li ul li a:hover, body.server #menu li ul li a.menu_active, body.server .extensionthumb a:hover
+{color:#9c0000}
 
 /* percentage bars: <div class="percentagebar"><div style="width:60%"></div></div> */
 div.percentagebar {
@@ -585,9 +588,11 @@ div.percentagebar div {
 
 
 .optionslist {border:0; border-collapse:collapse; width:auto;}
-.optionslist td, .optionslist th { padding:3px; vertical-align:top;}
+.optionslist td, .optionslist th { padding:3px; vertical-align:top; border:0 !important;}
 .contentlayout { border-collapse:collapse; width:100%; }
+/*
 .contentlayout td, .contentlayout th { border:0; }
+*/
 
 
 /* filter form */
@@ -623,7 +628,11 @@ div.percentagebar div {
 
 
 
-
+/* module Extensions > Providers */
+tbody#extproviderlist td {
+	height:40px;
+	vertical-align:middle;
+}
 /* module Extensions > Applications */
 /* extensions overview */
 .extensionlist {
@@ -661,6 +670,7 @@ textarea.licensetext {
 	border: 1px solid #666;
 }
 
+
 /* page Overview / home */
 div.classpaths {
 	font-family:"Courier New",Courier,monospace;
@@ -677,6 +687,20 @@ div.classpaths div:nth-child(odd) {
 }
 
 
+/* module remote > Security key */
+#remotekey {
+	text-align:center;
+	font-size:16px;
+	color:#007bb7;
+	width:450px;
+	padding:10px;
+	background-color:white;
+	border: 1px solid #595F73;
+}
+body.server #remotekey {
+	color:#9c0000;
+}
+
 /* tooltips */
 .helptextimage {
 	width:16px;
@@ -684,6 +708,9 @@ div.classpaths div:nth-child(odd) {
 	display:inline-block;
 	background: url(../img/info.png.cfm) no-repeat;
 	vertical-align:text-bottom;
+}
+.important {
+	background-color:red !important;
 }
 .helptextimage .inner {
 	display:none;

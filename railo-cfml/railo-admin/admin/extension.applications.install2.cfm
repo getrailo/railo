@@ -182,43 +182,30 @@
 	<cfset groups=steps[url.step].getGroups()>
 	
 	<cfoutput>
+		<cfif len(trim(steps[url.step].getLabel())&trim(steps[url.step].getDescription()))>
+			<cfif len(trim(steps[url.step].getLabel()))>
+				<h2>#steps[url.step].getLabel()#</h2>
+			</cfif>
+			<div class="pageintro">#steps[url.step].getDescription()#</div>
+		</cfif>
 		<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=install2&uid=#url.uid#&step=#url.step##appendURL#" method="post" enctype="multipart/form-data">
-			<table class="tbl maintbl">
-				<tbody>
-					<cfif stepLen GT 1>
-						<cfset stepOf=replace(stText.ext.stepOf,'{current}',url.step)>
-						<cfset stepOf=replace(stepOf,'{total}',arrayLen(steps))>
-						<tr>
-							<td colspan="3" class="comment right">#stepOf#</td>
-						</tr>
-					</cfif>
-					<cfif len(trim(steps[url.step].getLabel())&trim(steps[url.step].getDescription()))>
-						<tr>
-							<td colspan="3">
-								<cfif len(trim(steps[url.step].getLabel()))>
-									<h2>#steps[url.step].getLabel()#</h2>
-								</cfif>
-								#steps[url.step].getDescription()#
-							</td>
-						</tr>
-					</cfif>
-					<cfset variables.hiddenFieldsHtml = "" />
-					<cfloop array="#groups#" index="group">
-						<tr>
-							<td colspan="3">&nbsp;</td>
-						</tr>
-						<tr>
-							<td width="1">&nbsp;</td>
-							<td colspan="2">
-								<cfif len(trim(group.getLabel()))>
-									<b>#group.getLabel()#</b><br />
-								</cfif>
-								#group.getDescription()#
-							</td>
-						</tr>
+			<cfif stepLen GT 1>
+				<cfset stepOf=replace(stText.ext.stepOf,'{current}',url.step)>
+				<cfset stepOf=replace(stepOf,'{total}',arrayLen(steps))>
+				<div class="right">
+					#stepOf#
+				</div>
+			</cfif>
+			<cfset variables.hiddenFieldsHtml = "" />
+			<cfloop array="#groups#" index="group">
+				<cfif len(trim(group.getLabel()))>
+					<h3>#group.getLabel()#</h3>
+				</cfif>
+				<div class="itemintro">#group.getDescription()#</div>
+				<table class="maintbl">
+					<tbody>
 						<cfset items=group.getItems()>
 						<cfloop array="#items#" index="item">
-							<cfset doBR=true>
 							<!--- value --->
 							<cfif StructKeyExists(form,formPrefix&item.getName())>
 								<cfset value=form[formPrefix&item.getName()]>	
@@ -236,20 +223,20 @@
 								<cfset variables.hiddenFieldsHtml &= '#server.separator.line#<input type="hidden" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(item.getValue())#" />' />
 							<cfelse>
 								<tr>
-									<td>&nbsp;</td>
-						            <cfif len(trim(item.getLabel()))>
+									<cfif trim(item.getLabel()) neq "">
 										<th scope="row">#item.getLabel()#</th>
+										<td>
+									<cfelse>
+										<td colspan="2">
 									</cfif>
-									<td<cfif len(trim(item.getLabel())) EQ 0> colspan="2"</cfif> class="#iif(isError,de('tblContentRed'),de('tblContent'))#">
 										<cfif isError>
-											<span class="CheckError">#err[item.getName()]#</span><br />
+											<div class="error">#err[item.getName()]#</div>
 										</cfif>
-										
 										<!--- select --->
 										<cfif item.getType() EQ "select">
 											<cfset options=item.getOptions()>
 											<cfif arrayLen(options)>
-												<select name="#formPrefix##item.getName()#">
+												<select name="#formPrefix##item.getName()#" class="large">
 													<cfloop array="#options#" index="option">
 														<cfif structKeyExists(variables, 'fromForm')>
 															<cfset selected = variables.fromForm EQ option.getValue()>
@@ -260,13 +247,12 @@
 													</cfloop>
 												</select>
 											<cfelse>
-												<input type="text" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(item.getValue())#"  <cfif item.getSelected()> checked="checked"</cfif>/>
+												<input type="checkbox" class="checkbox" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(item.getValue())#"  <cfif item.getSelected()> checked="checked"</cfif>/>
 											</cfif>
 										<!--- radio/checkbox --->
 										<cfelseif item.getType() EQ "radio" or item.getType() EQ "checkbox">
 											<cfset options=item.getOptions()>
 											<cfif arrayLen(options)>
-												<cfset doBR=false>
 												<table class="optionslist">
 													<cfloop array="#options#" index="option">
 														<cfif structKeyExists(variables, 'fromForm')>
@@ -275,11 +261,12 @@
 															<cfset selected=option.getSelected()>
 														</cfif>
 														<tr>
-															<td><input type="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(option.getValue())#" <cfif selected> checked="checked"</cfif> /></td>
+															<td><input type="#item.getType()#" class="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(option.getValue())#" <cfif selected> checked="checked"</cfif> />
+															</td>
 															<td>
 																#option.getLabel()#
 																<cfif len(trim(option.getDescription()))>
-																	<br /><span class="comment">#option.getDescription()#</span>
+																	<br /><span class="comment inline">#option.getDescription()#</span>
 																</cfif>
 															</td>
 														</tr>
@@ -291,24 +278,26 @@
 												<cfelse>
 													<cfset selected=item.getSelected()>
 												</cfif>
-											   <input type="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#"<cfif selected> checked="checked"</cfif> />
+											   <input type="#item.getType()#" class="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#"<cfif selected> checked="checked"</cfif> />
 											</cfif>
 										<!--- text --->
 										<cfelse>
-											<input type="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#" style="width:400px">
+											<input type="#item.getType()#" name="#formPrefix##item.getName()#" value="#HTMLEditFormat(value)#" class="large" />
 										</cfif>
 										
 										<cfif len(trim(item.getDescription()))>
-											<cfif doBR><br /></cfif>
-											<span class="comment">#item.getDescription()#</span>
+											<div class="comment inline">#item.getDescription()#</div>
 										</cfif>
 									</td>
 								</tr>
 							</cfif>
 						</cfloop>
-					</cfloop>
+					</tbody>
+				</table>
+			</cfloop>
+			<table class="maintbl">
+				<tfoot>
 				    <tr>
-						<td>&nbsp;</td>
 						<td colspan="2">
 							#variables.hiddenFieldsHtml#
 							<input type="hidden" name="step" value="#url.step#">
@@ -333,7 +322,7 @@
 							</cfif>
 	    				</td>
 				    </tr>
-				</tbody>
+				</tfoot>
 			</table>
 		</cfform>
 	</cfoutput>

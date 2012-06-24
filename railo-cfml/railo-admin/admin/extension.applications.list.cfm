@@ -14,10 +14,8 @@
 
 <!--- upload own extension --->
 <cfoutput>
-	<div class="modheader">
-		<h2>#stText.ext.uploadExtension#</h2>
-		#stText.ext.uploadExtensionDesc#
-	</div>
+	<h2>#stText.ext.uploadExtension#</h2>
+	<div class="itemintro">#stText.ext.uploadExtensionDesc#</div>
 	<cfif structKeyExists(url, 'noextfile')>
 		<div class="error">
 			#stText.ext.nofileuploaded#
@@ -46,12 +44,10 @@
 
 <cfif extensions.recordcount>
 	<cfoutput>
-		<!--- 
-		Installed Applications --->
-		<div class="modheader">
-			<h2>#stText.ext.installed#</h2>
-			#stText.ext.installeddesc#
-		</div>
+		<!--- Installed Applications --->
+		<h2>#stText.ext.installed#</h2>
+		<div class="itemintro">#stText.ext.installeddesc#</div>
+
 		<div class="filterform">
 			<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 				<ul>
@@ -114,10 +110,9 @@
 
 <!---  Not Installed Applications --->
 <cfoutput>
-	<div class="modheader">
-		<h2>#stText.ext.notInstalled#</h2>
-		#stText.ext.notInstalleddesc#
-	</div>
+	<h2>#stText.ext.notInstalled#</h2>
+	<div class="itemintro">#stText.ext.notInstalleddesc#</div>
+
 	<div class="filterform">
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<ul>
@@ -132,9 +127,10 @@
 			<div class="clear"></div>
 		</cfform>
 	</div>
-<div class="extensionlist">
 </cfoutput>
-	<cfif isQuery(data)>
+
+<cfif isQuery(data)>
+	<div class="extensionlist">
 		<cfoutput query="data" group="uid">
 			<cfset info=data.info>
 			<cfif !StructKeyExists(existing,data.uid)
@@ -161,8 +157,6 @@
 				</div>
 			</cfif>
 		</cfoutput>
-	</cfif>
-<cfoutput>
-	<div class="clear"></div>
-</div>
-</cfoutput>
+		<div class="clear"></div>
+	</div>
+</cfif>

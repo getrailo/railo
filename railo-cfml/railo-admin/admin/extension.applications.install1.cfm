@@ -52,7 +52,7 @@
 				<h2>#stText.ext.LicenseAgreement#</h2>
 				#stText.ext.LicenseAgreementDesc#
 			</div>
-            <table class="tbl maintbl">
+            <table class="maintbl">
 				<tbody>
 					<tr>
 						<th scope="row">#stText.ext.licenseagreement#</th>

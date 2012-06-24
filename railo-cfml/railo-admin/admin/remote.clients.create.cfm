@@ -152,164 +152,157 @@ Error Output--->
 </cfsilent>
 
 <cfoutput>
-<script language="javascript">
-function removeStars(field) {
-	if(field.value=="****************")field.value="";
-}
+	<script language="javascript">
+		function removeStars(field) {
+			if(field.value=="#stars#")field.value="";
+		}
+	</script>
 
-</script>
-
-<h2># stText.remote.detail[actionType]#</h2>
-
-<table class="tbl" width="650">
-<tr>
-	<td colspan="2">#stText.remote.detail[actionType& "Desc"]#</td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.url'),de('&url=##url.url##'),de(''))#" method="post">
-
-	<tr>
-		<th scope="row">#stText.remote.label#</th>
-		<td width="450">
-			<cfinput type="text" name="label" value="#rc.label#" style="width:300px" required="yes" message="#stText.remote.LabelMissing#">
-			
-		</td>
-	</tr>
-	
-	
-	
-	
-	<tr>
-		<td width="200" colspan="2"><br /></td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.usage.title#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.usage.desc#</div><br />
-            
-            <cfloop query="usage">
-            <input type="checkbox" name="usage" value="#usage.code#" <cfif FindNoCase(usage.code,rc.usage)>  checked="checked"</cfif>> #usage.displayname#<br />
-            </cfloop>
-            <!---
-			<input type="checkbox" name="usage" value="synchronisation"<cfif FindNoCase('synchronisation',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.sync#
-			<cfif request.admintype EQ "server"><br /><input type="checkbox" name="usage" value="cluster"<cfif FindNoCase('cluster',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.cluster#</cfif>--->
-		</td>
-	</tr>
-	
-	<tr>
-		<td width="200" colspan="2"><br /><b>#stText.remote.connection#</b><br /><div class="comment">#stText.remote.connectionDesc#</div></td>
-	</tr>
-	
-<cfif actionType EQ "create">
-	<tr>
-		<th scope="row">#stText.remote.urlServer#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.urlServerDesc#</div><br />
-			<cfinput type="text" name="url_server" value="#rc.url_server#" style="width:450px" required="yes" message="#stText.remote.urlServerMissing#">
-		</td>
-	</tr>
-
-	<tr>
-		<th scope="row">#stText.remote.urlPath#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.urlPathDesc#</div><br />
-			<cfinput type="text" name="url_path" value="#rc.url_path#" style="width:450px" required="yes" message="#stText.remote.urlPathMissing#">
-		</td>
-	</tr>
-<cfelse>
-
-	<tr>
-		<th scope="row">#stText.remote.url#</th>
-		<td width="450">
-			<input type="hidden" name="url" value="#rc.url#">
-			<b>#rc.url#</b>
-		</td>
-	</tr>
-</cfif>
-	<tr>
-		<th scope="row">#stText.remote.serverusername#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.serverusernameDesc#</div><br />
-			<cfinput type="text" name="serverusername" value="#rc.serverusername#" style="width:200px">
-		</td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.serverpassword#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.serverpasswordDesc#</div><br />
-			<input type="hidden" name="serverpasswordh" value="#rc.serverpasswordh#">
-			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="serverpassword" value="#rc.serverpassword#" style="width:200px">
-		</td>
-	</tr>
-	<tr>
-		<td width="150" colspan="2" ><br /><b>#stText.remote.adminAccess#</b><br /><div class="comment">#stText.remote.adminAccessDesc#</div></td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.adminPassword[request.adminType]#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.adminPasswordDesc[request.adminType]#</div><br />
-			<input type="hidden" name="adminPasswordh" value="#rc.adminPasswordh#">
-			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="adminPassword" value="#rc.adminPassword#" style="width:200px" required="yes" message="#stText.remote.passwordMissing#">
-		</td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.securityKey#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.securityKeyDesc#</div><br />
-			<input type="hidden" name="securityKeyh" value="#rc.securityKeyh#">
-			<cfinput type="text" name="securityKey" value="#rc.securityKey#" onClick="removeStars(this)" style="width:300px" required="yes" message="#stText.remote.securityKeyMissing#"></td>
-	</tr>
-
-	<tr>
-		<td width="150" colspan="2"><br /><b>#stText.remote.proxy#</b><br /><div class="comment">#stText.remote.proxyDesc#</div></td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.proxyServer#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.proxyServerDesc#</div><br />
-			<cfinput type="text" name="proxyServer" value="#rc.proxyServer#" style="width:250px">
-		</td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.proxyPort#</th>
-		<td width="450">
-			<div class="comment">#stText.remote.proxyPortDesc#</div><br />
-			<cfinput type="text" name="proxyPort" value="#rc.proxyPort#" style="width:50px">
-		</td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.proxyUsername#</th>
-		<td width="450">
-			<cfinput type="text" name="proxyUsername" value="#rc.proxyUsername#" style="width:200px">
-		</td>
-	</tr>
-	<tr>
-		<th scope="row">#stText.remote.proxyPassword#</th>
-		<td width="450">
-			<input type="hidden" name="proxyPasswordh" value="#rc.proxyPasswordh#">
-			<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="proxyPassword" value="#rc.proxyPassword#" style="width:200px">
-		</td>
-	</tr>
-
-
-<tr>
-	<td width="150" colspan="2">&nbsp;</td>
-</tr>
-
-<tr>
-	<td colspan="2">
-	<input type="hidden" name="run" value="create2">
-	<input type="submit" class="button submit" name="_run" value="#stText.Buttons[actionType]#">
-	<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
-</tr>
-
-
-
-
-
-
-</cfform>
-</table>
+	<h2>#stText.remote.detail[actionType]#</h2>
+	<div class="itemintro">#stText.remote.detail[actionType& "Desc"]#</div>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.url'),de('&url=##url.url##'),de(''))#" method="post">
+		<input type="hidden" name="run" value="create2">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.remote.label#</th>
+					<td>
+						<cfinput type="text" name="label" value="#rc.label#" class="large" required="yes" message="#stText.remote.LabelMissing#">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.remote.usage.title#</th>
+					<td>
+						<ul class="radiolist">
+							<cfloop query="usage">
+								<li>
+									<label>
+										<input type="checkbox" class="checkbox" name="usage" value="#usage.code#" <cfif FindNoCase(usage.code,rc.usage) or usage.recordcount eq 1> checked="checked"</cfif>>
+										<b>#usage.displayname#</b>
+									</label>
+								</li>
+							</cfloop>
+						</ul>
+						<div class="comment">#stText.remote.usage.desc#</div>
+						<!---
+						<input type="checkbox" name="usage" value="synchronisation"<cfif FindNoCase('synchronisation',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.sync#
+						<cfif request.admintype EQ "server"><br /><input type="checkbox" name="usage" value="cluster"<cfif FindNoCase('cluster',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.cluster#</cfif>--->
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		<h3>#stText.remote.connection#</h3>
+		<div class="itemintro">#stText.remote.connectionDesc#</div>
+		<table class="maintbl">
+			<tbody>
+				<cfif actionType EQ "create">
+					<tr>
+						<th scope="row">#stText.remote.urlServer#</th>
+						<td>
+							<cfinput type="text" name="url_server" value="#rc.url_server#" class="large" required="yes" message="#stText.remote.urlServerMissing#">
+							<div class="comment">#stText.remote.urlServerDesc#</div>
+						</td>
+					</tr>
+				
+					<tr>
+						<th scope="row">#stText.remote.urlPath#</th>
+						<td>
+							<cfinput type="text" name="url_path" value="#rc.url_path#" class="large" required="yes" message="#stText.remote.urlPathMissing#">
+							<div class="comment">#stText.remote.urlPathDesc#</div>
+						</td>
+					</tr>
+				<cfelse>
+					<tr>
+						<th scope="row">#stText.remote.url#</th>
+						<td>
+							<input type="hidden" name="url" value="#rc.url#">
+							<b>#rc.url#</b>
+						</td>
+					</tr>
+				</cfif>
+				<tr>
+					<th scope="row">#stText.remote.serverusername#</th>
+					<td>
+						<cfinput type="text" name="serverusername" value="#rc.serverusername#" class="medium">
+						<div class="comment">#stText.remote.serverusernameDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.remote.serverpassword#</th>
+					<td>
+						<input type="hidden" name="serverpasswordh" value="#rc.serverpasswordh#">
+						<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="serverpassword" value="#rc.serverpassword#" class="medium">
+						<div class="comment">#stText.remote.serverpasswordDesc#</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h3>#stText.remote.adminAccess#</h3>
+		<div class="itemintro">#stText.remote.adminAccessDesc#</div>
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.remote.adminPassword[request.adminType]#</th>
+					<td>
+						<input type="hidden" name="adminPasswordh" value="#rc.adminPasswordh#">
+						<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="adminPassword" value="#rc.adminPassword#" class="medium" required="yes" message="#stText.remote.passwordMissing#">
+						<div class="comment">#stText.remote.adminPasswordDesc[request.adminType]#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.remote.securityKey#</th>
+					<td>
+						<input type="hidden" name="securityKeyh" value="#rc.securityKeyh#">
+						<cfinput type="text" name="securityKey" value="#rc.securityKey#" onClick="removeStars(this)" class="large" required="yes" message="#stText.remote.securityKeyMissing#">
+						<div class="comment">#stText.remote.securityKeyDesc#</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h3>#stText.remote.proxy#</h3>
+		<div class="itemintro">#stText.remote.proxyDesc#</div>
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.remote.proxyServer#</th>
+					<td>
+						<cfinput type="text" name="proxyServer" value="#rc.proxyServer#" class="large">
+						<div class="comment">#stText.remote.proxyServerDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.remote.proxyPort#</th>
+					<td>
+						<cfinput type="text" name="proxyPort" value="#rc.proxyPort#" class="number">
+						<div class="comment">#stText.remote.proxyPortDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.remote.proxyUsername#</th>
+					<td>
+						<cfinput type="text" name="proxyUsername" value="#rc.proxyUsername#" class="medium">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.remote.proxyPassword#</th>
+					<td>
+						<input type="hidden" name="proxyPasswordh" value="#rc.proxyPasswordh#">
+						<cfinput type="password" passthrough='autocomplete="off"' onClick="this.value='';" name="proxyPassword" value="#rc.proxyPassword#" class="medium">
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+						<input type="submit" class="button submit" name="_run" value="#stText.Buttons[actionType]#">
+						<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button cancel" name="cancel" value="#stText.Buttons.Cancel#">
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
 </cfoutput>

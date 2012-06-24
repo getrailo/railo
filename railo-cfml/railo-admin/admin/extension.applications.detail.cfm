@@ -129,7 +129,7 @@
 		<cfset updateAvailableDesc=replace(updateAvailableDesc,'{update}',detail.data.version)>
 		<!--- #updateAvailableDesc#--->
 		
-		<table class="maintbl" style="width:500px;">
+		<table class="maintbl autowidth">
 			<tbody>
 				<tr>
 					<th scope="row">#stText.ext.installedVersion#</td>

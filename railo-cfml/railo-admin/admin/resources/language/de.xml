@@ -735,7 +735,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="schedule.proxyusername">Username, um auf einen geschützten Proxy zuzugreifen.</data>
 	<data key="schedule.name">Name</data>
 	<data key="schedule.intervaltype">Intervall Typ</data>
-	<data key="schedule.currentdatetime">Aktuelle Datum/Zeit dieses Railo Kontexts: (mm/dd/yyyy hh:mm tt)</data>
+	<data key="schedule.currentdatetime">Aktuelle Datum/Zeit dieses Railo Kontexts:</data>
 	<data key="schedule.weekly">wöchentlich</data>
 	<data key="schedule.endsat">Endet am</data>
 	<data key="schedule.executiontimedescdaily">Definert die Zeit bei welcher der Task täglich ausgeführt werden soll.</data>

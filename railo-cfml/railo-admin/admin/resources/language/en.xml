@@ -741,7 +741,7 @@
 	<data key="schedule.proxyusername">Username to access a proxy if it is  protected by authentication</data>
 	<data key="schedule.name">Name</data>
 	<data key="schedule.intervaltype">Interval type</data>
-	<data key="schedule.currentdatetime">Current date/time of this Railo context is: (mm/dd/yyyy hh:mm tt)</data>
+	<data key="schedule.currentdatetime">The current date/time of this Railo context is:</data>
 	<data key="schedule.weekly">weekly</data>
 	<data key="schedule.endsat">End date</data>
 	<data key="schedule.executiontimedescdaily">Defines the time when the Task is executed daily</data>

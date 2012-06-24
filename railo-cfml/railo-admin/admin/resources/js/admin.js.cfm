@@ -21,7 +21,7 @@
 	<cfcontent reset="yes" type="#mimetype#" />
 	
 	<!--- PK: this tag is here, so my editor color-codes the content underneath. (it won't get outputted) --->
-	<script type="text/ecmascript">
+	<script type="text/javascript">
 //</cfsilent>
 /* init functions */
 $(function(){
@@ -258,7 +258,7 @@ function initTooltips()
 		}
 	});
 	
-	$('table.maintbl div.comment').each(function(){
+	$('table.maintbl div.comment:not(.inline)').each(function(){
 		var $this = $(this).addClass('helptextimage').removeClass('comment');
 		var parent = $this.parent('td');
 		if (parent.length && parent.prev('th').length)
