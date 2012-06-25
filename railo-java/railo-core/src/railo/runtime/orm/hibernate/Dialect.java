@@ -111,10 +111,11 @@ public class Dialect {
 	 */
 	public static String getDialect(DataSource ds){
 		String name=ds.getClazz().getName();
-		if("net.sourceforge.jtds.jdbc.Driver".equals(name)){
+		if("net.sourceforge.jtds.jdbc.Driver".equalsIgnoreCase(name)){
 			String dsn=ds.getDsnTranslated();
 			if(StringUtil.indexOfIgnoreCase(dsn, "sybase")!=-1)
-				return getDialect("SQLServer");
+				return getDialect("Sybase");
+			return getDialect("SQLServer");
 		}
 		return getDialect(name);
 	}
