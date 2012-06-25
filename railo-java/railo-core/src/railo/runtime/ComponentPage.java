@@ -16,14 +16,18 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
+import railo.runtime.converter.BinaryConverter;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
+import railo.runtime.converter.JavaConverter;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.converter.WDDXConverter;
 import railo.runtime.converter.XMLConverter;
+import railo.runtime.converter.bin.ImageConverter;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -151,7 +155,7 @@ public abstract class ComponentPage extends Page  {
                     return;
             	}
     			// WDDX
-                else if((method=pc.urlFormScope().get("method",null))!=null) {
+                else if((method=pc.urlFormScope().get(KeyConstants._method,null))!=null) {
                     callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
             		//close(pc);
                     return;
@@ -168,7 +172,7 @@ public abstract class ComponentPage extends Page  {
                     return;
                 } 
     			// WDDX
-                else if((method=pc.urlFormScope().get("method",null))!=null) {
+                else if((method=pc.urlFormScope().get(KeyConstants._method,null))!=null) {
                     callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
                     //close(pc); 
                     return;
@@ -201,7 +205,7 @@ public abstract class ComponentPage extends Page  {
 			String cdf = pc.getConfig().getComponentDumpTemplate();
 			
 			if(cdf!=null && cdf.trim().length()>0) {
-			    pc.variablesScope().set("component",component);
+			    pc.variablesScope().set(KeyConstants._component,component);
 			    pc.doInclude(cdf);
 			}
 			else pc.write(pc.getConfig().getDefaultDumpWriter().toString(pc,component.toDumpData(pc,9999,DumpUtil.toDumpProperties() ),true));
@@ -215,13 +219,37 @@ public abstract class ComponentPage extends Page  {
 	private void callRest(PageContext pc, Component component, String path, Result result, boolean suppressContent) throws IOException, ConverterException {
 		String method = pc.getHttpServletRequest().getMethod();
 		String[] subPath = result.getPath();
+		Struct cMeta;
+		try {
+			cMeta = component.getMetaData(pc);
+		} catch (PageException pe) {
+			throw ExceptionUtil.toIOException(pe);
+		}
+		
+
+		// Consumes
+		MimeType[] cConsumes=null;
+		String strMimeType = Caster.toString(cMeta.get(RestUtil.CONSUMES,null),null);
+		if(!StringUtil.isEmpty(strMimeType,true)){
+			cConsumes = MimeType.getInstances(strMimeType,',');
+		}
+		
+		// Produces
+		MimeType[] cProduces=null;
+		strMimeType = Caster.toString(cMeta.get(RestUtil.PRODUCES,null),null);
+		if(!StringUtil.isEmpty(strMimeType,true)){
+			cProduces = MimeType.getInstances(strMimeType,',');
+		}
+		
+		
 		
 		Iterator<Entry<Key, Object>> it = component.entryIterator();
 		Entry<Key, Object> e;
 		Object value;
 		UDF udf;
 		Struct meta;
-		boolean hasFunction=false;
+		int status=404;
+		MimeType bestP,bestC;
 		while(it.hasNext()){
 			e = it.next();
 			value=e.getValue();
@@ -229,39 +257,106 @@ public abstract class ComponentPage extends Page  {
 				udf=(UDF)value;
 				try {
 					meta = udf.getMetaData(pc);
+					
+					// check if http method match
 					String httpMethod = Caster.toString(meta.get(RestUtil.HTTP_METHOD,null),null);
 					if(StringUtil.isEmpty(httpMethod) || !httpMethod.equalsIgnoreCase(method)) continue;
+					
+
+					// get consumes mimetype
+					MimeType[] consumes;
+					strMimeType = Caster.toString(meta.get(RestUtil.CONSUMES,null),null);
+					if(!StringUtil.isEmpty(strMimeType,true)){
+						consumes = MimeType.getInstances(strMimeType,',');
+					}
+					else
+						consumes=cConsumes;
+					
+					
+					// get produces mimetype
+					MimeType[] produces;
+					strMimeType = Caster.toString(meta.get(RestUtil.PRODUCES,null),null);
+					if(!StringUtil.isEmpty(strMimeType,true)){
+						produces = MimeType.getInstances(strMimeType,',');
+					}
+					else
+						produces=cProduces;
+					
+					
+					
 					
 					String restPath = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
 					
 					// no rest path
 					if(StringUtil.isEmpty(restPath)){
 						if(ArrayUtil.isEmpty(subPath)) {
-							hasFunction=true;
-							_callRest(pc, component, udf, path, result.getVariables(),result, suppressContent,e.getKey());
-							break;
+							bestC = best(consumes,result.getContentType());
+							bestP = best(produces,result.getAccept());
+							if(bestC==null) status=405;
+							else if(bestP==null) status=406;
+							else {
+								status=200;
+								_callRest(pc, component, udf, path, result.getVariables(),result,bestP,produces, suppressContent,e.getKey());
+								break;
+							}
 						}
 					}
 					else {
 						Struct var = result.getVariables();
 						int index=RestUtil.matchPath(var, Path.init(restPath)/*TODO cache this*/, result.getPath());
 						if(index>=0 && index+1==result.getPath().length) {
-							hasFunction=true;
-							_callRest(pc, component, udf, path, var,result, suppressContent,e.getKey());
-							break;
+							bestC = best(consumes,result.getContentType());
+							bestP = best(produces,result.getAccept());
+							
+							if(bestC==null) status=405;
+							else if(bestP==null) status=406;
+							else {
+								status=200;
+								_callRest(pc, component, udf, path, var,result,bestP,produces, suppressContent,e.getKey());
+								break;
+							}
 						}
 					}
 				} 
 				catch (PageException pe) {}
 			}
 		}
-		
-		if(!hasFunction)
+		if(status==404)
 			RestUtil.setStatus(pc,404,"no rest service for ["+path+"] found");
+		else if(status==405)
+			RestUtil.setStatus(pc,405,"Unsupported Media Type");
+		else if(status==406)
+			RestUtil.setStatus(pc,406,"Not Acceptable");
+		
     	
 	}
 
-	private void _callRest(PageContext pc, Component component, UDF udf,String path, Struct variables, Result result, boolean suppressContent, Key methodName) throws PageException, IOException, ConverterException {
+	private MimeType best(MimeType[] produces, MimeType... accept) {
+		if(ArrayUtil.isEmpty(produces)){
+			if(accept.length>0) return accept[0];
+			return MimeType.ALL;
+		}
+		
+		MimeType best=null,tmp;
+		
+		for(int a=0;a<accept.length;a++){
+			tmp=accept[a].bestMatch(produces);
+			if(tmp!=null && !accept[a].hasWildCards() && tmp.hasWildCards()){
+				tmp=accept[a];
+			}
+			if(tmp!=null && 
+					(best==null || 
+					 best.getQuality()<tmp.getQuality() || 
+					 (best.getQuality()==tmp.getQuality() && best.hasWildCards() && !tmp.hasWildCards())))
+				best=tmp;
+		}
+		
+		
+		
+		return best;
+	}
+
+	private void _callRest(PageContext pc, Component component, UDF udf,String path, Struct variables, Result result, MimeType best,MimeType[] produces, boolean suppressContent, Key methodName) throws PageException, IOException, ConverterException {
 		FunctionArgument[] fa=udf.getFunctionArguments();
 		Struct args=new StructImpl();
 		Key name;
@@ -333,12 +428,68 @@ public abstract class ComponentPage extends Page  {
 		}
     	// convert result
 		else if(rtn!=null){
-        	Props props = new Props();
+			Props props = new Props();
         	props.format=result.getFormat();
         	
-        	pc.forceWrite(convertResult(pc, props, null, rtn));
+        	if(result.hasFormatExtension()){
+        		pc.forceWrite(convertResult(pc, props, null, rtn));
+        	}
+        	else {
+        		if(best!=null && !MimeType.ALL.same(best)) {
+            		int f = MimeType.toFormat(best, -1);
+            		if(f!=-1) {
+            			props.format=f;
+            			pc.forceWrite(convertResult(pc, props, null, rtn));
+            		}
+            		else {
+            			writeOut(pc,props,rtn,best);
+            		}
+            	}
+        		else pc.forceWrite(convertResult(pc, props, null, rtn));
+        	}
+        	
+        	
         }
 		
+	}
+
+	private void writeOut(PageContext pc, Props props, Object obj, MimeType mt) throws PageException, IOException, ConverterException {
+		// TODO miemtype mapping with converter defintion from external file
+		
+		// Images
+		if(mt.same(MimeType.IMAGE_GIF)) writeOut(pc,obj,mt,new ImageConverter("gif"));
+		else if(mt.same(MimeType.IMAGE_JPG)) writeOut(pc,obj,mt,new ImageConverter("jpeg"));
+		else if(mt.same(MimeType.IMAGE_PNG)) writeOut(pc,obj,mt,new ImageConverter("png"));
+		else if(mt.same(MimeType.IMAGE_TIFF)) writeOut(pc,obj,mt,new ImageConverter("tiff"));
+		else if(mt.same(MimeType.IMAGE_BMP)) writeOut(pc,obj,mt,new ImageConverter("bmp"));
+		else if(mt.same(MimeType.IMAGE_WBMP)) writeOut(pc,obj,mt,new ImageConverter("wbmp"));
+		else if(mt.same(MimeType.IMAGE_FBX)) writeOut(pc,obj,mt,new ImageConverter("fbx"));
+		else if(mt.same(MimeType.IMAGE_FBX)) writeOut(pc,obj,mt,new ImageConverter("fbx"));
+		else if(mt.same(MimeType.IMAGE_PNM)) writeOut(pc,obj,mt,new ImageConverter("pnm"));
+		else if(mt.same(MimeType.IMAGE_PGM)) writeOut(pc,obj,mt,new ImageConverter("pgm"));
+		else if(mt.same(MimeType.IMAGE_PBM)) writeOut(pc,obj,mt,new ImageConverter("pbm"));
+		else if(mt.same(MimeType.IMAGE_ICO)) writeOut(pc,obj,mt,new ImageConverter("ico"));
+		else if(mt.same(MimeType.IMAGE_PSD)) writeOut(pc,obj,mt,new ImageConverter("psd"));
+		else if(mt.same(MimeType.IMAGE_ASTERIX)) writeOut(pc,obj,MimeType.IMAGE_PNG,new ImageConverter("png"));
+		
+		// Application
+		else if(mt.same(MimeType.APPLICATION_JAVA)) writeOut(pc,obj,mt,new JavaConverter());
+		//if("application".equalsIgnoreCase(mt.getType()))
+		
+		
+		else pc.forceWrite(convertResult(pc, props, null, obj));
+	}
+
+	private void writeOut(PageContext pc, Object obj, MimeType mt,BinaryConverter converter) throws ConverterException, IOException {
+		pc.getResponse().setContentType(mt.toString());
+		
+		OutputStream os=null;
+		try{
+			converter.writeOut(pc, obj, os=pc.getResponseStream());
+		}
+		finally{
+			IOUtil.closeEL(os);
+		}
 	}
 
 	public static  boolean isSoap(PageContext pc) {
@@ -442,6 +593,10 @@ public abstract class ComponentPage extends Page  {
         	rsp.setContentType("text/plain; charset=UTF-8");
         	rsp.setHeader("Return-Format", "plain");
         break;
+        case UDF.RETURN_FORMAT_XML:
+        	rsp.setContentType("text/xml; charset=UTF-8");
+        	rsp.setHeader("Return-Format", "xml");
+        break;
         case UDF.RETURN_FORMAT_SERIALIZE:
         	rsp.setContentType("text/plain; charset=UTF-8");
         	rsp.setHeader("Return-Format", "serialize");
@@ -484,9 +639,7 @@ public abstract class ComponentPage extends Page  {
     }
     
     private static String convertResult(PageContext pc,Props props,Object queryFormat,Object rtn) throws ConverterException, PageException {
-
-    	
-		// return type XML ignore WDDX
+    	// return type XML ignore WDDX
 		if(props.type==CFTypes.TYPE_XML) {
 			//if(UDF.RETURN_FORMAT_WDDX==format) format=UDF.RETURN_FORMAT_PLAIN;
 			rtn=Caster.toString(Caster.toXML(rtn));

@@ -1,6 +1,8 @@
 package railo.runtime.converter;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -21,6 +23,7 @@ import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
@@ -49,7 +52,7 @@ import railo.runtime.type.util.ComponentUtil;
 /**
  * class to serialize and desirilize WDDX Packes
  */
-public final class JSONConverter {
+public final class JSONConverter extends ConverterSupport {
     
 	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 
@@ -292,7 +295,7 @@ public final class JSONConverter {
 				return Caster.toString(cfc.call(pc, TO_JSON, new Object[0]));
 			} catch (PageException e) {
 				e.printStackTrace();
-				throw new ConverterException(e);
+				throw toConverterException(e);
 			}
 		}
 		return defaultValue;
@@ -341,7 +344,7 @@ public final class JSONConverter {
 	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
 		} 
     	catch (ExpressionException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
     }
     
@@ -357,7 +360,7 @@ public final class JSONConverter {
 			sct.setEL("MethodAttributes", meta.get("PARAMETERS"));
 		} 
 		catch (PageException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 		
 		sct.setEL("Access", ComponentUtil.toStringAccess(udf.getAccess(),"public"));
@@ -680,6 +683,12 @@ public final class JSONConverter {
 		StringBuffer sb=new StringBuffer();
 		_serialize(pc,null,object,sb,serializeQueryByColumns,new HashSet<Object>());
 		return sb.toString();
+	}
+
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(serialize(pc,source,false));
+		writer.flush();
 	}
 	
 	

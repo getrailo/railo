@@ -3,6 +3,7 @@ package railo.runtime;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -45,6 +47,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.commons.lang.mimetype.MimeType;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.commons.lock.KeyLock;
@@ -2082,24 +2085,49 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		else matrix.setEL(entry.trim(), "");
     	}
     	
+    	// get accept
+    	List<MimeType> accept = ReqRspUtil.getAccept(this);
+    	MimeType contentType = ReqRspUtil.getContentType(this);
+    	
     	// check for format extension
-    	int format = getApplicationContext().getRestSettings().getReturnFormat();
+    	//int format = getApplicationContext().getRestSettings().getReturnFormat();
+    	int format;
+    	boolean hasFormatExtension=false;
     	if(StringUtil.endsWithIgnoreCase(pathInfo, ".json")) {
     		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
     		format = UDF.RETURN_FORMAT_JSON;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_JSON);
+    		hasFormatExtension=true;
     	}
     	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".wddx")) {
     		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
     		format = UDF.RETURN_FORMAT_WDDX;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_WDDX);
+    		hasFormatExtension=true;
     	}
-    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".serialize")) {
-    		pathInfo=pathInfo.substring(0,pathInfo.length()-10);
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".cfml")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
     		format = UDF.RETURN_FORMAT_SERIALIZE;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_CFML);
+    		hasFormatExtension=true;
     	}
     	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".xml")) {
     		pathInfo=pathInfo.substring(0,pathInfo.length()-4);
     		format = UDF.RETURN_FORMAT_XML;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_XML);
+    		hasFormatExtension=true;
     	}
+    	else {
+    		format = getApplicationContext().getRestSettings().getReturnFormat();
+    		//MimeType mt=MimeType.toMimetype(format);
+    		//if(mt!=null)accept.add(mt);
+    	}
+    	
+    	if(accept.size()==0) accept.add(MimeType.ALL);
     	
     	// loop all mappings
     	//railo.runtime.rest.Result result = null;//config.getRestSource(pathInfo, null);
@@ -2113,7 +2141,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             if(pathInfo.startsWith(m.getVirtualWithSlash(),0)) {
             	mapping=m;
             	//result = m.getResult(this,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
-            	rl=new RestRequestListener(m,pathInfo.substring(m.getVirtual().length()),format,matrix,null);
+            	rl=new RestRequestListener(m,pathInfo.substring(m.getVirtual().length()),matrix,format,hasFormatExtension,accept,contentType,null);
             	break;
             }
         }
@@ -2122,7 +2150,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(mapping==null && defaultMapping!=null) {
     		mapping=defaultMapping;
             //result = mapping.getResult(this,callerPath=pathInfo,format,matrix,null);
-        	rl=new RestRequestListener(mapping,pathInfo,format,matrix,null);
+        	rl=new RestRequestListener(mapping,pathInfo,matrix,format,hasFormatExtension,accept,contentType,null);
     	}
     	
     	
@@ -2179,14 +2207,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             base=null;
 	    }
     }
-    
-    
-	
-    /**
+
+	/**
      * @throws PageException 
      * @see railo.runtime.PageContext#execute(java.lang.String)
      */
-
     public void execute(String realPath, boolean throwExcpetion) throws PageException  {
     	execute(realPath, throwExcpetion, true);
     }

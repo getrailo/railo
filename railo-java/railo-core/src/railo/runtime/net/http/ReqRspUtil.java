@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
@@ -20,7 +23,6 @@ import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.functions.decision.IsLocalHost;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 
 public final class ReqRspUtil {
 
@@ -97,10 +99,10 @@ public final class ReqRspUtil {
 			String str = req.getHeader("Cookie");
 			if(str!=null) {
 				try{
-					String[] arr = List.listToStringArray(str, ';'),tmp;
+					String[] arr = railo.runtime.type.List.listToStringArray(str, ';'),tmp;
 					java.util.List<Cookie> list=new ArrayList<Cookie>();
 					for(int i=0;i<arr.length;i++){
-						tmp=List.listToStringArray(arr[i], '=');
+						tmp=railo.runtime.type.List.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
 							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
 						}
@@ -149,6 +151,21 @@ public final class ReqRspUtil {
 				return ReqRspUtil.decode(req.getHeader(key),charset,false);
 		}
 		return defaultValue;
+	}
+
+	public static List<String> getHeadersIgnoreCase(PageContext pc, String name) {
+		String charset = pc.getConfig().getWebCharset();
+		HttpServletRequest req = pc.getHttpServletRequest();
+		Enumeration e = req.getHeaderNames();
+		List<String> rtn=new ArrayList<String>();
+		String keyDecoded,key;
+		while(e.hasMoreElements()) {
+			key=e.nextElement().toString();
+			keyDecoded=ReqRspUtil.decode(key, charset,false);
+			if(name.equalsIgnoreCase(key) || name.equalsIgnoreCase(keyDecoded))
+				rtn.add(ReqRspUtil.decode(req.getHeader(key),charset,false));
+		}
+		return rtn;
 	}
 
 	public static String getScriptName(HttpServletRequest req) {
@@ -298,5 +315,35 @@ public final class ReqRspUtil {
 		}
 		catch(Throwable t){}
 		return false;
+	}
+	
+
+    public static LinkedList<MimeType> getAccept(PageContext pc) {
+    	LinkedList<MimeType> accept=new LinkedList<MimeType>();
+    	java.util.Iterator<String> it = ReqRspUtil.getHeadersIgnoreCase(pc, "accept").iterator();
+    	String value;
+		while(it.hasNext()){
+			value=it.next();
+			MimeType[] mtes = MimeType.getInstances(value, ',');
+			if(mtes!=null)for(int i=0;i<mtes.length;i++){
+				accept.add(mtes[i]);
+			}
+		}
+		return accept;
+	}
+    
+    public static MimeType getContentType(PageContext pc) {
+    	java.util.Iterator<String> it = ReqRspUtil.getHeadersIgnoreCase(pc, "content-type").iterator();
+    	String value;
+    	MimeType rtn=null;
+		while(it.hasNext()){
+			value=it.next();
+			MimeType[] mtes = MimeType.getInstances(value, ',');
+			if(mtes!=null)for(int i=0;i<mtes.length;i++){
+				rtn= mtes[i];
+			}
+		}
+		if(rtn==null) return MimeType.ALL;
+		return rtn;
 	}
 }

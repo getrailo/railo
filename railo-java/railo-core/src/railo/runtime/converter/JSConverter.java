@@ -1,6 +1,9 @@
 
 package railo.runtime.converter;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,6 +15,7 @@ import java.util.Set;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -27,7 +31,7 @@ import railo.runtime.type.util.CollectionUtil;
 /**
  * class to serialize to Convert CFML Objects (query,array,struct usw) to a JavaScript representation
  */
-public final class JSConverter {
+public final class JSConverter extends ConverterSupport {
 
 	private static final String NULL = "null";
 	private boolean useShortcuts=false;
@@ -47,6 +51,24 @@ public final class JSConverter {
 		return clientVariableName+"="+str+(StringUtil.endsWith(str, ';')?"":";");
 		//return sb.toString();
 	}
+
+	
+
+	   
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(_serialize(source));
+		writer.flush();
+	}
+	private String _serialize(Object object) throws ConverterException {
+		StringBuffer sb=new StringBuffer();
+		_serialize("tmp",object,sb,new HashSet<Object>());
+		String str = sb.toString().trim();
+		return str+(StringUtil.endsWith(str, ';')?"":";");
+		//return sb.toString();
+	}
+	
+	
 	
 	private void _serialize(String name,Object object,StringBuffer sb,Set<Object> done) throws ConverterException {
 		// NULL

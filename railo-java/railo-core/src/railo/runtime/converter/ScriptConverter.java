@@ -2,6 +2,7 @@ package railo.runtime.converter;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
+import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -41,7 +43,7 @@ import railo.runtime.type.util.ComponentUtil;
 /**
  * class to serialize and desirilize WDDX Packes
  */
-public final class ScriptConverter {
+public final class ScriptConverter extends ConverterSupport {
 	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
     
 	private int deep=1;
@@ -70,7 +72,7 @@ public final class ScriptConverter {
 	    try {
 		    sb.append(JavaConverter.serialize(serializable));
         } catch (IOException e) {
-            throw new ConverterException(e);
+            throw toConverterException(e);
         }
 	    sb.append("')");
         
@@ -103,7 +105,7 @@ public final class ScriptConverter {
 		    sb.append(')');
 		} 
 	    catch (PageException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 	}
 
@@ -243,7 +245,7 @@ public final class ScriptConverter {
         try {
         	sb.append("evaluateComponent('"+c.getAbsName()+"','"+ComponentUtil.md5(ci)+"',struct(");
 		} catch (Exception e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
         
 		boolean doIt=false;
@@ -420,7 +422,7 @@ public final class ScriptConverter {
 				try {
 					_serialize(((ObjectWrap)object).getEmbededObject(), sb,done);
 				} catch (PageException e) {
-					throw new ConverterException(e);
+					throw toConverterException(e);
 				}
 			    deep--;
 			    return;
@@ -531,6 +533,12 @@ public final class ScriptConverter {
 	private String escape(String str) {
         return StringUtil.replace(StringUtil.replace(str,"'","''",false),"#","##",false);
     }
+
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(serialize(source));
+		writer.flush();
+	}
 
     /**
 	 * serialize a Object to his literal Format

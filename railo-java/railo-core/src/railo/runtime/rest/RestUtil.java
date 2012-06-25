@@ -17,41 +17,8 @@ public class RestUtil {
 	public static final Collection.Key REST = KeyImpl.getInstance("rest");
 	public static final Collection.Key REST_PATH = KeyImpl.getInstance("restPath");
 	public static final Collection.Key REST_ARG_SOURCE = KeyImpl.getInstance("restArgSource"); 
-
-	/*public static Pair<Key, UDF> getUDFNameFor(PageContext pc, Component component, String path, Pair<Collection.Key,UDF> defaultValue) {
-		String method = pc.getHttpServletRequest().getMethod();
-		String[] arrPath=StringUtil.isEmpty(path)?new String[0]:List.listToStringArray(path, '/');
-		Key[] keys = component.keys();
-		Object value;
-		UDF udf;
-		FunctionArgument[] args;
-		Struct meta;
-		for(int i=0;i<keys.length;i++){
-			value=component.get(keys[i],null);
-			if(value instanceof UDF){
-				udf=(UDF)value;
-				try {
-					meta = udf.getMetaData(pc);
-					String httpMethod = Caster.toString(meta.get(HTTP_METHOD,null),null);
-					if(StringUtil.isEmpty(httpMethod) || !httpMethod.equalsIgnoreCase(method)) continue;
-					
-					args = udf.getFunctionArguments();
-					
-					if(args.length==0 || arrPath.length==0){
-						return new Pair<Collection.Key,UDF>(keys[i], udf);
-					}
-				} 
-				catch (PageException e) {}
-				
-			}
-		}
-		
-		return defaultValue;
-	}*/
-	
-	
-	
-	
+	public static final Collection.Key CONSUMES = KeyImpl.getInstance("consumes");  
+	public static final Collection.Key PRODUCES = KeyImpl.getInstance("produces"); 
 	
 	public static String[] splitPath(String path) {
 		return List.listToStringArray(path, '/');

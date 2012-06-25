@@ -11,6 +11,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.AndResourceFilter;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
+import railo.commons.lang.mimetype.MimeType;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
@@ -184,7 +185,7 @@ public class Mapping {
 	}
 
 
-	public Result getResult(PageContext pc,String path,int format,Struct matrix, Result defaultValue) throws PageException {
+	public Result getResult(PageContext pc,String path,Struct matrix,int format,boolean hasFormatExtension, List<MimeType> accept, MimeType contentType,Result defaultValue) throws PageException {
 		List<Source> sources = init(pc,false);
 		Iterator<Source> it = sources.iterator();
 		Source src;
@@ -198,7 +199,7 @@ public class Mapping {
 			if(index!=-1){
             	subPath=new String[(arrPath.length-1)-index];
             	System.arraycopy(arrPath, index+1, subPath, 0, subPath.length);
-				return new Result(src,variables,subPath, format,matrix);
+				return new Result(src,variables,subPath,matrix,format,hasFormatExtension,accept,contentType);
 			}	
 		}
 		

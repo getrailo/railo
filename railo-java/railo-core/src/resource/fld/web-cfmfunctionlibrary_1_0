@@ -4218,8 +4218,8 @@ EntitySave(entity, [forceinsert])</description>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateJava</class>
 		<description>literal representation of a serializable Java Object, used by the serialize method.</description>
 		<argument>
-			<name>string</name>
-			<type>string</type>
+			<name>stringOrBinary</name>
+			<type>any</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
