@@ -119,17 +119,17 @@ public class ResourceUtilImpl implements railo.runtime.util.ResourceUtil {
 	}
 
 	/**
-	 * @see railo.runtime.util.ResourceUtil#getMymeType(railo.commons.io.res.Resource, java.lang.String)
+	 * @see railo.runtime.util.ResourceUtil#getMimeType(railo.commons.io.res.Resource, java.lang.String)
 	 */
-	public String getMymeType(Resource res, String defaultValue) {
-		return ResourceUtil.getMymeType(res, defaultValue);
+	public String getMimeType(Resource res, String defaultValue) {
+		return ResourceUtil.getMimeType(res, defaultValue);
 	}
 
 	/**
-	 * @see railo.runtime.util.ResourceUtil#getMymeType(byte[], java.lang.String)
+	 * @see railo.runtime.util.ResourceUtil#getMimeType(byte[], java.lang.String)
 	 */
-	public String getMymeType(byte[] barr, String defaultValue) {
-		return ResourceUtil.getMymeType(barr, defaultValue);
+	public String getMimeType(byte[] barr, String defaultValue) {
+		return IOUtil.getMimeType(barr, defaultValue);
 	}
 
 	/**

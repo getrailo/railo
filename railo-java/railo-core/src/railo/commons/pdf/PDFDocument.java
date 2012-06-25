@@ -336,7 +336,7 @@ public final class PDFDocument {
     		
 			// mimetype
 			if(StringUtil.isEmpty(strMimetype)) {
-				String mt = ResourceUtil.getMymeType(srcfile,null);
+				String mt = ResourceUtil.getMimeType(srcfile,null);
 				if(mt!=null) setMimetype(mt);
 			}
 			InputStream is = srcfile.getInputStream();

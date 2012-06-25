@@ -81,7 +81,7 @@ public class ServletContextImpl implements ServletContext {
 	public String getMimeType(String file) {
 		throw notSupported("getMimeType(String file)");
 		// TODO
-		//return ResourceUtil.getMymeType(config.getResource(file),null);
+		//return ResourceUtil.getMimeType(config.getResource(file),null);
 	}
 
 	/**

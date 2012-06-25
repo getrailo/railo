@@ -101,7 +101,7 @@ public interface ResourceUtil {
 	     * @param defaultValue 
 	     * @return mime type of the file
 	     */
-	    public String getMymeType(Resource res, String defaultValue);
+	    public String getMimeType(Resource res, String defaultValue);
 
 	    /**
 	     * return the mime type of a byte array
@@ -109,7 +109,7 @@ public interface ResourceUtil {
 	     * @param defaultValue 
 	     * @return mime type of the file
 	     */
-	    public String getMymeType(byte[] barr, String defaultValue);
+	    public String getMimeType(byte[] barr, String defaultValue);
 	    
 		/**
 		 * check if file is a child of given directory

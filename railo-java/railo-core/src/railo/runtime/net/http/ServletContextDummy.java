@@ -92,7 +92,7 @@ public class ServletContextDummy implements ServletContext {
 	 * @see javax.servlet.ServletContext#getMimeType(java.lang.String)
 	 */
 	public String getMimeType(String file) {
-		return ResourceUtil.getMymeType(config.getResource(file),null);
+		return ResourceUtil.getMimeType(config.getResource(file),null);
 	}
 
 	/**

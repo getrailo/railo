@@ -138,7 +138,7 @@ public final class DocumentUtil {
         	String type = ct.getMimeType();
         	String c=ct.getCharset();
         	if(c!=null) charset=c;
-            //String type=ResourceUtil.getMymeType(file,"");
+            //String type=ResourceUtil.getMimeType(file,"");
             if(type==null)  {}
             // HTML
             else if(type.equals("text/html")) {

@@ -350,7 +350,7 @@ public final class S3 implements S3Constants {
 	}
 	
 	/*public void putObject(String bucketName,String objectName,int acl,Resource res) throws IOException, InvalidKeyException, NoSuchAlgorithmException, PageException, SAXException, EncoderException {
-		String contentType = IOUtil.getMymeType(res, "application");
+		String contentType = IOUtil.getMimeType(res, "application");
 		InputStream is = null;
 		try {
 			is = res.getInputStream();

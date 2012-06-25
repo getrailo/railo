@@ -4,13 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicMatch;
-import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
@@ -752,11 +748,11 @@ public final class ResourceUtil {
      * @param defaultValue 
      * @return mime type of the file
      */
-    public static String getMymeType(Resource res, String defaultValue) {
-        return getMymeType(res, MIMETYPE_CHECK_HEADER,defaultValue);
+    public static String getMimeType(Resource res, String defaultValue) {
+        return getMimeType(res, MIMETYPE_CHECK_HEADER,defaultValue);
     }
     
-    public static String getMymeType(Resource res, int checkingType, String defaultValue) {
+    public static String getMimeType(Resource res, int checkingType, String defaultValue) {
         
     	// check Extension
     	if((checkingType&MIMETYPE_CHECK_EXTENSION)!=0) {
@@ -769,66 +765,24 @@ public final class ResourceUtil {
     	
     	// check mimetype
     	if((checkingType&MIMETYPE_CHECK_HEADER)!=0) {
-	    	PrintStream out = System.out;
-	        try {
-	        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-	            MagicMatch match = Magic.getMagicMatch(IOUtil.toBytes(res));
-	            return match.getMimeType();
-	        } 
-	        catch (Exception e) {
-	            return defaultValue;
-	        }
-	        finally {
-	        	System.setOut(out);
-	        }
+    		InputStream is=null;
+    		try {
+    			is = res.getInputStream();
+    			return IOUtil.getMimeType(is, defaultValue);
+			} 
+    		catch (Throwable t) {
+				return defaultValue;
+			}
+    		finally {
+    			IOUtil.closeEL(is);
+    		}
     	}
     	
     	return defaultValue;
     }
+
     
-
-    /**
-     * return the mime type of a file, dont check extension
-     * @param barr
-     * @return mime type of the file
-     * @throws IOException 
-     */
-    public static String getMymeType(byte[] barr) throws IOException {
-        //if(mimeTypeParser==null)mimeTypeParser=new Magic();
-    	PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            MagicMatch match = Magic.getMagicMatch(barr);
-            return match.getMimeType();
-        } 
-        catch (Exception e) {
-            throw new IOException(e.getMessage());
-        }
-        finally {
-        	System.setOut(out);
-        }
-    }
-
-    /**
-     * return the mime type of a file, dont check extension
-     * @param barr
-     * @param defaultValue 
-     * @return mime type of the file
-     */
-    public static String getMymeType(byte[] barr, String defaultValue) {
-    	PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            MagicMatch match = Magic.getMagicMatch(barr);
-            return match.getMimeType();
-        } 
-        catch (Exception e) {
-            return defaultValue;
-        }
-        finally {
-        	System.setOut(out);
-        }
-    }
+    
     
 	/**
 	 * check if file is a child of given directory
