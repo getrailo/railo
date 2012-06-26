@@ -301,6 +301,7 @@ tr.notOK td {background-color:#f9e0e0;}
 	font-weight:normal;
 	empty-cells:show;
 	border:1px solid #e0e0e0;
+	word-break:break-all;
 }
 .maintbl th {
 	text-align:left;
@@ -477,8 +478,9 @@ a.edit, .btn-search {
 	display:none;
 }
 label:hover {
-	background-color:#f6f6f6;
+	/* background-color:#f6f6f6; */
 	cursor:pointer;
+	border-bottom:1px dotted #666;
 }
 .checkbox, .radio {border:0px;}
 .radiolist {
@@ -494,7 +496,7 @@ label:hover {
 	padding-left:20px;
 }
 .radiolist label b {
-	color:#666;
+	font-weight:normal;
 }
 .radiolist table {
 	margin-left:20px;

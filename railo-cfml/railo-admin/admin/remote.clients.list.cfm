@@ -110,18 +110,9 @@ list all mappings and display necessary edit fields --->
 	<div class="pageintro">#stText.remote.desc#</div>
 	
 	<cfif clients.recordcount>
-		<cfsavecontent variable="headText">
-			<script type="text/javascript">
-				$(function(){
-					enableBtnsWhenChecked($('##list input.submit'), $('##list input.checkbox'));
-				});
-			</script>
-		</cfsavecontent>
-		<cfhtmlhead text="#headText#" />
-		
 		<h2>#stText.remote.listClients#</h2>
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl" id="list">
+			<table class="maintbl checkboxtbl">
 				<thead>
 					<tr>
 						<th width="3%">

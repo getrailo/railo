@@ -326,19 +326,10 @@
 				</table>
 			</cfsavecontent> 
 			#browse#
-		
-			<cfsavecontent variable="headText">
-				<script type="text/javascript">
-					$(function(){
-						enableBtnsWhenChecked($('##ds_edit input.instbtn'), $('##ds_edit input.checkbox'));
-					});
-				</script>
-			</cfsavecontent>
-			<cfhtmlhead text="#headText#" />
 		</cfif>
 		
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl" id="ds_edit">
+			<table class="maintbl checkboxtbl">
 				<thead>
 					<tr>
 						<th width="3%">
@@ -433,9 +424,9 @@
 						 <tr>
 							<td colspan="6">
 								<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-								<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.Execute#">
-								<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.Delete#">
-								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.DeleteAll#">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Execute#">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+								<input type="submit" class="button" name="mainAction" value="#stText.Buttons.DeleteAll#">
 							</td>	
 						</tr>
 					</tfoot>

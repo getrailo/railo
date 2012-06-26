@@ -284,19 +284,9 @@ Defaults --->
 			</div>
 		</cfif>
 	</cfloop>
-	
-	<!--- enable/disable buttons based on checkboxes --->
-	<cfsavecontent variable="headText">
-		<script type="text/javascript">
-			$(function(){
-				enableBtnsWhenChecked($('##ds_edit tfoot input.submit'), $('##ds_edit input.linecb'));
-			});
-		</script>
-	</cfsavecontent>
-	<cfhtmlhead text="#headText#" />
-	
+		
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-		<table class="maintbl" id="ds_edit">
+		<table class="maintbl checkboxtbl">
 			<thead>
 				<tr>
 					<th width="3%">
@@ -316,7 +306,7 @@ Defaults --->
 						<td>
 							<input type="hidden" name="id_#ms.currentrow#" value="#hash(ms.hostName&":"&ms.username&":"&ms.password&":"&ms.tls&":"&ms.ssl)#">
 							<cfif not ms.readonly>
-								<input type="checkbox" class="checkbox linecb" name="row_#ms.currentrow#" value="#ms.currentrow#">
+								<input type="checkbox" class="checkbox" name="row_#ms.currentrow#" value="#ms.currentrow#">
 							</cfif>
 						</td>
 						<!--- host --->

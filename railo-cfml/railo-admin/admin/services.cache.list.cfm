@@ -93,16 +93,6 @@ Redirtect to entry --->
 </cfloop>
 <cfset querySort(connections,"default")>
 
-<cfsavecontent variable="headText">
-	<script type="text/javascript">
-		$(function(){
-			enableBtnsWhenChecked($('#list_btns input.submit'), $('#list input.checkbox'));
-			enableBtnsWhenChecked($('#list2_btns input.submit'), $('#list2 input.checkbox'));
-		});
-	</script>
-</cfsavecontent>
-<cfhtmlhead text="#headText#" />
-
 <cfoutput>
 
 	<cfif access NEQ "yes">
@@ -114,7 +104,7 @@ Redirtect to entry --->
 		<h2>#stText.Settings.cache.titleReadOnly#</h2>
 		<div class="itemintro">#stText.Settings.cache.descReadOnly#</div>
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl" id="list">
+			<table class="maintbl checkboxtbl">
 				<thead>
 					<tr>
 						<cfif access EQ "yes">
@@ -160,7 +150,7 @@ Redirtect to entry --->
 					</cfloop>
 				</tbody>
 				<cfif access EQ "yes">
-					<tfoot id="list_btns">
+					<tfoot>
 						<tr>
 							<td colspan="4">
 								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.verify#">
@@ -178,7 +168,7 @@ Redirtect to entry --->
 		<h2>#stText.Settings.cache.titleExisting#</h2>
 		<div class="itemintro">#stText.Settings.cache.descExisting#</div>
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl" id="list2">
+			<table class="maintbl checkboxtbl">
 				<thead>
 					<tr>
 						<th width="1%"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></th>
@@ -223,7 +213,7 @@ Redirtect to entry --->
 						</tr>
 					</cfloop>
 				</tbody>
-				<tfoot id="list2_btns">
+				<tfoot>
 					<tr>
 						<td colspan="4">
 							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.verify#">

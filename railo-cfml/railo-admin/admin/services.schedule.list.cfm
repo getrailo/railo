@@ -193,17 +193,8 @@ Redirtect to entry --->
 			</cfform>
 		</div>
 
-		<cfsavecontent variable="headText">
-			<script type="text/javascript">
-				$(function(){
-					enableBtnsWhenChecked($('##ds_edit input.submit'), $('##ds_edit tbody input.checkbox'));
-				});
-			</script>
-		</cfsavecontent>
-		<cfhtmlhead text="#headText#" />
-
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl" id="ds_edit">
+			<table class="maintbl checkboxtbl">
 				<thead>
 					<tr>
 						<th width="3%"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)" /></th>

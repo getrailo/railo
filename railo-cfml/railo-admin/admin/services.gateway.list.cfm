@@ -131,16 +131,6 @@ Redirtect to entry --->
     <cfset QuerySetCell(tmp,"state",entries.state)>
 </cfloop>
 
-<cfsavecontent variable="headText">
-	<script type="text/javascript">
-		$(function(){
-			enableBtnsWhenChecked($('#instancelist_btns input.instbtn'), $('#instancelist input.checkbox'));
-			enableBtnsWhenChecked($('#instancelist2_btns input.instbtn'), $('#instancelist2 input.checkbox'));
-		});
-	</script>
-</cfsavecontent>
-<cfhtmlhead text="#headText#" />
-
 <cfoutput>
 	<!--- Error Output--->
 	<cfset printError(error)>
@@ -151,7 +141,7 @@ Redirtect to entry --->
 		
 		<div class="pageintro">#stText.Settings.cache.descReadOnly#</div>
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl" id="instancelist">
+			<table class="maintbl checkboxtbl">
 				<thead>
 					<tr>
 						<th width="3%"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></th>
@@ -195,7 +185,7 @@ Redirtect to entry --->
 						</tr>
 					</cfloop>
 				</tbody>
-				<tfoot id="instancelist_btns">
+				<tfoot>
 					<tr>
 						<td></td>
 						<td colspan="3">
@@ -214,7 +204,7 @@ Redirtect to entry --->
 		<div class="itemintro">#stText.Settings.gateway.descExisting#</div>
     
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<table class="maintbl" id="instancelist2">
+			<table class="maintbl checkboxtbl">
 				<thead>
 					<tr>
 						<cfif srcLocal.recordcount gt 1>
@@ -264,14 +254,14 @@ Redirtect to entry --->
 						</tr>
 					</cfloop>
 				</tbody>
-				<tfoot id="instancelist2_btns">
+				<tfoot>
 					<tr>
 						<td></td>
 						<td colspan="4" id="btns">
-							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.refresh#">
-							<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.delete#">
-							<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.restart#">
-							<input type="submit" class="button submit instbtn" name="mainAction" value="#stText.Buttons.stopstart#">
+							<input type="submit" class="button" name="mainAction" value="#stText.Buttons.refresh#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.delete#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.restart#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.stopstart#">
 						</td>	
 					</tr>
 				</tfoot>

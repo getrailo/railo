@@ -116,19 +116,9 @@ list all mappings and display necessary edit fields --->
 	
 	<cfset columns=doMode?5:4>
 
-
-	<cfsavecontent variable="headText">
-		<script type="text/javascript">
-			$(function(){
-				enableBtnsWhenChecked($('##list input.submit'), $('##list input.checkbox'));
-			});
-		</script>
-	</cfsavecontent>
-	<cfhtmlhead text="#headText#" />
-	
 	<div class="itemintro">#stText.ext.prov.IntroText#</div>
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-		<table class="maintbl" id="list">
+		<table class="maintbl checkboxtbl">
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></th>

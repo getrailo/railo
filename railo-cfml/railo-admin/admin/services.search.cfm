@@ -131,21 +131,12 @@
 		@to setting for SearchEngine Class
 		 --->
 		<cfif collections.recordcount>
-			<cfsavecontent variable="headText">
-				<script type="text/javascript">
-					$(function(){
-						enableBtnsWhenChecked($('#ds_edit input.instbtn'), $('#ds_edit input.checkbox'));
-					});
-				</script>
-			</cfsavecontent>
-			<cfhtmlhead text="#headText#" />
-			
 			<cfoutput>
 				<!--- 
 				Existing Collection --->
 				<h2>#stText.Search.Collections#</h2>
 				<form action="#request.self#?action=#url.action#" method="post" enctype="multipart/form-data">
-					<table class="maintbl" id="ds_edit">
+					<table class="maintbl checkboxtbl">
 						<thead>
 							<tr>
 								<th width="3%"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></th>
@@ -182,11 +173,11 @@
 							 <tr>
 								<td colspan="8">
 									<input type="hidden" name="run" value="action">
-									<input type="submit" class="button submit instbtn" name="action" value="#stText.Buttons.Repair#">
-									<input type="submit" class="button submit instbtn" name="action" value="#stText.Buttons.Optimize#">
-									<input type="submit" class="button submit instbtn" name="action" value="#stText.Buttons.Purge#">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Repair#">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Optimize#">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Purge#">
 									<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-									<input type="submit" class="button submit instbtn" name="action" value="#stText.Buttons.Delete#">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Delete#">
 								</td>	
 							</tr>
 						</tfoot>

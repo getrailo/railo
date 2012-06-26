@@ -23,9 +23,25 @@
 	<!--- PK: this tag is here, so my editor color-codes the content underneath. (it won't get outputted) --->
 	<script type="text/javascript">
 //</cfsilent>
+
 /* init functions */
 $(function(){
 	initTooltips();
+
+	$('table.checkboxtbl').each(function(){
+		var btns = $('tfoot input.submit', this);
+		if (btns.length==0)
+		{
+			btns = $(this).next('h4.rsync').next('table.rsync').find('tfoot input.submit');
+			
+		}
+		var cbs = $('tbody input.checkbox', this);
+		if (btns.length && cbs.length)
+		{
+			enableBtnsWhenChecked(btns, cbs);
+		}
+	});
+
 	scrollToEl('div.error,div.warning:not(.nofocus)');
 });
 
