@@ -1,6 +1,6 @@
 package railo.runtime.rest;
 
-public class RestSettingImpl implements RestSetting {
+public class RestSettingImpl implements RestSettings {
 
 	private final boolean skipCFCWithError;
 	private int returnFormat;

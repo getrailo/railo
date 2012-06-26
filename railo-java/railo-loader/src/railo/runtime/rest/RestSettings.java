@@ -1,6 +1,6 @@
 package railo.runtime.rest;
 
-public interface RestSetting {
+public interface RestSettings {
 	public boolean getSkipCFCWithError();
 	
 	//public Resource[] getCfcLocations();
