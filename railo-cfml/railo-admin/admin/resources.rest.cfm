@@ -106,7 +106,7 @@ Error Output --->
 
 
 <cfset stText.rest.setting="Settings">
-<cfset stText.rest.list="List">
+<cfset stText.rest.list="List services">
 <cfset stText.rest.listDesc="List Services when ""/rest/"" is called ">
 <cfset stText.rest.mapping="Mappings">
 <cfset stText.rest.mappingDesc="Mappings ...">
@@ -121,175 +121,161 @@ Error Output --->
 
 <!--- 
 list all mappings and display necessary edit fields --->
-<script>
-function checkTheBox(field) {
-	var apendix=field.name.split('_')[1];
-	var box=field.form['row_'+apendix];
-	box.checked=true;
-}
-
-function changeDefault(field) {
-	var form=field.form;
-	for(var i=0;i<form.length;i++){
-		if(form[i].name=='default') {
-			if(form[i].checked)
-				form["row_"+form[i].value].checked=true;
-			
-			//alert(form[i].value+":"+form[i].checked);
-			
-			//row_#rest.currentrow#
+<script type="text/javascript">
+	function changeDefault(field) {
+		var form=field.form;
+		for(var i=0;i<form.length;i++){
+			if(form[i].name=='default') {
+				$(form["row_"+form[i].value]).prop('checked', form[i].checked).triggerHandler('change');
+				
+				//alert(form[i].value+":"+form[i].checked);
+				
+				//row_#rest.currentrow#
+			}
 		}
 	}
-	
-}
-
 </script>
 <cfoutput>
-
-<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
-
-
-#stText.rest.desc#<br /><br />
-
-<!--- 
-Settings --->
-<h2>#stText.rest.setting#</h2>
-<table class="tbl" width="540">
-<colgroup>
-    <col width="150">
-    <col width="390">
-</colgroup>
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<tr>
-	<th scope="row">#stText.rest.list#</th>
-	<td>
-	<cfif hasAccess NEQ 0><input type="checkbox" class="checkbox" name="list" value="yes" <cfif settings.list>checked</cfif>><cfelse><b>#yesNoFormat(settings.list)#</b></cfif>
-	<div class="comment">#stText.rest.listDesc#</div></td>
-	
-</tr>
-<cfif hasAccess NEQ 0>
-<cfmodule template="remoteclients.cfm" colspan="2">
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr></cfif>
-</cfform>
-</table>
-
-<br><br>
-
-<!--- 
-Mappings --->
-<h2>#stText.rest.mapping#</h2>
-#stText.rest.mappingDesc#
-<table class="tbl" width="100%" border="0">
- 	<colgroup>
-        <col width="10">
-        <col width="10">
-        <col width="30%">
-        <col width="70%">
-        <col>
-    </colgroup>
-<tr>
-	<td colspan="7"><cfmodule template="tp.cfm" width="1" height="1"></td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-	<tr>
-		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
-		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<th scope="row">#stText.rest.VirtualHead#</th>
-		<th scope="row">#stText.rest.PhysicalHead#</th>
-		<th scope="row">#stText.rest.DefaultHead#</th>
-	</tr>
-	<cfloop query="rest">
-		<cfif not rest.hidden>
-		<!--- and now display --->
-		<input type="hidden" name="stopOnError_#rest.currentrow#" value="yes">
-	<tr>
-		<!--- checkbox ---->
-		<td><table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><cfif not rest.readOnly><input type="checkbox" class="checkbox" name="row_#rest.currentrow#" value="#rest.currentrow#"></cfif></td>
-		</tr>
-		</table></td>
-		
-		<!--- edit --->
-		<td>
-			<cfif not rest.readOnly>
-				<a href="#request.self#?action=#url.action#&action2=create&virtual=#rest.virtual#" class="btn-mini edit"><span>edit</span></a>
+	<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+	<div class="pageintro">#stText.rest.desc#</div>
+	<!--- Settings --->
+	<h2>#stText.rest.setting#</h2>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.rest.list#</th>
+					<td>
+						<cfif hasAccess NEQ 0><input type="checkbox" class="checkbox" name="list" value="yes" <cfif settings.list>checked</cfif>>
+						<cfelse><b>#yesNoFormat(settings.list)#</b></cfif>
+						<div class="comment">#stText.rest.listDesc#</div>
+					</td>
+				</tr>
+				<cfif hasAccess NEQ 0>
+					<cfmodule template="remoteclients.cfm" colspan="2">
+				</cfif>
+			</tbody>
+			<cfif hasAccess NEQ 0>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+						</td>
+					</tr>
+				</tfoot>
 			</cfif>
-		</td>
-		
-		<!--- virtual --->
-		<td height="30" title="#rest.virtual#" nowrap><input type="hidden" 
-			name="virtual_#rest.currentrow#" value="#rest.virtual#">#cut(rest.virtual,14)#</td>
-		
-		<!--- physical --->
-		<cfset css=iif(len(rest.physical) EQ 0 and len(rest.strPhysical) NEQ 0,de('Red'),de(''))>
-		<td class="tblContent#css#" nowrap <cfif len(rest.strPhysical)>title="#rest.Physical#"</cfif>><cfif rest.readOnly>#cut(rest.strPhysical,36)#<cfelse><cfinput  onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#rest.currentrow#" value="#rest.strPhysical#" required="no"  
-			style="width:100%" message="#stText.rest.PhysicalMissing##rest.currentrow#)"></cfif></td>
-		
-		
-		
-		
-		<!--- default --->
-		<td nowrap>
-			<cfif rest.readOnly>
-            	#yesNoFormat(rest.default)#
-			<cfelse>
-            	<input type="radio" name="default" value="#rest.currentrow#" onchange="changeDefault(this)" <cfif rest.default>checked="checked"</cfif>/>
-            </cfif>
-		
-		</td>
-	</tr>
-	</cfif>
-</cfloop>
-<cfif hasAccess>
-	<tr>
-		<td><table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#rest.recordcount+1#" value="#rest.recordcount+1#"></td>
-		</tr>
-		</table></td>
-		
-		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="virtual_#rest.recordcount+1#" value="" required="no" style="width:100%"></td>
-		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#rest.recordcount+1#" value="" required="no"  style="width:100%"></td>
-		
-		<td nowrap>
-        	<input type="radio" name="default" value="#rest.recordcount+1#" onchange="changeDefault(this)"/>
-		</td>
-	</tr>
-</cfif>
-<cfif hasAccess>
-<cfmodule template="remoteclients.cfm" colspan="8" line=true>
-	<tr>
-		<td colspan="8">
-		 <table border="0" cellpadding="0" cellspacing="0">
-		 <tr>
-			<td><cfmodule template="tp.cfm"  width="8" height="1"></td>		
-			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
-			<td></td>
-		 </tr>
-		 <tr>
-			<td></td>
-			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="54" height="1"></td>
-			<td>&nbsp;
-			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
-			</td>	
-		</tr>
-		 </table>
-		 </td>
-	</tr>
-</cfif>
-</cfform>
+		</table>
+	</cfform>
+
+	<!--- Mappings --->
+	<h2>#stText.rest.mapping#</h2>
+	<div class="itemintro">#stText.rest.mappingDesc#</div>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl checkboxtbl">
+			<thead>
+				<tr>
+					<th width="3%"><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif></th>
+					<th width="24%">#stText.rest.VirtualHead#</th>
+					<th width="65%">#stText.rest.PhysicalHead#</th>
+					<th width="5%">#stText.rest.DefaultHead#</th>
+					<!---<th width="3%"></th>--->
+				</tr>
+			</thead>
+			<tbody>
+				<cfloop query="rest">
+					<cfif not rest.hidden>
+						<tr>
+							<!--- checkbox ---->
+							<td>
+								<input type="hidden" name="stopOnError_#rest.currentrow#" value="yes">
+								<cfif not rest.readOnly>
+									<input type="checkbox" class="checkbox" name="row_#rest.currentrow#" value="#rest.currentrow#">
+								</cfif>
+							</td>
+							<!--- virtual --->
+							<td>
+								<input type="hidden" name="virtual_#rest.currentrow#" value="#rest.virtual#">
+								#rest.virtual#
+							</td>
+							<!--- physical --->
+							<cfset css=iif(len(rest.physical) EQ 0 and len(rest.strPhysical) NEQ 0,de('Red'),de(''))>
+							<td class="tblContent#css#">
+								<cfif rest.readOnly>
+									#rest.strPhysical#
+								<cfelse>
+									<cfinput  onKeyDown="checkTheBox(this)" type="text" 
+									name="physical_#rest.currentrow#" value="#rest.strPhysical#" required="no"  
+									class="xlarge" message="#stText.rest.PhysicalMissing##rest.currentrow#)">
+								</cfif>
+							</td>
+							<!--- default --->
+							<td>
+								<cfif rest.readOnly>
+									#yesNoFormat(rest.default)#
+								<cfelse>
+									<input type="radio" name="default" value="#rest.currentrow#" onchange="changeDefault(this)" <cfif rest.default>checked="checked"</cfif>/>
+								</cfif>
+							</td>
+							<!--- edit
+							<td>
+								<cfif not rest.readOnly>
+									<a href="#request.self#?action=#url.action#&action2=create&virtual=#rest.virtual#" class="btn-mini edit"><span>edit</span></a>
+								</cfif>
+							</td> --->
+						</tr>
+					</cfif>
+				</cfloop>
+				<cfif hasAccess>
+					<cfmodule template="remoteclients.cfm" colspan="4" line=true>
+				</cfif>
+			</tbody>
+			<cfif hasAccess>
+				<tfoot>
+					<tr>
+						<td colspan="5">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+						</td>	
+					</tr>
+				</tfoot>
+			</cfif>
+		</table>
+
+		<cfif hasAccess>
+			<h2>Create new mapping</h2>
+			<table class="maintbl">
+				<tbody>
+					<tr>
+						<th scope="row">#stText.rest.VirtualHead#</th>
+						<td>
+							<input type="hidden" name="row_#rest.recordcount+1#" value="#rest.recordcount+1#">
+							<cfinput type="text" name="virtual_#rest.recordcount+1#" value="" required="no" class="medium" />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.rest.PhysicalHead#</th>
+						<td>
+							<cfinput type="text" name="physical_#rest.recordcount+1#" value="" required="no" class="large">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.rest.DefaultHead#</th>
+						<td>
+							<input type="radio" name="default" value="#rest.recordcount+1#" onchange="changeDefault(this)"/>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</cfif>
+	</cfform>
 </cfoutput>
-</table>
