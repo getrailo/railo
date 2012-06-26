@@ -14,7 +14,7 @@ import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.rest.RestSetting;
+import railo.runtime.rest.RestSettings;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 
@@ -59,9 +59,11 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private Map<Integer,String> defaultCaches=new HashMap<Integer, String>();
 	private Map<Integer,Boolean> sameFieldAsArrays=new HashMap<Integer, Boolean>();
 
-	private RestSetting restSettings;
+	private RestSettings restSettings;
 
 	private Resource[] restCFCLocations;
+
+	private JavaSettingsImpl javaSettings;
 
     
     /**
@@ -88,6 +90,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.source=source;
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSettings=config.getRestSetting();
+        this.javaSettings=new JavaSettingsImpl();
     }
     
     /**
@@ -516,11 +519,11 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	}
 
 	@Override
-	public RestSetting getRestSettings() {
+	public RestSettings getRestSettings() {
 		return restSettings;
 	}
 
-	public void setRestSettings(RestSetting restSettings) {
+	public void setRestSettings(RestSettings restSettings) {
 		this.restSettings=restSettings;
 	}
 	
@@ -532,5 +535,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public Resource[] getRestCFCLocations() {
 		return restCFCLocations;
+	}
+
+	@Override
+	public JavaSettings getJavaSettings() {
+		return javaSettings;
 	}
 }

@@ -390,7 +390,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 				entry = it.next();
 				count++;
 				key=KeyImpl.toKey(entry.getKey(),null);
-				attr=(TagLibTagAttr) entry.getValue();
+				attr=entry.getValue();
 				value=attributesScope.get(key,null);
 				if(value==null){
 					if(attr.getDefaultValue()!=null){

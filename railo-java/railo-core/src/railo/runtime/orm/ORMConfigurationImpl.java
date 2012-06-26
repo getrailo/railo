@@ -113,7 +113,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		Object obj = settings.get(KeyConstants._cfcLocation,null);
 		
 		if(obj!=null){
-			java.util.List<Resource> list=loadCFCLocation(config,ac,obj);
+			java.util.List<Resource> list=loadCFCLocation(config,ac,obj,true);
 			
 			if(list!=null && list.size()>0){
 				c.cfcLocations=list.toArray(new Resource[list.size()]);
@@ -210,7 +210,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		return c;
 	}	
 
-	public static java.util.List<Resource> loadCFCLocation(Config config, ApplicationContext ac,Object obj) {
+	public static java.util.List<Resource> loadCFCLocation(Config config, ApplicationContext ac,Object obj, boolean onlyDir) {
 		
 		Resource res;
 		if(!Decision.isArray(obj)){
@@ -224,10 +224,9 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 			Array arr=Caster.toArray(obj,null);
 			java.util.List<Resource> list=new ArrayList<Resource>();
 			Iterator<Object> it = arr.valueIterator();
-			
 			while(it.hasNext()){
 				try	{
-					res=toResourceExisting(config,ac,it.next());
+					res=toResourceExisting(config,ac,it.next(),onlyDir);
 					if(res!=null) list.add(res);
 				}
 				catch(Throwable t){}
@@ -250,7 +249,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		return Caster.toResource(config, obj, existing);
 	}
 
-	private static Resource toResourceExisting(Config config, ApplicationContext ac,Object obj) {
+	private static Resource toResourceExisting(Config config, ApplicationContext ac,Object obj, boolean onlyDir) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(path,true)) return null;
@@ -269,19 +268,19 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 						pc, 
 						ac==null?null:ac.getMappings(), path, 
 						false, false, true);
-				if(res!=null && res.isDirectory()) return res;
+				if(res!=null && (!onlyDir || res.isDirectory())) return res;
 			}
 			// real path
 			else {
 				Resource src= ac!=null?ac.getSource():null;
 				if(src!=null) {
 					res=src.getParentResource().getRealResource(path);
-					if(res!=null && res.isDirectory()) return res;
+					if(res!=null && (!onlyDir || res.isDirectory())) return res;
 				}
 				// happens when this is called from within the application.cfc (init)
 				else {
 					res=ResourceUtil.toResourceNotExisting(pc, path);
-					if(res!=null && res.isDirectory()) return res;
+					if(res!=null && (!onlyDir || res.isDirectory())) return res;
 				}
 			}
 		}
@@ -290,12 +289,12 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		
 		// then in the webroot
 		res=config.getRootDirectory().getRealResource(path);
-		if(res!=null && res.isDirectory()) return res;
+		if(res!=null && (!onlyDir || res.isDirectory())) return res;
 		
 		// then absolute
 		res = ResourceUtil.toResourceNotExisting(config, path);
 		
-		if(res!=null && res.isDirectory()) return res;
+		if(res!=null && (!onlyDir || res.isDirectory())) return res;
 		return null;
 	}
 

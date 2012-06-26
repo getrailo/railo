@@ -1,6 +1,8 @@
 package railo.runtime.listener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +22,10 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
-import railo.runtime.rest.RestSetting;
+import railo.runtime.rest.RestSettings;
 import railo.runtime.rest.RestSettingImpl;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -65,6 +69,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key ORM_SETTINGS = KeyImpl.intern("ormsettings");
 	private static final Collection.Key IN_MEMORY_FILESYSTEM = KeyImpl.intern("inmemoryfilesystem");
 	private static final Collection.Key REST_SETTING = KeyImpl.intern("restsettings");
+	private static final Collection.Key JAVA_SETTING = KeyImpl.intern("javasettings");
 
 	
 	private ComponentAccess component;
@@ -127,7 +132,9 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean ormEnabled;
 	private ORMConfiguration ormConfig;
 	private boolean initRestSetting;
-	private RestSetting restSetting;
+	private RestSettings restSetting;
+	private boolean initJavaSettings;
+	private JavaSettings javaSettings;
 	private String ormDatasource;
 
 	private Resource[] restCFCLocations;
@@ -149,6 +156,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         this.clientCluster=config.getClientCluster();
         this.triggerComponentDataMember=config.getTriggerComponentDataMember();
         this.restSetting=config.getRestSetting();
+        this.javaSettings=new JavaSettingsImpl();
         this.component=cfc;
 		
 		pc.addPageSource(component.getPageSource(), true);
@@ -811,7 +819,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 	@Override
-	public RestSetting getRestSettings() {
+	public RestSettings getRestSettings() {
 		initRest();
 		return restSetting;
 	}
@@ -821,7 +829,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		initRest();
 		return restCFCLocations;
 	}
-	
+
 	private void initRest() {
 		if(!initRestSetting) {
 			Object o = get(component,REST_SETTING,null);
@@ -831,7 +839,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 				// cfclocation
 				Object obj = sct.get(KeyConstants._cfcLocation,null);
 				if(obj==null) obj = sct.get(KeyConstants._cfcLocations,null);
-				List<Resource> list = ORMConfigurationImpl.loadCFCLocation(config, null, obj);
+				List<Resource> list = ORMConfigurationImpl.loadCFCLocation(config, null, obj,true);
 				restCFCLocations=list==null?null:list.toArray(new Resource[list.size()]);
 				
 				// skipCFCWithError
@@ -844,6 +852,77 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 				
 			}
 			initRestSetting=true; 
+		}
+	}
+	
+
+	@Override
+	public JavaSettings getJavaSettings() {
+		initJava();
+		return javaSettings;
+	}
+	
+	private void initJava() {
+		if(!initJavaSettings) {
+			Object o = get(component,JAVA_SETTING,null);
+			if(o!=null && Decision.isStruct(o)){
+				Struct sct = Caster.toStruct(o,null);
+				
+				// loadPaths
+				Object obj = sct.get(KeyImpl.init("loadPaths"),null);
+				List<Resource> paths;
+				if(obj!=null) {
+					paths = ORMConfigurationImpl.loadCFCLocation(config, null, obj,false);	
+				}
+				else paths=new ArrayList<Resource>();
+					
+				
+				// loadCFMLClassPath
+				Boolean loadCFMLClassPath=Caster.toBoolean(sct.get(KeyImpl.init("loadCFMLClassPath"),null),null);
+				if(loadCFMLClassPath==null)
+					loadCFMLClassPath=Caster.toBoolean(sct.get(KeyImpl.init("loadColdFusionClassPath"),null),null);
+				if(loadCFMLClassPath==null)loadCFMLClassPath=javaSettings.loadCFMLClassPath();
+					
+				// reloadOnChange
+				boolean reloadOnChange=Caster.toBooleanValue(sct.get(KeyImpl.init("reloadOnChange"),null),javaSettings.reloadOnChange());
+				
+				// watchInterval
+				int watchInterval=Caster.toIntValue(sct.get(KeyImpl.init("watchInterval"),null),javaSettings.watchInterval());
+				
+				// watchExtensions
+				obj = sct.get(KeyImpl.init("watchExtensions"),null);
+				List<String> extensions=new ArrayList<String>();
+				if(obj!=null) {
+					Array arr;
+					if(Decision.isArray(obj)) {
+						try {
+							arr = Caster.toArray(obj);
+						} catch (PageException e) {
+							arr=new ArrayImpl();
+						}
+					}
+					else {
+						arr=railo.runtime.type.List.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
+					}
+					Iterator<Object> it = arr.valueIterator();
+					String ext;
+					while(it.hasNext()){
+						ext=Caster.toString(it.next(),null);
+						if(StringUtil.isEmpty(ext))continue;
+						ext=ext.trim();
+						if(ext.startsWith("."))ext=ext.substring(1);
+						if(ext.startsWith("*."))ext=ext.substring(2);
+						extensions.add(ext);
+					}
+					
+				}
+				javaSettings=new JavaSettingsImpl(
+						paths.toArray(new Resource[paths.size()]),
+						loadCFMLClassPath,reloadOnChange,watchInterval,
+						extensions.toArray(new String[extensions.size()]));
+				
+			}
+			initJavaSettings=true; 
 		}
 	}
 }

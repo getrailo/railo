@@ -8,7 +8,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
-import railo.runtime.rest.RestSetting;
+import railo.runtime.rest.RestSettings;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
@@ -175,7 +175,9 @@ public interface ApplicationContext extends Serializable {
 	 */
 	public boolean getSameFieldAsArray(int scope);
 
-	public RestSetting getRestSettings();
+	public RestSettings getRestSettings();
+	
+	public JavaSettings getJavaSettings();
 	
 	public Resource[] getRestCFCLocations();
 }

@@ -13,6 +13,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.JavaSettings;
 import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
@@ -22,6 +23,7 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -101,6 +103,24 @@ public class GetApplicationSettings {
 			if(res!=null)cache.setEL(KeyConstants._resource, res);
 			if(tmp!=null)cache.setEL(KeyConstants._template, tmp);
 		}
+		
+		// java settings
+		JavaSettings js = ac.getJavaSettings();
+		StructImpl jsSct = new StructImpl();
+		jsSct.put("loadCFMLClassPath",js.loadCFMLClassPath());
+		jsSct.put("reloadOnChange",js.reloadOnChange());
+		jsSct.put("watchInterval",new Double(js.watchInterval()));
+		jsSct.put("watchExtensions",List.arrayToList(js.watchedExtensions(),","));
+		Resource[] reses = js.getResources();
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<reses.length;i++){
+			if(i>0)sb.append(',');
+			sb.append(reses[i].getAbsolutePath());
+		}
+		jsSct.put("loadCFMLClassPath",sb.toString());
+		sct.put("javaSettings",jsSct);
+		// REST Settings
+		// MUST
 		
 		if(cfc!=null){
 			sct.setEL(KeyConstants._component, cfc.getPageSource().getDisplayPath());

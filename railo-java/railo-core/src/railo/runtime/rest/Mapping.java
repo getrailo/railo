@@ -109,7 +109,7 @@ public class Mapping {
 	private static ArrayList<Source> _init(PageContext pc, Mapping mapping, Resource dir) throws PageException{
 		Resource[] children = dir.listResources(FILTER);
 		
-		RestSetting settings = pc.getApplicationContext().getRestSettings();
+		RestSettings settings = pc.getApplicationContext().getRestSettings();
 		ArrayList<Source> sources = new ArrayList<Source>(); 
 	
 		PageSource ps;
