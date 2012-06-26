@@ -105,11 +105,12 @@ public final class CreateObject implements Function {
         	// load resources
         	Resource[] reses=null;
         	if(!StringUtil.isEmpty(pathes, true)) {
-        		if(StringUtil.isEmpty(delimiter))delimiter=",";
-        		Array arrPathes = List.listToArrayRemoveEmpty(pathes.trim(),delimiter);
-        		reses=new Resource[arrPathes.size()];
+        		if(StringUtil.isEmpty(delimeter))delimeter=",";
+        		String[] arrPathes = List.trimItems(List.toStringArray(List.listToArrayRemoveEmpty(pathes.trim(),delimeter)));
+        		
+        		reses=new Resource[arrPathes.length];
         		for(int i=0;i<reses.length;i++) {
-        			reses[i]=ResourceUtil.toResourceExisting(pc,Caster.toString(arrPathes.getE(i+1)));
+        			reses[i]=ResourceUtil.toResourceExisting(pc,arrPathes[i]);
         		}
         	}
         	

@@ -109,12 +109,12 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 
     @Override
     public void setDynamicAttribute(String uri, String name, Object value) {
-    	TagUtil.setDynamicAttribute(attributesScope,KeyImpl.init(name),value,TagUtil.UPPER_CASE);
+    	TagUtil.setDynamicAttribute(attributesScope,KeyImpl.init(name),value,TagUtil.ORIGINAL_CASE);
     }
 
     @Override
     public void setDynamicAttribute(String uri, Collection.Key name, Object value) {
-    	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.UPPER_CASE);
+    	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.ORIGINAL_CASE);
     }
 
     /**
@@ -162,10 +162,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		finally{
 			pci.useSpecialMappings(old);
 		}
-    	
-    	
-    	
-    	
     }
 
     /**
@@ -383,15 +379,15 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		if(tag==null) return;
 		
 		if(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_FIXED || tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_MIXED){
-			Iterator it = tag.getAttributes().entrySet().iterator();
-			Map.Entry entry;
+			Iterator<Entry<String, TagLibTagAttr>> it = tag.getAttributes().entrySet().iterator();
 			int count=0;
 			Collection.Key key;
 			TagLibTagAttr attr;
 			Object value;
+			Entry<String, TagLibTagAttr> entry;
 			// check existing attributes
 			while(it.hasNext()){
-				entry = (Entry) it.next();
+				entry = it.next();
 				count++;
 				key=KeyImpl.toKey(entry.getKey(),null);
 				attr=(TagLibTagAttr) entry.getValue();
