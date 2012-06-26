@@ -10,7 +10,7 @@ function printError(error,boolean longversion=false) {
 	else if(error.message EQ error.detail)error.detail="";
 	// if(!IsSimpleValue(error) && error.getClass().getName() EQ "railo.runtime.exp.CatchBlock")createObject("java","railo.print").e(error.getPageException())
 	if(StructKeyExists(arguments.error,'message') and arguments.error.message NEQ "") {
-		writeOutput('<span class="CheckError">');
+		writeOutput('<div class="error">');
 		writeOutput(br(arguments.error.message));
 		writeOutput('<br>');
 		writeOutput(br(arguments.error.detail));
@@ -27,7 +27,7 @@ function printError(error,boolean longversion=false) {
 			}
 		}
 		//ErrorCode,addional,TagContext,StackTrace,type,Detail,Message,ExtendedInfo
-		writeOutput('</span><br><br>');
+		writeOutput('</div>');
 	}
 }
 

@@ -472,7 +472,8 @@
 	<data key="components.component">Component</data>
 	<data key="components.componentmappingsearchdesc">Search the component in the mappings defined, this include the implicit mapping &quot;/&quot;, that points on the webroot</data>
 	<data key="components.archive">Archive</data>
-	<data key="components.componentmappings">Addional Resources</data>
+	<data key="components.componentmappings">Additional Resources</data>
+	<data key="components.createnewcompmapping">Create new Additional Resource</data>
 	<data key="components.dmatpackage">package</data>
 	<data key="components.basecomponentdescription">Every component that does not explicitly extend another component (attribute &quot;extends&quot;) will by default extend this component. This means that every component extends this base component in some way.</data>
 	<data key="login.passwordmissing">Please enter a value for the field password</data>
