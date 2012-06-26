@@ -1739,6 +1739,51 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</return>
 	</function>
 	
+	<!-- CSRFGenerateToken -->
+	<function>
+		<name>CSRFGenerateToken</name>
+		<class>railo.runtime.functions.csrf.CSRFGenerateToken</class>
+		<description>Provides a random token and stores it in the session. You can also provide a specific key to store in the session.</description>
+		<argument>
+			<name>key</name>
+			<type>string</type>
+			<required>No</required>
+			<description>A random token is generated for the key provided.</description>
+	    </argument>
+		<argument>
+			<name>forceNew</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>If set to true, a new token is generated every time the function is called. 
+			If false, in case a token exists for the key, the same key is returned.</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- CSRFVerifyToken -->
+	<function>
+		<name>CSRFVerifyToken</name>
+		<class>railo.runtime.functions.csrf.CSRFVerifyToken</class>
+		<description>Validates the given token against the same stored in the session for a specific key.</description>
+		<argument>
+			<name>token</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>Token that to be validated against the token stored in the session.</description>
+	    </argument>
+		<argument>
+			<name>key</name>
+			<type>string</type>
+			<required>No</required>
+			<description>The key against which the token be searched.</description>
+	    </argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
 	<!-- ctCacheClear -->
 	<function>
 		<name>ctCacheClear</name>

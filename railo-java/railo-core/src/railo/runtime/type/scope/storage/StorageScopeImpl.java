@@ -1,11 +1,15 @@
 package railo.runtime.type.scope.storage;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import railo.commons.digest.MD5;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -70,6 +74,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	private int type;
 	private long timeSpan=-1;
 	private String storage;
+	private Map<String, String> tokens; 
 	
 	
 	/**
@@ -566,4 +571,31 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	public long getCreated() {
 		return timecreated==null?0:timecreated.getTime();
 	}
+	
+	@Override
+	public synchronized String generateToken(String key, boolean forceNew) {
+        if(tokens==null) 
+        	tokens = new HashMap<String,String>();
+        
+        // get existing
+        String token;
+        if(!forceNew) {
+        	token = tokens.get(key);
+        	if(token!=null) return token;
+        }
+        
+        // create new one
+        byte rnd[] = new byte[20];
+        new SecureRandom().nextBytes(rnd);
+        token = MD5.stringify(rnd);
+        tokens.put(key, token);
+        return token;
+    }
+	
+	@Override
+	public synchronized boolean verifyToken(String token, String key) {
+		if(tokens==null) return false;
+        String _token = tokens.get(key);
+        return _token!=null && _token.equalsIgnoreCase(token);
+    }
 }
