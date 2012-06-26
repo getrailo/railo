@@ -4,6 +4,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.commons.lang.RandomUtil;
 import railo.runtime.tag.ThreadTag;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
@@ -11,6 +12,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
@@ -51,7 +53,10 @@ public final class TagThread extends TagBase {
 			super._writeOut(bc);
 			return;
 		}*/
-		
+		Attribute name = getAttribute("name");
+		if(name==null){
+			addAttribute(new Attribute(false, "name",LitString.toExprString("thread"+RandomUtil.createRandomStringLC(20)), "string"));
+		}
 
 		GeneratorAdapter adapter = bc.getAdapter();
 		Page page = ASMUtil.getAncestorPage(this);

@@ -1,6 +1,5 @@
 package railo.runtime.type.scope.storage;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import railo.commons.digest.MD5;
+import railo.commons.lang.RandomUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -25,6 +24,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
@@ -280,7 +280,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public railo.runtime.type.Collection.Key[] keys() {
-		return sct.keys();
+		return CollectionUtil.keys(this);
 	}
 
 
@@ -585,9 +585,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
         }
         
         // create new one
-        byte rnd[] = new byte[20];
-        new SecureRandom().nextBytes(rnd);
-        token = MD5.stringify(rnd);
+        token = RandomUtil.createRandomStringLC(40);
         tokens.put(key, token);
         return token;
     }
