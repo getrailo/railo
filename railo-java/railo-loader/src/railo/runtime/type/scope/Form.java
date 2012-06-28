@@ -2,6 +2,8 @@ package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
 
+import javax.servlet.ServletInputStream;
+
 import org.apache.commons.fileupload.disk.DiskFileItem;
 
 import railo.runtime.exp.PageException;
@@ -48,4 +50,9 @@ public interface Form extends Scope {
 
 	public abstract void setScriptProtecting(ApplicationContext ac,boolean b);
 
+	public FormItem getUploadResource(String key);
+	
+	public FormItem[] getFileItems();
+	
+	public ServletInputStream getInputStream();
 }

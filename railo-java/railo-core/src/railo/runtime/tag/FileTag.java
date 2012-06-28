@@ -34,9 +34,8 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateImpl;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.scope.FormImpl;
-import railo.runtime.type.scope.FormImpl.Item;
-import railo.runtime.type.scope.FormUpload;
+import railo.runtime.type.scope.Form;
+import railo.runtime.type.scope.FormItem;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 
@@ -758,7 +757,7 @@ public final class FileTag extends BodyTagImpl {
 	 */
 
 	public void actionUpload() throws PageException {
-		FormImpl.Item item=getFormItem(pageContext,filefield);
+		FormItem item=getFormItem(pageContext,filefield);
 		Struct cffile = _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 		if(StringUtil.isEmpty(result)) {
             pageContext.undefinedScope().set(KeyConstants._file,cffile);
@@ -772,7 +771,7 @@ public final class FileTag extends BodyTagImpl {
 	
 	public static Struct actionUpload(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,String filefield,
 			String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
-		FormImpl.Item item=getFormItem(pageContext,filefield);
+		FormItem item=getFormItem(pageContext,filefield);
 		return _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 	}
 	
@@ -794,7 +793,7 @@ public final class FileTag extends BodyTagImpl {
 
 	public static Array actionUploadAll(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,
 			String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
-		Item[] items=getFormItems(pageContext);
+		FormItem[] items=getFormItems(pageContext);
 		Struct sct=null;
 		Array arr=new ArrayImpl();
 		for(int i=0;i<items.length;i++){
@@ -805,7 +804,7 @@ public final class FileTag extends BodyTagImpl {
 	}
 	
 	private static synchronized Struct _actionUpload(PageContext pageContext, railo.runtime.security.SecurityManager securityManager, 
-			Item formItem,String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
+			FormItem formItem,String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_ERROR;
 
 		boolean fileWasRenamed=false;
@@ -985,10 +984,10 @@ public final class FileTag extends BodyTagImpl {
 	 * @return FileItem
 	 * @throws ApplicationException
 	 */
-	private static Item getFormItem(PageContext pageContext, String filefield) throws PageException {
+	private static FormItem getFormItem(PageContext pageContext, String filefield) throws PageException {
 		// check filefield
 		if(StringUtil.isEmpty(filefield)){
-			Item[] items = getFormItems(pageContext);
+			FormItem[] items = getFormItems(pageContext);
 			if(ArrayUtil.isEmpty(items))
 				throw new ApplicationException("no file send with this form");
 			return items[0];
@@ -996,10 +995,10 @@ public final class FileTag extends BodyTagImpl {
 			
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
-		FormUpload upload = (FormUpload)pageContext.formScope();
-		FormImpl.Item fileItem = upload.getUploadResource(filefield);
+		railo.runtime.type.scope.Form upload = pageContext.formScope();
+		FormItem fileItem = upload.getUploadResource(filefield);
 		if(fileItem==null) {
-			Item[] items = upload.getFileItems();
+			FormItem[] items = upload.getFileItems();
 			StringBuilder sb=new StringBuilder();
 			for(int i=0;i<items.length;i++){
 				if(i!=0) sb.append(", ");
@@ -1017,11 +1016,11 @@ public final class FileTag extends BodyTagImpl {
 		return fileItem;
 	}
 	
-	private static Item[] getFormItems(PageContext pageContext) throws PageException {
+	private static FormItem[] getFormItems(PageContext pageContext) throws PageException {
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
 		
-		FormUpload scope = (FormUpload) pageContext.formScope();
+		Form scope = pageContext.formScope();
 		return scope.getFileItems();
 	}
 	

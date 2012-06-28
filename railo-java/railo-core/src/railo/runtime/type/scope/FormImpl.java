@@ -40,7 +40,7 @@ import railo.runtime.type.util.ArrayUtil;
 /**
  * Form Scope
  */
-public final class FormImpl extends ScopeSupport implements Form,ScriptProtected,FormUpload {
+public final class FormImpl extends ScopeSupport implements Form,ScriptProtected {
 	
 
 	private byte EQL=61;
@@ -273,7 +273,8 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		
 	}
 
-	public FormImpl.Item[] getFileItems() {
+	@Override
+	public FormItem[] getFileItems() {
 		if(fileItems==null || fileItems.isEmpty()) return new FormImpl.Item[0];
 		
 		Iterator it = fileItems.entrySet().iterator();
@@ -294,7 +295,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	public DiskFileItem getFileUpload(String key) {
 		return null;
 	}
-	public Item getUploadResource(String key) {
+	public FormItem getUploadResource(String key) {
 		key=key.trim();
 		String lcKey = StringUtil.toLowerCase(key);
 		
@@ -386,7 +387,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
         setFieldNames();
 	}
 
-	public class Item {
+	private class Item implements FormItem {
 		Resource resource;
 		String contentType;
 		String name;

@@ -17,13 +17,14 @@ import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.FormImpl.Item;
 import railo.runtime.type.util.StructSupport;
 
 /**
  * 
  */
-public final class UrlFormImpl extends StructSupport implements URLForm,FormUpload {
+public final class UrlFormImpl extends StructSupport implements URLForm {
+
+	private static final long serialVersionUID = -5709431392572723178L;
 
 	private FormImpl form;
 	private URLImpl url;
@@ -339,15 +340,15 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 	/**
 	 * @see java.util.Map#values()
 	 */
-	public java.util.Collection values() {
+	public java.util.Collection<Object> values() {
 		return form.values();
 	}
 
-	public Item getUploadResource(String key) {
+	public FormItem getUploadResource(String key) {
 		return form.getUploadResource(key);
 	}
 
-	public Item[] getFileItems() {
+	public FormItem[] getFileItems() {
 		return form.getFileItems();
 	}
 
