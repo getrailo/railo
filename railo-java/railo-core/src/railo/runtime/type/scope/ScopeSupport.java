@@ -271,6 +271,12 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 		clear();
 		isInit=false;
 	}
+	
+	@Override
+	public void release(PageContext pc) {
+		clear();
+		isInit=false;
+	}
 
 
     /**

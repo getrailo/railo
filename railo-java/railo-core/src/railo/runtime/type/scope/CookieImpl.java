@@ -283,15 +283,21 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 		catch (Exception e) {}
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ScopeSupport#release()
-	 */
+	@Override
 	public void release() {
 		raw.clear();
 		scriptProtected=ScriptProtected.UNDEFINED;
 		super.release();
 	}
+	
+	@Override
+	public void release(PageContext pc) {
+		raw.clear();
+		scriptProtected=ScriptProtected.UNDEFINED;
+		super.release(pc);
+	}
+	
+	
 
 	/**
 	 *

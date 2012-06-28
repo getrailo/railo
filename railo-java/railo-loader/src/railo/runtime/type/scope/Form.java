@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletInputStream;
 
-import org.apache.commons.fileupload.disk.DiskFileItem;
-
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 
@@ -34,14 +32,6 @@ public interface Form extends Scope {
      */
     public abstract void setEncoding(ApplicationContext ac,String encoding) throws UnsupportedEncodingException;
 
-    
-    /**
-     * FUTURE replace with other return type
-     * return a file upload object 
-     * @param key name of the form field
-     * @return apache default file item object (File Object)
-     */
-    public abstract DiskFileItem getFileUpload(String key);
 
     /**
      * @return return the exception when initialised

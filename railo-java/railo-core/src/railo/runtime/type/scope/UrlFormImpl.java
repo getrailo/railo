@@ -51,11 +51,16 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 			form.setEL(keys[i], url.get(keys[i],null));
 		}*/
 	}
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	
+	@Override
 	public void release() {
+		isInit=false;
+		form.release();
+		url.release();
+	}
+	
+	@Override
+	public void release(PageContext pc) {
 		isInit=false;
 		form.release();
 		url.release();

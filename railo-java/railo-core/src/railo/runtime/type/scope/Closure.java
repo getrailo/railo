@@ -45,10 +45,12 @@ public class Closure extends ScopeSupport implements Variables {
 	public void initialize(PageContext pc) {	
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	@Override
 	public void release() {
+	}
+
+	@Override
+	public void release(PageContext pc) {
 	}
 
 	/**

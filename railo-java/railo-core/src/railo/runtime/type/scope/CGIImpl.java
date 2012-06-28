@@ -297,10 +297,18 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	@Override
 	public void release() {
+		isInit=false;
+		this.req=null;
+		scriptProtected=ScriptProtected.UNDEFINED; 
+		pc=null;
+		https=null;
+		headers=null;
+	}
+	
+	@Override
+	public void release(PageContext pc) {
 		isInit=false;
 		this.req=null;
 		scriptProtected=ScriptProtected.UNDEFINED; 

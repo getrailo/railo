@@ -90,10 +90,14 @@ public interface Scope extends Struct {
 	
 	/**
 	 * release scope for reuse
+	 * @deprecated use instead <code>release(PageContext)</code>
 	 */
 	public void release();
 	
-	//FUTURE public void release(PageContext pc);
+	/**
+	 * release scope for reuse
+	 */
+	public void release(PageContext pc);
 	
     /** 
      * @return return the scope type (SCOPE_SERVER, SCOPE_SESSION usw.) 

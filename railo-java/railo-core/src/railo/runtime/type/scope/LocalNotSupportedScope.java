@@ -134,10 +134,12 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	 */
 	public void initialize(PageContext pc) {
 	}
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	
+	@Override
 	public void release() {
+	}
+	@Override
+	public void release(PageContext pc) {
 	}
 	
 	/**

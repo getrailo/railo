@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
 import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.scope.storage.MemoryScope;
@@ -77,8 +78,13 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
 	public void touchAfterRequest(PageContext pc) {
 		
 	}
+	@Override
+	public void release() {
+		release(ThreadLocalPageContext.get());
+	}
 	
-    public void release() {
+	@Override
+	public void release(PageContext pc) {
     	if(httpSession!=null){
 	    	try {
 	    		Object key;
@@ -95,7 +101,7 @@ public final class JSession extends ScopeSupport implements Session,HttpSessionB
 	    	}
 	    	catch(Throwable t) {}
     	}
-        super.release();
+        super.release(pc);
     }
 
     /**

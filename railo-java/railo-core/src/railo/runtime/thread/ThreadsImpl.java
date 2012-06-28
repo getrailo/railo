@@ -81,26 +81,28 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		return "thread";
 	}
 
+	@Override
 	public void initialize(PageContext pc) {
 		
 	}
 
+	@Override
 	public boolean isInitalized() {
 		return true;
 	}
 
-	public void release() {
-		
-	}
+	@Override
+	public void release() {}
+	
+	@Override
+	public void release(PageContext pc) {}
 
+	@Override
 	public void clear() {
 		ct.content.clear();
 	}
 
-
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		StructImpl sct=new StructImpl();
 		ThreadLocalDuplication.set(this, sct);

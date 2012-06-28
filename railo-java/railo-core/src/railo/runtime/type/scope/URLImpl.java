@@ -70,14 +70,19 @@ public final class URLImpl extends ScopeSupport implements URL,ScriptProtected {
 		}
         catch (Exception e) {}
 	}
-    /**
-     * @see railo.runtime.type.scope.ScopeSupport#release()
-     */
-    public void release() {
+	@Override
+	public void release() {
     	encoding=null;
         raw=empty;
         scriptProtected=ScriptProtected.UNDEFINED;
         super.release();
+    }
+	@Override
+	public void release(PageContext pc) {
+    	encoding=null;
+        raw=empty;
+        scriptProtected=ScriptProtected.UNDEFINED;
+        super.release(pc);
     }
 
     @Override

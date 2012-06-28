@@ -41,12 +41,11 @@ public final class ComponentScopeThis extends StructSupport implements Component
         
     }
 
-    /**
-     * @see railo.runtime.type.scope.Scope#release()
-     */
-    public void release() {
-        
-    }
+    @Override
+    public void release() {}
+    
+    @Override
+    public void release(PageContext pc) {}
 
     /**
      * @see railo.runtime.type.scope.Scope#getType()

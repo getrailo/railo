@@ -48,17 +48,22 @@ public final class RequestImpl extends StructSupport implements Request {
 		
 	}
 
+	@Override
 	public boolean isInitalized() {
 		return init;
 	}
 
+	@Override
 	public void release() {
 		init = false;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#getType()
-	 */
+	@Override
+	public void release(PageContext pc) {
+		init = false;
+	}
+
+	@Override
 	public int getType() {
 		return SCOPE_REQUEST;
 	}

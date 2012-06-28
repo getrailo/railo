@@ -599,10 +599,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
-	public void release() {
+	@Override
+	public final void release() {
 		isInit=false;
 		argument=null;
 		local=null;
@@ -611,10 +609,18 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		checkArguments=false;
 		localAlways=false;
 		if(allowImplicidQueryCall)qryStack.clear();
-		
-		
-		//threads=null;
-		//hasThreads=false;
+	}
+	
+	@Override
+	public final void release(PageContext pc) {
+		isInit=false;
+		argument=null;
+		local=null;
+		variable=null;
+		scopes=null;
+		checkArguments=false;
+		localAlways=false;
+		if(allowImplicidQueryCall)qryStack.clear();
 	}
 
 	/**

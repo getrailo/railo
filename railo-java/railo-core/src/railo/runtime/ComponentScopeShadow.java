@@ -89,10 +89,13 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
         return component.isInitalized();
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
-	public void release() {}
+
+    @Override
+    public void release() {}
+    
+    @Override
+    public void release(PageContext pc) {}
+
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()

@@ -206,10 +206,14 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	@Override
 	public final void release() {
+		clear();
+		isinit=false;
+	}
+	
+	@Override
+	public final void release(PageContext pc) {
 		clear();
 		isinit=false;
 	}

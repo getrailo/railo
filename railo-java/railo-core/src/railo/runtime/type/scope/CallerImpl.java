@@ -199,10 +199,13 @@ public final class CallerImpl extends StructSupport implements Caller  {
         return pc!=null;
     }
 
-    /**
-     * @see railo.runtime.type.scope.Scope#release()
-     */
+    @Override
     public void release() {
+        this.pc=null;
+    }
+
+    @Override
+    public void release(PageContext pc) {
         this.pc=null;
     }
 

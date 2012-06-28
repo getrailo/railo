@@ -123,8 +123,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	
 	public Collection duplicate(boolean deepCopy);
 	
-	// FUTURE public Collection duplicate(boolean deepCopy, Map<Object,Object> done);
-	
     /**
      * contains this key
      * @param key

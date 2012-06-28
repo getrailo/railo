@@ -27,6 +27,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.URLItem;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ServletInputStreamDummy;
@@ -250,12 +251,16 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
         	IOUtil.closeEL(reader);
         }
 	}
+	
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	@Override
 	public void release() {
-		super.release();
+		release(ThreadLocalPageContext.get());
+	}
+
+	@Override
+	public void release(PageContext pc) {
+		super.release(pc);
         encoding=null;
         scriptProtected=ScriptProtected.UNDEFINED;
         raw=empty;
@@ -295,6 +300,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	public DiskFileItem getFileUpload(String key) {
 		return null;
 	}
+	
 	public FormItem getUploadResource(String key) {
 		key=key.trim();
 		String lcKey = StringUtil.toLowerCase(key);
