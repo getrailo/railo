@@ -17,6 +17,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
@@ -753,13 +754,25 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	return getResource();
     }
     
-    /**
-     * @see railo.runtime.SourceFile#getResource()
-     */
+    @Override
     public Resource getResource() {
     	Resource res = getPhyscalFile();
     	if(res!=null) return res;
     	return getArchiveFile();
+    }
+    
+    @Override
+    public Resource getResourceTranslated(PageContext pc) throws ExpressionException {
+    	Resource res = getPhyscalFile();
+		
+		// there is no physical resource
+		if(res==null){
+        	String path=getDisplayPath();
+        	if(path.startsWith("ra://"))
+        		path="zip://"+path.substring(5);
+        	res=ResourceUtil.toResourceExisting(pc, path,false);
+        }
+		return res;
     }
 
 

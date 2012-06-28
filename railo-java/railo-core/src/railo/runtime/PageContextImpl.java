@@ -821,7 +821,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	/**
      * @see railo.runtime.PageContext#getTemplatePath()
      */
-    public Array getTemplatePath() throws ExpressionException {
+    public Array getTemplatePath() throws PageException {
         int len=includePathList.size();
         SVArray sva = new SVArray();
         PageSource ps;

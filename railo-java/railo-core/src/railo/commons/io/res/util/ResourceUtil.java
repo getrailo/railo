@@ -1300,23 +1300,19 @@ public final class ResourceUtil {
 		}
 	}
 	
-	// FUTURE this method should be part of pagesource in a more proper way, there should be a method getResource() inside PageSource
-	public static Resource getResource(PageContext pc,PageSource ps) throws ExpressionException {
-		Resource res = ps.getPhyscalFile();
-		
-		// there is no physical resource
-		if(res==null){
-        	String path=ps.getDisplayPath();
-        	if(path.startsWith("ra://"))
-        		path="zip://"+path.substring(5);
-        	res=ResourceUtil.toResourceExisting(pc, path,false);
-        }
-		return res;
+	/**
+     * if the pageSource is based on a archive, translate the source to a zip:// Resource
+     * @return return the Resource matching this PageSource
+     * @param pc the Page Context Object
+     * @deprecated use instead <code>PageSource.getResourceTranslated(PageContext)</code>
+     */
+    public static Resource getResource(PageContext pc,PageSource ps) throws PageException {
+		return ps.getResourceTranslated(pc);
 	}
 	
 	public static Resource getResource(PageContext pc,PageSource ps, Resource defaultValue) {
 		try {
-			return getResource(pc, ps);
+			return ps.getResourceTranslated(pc);
 		} 
 		catch (Throwable t) {
 			return defaultValue;

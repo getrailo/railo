@@ -1037,7 +1037,7 @@ public final class ConfigWebAdmin {
         }
         
         
-        // FUTURE remove this part for version 4.0
+        // FUTURE remove this part in upcoming versions
         // add s3 when not
         Element el=doc.createElement("resource-provider");
         el.setAttribute("scheme", "s3");

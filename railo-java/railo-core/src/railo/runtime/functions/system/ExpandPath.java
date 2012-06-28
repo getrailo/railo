@@ -14,6 +14,7 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.util.ArrayUtil;
 
@@ -21,7 +22,7 @@ public final class ExpandPath implements Function {
 
 	private static final long serialVersionUID = 6192659914120397912L;
 
-	public static String call(PageContext pc , String realPath) throws ExpressionException {
+	public static String call(PageContext pc , String realPath) throws PageException {
 		
 		ConfigWeb config=pc.getConfig();
 		realPath=realPath.replace('\\','/');
