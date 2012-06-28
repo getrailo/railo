@@ -25,6 +25,7 @@ import railo.commons.db.DBUtil;
 import railo.commons.io.CompressUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
+import railo.commons.io.cache.Cache2;
 import railo.commons.io.log.Log;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogResource;
@@ -3240,10 +3241,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
 	
 	private void doVerifyCacheConnection() throws PageException {
-        try {
+		
+		
+		try {
 			Cache cache = Util.getCache(pageContext.getConfig(), getString("admin",action,"name"));
-			// FUTURE cache.verify();
-			cache.getCustomInfo();
+			if(cache instanceof Cache2)
+				((Cache2)cache).verify();
+			else
+				cache.getCustomInfo();
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
