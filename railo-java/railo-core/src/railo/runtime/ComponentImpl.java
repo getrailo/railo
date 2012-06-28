@@ -1908,25 +1908,38 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		}
 	}
 
-	
+	private void initProperties() throws PageException
+	{
+		top.properties.properties = new LinkedHashMap<String,Property>();
 
-	private void initProperties() throws PageException {
-		top.properties.properties=new LinkedHashMap<String,Property>();
-		
-		// MappedSuperClass  
-		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
-			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(KeyConstants._mappedSuperClass,Boolean.FALSE),false);
-			if(msc){
-				Property p;
-				Iterator<Entry<String, Property>> it = top.base.properties.properties.entrySet().iterator();
-				while(it.hasNext())	{
-					p = it.next().getValue();
-					if(p.isPeristent()) {
-						
-						setProperty(p);
+		if (!isPersistent()) { return; }
+
+		ComponentImpl offsetComponent = top.base;
+		while (offsetComponent != null)
+		{
+			// MZ: Original version: Stop traversing the inheritance tree when embedded persistency is detected
+			// MZ: Removed - seems to restrict inherited components, though marked as mappedSuperClass
+			//if (offsetComponent.isPersistent()) { return; }
+
+			// MappedSuperClass
+			if (offsetComponent.properties.properties != null && offsetComponent.properties.meta != null)
+			{
+				if (Caster.toBooleanValue(offsetComponent.properties.meta.get(KeyConstants._mappedSuperClass, Boolean.FALSE), false))
+				{
+					Property p;
+					Iterator<Entry<String, Property>> it = offsetComponent.properties.properties.entrySet().iterator();
+					while(it.hasNext())
+					{
+						p = it.next().getValue();
+						if(p.isPeristent())
+						{
+							setProperty(p);
+						}
 					}
 				}
 			}
+			// MZ: RAILO-1939: Walk down the inheritance tree
+			offsetComponent = offsetComponent.base;
 		}
 	}
 
