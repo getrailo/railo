@@ -126,12 +126,6 @@ public interface Component extends Struct,Objects,CFObject {
      * @throws PageException
      */
     public abstract Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException;
-
-    /**
-     * 
-     * @deprecated use instead <code>getPageSource()</code>
-     */
-    public Page getPage();
     
     
 	/**

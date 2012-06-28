@@ -592,7 +592,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			if(top.properties._synchronized){
 				synchronized (this) {
 				    try {
-		            	parent=beforeCall(pc); // FUTURE add to interface
+		            	parent=beforeCall(pc); 
 		            	if(args!=null)rtn=udf.call(pc,args,true);
 						else rtn=udf.callWithNamedValues(pc,namedArgs,true);
 					}		
@@ -605,7 +605,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			// sync no
 			else {
 			    try {
-	            	parent=beforeCall(pc); // FUTURE add to interface
+	            	parent=beforeCall(pc);
 	            	if(args!=null)rtn=udf.call(pc,args,true);
 					else rtn=udf.callWithNamedValues(pc,namedArgs,true);
 				}		
@@ -1141,15 +1141,6 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     public boolean isValidAccess(int access) {
 		return !(access <0 || access>ACCESS_COUNT);
 	}
-	
-    /**
-     * @return returns the ComponentPage of the Component
-     * @deprecated use instead getPageSource()
-     */
-    public Page getPage() {
-        throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use getPageSource():PageSource instead"));
-        //return properties.page;
-    }
     
     /**
      * @see railo.runtime.Component#getPageSource()
