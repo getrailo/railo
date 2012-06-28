@@ -40,14 +40,7 @@ public interface SourceFile extends Serializable {
 	 * @return returns a variable string based on realpath and return it
 	 */
 	public String getRealPathAsVariableString();
-    
-    /**
-     * return file object, based on sourcefile
-     * @return file Object
-     * @deprecated use instead <code>getResource();</code>
-     */
-	public Resource getFile(); 
-	
+
 	/**
      * @return base Resource
      */

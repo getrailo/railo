@@ -937,7 +937,7 @@ public final class TagLoop extends TagGroup implements FlowControl {
 			adapter.storeLocal(end);
 		}
 		
-		// pc.us().addCollection(query);
+		// pc.us().addQuery(query);
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, US);
 		adapter.loadLocal(query);

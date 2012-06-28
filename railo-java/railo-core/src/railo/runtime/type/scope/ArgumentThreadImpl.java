@@ -19,6 +19,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.StructUtil;
@@ -238,13 +239,6 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return sct.iterator();
-	}
-
-	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
 	public Iterator<Collection.Key> keyIterator() {
@@ -264,7 +258,7 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return sct.valueIterator();
 	}
 

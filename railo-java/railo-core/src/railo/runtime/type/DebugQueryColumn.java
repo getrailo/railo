@@ -92,7 +92,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		used=true;
 		return super.valueIterator();
 	}

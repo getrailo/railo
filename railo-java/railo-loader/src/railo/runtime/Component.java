@@ -66,8 +66,6 @@ public interface Component extends Struct,Objects,CFObject {
      * @return Returns the Name.
      */
     public abstract String getName();
-    
-    // FUTURE alle attribute bis cf8 aufnehmen
 
     /**
      * @return Returns the Name.

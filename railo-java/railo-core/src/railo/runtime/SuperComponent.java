@@ -393,23 +393,12 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 		return comp.isValidAccess(access);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#iterator()
-	 */
-	public Iterator iterator() {
-		return comp.iterator();
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return comp.keyIterator(getAccess());
 	}
-	
 
+	@Override
 	public Iterator<String> keysAsStringIterator() {
 		return comp.keysAsStringIterator(getAccess());
 	}
@@ -607,7 +596,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	}
 
 
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return comp.valueIterator();
 	}
 

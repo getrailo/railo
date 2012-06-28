@@ -684,30 +684,6 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract void setApplicationContext(ApplicationContext applicationContext);
     
-
-    /* *
-     * creates a PageSource from Realpath
-     * @param realPath
-     * @return Page Source
-     * @deprecated use instead getRelativePageSources or getRelativePageSourceExisting
-     * /
-    public abstract PageSource getRelativePageSource(String realPath);*/
-    
-    
-    /* *
-	 * get PageSource of the first Mapping that match the given realPath
-	 * @param realPath path to get PageSource for
-	 * @deprecated use instead Config.getPageSources or Config.getPageSourceExisting
-	 * /
-	public abstract PageSource getPageSource(String realPath);*/
-
-	/* *
-	 * get Resource of the first Mapping that match the given realPath
-	 * @param realPath path to get PageSource for
-	 * @deprecated use instead Config.getPhysicalResources or Config.getPhysicalResourceExisting
-	 * /
-	public abstract Resource getPhysical(String realPath, boolean alsoDefaultMapping);*/
-    
     
 	public abstract PageSource toPageSource(Resource res, PageSource defaultValue);
 

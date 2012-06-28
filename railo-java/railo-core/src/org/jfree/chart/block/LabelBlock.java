@@ -93,10 +93,7 @@ public class LabelBlock extends AbstractBlock
     
     /**
      * Returns the font.
-     *
      * @return The font (never <code>null</code>).
-     * 
-     * @see #setFont(Font)
      */
     public Font getFont() {
         return this.font;    
@@ -104,10 +101,7 @@ public class LabelBlock extends AbstractBlock
     
     /**
      * Sets the font and regenerates the label.
-     *
      * @param font  the font (<code>null</code> not permitted).
-     * 
-     * @see #getFont()
      */
     public void setFont(Font font) {
         if (font == null) {
@@ -120,10 +114,7 @@ public class LabelBlock extends AbstractBlock
    
     /**
      * Returns the paint.
-     *
      * @return The paint (never <code>null</code>).
-     * 
-     * @see #setPaint(Paint)
      */
     public Paint getPaint() {
         return this.paint;   
@@ -131,10 +122,7 @@ public class LabelBlock extends AbstractBlock
    
     /**
      * Sets the paint and regenerates the label.
-     *
      * @param paint  the paint (<code>null</code> not permitted).
-     * 
-     * @see #getPaint()
      */
     public void setPaint(Paint paint) {
         if (paint == null) {
@@ -147,10 +135,7 @@ public class LabelBlock extends AbstractBlock
 
     /**
      * Returns the tool tip text.
-     * 
      * @return The tool tip text (possibly <code>null</code>).
-     * 
-     * @see #setToolTipText(String)
      */
     public String getToolTipText() {
         return this.toolTipText;
@@ -158,10 +143,7 @@ public class LabelBlock extends AbstractBlock
     
     /**
      * Sets the tool tip text.
-     * 
      * @param text  the text (<code>null</code> permitted).
-     * 
-     * @see #getToolTipText()
      */
     public void setToolTipText(String text) {
         this.toolTipText = text;   
@@ -169,10 +151,7 @@ public class LabelBlock extends AbstractBlock
     
     /**
      * Returns the URL text.
-     * 
      * @return The URL text (possibly <code>null</code>).
-     * 
-     * @see #setURLText(String)
      */
     public String getURLText() {
         return this.urlText;
@@ -180,10 +159,7 @@ public class LabelBlock extends AbstractBlock
     
     /**
      * Sets the URL text.
-     * 
      * @param text  the text (<code>null</code> permitted).
-     * 
-     * @see #getURLText()
      */
     public void setURLText(String text) {
         this.urlText = text;   

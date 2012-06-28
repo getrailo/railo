@@ -162,7 +162,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 			plans=new ExecutionPlan[]{toExecutionPlan(obj,1)};
 		}
 		else {
-			Iterator it = arr.iterator();
+			Iterator<Object> it = arr.valueIterator();
 			plans=new ExecutionPlan[arr.size()];
 			int index=0;
 			while(it.hasNext()) {

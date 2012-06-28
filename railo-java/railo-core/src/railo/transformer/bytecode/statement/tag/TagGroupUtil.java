@@ -24,12 +24,6 @@ import railo.transformer.bytecode.visitor.WhileVisitor;
 
 public class TagGroupUtil {
 	
-	
-	// int getCurrentrow()
-	/*public static final Method GET_CURRENTROW_1 = new Method(
-			"getCurrentrow",
-			Types.INT_VALUE,
-			new Type[]{Types.INT_VALUE});*/
 
 	// Undefined us()
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
@@ -44,9 +38,9 @@ public class TagGroupUtil {
 			Types.VOID,
 			new Type[]{Types.QUERY});
 
-	// void removeCollection()
-	public static final Method REMOVE_COLLECTION = new Method(
-			"removeCollection",
+	// void removeQuery()
+	public static final Method REMOVE_QUERY = new Method(
+			"removeQuery",
 			Types.VOID,
 			new Type[]{});
 
@@ -278,10 +272,10 @@ public class TagGroupUtil {
 					
 					
 					
-					// pc.us().removeCollection();
+					// pc.us().removeQuery();
 					adapter.loadArg(0);
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, US);
-					adapter.invokeInterface(UNDEFINED, REMOVE_COLLECTION);
+					adapter.invokeInterface(UNDEFINED, REMOVE_QUERY);
 					
 			    	// NumberIterator.release(ni);
 					adapter.loadLocal(tag.getNumberIterator());

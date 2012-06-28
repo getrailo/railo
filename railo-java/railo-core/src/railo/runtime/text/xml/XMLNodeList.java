@@ -292,20 +292,12 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return new EntryIterator(this,keys());
 	}
 	
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		Object[] values=new Object[getLength()];
 		for(int i=0;i<values.length;i++) {
 			values[i]=item(i);
 		}
 		return new ArrayIterator(values);
-	}
-	
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return valueIterator();
 	}
 
 	/**

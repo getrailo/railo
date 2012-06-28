@@ -55,17 +55,9 @@ abstract class TOCollection extends TOObjects implements Collection {
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		log();
 		return coll.valueIterator();
-	}
-
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		log();
-		return coll.iterator();
 	}
 
 	public String castToString() throws PageException {

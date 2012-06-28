@@ -179,15 +179,6 @@ public final class FunctionArgumentImpl implements FunctionArgument,Externalizab
 	public String getDisplayName() {
 		return dspName;
 	}
-
-
-	/**
-     * @see railo.runtime.type.FunctionArgument#getDspName()
-     * @deprecated replaced with <code>getDisplayName();</code>
-     */
-	public String getDspName() {
-		return getDisplayName();
-	}
 	
 	/**
 	 * @see railo.runtime.type.FunctionArgument#getMetaData()

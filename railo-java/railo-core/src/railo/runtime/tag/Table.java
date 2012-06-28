@@ -162,7 +162,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 		startNewRow=true;
 		initRow=query.getRecordcount();
 		query.go(startrow,pageContext.getId());
-		pageContext.undefinedScope().addCollection(query);
+		pageContext.undefinedScope().addQuery(query);
 		return query.getRecordcount()>=startrow?EVAL_BODY_INCLUDE:SKIP_BODY;
 	}
 
@@ -226,7 +226,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
      */
     public void doFinally() {
 		try {
-		    pageContext.undefinedScope().removeCollection();
+		    pageContext.undefinedScope().removeQuery();
 			if(query!=null)query.go(initRow,pageContext.getId());
 		} 
 		catch (PageException e) {	}

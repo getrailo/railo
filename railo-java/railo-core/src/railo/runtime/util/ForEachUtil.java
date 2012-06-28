@@ -15,6 +15,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.it.ForEachQueryIterator;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.wrap.MapAsStruct;
 
 public class ForEachUtil {
@@ -24,17 +25,17 @@ public class ForEachUtil {
 			if(o instanceof Query) {
 				return new ForEachQueryIterator((Query)o, ThreadLocalPageContext.get().getId());
 			}
-			return ((Collection)o).iterator();
+			return ((Collection)o).keyIterator();
 		}
-        else if(o instanceof Node)return XMLCaster.toXMLStruct((Node)o,false).iterator();
+        else if(o instanceof Node)return XMLCaster.toXMLStruct((Node)o,false).keysAsStringIterator();
         else if(o instanceof Map) {
-            return MapAsStruct.toStruct((Map)o,true).iterator();//StructImpl((Map)o);
+            return MapAsStruct.toStruct((Map)o,true).keysAsStringIterator();
         }
         else if(o instanceof ObjectWrap) {
             return toIterator(((ObjectWrap)o).getEmbededObject());
         }
         else if(Decision.isArray(o)) {
-            return Caster.toArray(o).iterator();
+            return Caster.toArray(o).valueIterator();
         }
         throw new CasterException(o,"collection");
 	}

@@ -47,22 +47,9 @@ public interface Undefined extends Scope {
 
     /**
      * @return returns actuell collection stack
-     * @deprecated use instead <code>{@link #getQueryStack()}</code>
-     */
-    public abstract QueryStack getCollectionStack();
-    
-    /**
-     * @return returns actuell collection stack
      */
     public abstract QueryStack getQueryStack();
 
-    /**
-     * sets a individuell collection stack to the undefined scope
-     * @param collStack new collection stack
-     * @deprecated use instead <code>{@link #setQueryStack(QueryStack)}</code>
-     */
-    public abstract void setCollectionStack(QueryStack collStack);
-    
     /**
      * sets a individual query stack to the undefined scope
      * @param qryStack Query stack
@@ -72,22 +59,9 @@ public interface Undefined extends Scope {
     /**
      * add a collection to the undefined scope
      * @param qry  Query to add to undefined scope
-     * @deprecated use instead <code>{@link #addQuery(Query)}</code>
-     */
-    public abstract void addCollection(Query qry);
-
-    /**
-     * add a collection to the undefined scope
-     * @param qry  Query to add to undefined scope
      */
     public abstract void addQuery(Query qry);
 
-    /**
-     * remove a collection from the undefined scope
-     * @deprecated <code>{@link #removeQuery()}</code>
-     */
-    public abstract void removeCollection();
-    
     /**
      * remove a collection from the undefined scope
      */

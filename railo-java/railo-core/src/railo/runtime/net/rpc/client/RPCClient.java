@@ -908,20 +908,11 @@ public final class RPCClient implements Objects, Iteratorable{
 	public Iterator<String> keysAsStringIterator() {
 		return new KeyAsStringIterator(keyIterator());
 	}
-    
-    
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return keyIterator();
-	}
 
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return new ObjectsIterator(keyIterator(),this);
 	}
 	

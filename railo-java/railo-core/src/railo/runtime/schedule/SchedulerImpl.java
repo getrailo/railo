@@ -376,15 +376,6 @@ public final class SchedulerImpl implements Scheduler {
     public void execute(ScheduleTask task) {
     	new ExecutionThread(config,log,task,charset).start();
     } 
-    
-
-    /**
-     * @see railo.runtime.schedule.Scheduler#getNextExecutionTime()
-     */
-    public long getNextExecutionTime() {
-    	// no longer called and used
-        return -1;
-    }
 
     /**
      * @see railo.runtime.schedule.Scheduler#getLogger()

@@ -29,6 +29,7 @@ import railo.runtime.converter.WDDXConverter;
 import railo.runtime.converter.XMLConverter;
 import railo.runtime.converter.bin.ImageConverter;
 import railo.runtime.dump.DumpUtil;
+import railo.runtime.dump.DumpWriter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -208,7 +209,7 @@ public abstract class ComponentPage extends Page  {
 			    pc.variablesScope().set(KeyConstants._component,component);
 			    pc.doInclude(cdf);
 			}
-			else pc.write(pc.getConfig().getDefaultDumpWriter().toString(pc,component.toDumpData(pc,9999,DumpUtil.toDumpProperties() ),true));
+			else pc.write(pc.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(pc,component.toDumpData(pc,9999,DumpUtil.toDumpProperties() ),true));
 			
 		}
 		catch(Throwable t) {

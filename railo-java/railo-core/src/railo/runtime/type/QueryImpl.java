@@ -1064,13 +1064,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public int getRecordcount() {
 		return recordcount;
 	}
-
-	/**
-	 * @see railo.runtime.type.Iterator#getCurrentrow()
-	 */
-	public int getCurrentrow() {
-		return getCurrentrow(getPid());
-	}
 	
 	/**
 	 * @see railo.runtime.type.Query#getCurrentrow(int)
@@ -2676,7 +2669,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see java.sql.ResultSet#isAfterLast()
 	 */
 	public boolean isAfterLast() throws SQLException {
-		return getCurrentrow()>recordcount;
+		return getCurrentrow(ThreadLocalPageContext.get().getId())>recordcount;
 	}
 
 	/**
@@ -3149,15 +3142,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return new EntryIterator(this, keys());
 	}
 	
-
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return keyIterator();
-	}
-	
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return new CollectionIterator(keys(),this);
 	}
 

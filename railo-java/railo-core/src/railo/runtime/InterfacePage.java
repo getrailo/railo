@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import railo.runtime.dump.DumpUtil;
+import railo.runtime.dump.DumpWriter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.http.ReqRspUtil;
@@ -64,7 +65,7 @@ public abstract class InterfacePage extends Page  {
 			    pc.variablesScope().set(COMPONENT,interf);
 			    pc.doInclude(cdf);
 			}
-			else pc.write(pc.getConfig().getDefaultDumpWriter().toString(pc,interf.toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true));
+			else pc.write(pc.getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(pc,interf.toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true));
 			
 		}
 		catch(Throwable t) {

@@ -1944,13 +1944,7 @@ public abstract class ConfigImpl implements Config {
         this.debugShowUsage = debugShowUsage;
     }
 
-	/**
-	 * @return the errorTemplate
-	 */
-	public String getErrorTemplate() {
-		return getErrorTemplate(500);
-	}
-	
+	@Override
 	public String getErrorTemplate(int statusCode) {
 		return (String) errorTemplates.get(Caster.toString(statusCode));
 	}
@@ -2444,16 +2438,7 @@ public abstract class ConfigImpl implements Config {
 		return dmpWriterEntries;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getDefaultDumpWriter()
-	 */
-	public DumpWriter getDefaultDumpWriter() {
-		//throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
-		return getDefaultDumpWriter(HTMLDumpWriter.DEFAULT_RICH);
-		
-	}
-	
+	@Override
 	public DumpWriter getDefaultDumpWriter(int defaultType) {
 		DumpWriterEntry[] entries = getDumpWritersEntries();
 		if(entries!=null)for(int i=0;i<entries.length;i++){

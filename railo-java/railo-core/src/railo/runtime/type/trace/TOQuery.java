@@ -239,11 +239,6 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow()
 	 */
-	
-	public int getCurrentrow() {
-		log();
-		return qry.getCurrentrow();
-	}
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow(int)

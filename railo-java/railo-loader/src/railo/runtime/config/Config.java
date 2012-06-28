@@ -312,12 +312,8 @@ public interface Config {
     public abstract String getDebugTemplate();
 
     /**
-     * @return Returns the error Template.
-     * @deprecated replaced with getErrorTemplate(int status)
+     * @return Returns the error Template for given status code.
      */
-    public abstract String getErrorTemplate();
-    
-    
     public abstract String getErrorTemplate(int statusCode);
 
     /**
@@ -514,15 +510,6 @@ public interface Config {
 	 */
 	public String getCacheDefaultConnectionName(int type);
 	
-	
-	/**
-	 * returns the default DumpWriter  
-	 * @param defaultType
-	 * @return default DumpWriter
-	 * @deprecated use instead <code>getDefaultDumpWriter(int defaultType)</code>
-	 */
-	public abstract DumpWriter getDefaultDumpWriter();
-
 	/**
 	 * returns the default DumpWriter  
 	 * @param defaultType

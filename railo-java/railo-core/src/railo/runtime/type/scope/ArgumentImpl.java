@@ -53,6 +53,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		functionArgumentNames=null;
 		super.release();
 	}
+	
 	@Override
 	public void release(PageContext pc) {
 		functionArgumentNames=null;

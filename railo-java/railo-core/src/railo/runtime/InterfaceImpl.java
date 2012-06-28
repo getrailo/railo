@@ -101,7 +101,7 @@ public class InterfaceImpl implements Interface {
     private static void loadImplements(PageContext pc, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
     	
     	Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(lstExtend, ',');
-    	Iterator<?> it = arr.iterator();
+    	Iterator<Object> it = arr.valueIterator();
     	InterfaceImpl ic;
     	String extend;
 

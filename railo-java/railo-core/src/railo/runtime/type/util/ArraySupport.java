@@ -339,7 +339,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return iterator();
 	}
 	

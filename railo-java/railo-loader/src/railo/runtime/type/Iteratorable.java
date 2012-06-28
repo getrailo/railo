@@ -28,11 +28,4 @@ public interface Iteratorable {
     
 
     public Iterator<Entry<Key, Object>> entryIterator();
-    
-    /**
-     * @return return a Iterator for keys
-     * @deprecated use instead <code>{@link #keyIterator()}</code>
-     */
-    public Iterator iterator();
-    
 }

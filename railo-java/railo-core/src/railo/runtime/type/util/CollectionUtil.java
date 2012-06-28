@@ -27,10 +27,6 @@ public class CollectionUtil {
 		}
 		return true;
 	}
-	
-	public static Iterator toIterator(Collection c){
-		return c.iterator();
-	}
 
 	/*public static String[] toStringArray(Key[] keys) {
 		if(keys==null) return null;

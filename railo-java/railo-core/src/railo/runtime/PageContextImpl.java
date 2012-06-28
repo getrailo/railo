@@ -69,6 +69,7 @@ import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpUtil;
+import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
@@ -1880,7 +1881,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 						pe=e;
 					}
 				}
-				if(!Abort.isSilentAbort(pe))forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
+				if(!Abort.isSilentAbort(pe))forceWrite(getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
 			catch (Exception e) { 
 			}

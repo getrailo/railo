@@ -338,13 +338,6 @@ public class XMLMultiElementArray extends ArraySupport {
 	}
 
 	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return struct.getInnerArray().iterator();
-	}
-
-	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
 	public Iterator<Collection.Key> keyIterator() {

@@ -260,7 +260,8 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	 */
 	
 	public Object get(Key key, Object defaultValue) {
-		return getAt(key, getCurrentrow(),getPid(),defaultValue);
+		int pid = getPid();
+		return getAt(key, getCurrentrow(pid),pid,defaultValue);
 	}
 
 	/**
@@ -284,7 +285,8 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	 */
 	
 	public Object get(Key key) throws PageException {
-		return getAt(key, getCurrentrow(),getPid());
+		int pid = getPid();
+		return getAt(key, getCurrentrow(pid),pid);
 	}
 
 	/**
@@ -504,14 +506,6 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	
 	public int getRecordcount() {
 		return recordcount;
-	}
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#getCurrentrow()
-	 */
-	
-	public synchronized int getCurrentrow() {
-		return getCurrentrow(getPid());
 	}
 
 	/**
@@ -1141,7 +1135,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, String key, Object defaultValue) {
-		return getAt(KeyImpl.init(key), getCurrentrow(), pc.getId(),defaultValue);
+		return getAt(KeyImpl.init(key), getCurrentrow(pc.getId()), pc.getId(),defaultValue);
 	}
 
 	/**
@@ -1149,7 +1143,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, Key key, Object defaultValue) {
-		return getAt(key, getCurrentrow(), pc.getId(),defaultValue);
+		return getAt(key, getCurrentrow(pc.getId()), pc.getId(),defaultValue);
 	}
 
 	/**
@@ -1157,7 +1151,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, String key) throws PageException {
-		return getAt(KeyImpl.init(key), getCurrentrow(), pc.getId());
+		return getAt(KeyImpl.init(key), getCurrentrow(pc.getId()), pc.getId());
 	}
 
 	/**
@@ -1165,7 +1159,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, Key key) throws PageException {
-		return getAt(key, getCurrentrow(), pc.getId());
+		return getAt(key, getCurrentrow(pc.getId()), pc.getId());
 	}
 
 	/**
@@ -2302,18 +2296,10 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		return new EntryIterator(this,keys());
 	}
 	
-
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return keyIterator();
-	}
-	
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return new CollectionIterator(keys(),this);
 	}
 	

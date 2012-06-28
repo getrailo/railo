@@ -107,13 +107,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		this.local=local;
 		this.argument=argument;
 	}
-
-	/**
-     * @see railo.runtime.type.scope.Undefined#getCollectionStack()
-     */
-	public QueryStack getCollectionStack() {
-		return getQueryStack();
-	}
 	
 	/**
 	 * @see railo.runtime.type.scope.Undefined#getQueryStack()
@@ -123,24 +116,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	/**
-     * @see railo.runtime.type.scope.Undefined#setCollectionStack(railo.runtime.util.QueryStack)
-     */
-	public void setCollectionStack(QueryStack collStack) {
-		setQueryStack(collStack);
-	}
-	
-	/**
 	 * @see railo.runtime.type.scope.Undefined#setQueryStack(railo.runtime.util.QueryStack)
 	 */
 	public void setQueryStack(QueryStack qryStack) {
 		this.qryStack=(QueryStackImpl) qryStack;
-	}
-	
-	/**
-     * @see railo.runtime.type.scope.Undefined#addCollection(railo.runtime.type.Query)
-     */
-	public void addCollection(Query coll) {
-		addQuery(coll);
 	}
 
 	/**
@@ -149,13 +128,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public void addQuery(Query qry) {
 		if(allowImplicidQueryCall)
 			qryStack.addQuery(qry);
-	}
-
-	/**
-     * @see railo.runtime.type.scope.Undefined#removeCollection()
-     */
-	public void removeCollection() {
-		removeQuery();
 	}
 
 	/**

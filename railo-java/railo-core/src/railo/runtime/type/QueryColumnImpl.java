@@ -164,11 +164,11 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	 * @see railo.runtime.type.ref.Reference#remove(PageContext pc)
 	 */
 	public Object remove(PageContext pc) throws PageException {
-        return remove(query.getCurrentrow());
+        return remove(query.getCurrentrow(pc.getId()));
 	}
 
 	public Object removeEL(PageContext pc) {
-        return removeEL(query.getCurrentrow());
+        return removeEL(query.getCurrentrow(pc.getId()));
 	}
 	
 	/**
@@ -467,7 +467,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return DumpUtil.toDumpData(get(query.getCurrentrow()), pageContext,maxlevel,dp);
+		return DumpUtil.toDumpData(get(query.getCurrentrow(pageContext.getId())), pageContext,maxlevel,dp);
 	}	
 	
     private synchronized void growTo(int row) {
@@ -515,7 +515,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
      */
     public Object get(PageContext pc) {
-        return get(query.getCurrentrow());
+        return get(query.getCurrentrow(pc.getId()));
     }
     
     /**
@@ -523,32 +523,32 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
      */
     public Object get(PageContext pc, Object defaultValue) {
-        return get(query.getCurrentrow(),defaultValue);
+        return get(query.getCurrentrow(pc.getId()),defaultValue);
     }
 
     /**
      * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
      */
     public Object touch(PageContext pc) throws PageException {
-        return touch(query.getCurrentrow());
+        return touch(query.getCurrentrow(pc.getId()));
     }
 
     public Object touchEL(PageContext pc) {
-        return touchEL(query.getCurrentrow());
+        return touchEL(query.getCurrentrow(pc.getId()));
     }
 
     /**
      * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
      */
     public Object set(PageContext pc, Object value) throws PageException {
-        return set(query.getCurrentrow(),value);
+        return set(query.getCurrentrow(pc.getId()),value);
     }
 
     /**
      * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)
      */
     public Object setEL(PageContext pc, Object value) {
-        return setEL(query.getCurrentrow(),value);
+        return setEL(query.getCurrentrow(pc.getId()),value);
     }
 
     /**
@@ -562,14 +562,14 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @see railo.runtime.op.Castable#castToString()
      */
     public String castToString() throws PageException {
-        return Caster.toString(get(query.getCurrentrow()));
+        return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
     }
 
 	/**
 	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
 	 */
 	public String castToString(String defaultValue) {
-		Object value = get(query.getCurrentrow(),null);
+		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
 		return Caster.toString(value,defaultValue);
 	}
@@ -578,14 +578,14 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @see railo.runtime.op.Castable#castToBooleanValue()
      */
     public boolean castToBooleanValue() throws PageException {
-        return Caster.toBooleanValue(get(query.getCurrentrow()));
+        return Caster.toBooleanValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
     }
     
     /**
      * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
      */
     public Boolean castToBoolean(Boolean defaultValue) {
-    	Object value = get(query.getCurrentrow(),null);
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
 		return Caster.toBoolean(value,defaultValue);
     }
@@ -594,14 +594,14 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @see railo.runtime.op.Castable#castToDoubleValue()
      */
     public double castToDoubleValue() throws PageException {
-        return Caster.toDoubleValue(get(query.getCurrentrow()));
+        return Caster.toDoubleValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
     }
     
     /**
      * @see railo.runtime.op.Castable#castToDoubleValue(double)
      */
     public double castToDoubleValue(double defaultValue) {
-    	Object value = get(query.getCurrentrow(),null);
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
 		return Caster.toDoubleValue(value,defaultValue);
     }
@@ -610,14 +610,14 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @see railo.runtime.op.Castable#castToDateTime()
      */
     public DateTime castToDateTime() throws PageException {
-        return DateCaster.toDateAdvanced(get(query.getCurrentrow()),null);
+        return DateCaster.toDateAdvanced(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())),null);
     }
     
     /**
      * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
      */
     public DateTime castToDateTime(DateTime defaultValue) {
-    	Object value = get(query.getCurrentrow(),null);
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
 		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
     }
@@ -694,7 +694,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      */
     public String toString() {
         try {
-            return Caster.toString(get(query.getCurrentrow()));
+            return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
         } catch (PageException e) {
             return super.toString();
         }
@@ -748,7 +748,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return new ArrayIterator(data,0,size);
 	}
 	
@@ -771,13 +771,13 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 				return mi.invoke(this);
 			} catch (Throwable t) {
 				try {
-					return pc.getFunction(get(query.getCurrentrow()), methodName, arguments);
+					return pc.getFunction(get(query.getCurrentrow(pc.getId())), methodName, arguments);
 				} catch (PageException pe) {
 					throw Caster.toPageException(t);
 				}
 			}
 		}
-		return pc.getFunction(get(query.getCurrentrow()), methodName, arguments);
+		return pc.getFunction(get(query.getCurrentrow(pc.getId())), methodName, arguments);
 	}
 
 	/**

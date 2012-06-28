@@ -104,12 +104,12 @@ public class SimpleQueryColumn implements QueryColumn {
 	
 	
 	private Object getChildElement(Key key, Object defaultValue) {
-    	// column and query has same name
+    	PageContext pc = ThreadLocalPageContext.get();
+		// column and query has same name
 		if(key.equals(this.key)) {
-    		return get(qry.getCurrentrow(),defaultValue);
+    		return get(qry.getCurrentrow(pc.getId()),defaultValue);
     	}
     	// get it from undefined scope
-		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
 			Undefined undefined = pc.undefinedScope();
 			boolean old = undefined.setAllowImplicidQueryCall(false);
@@ -217,13 +217,8 @@ public class SimpleQueryColumn implements QueryColumn {
 	}
 
 	
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		throw SimpleQuery.notSupported();
-	}
-
-	
-	public Iterator iterator() {
-		return keyIterator();
 	}
 
 	

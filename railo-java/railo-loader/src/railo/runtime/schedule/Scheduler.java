@@ -74,13 +74,6 @@ public interface Scheduler {
     public abstract void runScheduleTask(String name, boolean throwWhenNotExist)
             throws IOException, ScheduleException;
 
-    
-    /**
-     * @return Returns the nextExecutionTime.
-     * @deprecated task are self controlled no longer controlled by a controller thread
-     */
-    public abstract long getNextExecutionTime();
-
     /**
      * @return Returns the logFile.
      */

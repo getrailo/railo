@@ -304,7 +304,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	
 	private Array translateTime(Array exp) {
 		exp=(Array) exp.duplicate(true);
-		Iterator it = exp.iterator();
+		Iterator<Object> it = exp.valueIterator();
 		Struct sct;
 		while(it.hasNext()) {
 			sct=(Struct) it.next();

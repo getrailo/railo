@@ -320,14 +320,6 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return column.iterator();
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
 	public Iterator<Collection.Key> keyIterator() {
@@ -540,7 +532,7 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return column.valueIterator();
 	}
 	

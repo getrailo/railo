@@ -146,7 +146,7 @@ public final class DeserializeJSON implements Function {
 			}
 			
 			Array data;
-			Iterator it = arr.iterator();
+			Iterator<Object> it = arr.valueIterator();
 			while(it.hasNext()) {
 				data=Caster.toArray(it.next(),null);
 				if(data==null || data.size()!=datas.length) return null;
@@ -166,7 +166,7 @@ public final class DeserializeJSON implements Function {
 			Key[] columns=new Key[arr.size()];
 			String column;
 			int index=0;
-			Iterator it = arr.iterator();
+			Iterator<Object> it = arr.valueIterator();
 			while(it.hasNext()) {
 				column=Caster.toString(it.next(),null);
 				if(StringUtil.isEmpty(column)) return null;

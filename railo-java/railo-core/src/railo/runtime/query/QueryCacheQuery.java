@@ -423,13 +423,6 @@ public class QueryCacheQuery extends QueryImpl {
 	}
 
 	/**
-	 * @see railo.runtime.type.QueryImpl#getCurrentrow()
-	 */
-	public int getCurrentrow() {
-		return query.getCurrentrow();
-	}
-
-	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow(int)
 	 */
 	public int getCurrentrow(int pid) {
@@ -562,12 +555,6 @@ public class QueryCacheQuery extends QueryImpl {
 		return query.isInitalized();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#iterator()
-	 */
-	public Iterator iterator() {
-		return query.iterator();
-	}
 
 	@Override
 	public Iterator<Collection.Key> keyIterator() {
@@ -2015,7 +2002,7 @@ public class QueryCacheQuery extends QueryImpl {
 	/**
 	 * @see railo.runtime.type.QueryImpl#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		// TODO Auto-generated method stub
 		return query.valueIterator();
 	}

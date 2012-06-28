@@ -202,14 +202,6 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return values().contains(value);
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public final Iterator iterator() {
-		return keyIterator();
-	}
-	
     @Override
 	public Iterator<String> keysAsStringIterator() {
     	return new KeyAsStringIterator(keyIterator());
