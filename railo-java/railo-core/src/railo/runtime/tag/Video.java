@@ -105,9 +105,6 @@ public class Video extends TagSupport {
 	private long buffersize;
 	private int execution=EXECUTION_PERFORMANCE;
 	private static ProfileCollection _profileCollection;
-
-	private static Method toStruct;
-	private static Boolean hasToStruct;
 	
 	public Video(){
 		
@@ -625,11 +622,11 @@ public class Video extends TagSupport {
 
 	private VideoProfile getProfile(String strProfile) throws PageException {
 		strProfile=strProfile.trim().toLowerCase();
-		return (VideoProfile) getProfileCollection().getProfiles().get(strProfile);
+		return getProfileCollection().getProfiles().get(strProfile);
 	}
 	
 	private String getProfileKeyList() throws PageException {
-		Iterator it = getProfileCollection().getProfiles().keySet().iterator();
+		Iterator<String> it = getProfileCollection().getProfiles().keySet().iterator();
 		StringBuffer sb=new StringBuffer();
 		boolean doDel=false;
 		while(it.hasNext()) {
@@ -860,14 +857,14 @@ public class Video extends TagSupport {
 
 	public Struct toStruct(VideoInfo[] infos) {
 		Struct sct=new StructImpl();
-		sct.setEL("source", toStruct(infos[0]));
-		sct.setEL("destination", toStruct(infos[1]));
+		sct.setEL(KeyConstants._source, toStruct(infos[0]));
+		sct.setEL(KeyConstants._destination, toStruct(infos[1]));
 		return sct;
 	}
 	
 	private Struct toStruct(VideoInfo info) {
 		
-		Struct sct=base(info);
+		Struct sct=info.toStruct();
 		
 		// audio
 		Struct audio=Caster.toStruct(sct.get(AUDIO,null),null);
@@ -885,12 +882,12 @@ public class Video extends TagSupport {
 		
 		// Audio
 		audio.setEL("channels", info.getAudioChannels());
-		audio.setEL("codec", info.getAudioCodec());
+		audio.setEL(KeyConstants._codec, info.getAudioCodec());
 		if(info.getAudioBitrate()!=-1)audio.setEL("bitrate", new Double(info.getAudioBitrate()));
 		if(info.getAudioSamplerate()!=-1)audio.setEL("samplerate", new Double(info.getAudioSamplerate()));
 		
 		// Video
-		video.setEL("codec", info.getVideoCodec());
+		video.setEL(KeyConstants._codec, info.getVideoCodec());
 		video.setEL(KeyConstants._format, info.getVideoFormat());
 		if(info.getVideoBitrate()!=-1)video.setEL("bitrate", new Double(info.getVideoBitrate()));
 		if(info.getFramerate()!=-1)video.setEL("framerate", new Double(info.getFramerate()));
@@ -901,32 +898,6 @@ public class Video extends TagSupport {
 		if(info.getWidth()!=-1)sct.setEL(KeyConstants._width, new Double(info.getWidth()));
 		
 		
-		
-		return sct;
-	}
-	
-	/*
-	 * genrate the base struct for info
-	 * @param info
-	 * @return
-	 */
-	private static synchronized Struct base(VideoInfo info) {
-		// FUTURE add toStruct():Struct to the VideoInfo interface and remove reflection here
-		Struct sct=null;
-		if(hasToStruct!=Boolean.FALSE){
-			try {
-				if(toStruct==null) {
-					toStruct = info.getClass().getMethod("toStruct", new Class[0]);
-				}
-				sct= Caster.toStruct(toStruct.invoke(info, new Object[0]),null);
-				hasToStruct=Boolean.TRUE;
-			}
-			catch(Throwable t){
-				hasToStruct=Boolean.FALSE;
-			}
-		}
-		
-		if(sct==null)sct=new StructImpl();
 		
 		return sct;
 	}
