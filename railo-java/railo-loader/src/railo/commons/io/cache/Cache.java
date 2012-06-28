@@ -174,11 +174,4 @@ public interface Cache {
 	 */
 	public Struct getCustomInfo();
 
-	/**
-	 * removes the cache complitly
-	 */
-	// FUTURE public void remove() throws IOException; //or better clear()
-	
-	// FUTURE public void verify() throws IOException;
-
 }
