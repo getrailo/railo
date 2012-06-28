@@ -41,11 +41,6 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
     public static ComponentWrap  toComponentWrap(int access, Component component) throws ExpressionException {
     	return new ComponentWrap(access, ComponentUtil.toComponentAccess(component));
     }
-    
-
-    public Page getPage(){
-    	return component.getPage();
-    }
 
     /**
      * @see railo.runtime.Component#getPageSource()

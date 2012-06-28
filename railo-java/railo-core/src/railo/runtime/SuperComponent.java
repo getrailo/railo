@@ -523,11 +523,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return comp.top.toDumpData(pageContext, maxlevel,dp);
 	}
-
-
-	public Page getPage() {
-		return comp.getPage();
-	}
 	
 	/**
 	 * @see railo.runtime.Component#getPageSource()

@@ -120,13 +120,6 @@ public abstract class ComponentProxy implements Component {
 	}
 
 	/**
-	 * @see railo.runtime.Component#getPage()
-	 */
-	public Page getPage() {
-		return getComponent().getPage();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#size()
 	 */
 	public int size() {
