@@ -49,13 +49,13 @@ public class HMAC implements Function {
             mac.reset();
             mac.update(msg);
             msg = mac.doFinal();
-            return MD5.getDigestAsString(msg);
+            return MD5.stringify(msg).toUpperCase();
         }
         catch(Exception e) {
             throw Caster.toPageException(e);
         }
 	}
-
+	
 	private static byte[] toBinary(Object obj, Charset cs) throws PageException {
 		if(Decision.isBinary(obj)){
 			return Caster.toBinary(obj);
