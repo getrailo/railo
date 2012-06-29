@@ -30,9 +30,26 @@ public interface Statement {
      */
     public void writeOut(BytecodeContext bc) throws BytecodeException;    
 
+    
     /**
-     * Returns the value of line.
-     * @return value line
+     * sets the line value.
+     * @param line The line to set.
      */
-    public int getLine();
+    public void setStart(Position startLine);
+
+    /**
+     * sets the line value.
+     * @param line The line to set.
+     */
+    public void setEnd(Position endLine);
+    
+    /**
+	 * @return the startLine
+	 */
+	public Position getStart();
+	
+	/**
+	 * @return the endLine
+	 */
+	public Position getEnd();
 }

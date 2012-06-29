@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function dump
+ * Implements the CFML Function dump
  */
 package railo.runtime.functions.other;
 

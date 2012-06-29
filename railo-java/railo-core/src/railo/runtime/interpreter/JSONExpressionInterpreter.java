@@ -11,11 +11,8 @@ public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
 		allowNullConstant=true;
     }
         
-	/**
-	 *
-	 * @see railo.runtime.interpreter.CFMLExpressionInterpreter#string()
-	 */
-	protected Ref string() throws PageException {
+	@Override
+    protected Ref string() throws PageException {
         
         // Init Parameter
         char quoter = cfml.getCurrentLower();

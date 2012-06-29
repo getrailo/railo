@@ -16,7 +16,10 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.StructSupport;
 
 public final class ObjectStruct extends StructSupport implements Struct,Objects {
@@ -176,19 +179,12 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public Key[] keys() {
-		String[] strKeys = keysAsString();
+		String[] strKeys = Reflector.getPropertyKeys(jo.getClazz());
 		Key[] keys=new Key[strKeys.length];
 		for(int i=0;i<strKeys.length;i++) {
 			keys[i]=KeyImpl.init(strKeys[i]);
 		}
 		return keys;
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return Reflector.getPropertyKeys(jo.getClazz());
 	}
 
 	/**
@@ -223,7 +219,7 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	 * @see railo.runtime.type.Collection#size()
 	 */
 	public int size() {
-		return keysAsString().length;
+		return keys().length;
 	}
 
 	/**
@@ -236,8 +232,23 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
 	}
 
 	/**

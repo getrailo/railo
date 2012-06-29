@@ -39,6 +39,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Handles interactions with directories.
@@ -55,11 +56,11 @@ public final class Directory extends TagImpl  {
 	public static final ResourceFilter DIRECTORY_FILTER = new DirectoryResourceFilter();
 	public static final ResourceFilter FILE_FILTER = new FileResourceFilter();
 	
-	private static final Key MODE = KeyImpl.intern("mode");
-	private static final Key META = KeyImpl.intern("meta");
-	private static final Key DATE_LAST_MODIFIED = KeyImpl.intern("dateLastModified");
-	private static final Key ATTRIBUTES = KeyImpl.intern("attributes");
-	private static final Key DIRECTORY = KeyImpl.intern("directory");
+	private static final Key MODE = KeyConstants._mode;
+	private static final Key META = KeyConstants._meta;
+	private static final Key DATE_LAST_MODIFIED = KeyConstants._dateLastModified;
+	private static final Key ATTRIBUTES = KeyConstants._attributes;
+	private static final Key DIRECTORY = KeyConstants._directory;
 	
 	
 	public static final int LIST_INFO_QUERY_ALL = 1;
@@ -632,21 +633,21 @@ public final class Directory extends TagImpl  {
 		
 	    
 		if(!directory.exists())
-			throw new ApplicationException("directory ["+directory.toString()+"] doesn't exist");
+			throw new ApplicationException("the directory ["+directory.toString()+"] doesn't exist");
 		if(!directory.isDirectory())
-			throw new ApplicationException("file ["+directory.toString()+"] exists, but isn't a directory");
+			throw new ApplicationException("the file ["+directory.toString()+"] exists, but it isn't a directory");
 		if(!directory.canRead())
 			throw new ApplicationException("no access to read directory ["+directory.toString()+"]");
 		
 		if(strNewdirectory==null)
-			throw new ApplicationException("attribute newDirectory is not defined");
+			throw new ApplicationException("the attribute [newDirectory] is not defined");
 		
 		// real to source 
 		Resource newdirectory=toDestination(pc,strNewdirectory,directory);
 		
 	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
 		if(newdirectory.exists())
-			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
+			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exists");
 		try {
 			directory.moveTo(newdirectory);
 		}

@@ -36,7 +36,7 @@ public final class ContentTypeImpl implements ContentType {
 	}
 
 	public ContentTypeImpl(InputStream is) {
-		String raw=IOUtil.getMymeType(is, null);
+		String raw=IOUtil.getMimeType(is, null);
 		String[] arr = List.listToStringArray(raw, '/');
 		this.type=arr[0];
 		this.subtype=arr[1];

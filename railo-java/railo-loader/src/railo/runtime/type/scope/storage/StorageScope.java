@@ -66,4 +66,12 @@ public interface StorageScope extends SharedScope {
 	 * @return an integer specifying the number of seconds this session remains open between client requests
 	 */
 	public int getMaxInactiveInterval();
+	
+
+	
+	public long getCreated();
+	
+	public String generateToken(String key, boolean forceNew);
+	
+	public boolean verifyToken(String token, String key);
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * 
  */
-public interface Struct extends Collection,Map,Sizeable {
+public interface Struct extends Collection,Map,Sizeable,Objects {
 
 	public static final int TYPE_WEAKED=0;
 	public static final int TYPE_LINKED=1;

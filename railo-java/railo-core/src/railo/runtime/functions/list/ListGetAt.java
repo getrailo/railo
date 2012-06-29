@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listgetat
+ * Implements the CFML Function listgetat
  */
 package railo.runtime.functions.list;
 
@@ -17,13 +17,13 @@ public final class ListGetAt implements Function {
 		return call(pc,list,posNumber,",",false);
 	}
 
-	public static String call(PageContext pc , String list, double posNumber, String delimeter) throws PageException {
-		return call(pc,list,posNumber,delimeter,false);
+	public static String call(PageContext pc , String list, double posNumber, String delimiter) throws PageException {
+		return call(pc,list,posNumber,delimiter,false);
 	}
 	
-	public static String call(PageContext pc , String list, double posNumber, String delimeter, boolean includeEmptyFields) throws PageException {
+	public static String call(PageContext pc , String list, double posNumber, String delimiter, boolean includeEmptyFields) throws PageException {
 		int pos=(int) posNumber;
-		String rtn = List.getAt(list,delimeter,pos-1,!includeEmptyFields);
+		String rtn = List.getAt(list,delimiter,pos-1,!includeEmptyFields);
 		if(rtn==null) throw new FunctionException(pc,"listGetAt",2,"posNumber","invalid string list index ["+pos+"]");
 		return rtn;
 	}

@@ -1,6 +1,7 @@
 package railo.runtime.query;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -248,14 +249,6 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return column.keysAsString();
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
@@ -337,8 +330,18 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	 *
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return column.keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return column.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return column.entryIterator();
 	}
 
 	/**

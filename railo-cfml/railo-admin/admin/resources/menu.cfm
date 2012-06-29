@@ -75,7 +75,8 @@
 		struct(action:"documentation",label:stMenu.documentation.label,
 			children:array(
 				struct(action:"tagRef",label:stMenu.documentation.tagRef),
-				struct(action:"funcRef",label:stMenu.documentation.funcRef)
+				struct(action:"funcRef",label:stMenu.documentation.funcRef),
+				struct(action:"objRef",label:stMenu.documentation.objRef)
 			)
 		)
 	)>

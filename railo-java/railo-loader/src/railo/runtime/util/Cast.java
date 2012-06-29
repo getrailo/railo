@@ -26,7 +26,7 @@ import railo.runtime.type.dt.TimeSpan;
 
 
 /**
- * This class can cast object of one type to a other by cold fusion rules
+ * This class can cast object of one type to a other by CFML rules
  */
 public interface Cast { 
     

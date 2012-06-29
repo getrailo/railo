@@ -7,7 +7,7 @@ import railo.runtime.type.Struct;
 
 
 /**
- * Exception throwed by Cold Fusion Code
+ * Exception throwed by CFML Code
  */
 public final class CustomTypeException extends PageExceptionImpl {
 	

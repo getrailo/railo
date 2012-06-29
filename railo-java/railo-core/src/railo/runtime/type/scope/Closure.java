@@ -3,25 +3,33 @@ package railo.runtime.type.scope;
 import java.util.Iterator;
 
 import railo.runtime.PageContext;
+import railo.runtime.dump.DumpData;
+import railo.runtime.dump.DumpProperties;
+import railo.runtime.dump.DumpTable;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.util.StructSupport;
+import railo.runtime.type.Struct;
 
-public class Closure extends StructSupport implements Variables {
+public class Closure extends ScopeSupport implements Variables {
 	
 	private static final Object NULL = new Object();
 	private Argument arg;
 	private Local local;
 	private Variables var;
+	private boolean debug;
+	private Undefined und; 
 
-	public Closure(Argument arg, Local local,Variables var ){
+	public Closure(PageContext pc,Argument arg, Local local,Variables var ){
+		super("variables",SCOPE_VARIABLES,Struct.TYPE_REGULAR);
 		arg.setBind(true);
 		local.setBind(true);
 		var.setBind(true);
-		
+		und = pc.undefinedScope();
 		this.arg=arg;
 		this.local=local;
 		this.var=var;
+		this.debug=pc.getConfig().debug();
 	}
 
 	/**
@@ -72,16 +80,11 @@ public class Closure extends StructSupport implements Variables {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return var.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
+		if(local.containsKey(key))
+			return local.remove(key);
 		return var.remove(key);
 	}
 
@@ -89,6 +92,8 @@ public class Closure extends StructSupport implements Variables {
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
 	 */
 	public Object removeEL(Key key) {
+		if(local.containsKey(key))
+			return local.removeEL(key);
 		return var.removeEL(key);
 	}
 
@@ -103,28 +108,47 @@ public class Closure extends StructSupport implements Variables {
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
 	 */
 	public Object get(Key key) throws PageException {
-		Object value = local.get(key,NULL);
-		if(value!=NULL) return value;
-		value=arg.get(key,NULL);
-		if(value!=NULL) return value;
-		return var.get(key);
+		Object value = local.get(key,null);
+		if(value!=null) return value;
+		value=arg.get(key,null);
+		if(value!=null) {
+			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
+			return value;
+		}
+		
+		value= var.get(key);
+		if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),var.getTypeAsString(), key);
+		return value;
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		Object value = local.get(key,NULL);
-		if(value!=NULL) return value;
-		value=arg.get(key,NULL);
-		if(value!=NULL) return value;
-		return var.get(key,defaultValue);
+		Object value = local.get(key,null);
+		if(value!=null) return value;
+		value=arg.get(key,null);
+		if(value!=null) {
+			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
+			return value;
+		}
+		value= var.get(key,defaultValue);
+		if(value!=null && debug && value!=defaultValue) {
+			UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),var.getTypeAsString(), key);
+		}
+		return value;
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Key key, Object value) throws PageException {
+		if(und.getLocalAlways() || local.containsKey(key))     return local.set(key,value);
+	    if(arg.containsFunctionArgumentKey(key))  {
+	    	if(debug)UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
+	    	return arg.set(key,value);
+	    }
+	    if(debug)UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),var.getTypeAsString(), key);
 		return var.set(key, value);
 	}
 
@@ -132,14 +156,21 @@ public class Closure extends StructSupport implements Variables {
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Key key, Object value) {
-		return var.setEL(key, value);
+	    if(und.getLocalAlways() || local.containsKey(key))     return local.setEL(key,value);
+        if(arg.containsFunctionArgumentKey(key))  {
+        	if(debug)UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
+        	return arg.setEL(key,value);
+        }
+	    	
+		if(debug)UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),var.getTypeAsString(), key);
+		return var.setEL(key,value);
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return new Closure((Argument)arg.duplicate(deepCopy), (Local)local.duplicate(deepCopy), (Variables)var.duplicate(deepCopy));
+		return new Closure(ThreadLocalPageContext.get(),(Argument)arg.duplicate(deepCopy), (Local)local.duplicate(deepCopy), (Variables)var.duplicate(deepCopy));
 	}
 
 	/**
@@ -152,9 +183,25 @@ public class Closure extends StructSupport implements Variables {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return var.keyIterator();
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return var.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return var.entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return var.valueIterator();
+	}
+	
 	/**
 	 * 
 	 * @see railo.runtime.type.scope.Variables#setBind(boolean)
@@ -168,5 +215,15 @@ public class Closure extends StructSupport implements Variables {
 	public boolean isBind() {
 		return true;
 	}
+	
+	@Override
+	public DumpData toDumpData(PageContext pageContext, int maxlevel,
+			DumpProperties properties) {
+		
+		DumpTable dt= (DumpTable) super.toDumpData(pageContext, maxlevel, properties);
+		dt.setTitle("Closure Variable Scope");
+		return dt;
+	}
+
 
 }

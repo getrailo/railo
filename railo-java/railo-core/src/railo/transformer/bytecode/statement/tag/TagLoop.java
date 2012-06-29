@@ -9,22 +9,22 @@ import org.objectweb.asm.commons.Method;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.type.scope.Undefined;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
+import railo.transformer.bytecode.statement.ForEach;
 import railo.transformer.bytecode.util.ASMConstants;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
+import railo.transformer.bytecode.util.Methods;
+import railo.transformer.bytecode.util.Methods_Caster;
 import railo.transformer.bytecode.util.Types;
-import railo.transformer.bytecode.visitor.AndVisitor;
 import railo.transformer.bytecode.visitor.DecisionDoubleVisitor;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 import railo.transformer.bytecode.visitor.DecisionObjectVisitor;
-import railo.transformer.bytecode.visitor.ForConditionIntVisitor;
+import railo.transformer.bytecode.visitor.DoWhileVisitor;
 import railo.transformer.bytecode.visitor.ForDoubleVisitor;
 import railo.transformer.bytecode.visitor.ForVisitor;
 import railo.transformer.bytecode.visitor.LoopVisitor;
@@ -32,16 +32,20 @@ import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
 
-public final class TagLoop extends TagBase implements FlowControl {
+public final class TagLoop extends TagGroup implements FlowControl {
 
 
-	public static final int TYPE_FILE = 0;
-	public static final int TYPE_LIST = 1;
-	public static final int TYPE_INDEX = 2;
-	public static final int TYPE_CONDITION = 3;
-	public static final int TYPE_QUERY = 4;
-	public static final int TYPE_COLLECTION = 5;
-	public static final int TYPE_ARRAY = 6;
+	public static final int TYPE_FILE = 1;
+	public static final int TYPE_LIST = 2;
+	public static final int TYPE_INDEX = 3;
+	public static final int TYPE_CONDITION = 4;
+	public static final int TYPE_QUERY = 5;
+	public static final int TYPE_COLLECTION = 6;
+	public static final int TYPE_ARRAY = 7;
+	public static final int TYPE_GROUP = 8;
+	public static final int TYPE_INNER_GROUP = 9;
+	public static final int TYPE_INNER_QUERY = 10;
+	public static final int TYPE_NOTHING = 11;
 	
 
 	
@@ -64,16 +68,12 @@ public final class TagLoop extends TagBase implements FlowControl {
 			Types.VOID,
 			new Type[]{Types.DOUBLE_VALUE});
 
-	// Iterator toIterator(Object o)
-	private static final Method TO_ITERATOR = new Method(
-			"toIterator",
-			Types.ITERATOR,
-			new Type[]{Types.OBJECT});
+	
 
-	private static final Method KEYS = new Method(
+	/*private static final Method KEYS = new Method(
 			"keyIterator",
 			Types.COLLECTION_KEY_ARRAY,
-			new Type[]{});
+			new Type[]{});*/
 
 	private static final Method GET = new Method(
 			"get",
@@ -135,13 +135,13 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{});
 	
 
-	// Array listToArrayRemoveEmpty(String list, String delimeter)
+	// Array listToArrayRemoveEmpty(String list, String delimiter)
 	private static final Method LIST_TO_ARRAY_REMOVE_EMPTY_SS = new Method(
 			"listToArrayRemoveEmpty",
 			Types.ARRAY,
 			new Type[]{Types.STRING,Types.STRING});
 	
-	// Array listToArrayRemoveEmpty(String list, char delimeter)
+	// Array listToArrayRemoveEmpty(String list, char delimiter)
 	private static final Method LIST_TO_ARRAY_REMOVE_EMPTY_SC = new Method(
 			"listToArrayRemoveEmpty",
 			Types.ARRAY,
@@ -173,19 +173,13 @@ public final class TagLoop extends TagBase implements FlowControl {
 			new Type[]{Types.STRING});
 
 	// int getCurrentrow()
-	/*OLD static final Method GET_CURRENTROW_0X = new Method(
-			"getCurrentrow",
-			Types.INT_VALUE,
-			new Type[]{});*/
-	
-	// int getCurrentrow()
 	static final Method GET_CURRENTROW_1 = new Method(
 			"getCurrentrow",
 			Types.INT_VALUE,
 			new Type[]{Types.INT_VALUE});
 
 	// double range(double number, double from)
-	private static final Method RANGE = new Method(
+	/*private static final Method RANGE = new Method(
 			"range",
 			Types.DOUBLE_VALUE,
 			new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
@@ -198,7 +192,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			UNDEFINED,
 			new Type[]{});
 
-	// void addCollection(Query coll)
+	// void addQuery(Query coll)
 	private static final Method ADD_QUERY = new Method(
 			"addQuery",
 			Types.VOID,
@@ -208,14 +202,9 @@ public final class TagLoop extends TagBase implements FlowControl {
 	private static final Method REMOVE_QUERY = new Method(
 			"removeQuery",
 			Types.VOID,
-			new Type[]{});
+			new Type[]{});*/
 
-	// boolean go(int index)
-	static final Method GO_1 = new Method(
-			"go",
-			Types.BOOLEAN_VALUE,
-			new Type[]{Types.INT_VALUE});
-	static final Method GO_2 = new Method(
+	static final Method GO = new Method(
 			"go",
 			Types.BOOLEAN_VALUE,
 			new Type[]{Types.INT_VALUE,Types.INT_VALUE});
@@ -228,6 +217,9 @@ public final class TagLoop extends TagBase implements FlowControl {
 			"read",
 			Types.STRING,
 			new Type[]{Types.READER,Types.INT_VALUE});
+	private static final Method ENTRY_ITERATOR = new Method("entryIterator",Types.ITERATOR,new Type[]{});
+	private static final Method GET_KEY = new Method("getKey",Types.OBJECT,new Type[]{});
+	private static final Method GET_VALUE = new Method("getValue",Types.OBJECT,new Type[]{});
 	
 	
 	
@@ -236,11 +228,8 @@ public final class TagLoop extends TagBase implements FlowControl {
 	private int type;
 	private LoopVisitor loopVisitor;
 
-	public TagLoop(int line) {
-		super(line);
-	}
-	public TagLoop(int sl,int el) {
-		super(sl,el);
+	public TagLoop(Position start,Position end) {
+		super(start,end);
 	}
 
 	public void setType(int type) {
@@ -253,6 +242,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
+		boolean old;
 		switch(type) {
 		case TYPE_COLLECTION:
 			writeOutTypeCollection(bc);
@@ -273,10 +263,47 @@ public final class TagLoop extends TagBase implements FlowControl {
 			writeOutTypeListArray(bc,true);
 		break;
 		case TYPE_QUERY:
-			writeOutTypeQuery(bc);
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeQuery(this,bc);
+			bc.changeDoSubFunctions(old);
+			//writeOutTypeQuery(bc);
 		break;
+		
+		case TYPE_GROUP:
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeGroup(this,bc);
+			bc.changeDoSubFunctions(old);
+			//writeOutTypeQuery(bc);
+		break;
+		
+		case TYPE_INNER_GROUP:
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeInnerGroup(this,bc);
+			bc.changeDoSubFunctions(old);
+		break;
+
+		case TYPE_INNER_QUERY:
+			old = bc.changeDoSubFunctions(false);
+			TagGroupUtil.writeOutTypeInnerQuery(this,bc);
+			bc.changeDoSubFunctions(old);
+		break;
+		case TYPE_NOTHING:
+			GeneratorAdapter a = bc.getAdapter();
+			DoWhileVisitor dwv=new DoWhileVisitor();
+			setLoopVisitor(dwv);
+			dwv.visitBeginBody(a);
+				getBody().writeOut(bc);
+			dwv.visitEndBodyBeginExpr(a);
+				a.push(false);
+			dwv.visitEndExpr(a);
+			
+			
+		break;
+		
+		
+		
 		default:
-			throw new BytecodeException("invalid type",getLine());
+			throw new BytecodeException("invalid type",getStart());
 		}
 	}
 
@@ -286,26 +313,58 @@ public final class TagLoop extends TagBase implements FlowControl {
 	 * @throws TemplateException
 	 */
 	private void writeOutTypeCollection(BytecodeContext bc) throws BytecodeException {
+		
+		GeneratorAdapter adapter = bc.getAdapter();
+
+		//VariableReference item=VariableInterpreter.getVariableReference(pc,index);
+		int index = -1;
+		Attribute attrIndex = getAttribute("index");
+		if(attrIndex!=null){
+			index = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrIndex.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(index);
+		}
+
+		//VariableReference item=VariableInterpreter.getVariableReference(pc,item);
+		int item = -1;
+		Attribute attrItem = getAttribute("item");
+		if(attrItem!=null){
+			item = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrItem.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(item);
+		}
+		boolean hasIndexAndItem=index!=-1 && item!=-1;
+		
+		
+		
 		WhileVisitor whileVisitor = new WhileVisitor();
 		loopVisitor=whileVisitor;
-		GeneratorAdapter adapter = bc.getAdapter();
 		// java.util.Iterator it=Caster.toIterator(@collection');
 		int it=adapter.newLocal(Types.ITERATOR);
 		getAttribute("collection").getValue().writeOut(bc,Expression.MODE_REF);
-		adapter.invokeStatic(Types.CASTER,TO_ITERATOR);
+		
+		// item and index
+		int entry=-1;
+		if(hasIndexAndItem) {
+			entry = adapter.newLocal(Types.MAP_ENTRY);
+			// Caster.toCollection(collection)
+			adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_COLLECTION);
+			//coll.entryIterator();
+			adapter.invokeInterface(Types.COLLECTION, ENTRY_ITERATOR);
+		}
+		else {
+			adapter.invokeStatic(Types.CASTER,ForEach.TO_ITERATOR);
+		}
+		
+		
 		adapter.storeLocal(it);
 		
-		//VariableReference item=VariableInterpreter.getVariableReference(pc,item);
-		int item = adapter.newLocal(Types.VARIABLE_REFERENCE);
-		adapter.loadArg(0);
+
 		
-		getAttribute("item").getValue().writeOut(bc, Expression.MODE_REF);
-//		if(Variable.register Key(bc, getAttribute("item").getValue()))
-		
-		//	adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE_KEY);
-		//else
-			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
-		adapter.storeLocal(item);
 		
 		// while(it.hasNext()) {
 		whileVisitor.visitBeforeExpression(bc);
@@ -313,16 +372,49 @@ public final class TagLoop extends TagBase implements FlowControl {
 			adapter.invokeInterface(Types.ITERATOR, HAS_NEXT);
 		
 		whileVisitor.visitAfterExpressionBeforeBody(bc);
-			// item.set(pc,it.next());
-			adapter.loadLocal(item);
-			adapter.loadArg(0);
+			if(hasIndexAndItem) {
+				// entry=it.next();
 				adapter.loadLocal(it);
-			adapter.invokeInterface(Types.ITERATOR, NEXT);
-			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
-			adapter.pop();
+				adapter.invokeInterface(Types.ITERATOR, NEXT);
+				adapter.storeLocal(entry);
+
+				// keyRef.set(pc,entry.getKey())
+				adapter.loadLocal(index);
+				adapter.loadArg(0);
+				adapter.loadLocal(entry);
+				adapter.invokeInterface(Types.MAP_ENTRY, GET_KEY);
+				adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_STRING);
+				adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+				adapter.pop();
+
+				// valueRef.set(pc,entry.getKey())
+				adapter.loadLocal(item);
+				adapter.loadArg(0);
+				adapter.loadLocal(entry);
+				adapter.invokeInterface(Types.MAP_ENTRY, GET_VALUE);
+				adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+				adapter.pop();
 		
+			}
+			else {
+				if(index==-1) adapter.loadLocal(item);
+				else adapter.loadLocal(index);
+				
+				adapter.loadArg(0);
+				adapter.loadLocal(it);
+				adapter.invokeInterface(Types.ITERATOR, NEXT);
+				
+				adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+				adapter.pop();
+			}
+			
+			
+			
+			
+			
+			
 			getBody().writeOut(bc);
-		whileVisitor.visitAfterBody(bc,getEndLine());
+		whileVisitor.visitAfterBody(bc,getEnd());
 		
 	}
 
@@ -338,7 +430,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			CastBoolean.toExprBoolean(getAttribute("condition").getValue()).writeOut(bc, Expression.MODE_VALUE);
 		whileVisitor.visitAfterExpressionBeforeBody(bc);
 			getBody().writeOut(bc);
-		whileVisitor.visitAfterBody(bc,getEndLine());
+		whileVisitor.visitAfterBody(bc,getEnd());
 		
 	}
 	
@@ -510,7 +602,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 				getBody().writeOut(bc);
 				
-			whileVisitor.visitAfterBody(bc,getEndLine());
+			whileVisitor.visitAfterBody(bc,getEnd());
 			
 		tfv.visitTryEnd(bc);
 		
@@ -645,7 +737,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 				getBody().writeOut(bc);
 			
-			forDoubleVisitor.visitEndBody(bc,getEndLine());
+			forDoubleVisitor.visitEndBody(bc,getEnd());
 				
 			
 			
@@ -671,7 +763,6 @@ public final class TagLoop extends TagBase implements FlowControl {
 		//List.listToArrayRemoveEmpty("", 'c')
 		int array = adapter.newLocal(Types.ARRAY);
 		int len = adapter.newLocal(Types.INT_VALUE);
-		int index = adapter.newLocal(Types.VARIABLE_REFERENCE);
 		
 		if(isArray) {
 			getAttribute("array").getValue().writeOut(bc, Expression.MODE_REF);
@@ -697,11 +788,30 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.invokeInterface(Types.ARRAY, SIZE);
 		adapter.storeLocal(len);
 
+		
 		//VariableInterpreter.getVariableReference(pc,Caster.toString(index));
-		adapter.loadArg(0);
-		getAttribute("index").getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
-		adapter.storeLocal(index);
+		Attribute attrIndex = getAttribute("index");
+		int index = -1;
+		if(attrIndex!=null) {
+			index = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrIndex.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(index);
+		}
+		
+
+		//VariableInterpreter.getVariableReference(pc,Caster.toString(item));
+		Attribute attrItem = getAttribute("item");
+		int item = -1;
+		if(attrItem!=null) {
+			item = adapter.newLocal(Types.VARIABLE_REFERENCE);
+			adapter.loadArg(0);
+			attrItem.getValue().writeOut(bc, Expression.MODE_REF);
+			adapter.invokeStatic(Types.VARIABLE_INTERPRETER, GET_VARIABLE_REFERENCE);
+			adapter.storeLocal(item);
+		}
+		
 		
 		int obj=0;
 		if(isArray)obj=adapter.newLocal(Types.OBJECT);
@@ -712,7 +822,8 @@ public final class TagLoop extends TagBase implements FlowControl {
 			
 			if(isArray) {
 				
-
+				
+				// value
 				adapter.loadLocal(array);
 				adapter.visitVarInsn(Opcodes.ILOAD, i);
 				ASMConstants.NULL(adapter);
@@ -725,7 +836,10 @@ public final class TagLoop extends TagBase implements FlowControl {
 					adapter.goTo(forVisitor.getContinueLabel());
 				adapter.visitLabel(endIf);
 				
-				adapter.loadLocal(index);
+				
+				if(item==-1) adapter.loadLocal(index);
+				else adapter.loadLocal(item);
+				
 				adapter.loadArg(0);
 				
 				
@@ -733,7 +847,8 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 			}
 			else {
-				adapter.loadLocal(index);
+				if(item==-1) adapter.loadLocal(index);
+				else adapter.loadLocal(item);
 				adapter.loadArg(0);
 					adapter.loadLocal(array);
 					adapter.visitVarInsn(Opcodes.ILOAD, i);
@@ -743,15 +858,29 @@ public final class TagLoop extends TagBase implements FlowControl {
 			}
 			adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
 			adapter.pop();
+			
+
+			// key
+			if(index!=-1 && item!=-1) {
+				adapter.loadLocal(index);
+				adapter.loadArg(0);
+				adapter.visitVarInsn(Opcodes.ILOAD, i);
+				adapter.cast(Types.INT_VALUE,Types.DOUBLE_VALUE);
+            	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_DOUBLE[Methods_Caster.DOUBLE]);
+            	adapter.invokeVirtual(Types.VARIABLE_REFERENCE, SET);
+				adapter.pop();
+			}
+			
+			
 			getBody().writeOut(bc);
-		forVisitor.visitEnd(bc, len, true,getStartLine()); 
+		forVisitor.visitEnd(bc, len, true,getStart()); 
 	}
 	
-	/**
+	/* *
 	 * write out query loop
 	 * @param adapter
 	 * @throws TemplateException
-	 */
+	 * /
 	private void writeOutTypeQuery(BytecodeContext bc) throws BytecodeException {
 		ForConditionIntVisitor forConditionVisitor = new ForConditionIntVisitor();// TODO replace with ForIntVisitor 
 		loopVisitor=forConditionVisitor;
@@ -782,11 +911,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
 		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_1);
 		adapter.storeLocal(startAt);
-		/* OLD
-		adapter.loadLocal(query);
-		adapter.invokeInterface(Types.QUERY, GET_CURRENTROW_0);
-		adapter.storeLocal(startAt);
-		*/
+		
 		
 		// startrow
 		int start=adapter.newLocal(Types.INT_VALUE);
@@ -833,7 +958,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 				
 				adapter.loadArg(0);
 				adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-				adapter.invokeInterface(Types.QUERY, GO_2);
+				adapter.invokeInterface(Types.QUERY, GO);
 				adapter.pop();
 			}
 		});
@@ -842,7 +967,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 			
 			int i=forConditionVisitor.visitBegin(adapter, start, true);
 				getBody().writeOut(bc);
-			forConditionVisitor.visitEndBeforeCondition(bc,1,false,getStartLine());
+			forConditionVisitor.visitEndBeforeCondition(bc,1,false,getStart());
 				
 				// && i<=endrow
 				if(attrEndRow!=null){
@@ -853,12 +978,9 @@ public final class TagLoop extends TagBase implements FlowControl {
 						
 						adapter.loadArg(0);
 						adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-						adapter.invokeVirtual(Types.QUERY, GO_2); 
+						adapter.invokeInterface(Types.QUERY, GO);
 						
-						/* OLD
-						adapter.invokeInterface(Types.QUERY, GO_1); 
-						 */
-						av.visitMiddle(bc);
+					av.visitMiddle(bc);
 						//LitBoolean.TRUE.writeOut(bc, Expression.MODE_VALUE);
 						DecisionIntVisitor dv=new DecisionIntVisitor();
 						dv.visitBegin();
@@ -874,12 +996,8 @@ public final class TagLoop extends TagBase implements FlowControl {
 					
 					adapter.loadArg(0);
 					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-					adapter.invokeInterface(Types.QUERY, GO_2);
+					adapter.invokeInterface(Types.QUERY, GO);
 					
-					/* OLD
-					adapter.invokeInterface(Types.QUERY, GO_1);
-					*/
-				
 				
 				}
 				
@@ -888,7 +1006,7 @@ public final class TagLoop extends TagBase implements FlowControl {
 
 		// Finally
 		tfv.visitTryEnd(bc);
-	}
+	}*/
 
 	/**
 	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
@@ -896,12 +1014,21 @@ public final class TagLoop extends TagBase implements FlowControl {
 	public Label getBreakLabel() {
 		return loopVisitor.getBreakLabel();
 	}
-
+	
 	/**
 	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
 	 */
 	public Label getContinueLabel() {
 		return loopVisitor.getContinueLabel();
+	}
+
+	@Override
+	public short getType() {
+		return TAG_LOOP;
+	}
+
+	public void setLoopVisitor(LoopVisitor loopVisitor) {
+		this.loopVisitor=loopVisitor;
 	}
 
 

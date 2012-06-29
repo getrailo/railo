@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getexception
+ * Implements the CFML Function getexception
  */
 package railo.runtime.functions.system;
 

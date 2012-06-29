@@ -18,6 +18,7 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * Class to check and interpret Variable Strings
@@ -276,7 +277,7 @@ public final class VariableInterpreter {
 	 */
 	public static Object setVariable(PageContext pc,String var, Object value) throws PageException {			
 	    StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new ExpressionException("invalid variable name declaration ["+var+"]");
 
 		if(list.size()==1) {
 			return pc.undefinedScope().set(list.next(),value);
@@ -496,27 +497,27 @@ public final class VariableInterpreter {
 	public static int scopeKey2Int(Collection.Key type) {
 		char c=type.lowerCharAt(0);
 		if('a'==c) {
-			if(ScopeSupport.APPLICATION.equalsIgnoreCase(type)) 		return Scope.SCOPE_APPLICATION;
+			if(KeyConstants._application.equalsIgnoreCase(type)) 		return Scope.SCOPE_APPLICATION;
 			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(type))	return Scope.SCOPE_ARGUMENTS;
 		}
 		else if('c'==c) {
-			if(ScopeSupport.CGI.equalsIgnoreCase(type))				return Scope.SCOPE_CGI;
-			if(ScopeSupport.COOKIE.equalsIgnoreCase(type))			return Scope.SCOPE_COOKIE;
-			if(ScopeSupport.CLIENT.equalsIgnoreCase(type))			return Scope.SCOPE_CLIENT;
-			if(ScopeSupport.CLUSTER.equalsIgnoreCase(type))			return Scope.SCOPE_CLUSTER; 
+			if(KeyConstants._cgi.equalsIgnoreCase(type))				return Scope.SCOPE_CGI;
+			if(KeyConstants._cookie.equalsIgnoreCase(type))			return Scope.SCOPE_COOKIE;
+			if(KeyConstants._client.equalsIgnoreCase(type))			return Scope.SCOPE_CLIENT;
+			if(KeyConstants._cluster.equalsIgnoreCase(type))			return Scope.SCOPE_CLUSTER; 
 		}
 		else if('f'==c) {
-			if(ScopeSupport.FORM.equalsIgnoreCase(type))				return Scope.SCOPE_FORM;
+			if(KeyConstants._form.equalsIgnoreCase(type))				return Scope.SCOPE_FORM;
 		}
 		else if('r'==c) {
-			if(ScopeSupport.REQUEST.equalsIgnoreCase(type))			return Scope.SCOPE_REQUEST;
+			if(KeyConstants._request.equalsIgnoreCase(type))			return Scope.SCOPE_REQUEST;
 		}
 		else if('s'==c) {
-			if(ScopeSupport.SESSION.equalsIgnoreCase(type))			return Scope.SCOPE_SESSION;
+			if(KeyConstants._session.equalsIgnoreCase(type))			return Scope.SCOPE_SESSION;
 			if(KeyImpl.SERVER.equalsIgnoreCase(type))			return Scope.SCOPE_SERVER;
 		}
 		else if('u'==c) {
-			if(ScopeSupport.URL.equalsIgnoreCase(type))				return Scope.SCOPE_URL;
+			if(KeyConstants._url.equalsIgnoreCase(type))				return Scope.SCOPE_URL;
 		}
 		else if('v'==c) {
 			if(KeyImpl.VARIABLES.equalsIgnoreCase(type))		return Scope.SCOPE_VARIABLES;

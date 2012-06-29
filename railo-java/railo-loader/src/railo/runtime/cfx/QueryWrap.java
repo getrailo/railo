@@ -619,12 +619,14 @@ public class QueryWrap implements Query {
 	public boolean isLast() throws SQLException {
 		return rst.isLast();
 	}
+	
 	/**
 	 * @return iterator for he keys
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return rst.keyIterator();
 	}
+	
 	/**
 	 * @return all keys of the Query
 	 */

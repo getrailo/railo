@@ -88,7 +88,8 @@ public class RamCache extends CacheSupport {
 		return missCount;
 	}
 
-	public List keys() {
+	@Override
+	public List<String> keys() {
 		List<String> list=new ArrayList<String>();
 		
 		Iterator<Entry<String, RamCacheEntry>> it = entries.entrySet().iterator();

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function refind
+ * Implements the CFML Function refind
  */
 package railo.runtime.functions.string;
 

@@ -18,4 +18,14 @@ public class HeaderWrap implements railo.commons.net.http.Header {
 	public String getValue() {
 		return header.getValue();
 	}
+	
+	@Override
+	public String toString(){
+		return header.toString();
+	}
+	
+	@Override
+	public boolean equals(Object obj){
+		return header.equals(obj);
+	}
 }

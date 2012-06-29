@@ -20,6 +20,8 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
@@ -403,8 +405,18 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 *
 	 * @see railo.runtime.ComponentImpl#keyIterator()
 	 */
-	public Iterator keyIterator() {
-		return comp.keyIterator();
+	public Iterator<Collection.Key> keyIterator() {
+		return comp.keyIterator(getAccess());
+	}
+	
+
+	public Iterator<String> keysAsStringIterator() {
+		return comp.keysAsStringIterator(getAccess());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return comp.entryIterator(getAccess());
 	}
 
 	/**
@@ -413,14 +425,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 */
 	public Key[] keys() {
 		return comp.keys(getAccess());
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return comp.keysAsString(getAccess());
 	}
 
 	/**
@@ -666,5 +670,25 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public String getWSDLFile() {
 		return comp.getWSDLFile();
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	comp.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+		comp.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+		comp.registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+		comp.registerUDF(key, props);
+    }
 	
 }

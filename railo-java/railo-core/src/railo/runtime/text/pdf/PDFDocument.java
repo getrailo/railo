@@ -104,13 +104,6 @@ public class PDFDocument extends StructSupport implements Struct {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return getInfo().keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
@@ -158,8 +151,23 @@ public class PDFDocument extends StructSupport implements Struct {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return getInfo().keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return getInfo().keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return getInfo().entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return getInfo().valueIterator();
 	}
 
 	/**

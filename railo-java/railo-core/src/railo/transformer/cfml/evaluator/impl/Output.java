@@ -35,28 +35,28 @@ public final class Output extends EvaluatorSupport {
             if(hasParentWithQuery && hasParentWithGroup)break;
 		}
         
-        //ç
-        
         if(hasQuery && hasParentWithQuery) 
 			throw new EvaluatorException("Nesting of tags cfoutput with attribute query is not allowed");
 
         if(hasQuery) 
         	output.setType(TagOutput.TYPE_QUERY);
-        	//ASMUtil.replace(tag, new TagOutputQuery(tag));
+        
         else if(tag.containsAttribute("group") && hasParentWithQuery)
         	output.setType(TagOutput.TYPE_GROUP);
-        	//ASMUtil.replace(tag, new TagOutputGroup(tag));
+        
         else if(hasParentWithQuery) {
         	if(hasParentWithGroup) output.setType(TagOutput.TYPE_INNER_GROUP);
         	else output.setType(TagOutput.TYPE_INNER_QUERY);
-        	//ASMUtil.replace(tag, new TagOutputInner(tag,hasParentWithGroup));
         }
         else
         	 output.setType(TagOutput.TYPE_NORMAL);
-        	//ASMUtil.replace(tag, new TagOutputNormal(tag));
         
-        //if(hasParentWithQuery)tag.addAttribute(new Attribute("inner",LitBoolean.toExprBoolean(true, -1),"boolean"));
-        //if(hasParentWithGroup)tag.addAttribute(new Attribute("hasGroup",LitBoolean.toExprBoolean(true, -1),"boolean"));
+        
+        
+        // attribute maxrows and endrow not allowd at the same time
+        if(tag.containsAttribute("maxrows") && tag.containsAttribute("endrow"))
+        	throw new EvaluatorException("Wrong Context, you cannot use attribute maxrows and endrow at the same time.");
+        
         
 	}
 	

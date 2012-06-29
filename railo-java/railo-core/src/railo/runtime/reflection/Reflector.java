@@ -706,6 +706,22 @@ public final class Reflector {
 			throw new NativeException(e);
 		}
 	}
+	
+
+	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args, Object defaultValue) {
+		if(obj==null) {
+			return defaultValue;
+		}
+		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
+		if(mi==null)
+		    return defaultValue;
+	    try {
+	    	return mi.invoke(obj);
+        }
+		catch (Throwable t) {
+			return defaultValue;
+		}
+	}
 
 	public static ExpressionException throwCall(Object obj,String methodName, Object[] args) {
 		return new ExpressionException("No matching Method/Function for "+Type.getName(obj)+"."+methodName+"("+getDspMethods(getClasses(args))+") found");

@@ -1,8 +1,10 @@
 /**
- * Implements the Cold Fusion Function createobject
+ * Implements the CFML Function createobject
  * FUTURE neue attr unterstützen
  */
 package railo.runtime.functions.other;
+
+import java.util.ArrayList;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
@@ -10,14 +12,18 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.com.COMObject;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionNotSupported;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.functions.system.GetApplicationSettings;
 import railo.runtime.java.JavaObject;
+import railo.runtime.listener.JavaSettings;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
@@ -26,6 +32,7 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ArrayUtil;
 
 public final class CreateObject implements Function {
 	public static Object call(PageContext pc , String cfcName) throws PageException {
@@ -98,24 +105,39 @@ public final class CreateObject implements Function {
     }
 	
 	 
-    public static Object doJava(PageContext pc,String className, String pathes, String delimeter) throws PageException {
+    public static Object doJava(PageContext pc,String className, String pathes, String delimiter) throws PageException {
         if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
         	ConfigImpl ci = ((ConfigImpl)pc.getConfig());
         	
+        	java.util.List<Resource> resources=new ArrayList<Resource>();
+        	
+        	// get Resources from application context
+        	JavaSettings settings=pc.getApplicationContext().getJavaSettings();
+        	Resource[] _resources = settings==null?null:settings.getResources();
+        	if(_resources!=null)for(int i=0;i<_resources.length;i++){
+        		/*Resource res = pc.getConfig().getResource(paths[i]);
+                if(!res.exists()) {
+                	res=ResourceUtil.getCanonicalResourceEL(.getParentResource().getRealResource(path));
+                    
+                }*/
+        		resources.add(_resources[i]);
+        	}
+        	
+        	
         	// load resources
-        	Resource[] reses=null;
+        	//Resource[] reses=null;
         	if(!StringUtil.isEmpty(pathes, true)) {
-        		if(StringUtil.isEmpty(delimeter))delimeter=",";
-        		Array arrPathes = List.listToArrayRemoveEmpty(pathes.trim(),delimeter);
-        		reses=new Resource[arrPathes.size()];
-        		for(int i=0;i<reses.length;i++) {
-        			reses[i]=ResourceUtil.toResourceExisting(pc,Caster.toString(arrPathes.getE(i+1)));
+        		if(StringUtil.isEmpty(delimiter))delimiter=",";
+        		String[] arrPathes = List.trimItems(List.toStringArray(List.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
+        		
+        		for(int i=0;i<arrPathes.length;i++) {
+        			resources.add(ResourceUtil.toResourceExisting(pc,arrPathes[i]));
         		}
         	}
         	
         	// load class
         	try	{
-        		ClassLoader cl = reses==null?ci.getClassLoader():ci.getClassLoader(reses);
+        		ClassLoader cl = resources.size()==0?ci.getClassLoader():ci.getClassLoader(resources.toArray(new Resource[resources.size()]));
     			Class clazz = ClassUtil.loadClass(cl,className);
         		return new JavaObject((pc).getVariableUtil(),clazz);
 	        } 

@@ -111,5 +111,17 @@ public class ESAPIEncode implements Function {
 					"[css,dn,html,html_attr,javascript,ldap,vbscript,xml,xml_attr,xpath]");
 		return encode(value, encFor);
 	}
+
+	public static String canonicalize(String input, boolean restrictMultiple, boolean restrictMixed) {
+		if(StringUtil.isEmpty(input)) return null;
+		PrintStream out = System.out;
+		try {
+			 System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+			 return ESAPI.encoder().canonicalize(input, restrictMultiple, restrictMixed);
+		}
+		finally {
+			 System.setOut(out);
+		}	
+	}
 	
 }

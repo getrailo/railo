@@ -2,6 +2,7 @@ package railo.runtime.converter;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.Writer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -44,12 +46,13 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
  * class to serialize and desirilize WDDX Packes
  */
-public final class XMLConverter {
+public final class XMLConverter extends ConverterSupport {
 	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 	
 	private int deep=1;
@@ -156,17 +159,17 @@ public final class XMLConverter {
 		try {
 			component=new ComponentWrap(Component.ACCESS_PRIVATE, ca=ComponentUtil.toComponentAccess(component));
 		} catch (ExpressionException e1) {
-			throw new ConverterException(e1);
+			throw toConverterException(e1);
 		}
 		boolean isPeristent=ca.isPersistent();
 		
 		
         deep++;
         Object member;
-        Iterator it=component.keyIterator();
+        Iterator<Key> it = component.keyIterator();
         Collection.Key key;
         while(it.hasNext()) {
-        	key=Caster.toKey(it.next(),null);
+        	key=it.next();
         	member = component.get(key,null);
         	if(member instanceof UDF) continue;
         	sb.append(goIn()+"<var scope=\"this\" name="+_+key.toString()+_+">");
@@ -206,7 +209,7 @@ public final class XMLConverter {
 			return goIn()+"<component md5=\""+ComponentUtil.md5(component)+"\" name=\""+component.getAbsName()+"\">"+sb+"</component>";
 		} 
 		catch (Exception e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 	}
 
@@ -220,11 +223,11 @@ public final class XMLConverter {
 	private String _serializeStruct(Struct struct, Map<Object,String> done, String id) throws ConverterException {
         StringBuffer sb=new StringBuffer(goIn()+"<STRUCT ID=\""+id+"\">");
         
-        Iterator it=struct.keyIterator();
+        Iterator<Key> it = struct.keyIterator();
 
         deep++;
         while(it.hasNext()) {
-            String key=Caster.toString(it.next(),"");
+            Key key = it.next();
             // <ENTRY NAME="STRING" TYPE="STRING">hello</ENTRY>
             String value = _serialize(struct.get(key,null),done);
             sb.append(goIn()+"<ENTRY NAME=\""+key.toString()+"\" TYPE=\""+type+"\">");
@@ -290,14 +293,13 @@ public final class XMLConverter {
 		 *  </ROWS>
 		 *  </QUERY>
 		*/
-		String[] keys = query.keysAsString();
-		//StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.List.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
+		Collection.Key[] keys = CollectionUtil.keys(query);
 		StringBuffer sb=new StringBuffer(goIn()+"<QUERY ID=\""+id+"\">");
 		
 		// columns
 		sb.append(goIn()+"<COLUMNNAMES>");
 		for(int i=0;i<keys.length;i++) {
-			sb.append(goIn()+"<COLUMN NAME=\""+keys[i]+"\"></COLUMN>");
+			sb.append(goIn()+"<COLUMN NAME=\""+keys[i].getString()+"\"></COLUMN>");
 		}
 		sb.append(goIn()+"</COLUMNNAMES>");
 		
@@ -438,6 +440,12 @@ public final class XMLConverter {
 		deep--;
 		return rtn;
 	}
+
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(serialize(source));
+		writer.flush();
+	}
 	
 	/**
 	 * serialize a Object to his xml Format represenation and create a valid wddx representation
@@ -545,7 +553,7 @@ public final class XMLConverter {
 				if(data==null) return new Double(0);
 				return Caster.toDouble(data.getNodeValue());
 			} catch (Exception e) {
-				throw new ConverterException(e);
+				throw toConverterException(e);
 			}
 		}
 		// Boolean
@@ -553,7 +561,7 @@ public final class XMLConverter {
 			try {
 				return Caster.toBoolean(element.getAttribute("value"));
 			} catch (PageException e) {
-				throw new ConverterException(e);
+				throw toConverterException(e);
 				
 			}
 		}
@@ -579,7 +587,7 @@ public final class XMLConverter {
 				return DateCaster.toDateAdvanced(element.getFirstChild().getNodeValue(),timeZone);
 			} 
             catch (Exception e) {
-				throw new ConverterException(e);
+				throw toConverterException(e);
 			} 
 		}
 		else 
@@ -637,7 +645,7 @@ public final class XMLConverter {
 			return query;
 		}
 		catch(PageException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 		
 	}
@@ -767,7 +775,7 @@ public final class XMLConverter {
 				try {
 					array.append(_deserialize((Element)node));
 				} catch (PageException e) {
-					throw new ConverterException(e);
+					throw toConverterException(e);
 				}
 			
 		}

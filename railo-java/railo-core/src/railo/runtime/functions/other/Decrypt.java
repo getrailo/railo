@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function decrypt
+ * Implements the CFML Function decrypt
  */
 package railo.runtime.functions.other;
 

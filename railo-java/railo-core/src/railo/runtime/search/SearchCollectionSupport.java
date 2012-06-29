@@ -31,6 +31,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * represent a single Collection
@@ -515,7 +516,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             		qv = Caster.toQuery(pc.getVariable(queryName));
             	}
             	else {
-            		k=KeyImpl.ID;
+            		k=KeyConstants._id;
                     Key[] cols = new Key[]{k};
                     String[] types = new String[]{"VARCHAR"};
             		qv=new QueryImpl(cols,types, 1,"query");

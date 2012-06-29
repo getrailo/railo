@@ -15,7 +15,7 @@ import railo.runtime.type.List;
 
 
 /**
- * Factory to create Locales by Cold Fusion rules
+ * Factory to create Locales by CFML rules
  */
 public final class LocaleFactory {
 	//private static Pattern localePattern = Pattern.compile("^\\s*([^\\s\\(]+)\\s*(\\(\\s*([^\\s\\)]+)\\s*\\))?\\s*$");

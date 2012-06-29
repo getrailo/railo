@@ -5,7 +5,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function lsparseeurocurrency
+ * Implements the CFML Function lsparseeurocurrency
  */
 public final class LSParseEuroCurrency implements Function {
 	public static String call(PageContext pc , String string) throws PageException {

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function urldecode
+ * Implements the CFML Function urldecode
  */
 package railo.runtime.functions.other;
 

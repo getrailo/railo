@@ -296,7 +296,10 @@ public final class Operator {
     public static int compare(String left, double right) { 
     	if(Decision.isNumeric(left)) {
             if(left.length()>9) {
-            	return new BigDecimal(left).compareTo(new BigDecimal(right));
+            	try{
+            		return new BigDecimal(left).compareTo(new BigDecimal(right));
+            	}
+            	catch(Throwable t){}
             }
     		return compare(Caster.toDoubleValue(left,Double.NaN),right); 
     	}

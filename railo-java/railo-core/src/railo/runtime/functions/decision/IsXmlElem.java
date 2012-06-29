@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isxmlelem
+ * Implements the CFML Function isxmlelem
  */
 package railo.runtime.functions.decision;
 

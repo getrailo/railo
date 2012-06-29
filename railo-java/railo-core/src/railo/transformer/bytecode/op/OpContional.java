@@ -32,19 +32,22 @@ public final class OpContional extends ExpressionBase {
     	Label end = new Label();
     	
     	// cont
-    	ExpressionUtil.visitLine(bc, cont.getLine());
+    	ExpressionUtil.visitLine(bc, cont.getStart());
     	cont.writeOut(bc, MODE_VALUE);
+    	ExpressionUtil.visitLine(bc, cont.getEnd());
     	adapter.visitJumpInsn(Opcodes.IFEQ, yes);
     	
     	// left
-    	ExpressionUtil.visitLine(bc, left.getLine());
+    	ExpressionUtil.visitLine(bc, left.getStart());
     	left.writeOut(bc, MODE_REF);
+    	ExpressionUtil.visitLine(bc, left.getEnd());
     	adapter.visitJumpInsn(Opcodes.GOTO, end);
     	
     	// right
-    	ExpressionUtil.visitLine(bc, right.getLine());
+    	ExpressionUtil.visitLine(bc, right.getStart());
     	adapter.visitLabel(yes);
     	right.writeOut(bc, MODE_REF);
+    	ExpressionUtil.visitLine(bc, right.getEnd());
     	adapter.visitLabel(end);
     	
     	return Types.OBJECT;
@@ -58,7 +61,7 @@ public final class OpContional extends ExpressionBase {
     
     
     private OpContional(Expression cont, Expression left, Expression right) {
-        super(cont.getLine());
+        super(left.getStart(),right.getEnd());
         this.cont=CastBoolean.toExprBoolean(cont);
         this.left=left;  
         this.right=right;  

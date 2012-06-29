@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function xmlparse
+ * Implements the CFML Function xmlparse
  */
 package railo.runtime.functions.xml;
 

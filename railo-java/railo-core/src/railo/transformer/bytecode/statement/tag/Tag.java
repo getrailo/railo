@@ -93,30 +93,7 @@ public interface Tag extends Statement,HasBody {
 	public abstract void addMissingAttribute(String name, String type);
 	
 	public abstract Map getMissingAttributes();
-	
-	
 
-	/**
-	 * @return the startLine
-	 */
-	public int getStartLine();
-	/**
-	 * @return the endLine
-	 */
-	public int getEndLine();
-	
-	/**
-     * sets the line value.
-     * @param line The line to set.
-     */
-    public void setStartLine(int startLine);
-
-
-    /**
-     * sets the line value.
-     * @param line The line to set.
-     */
-    public void setEndLine(int endLine);
 
 	public abstract void setScriptBase(boolean scriptBase);
 	public abstract boolean isScriptBase();

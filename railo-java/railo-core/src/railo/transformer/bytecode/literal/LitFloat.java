@@ -6,6 +6,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprFloat;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
@@ -18,8 +19,8 @@ public final class LitFloat extends ExpressionBase implements Literal,ExprFloat 
     
     private float f;
 
-	public static ExprFloat toExprFloat(float f, int line) {
-		return new LitFloat(f,line);
+	public static ExprFloat toExprFloat(float f, Position start,Position end) {
+		return new LitFloat(f,start,end);
 	}
     
     /**
@@ -27,8 +28,8 @@ public final class LitFloat extends ExpressionBase implements Literal,ExprFloat 
      * @param d
      * @param line 
      */
-	public LitFloat(float f, int line) {
-        super(line);
+	public LitFloat(float f, Position start,Position end) {
+        super(start,end);
         this.f=f;
     }
 

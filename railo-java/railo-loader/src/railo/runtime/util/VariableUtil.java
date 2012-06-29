@@ -3,6 +3,7 @@ package railo.runtime.util;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Struct;
 
 /**
  * Variable Util
@@ -139,9 +140,37 @@ public interface VariableUtil {
      * @param args arguments to call the function
      * @return return value of the function
      * @throws PageException
+     * @deprecated use instead <code>callFunctionWithoutNamedValues(PageContext pc, Object coll, Collection.Key key, Object[] args)</code> 
      */
     public abstract Object callFunctionWithoutNamedValues(PageContext pc,
             Object coll, String key, Object[] args) throws PageException;
+    
+    /**
+     * call a Function (UDF, Method) without Named Values
+     * @param pc 
+     * @param coll Collection of the UDF Function
+     * @param key name of the function
+     * @param args arguments to call the function
+     * @return return value of the function
+     * @throws PageException
+     */
+    public Object callFunctionWithoutNamedValues(PageContext pc, 
+    		Object coll, Collection.Key key, Object[] args) throws PageException;
+
+    /**
+     * call a Function (UDF, Method) with Named Values
+     * @param pc 
+     * @param coll Collection of the UDF Function
+     * @param key name of the function
+     * @param args arguments to call the function
+     * @return return value of the function
+     * @throws PageException
+     * @deprecated use instead <code>callFunctionWithNamedValues(PageContext pc, Object coll, Collection.Key key, Object[] args)</code>
+     */
+    public abstract Object callFunctionWithNamedValues(PageContext pc,
+            Object coll, String key, Object[] args) throws PageException;
+    
+    
 
     /**
      * call a Function (UDF, Method) with Named Values
@@ -152,7 +181,10 @@ public interface VariableUtil {
      * @return return value of the function
      * @throws PageException
      */
-    public abstract Object callFunctionWithNamedValues(PageContext pc,
-            Object coll, String key, Object[] args) throws PageException;
+    public Object callFunctionWithNamedValues(PageContext pc, 
+			Object coll, Collection.Key key, Object[] args) throws PageException;
+    
+    public Object callFunctionWithNamedValues(PageContext pc, 
+    		Object coll, Collection.Key key, Struct args) throws PageException;
 
 }

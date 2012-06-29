@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function val
+ * Implements the CFML Function val
  */
 package railo.runtime.functions.string;
 

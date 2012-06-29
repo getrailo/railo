@@ -21,12 +21,21 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.Pair;
+import railo.loader.engine.CFMLEngine;
+import railo.loader.engine.CFMLEngineFactory;
+import railo.runtime.CFMLFactory;
+import railo.runtime.CFMLFactoryImpl;
+import railo.runtime.Component;
+import railo.runtime.PageContext;
+import railo.runtime.config.Config;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.system.ContractPath;
 import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.spooler.ExecutionPlan;
@@ -35,6 +44,7 @@ import railo.runtime.spooler.remote.RemoteClientTask;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -60,12 +70,17 @@ import railo.runtime.util.Creation;
 public final class CreationImpl implements Creation {
 
     private static CreationImpl singelton;
+	private CFMLEngine engine;
 
-    /**
+    private CreationImpl(CFMLEngine engine) {
+		this.engine=engine;
+	}
+
+	/**
      * @return singleton instance
      */
-    public static Creation getInstance() {
-        if(singelton==null)singelton=new CreationImpl();
+    public static Creation getInstance(CFMLEngine engine) { 
+        if(singelton==null)singelton=new CreationImpl(engine);
         return singelton;
     }
 
@@ -79,10 +94,10 @@ public final class CreationImpl implements Creation {
 	/**
 	 * @see railo.runtime.util.Creation#createArray(java.lang.String, java.lang.String, boolean, boolean)
 	 */
-	public Array createArray(String list, String delimeter,boolean removeEmptyItem, boolean trim) {
-		if(removeEmptyItem)return List.listToArrayRemoveEmpty(list, delimeter);
-		if(trim)return List.listToArrayTrim(list, delimeter);
-		return List.listToArray(list, delimeter);
+	public Array createArray(String list, String delimiter,boolean removeEmptyItem, boolean trim) {
+		if(removeEmptyItem)return List.listToArrayRemoveEmpty(list, delimiter);
+		if(trim)return List.listToArrayTrim(list, delimiter);
+		return List.listToArray(list, delimiter);
 	}
 	
     /**
@@ -106,10 +121,13 @@ public final class CreationImpl implements Creation {
         return new StructImpl(type);
     }
 
-    /**
-     * @see railo.runtime.util.Creation#createQuery(java.lang.String[], int, java.lang.String)
-     */
+    @Override
     public Query createQuery(String[] columns, int rows, String name) {
+        return new QueryImpl(columns,rows,name);
+    }
+
+    @Override
+    public Query createQuery(Collection.Key[] columns, int rows, String name) throws DatabaseException {
         return new QueryImpl(columns,rows,name);
     }
     
@@ -275,6 +293,36 @@ public final class CreationImpl implements Creation {
 
 	public HttpServletResponse createHttpServletResponse(OutputStream io) {
 		return new HttpServletResponseDummy(io);
+	}
+
+	@Override
+	public PageContext createPageContext(HttpServletRequest req, HttpServletResponse rsp, OutputStream out) {
+		Config config = ThreadLocalPageContext.getConfig();
+		return (PageContext) ((CFMLFactoryImpl)config.getFactory()).getPageContext(config.getFactory().getServlet(), req, rsp, null, false, -1, false);
+	}
+
+	@Override
+	public Component createComponentFromName(PageContext pc, String fullName) throws PageException {
+		return pc.loadComponent(fullName);
+	}
+
+	@Override
+	public Component createComponentFromPath(PageContext pc, String path) throws PageException {	
+		path=path.trim();
+		String pathContracted=ContractPath.call(pc, path);
+    	
+		if(pathContracted.toLowerCase().endsWith(".cfc"))
+			pathContracted=pathContracted.substring(0,pathContracted.length()-4);
+		
+    	pathContracted=pathContracted
+			.replace(File.pathSeparatorChar, '.')
+			.replace('/', '.')
+			.replace('\\', '.');
+    	
+    	while(pathContracted.toLowerCase().startsWith("."))
+			pathContracted=pathContracted.substring(1);
+    	
+		return createComponentFromName(pc, pathContracted);
 	}
 
 

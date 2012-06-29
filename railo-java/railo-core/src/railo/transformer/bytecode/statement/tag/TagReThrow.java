@@ -5,19 +5,13 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 
 public final class TagReThrow extends TagBase {
 
-	/**
-	 * Constructor of the class
-	 * @param tag
-	 */
-	public TagReThrow(int line) {
-		super(line);
-	}
-	public TagReThrow(int sl,int el) {
-		super(sl,el);
+	public TagReThrow(Position start,Position end) {
+		super(start,end);
 	}
 
 	// void throwCatch()

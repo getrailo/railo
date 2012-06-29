@@ -99,7 +99,8 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 	 * @see coldfusion.server.DataSourceService#purgeQueryCache()
 	 */
 	public void purgeQueryCache() throws IOException {
-		pc().getQueryCache().clearUnused();
+		PageContext pc = pc();
+		if(pc!=null)pc.getQueryCache().clearUnused(pc);
 
 	}
 

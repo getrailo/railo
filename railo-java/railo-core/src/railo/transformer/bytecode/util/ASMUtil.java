@@ -19,11 +19,14 @@ import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
+import railo.runtime.type.dt.TimeSpanImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
@@ -32,6 +35,9 @@ import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.expression.var.Argument;
+import railo.transformer.bytecode.expression.var.BIF;
+import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
@@ -357,7 +363,7 @@ public final class ASMUtil {
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof Page)	return (Page) parent;
@@ -394,7 +400,7 @@ public final class ASMUtil {
 			parent=parent.getParent();
 			//print.ln(" - "+parent);
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statement",stat.getLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof TagComponent)
@@ -758,15 +764,15 @@ public final class ASMUtil {
 	}
 
 
-	public static Boolean toBoolean(Attribute attr, int line) throws BytecodeException {
+	public static Boolean toBoolean(Attribute attr, Position start) throws BytecodeException {
 		if(attr==null)
-			throw new BytecodeException("attribute does not exist",line);
+			throw new BytecodeException("attribute does not exist",start);
 		
 		if(attr.getValue() instanceof Literal){
 			Boolean b=((Literal)attr.getValue()).getBoolean(null);
 			if(b!=null) return b; 
 		}
-		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",line);
+		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",start);
 		
 		
 	}
@@ -935,6 +941,55 @@ public final class ASMUtil {
 			
 		}
 		return name.toString();
+	}
+
+
+	public static long timeSpanToLong(Expression val) throws EvaluatorException {
+		if(val instanceof Literal) {
+			Double d = ((Literal)val).getDouble(null);
+			if(d==null) throw cacheWithinException();
+			return TimeSpanImpl.fromDays(d.doubleValue()).getMillis();
+		}
+		// createTimespan
+		else if(val instanceof Variable) {
+			Variable var=(Variable)val;
+			if(var.getMembers().size()==1) {
+				Member first = var.getFirstMember();
+				if(first instanceof BIF) {
+					BIF bif=(BIF) first;
+					if("createTimeSpan".equalsIgnoreCase(bif.getFlf().getName())) {
+						Argument[] args = bif.getArguments();
+						int len=ArrayUtil.size(args);
+						if(len>=4 && len<=5) {
+							double days=toDouble(args[0].getValue());
+							double hours=toDouble(args[1].getValue());
+							double minutes=toDouble(args[2].getValue());
+							double seconds=toDouble(args[3].getValue());
+							double millis=len==5?toDouble(args[4].getValue()):0;
+							return new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis();
+						}
+					}
+				}
+			}
+		}
+		throw cacheWithinException();
+	}
+
+
+
+	private static EvaluatorException cacheWithinException() {
+		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4)");
+	}
+
+
+	private static double toDouble(Expression e) throws EvaluatorException {
+		if(!(e instanceof Literal)) 
+			throw new EvaluatorException("Paremeters of the function createTimeSpan have to be literal numeric values in this context");
+		Double d = ((Literal)e).getDouble(null);
+		if(d==null)
+			throw new EvaluatorException("Paremeters of the function createTimeSpan have to be literal numeric values in this context");
+		
+		return d.doubleValue();
 	}
 	
 }

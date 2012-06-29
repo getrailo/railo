@@ -14,7 +14,7 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 
 /**
- * Implements the Cold Fusion Function evaluate
+ * Implements the CFML Function evaluate
  */
 public final class Evaluate implements Function {
 	

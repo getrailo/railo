@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isarray
+ * Implements the CFML Function isarray
  */
 package railo.runtime.functions.system;
 

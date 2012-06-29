@@ -157,7 +157,7 @@ import railo.runtime.type.scope.ScopeContext;
 	}
 
 	private static void infoQueryCache(Struct parent,CFMLFactory factory) throws PageException {
-		long size= ((QueryCacheSupport)factory.getQueryCache()).sizeOf();
+		long size= ((QueryCacheSupport)factory.getDefaultQueryCache()).sizeOf();
 		parent.set(QUERY_CACHE, Caster.toDouble(size));
 	}
 	

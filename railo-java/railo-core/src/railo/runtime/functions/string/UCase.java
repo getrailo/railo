@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function ucase
+ * Implements the CFML Function ucase
  */
 package railo.runtime.functions.string;
 

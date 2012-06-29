@@ -1,9 +1,12 @@
 package railo.runtime.converter;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import railo.runtime.PageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
@@ -11,10 +14,16 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.SimpleValue;
 import railo.runtime.type.Struct;
 
-public class LazyConverter {
-	
+public class LazyConverter extends ConverterSupport {
+
 	public static String serialize(Object o)  {
 		return serialize(o,new HashSet<Object>());
+	}
+
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(serialize(source));
+		writer.flush();
 	}
 	
 	

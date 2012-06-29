@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function stripcr
+ * Implements the CFML Function stripcr
  */
 package railo.runtime.functions.other;
 

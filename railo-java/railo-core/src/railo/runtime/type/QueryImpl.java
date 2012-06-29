@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import railo.commons.db.DBUtil;
@@ -63,7 +64,6 @@ import railo.runtime.op.Decision;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
-import railo.runtime.reflection.Reflector;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
@@ -71,11 +71,15 @@ import railo.runtime.type.comparator.SortRegisterComparator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.CollectionIterator;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.sql.BlobImpl;
 import railo.runtime.type.sql.ClobImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.QueryUtil;
 
 /**
@@ -96,14 +100,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return template;
 	}
 
-	public static final Collection.Key COLUMNS = KeyImpl.intern("COLUMNS");
-	public static final Collection.Key SQL = KeyImpl.intern("SQL");
-	public static final Collection.Key EXECUTION_TIME = KeyImpl.intern("executionTime");
-	public static final Collection.Key RECORDCOUNT = KeyImpl.intern("RECORDCOUNT");
-	public static final Collection.Key CACHED = KeyImpl.intern("cached");
-	public static final Collection.Key COLUMNLIST = KeyImpl.intern("COLUMNLIST");
-	public static final Collection.Key CURRENTROW = KeyImpl.intern("CURRENTROW");
-	public static final Collection.Key IDENTITYCOL =  KeyImpl.intern("IDENTITYCOL");
 	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
 	
 	
@@ -211,19 +207,20 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		boolean hasResult=false;
-		boolean closeStatement=true;
+		//boolean closeStatement=true;
 		try {	
 			SQLItem[] items=sql.getItems();
 			if(items.length==0) {
 		    	stat=dc.getConnection().createStatement();
 		        setAttributes(stat,maxrow,fetchsize,timeout);
 		     // some driver do not support second argument
-		        hasResult=createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+		        //hasResult=createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+		        hasResult=QueryUtil.execute(stat,createGeneratedKeys,sql);
 	        }
 	        else {
 	        	// some driver do not support second argument
 	        	PreparedStatement preStat = dc.getPreparedStatement(sql, createGeneratedKeys,allowToCachePreperadeStatement);
-	        	closeStatement=false;
+	        	//closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
@@ -257,7 +254,8 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			throw Caster.toPageException(e);
 		}
         finally {
-        	if(closeStatement)DBUtil.closeEL(stat);
+        	//if(closeStatement)
+        		DBUtil.closeEL(stat);
         }  
 		exeTime=stopwatch.time();
 	}
@@ -287,7 +285,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	
 	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
 		generatedKeys=new QueryImpl(rs,"");
-		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,IDENTITYCOL);
+		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
 	}
 	
 	/*private void setUpdateData(Statement stat, boolean createGeneratedKeys, boolean createUpdateCount)  {
@@ -332,15 +330,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(maxrow>-1) stat.setMaxRows(maxrow);
         if(fetchsize>0)stat.setFetchSize(fetchsize);
         if(timeout>0)stat.setQueryTimeout(timeout);
-	}
-
-	private ResultSet getResultSetEL(Statement stat) {
-		try {
-			return stat.getResultSet();
-		}
-		catch(SQLException sqle) {
-			return null;
-		}
 	}
 
     private boolean fillResult(DatasourceConnection dc, ResultSet result, int maxrow, boolean closeResult,boolean createGeneratedKeys) throws SQLException, IOException, PageException {
@@ -449,6 +438,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @param strColumns columns for the resultset
 	 * @param rowNumber count of rows to generate (empty fields)
 	 * @param name 
+	 * @deprecated use instead <code>QueryImpl(Collection.Key[] columnKeys, int rowNumber,String name)</code>
 	 */
 	public QueryImpl(String[] strColumns, int rowNumber,String name) {
         this.name=name;
@@ -687,35 +677,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return QueryUtil.toStringArray(columnNames);
-	}
-
-	/* *
-	 * @see railo.runtime.type.Collection#removeEL(java.lang.String)
-	 * /
-	public synchronized Object removeEL (String key) {
-		return setEL(key,null);
-	}*/
-
-	/**
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
 	 */
 	public Object removeEL(Collection.Key key) {
 		return setEL(key,null);
 	}
 
-	/* *
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 * /
-	public synchronized Object remove (String key) throws PageException {
-		return set(key,null);
-	}*/
-
-	
-	
 	/**
 	 * @throws PageException 
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
@@ -813,11 +780,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(key.getString().length()>0) {
 	        char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
 	        }
 	        else if(c=='c') {
-	            if(key.equals(CURRENTROW)) return new Double(row);
-	            else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
 	        }
 		}
         return null;
@@ -856,11 +823,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
         if(key.getString().length()>0) {
         	char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new Double(getRecordcount());
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
 			}
 	        else if(c=='c') {
-			    if(key.equals(CURRENTROW)) return new Double(row);
-			    else if(key.equals(COLUMNLIST)) return getColumnlist(true);
+			    if(key.equals(KeyConstants._CURRENTROW)) return new Double(row);
+			    else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
 			}
         }
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
@@ -915,9 +882,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
         
         QueryColumn removed = removeColumnEL(key);
         if(removed==null) {
-            if(key.equals(RECORDCOUNT) || 
-            		key.equals(CURRENTROW) || 
-            		key.equals(COLUMNLIST))
+            if(key.equals(KeyConstants._RECORDCOUNT) || 
+            		key.equals(KeyConstants._CURRENTROW) || 
+            		key.equals(KeyConstants._COLUMNLIST))
                 throw new DatabaseException("can't remove "+key+" this is not a row","existing rows are ["+getColumnlist(false)+"]",null,null,null);
             throw new DatabaseException("can't remove row ["+key+"], this row doesn't exist",
                     "existing rows are ["+getColumnlist(false)+"]",null,null,null);
@@ -1391,11 +1358,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		if(key.getString().length()>0) {
         	char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 	        if(c=='c') {
-	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 		}
         throw new DatabaseException("key ["+key.getString()+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
@@ -1432,14 +1399,14 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public QueryColumn getColumn(Collection.Key key, QueryColumn defaultValue) {
         int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
-        if(key.getString().length()>0) {//FUTURE add length method to Key Interface
+        if(key.length()>0) {
         	char c=key.lowerCharAt(0);
 	        if(c=='r') {
-	            if(key.equals(RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 	        if(c=='c') {
-	            if(key.equals(CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
         }
         return defaultValue;
@@ -1449,7 +1416,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		String[] keys=keysAsString();
+		Collection.Key[] keys=keys();
 		
 		StringBuffer sb=new StringBuffer();
 
@@ -1477,7 +1444,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	
 	// Header
 		for(int i=0;i<keys.length;i++) {
-			sb.append(getToStringField(keys[i]));
+			sb.append(getToStringField(keys[i].getString()));
 		}
 		sb.append("|\n");
 		sb.append(trenner);
@@ -1552,6 +1519,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			case Types.TINYINT: return "TINYINT";
 			case Types.VARBINARY: return "VARBINARY";
 			case Types.NVARCHAR: return "NVARCHAR";
+			case Types.SQLXML: return "SQLXML";
 			case Types.VARCHAR: return "VARCHAR";
 			default : return "VARCHAR";
 		}
@@ -1634,9 +1602,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
      * @see com.allaire.cfx.Query#getColumnIndex(java.lang.String)
      */
     public int getColumnIndex(String coulmnName) {
-        String[] keys = keysAsString();
+        Collection.Key[] keys = keys();
 		for(int i=0;i<keys.length;i++) {
-			if(keys[i].equalsIgnoreCase(coulmnName)) return i+1;
+			if(keys[i].getString().equalsIgnoreCase(coulmnName)) return i+1;
 		}
 		return -1;
     }
@@ -1702,17 +1670,14 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @see railo.runtime.type.Query#getColumnNamesAsString()
 	 */
 	public String[] getColumnNamesAsString() {
-		String[] keys = keysAsString();
-		String[] rtn=new String[keys.length];
-		System.arraycopy(keys,0,rtn,0,keys.length);
-		return rtn;
+		return CollectionUtil.keysAsString(this);
 	}
 
     /**
      * @see com.allaire.cfx.Query#getData(int, int)
      */
     public String getData(int row, int col) throws IndexOutOfBoundsException {
-        String[] keys = keysAsString();
+        Collection.Key[] keys = keys();
 		if(col<1 || col>keys.length) {
 			new IndexOutOfBoundsException("invalid column index to retrieve Data from query, valid index goes from 1 to "+keys.length);
 		}
@@ -1747,7 +1712,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
      * @see com.allaire.cfx.Query#setData(int, int, java.lang.String)
      */
     public void setData(int row, int col, String value) throws IndexOutOfBoundsException {
-        String[] keys = keysAsString();
+        Collection.Key[] keys = keys();
 		if(col<1 || col>keys.length) {
 			new IndexOutOfBoundsException("invalid column index to retrieve Data from query, valid index goes from 1 to "+keys.length);
 		}
@@ -1867,7 +1832,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
     	Struct column;
         for(int i=0;i<columns.length;i++) {
         	column=new StructImpl();
-        	column.setEL(KeyImpl.NAME,columnNames[i].getString());
+        	column.setEL(KeyConstants._name,columnNames[i].getString());
         	column.setEL("isCaseSensitive",Boolean.FALSE);
         	column.setEL("typeName",columns[i].getTypeAsString());
         	cols.appendEL(column);
@@ -1883,12 +1848,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
         }
         
         Struct sct=new StructImpl();
-        sct.setEL(KeyImpl.NAME_UC,getName());
-        sct.setEL(COLUMNS,cols);
-        sct.setEL(SQL,sql==null?"":sql.toString());
-        sct.setEL(EXECUTION_TIME,new Double(exeTime));
-        sct.setEL(RECORDCOUNT,new Double(getRowCount()));
-        sct.setEL(CACHED,Caster.toBoolean(isCached()));
+        sct.setEL(KeyConstants._NAME,getName());
+        sct.setEL(KeyConstants._COLUMNS,cols);
+        sct.setEL(KeyConstants._SQL,sql==null?"":sql.toString());
+        sct.setEL(KeyConstants._executionTime,new Double(exeTime));
+        sct.setEL(KeyConstants._RECORDCOUNT,new Double(getRowCount()));
+        sct.setEL(KeyConstants._cached,Caster.toBoolean(isCached()));
         return sct;
         
     }
@@ -1970,33 +1935,18 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-	 */
-	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
-		return Reflector.callMethod(this,methodName,arguments);
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
-		return Reflector.callMethod(this,methodName,arguments);
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
-	public Object callWithNamedValues(PageContext pc, String methodName,Struct args) throws PageException {		
-		throw new ExpressionException("No matching Method/Function ["+methodName+"] for call with named arguments found");
+		return MemberUtil.call(pc, this, methodName, arguments, railo.commons.lang.CFTypes.TYPE_QUERY, "query");
+		//return Reflector.callMethod(this,methodName,arguments);
 	}
 
 	/**
 	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
 	 */
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {	
-		throw new ExpressionException("No matching Method/Function ["+methodName.getString()+"] for call with named arguments found");
+		return MemberUtil.callWithNamedValues(pc, this, methodName, args,railo.commons.lang.CFTypes.TYPE_QUERY, "query");
 	}
 
 	/**
@@ -3179,17 +3129,24 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		updateObject(columnName, new DateTimeImpl(x.getTime(),false));
 	}
 
+	@Override
 	public ResultSetMetaData getMetaData() throws SQLException {
-		
 		throw new SQLException("method is not implemented");
 	}
 
-
-    /**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 	
 

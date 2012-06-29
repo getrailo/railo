@@ -22,10 +22,8 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.engine.Controler;
-import railo.runtime.exp.DeprecatedException;
-import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 /**  
  * Mapping class
@@ -142,17 +140,12 @@ public final class MappingImpl implements Mapping {
         return archiveClassLoader;
     }
     
-    // FUTURE set to deprecated
-    public synchronized ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
-    	throw new PageRuntimeException(new DeprecatedException("this method is no longer supported"));
-    }
-    
     public synchronized PCLCollection touchPCLCollection() throws IOException {
     	
     	if(pclCollection==null){
     		pclCollection=new PCLCollection(this,getClassRootDirectory(),getClass().getClassLoader(),classLoaderMaxElements);
 		}
-    	Controler.checkPermGenSpace(((ConfigWebImpl)getConfig()).getConfigServerImpl(),true);
+    	getConfig().checkPermGenSpace(true);
     	return pclCollection;
     }
 	public synchronized PCLCollection getPCLCollection() {
@@ -452,9 +445,16 @@ public final class MappingImpl implements Mapping {
 	}
 
 	public static boolean isOK(PageSource ps) {
-		//return ps!=null;
 		return (ps.getMapping().isTrusted() && ((PageSourceImpl)ps).isLoad()) || ps.exists();
-	} 
+	}
+
+	public static PageSource isOK(PageSource[] arr) {
+		if(ArrayUtil.isEmpty(arr)) return null;
+		for(int i=0;i<arr.length;i++) {
+			if(isOK(arr[i])) return arr[i];
+		}
+		return null;
+	}
 	
 	private static String _getRecursive(Resource res, String path, String filename) {
     	if(res.isDirectory()) {

@@ -25,7 +25,7 @@ public final class Cast extends ExpressionBase {
     private String lcType;
     
     private Cast(Expression expr, String type, String lcType) {
-        super(expr.getLine());
+        super(expr.getStart(),expr.getEnd());
         this.expr=expr;
         this.type=type;
         this.lcType=lcType;
@@ -48,8 +48,10 @@ public final class Cast extends ExpressionBase {
     	case 'd':
     		if("double".equals(type))							return CastDouble.toExprDouble(expr);
     	break;
+    	case 'i':
+        	if("int".equals(lcType))							return CastInt.toExprInt(expr);
     	case 'n':
-        	if("number".equals(lcType))							return CastDouble.toExprDouble(expr);
+        	if("number".equals(lcType) || "numeric".equals(lcType))return CastDouble.toExprDouble(expr);
         break;
     	case 'o':
         	if("object".equals(lcType))							{
@@ -478,6 +480,7 @@ public final class Cast extends ExpressionBase {
         	if("file".equals(lcType)) 							return Types.FILE;
             if("float".equals(type)) 							return Types.FLOAT_VALUE;
             if("float".equals(lcType))							return Types.FLOAT;
+            if("function".equals(lcType))							return Types.UDF;
         break;
 
         case 'i':
@@ -530,7 +533,7 @@ public final class Cast extends ExpressionBase {
 			return Type.getType(ClassUtil.loadClass(type));
 		} 
         catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),-1);
+			throw new BytecodeException(e.getMessage(),null);
 		}
 		
 	}

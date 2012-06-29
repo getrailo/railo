@@ -29,8 +29,8 @@ import railo.runtime.img.math.RidgedFBM;
 import railo.runtime.img.math.SCNoise;
 import railo.runtime.img.math.VLNoise;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * A filter which produces textures from fractal Brownian motion.
@@ -321,7 +321,7 @@ public class FBMFilter extends PointFilter implements Cloneable, DynFiltering {
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Amount, Stretch, Angle, BasisType, Operation, Octaves, H, Lacunarity, Gain, Bias, Basis, Scale, Dimensions]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Amount, Stretch, Angle, BasisType, Operation, Octaves, H, Lacunarity, Gain, Bias, Basis, Scale, Dimensions]");
 		}
 
 		return filter(src, dst);

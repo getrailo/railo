@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
@@ -17,9 +18,11 @@ import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.tag.util.DeprecatedUtil;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * implementation of the form tag 
@@ -210,10 +213,25 @@ public final class Form extends BodyTagImpl {
     }
     /**
      * @param name The name to set.
+     * @throws ApplicationException 
      */
-    public void setName(String name) {
+    public void setName(String name) throws ApplicationException {
         this.name=name;
+        checkName(name);
     }
+    
+    private static void checkName(String name) throws ApplicationException {
+		if(name.length()==0)return;
+		int len=name.length();
+		
+		for(int pos=0;pos<len;pos++) {
+			char c=name.charAt(pos);
+			if((c>='a' && c<='z')||(c>='A' && c<='Z')||(c>='0' && c<='9')||(c=='_')||(c=='-')||(c==':')||(c=='.'))
+				continue;
+			throw new ApplicationException("value of attribute name ["+name+"] is invalid, only the following characters are allowed [a-z,A-Z,0-9,-,_,:,.]");
+		}
+	}
+    
     /**
      * @param onreset The onreset to set.
      */
@@ -286,11 +304,13 @@ public final class Form extends BodyTagImpl {
     public void setPassthrough(Object passthrough) throws PageException {
         if(passthrough instanceof Struct) {
             Struct sct = (Struct) passthrough;
-            railo.runtime.type.Collection.Key[] keys=sct.keys();
-            railo.runtime.type.Collection.Key key;
-            for(int i=0;i<keys.length;i++) {
-                key=keys[i];
-                attributes.setEL(key,sct.get(key,null));
+            //railo.runtime.type.Collection.Key[] keys=sct.keys();
+            //railo.runtime.type.Collection.Key key;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e;
+            while(it.hasNext()) {
+            	e = it.next();
+                attributes.setEL(e.getKey(),e.getValue());
             }
         }
         else this.passthrough = Caster.toString(passthrough);
@@ -398,7 +418,7 @@ public final class Form extends BodyTagImpl {
         attributes.setEL(KeyImpl.NAME,name);
         
         if(action==null) 	action=ReqRspUtil.self(pageContext. getHttpServletRequest());
-        attributes.setEL(KeyImpl.ACTION,action);
+        attributes.setEL(KeyConstants._action,action);
         
         String suffix=StringUtil.isEmpty(name)?""+count:StringUtil.toVariableName(name);
         String funcName="railo_form_"+count;
@@ -441,14 +461,14 @@ public final class Form extends BodyTagImpl {
         //}
         pageContext.forceWrite("<form");
         
-        railo.runtime.type.Collection.Key[] keys = attributes.keys();
-        railo.runtime.type.Collection.Key key;
-        for(int i=0;i<keys.length;i++) {
-            key = keys[i];
+        Iterator<Entry<Key, Object>> it = attributes.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
             pageContext.forceWrite(" ");
-            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite(e.getKey().getString());
             pageContext.forceWrite("=");
-            pageContext.forceWrite(de(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite(de(Caster.toString(e.getValue())));
             
         }
         

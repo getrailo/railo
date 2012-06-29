@@ -2,7 +2,7 @@ package railo.runtime.lock;
 
 import railo.commons.lock.Lock;
 
-class LockDataImpl implements LockDataPro {
+class LockDataImpl implements LockData {
 
 	private final Lock lock;
     private final String name;

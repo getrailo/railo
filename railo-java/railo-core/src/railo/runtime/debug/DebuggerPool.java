@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.exp.PageException;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -23,7 +24,9 @@ public class DebuggerPool {
 	
 	public synchronized void store(PageContext pc,Debugger debugger) {
 		if(ReqRspUtil.getScriptName(pc.getHttpServletRequest()).indexOf("/railo-context/")==0)return;
-		queue.add((Struct) debugger.getDebuggingData(pc, true).duplicate(true));
+		try {
+			queue.add((Struct) debugger.getDebuggingData(pc, true).duplicate(true));
+		} catch (PageException e) {}
 		
 		while(queue.size()>((ConfigWebImpl)pc.getConfig()).getDebugMaxRecordsLogged())
 			queue.poll();

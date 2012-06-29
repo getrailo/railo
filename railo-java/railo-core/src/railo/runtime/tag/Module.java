@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
@@ -11,6 +12,7 @@ import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Invokes a custom tag for use in CFML application pages.
@@ -27,22 +29,32 @@ public final class Module extends CFTag {
 		//String[] filenames=getFileNames(config,getAppendix());// = appendix+'.'+config.getCFMLExtension();
         
 	    Object objTemplate =attributesScope.get(KeyImpl.TEMPLATE,null);
-	    Object objName =attributesScope.get(KeyImpl.NAME,null);
+	    Object objName =attributesScope.get(KeyConstants._name,null);
 	    source=null;
 	    if(objTemplate!=null) {
 			attributesScope.removeEL(KeyImpl.TEMPLATE);
 		    String template=objTemplate.toString();
 
-            if(StringUtil.startsWith(template,'/'))  source=new InitFile(pageContext.getPageSource(template),template,template.endsWith('.'+pageContext.getConfig().getCFCExtension()));
-            else source=new InitFile(pageContext.getCurrentPageSource().getRealPage(template),template,StringUtil.endsWithIgnoreCase(template,'.'+pageContext.getConfig().getCFCExtension()));
+            if(StringUtil.startsWith(template,'/'))  {
+            	PageSource[] sources = ((PageContextImpl)pageContext).getPageSources(template);
+            	PageSource ps = MappingImpl.isOK(sources);
+            	
+            	if(ps==null)
+					throw new MissingIncludeException(sources[0],"could not find template ["+template+"], file ["+sources[0].getDisplayPath()+"] doesn't exist");
+            	source=new InitFile(ps,template,template.endsWith('.'+pageContext.getConfig().getCFCExtension()));
+            }
+            else {
+            	source=new InitFile(pageContext.getCurrentPageSource().getRealPage(template),template,StringUtil.endsWithIgnoreCase(template,'.'+pageContext.getConfig().getCFCExtension()));
+            	if(!MappingImpl.isOK(source.getPageSource())){
+					throw new MissingIncludeException(source.getPageSource(),"could not find template ["+template+"], file ["+source.getPageSource().getDisplayPath()+"] doesn't exist");
+            	}
+            }
     		
             //attributesScope.removeEL(TEMPLATE);
-			if(!MappingImpl.isOK(source.getPageSource()))
-					throw new MissingIncludeException(source.getPageSource(),"could not find template ["+template+"], file ["+source.getPageSource().getDisplayPath()+"] doesn't exist");
-			setAppendix(source.getPageSource());
+            setAppendix(source.getPageSource());
 	    }
 	    else if(objName!=null) {
-			attributesScope.removeEL(KeyImpl.NAME);
+			attributesScope.removeEL(KeyConstants._name);
 	        String[] filenames = toRealPath(config,objName.toString());
 	        boolean exist=false;
 	        

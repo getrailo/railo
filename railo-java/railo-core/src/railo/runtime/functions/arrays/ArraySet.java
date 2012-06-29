@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayset
+ * Implements the CFML Function arrayset
  */
 package railo.runtime.functions.arrays;
 
@@ -15,11 +15,11 @@ public final class ArraySet implements Function {
 		int f=(int) from;
 		int t=(int) to;
 		if(f<1)
-			throw new ExpressionException("second parameter of the function arraySet must be greater than zero, now ["+f+"]");
+			throw new ExpressionException("Second parameter of the function arraySet must be greater than zero; now ["+f+"]");
 		if(f>t)
-			throw new ExpressionException("third parameter of the function arraySet must be greater than second parameter now [second:"+f+", third:"+t+"]");
+			throw new ExpressionException("Third parameter of the function arraySet must be greater than the second parameter; now [second:"+f+", third:"+t+"]");
 		if(array.getDimension()>1)
-			throw new ExpressionException("function arraySet can only be used with 1 dimensional array, this array has "+array.getDimension()+" dimension");
+			throw new ExpressionException("Function arraySet can only be used with a one-dimensional array; this array has "+array.getDimension()+" dimensions");
         for(int i=f;i<=t;i++) {
 			array.setE(i,Duplicator.duplicate(value,true));
 		}

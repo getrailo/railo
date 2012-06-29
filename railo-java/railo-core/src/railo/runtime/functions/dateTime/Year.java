@@ -8,7 +8,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.dt.DateTime;
 
 /**
- * Implements the Cold Fusion Function year
+ * Implements the CFML Function year
  */
 public final class Year implements Function {
 

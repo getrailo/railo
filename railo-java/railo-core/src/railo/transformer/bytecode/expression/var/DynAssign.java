@@ -6,6 +6,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
@@ -22,8 +23,8 @@ public final class DynAssign extends ExpressionBase {
 			Types.OBJECT,
 			new Type[]{Types.STRING,Types.OBJECT}); 
 
-	public DynAssign(int line) {
-		super(line);
+	public DynAssign(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**
@@ -32,7 +33,7 @@ public final class DynAssign extends ExpressionBase {
 	 * @param value
 	 */
 	public DynAssign(Expression name, Expression value) {
-		super(name.getLine());
+		super(name.getStart(),name.getEnd());
 		this.name=CastString.toExprString(name);
 		this.value=value;
 	}

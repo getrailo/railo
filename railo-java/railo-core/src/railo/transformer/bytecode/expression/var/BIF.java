@@ -1,7 +1,6 @@
 package railo.transformer.bytecode.expression.var;
 
 import railo.transformer.bytecode.expression.ExprString;
-import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.library.function.FunctionLibFunction;
 
@@ -23,7 +22,7 @@ public final class BIF extends FunctionMember {
 			this.flf=flf;
 		}
 		public BIF(String name, FunctionLibFunction flf) {
-			this.name=LitString.toExprString(name,-1);
+			this.name=LitString.toExprString(name);
 			this.flf=flf;
 		}
 

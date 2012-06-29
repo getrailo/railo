@@ -29,7 +29,10 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.StructSupport;
 
 public class Excel extends StructSupport implements Cloneable,Struct {
@@ -260,12 +263,6 @@ public class Excel extends StructSupport implements Cloneable,Struct {
 
 
 	@Override
-	public String[] keysAsString() {
-		return skeys;
-	}
-
-
-	@Override
 	public Object remove(Key key) throws PageException {
 		return null;
 	}
@@ -324,15 +321,22 @@ public class Excel extends StructSupport implements Cloneable,Struct {
 
 
 	@Override
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys);
 	}
-
-
-
-
-
-
-
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
 	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys);
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
+	}
 }

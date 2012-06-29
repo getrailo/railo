@@ -1,5 +1,7 @@
 package railo.transformer.bytecode.literal;
 
+import railo.transformer.bytecode.Position;
+
 
 public class Identifier extends LitString {
 
@@ -11,16 +13,16 @@ public class Identifier extends LitString {
 	
 
 
-	public static Identifier toIdentifier(String str, int line) {
-		return new Identifier(str, CASE_ORIGNAL,line);
+	public static Identifier toIdentifier(String str, Position start,Position end) {
+		return new Identifier(str, CASE_ORIGNAL,start,end);
 	}
 
-	public static Identifier toIdentifier(String str, short _case, int line) {
-		return new Identifier(str, _case,line);
+	public static Identifier toIdentifier(String str, short _case, Position start,Position end) {
+		return new Identifier(str, _case,start,end);
 	}
 	
-	private Identifier(String str, short _case,int line) {
-		super(convert(str,_case), line);
+	private Identifier(String str, short _case,Position start,Position end) {
+		super(convert(str,_case), start,end);
 		this.raw=str;
 		this._case=_case;
 	}

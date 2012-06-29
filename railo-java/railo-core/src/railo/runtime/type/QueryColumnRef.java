@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -13,7 +14,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.QueryUtil;
 
 /**
@@ -149,17 +152,7 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
         return query.size();
     }
 
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        String[] k=new String[size()];
-        for(int i=1;i<=k.length;i++) {
-            k[i-1]=Caster.toString(i);
-        }
-        return k;
-    }
-    
+    @Override
     public Collection.Key[] keys() {
     	Collection.Key[] k=new Collection.Key[size()];
         for(int i=1;i<=k.length;i++) {
@@ -247,12 +240,20 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 		return setEL(Caster.toIntValue(key,query.getCurrentrow()),value);
 	}
 
-    /**
-     * @see railo.runtime.type.Iteratorable#keyIterator()
-     */
-    public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
         return new KeyIterator(keys());
     }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
+	}
     
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()

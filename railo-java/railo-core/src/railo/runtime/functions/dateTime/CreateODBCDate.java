@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function createodbcdate
+ * Implements the CFML Function createodbcdate
  */
 package railo.runtime.functions.dateTime;
 

@@ -1,6 +1,8 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.Tag;
 
@@ -11,10 +13,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * 
@@ -96,7 +100,7 @@ public final class Select extends BodyTagImpl {
      * @param name The name to set.
      */
     public void setName(String name) {
-        attributes.setEL(KeyImpl.NAME,name);
+        attributes.setEL(KeyConstants._name,name);
         input.setName(name);
     }
     /**
@@ -233,11 +237,11 @@ public final class Select extends BodyTagImpl {
     public void setPassthrough(Object passthrough) throws PageException {
         if(passthrough instanceof Struct) {
             Struct sct = (Struct) passthrough;
-            railo.runtime.type.Collection.Key[] keys=sct.keys();
-            railo.runtime.type.Collection.Key key;
-            for(int i=0;i<keys.length;i++) {
-                key=keys[i];
-                attributes.setEL(key,sct.get(key,null));
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e;
+            while(it.hasNext()) {
+                e = it.next();
+                attributes.setEL(e.getKey(),e.getValue());
             }
         }
         else this.passthrough = Caster.toString(passthrough);
@@ -349,14 +353,14 @@ public final class Select extends BodyTagImpl {
     	
         pageContext.forceWrite("<select");
         
-        railo.runtime.type.Collection.Key[] keys = attributes.keys();
-        railo.runtime.type.Collection.Key key;
-        for(int i=0;i<keys.length;i++) {
-            key = keys[i];
+        Iterator<Entry<Key, Object>> it = attributes.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
             pageContext.forceWrite(" ");
-            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite(e.getKey().getString());
             pageContext.forceWrite("=\"");
-            pageContext.forceWrite(enc(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite(enc(Caster.toString(e.getValue())));
             pageContext.forceWrite("\"");
         }
         

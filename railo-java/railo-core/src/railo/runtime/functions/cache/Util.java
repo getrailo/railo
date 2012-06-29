@@ -14,98 +14,110 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 
 public class Util {
-
-	public static Cache getDefault(PageContext pc, int type) throws IOException {
-		return getDefault(pc.getConfig(), type);
+	
+	/**
+	 * get the default cache for a certain type, also check definitions in application context (application.cfc/cfapplication)
+	 * @param pc current PageContext
+	 * @param type default type -> Config.CACHE_DEFAULT_...
+	 * @param defaultValue value returned when there is no default cache for this type
+	 * @return matching cache
+	 */
+	public static Cache getDefault(PageContext pc, int type,Cache defaultValue) {
+		// get default from application conetx
+		String name=pc!=null?pc.getApplicationContext().getDefaultCacheName(type):null;
+		if(!StringUtil.isEmpty(name)){
+			Cache cc = getCache(pc.getConfig(), name, null);
+			if(cc!=null) return cc;
+		}
+		
+		// get default from config
+		Config config=ThreadLocalPageContext.getConfig(pc);
+		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
+		if(cc==null) return defaultValue;
+		try {
+			return cc.getInstance(config);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+		
+		
 	}
 	
-	public static CacheConnection getDefaultCacheConnection(Config config, int type) throws IOException {
-		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
-		if(cc==null) throw new CacheException("there is no default "+toStringType(type,"")+" cache defined, you need to define this default cache in the Railo Administrator");
-		return cc;
-	}
-	public static Cache getDefault(Config config, int type) throws IOException {
+	/**
+	 * get the default cache for a certain type, also check definitions in application context (application.cfc/cfapplication)
+	 * @param pc current PageContext
+	 * @param type default type -> Config.CACHE_DEFAULT_...
+	 * @return matching cache
+	 * @throws IOException 
+	 */
+	public static Cache getDefault(PageContext pc, int type) throws IOException {
+		// get default from application conetx
+		String name=pc!=null?pc.getApplicationContext().getDefaultCacheName(type):null;
+		if(!StringUtil.isEmpty(name)){
+			Cache cc = getCache(pc.getConfig(), name, null);
+			if(cc!=null) return cc;
+		}
+		
+		// get default from config
+		Config config = ThreadLocalPageContext.getConfig(pc);
 		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
 		if(cc==null) throw new CacheException("there is no default "+toStringType(type,"")+" cache defined, you need to define this default cache in the Railo Administrator");
 		return cc.getInstance(config);
-	}
-	
-	public static Cache getDefault(Config config, int type,Cache defaultValue) {
-		CacheConnection cc= ((ConfigImpl)config).getCacheDefaultConnection(type);
 		
-		if(cc==null) return defaultValue;
-		try {
-			return cc.getInstance(config);
-		} catch (IOException e) {
-			return defaultValue;
-		}
-	}
-	
-
-	public static CacheConnection getCacheConnection(Config config,String cacheName, int type) throws IOException {
-		if(StringUtil.isEmpty(cacheName)){
-			return getDefaultCacheConnection(config, type);
-		}
-		return getCacheConnection(config, cacheName);
+		
 	}
 
-	public static Cache getCache(Config config,String cacheName, int type) throws IOException {
-		if(StringUtil.isEmpty(cacheName)){
-			return getDefault(config, type);
-		}
-		return getCache(config, cacheName);
-	}
-
-	public static Cache getCache(Config config,String cacheName, int type, Cache defaultValue)  {
-		if(StringUtil.isEmpty(cacheName)){
-			return getDefault(config, type,defaultValue);
-		}
-		return getCache(config, cacheName,defaultValue);
-	}
-	
-	/**
-	 * @param pc
-	 * @param cacheName
-	 * @param type
-	 * @return
-	 * @throws IOException
-	 * @deprecated use <code>getCache(Config config,String cacheName, int type)</code> instead
-	 */
 	public static Cache getCache(PageContext pc,String cacheName, int type) throws IOException {
-		return getCache(pc.getConfig(), cacheName);
+		if(StringUtil.isEmpty(cacheName)){
+			return getDefault(pc, type);
+		}
+		return getCache(ThreadLocalPageContext.getConfig(pc), cacheName);
 	}
-	/**
-	 * @param pc
-	 * @param cacheName
-	 * @return
-	 * @throws IOException
-	 * @deprecated use <code>getCache(Config config,String cacheName)</code> instead
-	 */
-	public static Cache getCache(PageContext pc,String cacheName) throws IOException {
-		return getCache(pc.getConfig(), cacheName);
+
+	public static Cache getCache(PageContext pc,String cacheName, int type, Cache defaultValue)  {
+		if(StringUtil.isEmpty(cacheName)){
+			return getDefault(pc, type,defaultValue);
+		}
+		return getCache(ThreadLocalPageContext.getConfig(pc), cacheName,defaultValue);
 	}
+	
+	
 	public static Cache getCache(Config config,String cacheName) throws IOException {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		CacheConnection cc=  config.getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) throw noCache(config,cacheName);
 		return cc.getInstance(config);	
 	}
+	
 	public static Cache getCache(Config config,String cacheName, Cache defaultValue) {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		CacheConnection cc= config.getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) return defaultValue;
 		try {
 			return cc.getInstance(config);
-		} catch (IOException e) {
+		} catch (Throwable t) {
 			return defaultValue;
 		}	
 	}
 	public static CacheConnection getCacheConnection(Config config,String cacheName) throws IOException {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
+		CacheConnection cc= config.getCacheConnections().get(cacheName.toLowerCase().trim());
 		if(cc==null) throw noCache(config,cacheName);
 		return cc;	
 	}
+
+	public static CacheConnection getCacheConnection(Config config,String cacheName, CacheConnection defaultValue) {
+		CacheConnection cc= config.getCacheConnections().get(cacheName.toLowerCase().trim());
+		if(cc==null) return defaultValue;
+		return cc;	
+	}
+	
+	
+	
+	
+	
+	
 	private static CacheException noCache(Config config, String cacheName) {
 		StringBuilder sb=new StringBuilder("there is no cache defined with name [").append(cacheName).append("], available caches are [");
 		Iterator it = ((ConfigImpl)config).getCacheConnections().keySet().iterator();
@@ -120,17 +132,12 @@ public class Util {
 		return new CacheException(sb.toString());
 	}
 
-	public static CacheConnection getCacheConnection(Config config,String cacheName, CacheConnection defaultValue) {
-		CacheConnection cc= (CacheConnection) ((ConfigImpl)config).getCacheConnections().get(cacheName.toLowerCase().trim());
-		if(cc==null) return defaultValue;
-		return cc;	
-	}
-
 	private static String toStringType(int type, String defaultValue) {
 		if(type==ConfigImpl.CACHE_DEFAULT_OBJECT) return "object";
 		if(type==ConfigImpl.CACHE_DEFAULT_TEMPLATE) return "template";
 		if(type==ConfigImpl.CACHE_DEFAULT_QUERY) return "query";
 		if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE) return "resource";
+		if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION) return "function";
 		return defaultValue;
 	}
 
@@ -150,6 +157,8 @@ public class Util {
 	public static void remove(ConfigWeb config, CacheConnection cc) throws Throwable  {
 		Cache c = cc.getInstance(config);
 		// FUTURE no reflection needed
+		
+		
 		Method remove=null;
 		try{
 			remove = c.getClass().getMethod("remove", new Class[0]);
@@ -174,6 +183,7 @@ public class Util {
 		if("query".equals(type)) return ConfigImpl.CACHE_DEFAULT_QUERY;
 		if("resource".equals(type)) return ConfigImpl.CACHE_DEFAULT_RESOURCE;
 		if("template".equals(type)) return ConfigImpl.CACHE_DEFAULT_TEMPLATE;
+		if("function".equals(type)) return ConfigImpl.CACHE_DEFAULT_FUNCTION;
 		return defaultValue;
 	}
 
@@ -182,6 +192,7 @@ public class Util {
 		if(ConfigImpl.CACHE_DEFAULT_QUERY==type) return "query";
 		if(ConfigImpl.CACHE_DEFAULT_RESOURCE==type) return "resource";
 		if(ConfigImpl.CACHE_DEFAULT_TEMPLATE==type) return "template";
+		if(ConfigImpl.CACHE_DEFAULT_FUNCTION==type) return "function";
 		return defaultValue;
 	}
 }

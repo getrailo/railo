@@ -54,9 +54,18 @@ public interface PageSource extends SourceFile {
     public abstract String getFileName();
 
     /**
+     * if the pageSource is based on a archive, Railo returns the ra:// path
      * @return return the Resource matching this PageSource
      */
     public abstract Resource getResource();
+    
+
+    /**
+     * if the pageSource is based on a archive, translate the source to a zip:// Resource
+     * @return return the Resource matching this PageSource
+     * @param pc the Page Context Object
+     */
+    public abstract Resource getResourceTranslated(PageContext pc) throws PageException;
 
     /**
      * @return returns the a classname matching to filename (Example: /railo/web/test_cfm)

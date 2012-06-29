@@ -25,6 +25,7 @@ import railo.commons.lang.KeyGenerator;
 import railo.commons.lang.PhysicalClassLoader;
 import railo.runtime.Component;
 import railo.runtime.Mapping;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaProxy;
 import railo.runtime.op.Caster;
@@ -38,6 +39,7 @@ public class JavaProxyFactory {
 	
 
 	private static final String COMPONENT_NAME="L"+Types.COMPONENT.getInternalName()+";";
+	private static final String CONFIG_WEB_NAME="L"+Types.CONFIG_WEB.getInternalName()+";";
 
 	private static final Type JAVA_PROXY = Type.getType(JavaProxy.class);
 
@@ -45,12 +47,13 @@ public class JavaProxyFactory {
 	private static final org.objectweb.asm.commons.Method CALL = new org.objectweb.asm.commons.Method(
 			"call",
 			Types.OBJECT,
-			new Type[]{Types.COMPONENT,Types.STRING,Types.OBJECT_ARRAY});
+			new Type[]{Types.CONFIG_WEB,Types.COMPONENT,Types.STRING,Types.OBJECT_ARRAY});
 	
 	private static final org.objectweb.asm.commons.Method CONSTRUCTOR = new org.objectweb.asm.commons.Method(
 			"<init>",
 			Types.VOID,
 			new Type[]{
+					Types.CONFIG_WEB,
 					Types.COMPONENT
 				}
     		);
@@ -154,7 +157,7 @@ public class JavaProxyFactory {
 		return createProxy(cfc, null, ClassUtil.loadClass(config.getClassLoader(), className));
 	}*/
 
-	public static Object createProxy(Component cfc, Class extendz,Class... interfaces) throws PageException, IOException {
+	public static Object createProxy(ConfigWeb config, Component cfc, Class extendz,Class... interfaces) throws PageException, IOException {
 		
 		if(extendz==null) extendz=Object.class;
 		if(interfaces==null) interfaces=new Class[0];
@@ -206,8 +209,10 @@ public class JavaProxyFactory {
 		
 		
 		// field Component
-		FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE, "cfc", COMPONENT_NAME, null, null);
-		fv.visitEnd();
+		FieldVisitor _fv = cw.visitField(Opcodes.ACC_PRIVATE, "cfc", COMPONENT_NAME, null, null);
+		_fv.visitEnd();
+		_fv = cw.visitField(Opcodes.ACC_PRIVATE, "config", CONFIG_WEB_NAME, null, null);
+		_fv.visitEnd();
 		
 		 // Constructor
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR,null,null,cw);
@@ -217,14 +222,20 @@ public class JavaProxyFactory {
         adapter.invokeConstructor(Types.OBJECT, SUPER_CONSTRUCTOR);
         
         //adapter.putField(JAVA_PROXY, arg1, arg2)
-        
+
         adapter.visitVarInsn(Opcodes.ALOAD, 0);
         adapter.visitVarInsn(Opcodes.ALOAD, 1);
+        adapter.visitFieldInsn(Opcodes.PUTFIELD, className, "config", CONFIG_WEB_NAME);
+
+        adapter.visitVarInsn(Opcodes.ALOAD, 0);
+        adapter.visitVarInsn(Opcodes.ALOAD, 2);
         adapter.visitFieldInsn(Opcodes.PUTFIELD, className, "cfc", COMPONENT_NAME);
-		adapter.visitInsn(Opcodes.RETURN);
+		
+        adapter.visitInsn(Opcodes.RETURN);
 		Label end = new Label();
 		adapter.visitLabel(end);
-		adapter.visitLocalVariable("cfc",COMPONENT_NAME, null, begin, end, 1);
+		adapter.visitLocalVariable("config",CONFIG_WEB_NAME, null, begin, end, 1);
+		adapter.visitLocalVariable("cfc",COMPONENT_NAME, null, begin, end, 2);
 		
         //adapter.returnValue();
         adapter.endMethod();
@@ -248,7 +259,7 @@ public class JavaProxyFactory {
 	        
 	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
 	        Class<?> clazz = cl.loadClass(className, barr);
-	        return newInstance(clazz, cfc);
+	        return newInstance(clazz, config,cfc);
         }
         catch(Throwable t) {
         	throw Caster.toPageException(t);
@@ -303,6 +314,10 @@ public class JavaProxyFactory {
          
          
          //JavaProxy.call(cfc,"add",new Object[]{arg0})
+         // config
+         adapter.visitVarInsn(Opcodes.ALOAD, 0);
+         adapter.visitFieldInsn(Opcodes.GETFIELD, className, "config", CONFIG_WEB_NAME);
+         
          // cfc
          adapter.visitVarInsn(Opcodes.ALOAD, 0);
          adapter.visitFieldInsn(Opcodes.GETFIELD, className, "cfc", COMPONENT_NAME);
@@ -396,14 +411,14 @@ public class JavaProxyFactory {
 		
 	}
 
-	private static Object newInstance(PhysicalClassLoader cl, String className, Component cfc) 
+	private static Object newInstance(PhysicalClassLoader cl, String className, ConfigWeb config,Component cfc) 
 		throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException, ClassNotFoundException {
-			return newInstance(cl.loadClass(className),cfc);
+			return newInstance(cl.loadClass(className),config,cfc);
 	}
-	private static Object newInstance(Class<?> _clazz, Component cfc) 
+	private static Object newInstance(Class<?> _clazz,ConfigWeb config, Component cfc) 
 	throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
-		Constructor<?> constr = _clazz.getConstructor(Component.class);
-		return constr.newInstance(cfc);
+		Constructor<?> constr = _clazz.getConstructor(new Class[]{ConfigWeb.class,Component.class});
+		return constr.newInstance(new Object[]{config,cfc});
 	}
 	
 	private static String createClassName(Class extendz, Class[] interfaces) throws IOException {

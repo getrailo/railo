@@ -29,7 +29,7 @@ public class ExpressionPath extends Path {
 		List<String> variables=new ArrayList<String>();
 		while((startIndex=path.indexOf('{',last))!=-1){
 			if(last+1<startIndex) {
-				delimeter(variables,regex,path.substring(last+1,startIndex));
+				delimiter(variables,regex,path.substring(last+1,startIndex));
 			}
 				
 			endIndex=path.indexOf('}',startIndex+1);
@@ -55,7 +55,7 @@ public class ExpressionPath extends Path {
 		}
 		
 		if(endIndex+1<path.length())
-			delimeter(variables,regex,path.substring(endIndex+1));
+			delimiter(variables,regex,path.substring(endIndex+1));
 		
 		//regex.append("(.*)");
 		
@@ -66,15 +66,15 @@ public class ExpressionPath extends Path {
 	}
 	
 
-	private static void delimeter(List<String> variables, StringBuilder regex, String delimeter) {
+	private static void delimiter(List<String> variables, StringBuilder regex, String delimiter) {
 		variables.add(null);
 		regex.append('(');
-		/*print.e(delimeter+":"+Pattern.quote(delimeter));
+		/*print.e(delimiter+":"+Pattern.quote(delimiter));
 		StringBuilder sb=new StringBuilder();
-		int len=delimeter.length();
+		int len=delimiter.length();
 		char c;
 		for (int i=0; i<len; i++) {
-			c=delimeter.charAt(i);
+			c=delimiter.charAt(i);
 			switch(c){
 			case '.': sb.append("\\.");break;
 			case '?': sb.append("\\?");break;
@@ -87,7 +87,7 @@ public class ExpressionPath extends Path {
 			}
 		}*/
 		
-		regex.append(Pattern.quote(delimeter));
+		regex.append(Pattern.quote(delimiter));
 		regex.append(')');
 	}
 

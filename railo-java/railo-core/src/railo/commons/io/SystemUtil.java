@@ -29,6 +29,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
@@ -39,15 +40,16 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
+
+import com.jezhumble.javasysmon.CpuTimes;
+import com.jezhumble.javasysmon.JavaSysMon;
+import com.jezhumble.javasysmon.MemoryStats;
 
 /**
  * 
  */
 public final class SystemUtil {
-
-	private static final Collection.Key MAX = KeyImpl.intern("max");
-	private static final Collection.Key INIT = KeyImpl.intern("init");
-	private static final Collection.Key USED = KeyImpl.intern("used");
 
 	public static final int MEMORY_TYPE_ALL=0;
 	public static final int MEMORY_TYPE_HEAP=1;
@@ -135,6 +137,7 @@ public final class SystemUtil {
 	}
 	
     private static Boolean isFSCaseSensitive;
+	private static JavaSysMon jsm;
 
     /**
      * returns if the file system case sensitive or not
@@ -430,20 +433,6 @@ public final class SystemUtil {
         	path = addPlaceHolder(dir,file,"{web-root-directory}");
         	if(!StringUtil.isEmpty(path)) return path;
 
-        	
-        
-        	/* TODO
-        else if(str.startsWith("{railo-server")) {
-            cs=((ConfigImpl)config).getConfigServerImpl();
-            //if(config instanceof ConfigServer && cs==null) cs=(ConfigServer) cw;
-            if(cs!=null) {
-                if(str.startsWith("}",13)) str=cs.getConfigDir().getReal(str.substring(14));
-                else if(str.startsWith("-dir}",13)) str=cs.getConfigDir().getReal(str.substring(18));
-                else if(str.startsWith("-directory}",13)) str=cs.getConfigDir().getReal(str.substring(24));
-            }
-        }*/
-        
-    	
         return addPlaceHolder(file, defaultValue);
     }
 	
@@ -591,6 +580,7 @@ public final class SystemUtil {
 		if(jreArch==-1) {
 			jreArch = toIntArch(System.getProperty("sun.arch.data.model"));
 			if(jreArch==ARCH_UNKNOW)jreArch = toIntArch(System.getProperty("com.ibm.vm.bitmode"));
+			if(jreArch==ARCH_UNKNOW)jreArch = toIntArch(System.getProperty("java.vm.name"));
 			if(jreArch==ARCH_UNKNOW) {
 				int addrSize = getAddressSize();
 				if(addrSize==4) return ARCH_32;
@@ -684,11 +674,11 @@ public final class SystemUtil {
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
 		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		Query qry=new QueryImpl(new Collection.Key[]{
-				KeyImpl.NAME,
+				KeyConstants._name,
 				KeyImpl.TYPE,
-				USED,
-				MAX,
-				INIT
+				KeyConstants._used,
+				KeyConstants._max,
+				KeyConstants._init
 		},0,"memory");
 		
 		int row=0;
@@ -704,11 +694,11 @@ public final class SystemUtil {
 				
 			row++;
 			qry.addRow();
-			qry.setAtEL(KeyImpl.NAME, row, bean.getName());
+			qry.setAtEL(KeyConstants._name, row, bean.getName());
 			qry.setAtEL(KeyImpl.TYPE, row, _type.name());
-			qry.setAtEL(MAX, row, Caster.toDouble(usage.getMax()));
-			qry.setAtEL(USED, row, Caster.toDouble(usage.getUsed()));
-			qry.setAtEL(INIT, row, Caster.toDouble(usage.getInit()));
+			qry.setAtEL(KeyConstants._max, row, Caster.toDouble(usage.getMax()));
+			qry.setAtEL(KeyConstants._used, row, Caster.toDouble(usage.getUsed()));
+			qry.setAtEL(KeyConstants._init, row, Caster.toDouble(usage.getInit()));
 			
 		}
 		return qry;
@@ -796,4 +786,33 @@ public final class SystemUtil {
 			return template+":"+line;
 		}
 	}
+
+	public static long getFreeBytes() throws ApplicationException {
+		return physical().getFreeBytes();
+	}
+
+	public static long getTotalBytes() throws ApplicationException {
+		return physical().getTotalBytes();
+	}
+	
+	public static double getCpuUsage(long time) throws ApplicationException {
+		if(time<1) throw new ApplicationException("time has to be bigger than 0");
+		if(jsm==null) jsm=new JavaSysMon();
+		CpuTimes cput = jsm.cpuTimes();
+		if(cput==null) throw new ApplicationException("CPU information are not available for this OS");
+		CpuTimes previous = new CpuTimes(cput.getUserMillis(),cput.getSystemMillis(),cput.getIdleMillis());
+        sleep(time);
+        
+        return jsm.cpuTimes().getCpuUsage(previous)*100D;
+    }
+	
+
+	private synchronized static MemoryStats physical() throws ApplicationException {
+		if(jsm==null) jsm=new JavaSysMon();
+		MemoryStats p = jsm.physical();
+		if(p==null) throw new ApplicationException("Memory information are not available for this OS");
+		return p;
+	}
+	
+	
 }

@@ -5,7 +5,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.List;
 
 /**
- * Implements the Cold Fusion Function listfind
+ * Implements the CFML Function listfind
  */
 public final class ListFind implements Function {
 	

@@ -1,14 +1,17 @@
 package railo.runtime.type.scope;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.CasterException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
@@ -17,6 +20,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.StructUtil;
 
 public final class ArgumentThreadImpl implements Argument,Sizeable {
@@ -178,13 +182,6 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return sct.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
@@ -250,8 +247,18 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return sct.keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return sct.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return sct.entryIterator();
 	}
 
 	/**
@@ -521,6 +528,10 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 		throw new CasterException(sct,"Array");
 	}
 
+	public void sort(Comparator com) throws ExpressionException {
+		throw new CasterException(sct,"Array");
+	}
+
 	/**
 	 * @see railo.runtime.type.Array#toArray()
 	 */
@@ -555,6 +566,36 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	 */
 	public long sizeOf() {
 		return StructUtil.sizeOf(this);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key, defaultValue);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
 	}
 
 }

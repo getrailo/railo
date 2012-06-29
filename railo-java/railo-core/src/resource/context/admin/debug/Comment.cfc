@@ -68,7 +68,7 @@ component extends="Debug" {
 	* output the debugging information
 	* @param custom settings done by the user
 	*/
-	function output(struct custom, struct debugging) {
+	function output(struct custom, struct debugging, string context="web") {
 		var NL=variables.NL;
 		writeOutput("<!--"&NL);
  		echo("=================================================================================="&NL);

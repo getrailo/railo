@@ -4,6 +4,7 @@ package railo.runtime.tag;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -21,6 +22,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.ProfileCollection;
 import railo.runtime.video.VideoExecuter;
 import railo.runtime.video.VideoInfo;
@@ -52,9 +54,11 @@ public class Video extends TagSupport {
 
 	public static final int EXECUTION_QUALITY=0;
 	public static final int EXECUTION_PERFORMANCE=1;
-	private static final Key SOURCE = KeyImpl.intern("source");
+	private static final Key SOURCE = KeyConstants._source;
 	private static final Key SOURCE1 = KeyImpl.intern("source1");
 	private static final Key SOURCE2 = KeyImpl.intern("source2");
+	private static final Key AUDIO = KeyImpl.intern("audio");
+	private static final Key VIDEO = KeyImpl.intern("video");
 	
 	private static VideoUtilImpl util=VideoUtilImpl.getInstance();
 	
@@ -101,7 +105,6 @@ public class Video extends TagSupport {
 	private long buffersize;
 	private int execution=EXECUTION_PERFORMANCE;
 	private static ProfileCollection _profileCollection;
-	
 	
 	public Video(){
 		
@@ -619,11 +622,11 @@ public class Video extends TagSupport {
 
 	private VideoProfile getProfile(String strProfile) throws PageException {
 		strProfile=strProfile.trim().toLowerCase();
-		return (VideoProfile) getProfileCollection().getProfiles().get(strProfile);
+		return getProfileCollection().getProfiles().get(strProfile);
 	}
 	
 	private String getProfileKeyList() throws PageException {
-		Iterator it = getProfileCollection().getProfiles().keySet().iterator();
+		Iterator<String> it = getProfileCollection().getProfiles().keySet().iterator();
 		StringBuffer sb=new StringBuffer();
 		boolean doDel=false;
 		while(it.hasNext()) {
@@ -854,34 +857,45 @@ public class Video extends TagSupport {
 
 	public Struct toStruct(VideoInfo[] infos) {
 		Struct sct=new StructImpl();
-		sct.setEL("source", toStruct(infos[0]));
-		sct.setEL("destination", toStruct(infos[1]));
+		sct.setEL(KeyConstants._source, toStruct(infos[0]));
+		sct.setEL(KeyConstants._destination, toStruct(infos[1]));
 		return sct;
 	}
 	
 	private Struct toStruct(VideoInfo info) {
-		Struct sct=new StructImpl();
-		Struct audio=new StructImpl();
-		Struct video=new StructImpl();
-		sct.setEL("audio", audio);
-		sct.setEL("video", video);
+		
+		Struct sct=info.toStruct();
+		
+		// audio
+		Struct audio=Caster.toStruct(sct.get(AUDIO,null),null);
+		if(audio==null) {
+			audio=new StructImpl();
+			sct.setEL(AUDIO, audio);
+		}
+		
+		// video
+		Struct video=Caster.toStruct(sct.get(VIDEO,null),null);
+		if(video==null) {
+			video=new StructImpl();
+			sct.setEL(VIDEO, video);
+		}
 		
 		// Audio
 		audio.setEL("channels", info.getAudioChannels());
-		audio.setEL("codec", info.getAudioCodec());
+		audio.setEL(KeyConstants._codec, info.getAudioCodec());
 		if(info.getAudioBitrate()!=-1)audio.setEL("bitrate", new Double(info.getAudioBitrate()));
 		if(info.getAudioSamplerate()!=-1)audio.setEL("samplerate", new Double(info.getAudioSamplerate()));
 		
 		// Video
-		video.setEL("codec", info.getVideoCodec());
-		video.setEL("format", info.getVideoFormat());
+		video.setEL(KeyConstants._codec, info.getVideoCodec());
+		video.setEL(KeyConstants._format, info.getVideoFormat());
 		if(info.getVideoBitrate()!=-1)video.setEL("bitrate", new Double(info.getVideoBitrate()));
 		if(info.getFramerate()!=-1)video.setEL("framerate", new Double(info.getFramerate()));
 		
 		// Allgemein
 		if(info.getDuration()!=-1)sct.setEL("duration", new Double(info.getDuration()));
-		if(info.getHeight()!=-1)sct.setEL("height", new Double(info.getHeight()));
-		if(info.getWidth()!=-1)sct.setEL("width", new Double(info.getWidth()));
+		if(info.getHeight()!=-1)sct.setEL(KeyConstants._height, new Double(info.getHeight()));
+		if(info.getWidth()!=-1)sct.setEL(KeyConstants._width, new Double(info.getWidth()));
 		
 		
 		

@@ -35,7 +35,7 @@ public final class CacheRemove implements Function {
 		String id;
 		Cache cache;
 		try {
-			cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}

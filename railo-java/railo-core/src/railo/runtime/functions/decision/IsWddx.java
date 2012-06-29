@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function iswddx
+ * Implements the CFML Function iswddx
  */
 package railo.runtime.functions.decision;
 

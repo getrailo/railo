@@ -26,12 +26,6 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	public int size() {
 		return 0;
 	}
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return null;
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#keys()
@@ -106,7 +100,22 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
+		return null;
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return null;
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return null;
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
 		return null;
 	}
 

@@ -39,6 +39,7 @@ import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.Type;
 import railo.runtime.util.QueryStack;
 import railo.runtime.util.QueryStackImpl;
@@ -54,27 +55,18 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	private static Collection.Key GENERATED_CONTENT=KeyImpl.intern("GENERATEDCONTENT");
 	private static Collection.Key EXECUTION_MODE=KeyImpl.intern("EXECUTIONMODE");      
 	private static Collection.Key EXECUTE_BODY=KeyImpl.intern("EXECUTEBODY");
-	private static Collection.Key HAS_END_TAG=KeyImpl.intern("HASENDTAG");
 	private static Collection.Key PARENT=KeyImpl.intern("PARENT");
-	private static Collection.Key CFCATCH=KeyImpl.intern("CFCATCH");
+	private static Collection.Key CFCATCH=KeyConstants._CFCATCH;
 	private static Collection.Key SOURCE=KeyImpl.intern("SOURCE");
 	
-	
-	private static Collection.Key ATTRIBUTES=KeyImpl.intern("ATTRIBUTES");
-	private static Collection.Key CALLER=KeyImpl.intern("CALLER");
-	private static Collection.Key THIS_TAG=KeyImpl.intern("THISTAG");
-	
-
 	private static final Collection.Key ON_ERROR = KeyImpl.intern("onError");
 	private static final Collection.Key ON_FINALLY = KeyImpl.intern("onFinally");
 	private static final Collection.Key ON_START_TAG = KeyImpl.intern("onStartTag");
 	private static final Collection.Key ON_END_TAG = KeyImpl.intern("onEndTag");
-	private static final Collection.Key INIT = KeyImpl.intern("init");
 
 	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.intern("attributetype");
 	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.intern("rtexprvalue");
 	private static final Collection.Key PARSE_BODY = KeyImpl.intern("parsebody");
-	private static final Collection.Key METADATA = KeyImpl.intern("metadata");
 	private static final String MARKER = "2w12801";
 	
     /**
@@ -115,11 +107,14 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         //thistagScope = new StructImpl();
     }
 
-    /**
-     * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
-     */
+    @Override
     public void setDynamicAttribute(String uri, String name, Object value) {
-    	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.UPPER_CASE);
+    	TagUtil.setDynamicAttribute(attributesScope,KeyImpl.init(name),value,TagUtil.ORIGINAL_CASE);
+    }
+
+    @Override
+    public void setDynamicAttribute(String uri, Collection.Key name, Object value) {
+    	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.ORIGINAL_CASE);
     }
 
     /**
@@ -167,10 +162,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		finally{
 			pci.useSpecialMappings(old);
 		}
-    	
-    	
-    	
-    	
     }
 
     /**
@@ -232,13 +223,13 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         thistagScope.set(GENERATED_CONTENT,"");
         thistagScope.set(EXECUTION_MODE,"start");      
         thistagScope.set(EXECUTE_BODY,Boolean.TRUE);
-        thistagScope.set(HAS_END_TAG,Caster.toBoolean(hasBody));
+        thistagScope.set(KeyConstants._HASENDTAG,Caster.toBoolean(hasBody));
         
 		
 		ctVariablesScope=new VariablesImpl();
-        ctVariablesScope.setEL(ATTRIBUTES,attributesScope);
-        ctVariablesScope.setEL(CALLER,callerScope);
-        ctVariablesScope.setEL(THIS_TAG,thistagScope);
+        ctVariablesScope.setEL(KeyConstants._ATTRIBUTES,attributesScope);
+        ctVariablesScope.setEL(KeyConstants._CALLER,callerScope);
+        ctVariablesScope.setEL(KeyConstants._THISTAG,thistagScope);
         
         
         // include
@@ -348,22 +339,22 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         boolean exeBody = false;
         try	{
 			Object rtn=Boolean.TRUE;
-			if(cfc.contains(pageContext, INIT)){
+			if(cfc.contains(pageContext, KeyConstants._init)){
 	        	Tag parent=getParent();
 	        	while(parent!=null && !(parent instanceof CFTag && ((CFTag)parent).isCFCBasedCustomTag())) {
 	    			parent=parent.getParent();
 	    		}
 				Struct args=new StructImpl(StructImpl.TYPE_LINKED);
-				args.set(HAS_END_TAG, Caster.toBoolean(hasBody));
+				args.set(KeyConstants._HASENDTAG, Caster.toBoolean(hasBody));
 	    		if(parent instanceof CFTag) {
 	    			args.set(PARENT, ((CFTag)parent).getComponent());
 	    		}
-	        	rtn=cfc.callWithNamedValues(pageContext, INIT, args);
+	        	rtn=cfc.callWithNamedValues(pageContext, KeyConstants._init, args);
 	        }
 			
 	        if(cfc.contains(pageContext, ON_START_TAG)){
 	        	Struct args=new StructImpl();
-	        	args.set(ATTRIBUTES, attributesScope);
+	        	args.set(KeyConstants._ATTRIBUTES, attributesScope);
 	        	setCaller(pageContext,args);
 	        	
 	        	
@@ -379,7 +370,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     }
     
     private static void setCaller(PageContext pageContext, Struct args) throws PageException {
-    	args.set(CALLER, pageContext.undefinedScope().duplicate(false));
+    	args.set(KeyConstants._CALLER, pageContext.undefinedScope().duplicate(false));
 	}
 
 	private static void validateAttributes(Component cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
@@ -388,18 +379,18 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		if(tag==null) return;
 		
 		if(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_FIXED || tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_MIXED){
-			Iterator it = tag.getAttributes().entrySet().iterator();
-			Map.Entry entry;
+			Iterator<Entry<String, TagLibTagAttr>> it = tag.getAttributes().entrySet().iterator();
 			int count=0;
 			Collection.Key key;
 			TagLibTagAttr attr;
 			Object value;
+			Entry<String, TagLibTagAttr> entry;
 			// check existing attributes
 			while(it.hasNext()){
-				entry = (Entry) it.next();
+				entry = it.next();
 				count++;
 				key=KeyImpl.toKey(entry.getKey(),null);
-				attr=(TagLibTagAttr) entry.getValue();
+				attr=entry.getValue();
 				value=attributesScope.get(key,null);
 				if(value==null){
 					if(attr.getDefaultValue()!=null){
@@ -410,7 +401,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 						throw new ApplicationException("attribute ["+key.getString()+"] is required for tag ["+tagName+"]");
 				}
 				if(value!=null) {
-					if(!Decision.isCastableTo(attr.getType(),value,true)) 
+					if(!Decision.isCastableTo(attr.getType(),value,true,-1)) 
 						throw new CasterException(createMessage(attr.getType(), value));
 				
 				}
@@ -442,7 +433,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		Struct meta=null;
     	//try {
     		//meta = Caster.toStruct(cfc.get(Component.ACCESS_PRIVATE, METADATA),null,false);
-    		Member mem = ComponentUtil.toComponentAccess(cfc).getMember(Component.ACCESS_PRIVATE, METADATA,true,false);
+    		Member mem = ComponentUtil.toComponentAccess(cfc).getMember(Component.ACCESS_PRIVATE, KeyConstants._metadata,true,false);
     		if(mem!=null)meta = Caster.toStruct(mem.getValue(),null,false);
 		//}catch (PageException e) {e.printStackTrace();}
     	if(meta==null) return null;
@@ -470,7 +461,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	}
     	
     // ATTRIBUTES
-    	Struct attributes=Caster.toStruct(meta.get(ATTRIBUTES,null),null,false);
+    	Struct attributes=Caster.toStruct(meta.get(KeyConstants._ATTRIBUTES,null),null,false);
     	if(attributes!=null) {
     		Iterator it = attributes.entrySet().iterator();
     		Map.Entry entry;
@@ -521,7 +512,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		            //rtn=cfc.call(pageContext, ON_END_TAG, new Object[]{attributesScope,pageContext.variablesScope(),output});
 		            
 		            Struct args=new StructImpl(StructImpl.TYPE_LINKED);
-		        	args.set(ATTRIBUTES, attributesScope);
+		        	args.set(KeyConstants._ATTRIBUTES, attributesScope);
 		        	setCaller(pageContext, args);
 		        	args.set(GENERATED_CONTENT, output);
 		        	rtn=cfc.callWithNamedValues(pageContext, ON_END_TAG, args);	

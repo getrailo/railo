@@ -21,7 +21,7 @@ public class ImageNew {
 	public static Object call(PageContext pc, Object source) throws PageException {
 		if(StringUtil.isEmpty(source))
 			return call(pc);//throw new FunctionException(pc,"ImageNew",1,"source","missing argument");
-		return Image.createImage(pc, source, true,true,true);
+		return Image.createImage(pc, source, true,true,true,null);
 	}
 	
 	public static Object call(PageContext pc,Object source, String width) throws PageException {

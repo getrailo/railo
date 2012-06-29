@@ -50,8 +50,6 @@ public interface CFMLEngine {
      */
     public abstract void addServletConfig(ServletConfig config) throws ServletException;
     
-    //public ConfigServer getConfigServer();
-    
     /**
      * method to invoke the engine for CFML
      * @param servlet
@@ -215,6 +213,8 @@ public interface CFMLEngine {
 	public ZipUtil getZipUtil();
 
 	public abstract void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException, JspException, ServletException;
+
+	public abstract void registerThreadPageContext(PageContext pc);
 
 	
 }

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gethttptimestring
+ * Implements the CFML Function gethttptimestring
  */
 package railo.runtime.functions.dateTime;
 

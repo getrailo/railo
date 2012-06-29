@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listtoarray
+ * Implements the CFML Function listtoarray
  */
 package railo.runtime.functions.list;
 
@@ -16,13 +16,13 @@ public final class ListItemTrim implements Function {
 	public static String call(PageContext pc , String list) throws PageException {
 		return call(pc,list,",",false);
 	}
-	public static String call(PageContext pc , String list, String delimeter) throws PageException {
-		return call(pc,list,delimeter,false);
+	public static String call(PageContext pc , String list, String delimiter) throws PageException {
+		return call(pc,list,delimiter,false);
 	}
 	
-	public static String call(PageContext pc , String list, String delimeter,boolean includeEmptyFields) throws PageException {
+	public static String call(PageContext pc , String list, String delimiter,boolean includeEmptyFields) throws PageException {
 		if(list.length()==0) return "";
-		Array arr = includeEmptyFields?List.listToArray(list,delimeter):List.listToArrayRemoveEmpty(list,delimeter);
-		return List.arrayToList(List.trimItems(arr),delimeter);	
+		Array arr = includeEmptyFields?List.listToArray(list,delimiter):List.listToArrayRemoveEmpty(list,delimiter);
+		return List.arrayToList(List.trimItems(arr),delimiter);	
 	}
 }

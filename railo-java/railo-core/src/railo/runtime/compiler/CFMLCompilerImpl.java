@@ -11,6 +11,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
@@ -68,7 +69,10 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        	return barr;
 	        }
 	        catch (BytecodeException bce) {
-	        	bce.addContext(source, bce.getLineAsInt(), bce.getLineAsInt(),null);
+	        	Position pos = bce.getPosition();
+	        	int line=pos==null?-1:pos.line;
+	        	int col=pos==null?-1:pos.column;
+	        	bce.addContext(source, line, col,null);
 	        	throw bce;
 	        	//throw new TemplateException(source,e.getLine(),e.getColumn(),e.getMessage());
 			}

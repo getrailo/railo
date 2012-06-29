@@ -20,7 +20,7 @@ public final class ExpressionAsStatement extends StatementBase {
 	 * @param expr
 	 */
 	public ExpressionAsStatement(Expression expr) {
-		super(expr.getLine());
+		super(expr.getStart(),expr.getEnd());
 		this.expr=expr;
 	}
 

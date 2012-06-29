@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isnumeric
+ * Implements the CFML Function isnumeric
  */
 package railo.runtime.functions.decision;
 

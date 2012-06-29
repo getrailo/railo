@@ -4,8 +4,11 @@ package railo.runtime;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 /**
  * interface for a Component
  */
@@ -123,12 +126,6 @@ public interface Component extends Struct,Objects,CFObject {
      * @throws PageException
      */
     public abstract Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException;
-
-    /**
-     * 
-     * @deprecated use instead <code>getPageSource()</code>
-     */
-    public Page getPage();
     
     
 	/**
@@ -155,5 +152,14 @@ public interface Component extends Struct,Objects,CFObject {
 	
 	public String getWSDLFile();
 	
+
+	
+
+    public void registerUDF(String key, UDF udf);
     
+    public void registerUDF(Collection.Key key, UDF udf);
+    
+    public void registerUDF(String key, UDFProperties props);
+    
+    public void registerUDF(Collection.Key key, UDFProperties props);
 }

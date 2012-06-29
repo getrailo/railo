@@ -12,9 +12,21 @@ public interface DataSourceManager {
 	 * @param pass password to datasource
 	 * @return return a Db Connectio9n Object
 	 * @throws PageException 
+	 * @deprecated use instead <code>getConnection(PageContext pc,DataSource ds, String user, String pass)</code>
 	 */
-	public abstract DatasourceConnection getConnection(PageContext pc,String datasource,
+	public DatasourceConnection getConnection(PageContext pc,String datasource,
 			String user, String pass) throws PageException;
+	
+	/**
+	 * return a database connection matching to datsource name 
+	 * @param ds datasource whished
+	 * @param user username to datasource
+	 * @param pass password to datasource
+	 * @return return a Db Connectio9n Object
+	 * @throws PageException 
+	 */
+	public DatasourceConnection getConnection(PageContext pc,DataSource ds, String user, String pass) throws PageException;
+	
 	
 	public abstract void releaseConnection(PageContext pc,DatasourceConnection dc) throws PageException;
 
@@ -61,6 +73,6 @@ public interface DataSourceManager {
 
 	public abstract void remove(String datasource);
 
-	// FUTURE public abstract void release();
+	public abstract void release();
 
 }

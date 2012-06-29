@@ -8,6 +8,7 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.NotVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -29,15 +30,8 @@ public final class TagSilent extends TagBase {
 			new Type[]{}
 	);
 	
-	/**
-	 * Constructor of the class
-	 * @param line
-	 */
-	public TagSilent(int line) {
-		super(line);
-	}
-	public TagSilent(int sl,int el) {
-		super(sl,el);
+	public TagSilent(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**

@@ -26,16 +26,17 @@ public class ConsoleExecutionLog extends ExecutionLogSupport {
 	}
 	
 	@Override
-	protected void _log(int startLine, int endLine, long startTime, long endTime) {
+	protected void _log(int startPos, int endPos, long startTime, long endTime) {
+	
 		long diff=endTime-startTime;
-		SystemOut.print(pw, pc.getId()+":"+pc.getCurrentPageSource().getDisplayPath()+":"+lines(startLine,endLine)+" > "+timeLongToString(diff));	
+		SystemOut.print(pw, pc.getId()+":"+pc.getCurrentPageSource().getDisplayPath()+":"+positons(startPos,endPos)+" > "+timeLongToString(diff));	
 	}
 	
 	protected void _release() {}
 	
-	private static String lines(int startLine, int endLine) {
-		if(startLine==endLine) return startLine+"";
-		return startLine+":"+endLine;
+	private static String positons(int startPos, int endPos) {
+		if(startPos==endPos) return startPos+"";
+		return startPos+":"+endPos;
 	}
 
 }

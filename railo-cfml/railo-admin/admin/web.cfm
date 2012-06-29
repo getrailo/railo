@@ -325,8 +325,8 @@ for(i=1;i lte arrayLen(navigation);i=i+1) {
 strNav ='<ul id="menu">'& strNav&'</ul>' ;
 
 function toBool(sct,key) {
-	if(not StructKeyExists(sct,key)) return false;
-	return sct[key];
+	if(not StructKeyExists(arguments.sct,arguments.key)) return false;
+	return arguments.sct[arguments.key];
 }
 function getRemoteClients() {
 	if(not isDefined("form._securtyKeys")) return array();

@@ -26,4 +26,6 @@ public interface Application extends Scope {
 	 */
 	public abstract void touch();
 
+	public long getCreated();
+
 }

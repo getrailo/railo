@@ -3,6 +3,7 @@ package railo.runtime.tag;
 import java.io.File;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.customtag.CustomTagUtil;
@@ -37,8 +38,8 @@ public final class CFImportTag extends CFTag {
 	    PageSource ps;
 	    for(int rp=0;rp<realPathes.length;rp++){
 		    for(int fn=0;fn<filenames.length;fn++){
-	            ps=pageContext.getRelativePageSource(realPathes[rp]+filenames[fn]);
-	            if(ps.exists()){
+	            ps=((PageContextImpl)pageContext).getRelativePageSourceExisting(realPathes[rp]+filenames[fn]);
+	            if(ps!=null){
 	            	source=new InitFile(ps,filenames[fn],filenames[fn].endsWith('.'+config.getCFCExtension()));
 	            	return;
 	            }

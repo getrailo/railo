@@ -10,6 +10,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
 import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.encoding.TypeMapping;
 
 import org.apache.axis.Constants;
 import org.apache.axis.client.Call;
@@ -21,6 +22,7 @@ import railo.commons.io.cache.CacheEntry;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.cache.eh.remote.Converter;
 import railo.runtime.cache.eh.remote.rest.RESTClient;
+import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.util.Cast;
 
 public class SoapClient {
@@ -61,27 +63,27 @@ public class SoapClient {
 	public Cache getCache(String cacheName) throws Exception {
 		
        Service  service = new Service();
-      service.getTypeMappingRegistry().getDefaultTypeMapping().register(
-               CacheConfiguration.class, 
-               cacheConfiguration,
-               new BeanSerializerFactory(CacheConfiguration.class,cacheConfiguration),
-               new BeanDeserializerFactory(CacheConfiguration.class,cacheConfiguration));
-       Call     call    = (Call) service.createCall();
+       TypeMapping tm = service.getTypeMappingRegistry().getDefaultTypeMapping();
+       TypeMappingUtil.registerBeanTypeMapping(tm, CacheConfiguration.class, cacheConfiguration);
+       TypeMappingUtil.registerBeanTypeMapping(tm, Cache.class, cache);
+       
+       
+      Call     call    = (Call) service.createCall();
        
        
        call.registerTypeMapping(
-               Element.class, 
+               Cache.class, 
                cache,
-               new BeanSerializerFactory(Cache.class,cache),
-               new BeanDeserializerFactory(Cache.class,cache));
+               BeanSerializerFactory.class,
+               BeanDeserializerFactory.class);
        
        
         
        call.registerTypeMapping(
                CacheConfiguration.class, 
                cacheConfiguration,
-               new BeanSerializerFactory(CacheConfiguration.class,cacheConfiguration),
-               new BeanDeserializerFactory(CacheConfiguration.class,cacheConfiguration));
+               BeanSerializerFactory.class,
+               BeanDeserializerFactory.class);
        
        call.setTargetEndpointAddress( new java.net.URL(endpoint) );
        call.setOperationName(new QName("http://soap.server.ehcache.sf.net/", "getCache"));
@@ -142,12 +144,11 @@ public class SoapClient {
     	Service  service = new Service();
         Call     call    = (Call) service.createCall();
         
-        
         call.registerTypeMapping(
                 Element.class, 
                 element,
-                new BeanSerializerFactory(Element.class,element),
-                new BeanDeserializerFactory(Element.class,element));
+                BeanSerializerFactory.class,
+                BeanDeserializerFactory.class);
         
         call.setTargetEndpointAddress( new java.net.URL(endpoint) );
         call.setOperationName(new QName("http://soap.server.ehcache.sf.net/", method));
@@ -177,8 +178,8 @@ public class SoapClient {
         call.registerTypeMapping(
                 Element.class, 
                 element,
-                new BeanSerializerFactory(Element.class,element),
-                new BeanDeserializerFactory(Element.class,element));
+                BeanSerializerFactory.class,
+                BeanDeserializerFactory.class);
         
         call.setTargetEndpointAddress( new java.net.URL(endpoint) );
         call.setOperationName(new QName("http://soap.server.ehcache.sf.net/", method));
@@ -212,8 +213,8 @@ public class SoapClient {
         call.registerTypeMapping(
                 Element.class, 
                 element,
-                new BeanSerializerFactory(Element.class,element),
-                new BeanDeserializerFactory(Element.class,element));
+                BeanSerializerFactory.class,
+                BeanDeserializerFactory.class);
         
         call.setTargetEndpointAddress( new java.net.URL(endpoint) );
         call.setOperationName(new QName("http://soap.server.ehcache.sf.net/", method));

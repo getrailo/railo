@@ -8,6 +8,7 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 import com.allaire.cfx.Query;
 import com.allaire.cfx.Request;
@@ -97,7 +98,7 @@ public final class RequestImpl implements Request {
 	 * @see com.allaire.cfx.Request#getAttributeList()
 	 */
 	public String[] getAttributeList() {
-		return attributes.keysAsString();
+		return CollectionUtil.keysAsString(attributes);
 	}
 
 	/**

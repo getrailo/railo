@@ -33,7 +33,7 @@ public class UDFCasterException extends CasterException {
 		
 		
 		
-		return "invalid call of the function "+udf.getFunctionName()+" ("+((UDFImpl)udf).getPageSource().getDisplayPath()+"), "+posToString(index)+" Argument ("+arg.getName()+") is of invalid type, "+detail;
+		return "invalid call of the function "+udf.getFunctionName()+" ("+udf.getPageSource().getDisplayPath()+"), "+posToString(index)+" Argument ("+arg.getName()+") is of invalid type, "+detail;
 	}
 	
 	private static String posToString(int index) {

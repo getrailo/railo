@@ -34,15 +34,12 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		this.config=c;
 	}
 
-	/**
-	 * FUTURE deprecated
-	 * @see DataSourceManager#getConnection(PageContext pc,java.lang.String, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public DatasourceConnection getConnection(PageContext pc,String _datasource, String user, String pass) throws PageException {
 		return getConnection(pc,pc.getConfig().getDataSource(_datasource), user, pass);
 	}
 
-	// FUTURE add to interface
+	@Override
 	public DatasourceConnection getConnection(PageContext pc,DataSource ds, String user, String pass) throws PageException {
 		if(autoCommit)
 			return config.getDatasourceConnectionPool().getDatasourceConnection(pc,ds,user,pass);

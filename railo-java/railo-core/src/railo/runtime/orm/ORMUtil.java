@@ -1,6 +1,8 @@
 package railo.runtime.orm;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
@@ -95,11 +97,14 @@ public class ORMUtil {
 		done.add(right);
 		
 		if(left.size()!=right.size()) return false;
-		Key[] keys = left.keys();
+		//Key[] keys = left.keys();
+		Iterator<Entry<Key, Object>> it = left.entryIterator();
+		Entry<Key, Object> e;
 		Object l,r;
-		for(int i=0;i<keys.length;i++){
-			l=left.get(keys[i],null);
-			r=right.get(keys[i],null);
+		while(it.hasNext()){
+			e = it.next();
+			l=e.getValue();
+			r=right.get(e.getKey(),null);
 			if(r==null || !_equals(done,l, r)) return false;
 		}
 		return true;

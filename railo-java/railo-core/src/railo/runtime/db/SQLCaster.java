@@ -679,6 +679,7 @@ public final class SQLCaster {
 				if(strType.equals("SMALLINT"))	return Types.SMALLINT;
 				else if(strType.equals("STRUCT"))	return Types.STRUCT;
 				else if(strType.equals("STRING"))	return Types.VARCHAR;
+				else if(strType.equals("SQLXML"))	return Types.SQLXML;
             }
             else if(first=='T') {
 				if(strType.equals("TIME"))		return Types.TIME;

@@ -3,7 +3,10 @@ package railo.runtime.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -273,12 +276,12 @@ public class JavaObject implements Objects,ObjectWrap {
      * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
      */
     public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
-        Collection.Key[] keys = args.keys();
-        Object[] values=new Object[keys.length];
-        for(int i=0;i<keys.length;i++) {
-            values[i]=args.get(keys[i],null);
+        Iterator<Object> it = args.valueIterator();
+    	List<Object> values=new ArrayList<Object>();
+        while(it.hasNext()) {
+            values.add(it.next());
         }   
-        return call(pc,methodName,values);
+        return call(pc,methodName,values.toArray(new Object[values.size()]));
     }
 
 	public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {

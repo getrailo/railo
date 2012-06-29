@@ -9,8 +9,6 @@ import railo.runtime.type.Struct;
 
 public interface Cache {
 	
-	//public static final String DEFAULT_CACHE_NAME = "default789575785";
-	
 	/**
 	 * initialize the cache
 	 * @param arguments configuration arguments
@@ -90,7 +88,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys() throws IOException;
+	public List<String> keys() throws IOException;
 	
 	/**
 	 * 
@@ -99,7 +97,7 @@ public interface Cache {
 	 * @param filter 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys(CacheKeyFilter filter) throws IOException;
+	public List<String> keys(CacheKeyFilter filter) throws IOException;
 	
 	/**
 	 * 
@@ -108,35 +106,35 @@ public interface Cache {
 	 * @param filter 
 	 * @return a set of the keys contained in this cache.
 	 */
-	public List keys(CacheEntryFilter filter) throws IOException; // FUTURE List<CacheEntry>
+	public List<CacheEntry> keys(CacheEntryFilter filter) throws IOException;
 	
 	/**
 	 * Returns a List of values containing in this cache. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values() throws IOException; // FUTURE List<CacheEntry>
+	public List<CacheEntry> values() throws IOException;
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheKeyFilter filter) throws IOException; // FUTURE List<CacheEntry>
+	public List<CacheEntry> values(CacheKeyFilter filter) throws IOException;
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List values(CacheEntryFilter filter) throws IOException; // List<CacheEntry>
+	public List<CacheEntry> values(CacheEntryFilter filter) throws IOException; 
 	
 	/**
 	 * Returns a List of entries containing in this cache Each element in the returned list is a CacheEntry. 
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries() throws IOException;// FUTURE public List<CacheEntry> entries();
+	public List<CacheEntry> entries() throws IOException;
 	
 	/**
 	 * Returns a list of entries containing in this cache that match the given filter.
@@ -144,7 +142,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries(CacheKeyFilter filter) throws IOException; // FUTURE List<CacheEntry>
+	public List<CacheEntry> entries(CacheKeyFilter filter) throws IOException;
 	
 	/**
 	 * Returns a list of entries containing in this cache that match the given filter.
@@ -152,7 +150,7 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List entries(CacheEntryFilter filter) throws IOException; // FUTURE List<CacheEntry>
+	public List<CacheEntry> entries(CacheEntryFilter filter) throws IOException;
 
 
 	/**
@@ -175,12 +173,5 @@ public interface Cache {
 	 * get all information data available for this cache
 	 */
 	public Struct getCustomInfo();
-
-	/**
-	 * removes the cache coplitly
-	 */
-	// FUTURE public void remove() throws IOException; //or better clear()
-	
-	// FUTURE public void verify() throws IOException;
 
 }

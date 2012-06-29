@@ -1,6 +1,7 @@
 package railo.runtime.type.trace;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.debug.Debugger;
@@ -34,9 +35,21 @@ abstract class TOCollection extends TOObjects implements Collection {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		log();
 		return coll.keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	log();
+    	return coll.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		log();
+		return coll.entryIterator();
 	}
 
 	/**
@@ -162,14 +175,6 @@ abstract class TOCollection extends TOObjects implements Collection {
 	public Key[] keys() {
 		log();
 		return coll.keys();
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		log();
-		return coll.keysAsString();
 	}
 
 	/**

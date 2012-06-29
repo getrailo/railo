@@ -21,7 +21,9 @@ import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprBoolean;
@@ -37,8 +39,10 @@ import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.util.ASMConstants;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public abstract class Function extends StatementBase implements Opcodes, IFunction,HasBody {
 
@@ -114,13 +118,13 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 					Types.STRING,
 					Types.STRING,
 					Types.BOOLEAN_VALUE,
-					Types.BOOLEAN_VALUE,
 					Types.INT_VALUE,
 					Types.STRING,
 					Types.STRING,
 					Types.STRING,
 					Types.BOOLEAN,
 					Types.BOOLEAN,
+					Types.LONG_VALUE,
 					Page.STRUCT_IMPL
 				}
     		);
@@ -135,14 +139,28 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 					Types.SHORT_VALUE,
 					Types.STRING,
 					Types.BOOLEAN_VALUE,
-					Types.BOOLEAN_VALUE,
 					Types.INT_VALUE,
 					Types.STRING,
 					Types.STRING,
 					Types.STRING,
 					Types.BOOLEAN,
 					Types.BOOLEAN,
+					Types.LONG_VALUE,
 					Page.STRUCT_IMPL
+				}
+    		);
+	private static final Method INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT = new Method(
+			"<init>",
+			Types.VOID,
+			new Type[]{
+					Types.PAGE_SOURCE,
+					FUNCTION_ARGUMENT_ARRAY,
+					Types.INT_VALUE,
+					Types.STRING,
+					Types.SHORT_VALUE,
+					Types.STRING,
+					Types.BOOLEAN_VALUE,
+					Types.INT_VALUE
 				}
     		);
 
@@ -247,7 +265,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	ExprString name;
 	ExprString returnType=ANY;
 	ExprBoolean output=LitBoolean.TRUE;
-	ExprBoolean abstr=LitBoolean.FALSE;
+	//ExprBoolean abstry=LitBoolean.FALSE;
 	int access=Component.ACCESS_PUBLIC;
 	ExprString displayName=LitString.EMPTY;
 	ExprString hint=LitString.EMPTY;
@@ -260,10 +278,14 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	ExprBoolean verifyClient;
 	protected int valueIndex;
 	protected int arrayIndex;
+	private long cachedWithin;
+	private boolean _abstract;
+	private boolean _final;
+	
 
-	public Function(Page page,String name,int access,String returnType,Body body,int startline,int endline) {
-		super(startline,endline);
-		this.name=LitString.toExprString(name, -1);
+	public Function(Page page,String name,int access,String returnType,Body body,Position start, Position end) {
+		super(start,end);
+		this.name=LitString.toExprString(name);
 		this.access=access;
 		if(!StringUtil.isEmpty(returnType))this.returnType=LitString.toExprString(returnType);
 		this.body=body;
@@ -273,23 +295,24 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		arrayIndex=indexes[ARRAY_INDEX];
 	}
 	
-	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression abstr,
+	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
-			Expression verifyClient,Body body,int startline,int endline) {
-		super(startline,endline);
+			Expression verifyClient,long cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
+		super(start,end);
+		
 		this.name=CastString.toExprString(name);
 		this.returnType=CastString.toExprString(returnType);
 		this.returnFormat=returnFormat!=null?CastString.toExprString(returnFormat):null;
 		this.output=CastBoolean.toExprBoolean(output);
-		this.abstr=CastBoolean.toExprBoolean(abstr);
 		this.access=access;
 		this.description=description!=null?CastString.toExprString(description):null;
 		this.displayName=CastString.toExprString(displayName);
 		this.hint=CastString.toExprString(hint);
 		this.secureJson=secureJson!=null?CastBoolean.toExprBoolean(secureJson):null;
 		this.verifyClient=verifyClient!=null?CastBoolean.toExprBoolean(verifyClient):null;
-		//checkNameConflict(this.name);
-
+		this.cachedWithin=cachedWithin;
+		this._abstract=_abstract;
+		this._final=_final;
 		
 		this.body=body;
 		body.setParent(this);
@@ -311,9 +334,9 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	 * @see railo.transformer.bytecode.statement.IFunction#writeOut(railo.transformer.bytecode.BytecodeContext, int)
 	 */
 	public final void writeOut(BytecodeContext bc, int type) throws BytecodeException {
-    	ExpressionUtil.visitLine(bc, getStartLine());
+    	ExpressionUtil.visitLine(bc, getStart());
         _writeOut(bc,type);
-    	ExpressionUtil.visitLine(bc, getEndLine());
+    	ExpressionUtil.visitLine(bc, getEnd());
 	}
 	
 	/**
@@ -371,28 +394,52 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		short type=ExpressionUtil.toShortType(returnType,CFTypes.TYPE_UNKNOW);
 		if(type==CFTypes.TYPE_UNKNOW) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
 		else adapter.push(type);
+		
 		// return format
 		if(returnFormat!=null)ExpressionUtil.writeOutSilent(returnFormat,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		
 		// output
 		ExpressionUtil.writeOutSilent(output,bc, Expression.MODE_VALUE);
-		// abstract
-		ExpressionUtil.writeOutSilent(abstr,bc, Expression.MODE_VALUE);
+		
 		// access
 		writeOutAccess(bc, access);
+		
+		boolean light=type!=-1;
+		if(light && !LitString.EMPTY.equals(displayName))light=false;
+		if(light && description!=null && !LitString.EMPTY.equals(description))light=false;
+		if(light && !LitString.EMPTY.equals(hint))light=false;
+		if(light && secureJson!=null)light=false;
+		if(light && verifyClient!=null)light=false;
+		if(light && cachedWithin>0)light=false;
+		if(light && Page.hasMetaDataStruct(metadata, null))light=false;
+		
+		if(light){
+			adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT);
+			return;
+		}
+		
 		// displayName
 		ExpressionUtil.writeOutSilent(displayName,bc, Expression.MODE_REF);// displayName;
+		
 		// description
 		if(description!=null)ExpressionUtil.writeOutSilent(description,bc, Expression.MODE_REF);// displayName;
 		else adapter.push("");
+		
 		// hint
 		ExpressionUtil.writeOutSilent(hint,bc, Expression.MODE_REF);// hint;
+		
 		// secureJson
 		if(secureJson!=null)ExpressionUtil.writeOutSilent(secureJson,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		
 		// verify client
 		if(verifyClient!=null)ExpressionUtil.writeOutSilent(verifyClient,bc, Expression.MODE_REF);
 		else ASMConstants.NULL(adapter);
+		
+		// cachedwithin
+		adapter.push(cachedWithin<0?0:cachedWithin);
+		
 		// meta
 		Page.createMetaDataStruct(bc,metadata,null);
 		
@@ -602,7 +649,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		String name=attr.getName().toLowerCase();
 		// name
 		if("name".equals(name))	{
-			throw new BytecodeException("name cannot be defined twice",getLine());
+			throw new BytecodeException("name cannot be defined twice",getStart());
 			//this.name=CastString.toExprString(attr.getValue());
 		}
 		else if("returntype".equals(name))	{
@@ -614,22 +661,40 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 			String strAccess = ls.getString();
 			int acc = ComponentUtil.toIntAccess(strAccess,-1);
 			if(acc==-1)
-				throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
+				throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
 			access=acc;
 			
 		}
 		
 		else if("output".equals(name))		this.output=toLitBoolean(name,attr.getValue());
-		else if("abstract".equals(name))	this.abstr=toLitBoolean(name,attr.getValue());
 		else if("displayname".equals(name))	this.displayName=toLitString(name,attr.getValue());
 		else if("hint".equals(name))		this.hint=toLitString(name,attr.getValue());
 		else if("description".equals(name))	this.description=toLitString(name,attr.getValue());
 		else if("returnformat".equals(name))this.returnFormat=toLitString(name,attr.getValue());
 		else if("securejson".equals(name))	this.secureJson=toLitBoolean(name,attr.getValue());
 		else if("verifyclient".equals(name))	this.verifyClient=toLitBoolean(name,attr.getValue());
+		else if("cachedwithin".equals(name))	{
+			try {
+				this.cachedWithin=ASMUtil.timeSpanToLong(attr.getValue());
+			} catch (EvaluatorException e) {
+				throw new TemplateException(e.getMessage());
+			}
+		}
+		else if("modifier".equals(name))	{
+			Expression val = attr.getValue();
+			if(val instanceof Literal) {
+				Literal l=(Literal) val;
+				String str = StringUtil.emptyIfNull(l.getString()).trim();
+				if("abstract".equalsIgnoreCase(str))_abstract=true;
+				else if("final".equalsIgnoreCase(str))_final=true;
+			}
+		}
+		
+		
+		
 		else {
 			toLitString(name,attr.getValue());// needed for testing
-			if(metadata==null)metadata=new HashMap();
+			if(metadata==null)metadata=new HashMap<String,Attribute>();
 			metadata.put(attr.getName(), attr);
 		}
 	}
@@ -637,14 +702,14 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 	private final LitString toLitString(String name, Expression value) throws BytecodeException {
 		ExprString es = CastString.toExprString(value);
 		if(!(es instanceof LitString))
-			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getLine());
+			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitString) es;
 	}
 	
 	private final LitBoolean toLitBoolean(String name, Expression value) throws BytecodeException {
 		 ExprBoolean eb = CastBoolean.toExprBoolean(value);
 		if(!(eb instanceof LitBoolean))
-			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getLine());
+			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitBoolean) eb;
 	}
 

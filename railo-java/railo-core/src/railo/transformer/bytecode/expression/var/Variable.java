@@ -19,12 +19,12 @@ import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.Invoker;
-import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
@@ -128,12 +128,12 @@ public class Variable extends ExpressionBase implements Invoker {
 	int countFM=0;
 	private boolean ignoredFirstMember;
 
-	public Variable(int line) {
-		super(line);
+	public Variable(Position start,Position end) {
+		super(start,end);
 	}
 	
-	public Variable(int scope,int line) {
-		super(line);
+	public Variable(int scope,Position start,Position end) {
+		super(start,end);
 		this.scope=scope;
 	}
 	
@@ -303,10 +303,10 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
     	else if(member instanceof UDF)
     		return _writeOutFirstUDF(bc,(UDF)member,scope,doOnlyScope);
     	else
-    		return _writeOutFirstBIF(bc,(BIF)member,mode,last,getLine());
+    		return _writeOutFirstBIF(bc,(BIF)member,mode,last,getStart());
 	}
 	
-	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last,int line) throws BytecodeException {
+	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last,Position line) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		// class
@@ -349,7 +349,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 				
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
-						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getLine());
+						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getStart());
 						UDFUtil.addFunctionDoc(bce, bif.getFlf());
 						throw bce;
 					}
@@ -466,14 +466,14 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	
 	
 
-	private static VT getMatchingValueAndType(FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, int line) throws BytecodeException {
+	private static VT getMatchingValueAndType(FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, Position line) throws BytecodeException {
 		String flfan=flfa.getName();
 		
 		// first search if a argument match
 		for(int i=0;i<nargs.length;i++){
 			if(names[i]!=null && names[i].equalsIgnoreCase(flfan)) {
-				nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
-				return new VT(nargs[i].getValue(),flfa.getType(),i);
+				nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
+				return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 			}
 		}
 		
@@ -483,8 +483,8 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 			//String[] arrAlias = railo.runtime.type.List.toStringArray(railo.runtime.type.List.trimItems(railo.runtime.type.List.listToArrayRemoveEmpty(alias, ',')));
 			for(int i=0;i<nargs.length;i++){
 				if(names[i]!=null && railo.runtime.type.List.listFindNoCase(alias, names[i])!=-1){
-					nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
-					return new VT(nargs[i].getValue(),flfa.getType(),i);
+					nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
+					return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 				}
 			}
 		}
@@ -513,7 +513,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 
 	private static String getName(Expression expr) throws BytecodeException {
 		String name = ASMUtil.toString(expr);
-		if(name==null) throw new BytecodeException("cannot extract a string from a object of type ["+expr.getClass().getName()+"]",-1);
+		if(name==null) throw new BytecodeException("cannot extract a string from a object of type ["+expr.getClass().getName()+"]",null);
 		return name;
 	}
 
@@ -547,7 +547,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		for(int i=0;i<args.length;i++){
 			if(args[i] instanceof NamedArgument)named=true;
 			else if(named)
-				throw new BytecodeException("invalid argument for function "+funcName+", you can not mix named and unnamed arguments", args[i].getLine());
+				throw new BytecodeException("invalid argument for function "+funcName+", you can not mix named and unnamed arguments", args[i].getStart());
 		}
 		
 		

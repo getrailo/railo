@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function sgn
+ * Implements the CFML Function sgn
  */
 package railo.runtime.functions.math;
 

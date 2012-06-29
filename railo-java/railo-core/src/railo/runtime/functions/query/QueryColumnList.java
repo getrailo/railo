@@ -6,13 +6,13 @@ import railo.runtime.type.List;
 import railo.runtime.type.Query;
 
 /**
- * Implements the Cold Fusion Function querynew
+ * Implements the CFML Function querynew
  */
 public final class QueryColumnList implements Function {
     public static String call(PageContext pc , Query qry) {
         return call(pc,qry,",");
     }
-    public static String call(PageContext pc , Query qry, String delimeter) {
-        return List.arrayToList(qry.getColumns(),delimeter);
+    public static String call(PageContext pc , Query qry, String delimiter) {
+        return List.arrayToList(qry.getColumns(),delimiter);
     }
 }

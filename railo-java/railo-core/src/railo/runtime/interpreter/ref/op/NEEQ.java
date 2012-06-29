@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.op;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
@@ -22,17 +23,13 @@ public final class NEEQ extends RefSupport implements Ref {
         this.right=right;
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() throws PageException {
-    	return left.eeq(right)?Boolean.FALSE:Boolean.TRUE;
+    @Override
+	public Object getValue(PageContext pc) throws PageException {
+    	return left.eeq(pc,right)?Boolean.FALSE:Boolean.TRUE;
         //return (left.getValue()!=right.getValue())?Boolean.TRUE:Boolean.FALSE;
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-     */
+    @Override
     public String getTypeName() {
         return "operation";
     }

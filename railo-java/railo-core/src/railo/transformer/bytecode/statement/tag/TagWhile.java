@@ -4,6 +4,7 @@ import org.objectweb.asm.Label;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.visitor.WhileVisitor;
@@ -12,15 +13,8 @@ public final class TagWhile extends TagBase implements FlowControl {
 
 	private WhileVisitor wv;
 
-	/**
-	 * Constructor of the class
-	 * @param tag
-	 */
-	public TagWhile(int line) {
-		super(line);
-	}
-	public TagWhile(int sl,int el) {
-		super(sl,el);
+	public TagWhile(Position start,Position end) {
+		super(start,end);
 	}
 
 
@@ -33,7 +27,7 @@ public final class TagWhile extends TagBase implements FlowControl {
 			getAttribute("condition").getValue().writeOut(bc, Expression.MODE_VALUE);
 		wv.visitAfterExpressionBeforeBody(bc);
 			getBody().writeOut(bc);
-		wv.visitAfterBody(bc,getEndLine());
+		wv.visitAfterBody(bc,getEnd());
 	}
 
 

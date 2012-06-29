@@ -13,6 +13,7 @@ import railo.runtime.op.Operator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.util.StructSupport;
 
@@ -117,13 +118,25 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
         parent.clear();
     }
 
-
-    /**
-     * @see railo.runtime.type.Collection#keyIterator()
-     */
-    public Iterator keyIterator() {
+    @Override
+	public Iterator<Collection.Key> keyIterator() {
         return parent.keyIterator();
     }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return parent.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return parent.valueIterator();
+	}
 
     /**
      *
@@ -132,22 +145,6 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
     public Collection.Key[] keys() {
         return parent.keys();
     }
-
-    /**
-     *
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        return parent.keysAsString();
-    }
-
-    /* *
-     * @see railo.runtime.type.Collection#remove(java.lang.String)
-     * /
-    public Object remove (String key) throws PageException {
-        return parent.remove(key);
-    }*/
-
 
     /**
      * @see railo.runtime.type.Collection#size()

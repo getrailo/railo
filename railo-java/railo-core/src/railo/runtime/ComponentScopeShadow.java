@@ -17,7 +17,10 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
@@ -113,7 +116,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Object get(Key key) throws PageException {
 		Object o = get(key,null);
 		if(o!=null) return o;
-        throw new ExpressionException("Component ["+component.getCallName()+"] has no acessible Member with name ["+key+"]");
+        throw new ExpressionException("Component ["+component.getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
 	
 	/**
@@ -130,25 +133,24 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		String[] keys=new String[shadow.size()+1];
-		Iterator<Key> it = shadow.keySet().iterator();
-		int index=0;
-		while(it.hasNext()) {
-			keys[index++]=it.next().getString();
-		}
-		keys[index]=KeyImpl.THIS_UC.getString();
-		return keys;
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
+	}
+
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
 	}
 
 	/**
@@ -208,7 +210,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#size()
 	 */
 	public int size() {
-		return keysAsString().length;
+		return keys().length;
 	}
 
 	/**
@@ -372,13 +374,6 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public Object get(PageContext pc, Key key, Object defaultValue) {
 		return get(key, defaultValue);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
-		return set(KeyImpl.init(propertyName), value);
 	}
 
 	/**

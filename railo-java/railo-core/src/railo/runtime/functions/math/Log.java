@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function log
+ * Implements the CFML Function log
  */
 package railo.runtime.functions.math;
 

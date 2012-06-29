@@ -116,7 +116,7 @@
 	<!--- 
 	invoke Tag 
 	--->
-	<cffunction name="invokeTag" output="true" access="private" returntype="any" hint="invokes the service tag">
+	<cffunction name="invokeTag" output="false" access="private" returntype="any" hint="invokes the service tag">
 		<cfset var tagname = getTagName()>
 		<cfset var tagAttributes = getAttributes()>
 		<cfset var tagParams = getParams()>	

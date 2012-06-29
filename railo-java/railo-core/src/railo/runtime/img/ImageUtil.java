@@ -71,17 +71,17 @@ public class ImageUtil {
 	public static String getFormat(Resource res) throws IOException {
 		String ext=getFormatFromExtension(res,null);
 		if(ext!=null) return ext;
-		String mt=IOUtil.getMymeType(res, null);
+		String mt=ResourceUtil.getMimeType(res, null);
 		if(mt==null) return null;//throw new IOException("can't extract mimetype from ["+res+"]");
 		return getFormatFromMimeType(mt);
 	}
 
 	public static String getFormat(byte[] binary) throws IOException {
-		return getFormatFromMimeType(IOUtil.getMymeType(binary, ""));
+		return getFormatFromMimeType(IOUtil.getMimeType(binary, ""));
 	}
 
 	public static String getFormat(byte[] binary,String defaultValue) {
-		return getFormatFromMimeType(IOUtil.getMymeType(binary, ""),defaultValue);
+		return getFormatFromMimeType(IOUtil.getMimeType(binary, ""),defaultValue);
 	}
 
 	public static String getFormatFromExtension(Resource res, String defaultValue) {

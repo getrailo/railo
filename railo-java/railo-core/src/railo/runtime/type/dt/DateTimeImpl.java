@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import railo.commons.date.DateTimeUtil;
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
@@ -17,13 +18,18 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Operator;
+import railo.runtime.reflection.Reflector;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Objects;
 import railo.runtime.type.SimpleValue;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.Struct;
+import railo.runtime.type.util.MemberUtil;
 
 /**
  * Printable and Castable DateTime Object
  */
-public final class DateTimeImpl extends DateTime implements SimpleValue,Sizeable {
+public final class DateTimeImpl extends DateTime implements SimpleValue,Sizeable,Objects {
 	
 	public DateTimeImpl(PageContext pc) {
 		this(pc,System.currentTimeMillis(),true);
@@ -193,6 +199,40 @@ public final class DateTimeImpl extends DateTime implements SimpleValue,Sizeable
 	public long sizeOf() {
 		return SizeOf.LONG_SIZE+SizeOf.REF_SIZE;
 	}
-	
+
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return Reflector.getField(this, key.getString(),defaultValue);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return Reflector.getField(this, key.getString());
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return Reflector.setField(this, propertyName.getString(),value);
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		try {
+			return Reflector.setField(this, propertyName.getString(),value);
+		} catch (PageException e) {
+			return value;
+		}
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_DATETIME, "datetime");
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_DATETIME, "datetime");
+	}
 	
 }

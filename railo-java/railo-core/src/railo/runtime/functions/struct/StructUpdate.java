@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structupdate
+ * Implements the CFML Function structupdate
  */
 package railo.runtime.functions.struct;
 

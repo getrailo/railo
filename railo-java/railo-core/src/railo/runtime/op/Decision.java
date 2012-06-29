@@ -41,6 +41,7 @@ import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -472,12 +473,14 @@ public final class Decision {
         //else if(o instanceof XMLStruct) return true;
         else if(o instanceof Struct) {
             Struct sct=(Struct) o;
-            Collection.Key[] keys=sct.keys();
+            Iterator<Key> it = sct.keyIterator();
             try {
-                for(int i=0;i<keys.length;i++) Caster.toIntValue(keys[i].toString());
+                while(it.hasNext()) {
+                	Caster.toIntValue(it.next().getString());
+                }
                 return true;
             } 
-            catch (Exception e) {
+            catch (Throwable t) {
                 return false;
             }
         }
@@ -759,7 +762,7 @@ public final class Decision {
 	}
 
 	/**
-	 * returns if object is a cold fusion object
+	 * returns if object is a CFML object
 	 * @param o Object to check
 	 * @return is or not
 	 */
@@ -989,12 +992,15 @@ public final class Decision {
 		
     }
     
-    
-    
-    
-    
-    
-    public static boolean isCastableTo(String type, Object o, boolean alsoPattern) {
+    /**
+     * checks if a value is castable to a certain type
+     * @param type any,array,boolean,binary, ...
+     * @param o value to check
+     * @param alsoPattern also check patterns like creditcards,email,phone ...
+     * @param maxlength only used for email,url, string, ignored otherwise
+     * @return
+     */
+    public static boolean isCastableTo(String type, Object o, boolean alsoPattern, int maxlength) {
         
     	type=StringUtil.toLowerCase(type).trim();
         if(type.length()>2) {
@@ -1043,6 +1049,11 @@ public final class Decision {
                     	return isDateAdvanced(o, true);
                     }
                     else if(alsoPattern && type.equals("email")) {
+                    	if(maxlength>-1) {
+                    		String str = Caster.toEmail(o,null);
+                    		if(str==null) return false;
+                    		return str.length()<=maxlength;
+                    	}
                         return Caster.toEmail(o,null)!= null;
                     }
                     break;
@@ -1097,6 +1108,11 @@ public final class Decision {
                     break;
                 case 's':
                     if(type.equals("string")) {
+                    	if(maxlength>-1) {
+                    		String str = Caster.toString(o,null);
+                    		if(str==null) return false;
+                    		return str.length()<=maxlength;
+                    	}
                         return isCastableToString(o);
                     }
                     else if(type.equals("struct")) {
@@ -1128,6 +1144,11 @@ public final class Decision {
                     	//return DateCaster.toDate(o,pc.getTimeZone());
                     }
                     if(alsoPattern && type.equals("url")) {
+                    	if(maxlength>-1) {
+                    		String str = Caster.toURL(o,null);
+                    		if(str==null) return false;
+                    		return str.length()<=maxlength;
+                    	}
                         return Caster.toURL(o,null)!=null;
                     }
                     break;
@@ -1167,7 +1188,7 @@ public final class Decision {
         	if(arr!=null){
         		Iterator it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(t, it.next(), alsoPattern))
+        			if(!isCastableTo(t, it.next(), alsoPattern,-1))
         				return false;
         			
         		}

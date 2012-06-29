@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function directoryexists
+ * Implements the CFML Function directoryexists
  */
 package railo.runtime.functions.system;
 

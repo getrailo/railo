@@ -1,5 +1,5 @@
 <cfapplication 
-	name="railo_context" 
+	name="webadmin" 
     clientmanagement="no" 
     clientstorage="file" 
     scriptprotect="none" 

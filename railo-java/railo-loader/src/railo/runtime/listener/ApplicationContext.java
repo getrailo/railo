@@ -2,11 +2,13 @@ package railo.runtime.listener;
 
 import java.io.Serializable;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.rest.RestSettings;
 import railo.runtime.type.dt.TimeSpan;
 
 /**
@@ -86,9 +88,6 @@ public interface ApplicationContext extends Serializable {
 
 	public boolean getSecureJson();
 
-	//public abstract boolean hasOnSessionStart();
-	//public abstract boolean hasOnApplicationStart();
-	
 
 	public String getDefaultDataSource();
 	
@@ -153,4 +152,32 @@ public interface ApplicationContext extends Serializable {
 	
 	public void reinitORM(PageContext pc) throws PageException ;
 
+	public Resource getSource(); 
+	
+
+
+	public boolean getTriggerComponentDataMember();
+	public void setTriggerComponentDataMember(boolean triggerComponentDataMember);
+
+	/**
+	 * return the default cache name for a certain type 
+	 * @param type can be one of the following constants Config.CACHE_DEFAULT_OBJECT, Config.CACHE_DEFAULT_TEMPLATE, Config.CACHE_DEFAULT_QUERY, Config.CACHE_DEFAULT_RESOURCE, Config.CACHE_DEFAULT_FUNCTION
+	 * @return name of the cache defined
+	 */
+	public String getDefaultCacheName(int type);
+	
+	public void setDefaultCacheName(int type, String cacheName);
+
+	/**
+	 * merge the field with same name to array if true, otherwise to a comma separated string list
+	 * @param scope scope type, one of the following: Scope.SCOPE_FORM or Scope.SCOPE_URL
+	 * @return
+	 */
+	public boolean getSameFieldAsArray(int scope);
+
+	public RestSettings getRestSettings();
+	
+	public JavaSettings getJavaSettings();
+	
+	public Resource[] getRestCFCLocations();
 }

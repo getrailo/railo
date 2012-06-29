@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function hash
+ * Implements the CFML Function hash
  */
 package railo.runtime.functions.string;
 

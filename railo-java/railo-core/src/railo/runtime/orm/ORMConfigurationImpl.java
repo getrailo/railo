@@ -14,8 +14,10 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
@@ -25,6 +27,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public class ORMConfigurationImpl implements ORMConfiguration {
 	public static final int DBCREATE_NONE=0;
@@ -33,7 +36,6 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	
 	public static final Collection.Key AUTO_GEN_MAP = KeyImpl.intern("autogenmap");
 	public static final Collection.Key CATALOG = KeyImpl.intern("catalog");
-	public static final Collection.Key CFC_LOCATION = KeyImpl.intern("cfcLocation");
 	public static final Collection.Key IS_DEFAULT_CFC_LOCATION = KeyImpl.intern("isDefaultCfclocation");
 	public static final Collection.Key DB_CREATE = KeyImpl.intern("dbCreate");
 	public static final Collection.Key DIALECT = KeyImpl.intern("dialect");
@@ -50,7 +52,6 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	public static final Collection.Key EVENT_HANDLING = KeyImpl.intern("eventHandling");
 	public static final Collection.Key EVENT_HANDLER = KeyImpl.intern("eventHandler");
 	public static final Collection.Key AUTO_MANAGE_SESSION = KeyImpl.intern("autoManageSession");
-	public static final Collection.Key SKIP_WITH_ERROR = KeyImpl.intern("skipCFCWithError");
 	public static final Collection.Key NAMING_STRATEGY = KeyImpl.intern("namingstrategy");
 	
 	
@@ -88,15 +89,15 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	
 
 
-	public static ORMConfiguration load(Config config, Element el, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
-		return _load(config, new _GetElement(el),defaultCFCLocation,defaultConfig);
+	public static ORMConfiguration load(Config config,ApplicationContext ac, Element el, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
+		return _load(config,ac, new _GetElement(el),defaultCFCLocation,defaultConfig);
 	}
 	
-	public static ORMConfiguration load(Config config,Struct settings, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
-		return _load(config, new _GetStruct(settings),defaultCFCLocation,defaultConfig);
+	public static ORMConfiguration load(Config config,ApplicationContext ac,Struct settings, Resource defaultCFCLocation,ORMConfiguration defaultConfig) {
+		return _load(config,ac, new _GetStruct(settings),defaultCFCLocation,defaultConfig);
 	}
 
-	private static ORMConfiguration _load(Config config,_Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
+	private static ORMConfiguration _load(Config config,ApplicationContext ac, _Get settings, Resource defaultCFCLocation,ORMConfiguration dc) {
 		
 		if(dc==null)dc=new ORMConfigurationImpl();
 		ORMConfigurationImpl c = ((ORMConfigurationImpl)dc).duplicate();
@@ -109,45 +110,15 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		c.catalog=StringUtil.trim(Caster.toString(settings.get(CATALOG,dc.getCatalog()),dc.getCatalog()),dc.getCatalog());
 		
 		// cfclocation
-		Object obj = settings.get(CFC_LOCATION,null);
+		Object obj = settings.get(KeyConstants._cfcLocation,null);
+		
 		if(obj!=null){
-			Resource res;
-			if(!Decision.isArray(obj)){
-				String list = Caster.toString(obj,null);
-				if(!StringUtil.isEmpty(list)) {
-					obj=List.listToArray(list, ',');
-				}
-			}
+			java.util.List<Resource> list=loadCFCLocation(config,ac,obj,true);
 			
-			if(Decision.isArray(obj)) {
-				Array arr=Caster.toArray(obj,null);
-				java.util.List<Resource> list=new ArrayList<Resource>();
-				//c.cfcLocations=new Resource[arr.size()];
-				Iterator it = arr.valueIterator();
-				
-				while(it.hasNext()){
-					try	{
-						res=toResourceExisting(config, it.next());
-						if(res!=null) list.add(res);
-					}
-					catch(Throwable t){}
-				}
-				if(list.size()>0){
-					c.cfcLocations=list.toArray(new Resource[list.size()]);
-					c.isDefaultCfcLocation=false;
-				}
+			if(list!=null && list.size()>0){
+				c.cfcLocations=list.toArray(new Resource[list.size()]);
+				c.isDefaultCfcLocation=false;
 			}
-			/*else {
-				try	{
-					res = toResourceExisting(config, obj);
-					if(res!=null) {
-						c.cfcLocations=new Resource[]{res};//Caster.toResource(config, obj, true);
-						c.isDefaultCfcLocation=false;
-					}
-				}
-				catch(Throwable t){}
-			}*/
-			
 		}
 		if(c.cfcLocations == null)
 			c.cfcLocations=defaultCFCLocation==null?new Resource[0]:new Resource[]{defaultCFCLocation};
@@ -189,7 +160,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		c.autoManageSession=Caster.toBooleanValue(settings.get(AUTO_MANAGE_SESSION,dc.autoManageSession()),dc.autoManageSession());
 		
 		// skipCFCWithError
-		c.skipCFCWithError=Caster.toBooleanValue(settings.get(SKIP_WITH_ERROR,dc.skipCFCWithError()),dc.skipCFCWithError());
+		c.skipCFCWithError=Caster.toBooleanValue(settings.get(KeyConstants._skipCFCWithError,dc.skipCFCWithError()),dc.skipCFCWithError());
 		
 		// savemapping
 		c.saveMapping=Caster.toBooleanValue(settings.get(SAVE_MAPPING,dc.saveMapping()),dc.saveMapping());
@@ -239,10 +210,32 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		return c;
 	}	
 
-	private static Resource toRes(Config config, Object obj, boolean existing) throws ExpressionException {
-		PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null)return Caster.toResource(pc, obj, existing);
-		return Caster.toResource(config, obj, existing);
+	public static java.util.List<Resource> loadCFCLocation(Config config, ApplicationContext ac,Object obj, boolean onlyDir) {
+		
+		Resource res;
+		if(!Decision.isArray(obj)){
+			String list = Caster.toString(obj,null);
+			if(!StringUtil.isEmpty(list)) {
+				obj=List.listToArray(list, ',');
+			}
+		}
+		
+		if(Decision.isArray(obj)) {
+			Array arr=Caster.toArray(obj,null);
+			java.util.List<Resource> list=new ArrayList<Resource>();
+			Iterator<Object> it = arr.valueIterator();
+			while(it.hasNext()){
+				try	{
+					res=toResourceExisting(config,ac,it.next(),onlyDir);
+					if(res!=null) list.add(res);
+				}
+				catch(Throwable t){}
+			}
+			return list;
+		}
+		
+		
+		return null;
 	}
 
 
@@ -250,30 +243,58 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 
 
 
-	private static Resource toResourceExisting(Config config, Object obj) {
+	private static Resource toRes(Config config, Object obj, boolean existing) throws ExpressionException {
+		PageContext pc = ThreadLocalPageContext.get();
+		if(pc!=null)return Caster.toResource(pc, obj, existing);
+		return Caster.toResource(config, obj, existing);
+	}
+
+	private static Resource toResourceExisting(Config config, ApplicationContext ac,Object obj, boolean onlyDir) {
 		//Resource root = config.getRootDirectory();
 		String path = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(path,true)) return null;
 		path=path.trim();
 		Resource res;
-		
-		// first check local
 		PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null){
-			res=ResourceUtil.toResourceNotExisting(pc, path);
-			if(res.isDirectory()) return res;
+		
+		// first check relative to application.cfc
+		if(pc!=null) {
+			if(ac==null) ac= pc.getApplicationContext();
+			
+			// abs path
+			if(path.startsWith("/")){
+				ConfigWebImpl cwi=(ConfigWebImpl) config;
+				res=cwi.getPhysicalResourceExisting(
+						pc, 
+						ac==null?null:ac.getMappings(), path, 
+						false, false, true);
+				if(res!=null && (!onlyDir || res.isDirectory())) return res;
+			}
+			// real path
+			else {
+				Resource src= ac!=null?ac.getSource():null;
+				if(src!=null) {
+					res=src.getParentResource().getRealResource(path);
+					if(res!=null && (!onlyDir || res.isDirectory())) return res;
+				}
+				// happens when this is called from within the application.cfc (init)
+				else {
+					res=ResourceUtil.toResourceNotExisting(pc, path);
+					if(res!=null && (!onlyDir || res.isDirectory())) return res;
+				}
+			}
 		}
+		
+		
 		
 		// then in the webroot
 		res=config.getRootDirectory().getRealResource(path);
-		if(res.isDirectory()) return res;
+		if(res!=null && (!onlyDir || res.isDirectory())) return res;
 		
 		// then absolute
 		res = ResourceUtil.toResourceNotExisting(config, path);
-		if(res.isDirectory()) return res;
 		
-		
-		
+		if(res!=null && (!onlyDir || res.isDirectory())) return res;
 		return null;
 	}
 
@@ -495,7 +516,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		Struct sct=new StructImpl();
 		sct.setEL(AUTO_GEN_MAP,this.autogenmap());
 		sct.setEL(CATALOG,StringUtil.emptyIfNull(getCatalog()));
-		sct.setEL(CFC_LOCATION,arrLocs);
+		sct.setEL(KeyConstants._cfcLocation,arrLocs);
 		sct.setEL(IS_DEFAULT_CFC_LOCATION,isDefaultCfcLocation());
 		sct.setEL(DB_CREATE,dbCreateAsString(getDbCreate()));
 		sct.setEL(DIALECT,StringUtil.emptyIfNull(getDialect()));

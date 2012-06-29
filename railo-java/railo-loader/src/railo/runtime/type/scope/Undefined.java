@@ -35,6 +35,8 @@ public interface Undefined extends Scope {
      */
     public abstract int setMode(int mode);
     
+    public boolean getLocalAlways();
+    
 
     /**
      * sets the functions scopes 

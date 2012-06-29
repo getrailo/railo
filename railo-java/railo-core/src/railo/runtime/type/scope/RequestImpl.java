@@ -13,13 +13,13 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.util.StructSupport;
-import railo.runtime.util.IteratorWrapper;
 
 public final class RequestImpl extends StructSupport implements Request {
 
@@ -84,42 +84,49 @@ public final class RequestImpl extends StructSupport implements Request {
 		}
 		return size;
 	}
-
-
-
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		return new KeyIterator(keys());
+	
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
+		return keyList().iterator();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
-	public Key[] keys() {
+	
+
+	private List<Key> keyList() {
 		synchronized (_req) {
 			Enumeration<String> names = _req.getAttributeNames();
 			List<Key> list=new ArrayList<Key>();
 			while(names.hasMoreElements()){
 				list.add(KeyImpl.getInstance(names.nextElement()));
 			}
-			return list.toArray(new Key[list.size()]);
+			return list;
 		}
 	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
 		synchronized (_req) {
 			Enumeration<String> names = _req.getAttributeNames();
-			List<String> list=new ArrayList<String>();
+			List<Object> list=new ArrayList<Object>();
 			while(names.hasMoreElements()){
-				list.add(names.nextElement());
+				list.add(_req.getAttribute(names.nextElement()));
 			}
-			return list.toArray(new String[list.size()]);
+			return list.iterator();
 		}
+	}
+	
+	
+	/**
+	 * @see railo.runtime.type.Collection#keys()
+	 */
+	public Key[] keys() {
+		List<Key> list = keyList();
+		return list.toArray(new Key[list.size()]);
 	}
 
 	/**
@@ -182,10 +189,10 @@ public final class RequestImpl extends StructSupport implements Request {
 			if(value!=null) return value;
 			
 			Enumeration<String> names = _req.getAttributeNames();
-			String k;
+			Collection.Key k;
 			while(names.hasMoreElements()){
-				k=names.nextElement();
-				if(k.equalsIgnoreCase(key.getString())) return _req.getAttribute(k);
+				k=Caster.toKey(names.nextElement(),null);
+				if(key.equals(k)) return _req.getAttribute(k.getString());
 			}
 			return defaultValue;
 		}

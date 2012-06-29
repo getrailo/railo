@@ -24,6 +24,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.Date;
 import railo.runtime.type.dt.DateImpl;
 import railo.runtime.type.dt.Time;
+import railo.runtime.type.util.KeyConstants;
 /**
 * Provides a programmatic interface to the Railo scheduling engine. You can run a specified 
 *   page at scheduled intervals with the option to write out static HTML pages. This lets you offer users 
@@ -112,7 +113,12 @@ public final class Schedule extends TagImpl {
 	private boolean readonly;
 	private String serverPassword=null;
 	private boolean paused;
+	private boolean autoDelete;
 
+	public void setAutodelete(boolean autoDelete) {
+		this.autoDelete=autoDelete;
+	}
+	
 	/**
 	 * @param readonly the readonly to set
 	 */
@@ -423,7 +429,8 @@ public final class Schedule extends TagImpl {
                    publish,
                    hidden,
                    readonly,
-                   paused);
+                   paused,
+                   autoDelete);
         scheduler.addScheduleTask(st,true);
     } catch (Exception e) {
         throw Caster.toPageException(e);
@@ -468,28 +475,28 @@ public final class Schedule extends TagImpl {
         final String v="VARCHAR";
         String[] cols = new String[]{"task","path","file","startdate","starttime","enddate","endtime",
                 "url","port","interval","timeout","username","password","proxyserver",
-                "proxyport","proxyuser","proxypassword","resolveurl","publish","valid","paused"};
+                "proxyport","proxyuser","proxypassword","resolveurl","publish","valid","paused","autoDelete"};
         String[] types = new String[]{v,v,v,"DATE","OTHER","DATE","OTHER",
                 v,v,v,v,v,v,v,
-                v,v,v,v,"BOOLEAN",v,"BOOLEAN"};
+                v,v,v,v,"BOOLEAN",v,"BOOLEAN","BOOLEAN"};
         railo.runtime.type.Query query=new QueryImpl(cols,types,tasks.length,"query"
         );
         try {
 	        for(int i=0;i<tasks.length;i++) {
 	            int row=i+1;
 	            ScheduleTask task=tasks[i];
-	            query.setAt("task",row,task.getTask());
+	            query.setAt(KeyConstants._task,row,task.getTask());
 	            if(task.getResource()!=null) {
-	                query.setAt("path",row,task.getResource().getParent());
-	                query.setAt("file",row,task.getResource().getName());
+	                query.setAt(KeyConstants._path,row,task.getResource().getParent());
+	                query.setAt(KeyConstants._file,row,task.getResource().getName());
 	            }
 	            query.setAt("publish",row,Caster.toBoolean(task.isPublish()));
 	            query.setAt("startdate",row,task.getStartDate());
 	            query.setAt("starttime",row,task.getStartTime());
 	            query.setAt("enddate",row,task.getEndDate());
 	            query.setAt("endtime",row,task.getEndTime());
-	            query.setAt("url",row,printUrl(task.getUrl()));
-	            query.setAt("port",row,Caster.toString(HTTPUtil.getPort(task.getUrl())));
+	            query.setAt(KeyConstants._url,row,printUrl(task.getUrl()));
+	            query.setAt(KeyConstants._port,row,Caster.toString(HTTPUtil.getPort(task.getUrl())));
 	            query.setAt("interval",row,task.getStringInterval());
 	            query.setAt("timeout",row,Caster.toString(task.getTimeout()/1000));
 	            query.setAt("valid",row,Caster.toString(task.isValid()));
@@ -509,13 +516,14 @@ public final class Schedule extends TagImpl {
 	            query.setAt("resolveurl",row,Caster.toString(task.isResolveURL()));
 
 	            query.setAt("paused",row,Caster.toBoolean(task.isPaused()));
+	            query.setAt("autoDelete",row,Caster.toBoolean(((ScheduleTaskImpl)task).isAutoDelete()));
+	            
+	            
 	            
 	        }
 	        pageContext.setVariable(returnvariable,query);
         } 
-        catch (DatabaseException e) {
-           
-        }
+        catch (DatabaseException e) {}
         
         
     }
@@ -574,6 +582,7 @@ public final class Schedule extends TagImpl {
 		hidden=false;
 		serverPassword=null;
 		paused=false;
+		autoDelete=false;
 	}
 
 }

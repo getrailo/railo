@@ -5,7 +5,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.Query;
 
 /**
- * Implements the Cold Fusion Function querynew
+ * Implements the CFML Function querynew
  */
 public final class QueryRecordCount implements Function {
     public static double call(PageContext pc , Query qry) {

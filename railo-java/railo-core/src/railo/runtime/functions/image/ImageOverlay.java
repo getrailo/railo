@@ -11,7 +11,7 @@ public class ImageOverlay {
 		if(src1 instanceof String) src1=pc.getVariable(Caster.toString(src1));
 		//if(src2 instanceof String) src2=pc.getVariable(Caster.toString(src2));
 		
-		Image.toImage(src1).overlay(Image.createImage(pc, src2,true,false,true));
+		Image.toImage(src1).overlay(Image.createImage(pc, src2,true,false,true,null));
 		return null;
 	}
 }

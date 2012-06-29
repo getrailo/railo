@@ -14,6 +14,8 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
@@ -190,13 +192,6 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
     }
 
     /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        return component.keysAsString(access);
-    }
-
-    /**
      * @see railo.runtime.type.Collection#keys()
      */
     public Collection.Key[] keys() {
@@ -262,9 +257,24 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
     /**
      * @see railo.runtime.type.Iteratorable#keyIterator()
      */
-    public Iterator keyIterator() {
-        return component.iterator(access);
+    public Iterator<Collection.Key> keyIterator() {
+        return component.keyIterator(access);
     }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return component.keysAsStringIterator(access);
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return component.entryIterator(access);
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return component.valueIterator(access);
+	}
     
 	/**
 	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
@@ -434,13 +444,6 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	}
 
     /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
-    public boolean isInitalized() {
-        return component.isInitalized();
-    }
-
-    /**
      *
      * @see railo.runtime.Component#getAccess()
      */
@@ -502,4 +505,24 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	public boolean equalTo(String type) {
 		return component.equalTo(type);
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	component.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+		component.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+		component.registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+		component.registerUDF(key, props);
+    }
 }

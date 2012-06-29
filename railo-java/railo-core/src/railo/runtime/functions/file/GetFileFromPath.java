@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getfilefrompath
+ * Implements the CFML Function getfilefrompath
  */
 package railo.runtime.functions.file;
 

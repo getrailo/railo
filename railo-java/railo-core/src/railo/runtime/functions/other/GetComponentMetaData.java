@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getmetadata
+ * Implements the CFML Function getmetadata
  */
 package railo.runtime.functions.other;
 
@@ -46,8 +46,13 @@ public final class GetComponentMetaData implements Function {
 		}
 		// TODO better solution
 		catch(ApplicationException ae){
-			InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
-			return inter.getMetaData(pc);
+			try{
+				InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
+				return inter.getMetaData(pc);
+			}
+			catch(PageException pe){
+				throw ae;
+			}
 		}
 	}
 }

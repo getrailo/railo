@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function atn
+ * Implements the CFML Function atn
  */
 package railo.runtime.functions.math;
 

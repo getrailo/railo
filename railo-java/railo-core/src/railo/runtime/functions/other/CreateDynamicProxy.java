@@ -53,7 +53,7 @@ public class CreateDynamicProxy implements Function {
 			if(!interfaces[i].isInterface()) throw new FunctionException(pc, "CreateDynamicProxy", 2, "interfaces", "definition ["+strInterfaces[i]+"] is a class and not a interface");
 		}
 		
-		return JavaProxyFactory.createProxy(cfc, null,interfaces);
+		return JavaProxyFactory.createProxy(pc.getConfig(),cfc, null,interfaces);
 	}
 	    
 }

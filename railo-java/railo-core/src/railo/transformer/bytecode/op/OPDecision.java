@@ -37,7 +37,7 @@ public final class OPDecision extends ExpressionBase implements ExprBoolean {
 			new Type[]{Types.OBJECT,Types.OBJECT});
 	
     private OPDecision(Expression left, Expression right, int operation) {
-        super(left.getLine());
+        super(left.getStart(),right.getEnd());
         this.left=left;
         this.right=right;  
         this.operation=operation;

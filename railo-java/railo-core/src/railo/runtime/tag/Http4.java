@@ -134,7 +134,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	
 
 	private static final Key MIME_TYPE = KeyImpl.intern("mimetype");
-	private static final Key CHARSET = KeyImpl.intern("charset");
+	private static final Key CHARSET = KeyConstants._charset;
 	private static final Key FILE_CONTENT = KeyImpl.intern("filecontent");
 	private static final Key HEADER = KeyConstants._header;
 	private static final Key TEXT = KeyConstants._text;
@@ -616,7 +616,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	railo.commons.net.http.Header header=headers[i];
 	        	//print.ln(header);
 		        
-	        	raw.append(header+" ");
+	        	raw.append(header.toString()+" ");
 	        	if(header.getName().equalsIgnoreCase("Set-Cookie"))
 	        		setCookie.append(header.getValue());
 	        	else {
@@ -796,7 +796,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private PageException toPageException(Throwable t) {
 		PageException pe = Caster.toPageException(t);
 		if(pe instanceof NativeException) {
-			((NativeException) pe).setAdditional("url", url);
+			((NativeException) pe).setAdditional(KeyConstants._url, url);
 		}
 		return pe;
 	}
@@ -1300,7 +1300,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static String getContentType(HttpParamBean param) {
 		String mimeType=param.getMimeType();
 		if(StringUtil.isEmpty(mimeType,true)) {
-			mimeType=ResourceUtil.getMymeType(param.getFile(), ResourceUtil.MIMETYPE_CHECK_EXTENSION+ResourceUtil.MIMETYPE_CHECK_HEADER, null);
+			mimeType=ResourceUtil.getMimeType(param.getFile(), ResourceUtil.MIMETYPE_CHECK_EXTENSION+ResourceUtil.MIMETYPE_CHECK_HEADER, null);
 		}
 		return mimeType;
 	}

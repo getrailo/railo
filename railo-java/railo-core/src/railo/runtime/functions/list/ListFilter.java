@@ -1,7 +1,9 @@
 /**
- * Implements the Cold Fusion Function arrayavg
+ * Implements the CFML Function arrayavg
  */
 package railo.runtime.functions.list;
+
+import java.util.Iterator;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
@@ -10,7 +12,6 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.List;
 import railo.runtime.type.UDF;
@@ -23,7 +24,7 @@ public final class ListFilter implements Function {
 		return call(pc, list, filter,",");
 	}
 
-	public static String call(PageContext pc , String list, UDF filter, String delimeter) throws PageException {
+	public static String call(PageContext pc , String list, UDF filter, String delimiter) throws PageException {
 		// check UDF return type
 		int type = filter.getReturnType();
 		if(type!=CFTypes.TYPE_BOOLEAN && type!=CFTypes.TYPE_ANY)
@@ -34,17 +35,17 @@ public final class ListFilter implements Function {
 		if(args.length>1)
 			throw new ExpressionException("UDF filter has to many arguments ["+args.length+"], should have at maximum 1 argument");
 		
-		if(delimeter==null) delimeter=",";
-		Array array = List.listToArrayRemoveEmpty(list, delimeter);
+		if(delimiter==null) delimiter=",";
+		Array array = List.listToArrayRemoveEmpty(list, delimiter);
 		
 		
 		StringBuilder sb=new StringBuilder();
-		Key[] keys = array.keys();
+		Iterator<Object> it = array.valueIterator();
 		Object value;
-		for(int i=0;i<keys.length;i++){
-			value=array.get(keys[i]);
+		while(it.hasNext()){
+			value=it.next();
 			if(Caster.toBooleanValue(filter.call(pc, new Object[]{value}, true))){
-				if(sb.length()>0) sb.append(delimeter);
+				if(sb.length()>0) sb.append(delimiter);
 				sb.append(value);
 			}
 		}

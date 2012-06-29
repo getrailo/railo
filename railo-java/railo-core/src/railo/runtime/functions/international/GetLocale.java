@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getlocale
+ * Implements the CFML Function getlocale
  */
 package railo.runtime.functions.international;
 

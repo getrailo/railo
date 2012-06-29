@@ -23,6 +23,7 @@ import railo.runtime.thread.ChildThreadImpl;
 import railo.runtime.thread.ThreadUtil;
 import railo.runtime.thread.ThreadsImpl;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -211,20 +212,18 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		this.timeout = (long)timeout;
 	}
 
+	@Override
 	public void setDynamicAttribute(String uri, String name, Object value) {
 		if(attrs==null)attrs=new StructImpl();
-		Key key = KeyImpl.getInstance(name=StringUtil.trim(name,""));
-		
-		/*if(key.equals(NAME))	setName(name);
-		else if(key.equals(DURATION)){
-			try {
-				setDuration(Caster.toDoubleValue(name));
-			} catch (PageException pe) {
-				throw new PageRuntimeException(pe);
-			}
-		}
-		else*/ 
-			attrs.setEL(key,value);
+		Key key = KeyImpl.getInstance(StringUtil.trim(name,""));
+		attrs.setEL(key,value);
+	}
+
+	@Override
+	public void setDynamicAttribute(String uri, Collection.Key name, Object value) {
+		if(attrs==null)attrs=new StructImpl();
+		Key key = KeyImpl.getInstance(StringUtil.trim(name.getString(),""));
+		attrs.setEL(key,value);
 	}
 
 	/**

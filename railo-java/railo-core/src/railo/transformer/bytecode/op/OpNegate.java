@@ -9,6 +9,7 @@ import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
@@ -21,8 +22,8 @@ public final class OpNegate extends ExpressionBase implements ExprBoolean {
 
 	private ExprBoolean expr;
 
-	private OpNegate(Expression expr, int line)  {
-        super(line);
+	private OpNegate(Expression expr, Position start, Position end)  {
+        super(start,end);
         this.expr=CastBoolean.toExprBoolean(expr);
     }
     
@@ -34,14 +35,14 @@ public final class OpNegate extends ExpressionBase implements ExprBoolean {
      * @return String expression
      * @throws TemplateException 
      */
-    public static ExprBoolean toExprBoolean(Expression expr, int line) {
+    public static ExprBoolean toExprBoolean(Expression expr, Position start, Position end) {
         if(expr instanceof Literal) {
         	Boolean b=((Literal) expr).getBoolean(null);
         	if(b!=null) {
-        		return new LitBoolean(!b.booleanValue(),line);
+        		return new LitBoolean(!b.booleanValue(),start,end);
         	}
         }
-        return new OpNegate(expr,line);
+        return new OpNegate(expr,start,end);
     }
 	
 	

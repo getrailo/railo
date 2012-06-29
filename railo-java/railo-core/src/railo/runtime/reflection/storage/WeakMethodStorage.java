@@ -66,7 +66,7 @@ public final class WeakMethodStorage {
 	 * @param methodsMap
 	 */
 	private void storeMethod(Method method, StructImpl methodsMap) {
-		Key methodName = KeyImpl.getInstance(method.getName());
+		Key methodName = KeyImpl.init(method.getName());
 		
 		
 		Object o=methodsMap.get(methodName,null);

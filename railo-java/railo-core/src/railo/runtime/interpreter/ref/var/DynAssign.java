@@ -13,31 +13,25 @@ public final class DynAssign extends RefSupport implements Ref {
     
     private Ref value;
     private Ref key;
-    private PageContext pc;
-
+    
 
     /**
      * @param pc
      * @param key
      * @param value
      */
-    public DynAssign(PageContext pc,Ref key, Ref value) {
-        this.pc=pc;
+    public DynAssign(Ref key, Ref value) {
         this.key=key;
         this.value=value;
     }
     
     
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() throws PageException {
-        return pc.setVariable(Caster.toString(key.getValue()),value.getValue());
+    @Override
+	public Object getValue(PageContext pc) throws PageException {
+        return pc.setVariable(Caster.toString(key.getValue(pc)),value.getValue(pc));
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-     */
+    @Override
     public String getTypeName() {
         return "operation";
     }

@@ -9,7 +9,7 @@ import railo.runtime.text.xml.XMLNodeList;
 import railo.runtime.text.xml.XMLUtil;
 
 /**
- * Implements the Cold Fusion Function xmlchildpos
+ * Implements the CFML Function xmlchildpos
  */
 public final class XmlChildPos implements Function {
 	public static double call(PageContext pc , Node node, String name, double index) {

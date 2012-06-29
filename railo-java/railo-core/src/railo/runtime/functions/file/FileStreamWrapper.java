@@ -169,14 +169,6 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 		return info.keys();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return info().keysAsString();
-	}
-
 	public Object remove(Key key) throws PageException {
 		throw new PageRuntimeException("can't remove key ["+key.getString()+"] from struct, struct is readonly");
 	}
@@ -221,8 +213,23 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return info().keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return info().keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return info().entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return info().valueIterator();
 	}
 
 	/**

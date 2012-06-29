@@ -19,4 +19,14 @@ public class HeaderWrap implements Header {
 	public String getValue() {
 		return header.getValue();
 	}
+	
+	@Override
+	public String toString(){
+		return header.toString();
+	}
+	
+	@Override
+	public boolean equals(Object obj){
+		return header.equals(obj);
+	}
 }

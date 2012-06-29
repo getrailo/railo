@@ -22,7 +22,7 @@ public final class FunctionLib {
 
 	
 	// all functions of the lib
-	private HashMap functions=new HashMap();
+	private HashMap<String,FunctionLibFunction> functions=new HashMap<String,FunctionLibFunction>();
 	private String version="";
 	private String shortName="";
 	private URI uri;
@@ -42,7 +42,7 @@ public final class FunctionLib {
 	 * @return FunctionLibFunction 
 	 */
 	public FunctionLibFunction getFunction(String name)	{
-		return (FunctionLibFunction)functions.get(name.toLowerCase());
+		return functions.get(name.toLowerCase());
 	}
 
 	/**
@@ -142,7 +142,7 @@ public final class FunctionLib {
 	/**
 	 * @return Returns the functions.
 	 */
-	public Map getFunctions() {
+	public Map<String,FunctionLibFunction> getFunctions() {
 		return functions;
 	}
 
@@ -155,9 +155,9 @@ public final class FunctionLib {
     
     public String getHash() {
     	StringBuffer sb=new StringBuffer();
-    	Iterator it = functions.keySet().iterator();
+    	Iterator<String> it = functions.keySet().iterator();
     	while(it.hasNext()) {
-    		sb.append(((FunctionLibFunction)functions.get(it.next())).getHash()+"\n");
+    		sb.append((functions.get(it.next())).getHash()+"\n");
     	}
     	try {
 			return Md5.getDigestAsString(sb.toString());

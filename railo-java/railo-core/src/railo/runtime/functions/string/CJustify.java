@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function cjustify
+ * Implements the CFML Function cjustify
  */
 package railo.runtime.functions.string;
 

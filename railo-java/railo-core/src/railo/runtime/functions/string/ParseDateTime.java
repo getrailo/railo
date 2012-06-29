@@ -9,7 +9,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.date.DateCaster;
 
 /**
- * Implements the Cold Fusion Function parsedatetime
+ * Implements the CFML Function parsedatetime
  */
 public final class ParseDateTime implements Function {
 

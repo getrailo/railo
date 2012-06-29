@@ -83,11 +83,13 @@ private function isColumnEmpty(string columnName){
     
     <cffunction name="output" returntype="void">
     	<cfargument name="custom" type="struct" required="yes">
-		<cfargument name="debugging" required="true" type="struct"><cfsilent>
-<cfset time=getTickCount()>
+		<cfargument name="debugging" required="true" type="struct">
+		<cfargument name="context" type="string" default="web"><cfsilent>
+<cfset var time=getTickCount()>
+<cfset var _cgi=structKeyExists(debugging,'cgi')?debugging.cgi:cgi>
 
-<cfset pages=debugging.pages>
-<cfset queries=debugging.queries>
+<cfset var pages=debugging.pages>
+<cfset var queries=debugging.queries>
 <cfif not isDefined('debugging.timers')>
 	<cfset debugging.timers=queryNew('label,time,template')>
 </cfif>
@@ -125,7 +127,7 @@ millisecond:"ms"
 <cfsavecontent variable="sImgMinus"><img src="#minus#"></cfsavecontent>
 </cfoutput>
 
-</cfsilent></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
+</cfsilent><cfif context EQ "web"></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp></cfif>
 <style type="text/css">
 <cfoutput>
 
@@ -234,11 +236,11 @@ function railoDebugModernToggle(id) {
         <table class="tbl" cellpadding="2" cellspacing="0">
         <tr>
             <td class="cfdebug" nowrap> Template</td>
-            <td class="cfdebug">#cgi.SCRIPT_NAME# (#getBaseTemplatePath()#)</td>
+            <td class="cfdebug">#_cgi.SCRIPT_NAME# (#expandPath(_cgi.SCRIPT_NAME)#)</td>
         </tr>
         <tr>
             <td class="cfdebug" nowrap> User Agent </td>
-            <td class="cfdebug">#cgi.http_user_agent#</td>
+            <td class="cfdebug">#_cgi.http_user_agent#</td>
         </tr>
         </table>
     </td>
@@ -272,11 +274,11 @@ function railoDebugModernToggle(id) {
             </tr>
             <tr>
                 <td class="cfdebug" nowrap> Remote IP </td>
-                <td class="cfdebug">#cgi.remote_addr#</td>
+                <td class="cfdebug">#_cgi.remote_addr#</td>
             </tr>
             <tr>
                 <td class="cfdebug" nowrap> Host Name </td>
-                <td class="cfdebug">#cgi.server_name#</td>
+                <td class="cfdebug">#_cgi.server_name#</td>
             </tr>
             <cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")><tr>
                 <td class="cfdebug" nowrap> Architecture</td>
@@ -310,15 +312,13 @@ function railoDebugModernToggle(id) {
 		<a href="javascript:railoDebugModernToggle('exe')"><img vspace="4" src="#display?minus:plus#" id="exe_img" onclick=""></a>
 	</td>
     <td>
-
-
-        <table class="tbl"  cellpadding="2" cellspacing="0">
+	    <table class="tbl"  cellpadding="2" cellspacing="0">
             <tr><td align="right" nowrap>#formatUnit(custom.unit, loa)#</td><td width="800">&nbsp;Startup/Compiling</td></tr>
             <tr><td align="right" nowrap>#formatUnit(custom.unit, tot-q-loa)#</td><td>&nbsp;Application</td></tr>
             <tr><td align="right" nowrap>#formatUnit(custom.unit, q)#</td><td>&nbsp;Query</td></tr>
             <tr><td align="right" nowrap><b>#formatUnit(custom.unit, tot)#</b></td><td>&nbsp;<b>Total</b></td></tr>
         </table>
-</td>
+	</td>
 </tr>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -416,7 +416,6 @@ function railoDebugModernToggle(id) {
             <tr><td align="right" nowrap>#implicitAccess.recordcount#</td><td width="800">&nbsp;implicit variable access#implicitAccess.recordcount GT 1?'es':''#</td></tr>
         </table>
     </td>
-    </td>
 </tr>
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -442,21 +441,17 @@ function railoDebugModernToggle(id) {
     		</cfloop>                
      		</table><br>
         </div>
-    	</td>
+    </td>
 </tr>
 </table>
-        
-        
-
 </cfif> 
 
 
 <!--- Timers --->
 <cfif structKeyExists(custom,"timer") and custom.timer and  timers.recordcount>
 	<cfset display=structKeyExists(cookie,'railo_debug_modern_time') and cookie.railo_debug_modern_time>
-	<span class="h2">CFTimer Times</span>
-    
-    <table class="tbl" cellpadding="0" cellspacing="0">
+<span class="h2">CFTimer Times</span>    
+<table class="tbl" cellpadding="0" cellspacing="0">
 <tr>
 	<td valign="top">
 		<a href="javascript:railoDebugModernToggle('time')"><img vspace="4" src="#display?minus:plus#" id="time_img"></a>
@@ -599,7 +594,9 @@ function railoDebugModernToggle(id) {
 </table>
 
 </cfif>
-
+</td>
+</tr>
+</table>
 </cfoutput>
 
 

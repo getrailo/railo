@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structget
+ * Implements the CFML Function structget
  */
 package railo.runtime.functions.struct;
 

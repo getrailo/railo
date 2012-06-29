@@ -15,6 +15,10 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -48,20 +52,6 @@ public  class MapAsStruct extends StructSupport implements Struct {
        return map.size();
     }
 
-
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public synchronized String[] keysAsString() {
-        int len=size();
-        String[] k=new String[len];
-        Iterator it = map.keySet().iterator();
-        int count=0;
-        while(it.hasNext()) {
-            k[count++]=it.next().toString();
-        }
-        return k;
-    }
     /**
      * @see railo.runtime.type.Collection#keys()
      */
@@ -167,13 +157,27 @@ public  class MapAsStruct extends StructSupport implements Struct {
         return map.put(key.getString(),value);
     }
     
-    
-    /**
-     * @see railo.runtime.type.Collection#keyIterator()
-     */
-    public synchronized Iterator keyIterator() {
-        return map.keySet().iterator();//new ArrayIterator(map.keySet().toArray());
+    @Override
+	public synchronized Iterator<Collection.Key> keyIterator() {
+        return new KeyIterator(keys());
     }
+
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+		return new StringIterator(keys());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
+	}
+	
+	
     
     /**
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)

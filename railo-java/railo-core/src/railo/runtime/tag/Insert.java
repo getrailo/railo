@@ -24,6 +24,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Form;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
 * Inserts records in data sources.
@@ -222,7 +223,7 @@ public final class Insert extends TagImpl {
         String[] fields=null; 
         Form form = pageContext.formScope();
         if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
-        else fields=pageContext.formScope().keysAsString();
+        else fields=CollectionUtil.keysAsString(pageContext.formScope());
         
         StringBuffer names=new StringBuffer();
         StringBuffer values=new StringBuffer();

@@ -1,6 +1,7 @@
 package railo.runtime.security;
 
 import java.io.IOException;
+import java.util.Set;
 
 import railo.commons.digest.MD5;
 import railo.commons.io.IOUtil;
@@ -115,10 +116,11 @@ public final class CredentialImpl implements Credential {
         throw new ApplicationException("invalid roles definition for tag loginuser");
     }
 
-    /**
-     * @see railo.runtime.converter.ScriptConvertable#serialize()
-     */
     public String serialize() {
+    	return serialize(null);
+    }
+
+    public String serialize(Set<Object> done) {
         return "createObject('java','railo.runtime.security.Credential').init('"+username+"','"+password+"','"+List.arrayToList(roles,",")+"')";
     } 
     

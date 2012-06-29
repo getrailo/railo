@@ -1,14 +1,20 @@
 package railo.runtime.listener;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
+import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.rest.RestSettings;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
 
@@ -16,12 +22,8 @@ import railo.runtime.type.scope.Scope;
  * 
  */
 public class ClassicApplicationContext extends ApplicationContextSupport {
-   
 
 	private static final long serialVersionUID = 940663152793150953L;
-
-	
-	
 
 	private String name;
     private boolean setClientCookies;
@@ -52,30 +54,43 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private short sessionType;
     private boolean sessionCluster;
     private boolean clientCluster;
+	private Resource source;
+	private boolean triggerComponentDataMember;
+	private Map<Integer,String> defaultCaches=new HashMap<Integer, String>();
+	private Map<Integer,Boolean> sameFieldAsArrays=new HashMap<Integer, Boolean>();
+
+	private RestSettings restSettings;
+
+	private Resource[] restCFCLocations;
+
+	private JavaSettingsImpl javaSettings;
 
     
     /**
      * constructor of the class
      * @param config
      */
-    public ClassicApplicationContext(Config config,String name,boolean isDefault) {
-    	ConfigImpl ci = ((ConfigImpl)config);
+    public ClassicApplicationContext(Config config,String name,boolean isDefault, Resource source) {
     	this.name=name;
     	setClientCookies=config.isClientCookies();
         setDomainCookies=config.isDomainCookies();
         setSessionManagement=config.isSessionManagement();
         setClientManagement=config.isClientManagement();
         sessionTimeout=config.getSessionTimeout();
-        clientTimeout=ci.getClientTimeout();
+        clientTimeout=config.getClientTimeout();
         applicationTimeout=config.getApplicationTimeout();
         loginStorage=Scope.SCOPE_COOKIE;
         scriptProtect=config.getScriptProtect();
         this.isDefault=isDefault;
-        this.defaultDataSource=ci.getDefaultDataSource();
+        this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
         this.sessionType=config.getSessionType();
-        this.sessionCluster=ci.getSessionCluster();
-        this.clientCluster=ci.getClientCluster();
+        this.sessionCluster=config.getSessionCluster();
+        this.clientCluster=config.getClientCluster();
+        this.source=source;
+        this.triggerComponentDataMember=config.getTriggerComponentDataMember();
+        this.restSettings=config.getRestSetting();
+        this.javaSettings=new JavaSettingsImpl();
     }
     
     /**
@@ -114,12 +129,17 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.idletimeout=idletimeout;
 		dbl.localMode=localMode;
 		dbl.sessionType=sessionType;
+		dbl.triggerComponentDataMember=triggerComponentDataMember;
+		dbl.restSettings=restSettings;
+		dbl.defaultCaches=Duplicator.duplicateMap(defaultCaches, new HashMap<Integer, String>(),false );
+		dbl.sameFieldAsArrays=Duplicator.duplicateMap(sameFieldAsArrays, new HashMap<Integer, Boolean>(),false );
 		
 		dbl.ormEnabled=ormEnabled;
 		dbl.config=config;
 		dbl.ormdatasource=ormdatasource;
 		dbl.sessionCluster=sessionCluster;
 		dbl.clientCluster=clientCluster;
+		dbl.source=source;
 		
 		return dbl;
 	}
@@ -458,5 +478,67 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public void reinitORM(PageContext pc) throws PageException {
 		// do nothing
+	}
+
+	@Override
+	public Resource getSource() {
+		return source;
+	}
+
+	@Override
+	public boolean getTriggerComponentDataMember() {
+		return triggerComponentDataMember;
+	}
+
+	@Override
+	public void setTriggerComponentDataMember(boolean triggerComponentDataMember) {
+		this.triggerComponentDataMember=triggerComponentDataMember;
+	}
+
+	@Override
+	public void setDefaultCacheName(int type,String name) {
+		if(StringUtil.isEmpty(name,true)) return;
+		defaultCaches.put(type, name.trim());
+	}
+	
+	@Override
+	public String getDefaultCacheName(int type) {
+		return defaultCaches.get(type);
+	}
+
+	public void setSameFieldAsArray(int scope, boolean sameFieldAsArray) {
+		sameFieldAsArrays.put(scope, sameFieldAsArray);
+	}
+	
+	
+	@Override
+	public boolean getSameFieldAsArray(int scope) {
+		Boolean b= sameFieldAsArrays.get(scope);
+		if(b==null) return false;
+		return b.booleanValue();
+	}
+
+	@Override
+	public RestSettings getRestSettings() {
+		return restSettings;
+	}
+
+	public void setRestSettings(RestSettings restSettings) {
+		this.restSettings=restSettings;
+	}
+	
+
+	public void setRestCFCLocations(Resource[] restCFCLocations) {
+		this.restCFCLocations = restCFCLocations;
+	}
+
+	@Override
+	public Resource[] getRestCFCLocations() {
+		return restCFCLocations;
+	}
+
+	@Override
+	public JavaSettings getJavaSettings() {
+		return javaSettings;
 	}
 }

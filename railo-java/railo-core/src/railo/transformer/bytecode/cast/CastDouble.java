@@ -25,7 +25,7 @@ public final class CastDouble extends ExpressionBase implements ExprDouble {
     private Expression expr;
     
     private CastDouble(Expression expr) {
-        super(expr.getLine());
+        super(expr.getStart(),expr.getEnd());
     	this.expr=expr;
     }
     
@@ -39,7 +39,7 @@ public final class CastDouble extends ExpressionBase implements ExprDouble {
         if(expr instanceof ExprDouble) return (ExprDouble) expr;
         if(expr instanceof Literal) {
             Double dbl = ((Literal)expr).getDouble(null);
-            if(dbl!=null) return new LitDouble(dbl.doubleValue(),expr.getLine());
+            if(dbl!=null) return LitDouble.toExprDouble(dbl.doubleValue(),expr.getStart(),expr.getEnd());
         }
         return new CastDouble(expr);
     }

@@ -3,7 +3,7 @@ Defaults --->
 <cfset error.message="">
 <cfset error.detail="">
 <cfparam name="form.mainAction" default="none">
-
+<cfset fullMode=structKeyExists(session,"screenMode") && session.screenMode EQ "full">
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
@@ -76,33 +76,33 @@ Error Output --->
 <cffunction name="printMemory" output="yes">
 	<cfargument name="usage" type="query" required="yes">
 	
-    <cfset height=6>
-    <cfset width=100>
-    	<cfset var used=evaluate(ValueList(usage.used,'+'))>
-    	<cfset var max=evaluate(ValueList(usage.max,'+'))>
-    	<cfset var init=evaluate(ValueList(usage.init,'+'))>
+    <cfset var height=6>
+    <cfset var width=100>
+    	<cfset var used=evaluate(ValueList(arguments.usage.used,'+'))>
+    	<cfset var max=evaluate(ValueList(arguments.usage.max,'+'))>
+    	<cfset var init=evaluate(ValueList(arguments.usage.init,'+'))>
         
-		<cfset var qry=QueryNew(usage.columnlist)>
+		<cfset var qry=QueryNew(arguments.usage.columnlist)>
 		<cfset QueryAddRow(qry)>
-        <cfset QuerySetCell(qry,"type",usage.type)>
-        <cfset QuerySetCell(qry,"name",pool[usage.type])>
+        <cfset QuerySetCell(qry,"type",arguments.usage.type)>
+        <cfset QuerySetCell(qry,"name",variables.pool[arguments.usage.type])>
         <cfset QuerySetCell(qry,"init",init,qry.recordcount)>
         <cfset QuerySetCell(qry,"max",max,qry.recordcount)>
         <cfset QuerySetCell(qry,"used",used,qry.recordcount)>
         
-        <cfset usage=qry>
-    	<b>#pool[usage.type]#</b>
-        <cfif StructKeyExists(pool,usage.type& "_desc")><br /><span class="comment">#pool[usage.type& "_desc"]#</span></cfif>
+        <cfset arguments.usage=qry>
+    	<b>#variables.pool[arguments.usage.type]#</b>
+        <cfif StructKeyExists(variables.pool,arguments.usage.type& "_desc")><br /><span class="comment">#variables.pool[arguments.usage.type& "_desc"]#</span></cfif>
         
         
         
         <table cellpadding="0" cellspacing="0">
-        <cfloop query="usage">
-        	<cfset _used=int(width/usage.max*usage.used)>
-        	<cfset _free=width-_used> 
+        <cfloop query="#arguments.usage#">
+        	<cfset local._used=int(width/arguments.usage.max*arguments.usage.used)>
+        	<cfset local._free=width-_used> 
             
-			<cfset pused=int(100/usage.max*usage.used)>
-        	<cfset pfree=100-pused> 
+			<cfset local.pused=int(100/arguments.usage.max*arguments.usage.used)>
+        	<cfset local.pfree=100-pused> 
             
             
             
@@ -114,8 +114,8 @@ Error Output --->
                 	<td colspan="2"><cfmodule template="tp.cfm" height="1" width="#width#" /></td>
                 </tr>
                 <tr>
-                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#" title="#int(usage.used/1024)#kb (#pused#%)"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
-                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#" title="#int((usage.max-usage.used)/1024)#kb (#pfree#%)"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
+                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#" title="#int(arguments.usage.used/1024)#kb (#pused#%)"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
+                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#" title="#int((arguments.usage.max-arguments.usage.used)/1024)#kb (#pfree#%)"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
                 </tr>
                 </table>
                 </td>
@@ -134,28 +134,7 @@ Error Output --->
 	max:[server.java.totalMemory],
 	init:[0]
 )>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <cfoutput>
-
 
 
 
@@ -168,10 +147,10 @@ Error Output --->
 
 
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%" border="0">
 <tr>
-<td valign="top">
-<table class="tbl" width="300">
+<td valign="top" width="60%">
+<table class="tbl" width="100%">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Info#</h2></td>
 </tr>
@@ -308,6 +287,18 @@ Error Output --->
 		#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 	</td> 
 </tr>
+<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+<tr>
+	<td class="tblHead" width="150">Architecture</td>
+	<td class="tblContent">
+		<cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif>
+	</td> 
+</tr>
+</cfif>
+
+
+
+<!---
 <tr>
 	<td class="tblHead" width="150">Classpath</td>
 	<td class="tblContent">
@@ -320,17 +311,25 @@ Error Output --->
    </div>
 	</td> 
 </tr>
+--->
 </table>
 
 
 </td>
-<td valign="top">
+<td valign="top" width="40%">
+
+<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
+<script>
+function doNothing(){return true;}
+</script>
+<cfdiv onBindError="doNothing" bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
+
 
 <!--- Memory Usage --->
 <cftry>
 <cfsavecontent variable="memoryInfo">
 
-<table class="tbl">
+<table class="tbl" width="100%">
 
 <tr>
 	<td><h2>Memory Usage</h2></td>
@@ -354,9 +353,6 @@ Error Output --->
 
 
 <!--- Support --->
-
-
-
 <table class="tbl" width="100%">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Support#</h2></td>
@@ -395,18 +391,30 @@ Error Output --->
     
     </td>
 </tr>
-
 </table>
 
 
 
 </td>
 </tr>
-
-
-
 </table>
+<table class="tbl" width="100%">
 
+<tr>
+	<td><h2>Classpath</h2></td>
+</tr>
+<tr>
+	<td class="tblContent">
+    	
+	<div class="tblContent" style="font-family:Courier New;font-size : #fullMode?9:8#pt;overflow:auto;width:100%;height:100px;border-style:solid;border-width:1px;padding:0px">
+    <cfset arr=getClasspath()>
+    <cfloop from="1" to="#arrayLen(arr)#" index="line">
+    <span style="background-color:###line mod 2?'d2e0ee':'ffffff'#;display:block;padding:1px 5px 1px 5px ;">#arr[line]#</span>
+    </cfloop>
+   </div>
+	</td> 
+</tr>
+</table>
 
 
 <br><br>

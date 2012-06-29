@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getnumericdate
+ * Implements the CFML Function getnumericdate
  */
 package railo.runtime.functions.other;
 

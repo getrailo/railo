@@ -40,8 +40,6 @@ public interface LockManager {
     public String[] getOpenLockNames();
     
 
-	public void unlock(int pageContextId);
-
-	// FUTURE add to interface public abstract void clean();
+	public abstract void clean();
 
 }

@@ -1,12 +1,13 @@
 package railo.runtime.type.scope;
 
+import railo.runtime.type.Collection;
 import railo.runtime.type.scope.storage.StorageScope;
 
 
 /**
  * Interface of the scope client
  */
-public interface Client extends Scope,SharedScope,StorageScope { 
+public interface Client extends Scope,UserScope,StorageScope { 
 
     
 	/**
@@ -17,6 +18,6 @@ public interface Client extends Scope,SharedScope,StorageScope {
 	/**
 	 * @return all keys except the readpnly ones (cfid,cftoken,hitcount,lastvisit ...)
 	 */
-	public abstract String[] pureKeys();
+	public abstract Collection.Key[] pureKeys();
 
 }

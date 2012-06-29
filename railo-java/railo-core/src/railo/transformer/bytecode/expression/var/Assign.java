@@ -91,7 +91,7 @@ public class Assign extends ExpressionBase {
 	 * @param value
 	 */
 	public Assign(Variable variable, Expression value) {
-		super(variable.getLine());
+		super(variable.getStart(),variable.getEnd());
 		this.variable=variable;
 		this.value=value;
 		//this.returnOldValue=returnOldValue;
@@ -138,7 +138,7 @@ public class Assign extends ExpressionBase {
 			
 			// UDF
 			else if(member instanceof UDF) {
-				if(last)throw new BytecodeException("can't asign value to a user defined function",getLine());
+				if(last)throw new BytecodeException("can't asign value to a user defined function",getStart());
 				UDF udf=(UDF) member;
 				boolean isKey=Variable.registerKey(bc, udf.getName());
 				//udf.getName().writeOut(bc, MODE_REF);
@@ -159,12 +159,12 @@ public class Assign extends ExpressionBase {
 			//return Variable._writeOutFirstDataMember(adapter,(DataMember)member,variable.scope, last);
 		}
     	else if(member instanceof UDF) {
-    		if(last)throw new BytecodeException("can't assign value to a user defined function",getLine());
+    		if(last)throw new BytecodeException("can't assign value to a user defined function",getStart());
     		return Variable._writeOutFirstUDF(bc,(UDF)member,variable.scope,doOnlyScope);
     	}
     	else {
-    		if(last)throw new BytecodeException("can't assign value to a built in function",getLine());
-    		return Variable._writeOutFirstBIF(bc,(BIF)member,mode,last,getLine());
+    		if(last)throw new BytecodeException("can't assign value to a built in function",getStart());
+    		return Variable._writeOutFirstBIF(bc,(BIF)member,mode,last,getStart());
     	}
 	}
 
@@ -219,7 +219,7 @@ public class Assign extends ExpressionBase {
 		else {
 			adapter.loadArg(0);
 			TypeScope.invokeScope(adapter, Scope.SCOPE_UNDEFINED);
-			Variable.registerKey(bc,LitString.toExprString(ScopeFactory.toStringScope(variable.scope,"undefined"),-1));
+			Variable.registerKey(bc,LitString.toExprString(ScopeFactory.toStringScope(variable.scope,"undefined")));
 			value.writeOut(bc, MODE_REF);
 			adapter.invokeInterface(TypeScope.SCOPES[Scope.SCOPE_UNDEFINED],METHOD_SCOPE_SET_KEY);
 		}

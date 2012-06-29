@@ -21,12 +21,14 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 	private static final Collection.Key APPLICATION_NAME = KeyImpl.intern("applicationname");
 	private long lastAccess;
 	private long timeSpan;
+	private long created;
 	
 	/**
 	 * default constructor of the session scope
 	 */
 	public ApplicationImpl() {
 		super(true,"application",SCOPE_APPLICATION);
+		created = System.currentTimeMillis();
 	}
 
 	/**
@@ -85,5 +87,10 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 	 */
 	public Map getApplicationSettings(){
 		return GetApplicationSettings.call(ThreadLocalPageContext.get());
+	}
+
+	@Override
+	public long getCreated() {
+		return created;
 	}
 }

@@ -1,6 +1,7 @@
 package railo.runtime.orm.hibernate;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
@@ -29,6 +31,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.QueryUtil;
 
@@ -334,6 +337,7 @@ public class HibernateCaster {
 		if("datetime".equals(type)) 				return "timestamp";
 		if("numeric".equals(type)) 					return "double";
 		if("number".equals(type)) 					return "double";
+		if("numeric".equals(type)) 					return "double";
 		if("char".equals(type)) 					return "character";
 		if("nchar".equals(type)) 					return "character";
 		if("decimal".equals(type)) 					return "double";
@@ -375,8 +379,8 @@ public class HibernateCaster {
 	 * @return
 	 * @throws PageException
 	 */
-	public static Object toSQL(HibernateORMEngine engine,ColumnInfo ci, Object value) throws PageException {
-		return toSQL(engine, ci.getType(), value);
+	public static Object toSQL(HibernateORMEngine engine,ColumnInfo ci, Object value, RefBoolean isArray) throws PageException {
+		return toSQL(engine, ci.getType(), value,isArray);
 	}
 	
 	/**
@@ -387,10 +391,10 @@ public class HibernateCaster {
 	 * @return
 	 * @throws PageException
 	 */
-	public static Object toSQL(HibernateORMEngine engine,Type type, Object value) throws PageException {
+	public static Object toSQL(HibernateORMEngine engine,Type type, Object value, RefBoolean isArray) throws PageException {
 		int t = toSQLType(type.getName(), Types.OTHER);
 		if(t==Types.OTHER) return value;
-		return toSQL(engine, t, value);
+		return toSQL(engine, t, value,isArray);
 	}
 
 	/**
@@ -401,9 +405,32 @@ public class HibernateCaster {
 	 * @return
 	 * @throws PageException
 	 */
-	private static Object toSQL(HibernateORMEngine engine,int sqlType, Object value) throws PageException {
+	private static Object toSQL(HibernateORMEngine engine,int sqlType, Object value, RefBoolean isArray) throws PageException {
+		if(isArray!=null)isArray.setValue(false);
 		SQLItemImpl item = new SQLItemImpl(value,sqlType);
-		return SQLCaster.toSqlType(item);
+		try{
+			return SQLCaster.toSqlType(item);
+		}
+		catch(PageException pe){
+			// pherhaps it is a array of this type 
+			if(isArray!=null && Decision.isArray(value)) {
+				Object[] src = Caster.toNativeArray(value);
+				ArrayList<Object> trg = new ArrayList<Object>();
+				for(int i=0;i<src.length;i++){
+					try{
+						trg.add(SQLCaster.toSqlType(new SQLItemImpl(src[i],sqlType)));
+					}
+					catch(PageException inner){
+						throw pe;
+					}
+				}
+				isArray.setValue(true);
+				return ArrayUtil.toArray(trg);
+				
+			}
+			throw pe;
+		}
+		
 	}
 
 

@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 
 /**
@@ -12,21 +13,21 @@ public interface Ref {
      * @return value to reference
      * @throws PageException
      */
-    public Object touchValue() throws PageException;
+    public Object touchValue(PageContext pc) throws PageException;
 
     /**
      * return the value for that the reference is for
      * @return value to reference
      * @throws PageException
      */
-    public Object getValue() throws PageException;
+    public Object getValue(PageContext pc) throws PageException;
 
     /**
      * return the value for that the reference is for
      * @return value to reference
      * @throws PageException
      */
-    public Object getCollection() throws PageException;
+    public Object getCollection(PageContext pc) throws PageException;
     
 	/**
 	 * return the name name of a reference
@@ -35,5 +36,5 @@ public interface Ref {
 	public String getTypeName();
 	
 
-	public boolean eeq(Ref other) throws PageException;
+	public boolean eeq(PageContext pc,Ref other) throws PageException;
 }

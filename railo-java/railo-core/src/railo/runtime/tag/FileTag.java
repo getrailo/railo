@@ -38,6 +38,7 @@ import railo.runtime.type.scope.FormImpl;
 import railo.runtime.type.scope.FormImpl.Item;
 import railo.runtime.type.scope.FormUpload;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
@@ -112,6 +113,8 @@ public final class FileTag extends BodyTagImpl {
 	** accept = "image/jpg, application/msword"
 	** The browser uses file extension to determine file type. */
 	private String accept;
+	
+	private boolean strict=true;
     
     private String result=null;
 	
@@ -140,6 +143,7 @@ public final class FileTag extends BodyTagImpl {
 		source=null;
 		nameconflict=NAMECONFLICT_UNDEFINED;
 		accept=null;
+		strict=true;
 		securityManager=null;
         result=null;
         serverPassword=null;
@@ -317,6 +321,10 @@ public final class FileTag extends BodyTagImpl {
 	public void setAccept(String accept)	{
 		this.accept=accept;
 	}
+
+	public void setStrict(boolean strict)	{
+		this.strict=strict;
+	}
     
     /**
      * @param result The result to set.
@@ -335,9 +343,9 @@ public final class FileTag extends BodyTagImpl {
 		securityManager = pageContext.getConfig().getSecurityManager();
 		
 		switch(action){
-		case ACTION_MOVE: actionMove();
+		case ACTION_MOVE: actionMove(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
 		break;
-		case ACTION_COPY: actionCopy();
+		case ACTION_COPY: actionCopy(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
 		break;
 		case ACTION_DELETE: actionDelete();
 		break;
@@ -399,7 +407,9 @@ public final class FileTag extends BodyTagImpl {
 	 * move source file to destination path or file
 	 * @throws PageException
 	 */
-	private void actionMove() throws PageException {
+	public static void actionMove(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -459,7 +469,9 @@ public final class FileTag extends BodyTagImpl {
 	 * copy source file to destination file or path
 	 * @throws PageException
 	 */
-	private void actionCopy() throws PageException {
+	public static void actionCopy(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -493,8 +505,6 @@ public final class FileTag extends BodyTagImpl {
 			// ERROR
 			else throw new ApplicationException("destiniation file ["+destination.toString()+"] already exist");
 		}
-        
-		
 		
         try {
             IOUtil.copy(source,destination);			
@@ -724,15 +734,15 @@ public final class FileTag extends BodyTagImpl {
 		sct.setEL(KeyImpl.TYPE,file.isDirectory()?"Dir":"File");
 		sct.setEL("dateLastModified",new DateTimeImpl(pageContext,file.lastModified(),false));
 		sct.setEL("attributes",getFileAttribute(file));
-		if(SystemUtil.isUnix())sct.setEL("mode",new ModeObjectWrap(file));
+		if(SystemUtil.isUnix())sct.setEL(KeyConstants._mode,new ModeObjectWrap(file));
         
 		try { 		
 			BufferedImage bi = ImageUtil.toBufferedImage(file, null);
             if(bi!=null) {
 	            Struct img =new StructImpl();
-	            img.setEL("width",new Double(bi.getWidth()));
-	            img.setEL("height",new Double(bi.getHeight()));
-	            sct.setEL("img",img);
+	            img.setEL(KeyConstants._width,new Double(bi.getWidth()));
+	            img.setEL(KeyConstants._height,new Double(bi.getHeight()));
+	            sct.setEL(KeyConstants._img,img);
             }
         } 
 		catch (Throwable t) {}
@@ -749,9 +759,9 @@ public final class FileTag extends BodyTagImpl {
 
 	public void actionUpload() throws PageException {
 		FormImpl.Item item=getFormItem(pageContext,filefield);
-		Struct cffile = _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+		Struct cffile = _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 		if(StringUtil.isEmpty(result)) {
-            pageContext.undefinedScope().set("file",cffile);
+            pageContext.undefinedScope().set(KeyConstants._file,cffile);
 		    pageContext.undefinedScope().set("cffile",cffile);
         }
         else {
@@ -761,19 +771,19 @@ public final class FileTag extends BodyTagImpl {
 	
 	
 	public static Struct actionUpload(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,String filefield,
-			String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
+			String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		FormImpl.Item item=getFormItem(pageContext,filefield);
-		return _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+		return _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 	}
 	
 	public void actionUploadAll() throws PageException {
-		Array arr=actionUploadAll(pageContext,securityManager,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+		Array arr=actionUploadAll(pageContext,securityManager,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 		if(StringUtil.isEmpty(result)) {
 			Struct sct;
 			if(arr!=null && arr.size()>0) sct=(Struct) arr.getE(1);
 			else sct=new StructImpl();
 			
-            pageContext.undefinedScope().set("file",sct);
+            pageContext.undefinedScope().set(KeyConstants._file,sct);
 		    pageContext.undefinedScope().set("cffile",sct);
         }
         else {
@@ -783,19 +793,19 @@ public final class FileTag extends BodyTagImpl {
 	
 
 	public static Array actionUploadAll(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,
-			String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
+			String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		Item[] items=getFormItems(pageContext);
 		Struct sct=null;
 		Array arr=new ArrayImpl();
 		for(int i=0;i<items.length;i++){
-			sct = _actionUpload(pageContext,securityManager,items[i],strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+			sct = _actionUpload(pageContext,securityManager,items[i],strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 			arr.appendEL(sct);
 		}
 		return arr;
 	}
 	
 	private static synchronized Struct _actionUpload(PageContext pageContext, railo.runtime.security.SecurityManager securityManager, 
-			Item formItem,String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
+			Item formItem,String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_ERROR;
 
 		boolean fileWasRenamed=false;
@@ -806,8 +816,6 @@ public final class FileTag extends BodyTagImpl {
 		
 		String contentType=formItem.getContentType();
 		
-		// check file type
-		checkContentType(pageContext,contentType,accept);
 		
 		// set cffile struct
 		Struct cffile=new StructImpl();
@@ -827,6 +835,10 @@ public final class FileTag extends BodyTagImpl {
 			strClientFile=strClientFile.replace('\\','/');
 		Resource clientFile=pageContext.getConfig().getResource(strClientFile);
 		String clientFileName=clientFile.getName();
+		
+		// check file type
+		checkContentType(contentType,accept,getFileExtension(clientFile),strict);
+		
 			
 			//String dir=clientFile.getParent();
 			//dir=correctDirectory(dir);
@@ -933,20 +945,37 @@ public final class FileTag extends BodyTagImpl {
 	 * @param contentType 
 	 * @throws PageException
 	 */
-	private static void checkContentType(PageContext pageContext,String contentType,String accept) throws PageException {
-		String type=ListFirst.call(pageContext,contentType,"/").trim().toLowerCase();
-		String subType=ListLast.call(pageContext,contentType,"/").trim().toLowerCase();
+	private static void checkContentType(String contentType,String ext,String accept,boolean strict) throws PageException {
+		String type=List.first(contentType,"/",true).trim().toLowerCase();
+		String subType=List.last(contentType,"/",true).trim().toLowerCase();
+		if(!StringUtil.isEmpty(ext,true)){
+			ext=ext.trim().toLowerCase();
+			if(ext.startsWith("*."))ext=ext.substring(2);
+			if(ext.startsWith("."))ext=ext.substring(1);
+		}
+		else ext=null;
 		
-		if(accept==null || accept.trim().length()==0) return;
+		if(StringUtil.isEmpty(accept,true)) return;
 		
 		Array whishedTypes=List.listToArrayRemoveEmpty(accept,',');
 		int len=whishedTypes.size();
 		for(int i=1;i<=len;i++) {
-			String whishedType=Caster.toString(whishedTypes.getE(i)).trim();
-			String wType=ListFirst.call(pageContext,whishedType,"/").trim().toLowerCase();
-			String wSubType=ListLast.call(pageContext,whishedType,"/").trim().toLowerCase();
-			if((wType.equals("*") || wType.equals(type)) && (wSubType.equals("*") || wSubType.equals(subType)))return;
+			String whishedType=Caster.toString(whishedTypes.getE(i)).trim().toLowerCase();
+			if(whishedType.equals("*")) return;
 			
+			// check mimetype
+			if(List.len(whishedType, "/", true)==2){
+				String wType=List.first(whishedType, "/",true).trim();
+				String wSubType=List.last(whishedType,"/",true).trim();
+				if((wType.equals("*") || wType.equals(type)) && (wSubType.equals("*") || wSubType.equals(subType)))return;
+			}
+			
+			// check extension
+			if(ext!=null && !strict){
+				if(whishedType.startsWith("*."))whishedType=whishedType.substring(2);
+				if(whishedType.startsWith("."))whishedType=whishedType.substring(1);
+				if(ext.equals(whishedType)) return;
+			}
 		}
 		throw new ApplicationException("The MIME type of the uploaded file ["+contentType+"] was not accepted by the server.","only this ["+accept+"] mime type are accepted");
 	}

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function min
+ * Implements the CFML Function min
  */
 package railo.runtime.functions.math;
 

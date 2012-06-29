@@ -33,7 +33,7 @@ public class FileUpload {
 	    int nc = FileTag.toNameconflict(nameConflict);
 	    int m=FileTag.toMode(mode);
 	    
-	    return FileTag.actionUpload(pc, securityManager, fileField,  destination, nc, accept, m, attributes, acl, null);
+	    return FileTag.actionUpload(pc, securityManager, fileField,  destination, nc, accept,true, m, attributes, acl, null);
 	}
 }
 	

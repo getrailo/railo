@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraysum
+ * Implements the CFML Function arraysum
  */
 package railo.runtime.functions.arrays;
 

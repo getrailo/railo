@@ -48,19 +48,9 @@ public final class LockManagerImpl implements LockManager {
 	}
 	
 	public void unlock(LockData data) {
-		Lock l = ((LockDataPro)data).getLock();
+		Lock l = data.getLock();
 		locks.unlock(l);
 	}
-
-
-	/**
-	 *
-	 * @see railo.runtime.lock.LockManager#unlock(int)
-	 */
-	public void unlock(int pageContextId) {
-		throw new RuntimeException("no longer supported");//FUTURE remove from interface
-	}
-	
     
 	/**
 	 *

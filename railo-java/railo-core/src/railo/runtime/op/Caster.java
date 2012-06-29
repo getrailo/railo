@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,11 +30,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.apache.axis.AxisFault;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -110,7 +111,7 @@ import railo.runtime.util.IteratorWrapper;
 
 
 /**
- * This class can cast object of one type to a other by cold fusion rules
+ * This class can cast object of one type to a other by CFML rules
  */
 public final class Caster { 
     private Caster(){
@@ -2064,16 +2065,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             ArrayList arr=new ArrayList();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    arr.add(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e = it.next();
+                    arr.add(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+(e!=null?e.getKey():"")+"] is not a number");
             }
             return arr;
         }
@@ -2129,16 +2130,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    arr.setE(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e = it.next();
+                    arr.setE(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key.getString()+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+e.getKey().getString()+"] is not a number");
             }
             return arr;
         }
@@ -2183,17 +2184,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    //print.ln(key);
-                    arr.setE(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e=it.next();
+                    arr.setE(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+e.getKey()+"] is not a number");
             }
             return toNativeArray(arr);
         }
@@ -2236,13 +2236,15 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    arr.setEL(toIntValue(keys[i].toString()),sct.get(keys[i],null));
+                while(it.hasNext()) {
+                	e=it.next();
+                    arr.setEL(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
+            catch (ExpressionException ee) {
                 return defaultValue;
             }
             return arr;
@@ -2648,7 +2650,6 @@ public final class Caster {
         
     	DateTime dt=toDateTime(locale, str, tz,null,useCommomDateParserAsWell);
         if(dt==null){
-        	if(useCommomDateParserAsWell)return toDateTime(str, tz);
         	throw new ExpressionException("can't cast ["+str+"] to date value");
         }
         return dt;
@@ -2671,52 +2672,62 @@ public final class Caster {
         //synchronized(c){
         	
 	        // datetime
+        	ParsePosition pp=new ParsePosition(0);
 	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
+	        Date d;
 	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	
-	            	synchronized(c) {
-		            	optimzeDate(c,tz,df[i].parse(str));
-		            	return new DateTimeImpl(c.getTime());
-	            	}
-	            }
-	            catch (ParseException e) {}
+	    		pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+            	d = df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+				
+            	synchronized(c) {
+	            	optimzeDate(c,tz,d);
+	            	return new DateTimeImpl(c.getTime());
+            	}
+	            //}catch (ParseException e) {}
 	        }
 	        // date
 	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
 	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	optimzeDate(c,tz,df[i].parse(str));
-		            	return new DateTimeImpl(c.getTime());
-	            	}
-	        }
-	            catch (ParseException e) {}
+	    		pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+				d=df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+            	
+				synchronized(c) {
+	            	optimzeDate(c,tz,d);
+	            	return new DateTimeImpl(c.getTime());
+            	}
+				//}catch (ParseException e) {}
 	        }
 	    	
 	        // time
 	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
 	        for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	c.setTimeZone(tz);
-		            	c.setTime(df[i].parse(str));
-		
-	        
-		            	c.set(Calendar.YEAR,1899);
-		                c.set(Calendar.MONTH,11);
-		                c.set(Calendar.DAY_OF_MONTH,30);
-		            	c.setTimeZone(tz);
-	            	}
-	                return new DateTimeImpl(c.getTime());
-	            } 
-	            catch (ParseException e) {}
+	        	pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+            	d=df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+            	synchronized(c) {
+	            	c.setTimeZone(tz);
+	            	c.setTime(d);
+	            	c.set(Calendar.YEAR,1899);
+	                c.set(Calendar.MONTH,11);
+	                c.set(Calendar.DAY_OF_MONTH,30);
+	            	c.setTimeZone(tz);
+            	}
+                return new DateTimeImpl(c.getTime());
+	            //}catch (ParseException e) {}
 	        }
         //}
-        if(useCommomDateParserAsWell)return toDate(str, false, tz, defaultValue);
+        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false, tz, defaultValue);
         return defaultValue;
     }
     
@@ -2784,15 +2795,15 @@ public final class Caster {
         if(o instanceof Query) {
             if(duplicate) {
                 Query src = (Query)o;
-                Query trg=new QueryImpl(src.getColumns(),src.getRowCount(),"query");
+                Query trg=new QueryImpl(src.getColumnNames(),src.getRowCount(),"query");
 
-                String[] keys=src.getColumns();
+                Collection.Key[] keys=src.getColumnNames();
                 QueryColumn[] columnsSrc=new QueryColumn[keys.length];
                 for(int i=0;i<columnsSrc.length;i++) {
                     columnsSrc[i]=src.getColumn(keys[i]);
                 }
 
-                keys=trg.getColumns();
+                keys=trg.getColumnNames();
                 QueryColumn[] columnsTrg=new QueryColumn[keys.length];
                 for(int i=0;i<columnsTrg.length;i++) {
                     columnsTrg[i]=trg.getColumn(keys[i]);
@@ -3655,7 +3666,7 @@ public final class Caster {
      */
     public static Iterator toIterator(Object o) throws PageException {
         if(o instanceof Iterator) return (Iterator)o;
-        else if(o instanceof Iteratorable) return ((Iteratorable)o).keyIterator();
+        else if(o instanceof Iteratorable) return ((Iteratorable)o).keysAsStringIterator();
         else if(o instanceof Enumeration) return new IteratorWrapper((Enumeration)o);
         else if(o instanceof JavaObject) {
         	String[] names = ClassUtil.getFieldNames(((JavaObject)o).getClazz());
@@ -3791,12 +3802,14 @@ public final class Caster {
     
     public static Object[] toFunctionValues(Struct args) {
     	// TODO nicht sehr optimal 
-    	Key[] keys = args.keys();
-        FunctionValue[] fvalues=new FunctionValue[args.size()];
-        for(int i=0;i<keys.length;i++) {
-        	fvalues[i]=new FunctionValueImpl(keys[i].getString(),args.get(keys[i],null));
+    	Iterator<Entry<Key, Object>> it = args.entryIterator();
+        Entry<Key, Object> e;
+        List<FunctionValue> fvalues=new ArrayList<FunctionValue>();
+        while(it.hasNext()) {
+        	e=it.next();
+        	fvalues.add(new FunctionValueImpl(e.getKey().getString(),e.getValue()));
         }
-        return fvalues;
+        return fvalues.toArray(new FunctionValue[fvalues.size()]);
     }
 
     /**

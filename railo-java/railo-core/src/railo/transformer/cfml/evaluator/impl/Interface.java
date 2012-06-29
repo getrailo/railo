@@ -12,6 +12,7 @@ import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagFunction;
+import railo.transformer.bytecode.statement.tag.TagImport;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.library.tag.TagLibTag;
 
@@ -25,7 +26,7 @@ public class Interface extends Component {
 		List statments = body.getStatements();
 		Statement stat;
 		Iterator it = statments.iterator();
-		
+		Tag t;
 		while(it.hasNext()) {
 			stat=(Statement) it.next();
 			
@@ -33,11 +34,14 @@ public class Interface extends Component {
 				//body.remove(stat);
 			}
 			else if(stat instanceof Tag) {
-				if(stat instanceof TagFunction) {
-					TagFunction tf=(TagFunction) stat;
+				t=(Tag) stat;
+				if(stat instanceof TagImport) {
+					// ignore
+				}
+				else if(stat instanceof TagFunction) {
 					
-					Function.throwIfNotEmpty(tf);
-					Attribute attr = tf.getAttribute("access");
+					Function.throwIfNotEmpty(t);
+					Attribute attr = t.getAttribute("access");
 					
 					if(attr!=null) {
 						ExprString expr = CastString.toExprString(attr.getValue());
@@ -50,10 +54,10 @@ public class Interface extends Component {
 							throw new EvaluatorException(
 						"the attribute access of the tag function inside an interface definition can only have the value [public] not ["+access+"]");
 					}
-					else tf.addAttribute(new Attribute(false,"access",LitString.toExprString("public"),"string"));
+					else t.addAttribute(new Attribute(false,"access",LitString.toExprString("public"),"string"));
 					
 				}
-				else throw new EvaluatorException("tag "+libTag.getFullName()+" can only contain function definitions");
+				else throw new EvaluatorException("tag "+libTag.getFullName()+" can only contain function definitions.");
 			}
 		}
 		

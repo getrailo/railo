@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function urlencodedformat
+ * Implements the CFML Function urlencodedformat
  */
 package railo.runtime.functions.other;
 

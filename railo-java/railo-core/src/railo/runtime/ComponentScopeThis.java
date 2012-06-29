@@ -7,7 +7,6 @@ import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
@@ -15,6 +14,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
@@ -69,51 +69,27 @@ public final class ComponentScopeThis extends StructSupport implements Component
         return component.size(access)+1;
     }
     
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        Set keySet = component.keySet(access);
-        keySet.add("this");
-        String[] arr = new String[keySet.size()];
-        Iterator it = keySet.iterator();
-        
-        int index=0;
-        while(it.hasNext()){
-        	arr[index++]=Caster.toString(it.next(),null);
-        }
-        
-        return arr;
-    }
-
+    @Override
     public Collection.Key[] keys() {
-    	Set keySet = component.keySet(access);
-        keySet.add("this");
+    	Set<Key> keySet = component.keySet(access);
+        keySet.add(KeyConstants._this);
         Collection.Key[] arr = new Collection.Key[keySet.size()];
-        Iterator it = keySet.iterator();
+        Iterator<Key> it = keySet.iterator();
         
         int index=0;
         while(it.hasNext()){
-        	arr[index++]=KeyImpl.toKey(it.next(),null);
+        	arr[index++]=it.next();
         }
         return arr;
     }
     
-    
-    
-
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
-	public Object remove(Collection.Key key) throws PageException {
+    @Override
+    public Object remove(Collection.Key key) throws PageException {
 		return component.remove(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
-	public Object removeEL(Collection.Key key) {
+    @Override
+    public Object removeEL(Collection.Key key) {
 		 return component.removeEL(key);
 	}
 
@@ -151,20 +127,30 @@ public final class ComponentScopeThis extends StructSupport implements Component
 		return component.set(key,value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		return component.setEL(key,value);
 	}
 
-    /**
-     * @see railo.runtime.type.Iteratorable#keyIterator()
-     */
-    public Iterator keyIterator() {
-        return component.iterator(access);
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
+        return component.keyIterator(access);
     }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return component.keysAsStringIterator(access);
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return component.entryIterator(access);
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return component.valueIterator(access);
+	}
     
 	/**
 	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)

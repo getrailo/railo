@@ -1,10 +1,13 @@
 package railo.runtime.net.http;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -12,12 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
+import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.functions.decision.IsLocalHost;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 
 public final class ReqRspUtil {
 
@@ -94,10 +99,10 @@ public final class ReqRspUtil {
 			String str = req.getHeader("Cookie");
 			if(str!=null) {
 				try{
-					String[] arr = List.listToStringArray(str, ';'),tmp;
+					String[] arr = railo.runtime.type.List.listToStringArray(str, ';'),tmp;
 					java.util.List<Cookie> list=new ArrayList<Cookie>();
 					for(int i=0;i<arr.length;i++){
-						tmp=List.listToStringArray(arr[i], '=');
+						tmp=railo.runtime.type.List.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
 							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
 						}
@@ -116,25 +121,8 @@ public final class ReqRspUtil {
 		try {
 			Method setCharacterEncoding = rsp.getClass().getMethod("setCharacterEncoding", new Class[0]);
 			setCharacterEncoding.invoke(rsp, new Object[0]);
-			
-			
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		} 
+		catch (Throwable t) {}
 	}
 
 	public static String getQueryString(HttpServletRequest req) {
@@ -165,23 +153,24 @@ public final class ReqRspUtil {
 		return defaultValue;
 	}
 
+	public static List<String> getHeadersIgnoreCase(PageContext pc, String name) {
+		String charset = pc.getConfig().getWebCharset();
+		HttpServletRequest req = pc.getHttpServletRequest();
+		Enumeration e = req.getHeaderNames();
+		List<String> rtn=new ArrayList<String>();
+		String keyDecoded,key;
+		while(e.hasMoreElements()) {
+			key=e.nextElement().toString();
+			keyDecoded=ReqRspUtil.decode(key, charset,false);
+			if(name.equalsIgnoreCase(key) || name.equalsIgnoreCase(keyDecoded))
+				rtn.add(ReqRspUtil.decode(req.getHeader(key),charset,false));
+		}
+		return rtn;
+	}
+
 	public static String getScriptName(HttpServletRequest req) {
 		return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
 	}
-	
-	/*public static boolean isURLEncoded(String str) {
-		if(StringUtil.isEmpty(str,true)) return false;
-		if(!ReqRspUtil.isSubAscci(str,false)) return false;
-		int index,last=0;
-		boolean rtn=false;
-		while((index=str.indexOf('%',last))!=-1){
-			if(index+2>=str.length()) return false;
-			if(!isHex(str.charAt(index+1)) || !isHex(str.charAt(index+2))) return false;
-			last=index+1;
-			rtn=true;
-		}
-		return rtn;
-	}*/
 
 	private static boolean isHex(char c) {
 		return (c>='0' && c<='9') || (c>='a' && c<='f') || (c>='A' && c<='F');
@@ -289,4 +278,72 @@ public final class ReqRspUtil {
     	}
     	return need;
     }
+
+	public static boolean isThis(HttpServletRequest req, String url) { 
+		try {
+			return isThis(req, HTTPUtil.toURL(url));
+		} 
+		catch (Throwable t) {
+			return false;
+		}
+	}
+
+	public static boolean isThis(HttpServletRequest req, URL url) { 
+		try {
+			// Port
+			int reqPort=req.getServerPort();
+			int urlPort=url.getPort();
+			if(urlPort<=0) urlPort=HTTPUtil.isSecure(url)?443:80;
+			if(reqPort<=0) reqPort=req.isSecure()?443:80;
+			if(reqPort!=urlPort) return false;
+			
+			// host
+			String reqHost = req.getServerName();
+			String urlHost = url.getHost();
+			if(reqHost.equalsIgnoreCase(urlHost)) return true;
+			if(IsLocalHost.invoke(reqHost) && IsLocalHost.invoke(reqHost)) return true;
+			
+			InetAddress urlAddr = InetAddress.getByName(urlHost);
+			
+			InetAddress reqAddr = InetAddress.getByName(reqHost);
+			if(reqAddr.getHostName().equalsIgnoreCase(urlAddr.getHostName())) return true;
+			if(reqAddr.getHostAddress().equalsIgnoreCase(urlAddr.getHostAddress())) return true;
+			
+			reqAddr = InetAddress.getByName(req.getRemoteAddr());
+			if(reqAddr.getHostName().equalsIgnoreCase(urlAddr.getHostName())) return true;
+			if(reqAddr.getHostAddress().equalsIgnoreCase(urlAddr.getHostAddress())) return true;
+		}
+		catch(Throwable t){}
+		return false;
+	}
+	
+
+    public static LinkedList<MimeType> getAccept(PageContext pc) {
+    	LinkedList<MimeType> accept=new LinkedList<MimeType>();
+    	java.util.Iterator<String> it = ReqRspUtil.getHeadersIgnoreCase(pc, "accept").iterator();
+    	String value;
+		while(it.hasNext()){
+			value=it.next();
+			MimeType[] mtes = MimeType.getInstances(value, ',');
+			if(mtes!=null)for(int i=0;i<mtes.length;i++){
+				accept.add(mtes[i]);
+			}
+		}
+		return accept;
+	}
+    
+    public static MimeType getContentType(PageContext pc) {
+    	java.util.Iterator<String> it = ReqRspUtil.getHeadersIgnoreCase(pc, "content-type").iterator();
+    	String value;
+    	MimeType rtn=null;
+		while(it.hasNext()){
+			value=it.next();
+			MimeType[] mtes = MimeType.getInstances(value, ',');
+			if(mtes!=null)for(int i=0;i<mtes.length;i++){
+				rtn= mtes[i];
+			}
+		}
+		if(rtn==null) return MimeType.ALL;
+		return rtn;
+	}
 }

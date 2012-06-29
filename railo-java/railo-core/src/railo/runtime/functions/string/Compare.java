@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function compare
+ * Implements the CFML Function compare
  */
 package railo.runtime.functions.string;
 

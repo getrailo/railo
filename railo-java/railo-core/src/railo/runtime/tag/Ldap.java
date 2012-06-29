@@ -104,7 +104,7 @@ public final class Ldap extends TagImpl {
      * the default delimiter character, which is the semicolon (;), 
      * such as mgrpmsgrejecttext;lang-en. The delimiter character is used by the query, 
      * add, and modify action attributes, and is used by cfldap to output multi-value attributes
-     * @param delimiter delimeter to set
+     * @param delimiter delimiter to set
      */ 
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;

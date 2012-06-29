@@ -6,8 +6,8 @@
 <cffunction name="hasClients" output="no" returntype="boolean">
 	<cfargument name="clients" type="query">
 
-	<cfloop query="clients">
-		<cfif ListFindNoCase(clients.usage,"synchronisation")>
+	<cfloop query="#arguments.clients#">
+		<cfif ListFindNoCase(arguments.clients.usage,"synchronisation")>
         	<cfreturn true>
 		</cfif>
     </cfloop>

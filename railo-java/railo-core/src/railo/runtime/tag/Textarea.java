@@ -1,6 +1,8 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
@@ -11,7 +13,8 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.KeyConstants;
 
 // TODO tag textarea
 // attribute html macht irgendwie keinen sinn, aber auch unter neo nicht
@@ -130,7 +133,7 @@ public final class Textarea extends Input  implements BodyTag {
 		String bodyValue=null;
 		String value="";
 		if(bodyContent!=null)bodyValue=bodyContent.getString();
-		if(attributes.containsKey("value"))attrValue=Caster.toString(attributes.get("value",null));
+		if(attributes.containsKey(KeyConstants._value))attrValue=Caster.toString(attributes.get(KeyConstants._value,null));
 		
 		// check values
         if(!StringUtil.isEmpty(bodyValue) && !StringUtil.isEmpty(attrValue)) {
@@ -143,20 +146,20 @@ public final class Textarea extends Input  implements BodyTag {
         	value=enc(attrValue);
         }
         // id
-		if(StringUtil.isEmpty(attributes.get(KeyImpl.ID,null)))
-			attributes.set(KeyImpl.ID,StringUtil.toVariableName((String)attributes.get(KeyImpl.NAME)));
+		if(StringUtil.isEmpty(attributes.get(KeyConstants._id,null)))
+			attributes.set(KeyConstants._id,StringUtil.toVariableName((String)attributes.get(KeyConstants._name)));
 		
 		// start output
         pageContext.forceWrite("<textarea");
         
-        railo.runtime.type.Collection.Key[] keys = attributes.keys();
-        railo.runtime.type.Collection.Key key;
-        for(int i=0;i<keys.length;i++) {
-            key = keys[i];
+        Iterator<Entry<Key, Object>> it = attributes.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+            e = it.next();
             pageContext.forceWrite(" ");
-            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite(e.getKey().getString());
             pageContext.forceWrite("=\"");
-            pageContext.forceWrite(enc(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite(enc(Caster.toString(e.getValue())));
             pageContext.forceWrite("\"");
         }
         
