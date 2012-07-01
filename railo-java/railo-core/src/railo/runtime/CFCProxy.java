@@ -42,5 +42,10 @@ public class CFCProxy extends ComponentAccessProxy implements HibernateProxy, Se
 		return li.getCFC().sizeOf();
 	}
 	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
+	
 
 }

@@ -1015,4 +1015,9 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public QueryColumnPro toDebugColumn() {
 		return new DebugQueryColumn(data,key,query,size,type,typeChecked);
 	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
 }

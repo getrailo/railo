@@ -484,5 +484,10 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 	public long sizeOf() {
 		return QueryUtil.sizeOf(this);
 	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
 
 }

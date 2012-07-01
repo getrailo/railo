@@ -675,4 +675,9 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 		comp.registerUDF(key, props);
     }
 	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
+	
 }
