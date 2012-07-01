@@ -6,21 +6,15 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import railo.print;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.text.xml.XMLCaster;
-import railo.runtime.type.Array;
-import railo.runtime.type.Collection;
 import railo.runtime.type.ForEachIteratorable;
 import railo.runtime.type.ObjectWrap;
-import railo.runtime.type.Query;
 import railo.runtime.type.it.EnumAsIt;
 import railo.runtime.type.it.ForEachQueryIterator;
-import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.wrap.MapAsStruct;
 
 public class ForEachUtil {

@@ -2,10 +2,6 @@ package railo.commons.lang;
 
 import java.security.SecureRandom;
 
-import railo.print;
-import railo.commons.digest.MD5;
-import railo.runtime.functions.math.Rand;
-
 public class RandomUtil {
 	public static final char[]  CHARS=new char[]{
 		'0','1','2','3','4','5','6','7','8','9',

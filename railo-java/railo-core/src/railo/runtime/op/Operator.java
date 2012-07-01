@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;

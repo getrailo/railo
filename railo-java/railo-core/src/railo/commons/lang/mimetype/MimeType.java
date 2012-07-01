@@ -1,13 +1,9 @@
 package railo.commons.lang.mimetype;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;

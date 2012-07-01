@@ -17,8 +17,8 @@ import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.Struct;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Struct;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
 

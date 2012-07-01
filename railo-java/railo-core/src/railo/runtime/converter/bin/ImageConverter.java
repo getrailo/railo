@@ -1,6 +1,5 @@
 package railo.runtime.converter.bin;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 

@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +20,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Method;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.zip.ZipFile;
 
@@ -29,11 +27,7 @@ import javax.mail.Transport;
 
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicMatch;
-import railo.print;
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ExceptionUtil;
-import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.PageException;
 

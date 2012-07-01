@@ -2,7 +2,6 @@
 package railo.runtime.converter;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.HashSet;

@@ -12,16 +12,13 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
 import railo.runtime.com.COMObject;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionNotSupported;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.functions.system.GetApplicationSettings;
 import railo.runtime.java.JavaObject;
 import railo.runtime.listener.JavaSettings;
 import railo.runtime.net.proxy.ProxyData;
@@ -29,10 +26,8 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
-import railo.runtime.type.Array;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
-import railo.runtime.type.util.ArrayUtil;
 
 public final class CreateObject implements Function {
 	public static Object call(PageContext pc , String cfcName) throws PageException {

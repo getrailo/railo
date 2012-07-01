@@ -8,7 +8,6 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagLoop;
-import railo.transformer.bytecode.statement.tag.TagOutput;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.cfml.ExprTransformer;
 import railo.transformer.cfml.TransfomerSettings;

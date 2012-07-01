@@ -2,7 +2,6 @@ package railo.runtime.schedule;
 
 import java.net.URL;
 
-
 import railo.commons.io.res.Resource;
 import railo.commons.security.Credentials;
 import railo.runtime.net.proxy.ProxyData;
