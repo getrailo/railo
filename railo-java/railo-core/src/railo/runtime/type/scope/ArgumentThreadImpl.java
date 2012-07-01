@@ -19,7 +19,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.StructUtil;
@@ -591,5 +590,10 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
 	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    } 
 
 }

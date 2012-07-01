@@ -703,4 +703,9 @@ public class ListAsArray implements Array,List,Sizeable {
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
 	}
+
+	@Override
+	public java.util.Iterator<Object> getIterator() {
+    	return valueIterator();
+    } 
 }

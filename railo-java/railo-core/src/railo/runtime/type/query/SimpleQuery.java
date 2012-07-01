@@ -61,6 +61,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.CollectionIterator;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.KeyConstants;
@@ -2799,5 +2800,10 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	public long getExecutionTime() {
 		return exeTime;
 	}
+	
+	@Override
+	public java.util.Iterator getIterator() {
+		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
+    }
 
 }

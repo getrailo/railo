@@ -10,7 +10,7 @@ import railo.runtime.op.Castable;
 /**
  * interface collection, used for all collection types of railo (array, struct, query)
  */
-public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializable, Castable  {
+public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializable, Castable,ForEachIteratorable  {
     
     
     

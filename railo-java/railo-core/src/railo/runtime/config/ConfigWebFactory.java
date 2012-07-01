@@ -2629,9 +2629,25 @@ public final class ConfigWebFactory {
 
     private static void createTagFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
     	if(config instanceof ConfigServer){
+    		
+    	// Dump
     		Resource f = dir.getRealResource("Dump.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Dump.cfc",f);
-
+            
+        // MediaPlayer
+            f = dir.getRealResource("MediaPlayer.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/MediaPlayer.cfc",f);
+            Resource build = dir.getRealResource("build");
+            if(!build.exists())build.mkdirs();
+            String[] names=new String[]{"_background.png","_bigplay.png","_controls.png","_loading.gif","_player.swf","_player.xap",
+            		"background_png.cfm","bigplay_png.cfm","controls_png.cfm","jquery.js.cfm","loading_gif.cfm",
+            		"mediaelement-and-player.min.js.cfm","mediaelementplayer.min.css.cfm","player.swf.cfm","player.xap.cfm"};
+            for(int i=0;i<names.length;i++){
+                f = build.getRealResource(names[i]);
+                if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/build/"+names[i],f);
+            	
+            }
+        
         // AJAX
             AjaxFactory.deployTags(dir, doNew);
            

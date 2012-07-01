@@ -544,4 +544,9 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	public long sizeOf() {
 		return QueryUtil.sizeOf(column);
 	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
 }

@@ -443,4 +443,9 @@ public class SimpleQueryColumn implements QueryColumn {
 	public int getIndex() {
 		return index;
 	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
 }

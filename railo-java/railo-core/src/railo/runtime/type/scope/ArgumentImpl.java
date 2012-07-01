@@ -25,6 +25,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 
@@ -123,7 +124,9 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		o=get(Caster.toIntValue(key.getString(),-1),null);
 		if(o!=null)return o;
 		if(super.containsKey(key)) return null;// that is only for compatibility to neo
-		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope");
+		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+				railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+				+"]");
 		
 	}
 

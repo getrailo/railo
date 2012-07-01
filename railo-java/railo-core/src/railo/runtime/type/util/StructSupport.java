@@ -250,4 +250,8 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		}
 		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_STRUCT, "struct");
 	}
+    
+    public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    } 
 }

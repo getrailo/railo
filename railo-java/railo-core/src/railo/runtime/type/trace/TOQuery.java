@@ -22,11 +22,13 @@ import java.util.Map;
 
 import railo.runtime.db.SQL;
 import railo.runtime.debug.Debugger;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.it.ForEachQueryIterator;
 
 public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query {
 
@@ -2263,5 +2265,10 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	public long getExecutionTime() {
 		return qry.getExecutionTime();
 	}
+	
+	@Override
+	public java.util.Iterator getIterator() {
+		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
+    } 
 
 }

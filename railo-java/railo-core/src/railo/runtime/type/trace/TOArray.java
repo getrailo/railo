@@ -158,9 +158,15 @@ public class TOArray extends TOCollection implements Array {
 		return arr.containsKey(key);
 	}
 
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		log();
 		return new TOArray(debugger,(Array)arr.duplicate(deepCopy),type,category,text);
 	}
+
+	@Override
+	public java.util.Iterator<Object> getIterator() {
+    	return valueIterator();
+    } 
 
 }
