@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ModeUtil;
 import railo.commons.io.SystemUtil;
@@ -16,6 +17,7 @@ import railo.commons.io.res.type.s3.S3Resource;
 import railo.commons.io.res.util.ModeObjectWrap;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -944,9 +946,8 @@ public final class FileTag extends BodyTagImpl {
 	 * @param contentType 
 	 * @throws PageException
 	 */
-	private static void checkContentType(String contentType,String ext,String accept,boolean strict) throws PageException {
-		String type=List.first(contentType,"/",true).trim().toLowerCase();
-		String subType=List.last(contentType,"/",true).trim().toLowerCase();
+	private static void checkContentType(String contentType,String accept,String ext,boolean strict) throws PageException {
+		
 		if(!StringUtil.isEmpty(ext,true)){
 			ext=ext.trim().toLowerCase();
 			if(ext.startsWith("*."))ext=ext.substring(2);
@@ -956,17 +957,18 @@ public final class FileTag extends BodyTagImpl {
 		
 		if(StringUtil.isEmpty(accept,true)) return;
 		
+		
+		MimeType mt = MimeType.getInstance(contentType),sub;
+		
 		Array whishedTypes=List.listToArrayRemoveEmpty(accept,',');
 		int len=whishedTypes.size();
 		for(int i=1;i<=len;i++) {
 			String whishedType=Caster.toString(whishedTypes.getE(i)).trim().toLowerCase();
 			if(whishedType.equals("*")) return;
-			
 			// check mimetype
 			if(List.len(whishedType, "/", true)==2){
-				String wType=List.first(whishedType, "/",true).trim();
-				String wSubType=List.last(whishedType,"/",true).trim();
-				if((wType.equals("*") || wType.equals(type)) && (wSubType.equals("*") || wSubType.equals(subType)))return;
+				sub=MimeType.getInstance(whishedType);
+				if(mt.match(sub)) return;
 			}
 			
 			// check extension

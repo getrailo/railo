@@ -396,6 +396,11 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
 		Object obj=exception;
 		if(exception instanceof NativeException) obj=((NativeException)exception).getRootCause();
+		if("dump".equalsIgnoreCase(methodName)){
+			print(pc);
+			return null;
+		}
+		
 		try{
 			return Reflector.callMethod(obj, methodName, arguments);
 		}

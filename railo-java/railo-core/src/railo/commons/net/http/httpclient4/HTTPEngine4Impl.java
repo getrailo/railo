@@ -27,6 +27,8 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.TemporaryStream;
@@ -194,13 +196,14 @@ public class HTTPEngine4Impl {
         setTimeout(params,timeout);
         setCredentials(client, username, password);  
         setProxy(client,request,proxy);
-        
-        return new HTTPResponse4Impl(url,request,client.execute(request));
+        HttpContext context = new BasicHttpContext();
+		
+        return new HTTPResponse4Impl(url,context,request,client.execute(request,context));
     }
 	
 	public static DefaultHttpClient createClient(BasicHttpParams params, int maxRedirect) {
-    	params.setParameter(ClientPNames.HANDLE_REDIRECTS, Boolean.TRUE);
-    	params.setParameter(ClientPNames.MAX_REDIRECTS, new Integer(maxRedirect));
+    	params.setParameter(ClientPNames.HANDLE_REDIRECTS, maxRedirect==0?Boolean.FALSE:Boolean.TRUE);
+    	if(maxRedirect>0)params.setParameter(ClientPNames.MAX_REDIRECTS, new Integer(maxRedirect));
     	params.setParameter(ClientPNames.REJECT_RELATIVE_REDIRECT, Boolean.FALSE);
     	return new DefaultHttpClient(params);
 	}

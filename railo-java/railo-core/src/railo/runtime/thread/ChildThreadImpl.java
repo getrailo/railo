@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import railo.print;
 import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.lang.ExceptionUtil;
@@ -92,7 +93,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		if(attrs==null) this.attrs=new StructImpl();
 		else this.attrs=attrs;
 		
-		
 		if(!serializable){
 			this.page=page;
 			if(parent!=null){
@@ -142,14 +142,15 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ConfigWebImpl cwi;
 			try {
 				cwi = (ConfigWebImpl)config;
-				p=PageSourceImpl.loadPage(pc, cwi.getPageSources(oldPc,null, template, false,false,true));
+				DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
+				pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
+				pc.setRequestTimeout(requestTimeout);
+				p=PageSourceImpl.loadPage(pc, cwi.getPageSources(oldPc==null?pc:oldPc,null, template, false,false,true));
 				//p=cwi.getPageSources(oldPc,null, template, false,false,true).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
-			DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
-			pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
-			pc.setRequestTimeout(requestTimeout);pc.addPageSource(p.getPageSource(), true);
+				pc.addPageSource(p.getPageSource(), true);
 		}
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());

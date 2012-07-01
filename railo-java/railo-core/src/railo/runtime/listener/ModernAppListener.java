@@ -108,7 +108,7 @@ public class ModernAppListener extends AppListenerSupport {
 			
 			// onRequestStart
 			if(app.contains(pc,ON_REQUEST_START)) {
-				Object rtn=call(app,pci, ON_REQUEST_START, new Object[]{targetPage});
+				Object rtn=call(app,pci, ON_REQUEST_START, new Object[]{targetPage},true);
 				if(!Caster.toBooleanValue(rtn,true))
 					return;
 			}
@@ -158,9 +158,7 @@ public class ModernAppListener extends AppListenerSupport {
 		        else 
 		        	args=url;
 
-		        //print.out("c:"+requestedPage.getComponentName());
-		        //print.out("c:"+requestedPage.getComponentName());
-				Object rtn = call(app,pci, ON_CFCREQUEST, new Object[]{requestedPage.getComponentName(),method,args});
+		        Object rtn = call(app,pci, ON_CFCREQUEST, new Object[]{requestedPage.getComponentName(),method,args},true);
 		        
 		        if(rtn!=null){
 		        	if(pc.getHttpServletRequest().getHeader("AMF-Forward")!=null) {
@@ -178,20 +176,22 @@ public class ModernAppListener extends AppListenerSupport {
 				
 				
 			}
-			else if(!isCFC && app.contains(pc,ON_REQUEST)) {
-				call(app,pci, ON_REQUEST, new Object[]{targetPage});
-			}
+			//else if(!isCFC && app.contains(pc,ON_REQUEST)) {}
 			else {
 				// TODO impl die nicht so generisch ist
 				try{
-					pci.doInclude(requestedPage);
+
+					if(!isCFC && app.contains(pc,ON_REQUEST))
+						call(app,pci, ON_REQUEST, new Object[]{targetPage},false);
+					else
+						pci.doInclude(requestedPage);
 				}
 				catch(PageException pe){
 					if(!Abort.isSilentAbort(pe)) {
 						if(pe instanceof MissingIncludeException){
 							if(((MissingIncludeException) pe).getPageSource().equals(requestedPage)){
 								if(app.contains(pc,ON_MISSING_TEMPLATE)) {
-									if(!Caster.toBooleanValue(call(app,pci, ON_MISSING_TEMPLATE, new Object[]{targetPage}),true))
+									if(!Caster.toBooleanValue(call(app,pci, ON_MISSING_TEMPLATE, new Object[]{targetPage},true),true))
 										throw pe;
 								}
 								else throw pe;
@@ -202,15 +202,16 @@ public class ModernAppListener extends AppListenerSupport {
 					}
 					else {
 						doOnRequestEnd=false;
-						if(app.contains(pc,ON_ABORT)) 
-							call(app,pci, ON_ABORT, new Object[]{targetPage});
+						if(app.contains(pc,ON_ABORT)) {
+							call(app,pci, ON_ABORT, new Object[]{targetPage},true);
+						}
 					}
 				}
 			}
 			
 			// onRequestEnd
 			if(doOnRequestEnd && app.contains(pc,ON_REQUEST_END)) {
-				call(app,pci, ON_REQUEST_END, new Object[]{targetPage});
+				call(app,pci, ON_REQUEST_END, new Object[]{targetPage},true);
 			}
 		}
 		else {
@@ -224,7 +225,7 @@ public class ModernAppListener extends AppListenerSupport {
 	public boolean onApplicationStart(PageContext pc) throws PageException {
 		ComponentAccess app = apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_APPLICATION_START)) {
-			Object rtn = call(app,pc, ON_APPLICATION_START, ArrayUtil.OBJECT_EMPTY);
+			Object rtn = call(app,pc, ON_APPLICATION_START, ArrayUtil.OBJECT_EMPTY,true);
 			return Caster.toBooleanValue(rtn,true);
 		}
 		return true;
@@ -239,7 +240,7 @@ public class ModernAppListener extends AppListenerSupport {
 		boolean createPc=pc==null;
 		try {
 			if(createPc)pc =  createPageContext(factory,app,applicationName,null,ON_APPLICATION_END);
-			call(app,pc, ON_APPLICATION_END, new Object[]{pc.applicationScope()});
+			call(app,pc, ON_APPLICATION_END, new Object[]{pc.applicationScope()},true);
 		}
 		finally {
 			if(createPc && pc!=null){
@@ -252,7 +253,7 @@ public class ModernAppListener extends AppListenerSupport {
 	public void onSessionStart(PageContext pc) throws PageException {
 		ComponentAccess app = apps.get(pc.getApplicationContext().getName());
 		if(hasOnSessionStart(pc,app)) {
-			call(app,pc, ON_SESSION_START, ArrayUtil.OBJECT_EMPTY);
+			call(app,pc, ON_SESSION_START, ArrayUtil.OBJECT_EMPTY,true);
 		}
 	}
 
@@ -264,7 +265,7 @@ public class ModernAppListener extends AppListenerSupport {
 		PageContextImpl pc=null;
 		try {
 			pc = createPageContext(factory,app,applicationName,cfid,ON_SESSION_END);
-			call(app,pc, ON_SESSION_END, new Object[]{pc.sessionScope(false),pc.applicationScope()});
+			call(app,pc, ON_SESSION_END, new Object[]{pc.sessionScope(false),pc.applicationScope()},true);
 		}
 		finally {
 			if(pc!=null){
@@ -313,7 +314,7 @@ public class ModernAppListener extends AppListenerSupport {
 		if(((PageContextImpl)pc).isGatewayContext()) return;
 		ComponentAccess app = apps.get(pc.getApplicationContext().getName());
 		if(app!=null && app.contains(pc,ON_DEBUG)) {
-			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData(pc)});
+			call(app,pc, ON_DEBUG, new Object[]{pc.getDebugger().getDebuggingData(pc)},true);
 			return;
 		}
 		try {
@@ -333,7 +334,7 @@ public class ModernAppListener extends AppListenerSupport {
 				if(pe instanceof ModernAppListenerException) eventName= ((ModernAppListenerException)pe).getEventName();
 				if(eventName==null)eventName="";
 				
-				call(app,pc, ON_ERROR, new Object[]{pe.getCatchBlock(pc),eventName});
+				call(app,pc, ON_ERROR, new Object[]{pe.getCatchBlock(pc),eventName},true);
 				return;
 			}
 			catch(PageException _pe) {
@@ -344,12 +345,15 @@ public class ModernAppListener extends AppListenerSupport {
 	}
 
 
-	private Object call(Component app, PageContext pc, Collection.Key eventName, Object[] args) throws ModernAppListenerException {
+	private Object call(Component app, PageContext pc, Collection.Key eventName, Object[] args, boolean catchAbort) throws PageException {
 		try {
 			return app.call(pc, eventName, args);
 		} 
 		catch (PageException pe) {
-			if(Abort.isSilentAbort(pe)) return Boolean.FALSE;
+			if(Abort.isSilentAbort(pe)) {
+				if(catchAbort)return Boolean.FALSE;
+				throw pe;
+			}
 			throw new ModernAppListenerException(pe,eventName.getString());
 		}
 	}

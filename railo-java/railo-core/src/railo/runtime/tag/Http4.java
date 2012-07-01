@@ -7,12 +7,17 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -20,6 +25,7 @@ import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
@@ -32,7 +38,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
 
+import railo.print;
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -41,6 +51,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLEncoder;
 import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.Header;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
 import railo.commons.net.http.httpclient4.HTTPResponse4Impl;
 import railo.commons.net.http.httpclient4.ResourceBody;
@@ -540,9 +551,9 @@ public final class Http4 extends BodyTagImpl implements Http {
 	
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		BasicHttpParams params = new BasicHttpParams();
-    	DefaultHttpClient client = HTTPEngine4Impl.createClient(params,HTTPEngine.MAX_REDIRECT);
+    	DefaultHttpClient client = HTTPEngine4Impl.createClient(params,redirect?HTTPEngine.MAX_REDIRECT:0);
     	 
-    	HttpUriRequest req = init(pageContext.getConfig(),this,client,params,url,port);
+    	HttpRequestBase req = init(pageContext.getConfig(),this,client,params,url,port);
 		
     	try {
 		
@@ -724,9 +735,8 @@ public final class Http4 extends BodyTagImpl implements Http {
                     
                 if(str==null)str="";
 		        if(resolveurl){
-		        	//URI uri = httpMethod.getURI();
-		        	if(e.redirectURL!=null)url=e.redirectURL.toExternalForm();
-		        	str=new URLResolver().transform(str,new URL(url),false);
+		        	//if(e.redirectURL!=null)url=e.redirectURL.toExternalForm();
+		        	str=new URLResolver().transform(str,e.response.getTargetURL(),false);
 		        }
 		        cfhttp.set(FILE_CONTENT,str);
 		        try {
@@ -869,12 +879,12 @@ public final class Http4 extends BodyTagImpl implements Http {
     }*/
 	
 
-	static HttpUriRequest init(Config cw,Http4 http, DefaultHttpClient client, HttpParams params, String url, int port) throws PageException, IOException {
+	static HttpRequestBase init(Config cw,Http4 http, DefaultHttpClient client, HttpParams params, String url, int port) throws PageException, IOException {
 		String charset=http.charset;
 		if(StringUtil.isEmpty(charset,true)) charset=cw.getWebCharset();
 		else charset=charset.trim();
 		
-		HttpUriRequest req;
+		HttpRequestBase req;
 		
 	// check if has fileUploads	
 		boolean doUploadFile=false;
@@ -1351,6 +1361,32 @@ public final class Http4 extends BodyTagImpl implements Http {
 		return "";
 	}
 	
+	public static URL locationURL(HttpUriRequest req, HttpResponse rsp) {
+		URL url=null;
+		try {
+			url = req.getURI().toURL();
+		} catch (MalformedURLException e1) {
+			return null;
+		}
+		
+		Header h = HTTPResponse4Impl.getLastHeaderIgnoreCase(rsp, "location");
+		if(h!=null) {
+			String str = h.getValue();
+			try {
+				return new URL(str);
+			} catch (MalformedURLException e) {
+				try {
+					return new URL(url.getProtocol(), url.getHost(), url.getPort(), mergePath(url.getFile(), str));
+					
+				} catch (MalformedURLException e1) {
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+	
+	
 }
 
 class Executor4 extends Thread {
@@ -1360,11 +1396,11 @@ class Executor4 extends Thread {
 	 final boolean redirect;
 	 Throwable t;
 	 boolean done;
-	URL redirectURL;
+	//URL redirectURL;
 	HTTPResponse4Impl response;
-	private HttpUriRequest req;
+	private HttpRequestBase req;
 
-	public Executor4(Http4 http, DefaultHttpClient client,HttpUriRequest req, boolean redirect) {
+	public Executor4(Http4 http, DefaultHttpClient client,HttpRequestBase req, boolean redirect) {
 		this.http=http;
 		this.client=client;
 		this.redirect=redirect;
@@ -1384,12 +1420,49 @@ class Executor4 extends Thread {
 		}
 	}
 	
+	/*public HTTPResponse4Impl executeOld() throws IOException	{
+
+		short count=0;
+        HttpResponse rsp;
+        HttpContext localContext = new BasicHttpContext();
+        do {
+        	rsp = client.execute(req,localContext);
+        	if(!redirect || count++ >= HTTPEngine.MAX_REDIRECT || !Http4.isRedirect(rsp.getStatusLine().getStatusCode())) break;
+        	
+        	redirectURL=Http4.locationURL(req,rsp);
+        	if(redirectURL==null) break;
+        	
+        	URI redirectURI;
+        	try {
+    			redirectURI= new URI(redirectURL.toExternalForm());
+    		} catch (URISyntaxException e) {
+    			break;
+    		}
+        	
+    		
+    		print.e("req:"+req.getClass().getName());
+        	print.e("rsp:"+rsp.getClass().getName());
+        	req.setURI(redirectURI);
+        	print.e("redirectURI:"+redirectURI);
+        }
+        while(false);
+        
+        HttpHost target = (HttpHost) localContext.getAttribute(
+                ExecutionContext.HTTP_TARGET_HOST);
+        HttpUriRequest req = (HttpUriRequest) localContext.getAttribute(
+                ExecutionContext.HTTP_REQUEST);
+        
+        System.out.println("Target host: " + target.toURI());
+        System.out.println("Final request URI: " + req.getURI()); // relative URI (no proxy used)
+        System.out.println("Final request method: " + req.getMethod());
+        
+        return response=new HTTPResponse4Impl(null,client,req,rsp);
+        
+	}*/
+	
+
 	public HTTPResponse4Impl execute() throws IOException	{
-		try{
-			return response=new HTTPResponse4Impl(null,req,client.execute(req));
-		}
-		finally {
-			//HTTPUtil.release(client);
-		}
+		HttpContext context = new BasicHttpContext();
+		return response=new HTTPResponse4Impl(null,context,req,client.execute(req,context));
 	}
 }

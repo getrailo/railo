@@ -1,14 +1,22 @@
 package railo.commons.net.http.httpclient4;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.http.HTTPResponse;
@@ -19,10 +27,12 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 
 	HttpResponse rsp;
 	HttpUriRequest req;
-	private URL url; 
+	private URL url;
+	private HttpContext context; 
 
-	public HTTPResponse4Impl(URL url,HttpUriRequest req,HttpResponse rsp) {
+	public HTTPResponse4Impl(URL url,HttpContext context, HttpUriRequest req,HttpResponse rsp) {
 		this.url=url;
+		this.context=context;
 		this.req=req;
 		this.rsp=rsp;
 	}
@@ -48,7 +58,9 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 	
 	@Override
 	public InputStream getContentAsStream() throws IOException {
-		return rsp.getEntity().getContent();
+		HttpEntity e = rsp.getEntity();
+		if(e==null) return  null;
+		return e.getContent();
 	}
 	
 	@Override
@@ -81,6 +93,9 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 	
 	@Override
 	public Header getLastHeaderIgnoreCase(String name) {
+		return getLastHeaderIgnoreCase(rsp, name);
+	}
+	public static Header getLastHeaderIgnoreCase(HttpResponse rsp,String name) {
 		org.apache.http.Header header = rsp.getLastHeader(name);
 		if(header!=null) return new HeaderWrap(header);
 		
@@ -137,6 +152,28 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 			return url;
 		}
 	}
+	
+	public URL getTargetURL() {
+		URL start = getURL(); 	
+		
+		HttpUriRequest req = (HttpUriRequest) context.getAttribute(
+	                ExecutionContext.HTTP_REQUEST);
+		 	URI uri = req.getURI();
+		 	String path=uri.getPath();
+		 	String query=uri.getQuery();
+		 	if(!StringUtil.isEmpty(query)) path+="?"+query;
+		 	
+		 	URL _url=start;
+			try {
+				_url = new URL(start.getProtocol(),start.getHost(),start.getPort(),path);
+			} 
+			catch (MalformedURLException e) {}
+	        
+	        
+		return _url;
+	}
+	
+	
 
 
 	@Override

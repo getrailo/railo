@@ -869,12 +869,18 @@ public final class IOUtil {
      * @return mime type of the file
      */
     public static String getMimeType(InputStream is, String defaultValue) {
-    	
     	try {
+			return getMimeType(IOUtil.toBytesMax(is,1000), defaultValue);
+		} catch (IOException e) {
+			return defaultValue;
+		}
+    	
+    	
+    	/*try {
 			return URLConnection.guessContentTypeFromStream(is);
 		} catch (Throwable t) {
 			return defaultValue;
-		}
+		}*/
 		
         /*try {
 			return getMimeType(IOUtil.toBytesMax(is,1000), defaultValue);
@@ -892,8 +898,8 @@ public final class IOUtil {
      */
     public static String getMimeType(byte[] barr, String defaultValue) {
         
-    	String mt = getMimeType(new ByteArrayInputStream(barr), null);
-    	if(!StringUtil.isEmpty(mt,true)) return mt;
+    	//String mt = getMimeType(new ByteArrayInputStream(barr), null);
+    	//if(!StringUtil.isEmpty(mt,true)) return mt;
     	
     	PrintStream out = System.out;
         try {

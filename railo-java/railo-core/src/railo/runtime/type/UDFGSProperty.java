@@ -209,7 +209,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	
 
 	final Object cast(FunctionArgument arg,Object value, int index) throws PageException {
-		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+		if(value==null || Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
 			return value;
 		throw new UDFCasterException(this,arg,value,index);
 	}

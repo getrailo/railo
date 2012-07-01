@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.SizeOf;
@@ -72,6 +73,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.it.CollectionIterator;
 import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.sql.BlobImpl;
@@ -3457,4 +3459,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
         	ThreadLocalDuplication.remove(qry);
         }
     }
+	
+	@Override
+	public java.util.Iterator getIterator() {
+		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
+    } 
 }

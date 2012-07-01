@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import railo.print;
 import railo.commons.date.DateTimeUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -266,7 +267,7 @@ public final class Operator {
 	 * @param left 
 	 * @param right 
 	 * @return difference as int
-	 */ 
+	 */
 	public static int compare(String left, String right) { 
 		if(Decision.isNumeric(left)) {
 			if(Decision.isNumeric(right)){
@@ -279,13 +280,14 @@ public final class Operator {
 				}
 				return compare(Caster.toDoubleValue(left,Double.NaN),Caster.toDoubleValue(right,Double.NaN));
 			}
+			
+			return compare(Caster.toDoubleValue(left,Double.NaN),right);
 		}
-		else if(Decision.isBoolean(left)) {
+		if(Decision.isBoolean(left))
 			return compare(Caster.toBooleanValue(left,false)?1D:0D,right);
-		}
 //		 NICE Date compare, perhaps datetime to double
 		return left.compareToIgnoreCase(right); 
-	} 
+	}
 
     /** 
      * compares a String with a double 
