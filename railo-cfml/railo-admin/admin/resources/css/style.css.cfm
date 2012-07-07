@@ -333,7 +333,7 @@ td.fieldPadded {
 div.comment + * {
 	margin-top: 10px;
 }
-.checkbox + .comment, .radio + .comment {
+.checkbox + .comment, .radio + .comment, .radiolist label + .comment.inline {
 	display:inline;
 	padding-left:10px;
 }
@@ -404,7 +404,7 @@ select {
 	margin:3px 0px;
 	padding:1px 2px 0px 3px;
 }
-.button {
+.button, .submit {
 	display: inline-block;
 	outline: none;
 	text-align: center;

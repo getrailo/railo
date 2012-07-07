@@ -96,34 +96,30 @@ Error Output--->
 <cfset printError(error)>
 
 <h2>#driver.getLabel()#</h2>
-#driver.getDescription()#
-<table class="tbl" width="650">
-
+<div class="itemintro">#driver.getDescription()#</div>
 <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-<cfinput type="hidden" name="type" value="#entry.type#" >
-<cfinput type="hidden" name="label" value="#entry.label#" >
-	<tr>
-		<td width="150" class="tblHead" nowrap>#stText.debug.label#</td>
-		<td width="450" nowrap>#entry.label#</td>
-	</tr>
-    <tr>
-		<td width="150" class="tblHead" nowrap>#stText.debug.iprange#</td>
-		<td width="450" nowrap>
-        <cfinput type="text" 
-                name="iprange" 
-                value="#entry.iprange#" style="width:350px" required="yes"
-                message="#stText.debug.iprangeMissing#"><input type="button" name="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="button submit">
-        <br /><div class="comment">#replace(stText.debug.iprangeDesc,"
-","<br />","all")#</div>
-
-
-</td>
-	</tr>
-    
-	<tr>
-		<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="4"></td>
-	</tr>
-    
+	<cfinput type="hidden" name="type" value="#entry.type#" >
+	<cfinput type="hidden" name="label" value="#entry.label#" >
+	<table class="maintbl">
+		<tbody>
+			<tr>
+				<th scope="row">#stText.debug.label#</th>
+				<td>#entry.label#</td>
+			</tr>
+			<tr>
+				<th scope="row">#stText.debug.iprange#</th>
+				<td>
+					<cfinput type="text" 
+						name="iprange" 
+						value="#entry.iprange#" style="width:350px" required="yes"
+						message="#stText.debug.iprangeMissing#">
+					<input type="button" name="addmyip" value="#stText.debug.addMyIp#" onclick="add(this)" class="button" />
+			        <div class="comment">#rereplace(stText.debug.iprangeDesc, '[\r\n]+',"<br />","all")#</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
     <cfset custom=entry.custom>
     <cfloop array="#driver.getCustomFields()#" index="field">
     	<cfif isInstanceOf(field,"Group")>

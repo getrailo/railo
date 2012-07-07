@@ -455,7 +455,7 @@
 	<data key="components.archivemissing">Please enter a value for the archive name (row </data>
 	<data key="components.datamemberaccesstypedescription">Define the accessor for the data-members of a component. This defines how variables of the &quot;this&quot; scope of a component can be accessed from outside of the component.</data>
 	<data key="components.autoimportdescription">the following package defintion is imported into every template.</data>
-	<data key="components.componentmappingsdesc">Addional Resources that Railo checks for Components.</data>
+	<data key="components.componentmappingsdesc">Additional Resources that Railo checks for Components.</data>
 	<data key="components.componentmappingsearch">Search mappings</data>
 	<data key="components.useshadowdescription">Defines whether a component has an independent variables scope parallel to the &amp;quot;this&amp;quot; scope (CFML standard) or not.</data>
 	<data key="components.server">Define the component settings that will be used as a default for all web contexts. </data>
@@ -464,9 +464,9 @@
 	<data key="components.triggerdatamemberdescription">If there is no accessible data member (property, element of the this scope) inside a component, Railo searches for available matching &amp;quot;getters&amp;quot; or &amp;quot;setters&amp;quot; for the requested property. The following example should clarify this behaviour. &amp;quot;somevar = myComponent.properyName&amp;quot;. If &amp;quot;myComponent&amp;quot; has no accessible data member named &amp;quot;propertyName&amp;quot;, Railo searches for a function member (method) named &amp;quot;getPropertyName&amp;quot;.</data>
 	<data key="components.physical">Resource</data>
 	<data key="components.trusted">Trusted</data>
-	<data key="components.componentDeepSearch">Search sub directories</data>
+	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
-	Search for CFC in the sub directories of the defined "Addional Resources" below. this is not working for Archives!</data>
+	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>

@@ -1,4 +1,4 @@
-<cfsetting showdebugoutput="no">
+	<cfsetting showdebugoutput="no">
 <cfsilent>
 	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
 	<cfif not structKeyExists(application, "oHTTPCaching")>
@@ -191,6 +191,9 @@ function createTooltip(element, text, x, y, mouseAction )
 			$('body').append( element.tooltip );
 			element.tooltip.removeClass('stayput');
 		}
+		// reference to the parent
+		element.tooltip.data('parent', element);
+		
 		// Recalculate the position every time the tooltip is added to a page.
 		// This is needed due to the clicked/hovered elements keep changing position when rows ar folded and unfolded
 		if (x == 0) {
@@ -286,11 +289,7 @@ function initTooltips()
 		createTooltip($this, html, 0, 0, 'mouseover');
 	});
 	$('body').live('click', function(){
-		$('div.tooltip.stayput').each(function(){
-			// re-add title to element
-			var parent = $(this).remove().data('parent');
-			parent.prop('title', parent.data('title'));
-		});
+		$('div.tooltip.stayput').removeClass('stayput').each(function(){ $(this).data('parent').triggerHandler('mouseout') });
 	});
 }
 
