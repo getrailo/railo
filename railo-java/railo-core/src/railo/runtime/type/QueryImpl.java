@@ -1738,7 +1738,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
      */
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Query to String",
-          "Use Build-In-Function \"serialize(Query):String\" to create a String from Query");
+          "Use Built-In-Function \"serialize(Query):String\" to create a String from Query");
     }
 
 	/**

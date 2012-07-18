@@ -424,7 +424,7 @@ public class ListAsArray implements Array,List,Sizeable {
      */
     public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to String",
-          "Use Build-In-Function \"serialize(Array):String\" to create a String from Array");
+          "Use Built-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
 	/**

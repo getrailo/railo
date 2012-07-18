@@ -157,7 +157,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     @Override
 	public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
-          "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
+          "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
 
     @Override

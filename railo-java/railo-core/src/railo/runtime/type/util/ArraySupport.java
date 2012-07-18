@@ -244,7 +244,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
      */
     public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Array to String",
-          "Use Build-In-Function \"serialize(Array):String\" to create a String from Array");
+          "Use Built-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
     /**
