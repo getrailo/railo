@@ -409,19 +409,19 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 
 	public static String toList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
-		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getString());
+		StringBuilder sb=new StringBuilder(((KeyImpl)array[0]).getString());
 		
 		if(delimiter.length()==1) {
 			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
-				sb.append(((KeyImpl)array[i]).getString());
+				sb.append((array[i]).getString());
 			}
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
 				sb.append(delimiter);
-				sb.append(((KeyImpl)array[i]).getString());
+				sb.append((array[i]).getString());
 			}
 		}
 		return sb.toString();

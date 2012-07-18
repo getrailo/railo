@@ -64,15 +64,13 @@ public class CollectionUtil {
 	}
 
 	public static Key[] keys(Collection coll) { 
-		return coll.keys();
-		/* Code that replace method call above
-		 if(coll==null) return new Key[0];
+		if(coll==null) return new Key[0];
 		Iterator<Key> it = coll.keyIterator();
 		List<Key> rtn=new ArrayList<Key>();
 		if(it!=null)while(it.hasNext()){
 			rtn.add(it.next());
 		}
-		return rtn.toArray(new Key[rtn.size()]);*/
+		return rtn.toArray(new Key[rtn.size()]);
 	}
 	
 	public static String[] keysAsString(Collection coll) {

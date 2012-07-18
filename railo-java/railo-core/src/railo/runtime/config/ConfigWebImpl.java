@@ -156,12 +156,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return configServer;
     }
     
-
-    public ConfigServer getConfigServerX() {
-    	//throw new PageRuntimeException(new SecurityException("access on server config without password denied"));
-        return configServer;
-    }
-    
     /**
      * @see railo.runtime.config.ConfigImpl#getConfigServer(java.lang.String)
      */
