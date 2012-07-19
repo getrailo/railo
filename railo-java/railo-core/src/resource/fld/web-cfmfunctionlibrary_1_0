@@ -14822,7 +14822,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>No</required>
 			<default>normal</default>
 			<description>
-			the type the new struct (normal,weak,linked)
+			the type the struct created:
+			- normal (default): a regular struct
+			- weak: a struct with weak reference values, which do not prevent their referents from being made finalizable, finalized, and then reclaimed. Weak references are most often used to implement canonicalizing mappings.
+			- soft: a struct with soft reference values, which are cleared at the discretion of the garbage collector in response to memory demand.
+			- linked: a struct with linked keys, hold the order of the input
+			- synchronized: a struct with a synchronized (thread-safe) access
 			</description>
 		</argument>
 		<return>
