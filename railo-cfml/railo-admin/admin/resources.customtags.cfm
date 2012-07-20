@@ -232,7 +232,7 @@ function checkTheRadio(field) {
         </cfloop>
         <tr>
             <td><input type="radio" class="checkbox" name="extensions" value="custom"<cfif not has> checked="checked"</cfif>></td>
-            <td><input type="text"  onClick="checkTheRadio(this)" name="extensions_custom" value="#ArrayToList(setting.extensions)#" required="no"  style="width:113px">
+            <td><input type="text"  onclick="checkTheRadio(this)" name="extensions_custom" value="#ArrayToList(setting.extensions)#" required="no"  style="width:113px">
             <span class="comment">#stText.CustomTags.mode.custom#</span></td>
         </tr>
         </table>
@@ -314,7 +314,7 @@ function checkTheRadio(field) {
 			style="width:100%" 
 			message="#stText.CustomTags.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
-		<td class="tblContent" nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
+		<td class="tblContent" nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 			<option value="physical" <cfif mappings.physicalFirst>selected</cfif>>#stText.CustomTags.physical#</option>
 			<option value="archive" <cfif not mappings.physicalFirst>selected</cfif>>#stText.CustomTags.archive#</option>
 		</select></cfif></td>
@@ -323,7 +323,7 @@ function checkTheRadio(field) {
 		<cfif mappings.readOnly>
             	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
 			<cfelse>
-            <select name="trusted_#mappings.currentrow#" onChange="checkTheBox(this)">
+            <select name="trusted_#mappings.currentrow#" onchange="checkTheBox(this)">
                 <option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
                 <option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
             </select>
@@ -346,13 +346,13 @@ function checkTheRadio(field) {
 			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:100%"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:100%" ></td>
-		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onchange="checkTheBox(this)">
 			<option value="physical" selected>#stText.CustomTags.physical#</option>
 			<option value="archive">#stText.CustomTags.archive#</option>
 		</select></td>
 		<td class="tblContent" nowrap>
         
-        <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+        <select name="trusted_#mappings.recordcount+1#" onchange="checkTheBox(this)">
                 <option value="true">#stText.setting.inspecttemplateneverShort#</option>
                 <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
             </select>
@@ -367,12 +367,12 @@ function checkTheRadio(field) {
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
+			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
+			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
 			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">

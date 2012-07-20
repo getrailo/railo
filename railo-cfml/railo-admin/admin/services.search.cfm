@@ -167,7 +167,7 @@ function selectAll(field) {
 				<table border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<td><input type="checkbox" class="checkbox" name="name[]" value="#collections.name#"></td>
-					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
+					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><img src="resources/img/edit.png.cfm" hspace="2" border="0"></a></td>
 				</tr>
 				</table>
 				
@@ -189,14 +189,14 @@ function selectAll(field) {
 				<cfoutput> <table border="0" cellpadding="0" cellspacing="0">
 				 <tr>
 					<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-					<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
+					<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="20"></td>
 					<td></td>
 				 </tr>
 				 
 				 <tr>
 				 
 					<td></td>
-					<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
+					<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 					<td>&nbsp;
 					
 					<input type="hidden" name="run" value="action">
@@ -345,7 +345,7 @@ function selectAll(field) {
 					<!--- 
 					@todo kein funktioneller javascript
 					 --->
-					<input onClick="window.location='#request.self#?action=#url.action#';" 
+					<input onclick="window.location='#request.self#?action=#url.action#';" 
 						type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
 					<input type="hidden" name="run" value="index">
 					<input type="submit" class="submit" name="_run" value="#stText.Buttons.Update#">

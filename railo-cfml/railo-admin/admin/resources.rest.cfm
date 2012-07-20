@@ -229,7 +229,7 @@ Mappings --->
 		
 		<!--- edit --->
 		<td><cfif not rest.readOnly><a href="#request.self#?action=#url.action#&action2=create&virtual=#rest.virtual#">
-		<cfmodule template="img.cfm" src="edit.png" border="0"></a></cfif></td>
+		<img src="resources/img/edit.png.cfm" border="0"></a></cfif></td>
 		
 		<!--- virtual --->
 		<td height="30" class="tblContent" title="#rest.virtual#" nowrap><input type="hidden" 
@@ -282,12 +282,12 @@ Mappings --->
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="8" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
+			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="10"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="54" height="1"></td>
+			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="54" height="1"></td>
 			<td>&nbsp;
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.save#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">

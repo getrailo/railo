@@ -171,7 +171,7 @@ function setDesc(id,key){
 			</td>
             <td>
             <a href="#request.self#?action=#url.action#&action2=create&id=#qry.id#">
-			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a>
+			<img src="resources/img/edit.png.cfm" hspace="2" border="0"></a>
             </td>
 		</tr>
 		</table>
@@ -188,13 +188,13 @@ function setDesc(id,key){
 		<td colspan="#isWeb?4:3#">
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
-			<td><cfmodule template="img.cfm" src="tp.gif" width="8" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="20"></td>
+			<td><img src="resources/img/tp.gif.cfm" width="8" height="1"></td>		
+			<td><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="20"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#request.admintype#-bgcolor.gif" width="36" height="1"></td>
+			<td valign="top"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#request.admintype#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.delete#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
