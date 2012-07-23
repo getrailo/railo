@@ -212,10 +212,8 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		}
 		return true;
 	}
-
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	
+	@Override
 	public void  clear() {
 		sct.clear();
 	}
