@@ -159,43 +159,27 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 				ac.getClientTimeout().getMillis();
 	}
 	
-
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#setMaxInactiveInterval(int)
-	 */
 	@Override
 	public void setMaxInactiveInterval(int interval) {
 		this.timeSpan=interval*1000L;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getMaxInactiveInterval()
-	 */
 	@Override
 	public int getMaxInactiveInterval() {
 		return (int)(this.timeSpan/1000L);
 	}
 	
-	
-	
-
-	/**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public final boolean isInitalized() {
 		return isinit;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public final void initialize(PageContext pc) {
 		// StorageScopes need only request initialisation no global init, they are not reused;
 	}
 	
-	/**
-	 * @see railo.runtime.type.SharedScope#release(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		
 		sct.setEL(LASTVISIT, _lastvisit);
