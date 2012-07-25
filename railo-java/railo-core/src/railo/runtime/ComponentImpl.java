@@ -1953,35 +1953,28 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		}
 	}
 
-	// FUTURE add to interface and then search for #321 and change this as well
 	public Property[] getProperties(boolean onlyPeristent) {
-		if(top.properties.properties==null) return new Property[0];
+		Map<String,Property> props=new HashMap<String,Property>();
+		_getProperties(top,props,onlyPeristent);
+		return props.values().toArray(new Property[props.size()]);
+	}
+	
+	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent) {
+		//if(c.properties.properties==null) return new Property[0];
 		
-		Property[] props;
-		// for faster execution we have this
-		if(!onlyPeristent) {
-			int index=0;
-			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
-			props=new Property[top.properties.properties.size()];
-			while(it.hasNext())	{
-				props[index++]=it.next().getValue();
-			}
-		}
-		else {
+		if(c.base!=null) _getProperties(c.base, props, onlyPeristent);
 		
-			// collect with filter
+		// collect with filter
+		if(c.properties.properties!=null){
 			Property p;
-			java.util.List<Property> propsList=new ArrayList<Property>();
-			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
+			Iterator<Entry<String, Property>> it = c.properties.properties.entrySet().iterator();
 			while(it.hasNext())	{
 				p = it.next().getValue();
-				if(p.isPeristent()) {
-					propsList.add(p);
+				if(!onlyPeristent || p.isPeristent()) {
+					props.put(p.getName().toLowerCase(),p);
 				}
 			}
-			props = propsList.toArray(new Property[propsList.size()]);
 		}
-		return props;
 	}
 
 	public ComponentScope getComponentScope() {

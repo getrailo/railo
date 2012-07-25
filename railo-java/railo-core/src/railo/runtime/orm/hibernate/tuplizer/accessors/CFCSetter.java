@@ -7,6 +7,7 @@ import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.property.Setter;
 
 import railo.runtime.Component;
+import railo.runtime.ComponentScope;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.hibernate.HibernateRuntimeException;
@@ -56,7 +57,9 @@ public final class CFCSetter implements Setter {
 		try {
 			Component cfc = Caster.toComponent(trg);
 			//ComponentUtil.toComponentPro(cfc).getComponentScope().set(key,HibernateCaster.toCFML(value));// MUST HibernateCaster
-			ComponentUtil.toComponentPro(cfc).getComponentScope().set(key,value);
+			ComponentScope cs = ComponentUtil.toComponentPro(cfc).getComponentScope();
+			if(value==null)cs.removeEL(key);
+			else cs.set(key,value);
 		} 
 		catch (PageException e) {
 			throw new HibernateRuntimeException(e);

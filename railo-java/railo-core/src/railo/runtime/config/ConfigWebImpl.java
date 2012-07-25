@@ -149,7 +149,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     
 
     public ConfigServer getConfigServer() {
-    	throw new PageRuntimeException(new SecurityException("access on server config without password denied"));
+    	throw new PageRuntimeException(new SecurityException("access on server config without password defined"));
         //return configServer;
     }
     

@@ -48,6 +48,8 @@ import railo.runtime.type.util.ArrayUtil;
  */
 public final class CFMLFactoryImpl extends CFMLFactory {
 	
+	private static final int MAX_PC_STACK_SIZE = 0;
+	
 	private static JspEngineInfo info=new JspEngineInfoImpl("1.0");
 	private ConfigWebImpl config;
 	Stack<PageContext> pcs=new Stack<PageContext>();
@@ -158,7 +160,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
         //if(!pc.hasFamily()){
 			synchronized (runningPcs) {
 	            runningPcs.removeEL(ArgumentIntKey.init(pc.getId()));
-	            if(pcs.size()<100)// not more than 100 PCs
+	            if(pcs.size()<MAX_PC_STACK_SIZE)
 	            	pcs.push(pc);
 	            SystemOut.printDate(config.getOutWriter(),"Release: ("+pc.getId()+")");
 	        }
