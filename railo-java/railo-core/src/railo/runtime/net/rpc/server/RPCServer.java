@@ -806,9 +806,16 @@ public final class RPCServer{
 
 
 	public void registerTypeMapping(Class clazz) {
+		registerTypeMapping(clazz,"DefaultNamespace");
+	}
+
+	public void registerTypeMapping(Class clazz, String namespace) {
 		String fullname = ComponentUtil.getComponentNameFromClass(clazz);
 
-		QName qname = new QName("http://DefaultNamespace",fullname);
+		if(namespace == null) {
+			namespace = "DefaultNamespace";
+		}
+		QName qname = new QName("http://"+namespace,fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	

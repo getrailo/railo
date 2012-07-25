@@ -80,11 +80,15 @@ public final class ComponentUtil {
      * @return
      * @throws PageException
      */
-	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
-		return _getComponentJavaAccess(component, isNew,create,writeLog);
+	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog,String namespace) throws PageException {
+		return _getComponentJavaAccess(component, isNew,create,writeLog,namespace);
 	}
 	    
-    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+		return _getComponentJavaAccess(component, isNew,create,writeLog,null);
+	}
+
+    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog,String namespace) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
     	String className="DefaultNamespace.".concat(getClassname(component));
@@ -106,7 +110,7 @@ public final class ComponentUtil {
 		if(classFile.lastModified()>=classFileOriginal.lastModified()) {
 			try {
 				Class clazz=cl.loadClass(className);
-				if(clazz!=null && !hasChangesOfChildren(classFile.lastModified(),clazz))return registerTypeMapping(clazz);
+				if(clazz!=null && !hasChangesOfChildren(classFile.lastModified(),clazz))return registerTypeMapping(clazz,namespace);
 			}
 			catch(Throwable t){}
 		}
@@ -159,7 +163,7 @@ public final class ComponentUtil {
 	        
 	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
 	        
-	        return registerTypeMapping(cl.loadClass(className, barr));
+	        return registerTypeMapping(cl.loadClass(className, barr),namespace);
         }
         catch(Throwable t) {
         	throw Caster.toPageException(t);
@@ -240,10 +244,10 @@ public final class ComponentUtil {
      * @param clazz
      * @return
      */
-    private static Class registerTypeMapping(Class clazz) throws AxisFault {
+    private static Class registerTypeMapping(Class clazz,String namespace) throws AxisFault {
     	PageContext pc = ThreadLocalPageContext.get();
     	RPCServer server=RPCServer.getInstance(pc.getId(),pc.getServletContext());
-		return registerTypeMapping(server, clazz);
+		return registerTypeMapping(server, clazz, namespace);
     }
     /**
      * search in methods of a class for complex types
@@ -251,17 +255,17 @@ public final class ComponentUtil {
      * @param clazz
      * @return
      */
-    private static Class registerTypeMapping(RPCServer server, Class clazz) {
+    private static Class registerTypeMapping(RPCServer server, Class clazz, String namespace) {
     	java.lang.reflect.Method[] methods = clazz.getMethods();
     	java.lang.reflect.Method method;
     	Class[] params;
     	for(int i=0;i<methods.length;i++){
     		method=methods[i];
     		if(method.getDeclaringClass()==clazz){
-    			_registerTypeMapping(server, method.getReturnType());
+    			_registerTypeMapping(server, method.getReturnType(),namespace);
     			params = method.getParameterTypes();
     			for(int y=0;y<params.length;y++){
-    				_registerTypeMapping(server, params[y]);
+    				_registerTypeMapping(server, params[y],namespace);
     			}
     		}
     	}
@@ -273,17 +277,17 @@ public final class ComponentUtil {
 	 * @param server
 	 * @param clazz
 	 */
-	private static void _registerTypeMapping(RPCServer server, Class clazz) {
+	private static void _registerTypeMapping(RPCServer server, Class clazz, String namespace) {
 		if(clazz==null) return;
 		
 		if(!isComplexType(clazz)) {
 			if(clazz.isArray()) {
-				_registerTypeMapping(server, clazz.getComponentType());
+				_registerTypeMapping(server, clazz.getComponentType(),namespace);
 			}
 			return;
 		}
-		server.registerTypeMapping(clazz);
-		registerTypeMapping(server,clazz);
+		server.registerTypeMapping(clazz,namespace);
+		registerTypeMapping(server,clazz,namespace);
 	}
 
 	private static String getClassname(Component component) throws ExpressionException {
@@ -399,7 +403,6 @@ public final class ComponentUtil {
 		}
 		String fullname = s.replace('/', '.').replace('\\', '.');
 		fullname = fullname.substring(fullname.lastIndexOf('.')+1);
-		System.out.println(fullname);
 		return fullname;
 	}
 	
