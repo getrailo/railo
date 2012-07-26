@@ -620,6 +620,13 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	}
 
 	/**
+	 * @see railo.runtime.ComponentPro#getProperties()
+	 */
+	public Property[] getProperties(boolean onlyPeristent,boolean includeSuper) {
+		return comp.getProperties(onlyPeristent,includeSuper);
+	}
+	
+	/**
 	 * @see railo.runtime.ComponentPro#getComponentScope()
 	 */
 	public ComponentScope getComponentScope() {

@@ -172,7 +172,7 @@ public class HBMCreator {
 	}
 	
 	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, ComponentPro cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
-		Property[] _props = cfci.getProperties(true);
+		Property[] _props = cfci.getProperties(true,false);
 		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
 			if(meta==null)meta = cfci.getMetaData(pc);
         	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
