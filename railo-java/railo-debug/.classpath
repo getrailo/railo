@@ -99,6 +99,5 @@
 	<classpathentry kind="lib" path="/Railo-Libs/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/xmlparserv2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/X-Video"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
