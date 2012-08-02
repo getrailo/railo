@@ -19,7 +19,7 @@ import railo.commons.lang.StringUtil;
 import railo.commons.lang.mimetype.MimeType;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.config.Constants;
+import railo.runtime.op.Constants;
 import railo.runtime.converter.BinaryConverter;
 import railo.runtime.converter.ConverterException;
 import railo.runtime.converter.JSONConverter;
@@ -69,7 +69,7 @@ public abstract class ComponentPage extends Page  {
 	
 	public static final railo.runtime.type.Collection.Key METHOD = KeyConstants._method;
 	public static final railo.runtime.type.Collection.Key REMOTE_PERSISTENT_ID = KeyImpl.intern("Id16hohohh");
-	
+
 	private long lastCheck=-1;
 	
 	
@@ -184,7 +184,7 @@ public abstract class ComponentPage extends Page  {
             // Include MUST
             Array path = pc.getTemplatePath();
             //if(path.size()>1 ) {
-            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(railo.runtime.config.Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
             	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ComponentUtil.toComponentAccess(component));
             	Key[] keys = c.keys();
@@ -394,19 +394,24 @@ public abstract class ComponentPage extends Page  {
     	
     	// custom response
 		Struct sct = result.getCustomResponse();
+		boolean hasContent=false;
     	if(sct!=null){
 			HttpServletResponse rsp = pc.getHttpServletResponse();
     		// status
-    		int status = Caster.toIntValue(sct.get(KeyConstants._status,null),200);
-    		rsp.setStatus(status);
+    		int status = Caster.toIntValue(sct.get(KeyConstants._status,Constants.DOUBLE_ZERO),0);
+    		if(status>0)rsp.setStatus(status);
 			
     		// content
-    		String content=Caster.toString(sct.get(KeyConstants._content,null),null);
-    		if(content!=null) {
-				try {
-					pc.forceWrite(content);
-				} 
-				catch (IOException e) {}
+    		Object o=sct.get(KeyConstants._content,null);
+    		if(o!=null) {
+    			String content=Caster.toString(o,null);
+    			if(content!=null) {
+	        		try {
+						pc.forceWrite(content);
+						hasContent=true;
+					} 
+	        		catch (IOException e) {}
+    			}
     		}
     		
     		// headers
@@ -428,7 +433,7 @@ public abstract class ComponentPage extends Page  {
     		}
 		}
     	// convert result
-		else if(rtn!=null){
+		if(rtn!=null && !hasContent){
 			Props props = new Props();
         	props.format=result.getFormat();
         	
@@ -634,7 +639,7 @@ public abstract class ComponentPage extends Page  {
     }
     
     public static String convertResult(PageContext pc,Component component, String methodName,Object returnFormat,Object queryFormat,Object rtn) throws ConverterException, PageException {
-    	Object o = component.get(methodName,null);
+    	Object o = component.get(KeyImpl.init(methodName),null);
     	Props p = getProps(pc, o, returnFormat);
     	return convertResult(pc, p, queryFormat, rtn);
     }
@@ -689,7 +694,8 @@ public abstract class ComponentPage extends Page  {
 		return null;
 	}
 
-	public static Struct translate(Component c, String strMethod, Struct params) {
+	public static Struct translate(Component c, String strMethodName, Struct params) {
+		Collection.Key methodName=KeyImpl.init(strMethodName);
 		Key[] keys = CollectionUtil.keys(params);
 		FunctionArgument[] args=null;
 		int index=-1;
@@ -697,7 +703,7 @@ public abstract class ComponentPage extends Page  {
     	for(int i=0;i<keys.length;i++){
     		index=Caster.toIntValue(keys[i].getString(),0);
     		if(index>0)	{
-    			if(args==null)args=_getArgs(c,strMethod);
+    			if(args==null)args=_getArgs(c,methodName);
     			if(args!=null && index<=args.length) {
     				value=params.removeEL(keys[i]);
     				if(value!=null)params.setEL(args[index-1].getName(), value);
@@ -708,8 +714,8 @@ public abstract class ComponentPage extends Page  {
     	return params;
 	}
 
-	private static FunctionArgument[] _getArgs(Component c, String strMethod) {
-		Object o=c.get(strMethod,null);
+	private static FunctionArgument[] _getArgs(Component c, Collection.Key methodName) {
+		Object o=c.get(methodName,null);
 		if(o instanceof UDF) return ((UDF) o).getFunctionArguments();
 		return null;
 	}
