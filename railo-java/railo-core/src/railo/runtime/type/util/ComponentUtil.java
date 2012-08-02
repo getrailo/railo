@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import org.apache.axis.AxisFault;
 import org.objectweb.asm.ClassWriter;
@@ -32,6 +31,7 @@ import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
+import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Property;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -286,11 +286,20 @@ public final class ComponentUtil {
 			}
 			return;
 		}
+		String cName = clazz.getSuperclass().getCanonicalName();
+		if (cName != null && !cName.equals("java.lang.Object")) {
+			_registerTypeMapping(server,clazz.getSuperclass(),namespace);
+		}
 		server.registerTypeMapping(clazz,namespace);
 		registerTypeMapping(server,clazz,namespace);
 	}
 
-	private static String getClassname(Component component) throws ExpressionException {
+	private static String getClassname(Component component)throws ExpressionException {
+		return getClassname(component,false);
+		
+	}
+	
+	private static String getClassname(Component component,boolean preserveCase) throws ExpressionException {
     	PageSource ps = ComponentUtil.toComponentPro(component).getPageSource();
     	//ps.getRealpath()
     	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
@@ -303,7 +312,8 @@ public final class ComponentUtil {
     	
     	
     	
-    	path=path.replace('\\', '/').toLowerCase();
+    	path=path.replace('\\', '/');
+    	if(!preserveCase) path = path.toLowerCase();
     	path=List.trim(path, "/");
     	String[] arr = List.listToStringArray(path, '/');
     	
@@ -407,22 +417,36 @@ public final class ComponentUtil {
 	}
 	
 	
-	public static Class getServerComponentPropertiesClass(Component component) throws PageException {
+	public static Class getServerComponentPropertiesClass(Component component,String namespace) throws PageException {
+		return getServerComponentPropertiesClass(component,false,namespace);
+    }
+	public static Class getServerComponentPropertiesClass(Component component, boolean includeSuper,String namespace) throws PageException {
 		try {
-	    	return _getServerComponentPropertiesClass(component);
+	    	return _getServerComponentPropertiesClass(component,includeSuper,namespace);
 		}
     	catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
     }
-    
-    public static Class _getServerComponentPropertiesClass(Component component) throws PageException, IOException, ClassNotFoundException {
+	
+	public static Class _getServerComponentPropertiesClass(Component component,String namespace) throws PageException, IOException, ClassNotFoundException {
+		return _getServerComponentPropertiesClass(component,false,namespace);
+	}
+    public static Class _getServerComponentPropertiesClass(Component component,boolean includeSuper,String namespace) throws PageException, IOException, ClassNotFoundException {
     	
     	//If coming from axiscastor on a request to a top-level mapping the className is the c_116.absolute.path.to.cfc class, other wise it is relative.
-    	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
+    	String className=getClassname(component,true);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
     	
     	ComponentPro cp = ComponentUtil.toComponentPro(component);
+    	
+    	Class superClass = Object.class;
+    	
+    	if(includeSuper && component.getExtends() != null && !component.getExtends().equals("")) {
+    		PageContext pc = ThreadLocalPageContext.get();
+    		Component superCFC = ComponentLoader.loadComponent(pc, component.getExtends(), true, true);
+    		superClass = _getServerComponentPropertiesClass(superCFC,true,namespace);
+    	}
     	
     	Mapping mapping = cp.getPageSource().getMapping();
 		Config config = mapping.getConfig();
@@ -445,7 +469,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),superClass,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -622,11 +646,15 @@ public final class ComponentUtil {
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}
 
-	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+	public static Property[] getProperties(Component c,boolean onlyPeristent,boolean includeSuper) {
 		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent);
+			return ((ComponentPro)c).getProperties(onlyPeristent,includeSuper);
 		
 		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
+	}
+
+	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+		return getProperties(c,onlyPeristent,true);
 	}
 	
 	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {
