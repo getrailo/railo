@@ -3,6 +3,7 @@ package railo.runtime.type.util;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -30,6 +31,7 @@ import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.PageSourceImpl;
+import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Property;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -65,7 +67,7 @@ public final class ComponentUtil {
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldtype");
-	
+
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
     /**
@@ -78,14 +80,18 @@ public final class ComponentUtil {
      * @return
      * @throws PageException
      */
-	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
-		return _getComponentJavaAccess(component, isNew,create,writeLog);
+	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog,String namespace) throws PageException {
+		return _getComponentJavaAccess(component, isNew,create,writeLog,namespace);
 	}
 	    
-    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+		return _getComponentJavaAccess(component, isNew,create,writeLog,null);
+	}
+
+    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog,String namespace) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
-    	String className=getClassname(component).concat("_wrap");
+    	String className="DefaultNamespace.".concat(getClassname(component));
     	String real=className.replace('.','/');
     	String realOriginal=classNameOriginal.replace('.','/');
     	Mapping mapping = component.getPageSource().getMapping();
@@ -104,7 +110,7 @@ public final class ComponentUtil {
 		if(classFile.lastModified()>=classFileOriginal.lastModified()) {
 			try {
 				Class clazz=cl.loadClass(className);
-				if(clazz!=null && !hasChangesOfChildren(classFile.lastModified(),clazz))return registerTypeMapping(clazz);
+				if(clazz!=null && !hasChangesOfChildren(classFile.lastModified(),clazz))return registerTypeMapping(clazz,namespace);
 			}
 			catch(Throwable t){}
 		}
@@ -157,7 +163,7 @@ public final class ComponentUtil {
 	        
 	        cl = (PhysicalClassLoader) mapping.getConfig().getRPCClassLoader(true);
 	        
-	        return registerTypeMapping(cl.loadClass(className, barr));
+	        return registerTypeMapping(cl.loadClass(className, barr),namespace);
         }
         catch(Throwable t) {
         	throw Caster.toPageException(t);
@@ -238,10 +244,10 @@ public final class ComponentUtil {
      * @param clazz
      * @return
      */
-    private static Class registerTypeMapping(Class clazz) throws AxisFault {
+    private static Class registerTypeMapping(Class clazz,String namespace) throws AxisFault {
     	PageContext pc = ThreadLocalPageContext.get();
     	RPCServer server=RPCServer.getInstance(pc.getId(),pc.getServletContext());
-		return registerTypeMapping(server, clazz);
+		return registerTypeMapping(server, clazz, namespace);
     }
     /**
      * search in methods of a class for complex types
@@ -249,17 +255,17 @@ public final class ComponentUtil {
      * @param clazz
      * @return
      */
-    private static Class registerTypeMapping(RPCServer server, Class clazz) {
+    private static Class registerTypeMapping(RPCServer server, Class clazz, String namespace) {
     	java.lang.reflect.Method[] methods = clazz.getMethods();
     	java.lang.reflect.Method method;
     	Class[] params;
     	for(int i=0;i<methods.length;i++){
     		method=methods[i];
     		if(method.getDeclaringClass()==clazz){
-    			_registerTypeMapping(server, method.getReturnType());
+    			_registerTypeMapping(server, method.getReturnType(),namespace);
     			params = method.getParameterTypes();
     			for(int y=0;y<params.length;y++){
-    				_registerTypeMapping(server, params[y]);
+    				_registerTypeMapping(server, params[y],namespace);
     			}
     		}
     	}
@@ -271,20 +277,29 @@ public final class ComponentUtil {
 	 * @param server
 	 * @param clazz
 	 */
-	private static void _registerTypeMapping(RPCServer server, Class clazz) {
+	private static void _registerTypeMapping(RPCServer server, Class clazz, String namespace) {
 		if(clazz==null) return;
 		
 		if(!isComplexType(clazz)) {
 			if(clazz.isArray()) {
-				_registerTypeMapping(server, clazz.getComponentType());
+				_registerTypeMapping(server, clazz.getComponentType(),namespace);
 			}
 			return;
 		}
-		server.registerTypeMapping(clazz);
-		registerTypeMapping(server,clazz);
+		String cName = clazz.getSuperclass().getCanonicalName();
+		if (cName != null && !cName.equals("java.lang.Object")) {
+			_registerTypeMapping(server,clazz.getSuperclass(),namespace);
+		}
+		server.registerTypeMapping(clazz,namespace);
+		registerTypeMapping(server,clazz,namespace);
 	}
 
-	private static String getClassname(Component component) throws ExpressionException {
+	private static String getClassname(Component component)throws ExpressionException {
+		return getClassname(component,false);
+		
+	}
+	
+	private static String getClassname(Component component,boolean preserveCase) throws ExpressionException {
     	PageSource ps = ComponentUtil.toComponentPro(component).getPageSource();
     	//ps.getRealpath()
     	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
@@ -297,7 +312,8 @@ public final class ComponentUtil {
     	
     	
     	
-    	path=path.replace('\\', '/').toLowerCase();
+    	path=path.replace('\\', '/');
+    	if(!preserveCase) path = path.toLowerCase();
     	path=List.trim(path, "/");
     	String[] arr = List.listToStringArray(path, '/');
     	
@@ -359,22 +375,78 @@ public final class ComponentUtil {
 
 	}
 
+    /**
+     * 
+     * @param className the underlying class name a component uses
+     * @return the component Path that can be used by loadComponent() to get the component
+     */
+	public static String getComponentPathFromClass(Class clazz)  {
+		java.lang.reflect.Method m = getComplexTypeMethod(clazz);
 	
-    
-	public static Class getServerComponentPropertiesClass(Component component) throws PageException {
+		
+		Object o;
 		try {
-	    	return _getServerComponentPropertiesClass(component);
+			o = m.invoke(null, new Object[0]);
+			return o.toString();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		return clazz.getName();
+		
+	}
+    
+	
+	public static String getComponentNameFromClass(Class clazz)  {
+		String s = getComponentPathFromClass(clazz);
+		if (s.equals("")) {
+			s = clazz.getName();
+		} else {
+			if (s.toLowerCase().endsWith(".cfc")) {
+				s = s.substring(0,s.length()-4);
+			}
+			
+		}
+		String fullname = s.replace('/', '.').replace('\\', '.');
+		fullname = fullname.substring(fullname.lastIndexOf('.')+1);
+		return fullname;
+	}
+	
+	
+	public static Class getServerComponentPropertiesClass(Component component,String namespace) throws PageException {
+		return getServerComponentPropertiesClass(component,false,namespace);
+    }
+	public static Class getServerComponentPropertiesClass(Component component, boolean includeSuper,String namespace) throws PageException {
+		try {
+	    	return _getServerComponentPropertiesClass(component,includeSuper,namespace);
 		}
     	catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
     }
-    
-    public static Class _getServerComponentPropertiesClass(Component component) throws PageException, IOException, ClassNotFoundException {
-    	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
+	
+	public static Class _getServerComponentPropertiesClass(Component component,String namespace) throws PageException, IOException, ClassNotFoundException {
+		return _getServerComponentPropertiesClass(component,false,namespace);
+	}
+    public static Class _getServerComponentPropertiesClass(Component component,boolean includeSuper,String namespace) throws PageException, IOException, ClassNotFoundException {
+    	
+    	//If coming from axiscastor on a request to a top-level mapping the className is the c_116.absolute.path.to.cfc class, other wise it is relative.
+    	String className=getClassname(component,true);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
     	
     	ComponentPro cp = ComponentUtil.toComponentPro(component);
+    	
+    	Class superClass = Object.class;
+    	
+    	if(includeSuper && component.getExtends() != null && !component.getExtends().equals("")) {
+    		PageContext pc = ThreadLocalPageContext.get();
+    		Component superCFC = ComponentLoader.loadComponent(pc, component.getExtends(), true, true);
+    		superClass = _getServerComponentPropertiesClass(superCFC,true,namespace);
+    	}
     	
     	Mapping mapping = cp.getPageSource().getMapping();
 		Config config = mapping.getConfig();
@@ -384,7 +456,6 @@ public final class ComponentUtil {
 		String classNameOriginal=cp.getPageSource().getFullClassName();
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
-		
 		
 		// load existing class
 		if(classFile.lastModified()>=classFileOriginal.lastModified()) {
@@ -398,7 +469,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),superClass,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -575,11 +646,15 @@ public final class ComponentUtil {
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}
 
-	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+	public static Property[] getProperties(Component c,boolean onlyPeristent,boolean includeSuper) {
 		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent);
+			return ((ComponentPro)c).getProperties(onlyPeristent,includeSuper);
 		
 		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
+	}
+
+	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+		return getProperties(c,onlyPeristent,true);
 	}
 	
 	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {

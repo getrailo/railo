@@ -16,6 +16,8 @@ public interface ComponentPro extends Component {
 	 */
 	public Property[] getProperties(boolean onlyPeristent);
 	
+	public Property[] getProperties(boolean onlyPeristent,boolean includeSuper);
+	
 	public void setProperty(Property property) throws PageException;
 	
 	public ComponentScope getComponentScope();

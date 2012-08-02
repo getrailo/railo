@@ -1952,17 +1952,20 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			}
 		}
 	}
-	
+
 	public Property[] getProperties(boolean onlyPeristent) {
-		Map<String,Property> props=new HashMap<String,Property>();
-		_getProperties(top,props,onlyPeristent);
-		return props.values().toArray(new Property[props.size()]);
+		return getProperties(onlyPeristent,true);
 	}
 	
-	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent) {
+	public Property[] getProperties(boolean onlyPeristent,boolean includeSuper) {
+		Map<String,Property> props=new HashMap<String,Property>();
+		_getProperties(top,props,onlyPeristent,includeSuper);
+		return props.values().toArray(new Property[props.size()]);
+	}
+	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent,boolean includeSuper) {
 		//if(c.properties.properties==null) return new Property[0];
 		
-		if(c.base!=null) _getProperties(c.base, props, onlyPeristent);
+		if(c.base!=null && includeSuper) _getProperties(c.base, props, onlyPeristent, includeSuper);
 		
 		// collect with filter
 		if(c.properties.properties!=null){

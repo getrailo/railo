@@ -52,6 +52,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ComponentUtil;
 
 /**
  * xdoclet tags are not active yet; keep web.xml in sync.
@@ -334,6 +335,8 @@ public final class RPCServer{
                     ((org.apache.axis.SOAPPart) responseMsg.getSOAPPart()).
                             getMessage().setMessageContext(msgContext);
                 }
+                System.err.println("SOAPERROR: " + responseMsg.getSOAPPartAsString());
+                fault.printStackTrace();
             } catch (Throwable t) {
             	if(t instanceof InvocationTargetException)
             		t=((InvocationTargetException)t).getTargetException();
@@ -786,7 +789,7 @@ public final class RPCServer{
 				throw AxisFault.makeFault(e);
 			}
             TypeMappingUtil.registerDefaults(axisServer.getTypeMappingRegistry());
-            
+
         }
         return axisServer;
     }
@@ -803,8 +806,16 @@ public final class RPCServer{
 
 
 	public void registerTypeMapping(Class clazz) {
-		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName("http://DefaultNamespace",fullname);
+		registerTypeMapping(clazz,"DefaultNamespace");
+	}
+
+	public void registerTypeMapping(Class clazz, String namespace) {
+		String fullname = ComponentUtil.getComponentNameFromClass(clazz);
+
+		if(namespace == null) {
+			namespace = "DefaultNamespace";
+		}
+		QName qname = new QName("http://"+namespace,fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	
@@ -819,5 +830,5 @@ public final class RPCServer{
 			tm.removeSerializer(c, qname);
 		}
 		TypeMappingUtil.registerBeanTypeMapping(tm,clazz, qname);
+		}
 	}
-}
