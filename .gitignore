@@ -6,6 +6,7 @@ railo-java/railo-core/build
 railo-java/railo-loader/bin
 railo-java/railo-loader/bin/*
 railo-java/railo-debug/bin
+railo-java/railo-debug/web/tests/*
 railo-java/railo-debug/bin/*
 railo-java/libs/bin
 railo-java/railo-loader/build
@@ -17,7 +18,6 @@ railo-java/.DS_Store
 railo-java/railo-core/.DS_Store
 railo-java/railo-core/src/resource/library/tag/.DS_Store
 railo-java/railo-core/bin/.DS_Store
-
 railo-cfml/railo-admin/admin2/
 /*.project
 va specific
