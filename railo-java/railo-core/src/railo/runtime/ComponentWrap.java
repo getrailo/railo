@@ -467,6 +467,10 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return component.getProperties(onlyPeristent);
 	}
 	
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return component.getProperties(onlyPeristent,includeBaseProperties);
+	}
+	
 	/**
 	 * @see railo.runtime.ComponentPro#getComponentScope()
 	 */
