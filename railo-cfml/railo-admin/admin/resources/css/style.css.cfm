@@ -760,3 +760,8 @@ div.tooltip {
 .tooltip table td {
 	padding: 5px 3px;
 }
+
+/* css for tag and function documentation */
+.syntaxTag, .syntaxFunc{color:#993300;}
+.syntaxText {color:#CC0000;}
+.syntaxAttr {color:#000099;}

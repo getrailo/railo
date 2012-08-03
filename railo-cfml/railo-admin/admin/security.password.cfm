@@ -103,189 +103,180 @@ Error Output --->
    		returnVariable="settings">
 
 
-<!--- 
-settings --->
+<!--- settings --->
 <cfif request.adminType EQ "server">
-<cfoutput>
-<table class="tbl" width="740">
-<tr>
-	<td colspan="3"><h2>#stText.Login.settings#</h2></td>
-</tr>
-</cfoutput>
-
-<cfoutput><cfform action="#request.self#?action=#url.action#" method="post">
-<tr>
-	<th scope="row">#stText.Login.useCaptcha#</th>
-	<td>
-		
-		<cfinput type="checkbox" name="captcha" checked="#settings.captcha#" value="true"><br /><div class="comment">#stText.Login.useCaptchaDesc#</div>
-	</td>
-</tr>
-<tr>
-	<th scope="row">#stText.Login.delay#</th>
-	<td>
-		<select name="delay"><cfset hasDelay=false>
-        	<cfloop list="0,1,5,10,30,60" index="i"><option <cfif settings.delay EQ i><cfset hasDelay=true>selected="selected"</cfif>>#i#</option></cfloop>
-            <cfif not hasDelay><option selected="selected">#settings.delay#</option></cfif>
-        </select> #stText.Login.seconds#<br /><div class="comment">#stText.Login.delayDesc#</div>
-	</td>
-</tr>
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-	</td>
-</tr>
-</cfform></cfoutput>
-</table>
-<br><br>
+	<cfoutput>
+		<h2>#stText.Login.settings#</h2>
+		<cfform action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl">
+				<tbody>
+					<tr>
+						<th scope="row">#stText.Login.useCaptcha#</th>
+						<td>
+							<cfinput type="checkbox" name="captcha" checked="#settings.captcha#" value="true">
+							<div class="comment">#stText.Login.useCaptchaDesc#</div>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.Login.delay#</th>
+						<td>
+							<select name="delay"><cfset hasDelay=false>
+								<cfloop list="0,1,5,10,30,60" index="i"><option <cfif settings.delay EQ i><cfset hasDelay=true>selected="selected"</cfif>>#i#</option></cfloop>
+								<cfif not hasDelay><option selected="selected">#settings.delay#</option></cfif>
+							</select> #stText.Login.seconds#
+							<div class="comment">#stText.Login.delayDesc#</div>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.save#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</cfform>
+	</cfoutput>
 </cfif>
-<!--- 
-change password --->
+
+<!--- change password --->
 <cfoutput>
-  
-<table class="tbl" width="740">
-<tr>
-	<td colspan="3"><h2>#stText.Login.ChangePassword#</h2>#stText.Login.ChangePasswordDescription#</td>
-</tr>
+	<h2>#stText.Login.ChangePassword#</h2>
+	<div class="itemintro">#stText.Login.ChangePasswordDescription#</div>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.Login.OldPassword#</th>
+					<td>
+						<cfinput type="password" name="_old_password" value="" passthrough='autocomplete="off"'
+						class="medium" required="yes" message="#stText.Login.OldPasswordMissing#">
+						<div class="comment">#stText.Login.OldPasswordDescription#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Login.NewPassword#</th>
+					<td>
+						<cfinput type="password" name="_new_password" value="" passthrough='autocomplete="off"'
+						class="medium" required="yes" message="#stText.Login.NewPasswordMissing#">
+						<div class="comment">#stText.Login.NewPasswordDescription#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Login.RetypePassword#</th>
+					<td>
+						<cfinput type="password" name="_new_password_re" value="" passthrough='autocomplete="off"' 
+						class="medium" required="yes" message="#stText.Login.RetypeNewPasswordMissing#">
+						<div class="comment">#stText.Login.RetypeNewPassword#</div>
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+						<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Change#">
+						<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
 </cfoutput>
 
-<cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<tr>
-	<th scope="row">#stText.Login.OldPassword#</th>
-	<td>
-		<div class="comment">#stText.Login.OldPasswordDescription#</div><br>
-		<cfinput type="password" name="_old_password" value="" passthrough='autocomplete="off"'
-		style="width:200px" required="yes" message="#stText.Login.OldPasswordMissing#">
-	</td>
-</tr>
-<tr>
-	<th scope="row">#stText.Login.NewPassword#</th>
-	<td>
-		<div class="comment">#stText.Login.NewPasswordDescription#</div><br>
-		<cfinput type="password" name="_new_password" value="" passthrough='autocomplete="off"'
-		style="width:200px" required="yes" message="#stText.Login.NewPasswordMissing#">
-	</td>
-</tr>
-<tr>
-	<th scope="row">#stText.Login.RetypePassword#</th>
-	<td>
-		<div class="comment">#stText.Login.RetypeNewPassword#</div><br>
-		<cfinput type="password" name="_new_password_re" value="" passthrough='autocomplete="off"' 
-		style="width:200px" required="yes" message="#stText.Login.RetypeNewPasswordMissing#">
-	</td>
-</tr>
-
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Change#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-	</td>
-</tr>
-</cfform></cfoutput>
-</table>
-<br><br>
-
 <cfif request.adminType EQ "server">
-<cftry>
-	<cfset hasDefaultPW=true>
-	<cfadmin 
-		action="getDefaultPassword"
-		type="#request.adminType#"
-		password="#session["password"&request.adminType]#"
-		returnVariable="defaultPassword">
+	<cftry>
+		<cfset hasDefaultPW=true>
+		<cfadmin 
+			action="getDefaultPassword"
+			type="#request.adminType#"
+			password="#session["password"&request.adminType]#"
+			returnVariable="defaultPassword">
 		<cfcatch type="any">
 			<cfset hasDefaultPW=false>
 		</cfcatch>
-</cftry>
-<!--- 
-Set default password --->
-<cfif hasDefaultPW>
-<cfoutput>
-<h2>#stText.Login.DefaultPassword#</h2>
-<table class="tbl" width="600">
-<tr>
-	<td colspan="3">#stText.Login.DefaultPasswordDescription#</td>
-</tr>
-</cfoutput>
-<tr>
-	<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<tr>
-	<th scope="row">#stText.Login.Password#</th>
-	<td>
-		<div class="comment">#stText.Login.NewPasswordDescription#</div><br>
-		<cfinput type="text" name="_new_password" value="#defaultPassword#" 
-		style="width:200px" required="no" message="#stText.Login.NewPasswordMissing#">
-	</td>
-</tr>
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.delete#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-	</td>
-</tr>
-</cfform></cfoutput>
-</table>
-<br><br>
-</cfif>
+	</cftry>
+	<!--- Set default password --->
+	<cfif hasDefaultPW>
+		<cfoutput>
+			<h2>#stText.Login.DefaultPassword#</h2>
+			<div class="itemintro">#stText.Login.DefaultPasswordDescription#</div>
+			<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+				<table class="maintbl">
+					<tbody>
+						<tr>
+							<th scope="row">#stText.Login.Password#</th>
+							<td>
+								<cfinput type="password" name="_new_password" value="#defaultPassword#" 
+								class="medium" required="no" message="#stText.Login.NewPasswordMissing#">
+								<div class="comment">#stText.Login.NewPasswordDescription#</div>
+							</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.delete#">
+								<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</cfform>
+		</cfoutput>
+	</cfif>
 
 
-<cfset hasContextes=true>
-<cftry>
-<cfadmin 
-					action="getContextes"
-					type="#request.adminType#"
-					password="#session["password"&request.adminType]#"
-					returnVariable="contextes">
-	<cfcatch type="application">
-		<cfset hasContextes=false>
-	</cfcatch>
-</cftry>					
-<cfif hasContextes>
-<!--- 
-Reset Password --->
-<cfoutput><h2>#stText.Login.resetWebPW#</h2>
-<table class="tbl" width="600">
-<tr>
-	<td colspan="3">#stText.Login.resetWebPWDescription#</td>
-</tr>
-</cfoutput>
-<tr>
-	<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfoutput><cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<tr>
-	<th scope="row">#stText.Login.web#</th>
-	<td>
-		<cfsilent>
-		<cfset size=0>
-		<cfset QueryAddColumn(contextes,"text",array())>
-		<cfloop query="contextes">
-				<cfif len(contextes.label)><cfset path=contextes.label&" ("&contextes.path&")"><cfelse><cfset path=contextes.path></cfif>
-				<cfset contextes.text=path>
-				<cfif size LT len(path)><cfset size=len(path)></cfif>
-		</cfloop>
-		</cfsilent>
-		<select name="contextPath">
-				<option value=""></option>
-			<cfloop query="contextes"><option value="#contextes.path#">#contextes.text#</option></cfloop>
-		</select>
-	</td>
-</tr>
-
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Reset#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-	</td>
-</tr>
-</cfform></cfoutput>
-</table>
-<br><br>
-</cfif>
-
-
+	<cfset hasContextes=true>
+	<cftry>
+		<cfadmin 
+			action="getContextes"
+			type="#request.adminType#"
+			password="#session["password"&request.adminType]#"
+			returnVariable="contextes">
+		<cfcatch type="application">
+			<cfset hasContextes=false>
+		</cfcatch>
+	</cftry>					
+	<cfif hasContextes>
+		<!--- Reset Password --->
+		<cfoutput>
+			<h2>#stText.Login.resetWebPW#</h2>
+			<div class="itemintro">#stText.Login.resetWebPWDescription#</div>
+			<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+				<table class="maintbl">
+					<tbody>
+						<tr>
+							<th scope="row">#stText.Login.web#</th>
+							<td>
+								<cfsilent>
+								<cfset size=0>
+								<cfset QueryAddColumn(contextes,"text",array())>
+								<cfloop query="contextes">
+										<cfif len(contextes.label)><cfset path=contextes.label&" ("&contextes.path&")"><cfelse><cfset path=contextes.path></cfif>
+										<cfset contextes.text=path>
+										<cfif size LT len(path)><cfset size=len(path)></cfif>
+								</cfloop>
+								</cfsilent>
+								<select name="contextPath">
+										<option value="">#stText.Login.chooseWebContext#</option>
+									<cfloop query="contextes"><option value="#contextes.path#">#contextes.text#</option></cfloop>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Reset#">
+								<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</cfform>
+		</cfoutput>
+	</cfif>
 </cfif>

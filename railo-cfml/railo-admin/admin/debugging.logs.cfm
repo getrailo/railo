@@ -15,16 +15,16 @@
 	secType="debugging">
     
 <cfif isWeb>
-<cfadmin 
-	action="getLoggedDebugData"
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
-	returnVariable="logs">
-<cfadmin 
-	action="getDebugEntry"
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
-	returnVariable="entries">
+	<cfadmin 
+		action="getLoggedDebugData"
+		type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+		returnVariable="logs">
+	<cfadmin 
+		action="getDebugEntry"
+		type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+		returnVariable="entries">
 </cfif>    
 <cfadmin 
 	action="getDebugSetting"
@@ -99,186 +99,172 @@ Redirtect to entry --->
 
 
 <cfoutput>
-<h2>#stText.debug.settingTitle#</h2>
-#stText.debug.settingDesc#
-<table class="tbl" width="480">
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
-<tr>
-	<th scope="row">#stText.debug.maxLogs#</th>
-	<td width="90"><select name="maxLogs">
-   <cfset selected=false><cfloop list="10,20,50,100,200,500,1000" index="idx"><option <cfif idx EQ setting.maxLogs><cfset selected=true>selected="selected"</cfif> value="#idx#">#idx#</option></cfloop>
-   <cfif !selected><option selected="selected" value="#setting.maxLogs#">#setting.maxLogs#</option></cfif>
-    </select></td>
-</tr>
-<!---
-<tr>
-	<th scope="row">#stText.debug.minExeTime#</th>
-	<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.minExeTimeDesc#</span></td>
-</tr>
-<tr>
-	<th scope="row">#stText.debug.pathRestriction#</th>
-	<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
-</tr>
---->
-<cfmodule template="remoteclients.cfm" colspan="2">
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr>
-</cfform>
-</table>
-<br /><br />
-
-
-
-<cfif isWeb>
-<!---<h2>#stText.debug.filterTitle#</h2>
-<table class="tbl" width="740">
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
-
-<tr>
-	<th scope="row">#stText.debug.minExeTime#</th>
-	<td>
-    	<table class="tbl">
-        <tr>
-            <td class="tblHead" >Total</td
-        </tr>
-        <tr>
-            <td><input name="minExeTimeTotal" value="0" style="width:60px"/></td>
-        </tr>
-    	</table>
-    </td>
-</tr>
-<tr>
-	<th scope="row">#stText.debug.pathRestriction#</th>
-	<td><textarea name="pathRestriction" cols="60" rows="10" style="width:100%"></textarea><br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
-</tr>
-<cfmodule template="remoteclients.cfm" colspan="2">
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-	</td>
-</tr>
-</cfform>
-</table>
-<br /><br />--->
-
-
-<h2>#stText.debug.outputTitle#</h2>
-#stText.debug.outputDesc#
-<table class="tbl" width="740">
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
-<colgroup>
-	<col width="400"/>
-	<col width="220"/>
-	<col width="40"/>
-	<col width="40"/>
-	<col width="40"/>
-</colgroup>
-
-
-<tr>
-	<th scope="row">#stText.Debug.path#</th>
-	<th scope="row">#stText.Debug.reqTime#</th>
-	<th scope="row">#stText.Debug.exeTime#</th>
-</tr>
-<tr>
-	<th scope="row">#stText.Debug.exeTimeQuery#</th>
-	<th scope="row">#stText.Debug.exeTimeApp#</th>
-	<th scope="row">#stText.Debug.exeTimeTotal#</th>
-</tr>
-
-
-<tr>
-    <td colspan="5"></td>
-</tr>
-<tr>
-    <td class="tblHead" nowrap><input type="text" name="path" style="width:100%" value="#session.debugFilter.path#" /><br />
-    	<div class="comment">#stText.Debug.filterPath#</div></td>
-    <th scope="row"><input type="text" name="IntervalFilter" style="width:100%" value="#session.debugFilter.path#" /></th>
-    <th scope="row"><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></th>
-    <th scope="row"><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></th>
-    <th scope="row"><input type="text" name="urlFilter" style="width:40px" value="#session.debugFilter.path#" /></th>
-</tr>
-<tr>
-    <th scope="row"><input type="submit" name="filter" class="button submit" value="#stText.Debug.filter#" style="width:100%"/></th>
-</tr>
-<tr>
-    <td colspan="5"></td>
-</tr>
-
-
-
-
-
-
-
-
-
-<cfloop from="1" to="#arrayLen(logs)#" index="i">
-<cfset el=logs[i]>
-<cfset _total=0><cfloop query="el.pages"><cfset _total+=el.pages.total></cfloop>
-<cfset _query=0><cfloop query="el.pages"><cfset _query+=el.pages.query></cfloop>
-<cfset _app=0><cfloop query="el.pages"><cfset _app+=el.pages.app></cfloop>	
-<tr>
-	<td><a href="#request.self#?action=#url.action#">#el.cgi.SCRIPT_NAME##len(el.cgi.QUERY_STRING)?"?"& el.cgi.QUERY_STRING:""#</a></td>
-	<td>#LSDateFormat(el.starttime)# #LSTimeFormat(el.starttime)#</td>
-	<td>#_query#</td>
-	<td>#_app#</td>
-	<td>#_total#</td>
-</tr>
-</cfloop>
-
-<!--- 
-<tr>
-	<td colspan="2">
-		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr>
---->
-
-</cfform>
-</table>
-
-<cfif StructKeyExists(url,"id")>
+	<h2>#stText.debug.settingTitle#</h2>
+	<div class="pageintro">
+		#stText.debug.settingDesc#
+	</div>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.debug.maxLogs#</th>
+					<td>
+						<select name="maxLogs">
+							<cfset selected=false>
+							<cfloop list="10,20,50,100,200,500,1000" index="idx">
+								<option <cfif idx EQ setting.maxLogs><cfset selected=true>selected="selected"</cfif> value="#idx#">#idx#</option>
+							</cfloop>
+							<cfif !selected>
+								<option selected="selected" value="#setting.maxLogs#">#setting.maxLogs#</option>
+							</cfif>
+						</select>
+					</td>
+				</tr>
+				<!---
+				<tr>
+					<th scope="row">#stText.debug.minExeTime#</th>
+					<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.minExeTimeDesc#</span></td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.debug.pathRestriction#</th>
+					<td><input name="minExeTime" value="0" style="width:60px"/> ms<br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
+				</tr>
+				--->
+				<cfmodule template="remoteclients.cfm" colspan="2">
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+						<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+						<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+						<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
 	
-<!--- load available drivers --->
-	<cfset drivers=struct()>
-    <cfdirectory directory="./debug" action="list" name="dir" recurse="no" filter="*.cfc">
-    <cfloop query="dir">
-    	<cfif dir.name EQ "Debug.cfc" or dir.name EQ "Field.cfc" or dir.name EQ "Group.cfc">
-        	<cfcontinue>
-        </cfif>
-    	<cfset tmp=createObject('component','debug/#ReplaceNoCase(dir.name,'.cfc','')#')>
-        <cfset drivers[trim(tmp.getId())]=tmp>
-    </cfloop>
-    <cfset driver=drivers["railo-classic"]>
+	<cfif isWeb>
+		<!---<h2>#stText.debug.filterTitle#</h2>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
+		<table class="tbl" width="740">
+		<tr>
+			<th scope="row">#stText.debug.minExeTime#</th>
+			<td>
+				<table class="tbl">
+				<tr>
+					<td class="tblHead" >Total</td
+				</tr>
+				<tr>
+					<td><input name="minExeTimeTotal" value="0" style="width:60px"/></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">#stText.debug.pathRestriction#</th>
+			<td><textarea name="pathRestriction" cols="60" rows="10" style="width:100%"></textarea><br /><span class="comment">#stText.debug.pathRestrictionDesc#</span></td>
+		</tr>
+		<cfmodule template="remoteclients.cfm" colspan="2">
+		<tr>
+			<td colspan="2">
+				<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+			</td>
+		</tr>
+		</cfform>
+		</table>
+		<br /><br />--->
 	
+		<h2>#stText.debug.outputTitle#</h2>
+		<div class="itemintro">#stText.debug.outputDesc#</div>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
+			<table class="maintbl">
+				<thead>
+					<tr>
+						<th width="50%" rowspan="2">#stText.Debug.path#</th>
+						<th width="35%" rowspan="2">#stText.Debug.reqTime#</th>
+						<th width="15%" colspan="3">#stText.Debug.exeTime#</th>
+					</tr>
+					<tr>
+						<th width="5%">#stText.Debug.exeTimeQuery#</th>
+						<th width="5%">#stText.Debug.exeTimeApp#</th>
+						<th width="5%">#stText.Debug.exeTimeTotal#</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<input type="text" name="path" class="xlarge" value="#session.debugFilter.path#" />
+							<div class="comment">#stText.Debug.filterPath#</div>
+						</td>
+						<td><input type="text" name="IntervalFilter" class="xlarge" value="#session.debugFilter.path#" /></td>
+						<td><input type="text" name="urlFilter" class="number" value="#session.debugFilter.path#" /></td>
+						<td><input type="text" name="urlFilter" class="number" value="#session.debugFilter.path#" /></td>
+						<td><input type="text" name="urlFilter" class="number" value="#session.debugFilter.path#" /></td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="5"><input type="submit" name="filter" class="button submit" value="#stText.Debug.filter#" /></th>
+					</tr>
+				</tfoot>
+				<cfif not arrayIsEmpty(logs)>
+					<tbody>
+						<cfloop from="1" to="#arrayLen(logs)#" index="i">
+							<cfset el=logs[i]>
+							<cfset _total=0><cfloop query="el.pages"><cfset _total+=el.pages.total></cfloop>
+							<cfset _query=0><cfloop query="el.pages"><cfset _query+=el.pages.query></cfloop>
+							<cfset _app=0><cfloop query="el.pages"><cfset _app+=el.pages.app></cfloop>	
+							<tr>
+								<td><a href="#request.self#?action=#url.action#">#el.cgi.SCRIPT_NAME##len(el.cgi.QUERY_STRING)?"?"& el.cgi.QUERY_STRING:""#</a></td>
+								<td>#LSDateFormat(el.starttime)# #LSTimeFormat(el.starttime)#</td>
+								<td>#_query#</td>
+								<td>#_app#</td>
+								<td>#_total#</td>
+							</tr>
+						</cfloop>
+					</tbody>
+				</cfif>
+			</table>
+		</cfform>
+	<!--- 
+	<tr>
+		<td colspan="2">
+			<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+			<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+		</td>
+	</tr>
+	--->
 	
-	<cfloop query="entries">
-		<cfif entries.type EQ "railo-classic">
-        	<cfset entry=querySlice(entries, entries.currentrow ,1)>
-        </cfif>    
-    </cfloop>
-	
-	
-	
-	<cfset log=logs[id]>
-    
-	<cfset driver.output(entry.custom,log)>    
-    
-    
-<cfdump var="#driver#">
-<cfdump var="#entry#">
-<cfdump var="#log#">
-
-</cfif>
-
-</cfif>
+		<cfif StructKeyExists(url,"id")>
+			<!--- load available drivers --->
+			<cfset drivers=struct()>
+			<cfdirectory directory="./debug" action="list" name="dir" recurse="no" filter="*.cfc">
+			<cfloop query="dir">
+				<cfif dir.name EQ "Debug.cfc" or dir.name EQ "Field.cfc" or dir.name EQ "Group.cfc">
+					<cfcontinue>
+				</cfif>
+				<cfset tmp=createObject('component','debug/#ReplaceNoCase(dir.name,'.cfc','')#')>
+				<cfset drivers[trim(tmp.getId())]=tmp>
+			</cfloop>
+			<cfset driver=drivers["railo-classic"]>
+			
+			
+			<cfloop query="entries">
+				<cfif entries.type EQ "railo-classic">
+					<cfset entry=querySlice(entries, entries.currentrow ,1)>
+				</cfif>    
+			</cfloop>
+		
+			<cfset log=logs[id]>
+		
+			<cfset driver.output(entry.custom,log)>    
+					
+			<cfdump var="#driver#">
+			<cfdump var="#entry#">
+			<cfdump var="#log#">
+		</cfif>
+	</cfif>
 </cfoutput>
