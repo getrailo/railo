@@ -20,14 +20,10 @@
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
 <cfform onerror="customError" action="#request.self#?virtual=#mapping.virtual#&action=#url.action#&action2=#url.action2#" method="post">
-<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
+<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
 <input type="hidden"  name="row_#mapping.id#" value="#mapping.id#">
+<input type="hidden"  name="virtual_#mapping.id#" value="#mapping.virtual#">
 
-<tr>
-	<td class="tblHead" width="150">#stText.Mappings.VirtualHead#</td>
-	<td class="tblContent" title="#mapping.virtual#" nowrap><input type="hidden" 
-			name="virtual_#mapping.id#" value="#mapping.virtual#">#mapping.virtual#</td>
-</tr>
 <tr>
 	<td class="tblHead" width="150">#stText.Mappings.PhysicalHead#</td>
 	<cfset css=iif(len(mapping.physical) EQ 0 and len(mapping.strPhysical) NEQ 0,de('Red'),de(''))>
@@ -74,26 +70,23 @@
     </cfif></td>
 </tr>
 
-<tr>
-	<td class="tblHead" width="150">#stText.Mappings.ToplevelHead#</td>
-	<td class="tblContent" nowrap><cfif mapping.readOnly>#iif(mapping.toplevel,de("Yes"),de("No"))#<cfelse><input 
-	type="checkbox" class="checkbox" name="toplevel_#mapping.id#" 
-	value="yes" <cfif mapping.toplevel>checked</cfif>></cfif>
-    <br /><span class="comment">#stText.Mappings.ToplevelDesc#</span></td>
-</tr>
-
 <cfif hasAccess>
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
+		<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
 		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </cfif>
-
-
 </table>
+
+
+<!---
+
+
+
+Compile --->
 <br />
 <h2>#stText.Mappings.compileTitle#</h2>
 #stText.Mappings.compileDesc#

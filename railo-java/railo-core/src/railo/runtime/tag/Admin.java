@@ -23,6 +23,7 @@ import org.opencfml.eventgateway.Gateway;
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
 import railo.commons.io.CompressUtil;
+import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.Cache2;
@@ -38,6 +39,7 @@ import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
+import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
 import railo.runtime.CFMLFactoryImpl;
@@ -175,6 +177,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Key PROCEDURE = KeyImpl.intern("procedure");
 	private static final Key SERVER_LIBRARY = KeyImpl.intern("serverlibrary");
 	private static final Key KEEP_ALIVE = KeyImpl.intern("keepalive");
+
+	private static final short MAPPING_REGULAR = 1;
+	private static final short MAPPING_CT = 2;
+	private static final short MAPPING_CFC = 4;
 	
 	
 	
@@ -680,7 +686,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updatesecuritymanager",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE            )) doUpdateSecurityManager();
         else if(check("updatedefaultsecuritymanager",ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE       )) doUpdateDefaultSecurityManager();
         else if(check("compileMapping",         ACCESS_FREE) && check2(ACCESS_WRITE             )) doCompileMapping();
-        else if(check("createArchive",         ACCESS_FREE) && check2(ACCESS_WRITE             )) doCreateArchive();
+        else if(check("compileComponentMapping",         ACCESS_FREE) && check2(ACCESS_WRITE             )) doCompileComponentMapping();
+        else if(check("compileCTMapping",         ACCESS_FREE) && check2(ACCESS_WRITE             )) doCompileCTMapping();
+        else if(check("createArchive",         ACCESS_FREE) && check2(ACCESS_WRITE             )) doCreateArchive(MAPPING_REGULAR);
+        else if(check("createComponentArchive",         ACCESS_FREE) && check2(ACCESS_WRITE             )) doCreateArchive(MAPPING_CFC);
+        else if(check("createCTArchive",         ACCESS_FREE) && check2(ACCESS_WRITE             )) doCreateArchive(MAPPING_CT);
         else if(check("reload",  		        ACCESS_FREE) && check2(ACCESS_WRITE            )) doReload();
     	
 
@@ -769,7 +779,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         adminSync.broadcast(attributes, config);
     }
     
-    private void doCreateArchive() throws PageException {
+    private void doCreateArchive(short mappingType) throws PageException {
     	String virtual = getString("admin",action,"virtual").toLowerCase();
     	String strFile = getString("admin",action,"file");
     	Resource file = ResourceUtil.toResourceNotExisting(pageContext, strFile);
@@ -777,33 +787,95 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	boolean secure = getBoolV("secure", false);
     	
     	// compile
-    	Mapping mapping = doCompileMapping(virtual, true);
+    	Mapping mapping = doCompileMapping(mappingType,virtual, true);
         
     	// class files 
     	if(mapping==null)throw new ApplicationException("there is no mapping for ["+virtual+"]");
     	if(!mapping.hasPhysical())throw new ApplicationException("mapping ["+virtual+"] has no physical directory");
     	
     	Resource classRoot = mapping.getClassRootDirectory();
-    	
+    	Resource temp = SystemUtil.getTempDirectory().getRealResource("mani-"+IDGenerator.stringId());
+		Resource mani = temp.getRealResource("META-INF/MANIFEST.MF");
+		
     	try {
     		if(file.exists())file.delete();
     		if(!file.exists())file.createFile(true);
         	//Resource ra = ResourceUtil.toResourceNotExisting(pageContext, "zip://"+file.getPath());
         	//ResourceUtil.copyRecursive(classRoot, ra);
-    		filter=new ExtensionResourceFilter(new String[]{"class","cfm","cfml","cfc"},true,true);
+    		if(mappingType==MAPPING_CFC)filter=new ExtensionResourceFilter(new String[]{"class","cfc","MF"},true,true);
+    		else filter=new ExtensionResourceFilter(new String[]{"class","cfm","cfml","cfc","MF"},true,true);
 			
+    		// create manifest
+    		StringBuilder manifest=new StringBuilder();
+    		
+    		manifest.append("Mapping-Type: \"");
+    		if(mappingType==MAPPING_CFC)manifest.append("cfc");
+    		else if(mappingType==MAPPING_CT)manifest.append("ct");
+    		else manifest.append("regular");
+    		manifest.append("\"\n");
+    		
+    		if(mappingType==MAPPING_REGULAR) {
+    			manifest.append("Mapping-Virtual-Path: \"");
+    			manifest.append(mapping.getVirtual());
+        		manifest.append("\"\n");
+    		}
+    		
+    		mani.createFile(true);
+    		IOUtil.write(mani, manifest.toString(), "UTF-8", false);
+    		
 		// source files
-			if(!secure) {
-				Resource physical = mapping.getPhysical();
-				// ResourceUtil.copyRecursive(physical, ra,new ExtensionResourceFilter(new String[]{"cfm","cfml","cfc"},true));
-				CompressUtil.compressZip(ResourceUtil.listResources(new Resource[]{physical,classRoot},filter), file, filter);
-			}
-			else {
-				CompressUtil.compressZip(classRoot.listResources(filter), file, filter);
-			}
+    		Resource[] sources;
+			if(!secure) sources=new Resource[]{temp,mapping.getPhysical(),classRoot};
+			else sources=new Resource[]{temp,classRoot};
+				
+			/*ZipOutputStream zos = null;
+	        try {
+	        	zos = new ZipOutputStream(IOUtil.toBufferedOutputStream(file.getOutputStream()));
+	        	CompressUtil.compressZip(sources, zos, filter);
+	        	
+	        	// Manifest
+	        	ZipEntry ze=new ZipEntry("/META-INF2/MANIFEST.MF");
+	    		ze.setTime(System.currentTimeMillis());
+	    		zos.putNextEntry(ze);
+	            try {
+	                IOUtil.copy(new ByteArrayInputStream(manifest.toString().getBytes("UTF-8")),zos,false,false);
+	            } 
+	            finally {
+	                zos.closeEntry();
+	            }
+	        	
+	        	
+	        }
+	        finally {
+	            IOUtil.closeEL(zos);
+	        }*/
+			
+			CompressUtil.compressZip(ResourceUtil.listResources(sources,filter), file, filter);
+			
+			
+			
 			
 			if(getBoolV("append", false)) {
-				admin.updateMapping(
+				if(mappingType==MAPPING_CFC) {
+					admin.updateComponentMapping(
+							mapping.getVirtual(),
+			                mapping.getStrPhysical(),
+			                strFile,
+			                mapping.isPhysicalFirst()?"physical":"archive",
+			                mapping.isTrusted());
+			     }
+				else if(mappingType==MAPPING_CT) {
+					admin.updateCustomTag(
+							mapping.getVirtual(),
+			                mapping.getStrPhysical(),
+			                strFile,
+			                mapping.isPhysicalFirst()?"physical":"archive",
+			                mapping.isTrusted());
+					
+				}
+				
+				else 
+					admin.updateMapping(
 						mapping.getVirtual(),
 		                mapping.getStrPhysical(),
 		                strFile,
@@ -819,29 +891,46 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	catch (IOException e) {
 			throw Caster.toPageException(e); 
 		}
+    	finally{
+    		ResourceUtil.removeEL(temp, true);
+    	}
     	adminSync.broadcast(attributes, config);
     }
     private void doCompileMapping() throws PageException {
-        doCompileMapping(getString("admin",action,"virtual").toLowerCase(), getBoolV("stoponerror", true));
+        doCompileMapping(MAPPING_REGULAR,getString("admin",action,"virtual").toLowerCase(), getBoolV("stoponerror", true));
+        adminSync.broadcast(attributes, config);
+    }
+    private void doCompileComponentMapping() throws PageException {
+        doCompileMapping(MAPPING_CFC,getString("admin",action,"virtual").toLowerCase(), getBoolV("stoponerror", true));
+        adminSync.broadcast(attributes, config);
+    }
+    private void doCompileCTMapping() throws PageException {
+        doCompileMapping(MAPPING_CT,getString("admin",action,"virtual").toLowerCase(), getBoolV("stoponerror", true));
         adminSync.broadcast(attributes, config);
     }
     
-    private Mapping doCompileMapping(String virtual, boolean stoponerror) throws PageException {
+    private Mapping doCompileMapping(short mappingType,String virtual, boolean stoponerror) throws PageException {
         
         if(StringUtil.isEmpty(virtual))return null;
         
         if(!StringUtil.startsWith(virtual,'/'))virtual='/'+virtual;
         if(!StringUtil.endsWith(virtual,'/'))virtual+='/';
         
-        Mapping[] mappings = config.getMappings();
+        Mapping[] mappings = null;
+        if(mappingType==MAPPING_CFC)mappings=config.getComponentMappings();
+        else if(mappingType==MAPPING_CT)mappings=config.getCustomTagMappings();
+        else mappings=config.getMappings();
+        
+        
+        
         for(int i=0;i<mappings.length;i++) {
             Mapping mapping = mappings[i];
             if(mapping.getVirtualLowerCaseWithSlash().equals(virtual)) {
-            	Map errors = stoponerror?null:new HashTable();
+            	Map<String,String> errors = stoponerror?null:new HashTable();
                 doCompileFile(mapping,mapping.getPhysical(),"",errors);
                 if(errors!=null && errors.size()>0) {
                 	StringBuffer sb=new StringBuffer();
-                	Iterator it = errors.keySet().iterator();
+                	Iterator<String> it = errors.keySet().iterator();
                 	Object key;
                 	while(it.hasNext()) {
                 		key=it.next();
