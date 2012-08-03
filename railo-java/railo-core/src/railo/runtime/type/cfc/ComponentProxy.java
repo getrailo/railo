@@ -6,6 +6,7 @@ import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
@@ -20,7 +21,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ComponentProxy implements Component {
+public abstract class ComponentProxy implements ComponentPro {
 	
 	public abstract Component getComponent(); 
 	
@@ -455,11 +456,14 @@ public abstract class ComponentProxy implements Component {
 		return getComponent().callWithNamedValues(pc, methodName, args);
 	}
 	
-	/**
-	 * @see railo.runtime.Component#getProperties(boolean)
-	 */
+	@Override
 	public Property[] getProperties(boolean onlyPeristent) {
 		return getComponent().getProperties(onlyPeristent);
+	}
+	
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return ((ComponentPro)getComponent()).getProperties(onlyPeristent,includeBaseProperties);
 	}
 
 	/**

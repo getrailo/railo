@@ -28,7 +28,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * 
  */
-public class SuperComponent extends MemberSupport implements Component, Member,Sizeable {
+public class SuperComponent extends MemberSupport implements ComponentPro, Member,Sizeable {
 	
 	private ComponentImpl comp;
 
@@ -606,6 +606,12 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
 	}
+	
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return comp.getProperties(onlyPeristent,includeBaseProperties);
+	}
+	
+	
 
 	/**
 	 * @see railo.runtime.Component#getComponentScope()

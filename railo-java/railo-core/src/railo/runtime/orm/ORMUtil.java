@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
@@ -119,7 +120,7 @@ public class ORMUtil {
 		
 		if(left==null || right==null) return false;
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
-		Property[] props = left.getProperties(true);
+		Property[] props = getProperties(left);
 		Object l,r;
 		props=HBMCreator.getIds(null,null,props,null,true);
 		for(int i=0;i<props.length;i++){
@@ -131,11 +132,18 @@ public class ORMUtil {
 	}
 	
 	public static Object getPropertyValue(Component cfc, String name, Object defaultValue) {
-		Property[] props = cfc.getProperties(true);
+		Property[] props=getProperties(cfc);
+		
 		for(int i=0;i<props.length;i++){
 			if(!props[i].getName().equalsIgnoreCase(name)) continue;
 			return cfc.getComponentScope().get(KeyImpl.getInstance(name),null);
 		}
 		return defaultValue;
+	}
+
+	private static Property[] getProperties(Component cfc) {
+		if(cfc instanceof ComponentPro)
+			return ((ComponentPro)cfc).getProperties(true,true);
+		return cfc.getProperties(true);
 	}
 }
