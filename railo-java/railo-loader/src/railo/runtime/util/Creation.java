@@ -14,6 +14,8 @@ import javax.servlet.http.HttpSession;
 import org.w3c.dom.Document;
 
 import railo.commons.io.res.Resource;
+import railo.runtime.Component;
+import railo.runtime.PageContext;
 import railo.runtime.config.RemoteClient;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -47,7 +49,7 @@ public interface Creation {
      * creates and returns a array based on a string list
      * @return array
      */
-    public abstract Array createArray(String list, String delimeter,boolean removeEmptyItem,boolean trim);
+    public abstract Array createArray(String list, String delimiter,boolean removeEmptyItem,boolean trim);
 
     /**
      * creates and returns a DateTime instance
@@ -134,8 +136,18 @@ public interface Creation {
      * @param rows
      * @param name
      * @return created query Object
+     * @deprecated usse instead <code>createQuery(Collection.Key[] columns, int rows, String name)</code>
      */
     public abstract Query createQuery(String[] columns, int rows, String name);
+    
+    /**
+     * creates a query object with given data
+     * @param columns
+     * @param rows
+     * @param name
+     * @return created query Object
+     */
+    public abstract Query createQuery(Collection.Key[] columns, int rows, String name) throws PageException;
 
     /**
 	 * creates a query object with a resultset from a sql query
@@ -211,7 +223,29 @@ public interface Creation {
 
 	public abstract HttpServletRequest createHttpServletRequest(File contextRoot,String serverName, String scriptName,String queryString, 
 			Cookie[] cookies, Map<String,Object> headers, Map<String, String> parameters, Map<String,Object> attributes, HttpSession session);
+	
 	public abstract HttpServletResponse createHttpServletResponse(OutputStream io);
+
+
+	public abstract PageContext createPageContext(HttpServletRequest req, HttpServletResponse rsp, OutputStream out);
+
+	/**
+	 * creates a component object from (Full)Name, for example railo.extensions.net.HTTPUtil
+	 * @param pc Pagecontext for loading the CFC
+	 * @param fullname fullanem of the cfc example:railo.extensions.net.HTTPUtil
+	 * @return loaded cfc
+	 * @throws PageException 
+	 */
+	public abstract Component createComponentFromName(PageContext pc, String fullName) throws PageException;
+	
+	/**
+	 * creates a component object from a absolute local path, for example /Users/susi/Projects/Sorglos/wwwrooot/railo/extensions/net/HTTPUtil.cfc
+	 * @param pc Pagecontext for loading the CFC
+	 * @param path path of the cfc example:/Users/susi/Projects/Sorglos/wwwrooot/railo/extensions/net/HTTPUtil.cfc
+	 * @return loaded cfc
+	 * @throws PageException 
+	 */
+	public abstract Component createComponentFromPath(PageContext pc, String path) throws PageException; 
 	
 
 		

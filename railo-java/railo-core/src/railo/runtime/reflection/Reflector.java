@@ -205,7 +205,7 @@ public final class Reflector {
 	 * @param clazzArgs arguments to display
 	 * @return list
 	 */
-	public static String getDspMethods(Class[] clazzArgs) {
+	public static String getDspMethods(Class... clazzArgs) {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<clazzArgs.length;i++) {
 			if(i>0)sb.append(", ");
@@ -704,6 +704,22 @@ public final class Reflector {
 		} 
 		catch (Exception e) {
 			throw new NativeException(e);
+		}
+	}
+	
+
+	public static Object callMethod(Object obj, Collection.Key methodName, Object[] args, Object defaultValue) {
+		if(obj==null) {
+			return defaultValue;
+		}
+		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
+		if(mi==null)
+		    return defaultValue;
+	    try {
+	    	return mi.invoke(obj);
+        }
+		catch (Throwable t) {
+			return defaultValue;
 		}
 	}
 

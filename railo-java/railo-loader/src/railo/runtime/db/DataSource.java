@@ -1,5 +1,7 @@
 package railo.runtime.db;
 
+import java.util.TimeZone;
+
 import railo.runtime.type.Struct;
 
 /**
@@ -141,6 +143,8 @@ public interface DataSource extends Cloneable {
     public abstract int getConnectionTimeout();
     
     public long getMetaCacheTimeout();
+    
+    public TimeZone getTimeZone();
 
     /**
      * @param key 

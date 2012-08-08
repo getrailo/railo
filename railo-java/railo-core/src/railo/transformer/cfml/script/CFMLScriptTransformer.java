@@ -1,11 +1,10 @@
 package railo.transformer.cfml.script;
 
-import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
@@ -31,17 +30,17 @@ public class CFMLScriptTransformer extends AbstrCFMLScriptTransformer implements
 	 * @param parentTransformer
 	 * @throws TemplateException
 	 */
-	public void transform(Config config,Page page,CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag, CFMLString cfml) throws TemplateException	{
+	public void transform(Page page,CFMLTransformer parentTransformer,EvaluatorPool ep,FunctionLib[] fld, Tag tag,TagLibTag libTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings) throws TemplateException	{
 		//Page page = ASMUtil.getAncestorPage(tag);
 		boolean isCFC= page.isComponent();
 		boolean isInterface= page.isInterface();
 		
-		Data data = init(page,ep,fld,cfml,true);
+		Data data = init(page,ep,fld,scriptTags,cfml,settings,true);
 		data.insideFunction=false; 
 		data.tagName=libTag.getFullName();
 		data.isCFC=isCFC;
 		data.isInterface=isInterface;
-		data.scriptTags=((ConfigImpl) config).getCoreTagLib().getScriptTags();
+		//data.scriptTags=((ConfigImpl) config).getCoreTagLib().getScriptTags();
 		
 		tag.setBody(statements(data));
 	}

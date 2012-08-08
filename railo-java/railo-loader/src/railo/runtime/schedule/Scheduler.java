@@ -42,6 +42,17 @@ public interface Scheduler {
      */
     public abstract void addScheduleTask(ScheduleTask task,
             boolean allowOverwrite) throws ScheduleException, IOException;
+    
+    /**
+     * pause the scheduler task
+     * @param name
+     * @param pause
+     * @param throwWhenNotExist
+     * @throws ScheduleException
+     * @throws IOException
+     */
+	public void pauseScheduleTask(String name, 
+			boolean pause, boolean throwWhenNotExist) throws ScheduleException, IOException;
 
     /**
      * removes a task from scheduler
@@ -62,18 +73,6 @@ public interface Scheduler {
      */
     public abstract void runScheduleTask(String name, boolean throwWhenNotExist)
             throws IOException, ScheduleException;
-
-    /**
-     * execute all containing tasks
-     * @deprecated task are self controlled no longer controlled by a controller thread
-     */
-    public abstract void execute();
-
-    /**
-     * @return Returns the nextExecutionTime.
-     * @deprecated task are self controlled no longer controlled by a controller thread
-     */
-    public abstract long getNextExecutionTime();
 
     /**
      * @return Returns the logFile.

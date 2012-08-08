@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function htmlcodeformat
+ * Implements the CFML Function htmlcodeformat
  */
 package railo.runtime.functions.displayFormatting;
 

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function incrementvalue
+ * Implements the CFML Function incrementvalue
  */
 package railo.runtime.functions.math;
 

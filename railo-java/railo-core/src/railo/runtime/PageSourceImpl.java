@@ -17,12 +17,14 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.engine.ThreadLocalPageSource;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * represent a cfml file on the runtime system
@@ -268,7 +270,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         catch(ClassFormatError e) {
         	String msg=StringUtil.emptyIfNull(e.getMessage());
         	if(StringUtil.indexOfIgnoreCase(msg, "Invalid method Code length")!=-1) {
-        		throw new TemplateException("There is to much code inside the template ["+getDisplayPath()+"], Railo was not able to break it into pieces, move parts of your code to an include or a extrenal component/function",msg);
+        		throw new TemplateException("There is too much code inside the template ["+getDisplayPath()+"], Railo was not able to break it into pieces, move parts of your code to an include or a external component/function",msg);
         	}
         	throw Caster.toPageException(e);
         }
@@ -752,13 +754,25 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	return getResource();
     }
     
-    /**
-     * @see railo.runtime.SourceFile#getResource()
-     */
+    @Override
     public Resource getResource() {
     	Resource res = getPhyscalFile();
     	if(res!=null) return res;
     	return getArchiveFile();
+    }
+    
+    @Override
+    public Resource getResourceTranslated(PageContext pc) throws ExpressionException {
+    	Resource res = getPhyscalFile();
+		
+		// there is no physical resource
+		if(res==null){
+        	String path=getDisplayPath();
+        	if(path.startsWith("ra://"))
+        		path="zip://"+path.substring(5);
+        	res=ResourceUtil.toResourceExisting(pc, path,false);
+        }
+		return res;
     }
 
 
@@ -815,6 +829,40 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		SizeOf.size(compName)+
 		SizeOf.size(lastAccess)+
 		SizeOf.size(accessCount);
+	}
+
+	public static PageSource best(PageSource[] arr) {
+		if(ArrayUtil.isEmpty(arr)) return null;
+		if(arr.length==1)return arr[0];
+		for(int i=0;i<arr.length;i++) {
+			if(pageExist(arr[i])) return arr[i];
+		}
+		return arr[0];
+	}
+
+	public static boolean pageExist(PageSource ps) {
+		return (ps.getMapping().isTrusted() && ((PageSourceImpl)ps).isLoad()) || ps.exists();
+	}
+
+	public static Page loadPage(PageContext pc,PageSource[] arr,Page defaultValue) throws PageException {
+		if(ArrayUtil.isEmpty(arr)) return null;
+		Page p;
+		for(int i=0;i<arr.length;i++) {
+			p=arr[i].loadPage(pc,(Page)null);
+			if(p!=null) return p;
+		}
+		return defaultValue;
+	}
+
+	public static Page loadPage(PageContext pc,PageSource[] arr) throws PageException {
+		if(ArrayUtil.isEmpty(arr)) return null;
+		
+		Page p;
+		for(int i=0;i<arr.length;i++) {
+			p=arr[i].loadPage(pc,null);
+			if(p!=null) return p;
+		}
+		throw new MissingIncludeException(arr[0]);
 	}
 	
 	

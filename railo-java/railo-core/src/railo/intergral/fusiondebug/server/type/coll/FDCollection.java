@@ -13,6 +13,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.comparator.TextComparator;
+import railo.runtime.type.util.CollectionUtil;
 
 import com.intergral.fusiondebug.server.FDLanguageException;
 import com.intergral.fusiondebug.server.FDMutabilityException;
@@ -78,7 +79,7 @@ public class FDCollection extends FDValueSupport {
 	}
 	
 	private static Key[] keys(Collection coll) {
-		Key[] keys=coll.keys();
+		Key[] keys=CollectionUtil.keys(coll);
 		if(coll instanceof Array) return keys;
 		TextComparator comp=new TextComparator(true,true);
 		Arrays.sort(keys,comp);

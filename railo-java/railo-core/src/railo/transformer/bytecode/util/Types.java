@@ -197,6 +197,7 @@ public final class Types {
 	public static final Type COLLECTION_KEY_ARRAY = Type.getType(Collection.Key[].class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
 	public static final Type MAP = Type.getType(Map.class);
+	public static final Type MAP_ENTRY = Type.getType(Map.Entry.class);
 	public static final Type CHAR_ARRAY = Type.getType(char[].class);
 	public static final Type IOUTIL = Type.getType(IOUtil.class);
 	public static final Type BODY_CONTENT = Type.getType(BodyContent.class);
@@ -204,6 +205,9 @@ public final class Types {
 	public static final Type IMPORT_DEFINITIONS = Type.getType(ImportDefintion.class);
 	public static final Type IMPORT_DEFINITIONS_IMPL = Type.getType(ImportDefintionImpl.class);
 	public static final Type IMPORT_DEFINITIONS_ARRAY = Type.getType(ImportDefintion[].class);
+	public static final Type CLASS = Type.getType(Class.class);
+	public static final Type CLASS_ARRAY = Type.getType(Class[].class);
+	public static final Type CLASS_LOADER = Type.getType(ClassLoader.class);
 	 
 
 	/**
@@ -250,6 +254,7 @@ public final class Types {
             if("file".equals(lcType)) 								return FILE;
             if("float".equals(type))								return FLOAT_VALUE;
             if("float".equals(lcType))								return FLOAT;
+            if("function".equals(lcType))								return UDF;
         break;
         case 'i':
             if("int".equals(lcType))								return INT_VALUE;
@@ -316,7 +321,7 @@ public final class Types {
 		try {
 			return Type.getType(ClassUtil.loadClass(type));
 		} catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),-1);
+			throw new BytecodeException(e,null);
 		}
 	}
 

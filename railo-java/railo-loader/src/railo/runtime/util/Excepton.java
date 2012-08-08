@@ -161,8 +161,20 @@ public interface Excepton {
      * @param badArgumentName 
      * @param message 
      * @return FunctionException
+     * @deprecated use instead <code>createFunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message, String detail))</code>
      */
     public PageException createFunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message);
+    
+    /**
+     * create exception "FunctionException"
+     * @param pc 
+     * @param functionName 
+     * @param badArgumentPosition 
+     * @param badArgumentName 
+     * @param message 
+     * @return FunctionException
+     */
+    public PageException createFunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message, String detail);
     
     /**
      * create exception "LockException"

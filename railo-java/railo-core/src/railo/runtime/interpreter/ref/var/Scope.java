@@ -13,7 +13,6 @@ import railo.runtime.interpreter.ref.literal.LString;
  */
 public final class Scope extends RefSupport implements Set {
 	
-	private PageContext pc;
 	private int scope;
 
 	/**
@@ -21,37 +20,28 @@ public final class Scope extends RefSupport implements Set {
 	 * @param pc
 	 * @param scope
 	 */
-	public Scope(PageContext pc, int scope) {
-		this.pc=pc;
+	public Scope(int scope) {
 		this.scope=scope;
 	}
 	
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getValue()
-	 */
-	public Object getValue() throws PageException {
+	@Override
+	public Object getValue(PageContext pc) throws PageException {
 		return VariableInterpreter.scope(pc, scope, false);
 	}
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public String getTypeName() {
+	@Override
+    public String getTypeName() {
 		return "scope";
 	}
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#touchValue()
-     */
-    public Object touchValue() throws PageException {
+	@Override
+	public Object touchValue(PageContext pc) throws PageException {
     	return VariableInterpreter.scope(pc, scope, true);
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Set#setValue(java.lang.Object)
-     */
-    public Object setValue(Object obj) throws PageException {
-        return pc.undefinedScope().set(getKeyAsString(),obj);
+    @Override
+    public Object setValue(PageContext pc,Object obj) throws PageException {
+        return pc.undefinedScope().set(getKeyAsString(pc),obj);
     }
 
     /**
@@ -61,24 +51,18 @@ public final class Scope extends RefSupport implements Set {
         return scope;
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Set#getParent()
-     */
-    public Ref getParent() throws PageException {
+    @Override
+    public Ref getParent(PageContext pc) throws PageException {
         return null;
     }
-
-    /**
-     * @see railo.runtime.interpreter.ref.Set#getKey()
-     */
-    public Ref getKey() throws PageException {
-        return new LString(getKeyAsString());
+    
+    @Override
+    public Ref getKey(PageContext pc) throws PageException {
+        return new LString(getKeyAsString(pc));
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Set#getKey()
-     */
-    public String getKeyAsString() throws PageException {
+    @Override
+    public String getKeyAsString(PageContext pc) throws PageException {
         //return ScopeFactory.toStringScope(scope,null);
         return VariableInterpreter.scopeInt2String(scope);
     }

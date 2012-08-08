@@ -4,7 +4,7 @@ import railo.runtime.PageContext;
 import railo.runtime.type.Struct;
 
 /**
- * abstract class for all cold fusion scopes 
+ * abstract class for all scopes 
  */
 public interface Scope extends Struct {
 	
@@ -90,9 +90,14 @@ public interface Scope extends Struct {
 	
 	/**
 	 * release scope for reuse
+	 * @deprecated use instead <code>release(PageContext)</code>
 	 */
 	public void release();
-	// public void release(PageContext pc);// FUTURE add PageContext
+	
+	/**
+	 * release scope for reuse
+	 */
+	public void release(PageContext pc);
 	
     /** 
      * @return return the scope type (SCOPE_SERVER, SCOPE_SESSION usw.) 

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function removechars
+ * Implements the CFML Function removechars
  */
 package railo.runtime.functions.string;
 

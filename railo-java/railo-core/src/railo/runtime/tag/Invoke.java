@@ -10,6 +10,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -153,16 +154,14 @@ public final class Invoke  extends BodyTagImpl implements DynamicAttributes {
 	public void setWebservice(String webservice) {
 		this.webservice = webservice.trim();
 	}
-
 	
-	/**
-	 * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public void setDynamicAttribute(String uri, String localName, Object value) {
-		/*localName=StringUtil.toLowerCase(localName.trim());
-		if(keys.contains(localName))
-			attributes.put(localName, value);
-		else*/
+		setDynamicAttribute(uri, KeyImpl.init(localName), value);
+	}
+	
+	@Override
+	public void setDynamicAttribute(String uri, railo.runtime.type.Collection.Key localName, Object value) {
 		data.setEL(localName, value);
 	}
 

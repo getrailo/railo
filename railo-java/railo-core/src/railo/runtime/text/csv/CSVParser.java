@@ -155,12 +155,12 @@ public final class CSVParser {
 	/**
 	 * Reads a Single value from a CSV File
 	 * @param cfmlStr CFML String containig csv
-	 * @param delimeter delimter splits values
+	 * @param delimiter delimiter splits values
 	 * @param textQualifier text qualifier of the value
 	 * @return parsed value
 	 * @throws CSVParserException
 	 */
-	private String readValue(CFMLString cfmlStr,char delimeter,char textQualifier) throws CSVParserException {
+	private String readValue(CFMLString cfmlStr,char delimiter,char textQualifier) throws CSVParserException {
 		StringBuffer sb=new StringBuffer();
 		cfmlStr.removeSpace();
 		// Quoted String
@@ -185,7 +185,7 @@ public final class CSVParser {
 		}
 		// Pure String	
 		while(!cfmlStr.isAfterLast()) {
-			if(cfmlStr.isCurrent(delimeter) || cfmlStr.getCurrent()=='\n') {
+			if(cfmlStr.isCurrent(delimiter) || cfmlStr.getCurrent()=='\n') {
 				break;
 			}
 			sb.append(cfmlStr.getCurrent());

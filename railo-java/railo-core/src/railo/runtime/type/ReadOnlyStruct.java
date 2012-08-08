@@ -20,13 +20,13 @@ public class ReadOnlyStruct extends StructImpl {
 		this.isReadOnly=isReadOnly;
 	}
 	
-	/**
+	/* *
 	 * @see railo.runtime.type.StructImpl#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
+	 * /
+	public Object remove (String key) throws PageException {
 		if(isReadOnly)throw new ExpressionException("can't remove key ["+key+"] from struct, struct is readonly");
 		return super.remove (KeyImpl.init(key));
-	}
+	}*/
 
 	/**
 	 *

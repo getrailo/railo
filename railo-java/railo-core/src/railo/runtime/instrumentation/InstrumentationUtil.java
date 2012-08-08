@@ -5,7 +5,6 @@ import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -70,9 +69,9 @@ public class InstrumentationUtil {
 	}
 
 	
-	public static class ChangeAdapter extends ClassAdapter {  
+	public static class ChangeAdapter extends ClassVisitor {  
 		public ChangeAdapter(ClassVisitor cv) {  
-		    super(cv);
+		    super(Opcodes.ASM4,cv);
 		}  
 
 			/**

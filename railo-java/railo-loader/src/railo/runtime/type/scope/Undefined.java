@@ -1,8 +1,12 @@
 package railo.runtime.type.scope;
 
+import java.util.List;
+
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
+import railo.runtime.type.Struct;
 import railo.runtime.util.QueryStack;
 
 /**
@@ -31,6 +35,8 @@ public interface Undefined extends Scope {
      */
     public abstract int setMode(int mode);
     
+    public boolean getLocalAlways();
+    
 
     /**
      * sets the functions scopes 
@@ -41,22 +47,9 @@ public interface Undefined extends Scope {
 
     /**
      * @return returns actuell collection stack
-     * @deprecated use instead <code>{@link #getQueryStack()}</code>
-     */
-    public abstract QueryStack getCollectionStack();
-    
-    /**
-     * @return returns actuell collection stack
      */
     public abstract QueryStack getQueryStack();
 
-    /**
-     * sets a individuell collection stack to the undefined scope
-     * @param collStack new collection stack
-     * @deprecated use instead <code>{@link #setQueryStack(QueryStack)}</code>
-     */
-    public abstract void setCollectionStack(QueryStack collStack);
-    
     /**
      * sets a individual query stack to the undefined scope
      * @param qryStack Query stack
@@ -66,22 +59,9 @@ public interface Undefined extends Scope {
     /**
      * add a collection to the undefined scope
      * @param qry  Query to add to undefined scope
-     * @deprecated use instead <code>{@link #addQuery(Query)}</code>
-     */
-    public abstract void addCollection(Query qry);
-
-    /**
-     * add a collection to the undefined scope
-     * @param qry  Query to add to undefined scope
      */
     public abstract void addQuery(Query qry);
 
-    /**
-     * remove a collection from the undefined scope
-     * @deprecated <code>{@link #removeQuery()}</code>
-     */
-    public abstract void removeCollection();
-    
     /**
      * remove a collection from the undefined scope
      */
@@ -96,6 +76,9 @@ public interface Undefined extends Scope {
 	 */
     public abstract Object getCollection(String key) throws PageException;
 
+
+	public List<String> getScopeNames();
+	
     /**
      * return value matching key, if value is from Query return a QueryColumn
      * @param key
@@ -123,5 +106,16 @@ public interface Undefined extends Scope {
      * change the variable scope
      * @param scope
      */
-    public abstract void setVariableScope(Scope scope);
+    public abstract void setVariableScope(Variables scope);
+
+	/**
+	 * @return if check for arguments and local scope values
+	 */
+	public boolean getCheckArguments();
+	
+	public Struct getScope(Collection.Key key);
+	
+	public boolean setAllowImplicidQueryCall(boolean allowImplicidQueryCall);
+	
+	public void reinitialize(PageContext pc) ;
 }

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function int
+ * Implements the CFML Function int
  */
 package railo.runtime.functions.math;
 

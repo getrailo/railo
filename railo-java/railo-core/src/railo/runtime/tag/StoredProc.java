@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.JspException;
 
@@ -42,6 +43,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.KeyConstants;
 
 
 
@@ -388,10 +390,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 
 
 	private ProcResultBean getFirstResult() {
-		Key[] keys = results.keys();
-		if(keys.length==0) return null;
+		Iterator<Key> it = results.keyIterator();
+		if(!it.hasNext()) return null;
 			
-		return (ProcResultBean) results.removeEL(keys[0]);
+		return (ProcResultBean) results.removeEL(it.next());
 	}
 
 	/**
@@ -459,10 +461,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    Object cacheValue=null;
 			if(clearCache) {
 				hasCached=false;
-				pageContext.getQueryCache().remove(_sql,datasource,username,password);
+				pageContext.getQueryCache().remove(pageContext,_sql,datasource,username,password);
 			}
 			else if(hasCached) {
-				cacheValue = pageContext.getQueryCache().get(_sql,datasource,username,password,cachedafter);
+				cacheValue = pageContext.getQueryCache().get(pageContext,_sql,datasource,username,password,cachedafter);
 			}
 			int count=0;
 			if(cacheValue==null){
@@ -517,7 +519,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				}
 			    if(hasCached){
 			    	cache.set(COUNT, Caster.toDouble(count));
-			    	pageContext.getQueryCache().set(_sql,datasource,username,password,cache,cachedbefore);
+			    	pageContext.getQueryCache().set(pageContext,_sql,datasource,username,password,cache,cachedbefore);
 			    }
 			    
 			}
@@ -525,12 +527,13 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				Struct sctCache = (Struct) cacheValue;
 				count=Caster.toIntValue(sctCache.removeEL(COUNT),0);
 				
-				
-				Key[] keys = sctCache.keys();
-				for(int i=0;i<keys.length;i++){
-					if(STATUS_CODE.getVariable().equals(keys[i].getString()))
-						res.set(KEY_SC, sctCache.get(keys[i]));
-					else setVariable(keys[i].getString(), sctCache.get(keys[i]));
+				Iterator<Entry<Key, Object>> cit = sctCache.entryIterator();
+				Entry<Key, Object> ce;
+				while(cit.hasNext()){
+					ce = cit.next();
+					if(STATUS_CODE.getVariable().equals(ce.getKey().getString()))
+						res.set(KEY_SC, ce.getValue());
+					else setVariable(ce.getKey().getString(), ce.getValue());
 				}
 				isFromCache=true;
 			}
@@ -539,11 +542,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    long exe;
 		    
 		    setVariable(this.result, res);
-		    res.set(QueryImpl.EXECUTION_TIME,Caster.toDouble(exe=(System.nanoTime()-startNS)));
-		    res.set(QueryImpl.CACHED,Caster.toBoolean(isFromCache));
+		    res.set(KeyConstants._executionTime,Caster.toDouble(exe=(System.nanoTime()-startNS)));
+		    res.set(KeyConstants._cached,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {
-		    	pageContext.getDebugger().addQueryExecutionTime(datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
+		    	pageContext.getDebugger().addQuery(null,datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
 			}
 		    
 		    
@@ -609,8 +612,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	/**
 	 * @param timeout the timeout to set
 	 */
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
+	public void setTimeout(double timeout) {
+		this.timeout = (int) timeout;
 	}
 	
 	

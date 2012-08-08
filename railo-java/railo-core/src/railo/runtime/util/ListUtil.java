@@ -11,10 +11,10 @@ public final class ListUtil {
 	/**
 	 * creates a List from a String "List"
 	 * @param str String to creates List from
-	 * @param delimeter delimeter to split string
+	 * @param delimiter delimiter to split string
 	 * @return List 
 	 */
-	public static List stringToList(String str,char delimeter) {
+	public static List stringToList(String str,char delimiter) {
 		ArrayList list=new ArrayList();
 		int len=str.length();
 		if(len==0) return list;
@@ -22,7 +22,7 @@ public final class ListUtil {
 		
 		for(int i=0;i<len;i++) {
 			char c=str.charAt(i);
-			if(c==delimeter) {
+			if(c==delimiter) {
 				list.add(el.toString());
 				if(el.length()>0) el=new StringBuffer();
 			}
@@ -37,10 +37,10 @@ public final class ListUtil {
 	/**
 	 * creates a List from a String "List", trims empty values at start and end
 	 * @param str String to creates List from
-	 * @param delimeter delimeter to split string
+	 * @param delimiter delimiter to split string
 	 * @return List 
 	 */
-	public static List stringToListTrim(String str,char delimeter) {
+	public static List stringToListTrim(String str,char delimiter) {
 		ArrayList list=new ArrayList();
 		int len=str.length();
 		if(len==0) return list;
@@ -49,7 +49,7 @@ public final class ListUtil {
 		
 		for(int i=0;i<len;i++) {
 			char c=str.charAt(i);
-			if(c==delimeter) {
+			if(c==delimiter) {
 				if(!hasStart) {
 					if(el.length()>0) {
 						list.add(el.toString());
@@ -82,10 +82,10 @@ public final class ListUtil {
 	/**
 	 * creates a List from a String "List", remove all empty values
 	 * @param str String to creates List from
-	 * @param delimeter delimeter to split string
+	 * @param delimiter delimiter to split string
 	 * @return List 
 	 */
-	public static List stringToListRemoveEmpty(String str,char delimeter) {
+	public static List stringToListRemoveEmpty(String str,char delimiter) {
 		ArrayList list=new ArrayList();
 		int len=str.length();
 		if(len==0) return list;
@@ -93,7 +93,7 @@ public final class ListUtil {
 		
 		for(int i=0;i<len;i++) {
 			char c=str.charAt(i);
-			if(c==delimeter) {
+			if(c==delimiter) {
 				if(el.length()>0) {
 					list.add(el.toString());
 					el=new StringBuffer();

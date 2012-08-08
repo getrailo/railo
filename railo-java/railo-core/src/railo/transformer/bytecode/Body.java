@@ -33,7 +33,7 @@ public interface Body extends Statement {
 	 */
 	public abstract boolean isEmpty();
 	
-	public void addPrintOut(String str, int line);
+	public void addPrintOut(String str, Position start,Position end);
 
 	public void remove(Statement stat);
 

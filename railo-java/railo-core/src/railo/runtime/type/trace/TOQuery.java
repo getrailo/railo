@@ -22,11 +22,13 @@ import java.util.Map;
 
 import railo.runtime.db.SQL;
 import railo.runtime.debug.Debugger;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.it.ForEachQueryIterator;
 
 public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query {
 
@@ -239,11 +241,6 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow()
 	 */
-	
-	public int getCurrentrow() {
-		log();
-		return qry.getCurrentrow();
-	}
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow(int)
@@ -2169,12 +2166,6 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	}
 
 	@Override
-	public boolean go(int index) throws PageException {
-		log(""+index);
-		return qry.go(index);
-	}
-
-	@Override
 	public NClob getNClob(int arg0) throws SQLException {
 		log(""+arg0);
 		return qry.getNClob(arg0);
@@ -2274,5 +2265,10 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	public long getExecutionTime() {
 		return qry.getExecutionTime();
 	}
+	
+	@Override
+	public java.util.Iterator getIterator() {
+		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
+    } 
 
 }

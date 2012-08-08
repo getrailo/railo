@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listfirst
+ * Implements the CFML Function listfirst
  */
 package railo.runtime.functions.list;
 
@@ -15,11 +15,11 @@ public final class ListFirst implements Function {
 		return List.first(list,",",true);
 	}
 	
-	public static String call(PageContext pc , String list, String delimeter) {
-		return List.first(list,delimeter,true);
+	public static String call(PageContext pc , String list, String delimiter) {
+		return List.first(list,delimiter,true);
 	}
 	
-	public static String call(PageContext pc , String list, String delimeter, boolean includeEmptyFields) {
-		return List.first(list,delimeter,!includeEmptyFields);
+	public static String call(PageContext pc , String list, String delimiter, boolean includeEmptyFields) {
+		return List.first(list,delimiter,!includeEmptyFields);
 	}
 }

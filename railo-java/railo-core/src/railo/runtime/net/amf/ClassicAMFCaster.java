@@ -16,6 +16,7 @@ import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Property;
@@ -40,6 +41,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 import railo.runtime.type.wrap.ListAsArray;
@@ -101,9 +103,9 @@ public class ClassicAMFCaster implements AMFCaster {
 		return XMLCaster.toRawNode(node);
 	}
 	protected Object toAMFObject(Query query) throws PageException {
-		List result = new ArrayList();
+		List<ASObject> result = new ArrayList<ASObject>();
 		int len=query.getRecordcount();
-        Collection.Key[] columns=query.keys();
+        Collection.Key[] columns=CollectionUtil.keys(query);
     	ASObject row;
         for(int r=1;r<=len;r++) {
         	result.add(row = new ASObject());
@@ -174,10 +176,12 @@ public class ClassicAMFCaster implements AMFCaster {
     
 	protected Object toAMFObject(Struct src) throws PageException {
     	Struct trg=new StructImpl();
-    	Key[] keys = src.keys();
-    	
-        for(int i=0;i<keys.length;i++) {
-            trg.set(KeyImpl.init(toString(keys[i],forceStructLower)), toAMFObject(src.get(keys[i])));
+    	//Key[] keys = src.keys();
+    	Iterator<Entry<Key, Object>> it = src.entryIterator();
+    	Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
+            trg.set(KeyImpl.init(toString(e.getKey(),forceStructLower)), toAMFObject(e.getValue()));
         }
         return trg;
     }
@@ -258,11 +262,12 @@ public class ClassicAMFCaster implements AMFCaster {
 			ConfigWeb config = pc.getConfig();
 			
 				String name="/"+aso.getType().replace('.', '/')+".cfc";
-				PageSourceImpl ps = (PageSourceImpl) pc.getPageSource(name);
-				Page p=ps.loadPage(pc,null);
+
+				Page p = PageSourceImpl.loadPage(pc, ((PageContextImpl)pc).getPageSources(name), null) ;
+
 				if(p==null)throw new ApplicationException("Could not find a Component with name ["+aso.getType()+"]");
 				
-				Component cfc = ComponentLoader.loadComponent(pc, p, ps, aso.getType(), false);
+				Component cfc = ComponentLoader.loadComponent(pc, p, p.getPageSource(), aso.getType(), false);
 				ComponentWrap cw=ComponentWrap.toComponentWrap(config.getComponentDataMemberDefaultAccess(),cfc);
 				
 				Iterator it = aso.entrySet().iterator();

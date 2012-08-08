@@ -64,9 +64,7 @@
 	<classpathentry kind="lib" path="/Railo-Libs/jug.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/lowagie.itext.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/metadata-extractor.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/microsoft-msbase.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/microsoft-mssqlserver.jar"/>
-	<classpathentry kind="lib" path="/Railo-Libs/microsoft-msutil.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/microsoft-sqljdbc.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/mysql-connector-java-bin.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/objectweb-asm-all.jar"/>
@@ -99,5 +97,6 @@
 	<classpathentry kind="lib" path="/Railo-Libs/xml-apis.jar"/>
 	<classpathentry kind="lib" path="/Railo-Libs/xmlparserv2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Railo-Libs/javasysmon.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

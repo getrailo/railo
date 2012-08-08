@@ -7,7 +7,7 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Query;
 
 /**
- * Implements the Cold Fusion Function querynew
+ * Implements the CFML Function querynew
  */
 public final class QueryColumnArray implements Function {
     public static Array call(PageContext pc , Query qry) {

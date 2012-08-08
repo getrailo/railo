@@ -4,13 +4,14 @@ import org.objectweb.asm.Opcodes;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ASMUtil;
 
 public final class Break extends StatementBase {
 
-	public Break(int line) {
-		super(line);
+	public Break(Position start, Position end) {
+		super(start,end);
 		setHasFlowController(true);
 	}
 
@@ -22,7 +23,7 @@ public final class Break extends StatementBase {
 		FlowControl fc = ASMUtil.getAncestorFlowControlStatement(this);
 		if(fc!=null)
 			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, fc.getBreakLabel());
-		else throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",getLine());
+		else throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",getStart());
 	}
 	
 	/**

@@ -5,7 +5,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function fileexists
+ * Implements the CFML Function fileexists
  * @deprecated replace with <code>railo.runtime.functions.file.FileExists</code>
  */
 public final class FileExists implements Function {

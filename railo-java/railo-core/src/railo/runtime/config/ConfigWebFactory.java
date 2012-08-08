@@ -81,6 +81,7 @@ import railo.runtime.dump.DumpWriterEntry;
 import railo.runtime.dump.HTMLDumpWriter;
 import railo.runtime.dump.SimpleHTMLDumpWriter;
 import railo.runtime.dump.TextDumpWriter;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ConsoleExecutionLog;
 import railo.runtime.engine.ExecutionLog;
 import railo.runtime.engine.ExecutionLogFactory;
@@ -123,7 +124,6 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.text.xml.XMLCaster;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -131,25 +131,19 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuter;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
 
+import com.jacob.com.LibraryLoader;
+
 /**
  * 
  */
 public final class ConfigWebFactory {
-
-	
-
-
-
-	
-
-
-
 	/**
      * creates a new ServletConfig Impl Object
      * @param configServer
@@ -193,6 +187,9 @@ public final class ConfigWebFactory {
     			"===================================================================\n"
     			
     			);
+    	
+    	boolean doNew=doNew(configDir);
+    	
         
     	Resource configFile=configDir.getRealResource("railo-web.xml.cfm");
     	Resource configFileOld=configDir.getRealResource("railo-web.xml");
@@ -243,11 +240,11 @@ public final class ConfigWebFactory {
     	if(configDir.exists())createHtAccess(configDir.getRealResource(".htaccess"));
     		
         
-        createContextFiles(configDir,servletConfig);
+        createContextFiles(configDir,servletConfig,doNew);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc,false);
-		createContextFilesPost(configDir,configWeb,servletConfig,false);
+		load(configServer,configWeb,doc,false,doNew);
+		createContextFilesPost(configDir,configWeb,servletConfig,false,doNew);
 	    return configWeb;
     }
     
@@ -281,23 +278,29 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */
-    public static void reloadInstance(ConfigImpl config, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
-        // first sleep a little bit
-    	
-    	Resource configFile=config.getConfigFile();
-        Resource configDir=config.getConfigDir();
+    public static void reloadInstance(ConfigServerImpl cs, ConfigWebImpl cw, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
+        Resource configFile=cw.getConfigFile();
+        Resource configDir=cw.getConfigDir();
+        
+        boolean doNew=doNew(configDir);
         
         if(configFile==null) return ;
         
-        if(second(config.getLoadTime())>second(configFile.lastModified()) && !force) return ;
+        if(second(cw.getLoadTime())>second(configFile.lastModified()) && !force) return ;
         
         Document doc=loadDocument(configFile);
-        createContextFiles(configDir,null);
-        config.reset();
+        createContextFiles(configDir,null,doNew);
+        cw.reset();
         
-		load(config.getConfigServerImpl(),config,doc,true);
-		createContextFilesPost(configDir,config,null,false);
+        
+		load(cs,cw,doc,true,doNew);
+		createContextFilesPost(configDir,cw,null,false,doNew);
     }
+    
+    
+    
+    
+    
     
     private static long second(long ms) {
 		return ms/1000;
@@ -314,7 +317,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	
@@ -352,9 +355,10 @@ public final class ConfigWebFactory {
         loadCustomTagsMappings(configServer,config,doc);
     	loadPassword(cs,config,doc);
     	//loadLabel(cs,config,doc);
-    	loadFilesystem(cs,config,doc); // load tlds
+    	loadFilesystem(cs,config,doc, doNew); // load tlds
     	loadTag(cs,config,doc); // load tlds
         loadRegional(configServer,config,doc);
+        loadCompiler(configServer,config,doc);
     	loadScope(configServer,config,doc);
     	loadMail(configServer,config,doc);
         loadSearch(configServer,config,doc);
@@ -387,7 +391,7 @@ public final class ConfigWebFactory {
     	}
     	catch(Throwable t){}
 
-    	doNew(config.getConfigDir(), false);
+    	//doNew(config.getConfigDir(), false);
     	
     	ThreadLocalConfig.release();
     }
@@ -498,20 +502,20 @@ public final class ConfigWebFactory {
         }
         else {
         	//print.err("yep");
-        	if(!hasRich)sct.put("html",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_RICH,"html", new HTMLDumpWriter()));
-        	if(!hasPlain)sct.put("text",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_PLAIN,"text", new TextDumpWriter()));  
+        	if(!hasRich)sct.setEL(KeyConstants._html,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_RICH,"html", new HTMLDumpWriter()));
+        	if(!hasPlain)sct.setEL(KeyConstants._text,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_PLAIN,"text", new TextDumpWriter()));  
         	
-        	sct.put("classic",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"classic", new ClassicHTMLDumpWriter()));  
-        	sct.put("simple",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"simple", new SimpleHTMLDumpWriter()));  
+        	sct.setEL(KeyConstants._classic,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"classic", new ClassicHTMLDumpWriter()));  
+        	sct.setEL(KeyConstants._simple,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"simple", new SimpleHTMLDumpWriter()));  
 
         	
         }
-        DumpWriterEntry[] entries = new DumpWriterEntry[sct.size()];
-        Key[] keys = sct.keys();
-        for(int i=0;i<keys.length;i++){
-        	entries[i]=(DumpWriterEntry) sct.get(keys[i],null);
+        Iterator<Object> it = sct.valueIterator();
+        java.util.List<DumpWriterEntry> entries=new ArrayList<DumpWriterEntry>();
+        while(it.hasNext()){
+        	entries.add((DumpWriterEntry) it.next());
         }
-        config.setDumpWritersEntries(entries);
+        config.setDumpWritersEntries(entries.toArray(new DumpWriterEntry[entries.size()]));
 	}
     
     
@@ -746,7 +750,7 @@ public final class ConfigWebFactory {
     private static Resource[] _loadFileAccess(Config config,Element[] fileAccesses) {
     	if(ArrayUtil.isEmpty(fileAccesses))return new Resource[0];
     	
-    	java.util.List reses=new ArrayList();
+    	java.util.List<Resource> reses=new ArrayList<Resource>();
        	String path;
        	Resource res;
        	for(int i=0;i<fileAccesses.length;i++) {
@@ -757,7 +761,7 @@ public final class ConfigWebFactory {
        	    		reses.add(res);	
        	    }
        	}
-		return (Resource[]) reses.toArray(new Resource[reses.size()]);
+		return reses.toArray(new Resource[reses.size()]);
 	}
 
 
@@ -956,25 +960,32 @@ public final class ConfigWebFactory {
 	 * @throws IOException 
 	 * @throws IOException
 	 */
-	public static void createContextFiles(Resource configDir, ServletConfig servletConfig) throws IOException {
+	public static void createContextFiles(Resource configDir, ServletConfig servletConfig, boolean doNew) throws IOException {
 	    // NICE dies muss dynamisch ersstelt werden, da hier der admin hinkommt und dieser sehr viele files haben wird
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 	    
-	    if(SystemUtil.isWindows()) {
+	    if(!SystemUtil.isWindows()) {
 	    	Resource systemDir=SystemUtil.getSystemDirectory();
 	        if(systemDir!=null) {
-	        	Resource jacob=systemDir.getRealResource("jacob.dll");
+	        	boolean is64=SystemUtil.getJREArch()==SystemUtil.ARCH_64;
+	        	String name;
+	        	if(is64) name="jacob-x64.dll";
+	        	else name="jacob-x86.dll";
+	            
+	        	Resource jacob=systemDir.getRealResource(name);
 	            if(!jacob.exists()) {
-	                createFileFromResourceEL("/resource/bin/jacob.dll",jacob);
-                    
+	            	createFileFromResourceEL("/resource/bin/"+name,jacob);
 	            }
+	            //SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_PATH+":"+jacob.getAbsolutePath());
+	            System.setProperty(LibraryLoader.JACOB_DLL_PATH,jacob.getAbsolutePath());
+	            //SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_NAME+":"+name);
+	            System.setProperty(LibraryLoader.JACOB_DLL_NAME,name);
+	            
+	            //jacob.dll.name.x86 & jacob.dll.name.x64
+	            
 	        }
 	    }
-        
-        boolean doNew=doNew(configDir,true);
-        
-        
         
         // video
         Resource videoDir = configDir.getRealResource("video");
@@ -1194,6 +1205,9 @@ public final class ConfigWebFactory {
             f=debug.getRealResource("Classic.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc",f);
             
+            f=debug.getRealResource("Modern.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Modern.cfc",f);
+            
             f=debug.getRealResource("Comment.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Comment.cfc",f);
             
@@ -1341,10 +1355,7 @@ public final class ConfigWebFactory {
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext) throws IOException {
-		boolean doNew=doNew(configDir,true);
-  		
-		
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext,boolean doNew) {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 
@@ -1390,20 +1401,26 @@ public final class ConfigWebFactory {
 
 	}
 
-	private static boolean doNew(Resource contextDir,boolean readonly) throws IOException {
-		Resource version=contextDir.getRealResource("version");
-		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
-		if(!version.exists()) {
-            if(!readonly){
-            	version.createNewFile();
-            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            }
-            return true;
-        }
-        else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
-        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            return true;
-        }
+	static boolean doNew(Resource contextDir) {
+		
+		final boolean readonly=false;
+		try{
+			Resource version=contextDir.getRealResource("version");
+			String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
+			if(!version.exists()) {
+				if(!readonly){
+	            	version.createNewFile();
+	            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
+	            }
+	            return true;
+	        }
+	        else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
+	        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
+	
+	            return true;
+	        }
+		}
+		catch(Throwable t){}
         return false;
     }
 	
@@ -1411,12 +1428,21 @@ public final class ConfigWebFactory {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
+		
+		// charset
 		StringBuffer sb=new StringBuffer(config.getTemplateCharset());
+		sb.append(';');
 
+		// dot notation upper case
+		sb.append(config.getDotNotationUpperCase());
+		sb.append(';');
+		
+		// tld
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
 		}
 
+		// fld
 		for(int i=0;i<flds.length;i++){
 			sb.append(flds[i].getHash());
 		}
@@ -1574,7 +1600,16 @@ public final class ConfigWebFactory {
         	else strLogger="{railo-config}/logs/rest.log";
         }
         config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
-        
+
+        // allow-changes
+        /*Boolean allowChanges=Caster.toBoolean(el.getAttribute("allow-changes"),null);
+        if(allowChanges!=null){
+            config.setRestAllowChanges(allowChanges.booleanValue());
+        }
+        else if(hasCS){
+        	config.setRestAllowChanges(configServer.getRestAllowChanges());
+        }*/
+
         // list
         Boolean list=Caster.toBoolean(el.getAttribute("list"),null);
         if(list!=null){
@@ -1891,7 +1926,7 @@ public final class ConfigWebFactory {
      */
     private static void loadCache(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
         boolean hasCS=configServer!=null;
-        HashTable caches=new HashTable();
+        Map<String,CacheConnection> caches=new HashMap<String, CacheConnection>();
         
 
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
@@ -1920,7 +1955,21 @@ public final class ConfigWebFactory {
         else 
         	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,"");
     
-     	// default query
+     // default function
+    	String defaultUDF=eCache.getAttribute("default-function");
+        if(hasAccess && !StringUtil.isEmpty(defaultUDF)){
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,defaultUDF);
+        }
+        else if(hasCS){
+        	if(eCache.hasAttribute("default-function"))
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,"");
+        	else
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION));
+        }
+        else 
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,"");
+        
+     // default query
     	String defaultQuery=eCache.getAttribute("default-query");
         if(hasAccess && !StringUtil.isEmpty(defaultQuery)){
         	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,defaultQuery);
@@ -2053,14 +2102,12 @@ public final class ConfigWebFactory {
 		
 		// Copy Parent caches as readOnly
         if(hasCS) {
-            Map ds = configServer.getCacheConnections();
-            //print.o("PARENT");
-            //print.o(ds);
-            Iterator it = ds.entrySet().iterator();
-            Map.Entry entry;
+            Map<String, CacheConnection> ds = configServer.getCacheConnections();
+            Iterator<Entry<String, CacheConnection>> it = ds.entrySet().iterator();
+            Entry<String, CacheConnection> entry;
             while(it.hasNext()) {
-	                entry=(Entry) it.next();
-	                cc=((CacheConnection)entry.getValue());
+	                entry = it.next();
+	                cc=entry.getValue();
 	                if(!caches.containsKey(entry.getKey()))caches.put(entry.getKey(),new ServerCacheConnection(configServer,cc));
 	        }
 	    }
@@ -2199,8 +2246,8 @@ public final class ConfigWebFactory {
             String[] item;
             for(int i=0;i<arr.length;i++) {
                 item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
-                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
-                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),"");
+                if(item.length==2) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
+                else if(item.length==1) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),"");
             }   
         }
         catch(PageException ee) {}
@@ -2461,7 +2508,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */    
-    private static void loadFilesystem(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+    private static void loadFilesystem(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean doNew) throws ExpressionException, TagLibException, FunctionLibException {
         
     	if(configServer!=null){
     		Resource src = configServer.getConfigDir().getRealResource("distribution");
@@ -2536,7 +2583,7 @@ public final class ConfigWebFactory {
 	  	// Tag Directory
 	  	if(strTagDirectory!=null) {
 	  		Resource dir=ConfigWebUtil.getFile(config,configDir,strTagDirectory,FileUtil.TYPE_DIR);
-	  		createTagFiles(config,configDir,dir);
+	  		createTagFiles(config,configDir,dir,doNew);
 	  		if(dir!=null) {
 	  			config.setTagDirectory(dir);
 	  		}
@@ -2566,7 +2613,7 @@ public final class ConfigWebFactory {
 	  	// Function Directory
 	  	if(strFunctionDirectory!=null) {
 	  		Resource dir=ConfigWebUtil.getFile(config,configDir,strFunctionDirectory,FileUtil.TYPE_DIR);
-	  		createFunctionFiles(config,configDir,dir);
+	  		createFunctionFiles(config,configDir,dir,doNew);
 	  	  if(dir!=null) config.setFunctionDirectory(dir);
 	  	}
 	  	
@@ -2580,28 +2627,35 @@ public final class ConfigWebFactory {
     }
 
 
-    private static void createTagFiles(Config config,Resource configDir,Resource dir) {
-    	boolean doNew=true;
-    	try {
-			doNew=doNew(configDir,true);
-		} catch (IOException e) {}
-        
+    private static void createTagFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
     	if(config instanceof ConfigServer){
+    		
+    	// Dump
     		Resource f = dir.getRealResource("Dump.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Dump.cfc",f);
-
+            
+        // MediaPlayer
+            f = dir.getRealResource("MediaPlayer.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/MediaPlayer.cfc",f);
+            Resource build = dir.getRealResource("build");
+            if(!build.exists())build.mkdirs();
+            String[] names=new String[]{"_background.png","_bigplay.png","_controls.png","_loading.gif","_player.swf","_player.xap",
+            		"background_png.cfm","bigplay_png.cfm","controls_png.cfm","jquery.js.cfm","loading_gif.cfm",
+            		"mediaelement-and-player.min.js.cfm","mediaelementplayer.min.css.cfm","player.swf.cfm","player.xap.cfm"};
+            for(int i=0;i<names.length;i++){
+                f = build.getRealResource(names[i]);
+                if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/build/"+names[i],f);
+            	
+            }
+        
         // AJAX
             AjaxFactory.deployTags(dir, doNew);
            
     	}
 	}
 
-    private static void createFunctionFiles(Config config,Resource configDir,Resource dir) {
-    	boolean doNew=true;
-    	try {
-			doNew=doNew(configDir,true);
-		} catch (IOException e) {}
-        
+    private static void createFunctionFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
+    	
     	if(config instanceof ConfigServer){
     		Resource f = dir.getRealResource("writeDump.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeDump.cfm",f);
@@ -3111,7 +3165,7 @@ public final class ConfigWebFactory {
     // config
         if(orm==null) orm = doc.createElement("orm"); // this is just a dummy 
         ORMConfiguration def=hasCS?((ConfigServerImpl)configServer).getORMConfig():null;
-        ORMConfiguration ormConfig=ORMConfigurationImpl.load(config,orm,config.getRootDirectory(),def);
+        ORMConfiguration ormConfig=ORMConfigurationImpl.load(config,null,orm,config.getRootDirectory(),def);
         config.setORMConfig(ormConfig);
         
     }
@@ -3489,7 +3543,7 @@ public final class ConfigWebFactory {
       	}
       	configServer.setRequestMonitors(requests.toArray(new RequestMonitor[requests.size()]));
       	configServer.setIntervallMonitors(intervalls.toArray(new IntervallMonitor[intervalls.size()]));
-        configServer.getCFMLEngineImpl().touchMonitor(configServer);
+        ((CFMLEngineImpl)configServer.getCFMLEngine()).touchMonitor(configServer);
     }
 
     /**
@@ -3947,25 +4001,14 @@ public final class ConfigWebFactory {
         
         // proxy server
         String server=proxy.getAttribute("server");
-        if(hasAccess && !StringUtil.isEmpty(server)) config.setProxyServer(server);
-        else if(hasCS) config.setProxyServer(configServer.getProxyServer());
-
-        // proxy username
         String username=proxy.getAttribute("username");
-        if(hasAccess && !StringUtil.isEmpty(username)) config.setProxyUsername(username);
-        else if(hasCS) config.setProxyUsername(configServer.getProxyUsername());
-
-        // proxy password
         String password=proxy.getAttribute("password");
-        if(hasAccess && !StringUtil.isEmpty(password)) config.setProxyPassword(password);
-        else if(hasCS) config.setProxyPassword(configServer.getProxyPassword());
-
-        // proxy port
         int port=toInt(proxy.getAttribute("port"),-1);
-        if(hasAccess && port!=-1) config.setProxyPort(port);
-        else if(hasCS) config.setProxyPort(configServer.getProxyPort());
-
         
+        if(hasAccess && !StringUtil.isEmpty(server)) {
+        	config.setProxyData(ProxyDataImpl.getInstance(server, port, username, password));
+        }
+        else if(hasCS) config.setProxyData(configServer.getProxyData());
     }
     
     
@@ -4013,7 +4056,24 @@ public final class ConfigWebFactory {
       	
       	
     }
-    
+
+    private static void loadCompiler(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+        boolean hasCS=configServer!=null;
+        
+    	
+        Element compiler=getChildByName(doc.getDocumentElement(),"compiler");
+      	
+
+        // Scope Logger
+        String _case=compiler.getAttribute("dot-notation-upper-case");
+        if(!StringUtil.isEmpty(_case,true)){
+        	config.setDotNotationUpperCase(Caster.toBooleanValue(_case,true));
+        }
+        else if(hasCS){
+        	config.setDotNotationUpperCase(configServer.getDotNotationUpperCase());
+        }
+    }
+
 
     /**
      * @param configServer 

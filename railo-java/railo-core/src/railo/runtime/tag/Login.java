@@ -14,6 +14,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * 
@@ -115,7 +116,7 @@ public final class Login extends BodyTagImpl {
         if(password==null) password="";
         
         Struct sct=new StructImpl();
-        sct.setEL(KeyImpl.NAME,username);
+        sct.setEL(KeyConstants._name,username);
         sct.setEL(PASSWORD,password);
         pageContext.undefinedScope().setEL(CFLOGIN,sct);
     }

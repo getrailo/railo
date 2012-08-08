@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function spanincluding
+ * Implements the CFML Function spanincluding
  */
 package railo.runtime.functions.string;
 

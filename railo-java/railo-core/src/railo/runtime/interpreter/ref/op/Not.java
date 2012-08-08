@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.op;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
@@ -21,16 +22,12 @@ public final class Not extends RefSupport implements Ref {
         this.ref=ref;
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() throws PageException {
-        return (Caster.toBooleanValue(ref.getValue()))?Boolean.FALSE:Boolean.TRUE;
+    @Override
+	public Object getValue(PageContext pc) throws PageException {
+        return (Caster.toBooleanValue(ref.getValue(pc)))?Boolean.FALSE:Boolean.TRUE;
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-     */
+    @Override
     public String getTypeName() {
         return "operation";
     }

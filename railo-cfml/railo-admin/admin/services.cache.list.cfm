@@ -10,15 +10,16 @@
 				remoteClients="#request.getRemoteClients()#">				
 		</cfcase>
 		<cfcase value="#stText.Buttons.update#">
-			<cfadmin 
-				action="updateCacheDefaultConnection"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				object="#StructKeyExists(form,'object')?form.object:''#"
-				template="#StructKeyExists(form,'template')?form.template:''#"
-				query="#StructKeyExists(form,'query')?form.query:''#"
-				resource="#StructKeyExists(form,'resource')?form.resource:''#"
-				remoteClients="#request.getRemoteClients()#">				
+            <cfadmin 
+                action="updateCacheDefaultConnection"
+                type="#request.adminType#"
+                password="#session["password"&request.adminType]#"
+                object="#StructKeyExists(form,'object')?form.object:''#"
+                template="#StructKeyExists(form,'template')?form.template:''#"
+                query="#StructKeyExists(form,'query')?form.query:''#"
+                resource="#StructKeyExists(form,'resource')?form.resource:''#"
+                function="#StructKeyExists(form,'function')?form.function:''#"
+                remoteClients="#request.getRemoteClients()#">				
 		</cfcase>
 	<!--- delete --->
 		<cfcase value="#stText.Buttons.Delete#">
@@ -235,7 +236,7 @@ Redirtect to entry --->
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<table class="maintbl">
 				<tbody>
-					<cfloop index="type" list="object,template,query,resource"><!---  --->
+    <cfloop index="type" list="object,template,query,resource,function"><!---  --->
 						<tr>
 							<th scope="row">#stText.Settings.cache['defaulttype'& type]#</th>
 							<td>

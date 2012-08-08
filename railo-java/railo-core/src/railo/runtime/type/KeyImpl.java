@@ -19,17 +19,8 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.KeyConstants;
 
 public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable {
-	//public static HashMap<String,RefIntegerImpl> log=new HashMap<String,RefIntegerImpl>();
 	
-
-	public static final Collection.Key ACTION=KeyConstants._action;
-	public static final Key CFID=KeyConstants._cfid;
-	public static final Key CFTOKEN=KeyConstants._cftoken;
-	public static final Key DETAIL=KeyConstants._detail;
-	public static final Key ID=KeyConstants._id;
-	public static final Key RETURN_FORMAT =KeyConstants._returnFormat;
 	public static final Key NAME=KeyConstants._name;
-	public static final Key NAME_UC=KeyConstants._NAME;
 	public static final Key DATA=KeyConstants._data;
 	public static final Key S3=KeyConstants._s3;
 	public static final Key SIZE=KeyConstants._size;
@@ -59,7 +50,6 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public static final Key PATH = KeyConstants._path;
 	public static final Key ENTRY = KeyConstants._entry;
 	public static final Key KEY = KeyConstants._key;
-	public static final Key LINE = KeyConstants._line;
 	public static final Key COLUMN = KeyConstants._column;
 	public static final Key ARGUMENTS = KeyConstants._arguments;
 	public static final Key STATUS = KeyConstants._status;
@@ -148,17 +138,24 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	}
 	
 
+	public static Collection.Key _const(String key) {
+		return new KeyImpl(key);
+	}
+	
+
 	/**
 	 * used for static iniatisation of a key object (used by compiler)
 	 * @param string
 	 * @return
 	 */
 	public synchronized static Collection.Key getInstance(String key) {
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
 
 	public synchronized static Collection.Key intern(String key) {
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		/*Long l= keys.get(key);
 		String st=ExceptionUtil.getStacktrace(new Exception("Stack trace"), false);
 		String[] arr = railo.runtime.type.List.listToStringArray(st,'\n');
@@ -390,12 +387,12 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return arr;
 	}
 
-	public static String toUpperCaseList(Key[] array, String delimeter) {
+	public static String toUpperCaseList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getUpperString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(((KeyImpl)array[i]).getUpperString());
@@ -403,39 +400,39 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(((KeyImpl)array[i]).getUpperString());
 			}
 		}
 		return sb.toString();
 	}
 
-	public static String toList(Key[] array, String delimeter) {
+	public static String toList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
-		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getString());
+		StringBuilder sb=new StringBuilder(((KeyImpl)array[0]).getString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
-				sb.append(((KeyImpl)array[i]).getString());
+				sb.append((array[i]).getString());
 			}
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
-				sb.append(((KeyImpl)array[i]).getString());
+				sb.append(delimiter);
+				sb.append((array[i]).getString());
 			}
 		}
 		return sb.toString();
 	}
 
-	public static String toLowerCaseList(Key[] array, String delimeter) {
+	public static String toLowerCaseList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getLowerString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(((KeyImpl)array[i]).getLowerString());
@@ -443,7 +440,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(((KeyImpl)array[i]).getLowerString());
 			}
 		}
@@ -472,5 +469,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		SizeOf.size(this.ucKey)+
 		SizeOf.REF_SIZE;
 	}
-	
+
+	@Override
+	public int length() {
+		return key.length();
+	}
 }

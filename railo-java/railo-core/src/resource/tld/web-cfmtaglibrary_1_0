@@ -498,6 +498,64 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 - host(default:"s3.amazonaws.com"): hostname of the service
 </description>
 		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>triggerDataMember</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If there is no accessible data member (property, element of the this scope) inside a component, 
+			Railo searches for available matching &amp;quot;getters&amp;quot; or &amp;quot;setters&amp;quot; for the requested property. 
+			The following example should clarify this behaviour. 
+			&amp;quot;somevar = myComponent.properyName&amp;quot;. 
+			If &amp;quot;myComponent&amp;quot; has no accessible data member named &amp;quot;propertyName&amp;quot;, 
+			Railo searches for a function member (method) named &amp;quot;getPropertyName&amp;quot;.</description>
+		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>InvokeImplicitAccessor</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for triggerDataMember</description>
+		</attribute>
+		
+		<attribute>
+			<type>string</type>
+			<name>cacheObject</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for object caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheFunction</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for function caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheQuery</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for query caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheTemplate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used for template caching in this context</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>cacheResource</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>name of the cache used to store data from ram resource in this context</description>
+		</attribute>
+		
 	</tag>
 	<!-- Argument -->
 	<tag>
@@ -1870,6 +1928,38 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
             This attribute sets the available subdomains on the site
             upon which the cookie can be used.</description>
     </attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>httpOnly</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+			If HttpOnly is set to true, this cookie is marked as HttpOnly, by adding the HttpOnly attribute to it.
+			HttpOnly cookies are not supposed to be exposed to client-side scripting code, and may therefore help mitigate certain kinds of cross-site scripting attacks.
+			</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>preservecase</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true Railo keep the original case for the name, otherise the name is converted to a upper case string</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>encode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, Railo url encodes the given name and value if necessary.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>encodeValue</name>
+			<status>deprecated</status>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>alias for encode.</description>
+		</attribute>
 	</tag>
 	<!-- DBInfo -->
 	<tag>
@@ -2103,6 +2193,13 @@ Example:
 			<rtexprvalue>true</rtexprvalue>
 			<description>Required for action = "rename". Ignored by all other actions. The new name of the directory
 		specified in the directory attribute.</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>destination</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Required for action = "copy". Ignored by all other actions. Path of the destination directory. If not an absolute path, it is relative to the source directory.</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -2469,6 +2566,22 @@ Example:
 			<rtexprvalue>true</rtexprvalue>
 			<description>used only for type bookmark, name of the bookmark to define.</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>evalAtPrint</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<status>unimplemented</status>
+			<description>
+Determines if the contents of the cfdocumentitem tag body has to be evaluated at the time of printing the document.
+- true: evaluates the contents of the cfdocumentitem tag body only at the time of printing the document.
+- false (default): evaluates the contents of the cfdocumentitem tag body immediately.
+			</description>
+		</attribute>
+		
+		
+		
+		
 	</tag>
 	<!-- DocumentSection -->
 	<tag>
@@ -3157,9 +3270,14 @@ If omitted, the file's attributes are maintained.</description>
 			<name>accept</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Limits the MIME types to accept. Comma-delimited list. For example, to permit JPG and Microsoft Word file uploads:
-accept = "image/jpg, application/msword"
-The browser uses file extension to determine file type. </description>
+			<description>list of supported extensions or/and mimetypes.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>strict</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true (default), only mimetypes are supported.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -5420,7 +5538,7 @@ no: the function is processed as if it were within a cfsilent tag </description>
 	<!-- Http -->
 	<tag>
 		<name>http</name>
-		<tag-class>railo.runtime.tag.Http</tag-class>
+		<tag-class>railo.runtime.tag.Http4</tag-class>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
@@ -6140,6 +6258,16 @@ both functions must have the same attributes; otherwise
 			<rtexprvalue>true</rtexprvalue>
 			<script-support>required</script-support>
 			<description>A logical path to an existing page.</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>runOnce</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<script-support>optional</script-support>
+			<description>
+			if set to true, the given template is only included once within the current request.
+			</description>
 		</attribute>
 	</tag>
 	<!-- Index -->
@@ -7469,7 +7597,7 @@ Valid only for cfinput type="text".</description>
 		connections are anonymous.</description>
 		</attribute>
 		<attribute>
-			<type>numeric</type>
+			<type>number</type>
 			<name>referral</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -7748,7 +7876,13 @@ Valid only for cfinput type="text".</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The type or severity of the message.</description>
+			<description>
+			Type (severity) of the message:
+- information (default)
+- warning
+- error
+- fatal 
+			</description>
 		</attribute>
 		<attribute>
 			<type>boolean</type>
@@ -7835,11 +7969,11 @@ Valid only for cfinput type="text".</description>
 			<description>Condition that controls the loop.</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>query</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Query that controls the loop.  </description>
+			<description>Query that controls the loop. this can be a variable name or the query itself.</description>
 		</attribute>
 		<attribute>
 			<type>number</type>
@@ -7853,8 +7987,17 @@ Valid only for cfinput type="text".</description>
 			<name>endRow</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description> Last row of query that is included in the loop.</description>
+			<description> Last row of query that is included in the loop. You cannot use this attribute together with the attribute maxRows.</description>
 		</attribute>
+		
+		<attribute>
+			<type>number</type>
+			<name>maxRows</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies the maximum number of rows to display in the output section. You cannot use this attribute together with the attribute endrow.</description>
+		</attribute>
+		
 		<attribute>
 			<type>string</type>
 			<name>list</name>
@@ -7929,6 +8072,28 @@ Railo uses the number of characters in the file.</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>charset for read the file</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>group</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Specifies the query column to use when you group sets of records together to send as an e-mail
+		message. For example, if you send a set of billing statements to customers, you might group on
+		"Customer_ID." The group attribute, which is case sensitive, eliminates adjacent duplicates when the
+		data is sorted by the specified field. See the Usage section for exceptions.</description>
+		</attribute>
+		
+		<attribute>
+			<type>boolean</type>
+			<name>groupCaseSensitive</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		    <status>implemented</status>
+			<description>Boolean indicating whether to group with regard to case or not. The default value is NO;
+		case is considered while grouping. If the query attribute specifies a query object that was generated
+		by a case-insensitive SQL query, set the groupCaseSensitive attribute to NO to keep the recordset
+		intact.</description>
 		</attribute>
 	</tag>
 	<!-- Mail -->
@@ -8044,8 +8209,8 @@ Railo uses the number of characters in the file.</description>
 			<name>groupCaseSensitive</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		    <status>unimplemented</status>
-			<description>Boolean indicating whether to group with regard to case or not. The default value is YES;
+		    <status>implemented</status>
+			<description>Boolean indicating whether to group with regard to case or not. The default value is NO;
 		case is considered while grouping. If the query attribute specifies a query object that was generated
 		by a case-insensitive SQL query, set the groupCaseSensitive attribute to NO to keep the recordset
 		intact.</description>
@@ -8594,11 +8759,11 @@ Each type-value pair must start with a hyphen.</description>
 		<description>Displays the results of a database query or other operation. To nest cfoutput tags, see the "Usage" section. </description>
 		<attribute-type>fixed</attribute-type>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>query</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The name of the cfquery from which to draw data for the output section.</description>
+			<description>The name of the cfquery from which to draw data for the output section or the query itself.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -8633,7 +8798,14 @@ Each type-value pair must start with a hyphen.</description>
 			<name>maxRows</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies the maximum number of rows to display in the output section.</description>
+			<description>Specifies the maximum number of rows to display in the output section. You cannot use this attribute together with the attribute endRow.</description>
+		</attribute>
+		<attribute>
+			<type>number</type>
+			<name>endrow</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Last row of query that is included. You cannot use this attribute together with the attribute maxRows.</description>
 		</attribute>
 	</tag>
 	<!-- Param -->
@@ -8663,7 +8835,33 @@ Each type-value pair must start with a hyphen.</description>
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The type of parameter that is required. The default is 'any'.</description>
+			<description>The type of parameter that is required. The default is 'any' and valid values are:
+- any: any type of value
+- array: an array of values
+- binary: a binary value
+- boolean: a Boolean value
+- creditcard: a 13-16 digit number conforming to the mod10 algorithm
+- date or time: a date-time value
+- email: a valid e-mail address
+- eurodate: a date-time value. Any date part must be in the format dd/mm/yy. The format can use /, -, or . characters as delimiters
+- float or numeric: a numeric value
+- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where Ô XÕ is a hexadecimal number
+- integer: an integer
+- query: a query object
+- range: a numeric range, specified by the min and max attributes
+- regex or regular_expression: matches input against pattern attribute
+- ssn or social_security_number: a U.S. social security number
+- string: a string value or single character
+- struct: a structure
+- telephone: a standard U.S. telephone number
+- url: an http, https, ftp, file, mailto, or news URL
+- uuid: a ColdFusion Universally Unique Identifier, formatted Ô XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXXÕ, where Ô XÕ is a hexadecimal number. See CreateUUID
+- usdate: a U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years
+- variableName: a string formatted according to ColdFusion variable naming conventions
+- xml: XML objects and XML strings
+- zipcode: U.S., 5- or 9-digit format ZIP codes
+			
+</description>
 		</attribute>
 		<attribute>
 			<type>any</type>
@@ -8692,6 +8890,13 @@ Each type-value pair must start with a hyphen.</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>define a regular expression pattern, to check value against </description>
+		</attribute>
+		<attribute>
+			<type>int</type>
+			<name>maxlength</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>define the maxlength of a value for this types: email, url and string</description>
 		</attribute>
 	</tag>
 
@@ -9751,13 +9956,13 @@ Manipulates existing PDF documents. The following list describes some of the tas
 			<description>
 			the timezone used to convert a date object to a timestamp (string), this value is needed when your database runs in another timezone and you are not using cfqueryparam to to insert dates.</description>
 		</attribute>
-		<!-- <attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>lazy</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description></description>
-		</attribute> -->
+		</attribute>
 	</tag>
 	<!-- QueryParam -->
 	<tag>
@@ -10172,7 +10377,7 @@ dWord: creates a value of 0 (zero)</description>
                 if one with the name specified by the task attribute
                 does not exist
             run: executes the specified task</description>
-    </attribute>
+    	</attribute>
 		<attribute>
 			<type>string</type>
 			<name>serverpassword</name>
@@ -10186,7 +10391,7 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		<description>if set to true the scheduled task is not displayed in the Railo Administrator.</description>
-    </attribute>
+    	</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>readonly</name>
@@ -10355,6 +10560,14 @@ dWord: creates a value of 0 (zero)</description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>return variable name of action list</description>
+		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>autoDelete</name>
+			<required>false</required>
+			<status>hidden</status>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if set to true, the scheduled task get deleted when there is no possible future execution.</description>
 		</attribute>
 	</tag>
 	<!-- Script -->

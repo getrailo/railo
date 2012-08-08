@@ -82,7 +82,7 @@ Error Output --->
 	<cfhttp 
 			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
 		method="get" resolveurl="no" result="http">
-	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="wddx">
+	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="local.wddx">
 	<cfset session.avaiableVersion=wddx>
 	<cfreturn session.avaiableVersion>
 		<cfcatch>
@@ -205,7 +205,7 @@ Info --->
 
 <cfif hasUpdate>
 <h2>#stText.services.update.infoTitle#</h2>
-#replace(replace(replace(stText.services.update.update,'{available}','<b>#avi#</b>'),'{current}','<b>#curr#</b>'),'{avaiable}','<b>#avi#</b>')#
+#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#
 <cfscript>
 // Jira
 jira=stText.services.update.jira;

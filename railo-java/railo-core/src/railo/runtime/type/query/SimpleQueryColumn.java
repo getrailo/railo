@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
@@ -21,9 +22,12 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.scope.Undefined;
 
 public class SimpleQueryColumn implements QueryColumn {
+
+	private static final long serialVersionUID = 288731277532671308L;
 
 	private SimpleQuery qry;
 	private Key key;
@@ -100,14 +104,14 @@ public class SimpleQueryColumn implements QueryColumn {
 	
 	
 	private Object getChildElement(Key key, Object defaultValue) {
-    	// column and query has same name
+    	PageContext pc = ThreadLocalPageContext.get();
+		// column and query has same name
 		if(key.equals(this.key)) {
-    		return get(qry.getCurrentrow(),defaultValue);
+    		return get(qry.getCurrentrow(pc.getId()),defaultValue);
     	}
     	// get it from undefined scope
-		PageContext pc = ThreadLocalPageContext.get();
 		if(pc!=null){
-			UndefinedImpl undefined = ((UndefinedImpl)pc.undefinedScope());
+			Undefined undefined = pc.undefinedScope();
 			boolean old = undefined.setAllowImplicidQueryCall(false);
 			Object sister = undefined.get(this.key,null);
 			undefined.setAllowImplicidQueryCall(old);
@@ -128,11 +132,6 @@ public class SimpleQueryColumn implements QueryColumn {
 
 	
 	public Key[] keys() {
-		throw SimpleQuery.notSupported();
-	}
-
-	
-	public String[] keysAsString() {
 		throw SimpleQuery.notSupported();
 	}
 
@@ -196,24 +195,30 @@ public class SimpleQueryColumn implements QueryColumn {
 	}
 
 	
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,
 			DumpProperties properties) {
 		throw SimpleQuery.notSupported();
 	}
 
-	
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		throw SimpleQuery.notSupported();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	throw SimpleQuery.notSupported();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 
 	
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		throw SimpleQuery.notSupported();
-	}
-
-	
-	public Iterator iterator() {
-		return keyIterator();
 	}
 
 	
@@ -438,4 +443,9 @@ public class SimpleQueryColumn implements QueryColumn {
 	public int getIndex() {
 		return index;
 	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
 }

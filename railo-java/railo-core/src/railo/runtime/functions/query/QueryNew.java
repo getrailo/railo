@@ -1,6 +1,7 @@
 package railo.runtime.functions.query;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -19,7 +20,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.util.QueryUtil;
 
 /**
- * Implements the Cold Fusion Function querynew
+ * Implements the CFML Function querynew
  */
 public final class QueryNew implements Function {
 	public static railo.runtime.type.Query call(PageContext pc , String columnList) throws DatabaseException {
@@ -52,10 +53,13 @@ public final class QueryNew implements Function {
 	}
 	
 	private static Query _populate(PageContext pc, Query qry,Struct data) throws PageException {
-		Key[] keys = data.keys();
-		for(int i=0;i<keys.length;i++){
-			if(qry.getColumn(keys[i],null)!=null) 
-				 populateColumn(qry,keys[i],Caster.toArray(data.get(keys[i])));
+		//Key[] keys = data.keys();
+		Iterator<Entry<Key, Object>> it = data.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			if(qry.getColumn(e.getKey(),null)!=null) 
+				 populateColumn(qry,e.getKey(),Caster.toArray(e.getValue()));
 		}
 		return qry; 
 	}

@@ -14,15 +14,17 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.scope.FormImpl.Item;
 import railo.runtime.type.util.StructSupport;
 
 /**
  * 
  */
-public final class UrlFormImpl extends StructSupport implements URLForm,FormUpload {
+public final class UrlFormImpl extends StructSupport implements URLForm {
+
+	private static final long serialVersionUID = -5709431392572723178L;
 
 	private FormImpl form;
 	private URLImpl url;
@@ -42,18 +44,23 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 		form.initialize(pc);
 		url.initialize(pc);
 		//print.ln(">>>"+List.arrayToList(url.keys(),","));
-		form.addRaw(url.getRaw());
+		form.addRaw(pc.getApplicationContext(),url.getRaw());
 		
 		/*String[] keys = url.keys();
 		for(int i=0;i<keys.length;i++) {
 			form.setEL(keys[i], url.get(keys[i],null));
 		}*/
 	}
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	
+	@Override
 	public void release() {
+		isInit=false;
+		form.release();
+		url.release();
+	}
+	
+	@Override
+	public void release(PageContext pc) {
 		isInit=false;
 		form.release();
 		url.release();
@@ -83,12 +90,9 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 		return form.getEncoding();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#setEncoding(java.lang.String)
-	 */
-	public void setEncoding(String encoding)throws UnsupportedEncodingException {
-		form.setEncoding(encoding);
+	@Override
+	public void setEncoding(ApplicationContext ac, String encoding)throws UnsupportedEncodingException {
+		form.setEncoding(ac,encoding);
 	}
 
 	/**
@@ -151,37 +155,36 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 	 *
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return form.keyIterator();
 	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return form.keysAsString();
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return form.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return form.entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return form.valueIterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Collection.Key[] keys() {
 		return form.keys();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		return form.remove(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return form.removeEL(key);
 	}
@@ -327,13 +330,9 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 		return form.duplicate(deepCopy);
 	}
 	
-
-
-	/**
-	 * @see railo.runtime.type.scope.URL#setScriptProtecting(boolean)
-	 */
-	public void setScriptProtecting(boolean b) {
-		form.setScriptProtecting(b);
+	@Override
+	public void setScriptProtecting(ApplicationContext ac,boolean b) {
+		form.setScriptProtecting(ac,b);
 	}
 
 	/**
@@ -346,15 +345,15 @@ public final class UrlFormImpl extends StructSupport implements URLForm,FormUplo
 	/**
 	 * @see java.util.Map#values()
 	 */
-	public java.util.Collection values() {
+	public java.util.Collection<Object> values() {
 		return form.values();
 	}
 
-	public Item getUploadResource(String key) {
+	public FormItem getUploadResource(String key) {
 		return form.getUploadResource(key);
 	}
 
-	public Item[] getFileItems() {
+	public FormItem[] getFileItems() {
 		return form.getFileItems();
 	}
 

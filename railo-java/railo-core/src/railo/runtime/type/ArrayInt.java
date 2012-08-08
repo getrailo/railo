@@ -9,7 +9,7 @@ import railo.runtime.exp.ExpressionException;
 
 
 /**
- * cold fusion array object
+ * CFML array object
  */
 public final class ArrayInt implements Sizeable,Serializable {
 	

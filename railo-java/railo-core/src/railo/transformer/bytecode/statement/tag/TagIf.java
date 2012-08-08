@@ -10,6 +10,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
@@ -19,15 +20,8 @@ import railo.transformer.bytecode.util.ExpressionUtil;
 public final class TagIf extends TagBase {
 
 	
-	/**
-	 * Constructor of the class
-	 * @param tag
-	 */
-	public TagIf(int sl) {
-		this(sl,-1);
-	}
-	public TagIf(int sl,int el) {
-		super(sl,el);
+	public TagIf(Position start,Position end) {
+		super(start,end);
 	}
 
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
@@ -50,7 +44,7 @@ public final class TagIf extends TagBase {
 					continue;
 				}
 				else if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Else")) {
-					ExpressionUtil.visitLine(bc, t.getLine());
+					ExpressionUtil.visitLine(bc, t.getStart());
 			        hasElse=true;
 					writeOutElseIfEnd(adapter, endIf, end);
 					//endIf=writeOutElseIfStart(adapter,t);
@@ -71,7 +65,7 @@ public final class TagIf extends TagBase {
 		
 		Label endIf = new Label();
         
-		ExpressionUtil.visitLine(bc, tag.getLine());
+		ExpressionUtil.visitLine(bc, tag.getStart());
         cont.writeOut(bc,Expression.MODE_VALUE);
         adapter.ifZCmp(Opcodes.IFEQ, endIf);
         return endIf;

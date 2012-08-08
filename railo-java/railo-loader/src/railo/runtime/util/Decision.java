@@ -170,7 +170,7 @@ public interface Decision {
     public boolean isSimpleVariableName(String string);
 
     /**
-     * returns if object is a cold fusion object
+     * returns if object is a CFML object
      * @param o Object to check
      * @return is or not
      */

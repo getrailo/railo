@@ -20,11 +20,11 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.Type;
 import railo.runtime.type.wrap.MapAsStruct;
 
@@ -60,7 +60,7 @@ public final class VariableUtilImpl implements VariableUtil {
 	public Object get(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).get(pc,key,defaultValue);
+            return ((Objects)coll).get(pc,KeyImpl.init(key),defaultValue);
         }
 		// Collection
         else if(coll instanceof Collection) {
@@ -190,7 +190,7 @@ public final class VariableUtilImpl implements VariableUtil {
 	public Object getLight(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).get(pc,key,defaultValue);
+            return ((Objects)coll).get(pc,KeyImpl.init(key),defaultValue);
         }
 		// Collection
         else if(coll instanceof Collection) {
@@ -266,7 +266,6 @@ public final class VariableUtilImpl implements VariableUtil {
 			}
 			
 			throw new ExpressionException("Key ["+key.getString()+"] doesn't exist in Map ("+((Map)coll).getClass().getName()+")",detail);
-					//,"keys are ["+railo.runtime.type.List.arrayToList(MapAsStruct.toStruct((Map)coll, true).keysAsString(),",")+"]");
 		} 
 		// List
 		else if(coll instanceof List) {
@@ -311,12 +310,12 @@ public final class VariableUtilImpl implements VariableUtil {
     public Object get(PageContext pc, Object coll, String key) throws PageException {
         // Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).get(pc,key);
+            return ((Objects)coll).get(pc,KeyImpl.init(key));
         }
         // Collection
         else if(coll instanceof Collection) {
             
-			return ((Collection)coll).get(key);
+			return ((Collection)coll).get(KeyImpl.init(key));
 		} 
 		// Map
 		else if(coll instanceof Map) {
@@ -435,7 +434,7 @@ public final class VariableUtilImpl implements VariableUtil {
     public Object set(PageContext pc, Object coll, String key,Object value) throws PageException {
         // Objects
         if(coll instanceof Objects) { 
-            ((Objects)coll).set(pc,key,value);
+            ((Objects)coll).set(pc,KeyImpl.init(key),value);
             return value;
         }
         // Collection
@@ -494,12 +493,12 @@ public final class VariableUtilImpl implements VariableUtil {
     public Object setEL(PageContext pc, Object coll, String key,Object value) {
         // Objects
         if(coll instanceof Objects) { 
-            ((Objects)coll).setEL(pc,key,value);
+            ((Objects)coll).setEL(pc,KeyImpl.init(key),value);
             return value;
         }
         // Collection
         else if(coll instanceof Collection) { 
-			((Collection)coll).setEL(key,value);
+			((Collection)coll).setEL(KeyImpl.init(key),value);
 			return value;
 		}
 		// Map
@@ -715,32 +714,18 @@ public final class VariableUtilImpl implements VariableUtil {
      * @see railo.runtime.util.VariableUtil#callFunctionWithoutNamedValues(railo.runtime.PageContext, java.lang.Object, java.lang.String, java.lang.Object[])
      */
 	public Object callFunctionWithoutNamedValues(PageContext pc, Object coll, String key, Object[] args) throws PageException {
-	    
-        // Objects
-        if(coll instanceof Objects) {
-            return ((Objects)coll).call(pc,key,args);
-        }
-        // call UDF
-	    Object prop=getLight(pc,coll,key,null);	
-	    if(prop instanceof UDF) {
-			return ((UDF)prop).call(pc,args,false);
-		}
-        // call Object Wrapper      
-	    if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
-	    	return Reflector.callMethod(coll,key,args);
-	    }
-		throw new ExpressionException("No matching Method/Function for "+key+"("+Reflector.getDspMethods(Reflector.getClasses(args))+")");
+	    return callFunctionWithoutNamedValues(pc, coll, KeyImpl.init(key), args);
 	}
 	
 	public Object callFunctionWithoutNamedValues(PageContext pc, Object coll, Collection.Key key, Object[] args) throws PageException {
-	    // Objects
+		// Objects
         if(coll instanceof Objects) {
-            return ((Objects)coll).call(pc,key,args);
+        	return ((Objects)coll).call(pc,key,args);
         }
         // call UDF
 	    Object prop=getLight(pc,coll,key,null);	
 	    if(prop instanceof UDF) {
-			return ((UDF)prop).call(pc,args,false);
+	    	return ((UDF)prop).call(pc,args,false);
 		}
         // call Object Wrapper      
 	    if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
@@ -755,17 +740,7 @@ public final class VariableUtilImpl implements VariableUtil {
      * @see railo.runtime.util.VariableUtil#callFunctionWithNamedValues(railo.runtime.PageContext, java.lang.Object, java.lang.String, java.lang.Object[])
      */
 	public Object callFunctionWithNamedValues(PageContext pc, Object coll, String key, Object[] args) throws PageException {
-		// Objects
-        if(coll instanceof Objects) {
-            return ((Objects)coll).callWithNamedValues(pc,key, Caster.toFunctionValues(args));
-        }
-        // call UDF
-		Object prop=getLight(pc,coll,key,null);	
-        if(prop instanceof UDF) {
-            return ((UDF)prop).callWithNamedValues(pc,Caster.toFunctionValues(args),false);
-        }
-		throw new ExpressionException("No matching Method/Function ["+key+"] for call with named arguments found");
-		//throw new ExpressionException("can't use named argument for this operation");
+		return callFunctionWithNamedValues(pc, coll, KeyImpl.init(key), args);
 	}
 
 	public Object callFunctionWithNamedValues(PageContext pc, Object coll, Collection.Key key, Object[] args) throws PageException {
@@ -794,44 +769,20 @@ public final class VariableUtilImpl implements VariableUtil {
         throw new ExpressionException("No matching Method/Function for call with named arguments found");
 	}
 	
-	/*
-	public Object get(Scope scope,Collection.Key key1) throws PageException{
-		return scope.get(key1);
-	}
-	public Object undefined(PageContextImpl pc,Collection.Key key1,Collection.Key key2) throws PageException{
-		return pc.get(pc.us().getCollection(key1),key2);
-	}
-	
-	pagecontext.get(pagecontext.us().getCollection(key1), key2);
-	pagecontext.get(pagecontext.getCollection(pagecontext.us()
-						      .getCollection(key1),
-						  key2),
-			key3);
-	pagecontext.get((pagecontext.getCollection
-			 (pagecontext.getCollection(pagecontext.us()
-							.getCollection(key1),
-						    key2),
-			  key3)),
-			key4);
-    }
-	*/
-	
-	
-	
 	// used by generated bytecode
 	public static Object recordcount(PageContext pc,Object obj) throws PageException{
 		if(obj instanceof Query) return Caster.toDouble(((Query)obj).getRecordcount());
-		return pc.getCollection(obj, QueryImpl.RECORDCOUNT);
+		return pc.getCollection(obj, KeyConstants._RECORDCOUNT);
 	}
 	// used by generated bytecode
 	public static Object currentrow(PageContext pc,Object obj) throws PageException{
-		if(obj instanceof Query) return Caster.toDouble(((Query)obj).getCurrentrow());
-		return pc.getCollection(obj, QueryImpl.CURRENTROW);
+		if(obj instanceof Query) return Caster.toDouble(((Query)obj).getCurrentrow(pc.getId()));
+		return pc.getCollection(obj, KeyConstants._CURRENTROW);
 	}
 	// used by generated bytecode
 	public static Object columnlist(PageContext pc,Object obj) throws PageException{
 		if(obj instanceof Query) {
-			String[] columnNames = ((Query)obj).getColumns();
+			String[] columnNames = ((Query)obj).getColumnNamesAsString();
 			
 			StringBuffer sb=new StringBuffer();
 			for(int i=0;i<columnNames.length;i++) {
@@ -842,7 +793,7 @@ public final class VariableUtilImpl implements VariableUtil {
 			
 			
 		}
-		return pc.getCollection(obj, QueryImpl.COLUMNLIST);
+		return pc.getCollection(obj, KeyConstants._COLUMNLIST);
 	}
     
 }

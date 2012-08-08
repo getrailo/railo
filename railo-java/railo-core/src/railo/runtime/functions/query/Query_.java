@@ -1,5 +1,5 @@
 /**
- * creates a Cold Fusion query Column
+ * creates a CFML query Column
  */
 package railo.runtime.functions.query;
 

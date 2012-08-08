@@ -40,13 +40,13 @@ public abstract class UDFGSProperty extends UDFImpl {
 				rtnType,
 				rtnFormat,
 				false,
-				false,
 				"public",
 				"",
 				"",
 				"",
 				Boolean.FALSE,
 				Boolean.FALSE,
+				0L,
 				new StructImpl()
 				
 		));
@@ -63,13 +63,13 @@ public abstract class UDFGSProperty extends UDFImpl {
 	        short returnType, 
 	        String strReturnFormat, 
 	        boolean output, 
-	        boolean async, 
 	        String strAccess, 
 	        String displayName, 
 	        String description, 
 	        String hint, 
 	        Boolean secureJson,
 	        Boolean verifyClient,
+	        long cachedWithin,
 	        StructImpl meta) {
 		try {
 			return new UDFPropertiesImpl( pageSource,
@@ -78,14 +78,14 @@ public abstract class UDFGSProperty extends UDFImpl {
 			         functionName, 
 			         returnType, 
 			         strReturnFormat, 
-			         output, 
-			         async, 
+			         output,
 			         ComponentUtil.toIntAccess(strAccess), 
 			         displayName, 
 			         description, 
 			         hint, 
 			         secureJson,
 			         verifyClient,
+			         cachedWithin,
 			         meta);
 		} catch (ExpressionException e) {
 			return new UDFPropertiesImpl();
@@ -209,7 +209,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	
 
 	final Object cast(FunctionArgument arg,Object value, int index) throws PageException {
-		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+		if(value==null || Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
 			return value;
 		throw new UDFCasterException(this,arg,value,index);
 	}

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getmetadata
+ * Implements the CFML Function getmetadata
  */
 package railo.runtime.functions.other;
 
@@ -11,14 +11,17 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.img.Image;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.scope.UndefinedImpl;
 
 public final class GetMetaData implements Function {
+
+	private static final long serialVersionUID = -3787469574373656167L;
+
 	// TODO support enties more deeply
 	public static Object call(PageContext pc ) throws PageException {
         Component ac = pc.getActiveComponent();
@@ -62,9 +65,10 @@ public final class GetMetaData implements Function {
 			
 			return object.getClass();
 		}
+		
 		String str = Caster.toString(object,null);
 		if(str==null)throw new FunctionException(pc,"GetMetaData",1,"object","must be a string when second argument is true");
-        return ((UndefinedImpl)pc.undefinedScope()).getScope(str);
+        return pc.undefinedScope().getScope(KeyImpl.init(str));
 		
 	}
 

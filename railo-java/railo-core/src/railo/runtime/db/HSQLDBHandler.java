@@ -29,6 +29,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * class to reexecute queries on the resultset object inside the cfml enviroment
@@ -68,7 +69,7 @@ public final class HSQLDBHandler {
       Statement stat;
 		usedTables.add(name);
 			stat = conn.createStatement();
-			Key[] keys = query.keys();
+			Key[] keys = CollectionUtil.keys(query);
 			int[] types=query.getTypes();
 			int[] innerTypes=toInnerTypes(types);
 			// CREATE STATEMENT

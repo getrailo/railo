@@ -13,6 +13,7 @@
 				struct(action:"scope",label:stMenu.server.scope),
 				struct(action:"application",label:stMenu.server.application),
 				struct(action:"output",label:stMenu.server.output),
+				struct(action:"compiler",label:stMenu.server.compiler),
 				struct(action:"error",label:stMenu.server.error)
 			)
 		),
@@ -74,7 +75,8 @@
 		struct(action:"documentation",label:stMenu.documentation.label,
 			children:array(
 				struct(action:"tagRef",label:stMenu.documentation.tagRef),
-				struct(action:"funcRef",label:stMenu.documentation.funcRef)
+				struct(action:"funcRef",label:stMenu.documentation.funcRef),
+				struct(action:"objRef",label:stMenu.documentation.objRef)
 			)
 		)
 	)>

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function ceiling
+ * Implements the CFML Function ceiling
  */
 package railo.runtime.functions.math;
 

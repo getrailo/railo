@@ -90,12 +90,12 @@ public final class ObjectCache extends TagImpl {
 		QueryCacheSupport qc = ((QueryCacheSupport)pageContext.getQueryCache());
 		if(action.equalsIgnoreCase("clear")) {
 			if(filter==null)
-		    	qc.clear();
+		    	qc.clear(pageContext);
 		    else
-		    	qc.clear(filter);
+		    	qc.clear(pageContext,filter);
 		}
 		else if(action.equalsIgnoreCase("size")) {
-			pageContext.setVariable(result, Caster.toDouble(qc.size()));
+			pageContext.setVariable(result, Caster.toDouble(qc.size(pageContext)));
 		}
 		else throw new ApplicationException("attribute action has an invalid value ["+action+"], valid is only [clear,size]");
 		

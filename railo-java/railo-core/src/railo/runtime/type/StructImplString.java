@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import railo.commons.collections.HashTable;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -18,7 +17,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
 /**
- * cold fusion data type struct
+ * CFML data type struct
  */
 public final class StructImplString extends StructImpl implements Struct {
 
@@ -27,7 +26,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	public static final int TYPE_SYNC=2;
 	public static final int TYPE_REGULAR=3;
 	
-	private Map map;
+	private Map<Collection.Key,Object> map;
 	//private static  int scount=0;
 	//private static int kcount=0;
 	
@@ -35,7 +34,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * default constructor
 	 */
 	public StructImplString() {
-		map=new HashMap();
+		map=new HashMap<Collection.Key, Object>();
 	}
 	
     /**
@@ -46,10 +45,10 @@ public final class StructImplString extends StructImpl implements Struct {
      * @param doubleLinked
      */
     public StructImplString(int type) {
-    	if(type==TYPE_LINKED)		map=new LinkedHashMap();
-    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap();
+    	if(type==TYPE_LINKED)		map=new LinkedHashMap<Collection.Key, Object>();
+    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap<Collection.Key, Object>();
         else if(type==TYPE_SYNC)	map=new HashTable();
-        else 						map=new HashMap();
+        else 						map=new HashMap<Collection.Key, Object>();
     }
     
 	/**
@@ -75,7 +74,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Collection.Key key, Object value) throws PageException {
-		map.put(key.getLowerString(),value);
+		map.put(key,value);
 		return value;
 	}
 	
@@ -83,7 +82,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Collection.Key key, Object value) {
-        map.put(key.getLowerString(),value);
+        map.put(key,value);
 		return value;
 	}
 
@@ -94,38 +93,14 @@ public final class StructImplString extends StructImpl implements Struct {
 		return map.size();
 	}
 
-	public Collection.Key[] keys() {//print.out("keys");
-		Iterator it = map.keySet().iterator();
+	public Collection.Key[] keys() {
+		Iterator<Key> it = map.keySet().iterator();
 		Collection.Key[] keys = new Collection.Key[size()];
 		int count=0;
 		while(it.hasNext()) {
-			keys[count++]=KeyImpl.toKey(it.next(), null);
+			keys[count++]=it.next();
 		}
 		return keys;
-	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		Iterator it = map.keySet().iterator();
-		String[] keys = new String[size()];
-		int count=0;
-		while(it.hasNext()) {
-			keys[count++]=StringUtil.toString(it.next(), null).toUpperCase();
-		}
-		return keys;
-		
-		//return (String[])map.keySet().toArray(new String[map.size()]);
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
-		Object obj= map.remove(StringUtil.toLowerCase(key));
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
-		return obj;
 	}
 
 	/**
@@ -190,13 +165,14 @@ public final class StructImplString extends StructImpl implements Struct {
 	}
 	
 	public static void copy(Struct src,Struct trg,boolean deepCopy) {
-		String[] keys=src.keysAsString();
+		Iterator<Entry<Key, Object>> it = src.entryIterator();
+		Entry<Key, Object> e;
 		ThreadLocalDuplication.set(src, trg);
 		try {
-			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				if(!deepCopy) trg.setEL(key,src.get(key,null));
-				else trg.setEL(key,Duplicator.duplicate(src.get(key,null),deepCopy));
+			while(it.hasNext()) {
+				e = it.next();
+				if(!deepCopy) trg.setEL(e.getKey(),e.getValue());
+				else trg.setEL(e.getKey(),Duplicator.duplicate(e.getValue(),deepCopy));
 			}
 		}
 		finally {
@@ -207,7 +183,7 @@ public final class StructImplString extends StructImpl implements Struct {
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return map.keySet().iterator();
 	}
 	
@@ -230,7 +206,7 @@ public final class StructImplString extends StructImpl implements Struct {
      */
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
-          "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
+          "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
 
 	/**

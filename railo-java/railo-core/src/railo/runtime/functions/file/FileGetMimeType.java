@@ -20,7 +20,7 @@ public class FileGetMimeType {
 		// check type
         int checkingType=checkHeader?ResourceUtil.MIMETYPE_CHECK_HEADER:ResourceUtil.MIMETYPE_CHECK_EXTENSION;
         
-        String mimeType = ResourceUtil.getMymeType(src, checkingType, null);
+        String mimeType = ResourceUtil.getMimeType(src, checkingType, null);
         if(StringUtil.isEmpty(mimeType,true)) return "application/octet-stream";
         return mimeType;
 	}

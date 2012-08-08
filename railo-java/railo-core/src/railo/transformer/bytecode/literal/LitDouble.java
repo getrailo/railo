@@ -7,6 +7,7 @@ import railo.commons.color.ConstantsDouble;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
@@ -18,12 +19,15 @@ import railo.transformer.bytecode.util.Types;
 public final class LitDouble extends ExpressionBase implements Literal,ExprDouble {
 
 	private static final Type CONSTANTS_DOUBLE = Type.getType(ConstantsDouble.class);
-	public static final LitDouble ZERO=new LitDouble(0,-1);
+	public static final LitDouble ZERO=new LitDouble(0,null,null);
 	
     private double d;
 
-	public static ExprDouble toExprDouble(double d, int line) {
-		return new LitDouble(d,line);
+	public static LitDouble toExprDouble(double d) {
+		return new LitDouble(d,null,null);
+	}
+	public static LitDouble toExprDouble(double d, Position start,Position end) {
+		return new LitDouble(d,start,end);
 	}
     
     /**
@@ -31,8 +35,8 @@ public final class LitDouble extends ExpressionBase implements Literal,ExprDoubl
      * @param d
      * @param line 
      */
-	public LitDouble(double d, int line) {
-        super(line);
+	private LitDouble(double d, Position start,Position end) {
+        super(start,end);
         
         this.d=d;
     }

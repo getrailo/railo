@@ -17,7 +17,7 @@ public class FontUtil {
 	private static Graphics2D graphics;
 
 	public synchronized static Array getAvailableFontsAsStringArray() {
-		Iterator it = getAvailableFonts(false).iterator();
+		 Iterator<Object> it = getAvailableFonts(false).valueIterator();
 		Array arr=new ArrayImpl();
 		while(it.hasNext()) {
 			arr.appendEL(((Font)it.next()).getFontName());
@@ -48,13 +48,13 @@ public class FontUtil {
 		Font f=Font.decode(font);
 		if(f!=null) return f;
 		// font name
-		Iterator it = getAvailableFonts(false).iterator();
+		Iterator<Object> it = getAvailableFonts(false).valueIterator();
 		while(it.hasNext()) {
 			f=(Font) it.next();
 			if(f.getFontName().equalsIgnoreCase(font)) return f;
 		}
 		// family
-		it = getAvailableFonts(false).iterator();
+		it = getAvailableFonts(false).valueIterator();
 		while(it.hasNext()) {
 			f=(Font) it.next();
 			if(f.getFamily().equalsIgnoreCase(font)) return f;

@@ -5,6 +5,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
 import railo.transformer.bytecode.BytecodeContext;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 
@@ -42,7 +43,7 @@ public final class ForConditionIntVisitor implements Opcodes, LoopVisitor {
 		
 		return i;
 	}
-	public void visitEndBeforeCondition(BytecodeContext bc, int step, boolean isLocal,int startline) {
+	public void visitEndBeforeCondition(BytecodeContext bc, int step, boolean isLocal,Position startline) {
 		GeneratorAdapter adapter = bc.getAdapter();
 
 		

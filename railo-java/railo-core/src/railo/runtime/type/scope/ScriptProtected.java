@@ -1,5 +1,7 @@
 package railo.runtime.type.scope;
 
+import railo.runtime.listener.ApplicationContext;
+
 public interface ScriptProtected {
 
 	public static final int UNDEFINED=0;
@@ -15,6 +17,6 @@ public interface ScriptProtected {
     /**
      * transform the string values of the scope do a script protecting way
      */
-    public void setScriptProtecting(boolean scriptProtecting);
+    public void setScriptProtecting(ApplicationContext ac,boolean scriptProtecting);
     
 }

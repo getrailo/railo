@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -60,7 +60,7 @@ public final class Page extends BodyBase {
 
 
 	public void doFinalize(BytecodeContext bc) {
-		ExpressionUtil.visitLine(bc, getEndLine()+1);
+		ExpressionUtil.visitLine(bc, getEnd());
 	}
 
 	private static final Type KEY_IMPL = Type.getType(KeyImpl.class);
@@ -501,9 +501,9 @@ public final class Page extends BodyBase {
             BytecodeContext bc = new BytecodeContext(statConstr,constr,this,externalizer,keys,cw,name,adapter,UDF_CALL,writeLog());
             if(functions.length==0){}
             else if(functions.length==1){
-        		ExpressionUtil.visitLine(bc,functions[0].getStartLine());
+        		ExpressionUtil.visitLine(bc,functions[0].getStart());
         		functions[0].getBody().writeOut(bc);
-        		ExpressionUtil.visitLine(bc,functions[0].getEndLine());
+        		ExpressionUtil.visitLine(bc,functions[0].getEnd());
         	}
         	else writeOutUdfCallInner(bc,functions,0,functions.length);
             adapter.visitInsn(Opcodes.ACONST_NULL);
@@ -642,7 +642,7 @@ public final class Page extends BodyBase {
         try {
 			if(externalizer!=null)externalizer.writeOut();
 		} catch (IOException e) {
-			throw new BytecodeException(e.getMessage(), -1);
+			throw new BytecodeException(e.getMessage(), null);
 		}
         
         
@@ -752,19 +752,19 @@ public final class Page extends BodyBase {
 					adapter.push(i);
 				div.visitEnd(bc);
         	cv.visitWhenAfterExprBeforeBody(bc);
-        		ExpressionUtil.visitLine(bc, functions[i].getStartLine());
+        		ExpressionUtil.visitLine(bc, functions[i].getStart());
         		functions[i].getBody().writeOut(bc);
-        		ExpressionUtil.visitLine(bc, functions[i].getEndLine());
+        		ExpressionUtil.visitLine(bc, functions[i].getEnd());
         	cv.visitWhenAfterBody(bc);
         }
         cv.visitAfter(bc);
 	}
 
 	private void writeOutUdfCallInner(BytecodeContext bc,Function[] functions, int offset, int length) throws BytecodeException {
-		NativeSwitch ns=new NativeSwitch(2,NativeSwitch.ARG_REF,-1,-1);
+		NativeSwitch ns=new NativeSwitch(2,NativeSwitch.ARG_REF,null,null);
 		
 		for(int i=offset;i<length;i++) {
-        	ns.addCase(i, functions[i].getBody(),functions[i].getStartLine(),functions[i].getEndLine(),true);
+        	ns.addCase(i, functions[i].getBody(),functions[i].getStart(),functions[i].getEnd(),true);
         }
         ns._writeOut(bc);
 	}
@@ -866,9 +866,9 @@ public final class Page extends BodyBase {
 			adapter.loadArg(0);
 			adapter.invokeVirtual(Types.COMPONENT_IMPL, BEFORE_CALL);
 			adapter.storeLocal(oldData);
-			ExpressionUtil.visitLine(bc, component.getStartLine());
+			ExpressionUtil.visitLine(bc, component.getStart());
 			writeOutCallBody(bc,component.getBody(),IFunction.PAGE_TYPE_COMPONENT);
-			ExpressionUtil.visitLine(bc, component.getEndLine());
+			ExpressionUtil.visitLine(bc, component.getEnd());
 		int t = tcf.visitTryEndCatchBeging(bc);
 			// BodyContentUtil.flushAndPop(pc,bc);
 			adapter.loadArg(0);
@@ -901,9 +901,9 @@ public final class Page extends BodyBase {
 		adapter.visitLocalVariable("this", "L"+name+";", null, methodBegin, methodEnd, 0);
     	adapter.visitLabel(methodBegin);
         
-    	ExpressionUtil.visitLine(bc, interf.getStartLine());
+    	ExpressionUtil.visitLine(bc, interf.getStart());
 		writeOutCallBody(bc,interf.getBody(),IFunction.PAGE_TYPE_INTERFACE);
-		ExpressionUtil.visitLine(bc, interf.getEndLine());
+		ExpressionUtil.visitLine(bc, interf.getEnd());
 		
     	adapter.returnValue();
 	    adapter.visitLabel(methodEnd);
@@ -923,7 +923,7 @@ public final class Page extends BodyBase {
         		if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Component"))return t;
         	}
         }
-		throw new BytecodeException("missing component",getLine());
+		throw new BytecodeException("missing component",getStart());
 	}
 	private Tag getInterface() throws BytecodeException {
 		Iterator it = getStatements().iterator();
@@ -936,7 +936,7 @@ public final class Page extends BodyBase {
         		if(t.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Interface"))return t;
         	}
         }
-		throw new BytecodeException("missing interface",getLine());
+		throw new BytecodeException("missing interface",getStart());
 	}
 
 	private void writeOutFunctionDefaultValueInnerInner(BytecodeContext bc, Function function) throws BytecodeException {
@@ -1082,14 +1082,14 @@ public final class Page extends BodyBase {
 		attr = component.removeAttribute("persistent");
 		boolean persistent=false;
 		if(attr!=null) {
-			persistent=ASMUtil.toBoolean(attr,component.getStartLine()).booleanValue();
+			persistent=ASMUtil.toBoolean(attr,component.getStart()).booleanValue();
 		}
 		
 		// persistent
 		attr = component.removeAttribute("accessors");
 		boolean accessors=false;
 		if(attr!=null) {
-			accessors=ASMUtil.toBoolean(attr,component.getStartLine()).booleanValue();
+			accessors=ASMUtil.toBoolean(attr,component.getStart()).booleanValue();
 		}
 
 		adapter.push(persistent);
@@ -1201,7 +1201,12 @@ public final class Page extends BodyBase {
         
 	}
 	
-	
+	public static boolean hasMetaDataStruct(Map attrs, Map meta) {
+		if((attrs==null || attrs.size()==0) && (meta==null || meta.size()==0)){
+			return false;
+		}
+		return true;
+	}
 	
 	public static void createMetaDataStruct(BytecodeContext bc, Map attrs, Map meta) throws BytecodeException {
 		
@@ -1430,7 +1435,7 @@ public final class Page extends BodyBase {
 	public static byte[] setSourceLastModified(byte[] barr,  long lastModified) {
 		ClassReader cr = new ClassReader(barr);
 		ClassWriter cw = ASMUtil.getClassWriter();
-		ClassAdapter ca = new SourceLastModifiedClassAdapter(cw,lastModified);
+		ClassVisitor ca = new SourceLastModifiedClassAdapter(cw,lastModified);
 		cr.accept(ca, ClassReader.SKIP_DEBUG);
 		return cw.toByteArray();
 	}
@@ -1438,11 +1443,11 @@ public final class Page extends BodyBase {
 
 
 }
-	class SourceLastModifiedClassAdapter extends ClassAdapter {
+	class SourceLastModifiedClassAdapter extends ClassVisitor {
 
 		private long lastModified;
 		public SourceLastModifiedClassAdapter(ClassWriter cw, long lastModified) {
-			super(cw);
+			super(Opcodes.ASM4,cw);
 			this.lastModified=lastModified;
 		}
 		public MethodVisitor visitMethod(int access,String name, String desc,  String signature, String[] exceptions) {

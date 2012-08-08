@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isdefined
+ * Implements the CFML Function isdefined
  */
 package railo.runtime.functions.decision;
 

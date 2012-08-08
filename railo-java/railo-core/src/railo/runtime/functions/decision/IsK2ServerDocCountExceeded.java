@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isk2serverdoccountexceeded
+ * Implements the CFML Function isk2serverdoccountexceeded
  */
 package railo.runtime.functions.decision;
 

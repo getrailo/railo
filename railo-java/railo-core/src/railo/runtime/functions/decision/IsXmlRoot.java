@@ -5,7 +5,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Decision;
 
 /**
- * Implements the Cold Fusion Function isxmlroot
+ * Implements the CFML Function isxmlroot
  */
 public final class IsXmlRoot implements Function {
 	public static boolean call(PageContext pc , Object object) {

@@ -95,6 +95,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.label">Einstellungen</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regionales</data>
+	<data key="menu.server.compiler">Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
 	<data key="menu.server.application">Applikation</data>
@@ -134,6 +135,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.documentation.label">Dokumentation</data>
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
+	<data key="menu.documentation.objRef">Object Reference</data>
 	<data key="security.customtagdescription">Custom tags können im &apos;Web Administrator&apos; hinzugefügt, gelöscht und geändert werden.</data>
 	<data key="security.tagobject">Tag CFObject / Funktion createObject</data>
 	<data key="security.debugging">Debugging</data>
@@ -421,7 +423,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="search.last_update">Letzte Aktualisierung</data>
 	<data key="search.online">Online</data>
 	<data key="search.name">Name</data>
-	<data key="components.triggerdatamember">Magic functions</data>
+	<data key="components.triggerdatamember">Implizite Notation</data>
 	<data key="components.componentlocalsearchdesc">Relativ zum aktuellen Verzeichnis nach einer aufgerufenen Komponente suchen.</data>
 	<data key="components.componentdumptemplate">Komponetenausgabe Template (dump)</data>
 	<data key="components.basecomponent">Basis/Root Komponente</data>
@@ -537,6 +539,21 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="debug.memorylogger">Memory Logger</data>
 	<data key="debug.showQueryUsage">Query Zugriffe anzeigen</data>
 	<data key="debug.showQueryUsageDesc">Wenn engeschaltete werden die Zugriff auf die Queries die innerhalb eines request gezogen wurden angezeigt.</data>
+	
+		
+	<data key="setting.compiler">Railo Compiler Einstellungen, dies beeinflusst wie der Railo Compiler den Source Code übersetzt. Das ändern dieser Einstellungen löscht alle existierenden Class Files.</data>
+	<data key="setting.dotNotation">Dot Notation</data>
+	<data key="setting.dotNotationDesc">Konvertiert Struct Keys definiert mit "Dot Notation" als grossgeschrieben (CFML Standard) oder lässt diese wie sie sind (wie "Bracked Notation").
+Übersetzt zu grossgeschrieben:
+sct.dotNotation --> keyname: "DOTNOTATION"
+sct[""bracketNotation""] --> keyname: "bracketNotation"
+
+Behält die Keys wie sie sind:
+sct.dotNotation --> keyname: "dotNotation"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
+	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
+	
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Template Cache leeren</data>
 	<data key="setting.querycache">Query Cache</data>
@@ -654,6 +671,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="buttons.verify">überprüfen</data>
 	<data key="buttons.flush">leeren</data>
 	<data key="buttons.stopstart">stop/start</data>
+	<data key="buttons.back">zurück</data>
 	<data key="buttons.previous">restart</data>
 	<data key="buttons.addarchive">dem Mapping zuweisen</data>
 	<data key="buttons.cancel">abbrechen</data>
@@ -798,9 +816,11 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
 	<data key="settings.cache.defaulttypeTemplateDesc">Diese Cache Connection wird für Template Caching verwendet (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
-	<data key="settings.cache.defaulttypeQueryDesc">Diese Cache Connection wird für für das cache von cfquery Resultsets verwendet.</data>
+	<data key="settings.cache.defaulttypeQueryDesc">Diese Cache Connection wird für für das cachen von cfquery Resultsets verwendet.</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">Diese Cache Connection wird für die Ram Resource (ram://...) verwendet.</data>
+	<data key="settings.cache.defaulttypeFunction">Function</data>
+	<data key="settings.cache.defaulttypeFunctionDesc">Diese Cache Connection wird für für das cachen von cffunction/function Resultsets verwendet.</data>
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
 	<data key="settings.cache.Default">Default</data>
 	<data key="settings.cache.DefaultTitle">Default cache connection</data>
@@ -968,7 +988,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="overview.Hash">Hash</data>
 	<data key="overview.config">Konfigurationsfile</data>
 	<data key="overview.webroot">Webroot</data>
-	<data key="overview.info">Info</data>
+	<data key="overview.info">General Info</data>
 	<data key="overview.featurerequest">Feature Anfragen</data>
 	<data key="overview.contextcount">Anzahl Kontexte</data>
 	<data key="help.logotitle">Railo Hilfe</data>

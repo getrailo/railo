@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listchangedelims
+ * Implements the CFML Function listchangedelims
  */
 package railo.runtime.functions.list;
 

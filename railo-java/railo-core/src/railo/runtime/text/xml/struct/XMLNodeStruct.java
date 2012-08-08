@@ -32,9 +32,12 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.StructSupport;
-import railo.runtime.util.ArrayIterator;
 
 /**
  * 
@@ -55,14 +58,14 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		this.caseSensitive=caseSensitive;
 	}
 	
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
+	 * /
+	public Object remove (String key) throws PageException {
 		Object o= XMLUtil.removeProperty(node,KeyImpl.init(key),caseSensitive);
         if(o!=null)return o;           
         throw new ExpressionException("node has no child with name ["+key+"]");
-	}
+	}*/
 
 	/**
 	 *
@@ -320,15 +323,6 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		return count;
 	}
 
-	public String[] keysAsString() {
-		NodeList elements=XMLUtil.getChildNodes(node,Node.ELEMENT_NODE,false,null);// TODO ist das false hier OK?
-		String[] arr=new String[elements.getLength()];
-		for(int i=0;i<arr.length;i++) {
-			arr[i]=elements.item(i).getNodeName();
-		}
-		return arr;
-	}
-
 	public Collection.Key[] keys() {
 		NodeList elements=XMLUtil.getChildNodes(node,Node.ELEMENT_NODE,false,null);// TODO ist das false hie ok
 		Collection.Key[] arr=new Collection.Key[elements.getLength()];
@@ -365,11 +359,24 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 		return XMLUtil.setPropertyEL(node,key,value,caseSensitive);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		return new ArrayIterator(keysAsString());
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
+		return new KeyIterator(keys());
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
 	}
 
 	/**

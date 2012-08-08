@@ -6,7 +6,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 
 /**
- * Implements the Cold Fusion Function tobase64
+ * Implements the CFML Function tobase64
  */
 public final class ToBase64 implements Function {
 	/**

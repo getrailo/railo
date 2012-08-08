@@ -3,6 +3,8 @@ package railo.runtime.thread;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +15,7 @@ import railo.commons.lang.Pair;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
@@ -89,7 +92,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		if(attrs==null) this.attrs=new StructImpl();
 		else this.attrs=attrs;
 		
-		
 		if(!serializable){
 			this.page=page;
 			if(parent!=null){
@@ -139,13 +141,15 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ConfigWebImpl cwi;
 			try {
 				cwi = (ConfigWebImpl)config;
-				p=cwi.getPageSource(oldPc,null, template, false,false,true).loadPage(cwi);
+				DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
+				pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
+				pc.setRequestTimeout(requestTimeout);
+				p=PageSourceImpl.loadPage(pc, cwi.getPageSources(oldPc==null?pc:oldPc,null, template, false,false,true));
+				//p=cwi.getPageSources(oldPc,null, template, false,false,true).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
-			DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
-			pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
-			pc.setRequestTimeout(requestTimeout);pc.addPageSource(p.getPageSource(), true);
+				pc.addPageSource(p.getPageSource(), true);
 		}
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());
@@ -156,13 +160,13 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		
 		Argument newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));
         LocalImpl newLocal=pc.getScopeFactory().getLocalInstance();
-        Key[] keys = attrs.keys();
-		for(int i=0;i<keys.length;i++){
-			newArgs.setEL(keys[i],attrs.get(keys[i],null));
-			//newLocal.setEL(keys[i],attrs.get(keys[i],null));
+        //Key[] keys = attrs.keys();
+        Iterator<Entry<Key, Object>> it = attrs.entryIterator();
+        Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			newArgs.setEL(e.getKey(),e.getValue());
 		}
-		
-		//print.out(newArgs);
 		
 		newLocal.setEL(KEY_ATTRIBUTES, newArgs);
 

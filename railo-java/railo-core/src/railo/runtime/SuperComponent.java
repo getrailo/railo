@@ -20,13 +20,15 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructUtil;
 
 /**
  * 
  */
-public class SuperComponent extends MemberSupport implements Component, Member,Sizeable {
+public class SuperComponent extends MemberSupport implements ComponentPro, Member,Sizeable {
 	
 	private ComponentImpl comp;
 
@@ -391,20 +393,19 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 		return comp.isValidAccess(access);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#iterator()
-	 */
-	public Iterator iterator() {
-		return comp.iterator();
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
+		return comp.keyIterator(getAccess());
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		return comp.keyIterator();
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+		return comp.keysAsStringIterator(getAccess());
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return comp.entryIterator(getAccess());
 	}
 
 	/**
@@ -413,14 +414,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 */
 	public Key[] keys() {
 		return comp.keys(getAccess());
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.ComponentImpl#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return comp.keysAsString(getAccess());
 	}
 
 	/**
@@ -519,11 +512,6 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return comp.top.toDumpData(pageContext, maxlevel,dp);
 	}
-
-
-	public Page getPage() {
-		return comp.getPage();
-	}
 	
 	/**
 	 * @see railo.runtime.Component#getPageSource()
@@ -608,7 +596,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	}
 
 
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return comp.valueIterator();
 	}
 
@@ -618,6 +606,12 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
 	}
+	
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return comp.getProperties(onlyPeristent,includeBaseProperties);
+	}
+	
+	
 
 	/**
 	 * @see railo.runtime.Component#getComponentScope()
@@ -666,5 +660,30 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public String getWSDLFile() {
 		return comp.getWSDLFile();
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	comp.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+		comp.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+		comp.registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+		comp.registerUDF(key, props);
+    }
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
 	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
@@ -16,7 +17,9 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.QueryStack;
 import railo.runtime.util.QueryStackImpl;
@@ -26,10 +29,11 @@ import railo.runtime.util.QueryStackImpl;
  */
 public final class UndefinedImpl extends StructSupport implements Undefined {
 
-	private static final Collection.Key QUERY = KeyImpl.intern("query");
-	private Collection[] scopes;
+	private static final long serialVersionUID = -5626787508494702023L;
+
+	private Scope[] scopes;
 	private QueryStackImpl qryStack=new QueryStackImpl();
-	private Scope variable;
+	private Variables variable;
 	private boolean allowImplicidQueryCall;
 	private boolean checkArguments;
 	
@@ -41,6 +45,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	private Local local;
 	private Argument argument;
 	private PageContextImpl pc;
+	private boolean debug;
 	
 	/**
 	 * constructor of the class
@@ -50,6 +55,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public UndefinedImpl(PageContextImpl pc, short type) {
 		this.type=type;
 		this.pc=pc;
+		this.debug=pc.getConfig().debug();
 	}
 	
 	
@@ -71,17 +77,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	 * @see railo.runtime.type.scope.Undefined#variablesScope()
 	 */
 	public Variables variablesScope() {
-		return (Variables) variable;
+		return variable;
 	}
-
-	/*
-     * @see railo.runtime.type.scope.Undefined#check Arguments(boolean)
-     * /
-	public boolean check Arguments(boolean b) {
-		boolean old=this.check Arguments;
-		this.check Arguments=b;
-		return old;
-	}*/
 	
 	/**
 	 * @see railo.runtime.type.scope.Undefined#setMode(int)
@@ -98,6 +95,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		return m;
 	}
 	
+	public boolean getLocalAlways(){
+		return localAlways;
+	}
+	
 	
 	/**
      * @see railo.runtime.type.scope.Undefined#setFunctionScopes(railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope)
@@ -105,13 +106,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public void setFunctionScopes(Local local, Argument argument) {
 		this.local=local;
 		this.argument=argument;
-	}
-
-	/**
-     * @see railo.runtime.type.scope.Undefined#getCollectionStack()
-     */
-	public QueryStack getCollectionStack() {
-		return getQueryStack();
 	}
 	
 	/**
@@ -122,24 +116,10 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	/**
-     * @see railo.runtime.type.scope.Undefined#setCollectionStack(railo.runtime.util.QueryStack)
-     */
-	public void setCollectionStack(QueryStack collStack) {
-		setQueryStack(collStack);
-	}
-	
-	/**
 	 * @see railo.runtime.type.scope.Undefined#setQueryStack(railo.runtime.util.QueryStack)
 	 */
 	public void setQueryStack(QueryStack qryStack) {
 		this.qryStack=(QueryStackImpl) qryStack;
-	}
-	
-	/**
-     * @see railo.runtime.type.scope.Undefined#addCollection(railo.runtime.type.Query)
-     */
-	public void addCollection(Query coll) {
-		addQuery(coll);
 	}
 
 	/**
@@ -148,13 +128,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public void addQuery(Query qry) {
 		if(allowImplicidQueryCall)
 			qryStack.addQuery(qry);
-	}
-
-	/**
-     * @see railo.runtime.type.scope.Undefined#removeCollection()
-     */
-	public void removeCollection() {
-		removeQuery();
 	}
 
 	/**
@@ -170,13 +143,6 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	 */
 	public int size() {
 		return variable.size();
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return variable.keysAsString();
 	}
 
 	/**
@@ -220,81 +186,71 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		    if(rtn!=null) return rtn;
 
 		    rtn=argument.getFunctionArgument(key,null);
-		    if(rtn!=null) return rtn;
+		    if(rtn!=null) {
+		    	if(debug) debugCascadedAccess(pc,argument.getTypeAsString(), key);
+				return rtn;
+		    }
 		}
 		
 		// get data from queries
 		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
 			rtn=qryStack.getDataFromACollection(pc,key);
 			if(rtn!=null) {
-		    	return rtn;
+				if(debug) debugCascadedAccess(pc,"query", key);
+				return rtn;
 		    }
 		}
 		
 		// variable
 		rtn=variable.get(key,null);
 		if(rtn!=null) {
+			if(debug && checkArguments) debugCascadedAccess(pc,variable,rtn, key);
 			return rtn;
 	    }
 		
 		// thread scopes
 		if(pc.hasFamily()) {
 			rtn = pc.getThreadScope(key,null);
-			if(rtn!=null) return rtn;
+			if(rtn!=null) {
+				if(debug) debugCascadedAccess(pc,"thread", key);
+				return rtn;
+			}
 		}
 		
 		// get a scope value
 		for(int i=0;i<scopes.length;i++) {
 		    rtn=scopes[i].get(key,null);
 			if(rtn!=null) {
+				if(debug) debugCascadedAccess(pc,scopes[i].getTypeAsString(),key);
 				return rtn;
 			}
 		}
 		throw new ExpressionException("variable ["+key.getString()+"] doesn't exist");
 	}
 	
+	public static void debugCascadedAccess(PageContext pc,Variables var, Object value, Collection.Key key) {
+		if(var instanceof ComponentScope){
+			if(key.equals(KeyConstants._THIS) || key.equals(KeyConstants._SUPER)) return;
+			if(value instanceof UDF) {
+				return;
+			}
+		}
+		
+		debugCascadedAccess(pc,"variables", key);
+	}
+	
+	public static void debugCascadedAccess(PageContext pc,String name, Collection.Key key) {
+		if(pc!=null)pc.getDebugger().addImplicitAccess(name,key.getString());
+	}
+	
 	/**
      * @see railo.runtime.type.scope.Undefined#getCollection(java.lang.String)
      */
-	public Object getCollection(String key) throws ExpressionException {
-		Object rtn=null;
-		
-		if(checkArguments) {
-		    rtn=local.get(key,null);
-		    if(rtn!=null) return rtn;
-		    rtn=argument.getFunctionArgument(key,null);
-		    if(rtn!=null) return rtn;
-		}
-				
-		// get data from queries
-		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
-			rtn=qryStack.getColumnFromACollection(key);
-			if(rtn!=null) return rtn;
-		}
-		
-		// variable
-		rtn=variable.get(key,null);
-		if(rtn!=null) {
-			return rtn;
-		}
-		
-		// thread scopes
-		if(pc.hasFamily()) {
-			rtn = pc.getThreadScope(key,null);
-			if(rtn!=null) return rtn;
-		}
-		
-		// get a scope value
-		for(int i=0;i<scopes.length;i++) {
-			rtn=scopes[i].get(key,null);
-			if(rtn!=null) {
-				return rtn;
-			}
-		}
-		throw new ExpressionException("variable ["+key+"] doesn't exist");
+	public Object getCollection(String key) throws PageException {
+		return getCollection(KeyImpl.init(key));
 	}
 	
-	public Struct getScope(String key) {
+	public Struct getScope(Collection.Key key) {
 		Object rtn=null;
 		Struct sct=new StructImpl(Struct.TYPE_LINKED);
 		
@@ -308,7 +264,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		// get data from queries
 		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
 			rtn=qryStack.getColumnFromACollection(key);
-			if(rtn!=null) sct.setEL(QUERY, rtn);
+			if(rtn!=null) sct.setEL(KeyConstants._query, rtn);
 		}
 		
 		// variable
@@ -327,19 +283,20 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		for(int i=0;i<scopes.length;i++) {
 			rtn=scopes[i].get(key,null);
 			if(rtn!=null) {
-				sct.setEL(((Scope)scopes[i]).getTypeAsString(), rtn); 
+				sct.setEL(KeyImpl.init(scopes[i].getTypeAsString()), rtn); 
 			}
 		}
 		return sct;
 	}
-	
+
+
 	/**
 	 * return a list of String with the scope names
 	 * @param key
 	 * @return
 	 */
-	public List getScopeNames() {
-		List scopeNames=new ArrayList();
+	public List<String> getScopeNames() {
+		List<String> scopeNames=new ArrayList<String>();
 		
 		if(checkArguments) {
 			scopeNames.add("local");
@@ -354,13 +311,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		}
 		
 		for(int i=0;i<scopes.length;i++) {
-			
-			scopeNames.add(((Scope)scopes[i]).getTypeAsString()); 
+			scopeNames.add((scopes[i]).getTypeAsString()); 
 		}
 		return scopeNames;
-		
-		
-		
 	}
 
 	public Object getCollection(Key key) throws PageException {
@@ -370,31 +323,42 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		    rtn=local.get(key,null);
 		    if(rtn!=null) return rtn;
 		    rtn=argument.getFunctionArgument(key,null);
-		    if(rtn!=null) return rtn;
+		    if(rtn!=null) {
+		    	if(debug)debugCascadedAccess(pc,argument.getTypeAsString(), key);
+		    	return rtn;
+		    }
 		}
 				
 		// get data from queries
 		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
 			rtn=qryStack.getColumnFromACollection(key);
-			if(rtn!=null) return rtn;
+			if(rtn!=null) {
+				if(debug)debugCascadedAccess(pc,"query", key);
+				return rtn;
+			}
 		}
 		
 		// variable
 		rtn=variable.get(key,null);
 		if(rtn!=null) {
+			if(debug && checkArguments) debugCascadedAccess(pc,variable,rtn, key);
 			return rtn;
 		}
 		
 		// thread scopes
 		if(pc.hasFamily()) {
 			rtn = pc.getThreadScope(key,null);
-			if(rtn!=null) return rtn;
+			if(rtn!=null) {
+				if(debug) debugCascadedAccess(pc,"thread", key);
+				return rtn;
+			}
 		}
 		
 		// get a scope value
 		for(int i=0;i<scopes.length;i++) {
 			rtn=scopes[i].get(key,null);
 			if(rtn!=null) {
+				if(debug)debugCascadedAccess(pc,scopes[i].getTypeAsString(),key);
 				return rtn;
 			}
 		}
@@ -408,32 +372,43 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
             rtn=local.get(key,null);
             if(rtn!=null) return rtn;
             rtn=argument.getFunctionArgument(key,null);
-            if(rtn!=null) return rtn;
+            if(rtn!=null) {
+            	if(debug) debugCascadedAccess(pc,argument.getTypeAsString(), key);
+				return rtn;
+            }
         }
         
         // get data from queries
         if(allowImplicidQueryCall && !qryStack.isEmpty()) {
             rtn=qryStack.getDataFromACollection(key);
-            if(rtn!=null) return rtn;
+            if(rtn!=null) {
+            	if(debug) debugCascadedAccess(pc,"query", key);
+				return rtn;
+            }
         }
         
         // variable
         rtn=variable.get(key,null);
         if(rtn!=null) {
-            return rtn;
+        	if(debug && checkArguments) debugCascadedAccess(pc,variable, rtn, key);
+			return rtn;
         }
 		
 		// thread scopes
 		if(pc.hasFamily()) {
 			rtn = pc.getThreadScope(key,null);
-			if(rtn!=null) return rtn;
+			if(rtn!=null) {
+				if(debug && checkArguments) debugCascadedAccess(pc,"thread", key);
+				return rtn;
+			}
 		}
         
         // get a scope value
         for(int i=0;i<scopes.length;i++) {
             rtn=scopes[i].get(key,null);
             if(rtn!=null) {
-                return rtn;
+            	if(debug) debugCascadedAccess(pc,scopes[i].getTypeAsString(), key);
+    			return rtn;
             }
         }
         return defaultValue;
@@ -444,16 +419,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
      * @see railo.runtime.type.scope.Undefined#getCascading(java.lang.String)
      */
     public Object getCascading(String strKey) {
-        Object rtn=null;
-        Key key = KeyImpl.init(strKey);
-        // get a scope value
-        for(int i=0;i<scopes.length;i++) {
-            rtn=scopes[i].get(key,null);
-            if(rtn!=null) {
-                return rtn;
-            }
-        }
-        return null;
+        return getCascading(KeyImpl.init(strKey));
     }
 
 
@@ -480,10 +446,14 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Object setEL(Collection.Key key, Object value) {
 		if(checkArguments) {
             if(localAlways || local.containsKey(key))     return local.setEL(key,value);
-            if(argument.containsFunctionArgumentKey(key))  return argument.setEL(key,value);
+            if(argument.containsFunctionArgumentKey(key))  {
+            	if(debug)debugCascadedAccess(pc,argument.getTypeAsString(), key);
+            	return argument.setEL(key,value);
+            }
         }
 			
-		return variable.setEL(key,value);
+		if(debug && checkArguments)debugCascadedAccess(pc,variable.getTypeAsString(), key);
+    	return variable.setEL(key,value);
 	}
 
 	/**
@@ -493,10 +463,14 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public Object set(Collection.Key key, Object value) throws PageException {
 		if(checkArguments) {
         	if(localAlways || local.containsKey(key))     return local.set(key,value);
-            if(argument.containsFunctionArgumentKey(key))  return argument.set(key,value);
+            if(argument.containsFunctionArgumentKey(key))  {
+            	if(debug)debugCascadedAccess(pc,argument.getTypeAsString(), key);
+            	return argument.set(key,value);
+            }
             
         }
-		return variable.set(key,value);
+		if(debug && checkArguments)debugCascadedAccess(pc,variable.getTypeAsString(), key);
+    	return variable.set(key,value);
 	}
 	
 	/**
@@ -509,8 +483,23 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return variable.keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return variable.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return variable.entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return variable.valueIterator();
 	}
 	
 	/**
@@ -535,18 +524,18 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		// Strict
 		if(type==Config.SCOPE_STRICT) {
 			//print.ln("strict");
-			scopes=new Collection[] {};
+			scopes=new Scope[] {};
 		}
 		// small
 		else if(type==Config.SCOPE_SMALL) {
 			//print.ln("small");
 			if(pc.getConfig().mergeFormAndURL()) {
-				scopes=new Collection[] {
+				scopes=new Scope[] {
 						pc.formScope()
 					};
 			}
 			else {
-				scopes=new Collection[] {
+				scopes=new Scope[] {
 						pc.urlScope(),
 						pc.formScope()
 					};
@@ -554,25 +543,25 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		}
 		// standard
 		else  {
-			reinitialize((PageContextImpl) pc);
+			reinitialize( pc);
 		}
 		
 		
 	}
 
-	public void reinitialize(PageContextImpl pc) {
+	public void reinitialize(PageContext pc) {
 		if(type!=Config.SCOPE_STANDARD) return;
 		Client cs = pc.clientScopeEL();
 //		print.ln("standard");
 		if(pc.getConfig().mergeFormAndURL()) {
-            scopes=new Collection[cs==null?3:4]; 
+            scopes=new Scope[cs==null?3:4]; 
             scopes[0]=pc.cgiScope();
             scopes[1]=pc.formScope();
             scopes[2]=pc.cookieScope();
             if(cs!=null)scopes[3]=cs;
 		}
 		else {
-            scopes=new Collection[cs==null?4:5]; 
+            scopes=new Scope[cs==null?4:5]; 
             scopes[0]=pc.cgiScope();
             scopes[1]=pc.urlScope();
             scopes[2]=pc.formScope();
@@ -582,10 +571,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
-	public void release() {
+	@Override
+	public final void release() {
 		isInit=false;
 		argument=null;
 		local=null;
@@ -594,10 +581,18 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		checkArguments=false;
 		localAlways=false;
 		if(allowImplicidQueryCall)qryStack.clear();
-		
-		
-		//threads=null;
-		//hasThreads=false;
+	}
+	
+	@Override
+	public final void release(PageContext pc) {
+		isInit=false;
+		argument=null;
+		local=null;
+		variable=null;
+		scopes=null;
+		checkArguments=false;
+		localAlways=false;
+		if(allowImplicidQueryCall)qryStack.clear();
 	}
 
 	/**
@@ -613,13 +608,15 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		dupl.localAlways=localAlways;
 		dupl.qryStack= (deepCopy?(QueryStackImpl)qryStack.duplicate(deepCopy):qryStack);
 		
-		dupl.variable=deepCopy?(Scope)variable.duplicate(deepCopy):variable;
+		dupl.variable=deepCopy?(Variables)variable.duplicate(deepCopy):variable;
+		dupl.pc=pc;
+		dupl.debug=debug;
 		
 		// scopes
 		if(deepCopy) {
-			dupl.scopes=new Collection[scopes.length];
+			dupl.scopes=new Scope[scopes.length];
 			for(int i=0;i<scopes.length;i++) {
-				dupl.scopes[i]=scopes[i].duplicate(deepCopy);
+				dupl.scopes[i]=(Scope)scopes[i].duplicate(deepCopy);
 			}
 		}
 		else dupl.scopes=scopes;
@@ -641,7 +638,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
      */
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
-          "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
+          "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
     
 	/**
@@ -726,7 +723,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
     /**
      * @see railo.runtime.type.scope.Undefined#setVariableScope(railo.runtime.type.scope.Scope)
      */
-    public void setVariableScope(Scope scope) {
+    public void setVariableScope(Variables scope) {
     	variable=scope;
     }
 

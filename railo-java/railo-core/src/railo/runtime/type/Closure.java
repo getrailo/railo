@@ -10,7 +10,6 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ComponentUtil;
 
@@ -27,8 +26,8 @@ public class Closure extends UDFImpl {
 	public Closure(UDFProperties properties) {
 		super(properties);
 		PageContext pc = ThreadLocalPageContext.get();
-		if(((UndefinedImpl)pc.undefinedScope()).getCheckArguments())
-			this.variables=new railo.runtime.type.scope.Closure(pc.argumentsScope(),pc.localScope(),pc.variablesScope());
+		if(pc.undefinedScope().getCheckArguments())
+			this.variables=new railo.runtime.type.scope.Closure(pc,pc.argumentsScope(),pc.localScope(),pc.variablesScope());
 		else{
 			this.variables=pc.variablesScope();
 			variables.setBind(true);
@@ -114,7 +113,5 @@ public class Closure extends UDFImpl {
 		
 		// properties
 		out.writeObject(properties);
-		
-		
 	}
 }

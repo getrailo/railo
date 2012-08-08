@@ -129,7 +129,7 @@ public final class ComponentUtil {
     	java.util.List _keys=new ArrayList();
     
         // remote methods
-        String[] keys = component.keysAsString(Component.ACCESS_REMOTE);
+        Collection.Key[] keys = component.keys(Component.ACCESS_REMOTE);
         int max;
         for(int i=0;i<keys.length;i++){
         	max=-1;
@@ -161,7 +161,6 @@ public final class ComponentUtil {
         catch(Throwable t) {
         	throw Caster.toPageException(t);
         }
-        
     }
 
     private static railo.transformer.bytecode.Page getPage(BytecodeContext bc1, BytecodeContext bc2) {
@@ -278,12 +277,19 @@ public final class ComponentUtil {
 	 * @param clazz
 	 */
 	private static void _registerTypeMapping(RPCServer server, Class clazz) {
-		if(!isComplexType(clazz)) return;
+		if(clazz==null) return;
+		
+		if(!isComplexType(clazz)) {
+			if(clazz.isArray()) {
+				_registerTypeMapping(server, clazz.getComponentType());
+			}
+			return;
+		}
 		server.registerTypeMapping(clazz);
 		registerTypeMapping(server,clazz);
 	}
 
-	private static String getClassname(Component component) {
+	public static String getClassname(Component component) {
     	PageSource ps = component.getPageSource();
     	//ps.getRealpath()
     	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
@@ -325,7 +331,6 @@ public final class ComponentUtil {
 
     
     private static Object _getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException, IOException, ClassNotFoundException {
-
     	String real=className.replace('.','/');
     	
 		//Config config = pc.getConfig();
@@ -347,7 +352,6 @@ public final class ComponentUtil {
 				
 			}
 		}
-		
 		// create file
 		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{Pojo.class},null);
     	boolean exist=classFile.exists();
@@ -439,7 +443,7 @@ public final class ComponentUtil {
             for(int y=0;y<types.length;y++){
     			av.visitBeginItem(adapter, y);
     				adapter.loadArg(y);
-    			av.visitEndItem(bc);
+    			av.visitEndItem(bc.getAdapter());
             }
             av.visitEnd();
             adapter.invokeStatic(COMPONENT_CONTROLLER, INVOKE);
@@ -559,11 +563,11 @@ public final class ComponentUtil {
 		if(member==null) {
 			String strAccess = toStringAccess(access,"");
 			
-			String[] other;
+			Collection.Key[] other;
 			if(c instanceof ComponentAccess)
-				other=((ComponentAccess)c).keysAsString(access);
+				other=((ComponentAccess)c).keys(access);
 			else 
-				other=c.keysAsString();
+				other=CollectionUtil.keys(c);
 			
 			if(other.length==0)
 				return new ExpressionException(
@@ -688,10 +692,10 @@ public final class ComponentUtil {
         
 	    	   
 	    int format = udf.returnFormat;
-        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyImpl.RETURN_FORMAT, "wddx");
-        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
-        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
-        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
+        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyConstants._returnFormat, "wddx");
+        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyConstants._returnFormat, "plain");
+        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyConstants._returnFormat, "json");
+        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyConstants._returnFormat, "serialize");
         
         
         FunctionArgument[] args =  udf.arguments;

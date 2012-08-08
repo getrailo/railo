@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listfindnocase
+ * Implements the CFML Function listfindnocase
  */
 package railo.runtime.functions.list;
 

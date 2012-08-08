@@ -5,9 +5,9 @@
 * @return File Object
 */
 function printError(error,boolean longversion=false) {
-	if(IsSimpleValue(error))error=struct(message:error);
-	if(not StructKeyExists(error,'detail'))error.detail="";
-	else if(error.message EQ error.detail)error.detail="";
+	if(IsSimpleValue(arguments.error))arguments.error=struct(message:arguments.error);
+	if(not StructKeyExists(arguments.error,'detail'))arguments.error.detail="";
+	else if(arguments.error.message EQ arguments.error.detail)arguments.error.detail="";
 	// if(!IsSimpleValue(error) && error.getClass().getName() EQ "railo.runtime.exp.CatchBlock")createObject("java","railo.print").e(error.getPageException())
 	if(StructKeyExists(arguments.error,'message') and arguments.error.message NEQ "") {
 		writeOutput('<div class="error">');
@@ -53,8 +53,8 @@ function toInt(number obj) {
 }
 
 function two(number) {
-	if(number LT 10) return "0"&number;
-	return number;
+	if(arguments.number LT 10) return "0"&arguments.number;
+	return arguments.number;
 }
 
 /**
@@ -79,9 +79,9 @@ function toArrayFromForm(fieldName) {
 */
 function queryRow2Struct(query,row) {
 	var sct=struct();
-	var columns=listToArray(query.columnlist);
+	var columns=listToArray(arguments.query.columnlist);
 	for(var el in columns) {
-		sct[el]=query[el][row];
+		sct[el]=arguments.query[el][arguments.row];
 	}
 	return sct;
 }
@@ -106,14 +106,14 @@ function nullIfNoTime(fieldName) {
 }
 
 function toStructInterval(raw) {
-	var interval.raw=raw;
-	interval.second=raw;
+	var interval.raw=arguments.raw;
+	interval.second=arguments.raw;
 	interval.minute=0;
 	interval.hour=0;
 		
 	if(interval.second GTE 60*60) {
 		interval.hour=int(interval.second/(60*60));
-		_hour=interval.hour*60*60;
+		var _hour=interval.hour*60*60;
 		interval.second=interval.second-_hour;
 	}
 		
@@ -126,9 +126,9 @@ function toStructInterval(raw) {
 }
 
 function cut(_str,max) {
-	if(not isDefined('_str') or len(_str) EQ 0) return "&nbsp;";
-	if(len(_str) GT max) return left(_str,max)&"...";
-	return _str;
+	if(not isDefined('arguments._str') or len(arguments._str) EQ 0) return "&nbsp;";
+	if(len(arguments._str) GT arguments.max) return left(arguments._str,max)&"...";
+	return arguments._str;
 }
 
 function getForm(formKey, default) {

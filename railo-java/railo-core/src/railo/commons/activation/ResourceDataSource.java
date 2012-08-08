@@ -60,7 +60,7 @@ public final class ResourceDataSource implements DataSource {
 	public String getContentType() {
 		InputStream is=null;
 		try {
-			return IOUtil.getMymeType(is=_file.getInputStream(), "application/unknow");
+			return IOUtil.getMimeType(is=_file.getInputStream(), "application/unknow");
 		} catch (IOException e) {
 			return "application/unknow";
 		}

@@ -4,6 +4,7 @@ import org.objectweb.asm.Type;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.literal.LitString;
@@ -13,8 +14,13 @@ public class CollectionKey extends ExpressionBase {
 
 	private String value;
 
-	public CollectionKey(String value,int line) {
-		super(line);
+	public CollectionKey(String value) {
+		super(null,null);
+		this.value=value;
+	}
+
+	public CollectionKey(String value,Position start,Position end) {
+		super(start,end);
 		this.value=value;
 	}
 

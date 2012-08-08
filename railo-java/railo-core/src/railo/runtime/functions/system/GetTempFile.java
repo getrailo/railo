@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gettempfile
+ * Implements the CFML Function gettempfile
  */
 package railo.runtime.functions.system;
 

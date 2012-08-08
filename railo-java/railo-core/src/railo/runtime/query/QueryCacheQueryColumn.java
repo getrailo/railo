@@ -1,6 +1,7 @@
 package railo.runtime.query;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -9,6 +10,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.dt.DateTime;
@@ -210,7 +212,7 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	 * @see railo.runtime.type.Collection#get(java.lang.String)
 	 */
 	public Object get(String key) throws PageException {
-		return column.get(key);
+		return get(KeyImpl.init(key));
 	}
 
 	/**
@@ -243,14 +245,6 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	 */
 	public Key[] keys() {
 		return column.keys();
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return column.keysAsString();
 	}
 
 	/**
@@ -326,18 +320,20 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return column.iterator();
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return column.keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return column.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return column.entryIterator();
 	}
 
 	/**
@@ -536,7 +532,7 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return column.valueIterator();
 	}
 	
@@ -548,4 +544,9 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 	public long sizeOf() {
 		return QueryUtil.sizeOf(column);
 	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
 }

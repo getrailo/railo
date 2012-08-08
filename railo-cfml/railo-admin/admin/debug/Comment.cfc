@@ -68,8 +68,8 @@ component extends="Debug" {
 	* output the debugging information
 	* @param custom settings done by the user
 	*/
-	function output(struct custom, struct debugging) {
-		
+	function output(struct custom, struct debugging, string context="web") {
+		var NL=variables.NL;
 		writeOutput("<!--"&NL);
  		echo("=================================================================================="&NL);
         echo("=========================== RAILO DEBUGGING INFORMATION =========================="&NL);
@@ -159,7 +159,7 @@ component extends="Debug" {
         
         
 	// SCOPES   
-     	scopes=["Application","CGI","Client","Cookie","Form","Request","Server","Session","URL"];
+     	local.scopes=["Application","CGI","Client","Cookie","Form","Request","Server","Session","URL"];
 		if(not structKeyExists(custom,"scopes"))custom.scopes="";
 		if(len(custom.scopes)) {
         echo("=================================================================================="&NL);
@@ -171,7 +171,7 @@ component extends="Debug" {
                 if(!listFindNoCase(custom.scopes,name)) continue;
             	var doPrint=true;
 				try{
-					scp=evaluate(name);
+					local.scp=evaluate(name);
    				}
                 catch(any e){
                 	doPrint=false;
@@ -204,7 +204,7 @@ component extends="Debug" {
  	
 	
 	private function print(string title,array labels, query data) {
-		
+		var NL=variables.NL;
 		// get maxlength of columns
 		var lengths=array();
 		var i=1;
@@ -248,7 +248,7 @@ component extends="Debug" {
     
 function formatUnits(query data,array columns, string unit){
 	loop query="data" {
-    	loop array="#columns#" index="col" {
+    	loop array="#columns#" index="local.col" {
         	data[col]=formatUnit(unit,data[col]);
         }
     }

@@ -1,9 +1,11 @@
 package railo.commons.io.res.type.cache;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
@@ -14,7 +16,6 @@ import railo.commons.io.res.util.ResourceLockImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.cache.ram.RamCache;
-import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.cache.Util;
@@ -37,7 +38,9 @@ public final class CacheResourceProvider implements ResourceProvider {
 
 	private final Cache DEFAULT_CACHE=new RamCache();
 
-	private Config config;
+	private Set<Integer> inits=new HashSet<Integer>();
+
+	//private Config config;
 
 	
 	/**
@@ -148,11 +151,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 
 
 
-	CacheResourceCore createRoot() {
-		CacheResourceCore value = new CacheResourceCore(CacheResourceCore.TYPE_DIRECTORY,null,"");
-		getCache().put(toKey("null",""),value,Constants.LONG_ZERO,Constants.LONG_ZERO);
-		return value;
-	}
+	
 	
 
 
@@ -229,15 +228,20 @@ public final class CacheResourceProvider implements ResourceProvider {
 	
 
 	private Cache getCache() {
-		if(config==null){
-			config=ThreadLocalPageContext.getConfig();
-			createRoot();
-			
+		Cache c = Util.getDefault(ThreadLocalPageContext.get(),ConfigImpl.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
+		if(!inits.contains(c.hashCode())){
+			String k = toKey("null","");
+			if(!c.contains(k)) {
+				CacheResourceCore value = new CacheResourceCore(CacheResourceCore.TYPE_DIRECTORY,null,"");
+				c.put(k,value,Constants.LONG_ZERO,Constants.LONG_ZERO);
+			}
+			inits.add(c.hashCode());
 		}
-		Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_RESOURCE,DEFAULT_CACHE);
 		return c;
 	}
-	
+
+
+
 	private String toKey(String path, String name) {
 		if(caseSensitive) return path+":"+name;
 		return (path+":"+name).toLowerCase();

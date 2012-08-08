@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structclear
+ * Implements the CFML Function structclear
  */
 package railo.runtime.functions.struct;
 

@@ -13,7 +13,7 @@ public class NullExpression extends ExpressionBase {
 	public static final NullExpression NULL_EXPRESSION=new NullExpression();
 	
 	private NullExpression() {
-		super(-1);
+		super(null,null);
 	}
 
 	public Type _writeOut(BytecodeContext bc, int mode)

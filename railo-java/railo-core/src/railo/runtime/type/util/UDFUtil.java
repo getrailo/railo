@@ -2,8 +2,15 @@ package railo.runtime.type.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageExceptionImpl;
+import railo.runtime.op.Decision;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -33,14 +40,14 @@ public class UDFUtil {
 			if(c++>0)pattern.append(", ");
 			pattern.append(arg.getName());
 			pattern.append(":");
-			pattern.append(arg.getType());
+			pattern.append(arg.getTypeAsString());
 			
 		}
 		pattern.append(end);
 		pattern.append("):");
 		pattern.append(flf.getReturnTypeAsString());
 		
-		pe.setAdditional("Pattern", pattern);
+		pe.setAdditional(KeyConstants._Pattern, pattern);
 		
 		// Documentation
 		StringBuilder doc=new StringBuilder(flf.getDescription());
@@ -57,7 +64,7 @@ public class UDFUtil {
 			tmp.append("- ");
 			tmp.append(arg.getName());
 			tmp.append(" (");
-			tmp.append(arg.getType());
+			tmp.append(arg.getTypeAsString());
 			tmp.append("): ");
 			tmp.append(arg.getDescription());
 			tmp.append("\n");
@@ -67,8 +74,34 @@ public class UDFUtil {
 		if(opt.length()>0)doc.append("\nOptional:\n").append(opt);
 		
 		
-		pe.setAdditional("Documentation", doc);
+		pe.setAdditional(KeyImpl.init("Documentation"), doc);
 		
+	}
+
+	public static String callerHash(UDF udf, Object[] args, Struct values) throws ApplicationException {
+		StringBuilder sb=new StringBuilder(udf.getPageSource().getDisplayPath())
+			.append(';')
+			.append(udf.getFunctionName())
+			.append(';');
+		
+		if(values!=null) {
+			Iterator<Entry<Key, Object>> it = values.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()){
+				e = it.next();
+				if(!Decision.isSimpleValue(e.getValue())) throw new ApplicationException("only simple values are allowed as paremter for a function with cachedWithin");
+				sb.append(e.getKey().getString()).append(':').append(e.getValue()).append(';');
+				
+			}
+		}
+		else if(args!=null){
+			for(int i=0;i<args.length;i++){
+				if(!Decision.isSimpleValue(args[i])) throw new ApplicationException("only simple values are allowed as paremter for a function with cachedWithin");
+				sb.append(args[i]).append(';');
+				
+			}
+		}
+		return sb.toString();
 	}
 
 }

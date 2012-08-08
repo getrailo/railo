@@ -2,13 +2,18 @@ package railo.runtime.com;
 
 import java.util.Iterator;
 
+import railo.runtime.exp.CasterException;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
+
 import com.jacob.com.EnumVariant;
 
 /**
  * MUST this is a value iterator instead of a key iterator
  * 
  */
-public final class COMKeyWrapperIterator implements Iterator {
+public final class COMKeyWrapperIterator implements Iterator<Collection.Key> {
 
     private EnumVariant enumVariant;
     private COMObject wrapper;
@@ -38,7 +43,11 @@ public final class COMKeyWrapperIterator implements Iterator {
     /**
      * @see java.util.Iterator#next()
      */
-    public Object next() {
-        return COMUtil.toObject(wrapper,enumVariant.Next(),"",null);
+    public Collection.Key next() {
+        try {
+			return Caster.toKey(COMUtil.toObject(wrapper,enumVariant.Next(),"",null));
+		} catch (CasterException e) {
+			throw new PageRuntimeException(e);
+		}
     }
 }

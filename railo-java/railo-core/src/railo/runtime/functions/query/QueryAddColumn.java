@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function queryaddcolumn
+ * Implements the CFML Function queryaddcolumn
  */
 package railo.runtime.functions.query;
 

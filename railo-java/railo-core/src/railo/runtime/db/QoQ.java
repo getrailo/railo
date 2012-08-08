@@ -1,6 +1,7 @@
 package railo.runtime.db;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import railo.commons.lang.CFTypes;
@@ -117,17 +118,18 @@ public final class QoQ {
 		int selCount=expSelects.length;
 
 		Map selects=new HashMap();
-		Key[] keys;
+		Iterator<Key> it;
+		Key k;
 	// headers
 		for(int i=0;i<selCount;i++) {
 			Expression expSelect = expSelects[i];
 			
 			if(expSelect.getAlias().equals("*")) {
-				
-				keys = qr.keys();
-				for(int y=0;y<keys.length;y++){
-					selects.put(keys[y].getLowerString(),keys[y].getLowerString());
-					queryAddColumn(target,keys[y].getLowerString());
+				it = qr.keyIterator();
+				while(it.hasNext()){
+					k = it.next();
+					selects.put(k.getLowerString(),k.getLowerString());
+					queryAddColumn(target,k.getLowerString());
 				}
 			}
 			else {

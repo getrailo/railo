@@ -9,7 +9,7 @@ import railo.runtime.type.Collection.Key;
 /**
  * Iterator Implementation for a Object Array
  */
-public final class KeyIterator implements Iterator,Enumeration {
+public final class KeyIterator implements Iterator<Collection.Key>,Enumeration<Collection.Key> {
 	
 	private Collection.Key[] arr;
 	private int pos;
@@ -20,7 +20,7 @@ public final class KeyIterator implements Iterator,Enumeration {
 	 */
 	public KeyIterator(Collection.Key[] arr) {
 		
-		this.arr=arr;
+		this.arr=arr==null?new Collection.Key[0]:arr;
 		this.pos=0;
 	}
 
@@ -41,17 +41,17 @@ public final class KeyIterator implements Iterator,Enumeration {
 	/**
 	 * @see java.util.Iterator#next()
 	 */
-	public Object next() {
+	public Collection.Key next() {
 		Key key = arr[pos++];
 		if(key==null) return null;
-		return key.getString();
+		return key;
 	}
 
 	public boolean hasMoreElements() {
 		return hasNext();
 	}
 
-	public Object nextElement() {
+	public Collection.Key nextElement() {
 		return next();
 	}
 }

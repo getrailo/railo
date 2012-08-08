@@ -20,8 +20,8 @@ Defaults --->
 	<cfargument name="exact" required="no" type="boolean" default="false">
 	
 	<cfset arguments.filter=replace(arguments.filter,'*','',"all")>
-    <cfset filter=trim(filter)>
-	<cfif not len(filter)>
+    <cfset arguments.filter=trim(arguments.filter)>
+	<cfif not len(arguments.filter)>
 		<cfreturn true>
 	</cfif>
 	<cfif exact>

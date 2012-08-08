@@ -44,7 +44,7 @@ public abstract class CustomTag extends BodyTagTryCatchFinallyImpl implements Dy
      * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
      */
     public final void setDynamicAttribute(String uri, String name, Object value) {
-    	TagUtil.setDynamicAttribute(attributesScope,name,value);
+    	TagUtil.setDynamicAttribute(attributesScope,KeyImpl.init(name),value,TagUtil.UPPER_CASE);
     }
     
     /**

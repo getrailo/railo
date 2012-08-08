@@ -1,9 +1,9 @@
 <cffunction name="addZero">
 	<cfargument name="str">
  <!---   <while len(str) LT 2>
-		<cfset str="0"&str>
-	</while>--->
-	<cfreturn str>
+    	<cfset str="0"&str>
+    </while>--->
+    <cfreturn arguments.str>
 </cffunction>
 <cftry>
 	<cfset stVeritfyMessages = StructNew()>

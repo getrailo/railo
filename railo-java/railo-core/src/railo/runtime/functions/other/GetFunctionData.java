@@ -1,10 +1,11 @@
 /**
- * Implements the Cold Fusion Function getfunctiondescription
+ * Implements the CFML Function getfunctiondescription
  */
 package railo.runtime.functions.other;
 
 import java.util.ArrayList;
 
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
@@ -22,13 +23,14 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDFImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 import railo.transformer.library.tag.TagLibFactory;
 
 public final class GetFunctionData implements Function {
-	private static final Collection.Key SOURCE = KeyImpl.intern("source");
+	private static final Collection.Key SOURCE = KeyConstants._source;
 	private static final Collection.Key RETURN_TYPE = KeyImpl.intern("returnType");
 	private static final Collection.Key ARGUMENT_TYPE = KeyImpl.intern("argumentType");
 	private static final Collection.Key ARG_MIN = KeyImpl.intern("argMin");
@@ -68,7 +70,7 @@ public final class GetFunctionData implements Function {
 
 	private static Struct javaBasedFunction(FunctionLibFunction function) throws PageException {
 		Struct sct=new StructImpl();
-        sct.set(KeyImpl.NAME,function.getName());
+		sct.set(KeyImpl.NAME,function.getName());
         sct.set(KeyImpl.STATUS,TagLibFactory.toStatus(function.getStatus()));
 		sct.set(KeyImpl.DESCRIPTION,StringUtil.emptyIfNull(function.getDescription()));
         sct.set(RETURN_TYPE,StringUtil.emptyIfNull(function.getReturnTypeAsString()));
@@ -76,7 +78,13 @@ public final class GetFunctionData implements Function {
         sct.set(ARG_MIN,Caster.toDouble(function.getArgMin()));
         sct.set(ARG_MAX,Caster.toDouble(function.getArgMax()));
         sct.set(KeyImpl.TYPE,"java");
-		
+		String mm = function.getMemberName();
+        if(mm!=null && function.getMemberType()!=CFTypes.TYPE_UNKNOW) {
+        	StructImpl mem = new StructImpl();
+        	sct.set(KeyConstants._member, mem);
+        	mem.set(KeyConstants._name,mm);
+            mem.set(KeyConstants._type, function.getMemberTypeAsString());
+        }
 		
 		Array _args=new ArrayImpl();
 		sct.set(KeyImpl.ARGUMENTS,_args);
@@ -129,7 +137,7 @@ public final class GetFunctionData implements Function {
 			max++;
 			_arg.set(KeyImpl.REQUIRED,fa.isRequired()?Boolean.TRUE:Boolean.FALSE);
 			_arg.set(KeyImpl.TYPE,StringUtil.emptyIfNull(fa.getTypeAsString()));
-			_arg.set(KeyImpl.NAME,StringUtil.emptyIfNull(fa.getName()));
+			_arg.set(KeyConstants._name,StringUtil.emptyIfNull(fa.getName()));
 			_arg.set(KeyImpl.DESCRIPTION,StringUtil.emptyIfNull(fa.getHint()));
 			
 			String status;

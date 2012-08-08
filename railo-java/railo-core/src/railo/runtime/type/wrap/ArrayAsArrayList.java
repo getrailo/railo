@@ -105,7 +105,7 @@ public class ArrayAsArrayList extends ArrayList {
 	}
 
 	public int indexOf(Object o) {
-		Iterator it=array.iterator();
+		Iterator<Object> it=array.valueIterator();
 		int index=0;
 		while(it.hasNext()) {
 			if(it.next().equals(o))return index;
@@ -125,11 +125,11 @@ public class ArrayAsArrayList extends ArrayList {
 	 * @see java.util.List#iterator()
 	 */
 	public Iterator iterator() {
-		return array.iterator();
+		return array.valueIterator();
 	}
 
 	public int lastIndexOf(Object o) {
-		Iterator it=array.iterator();
+		Iterator<Object> it=array.valueIterator();
 		int index=0;
 		int rtn=-1;
 		while(it.hasNext()) {

@@ -5,7 +5,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function getEncoding
+ * Implements the CFML Function getEncoding
  */
 public final class GetEncoding implements Function {
 	public static String call(PageContext pc , String scope) throws FunctionException {

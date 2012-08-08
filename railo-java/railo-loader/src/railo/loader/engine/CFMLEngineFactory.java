@@ -1,10 +1,12 @@
 package railo.loader.engine;
 
+import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,8 +33,11 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
  * Factory to load CFML Engine
  */
 public class CFMLEngineFactory {
-
-    private static CFMLEngineFactory factory;
+	
+	 // set to false to disable patch loading, for example in major alpha releases
+    private static final boolean PATCH_ENABLED = true;
+    
+	private static CFMLEngineFactory factory;
     private static File railoServerRoot;
     private static CFMLEngineWrapper engineListener;
     private CFMLEngine engine;
@@ -205,8 +210,7 @@ public class CFMLEngineFactory {
            throw new ServletException(e);
         }
         
-        //PATCHLOAD File[] patches=patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
-        File[] patches=null;
+        File[] patches=PATCH_ENABLED?patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()})):null;
         File railo=null;
         if(patches!=null) {
             for(int i=0;i<patches.length;i++) {
@@ -235,11 +239,12 @@ public class CFMLEngineFactory {
             	
                 
                 railo=new File(patcheDir,engine.getVersion()+"."+coreExt);
-              /*PATCHLOAD remove deploying to patch dir
-                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
-                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
-                Util.copy(bis,bos);
-                Util.closeEL(bis,bos);*/
+               if(PATCH_ENABLED) {
+	                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
+	                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
+	                Util.copy(bis,bos);
+	                Util.closeEL(bis,bos);
+                }
             }
             else {
             	try {

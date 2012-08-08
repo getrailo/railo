@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function val
+ * Implements the CFML Function val
  */
 package railo.runtime.functions.string;
 
@@ -38,7 +38,10 @@ public final class Val implements Function {
         // at least one digit 
         if(curr>='0' && curr<='9') { 
                 curr=str.charAt(pos); 
-        } 
+        }
+        else if(curr=='.'){
+        	curr='.';
+        }
         else return 0; 
 
         boolean hasDot=false; 

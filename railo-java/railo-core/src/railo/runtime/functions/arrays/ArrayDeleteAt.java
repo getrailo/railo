@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraydeleteat
+ * Implements the CFML Function arraydeleteat
  */
 package railo.runtime.functions.arrays;
 

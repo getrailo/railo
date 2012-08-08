@@ -13,7 +13,7 @@ public class ClosureAsExpression extends ExpressionBase {
 
 
 	public ClosureAsExpression(Closure closure) {
-		super(closure.getLine());
+		super(closure.getStart(),closure.getEnd());
 		this.closure=closure;
 	}
 	

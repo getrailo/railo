@@ -5,7 +5,7 @@ import java.util.Map;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
-public class StructMapEntry implements Map.Entry {
+public class StructMapEntry implements Map.Entry<String,Object> {
 	
 	private Collection.Key key;
 	private Object value;
@@ -20,7 +20,7 @@ public class StructMapEntry implements Map.Entry {
 	/**
 	 * @see java.util.Map$Entry#getKey()
 	 */
-	public Object getKey() {
+	public String getKey() {
 		return key.getString();
 	}
 

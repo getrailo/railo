@@ -16,7 +16,7 @@ public class Argument extends ExpressionBase {
 		private String type;
 
 		public Argument(Expression value, String type) {
-			super(value.getLine());
+			super(value.getStart(),value.getEnd());
 			this.raw=value;//Cast.toExpression(value,type);
 			this.type=type;
 		}
@@ -51,8 +51,10 @@ public class Argument extends ExpressionBase {
 		}
 		
 		public Type writeOutValue(BytecodeContext bc, int mode) throws BytecodeException {
-			ExpressionUtil.visitLine(bc, getLine());
-			return getValue().writeOut(bc, mode);
+			ExpressionUtil.visitLine(bc, getStart());
+			Type t = getValue().writeOut(bc, mode);
+			ExpressionUtil.visitLine(bc, getEnd());
+			return t;
 		}
 
 		/**

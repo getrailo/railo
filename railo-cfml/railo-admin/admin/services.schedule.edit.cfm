@@ -1,8 +1,8 @@
 <cfscript>
 function toFile(path,file) {
-	if(len(path) EQ 0) return file;
-	if(right(path,1) NEQ server.separator.file) path=path&server.separator.file;
-	return path&file;
+	if(len(arguments.path) EQ 0) return arguments.file;
+	if(right(arguments.path,1) NEQ server.separator.file) arguments.path=arguments.path&server.separator.file;
+	return arguments.path&arguments.file;
 	
 }
 
@@ -10,8 +10,8 @@ function translateDateTime(task,dateName,timeName,newName) {
 	var sct=struct();
 	var d=0;
 	// Date
-	if(structKeyExists(task,dateName) and IsDate(task[dateName])) {
-		d=task[dateName];
+	if(structKeyExists(arguments.task,arguments.dateName) and IsDate(arguments.task[arguments.dateName])) {
+		d=arguments.task[arguments.dateName];
 		sct.year=year(d);
 		sct.month=two(month(d));
 		sct.day=two(day(d));	
@@ -22,8 +22,8 @@ function translateDateTime(task,dateName,timeName,newName) {
 		sct.day='';
 	}
 	// Time
-	if(structKeyExists(task,timeName) and IsDate(task[timeName])) {
-		d=task[timeName];
+	if(structKeyExists(arguments.task,arguments.timeName) and IsDate(arguments.task[arguments.timeName])) {
+		d=arguments.task[arguments.timeName];
 		sct.hour=two(hour(d));
 		sct.minute=two(minute(d));
 		sct.second=two(second(d));	
@@ -33,7 +33,7 @@ function translateDateTime(task,dateName,timeName,newName) {
 		sct.minute='';
 		sct.second='';
 	}
-	task[newName]=sct;
+	arguments.task[arguments.newName]=sct;
 }
 
 function formBool(formName) {

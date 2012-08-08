@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.Tag;
 
@@ -49,7 +50,7 @@ import railo.runtime.util.VariableUtil;
 
 /**
  * page context for every page object. 
- * the PageContext is a jsp page context expanded by cold fusion functionality.
+ * the PageContext is a jsp page context expanded by CFML functionality.
  * for example you have the method getSession to get jsp combatible session object (HTTPSession)
  *  and with sessionScope() you get CFML combatible session object (Struct,Scope).
  */
@@ -136,6 +137,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      */
     public abstract Session sessionScope() throws PageException;
+    
+    public abstract void setFunctionScopes(Local local,Argument argument);
 
     /**
      * @return server scope
@@ -153,6 +156,10 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      */
     public abstract Client clientScope() throws PageException;
+    
+
+    public abstract Client clientScopeEL();
+    
     /**
      * @return cluster scope
      * @throws PageException
@@ -481,6 +488,9 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract Query getQuery(String key) throws PageException;
 
+
+    public abstract Query getQuery(Object value) throws PageException;
+    
     /**
      * write a value to the header of the response
      * @param name name of the value to set
@@ -513,6 +523,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @return returns the page context id
      */
     public abstract int getId();
+    
+    public abstract JspWriter getRootWriter();
 
     /**
      * @return Returns the locale.
@@ -672,18 +684,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract void setApplicationContext(ApplicationContext applicationContext);
     
-
-    /**
-     * creates a PageSource from Realpath
-     * @param realPath
-     * @return Page Source
-     */
-    public abstract PageSource getRelativePageSource(String realPath);
     
-    public abstract PageSource getPageSource(String realPath);
-    
-    public abstract Resource getPhysical(String realPath, boolean alsoDefaultMapping);
-
 	public abstract PageSource toPageSource(Resource res, PageSource defaultValue);
 
     /**
@@ -693,28 +694,38 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract void setVariablesScope(Variables scope);
     
 
-    /** 
+    /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
-     * @deprecated replaced with <code>{@link #doInclude(PageSource)}</code>
+     * @deprecated use other doInclude methods
      */
-    public abstract void include(PageSource source) throws  ServletException;
+    public abstract void doInclude(PageSource source) throws  PageException;
 
     /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
+     * @param runOnce include only once per request
      * @throws ServletException
      */
-    public abstract void doInclude(PageSource source) throws  PageException;
-    
+    public abstract void doInclude(PageSource[] source, boolean runOnce) throws  PageException;
     
     /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
+     * @Deprecated used <code> doInclude(String source, boolean runOnce)</code> instead.
      */
     public abstract void doInclude(String source) throws  PageException;
+    
+    
+    /**  
+     * includes a path from a absolute path
+     * @param source absolute path as file object
+     * @param runOnce include only once per request
+     * @throws ServletException
+     */
+    public abstract void doInclude(String source, boolean runOnce) throws  PageException;
     
     
     /**
@@ -900,8 +911,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract void setCatch(PageException pe);
     public abstract void setCatch(PageException pe,boolean caught, boolean store);
     
-    public abstract void exeLogStart(int line,String id);
-	public abstract void exeLogEnd(int line,String id);
+    public abstract void exeLogStart(int position,String id);
+	public abstract void exeLogEnd(int position,String id);
     
     
     /**
@@ -954,6 +965,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * compile a CFML Template
      * @param templatePath 
      * @throws PageException 
+     * @deprecated use instead <code>compile(PageSource pageSource)</code>
      */
     public abstract void compile(String templatePath)throws PageException;
     
@@ -988,6 +1000,17 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException 
      */
     public abstract void param(String type, String name, Object defaultValue) throws PageException;
+
+    /**
+     * @param type
+     * @param name
+     * @param defaultValue
+     * @param maxLength
+     * @throws PageException 
+     */
+    public abstract void param(String type, String name, Object defaultValue, int maxLength) throws PageException;
+    
+    
 
     /**
      * @param type

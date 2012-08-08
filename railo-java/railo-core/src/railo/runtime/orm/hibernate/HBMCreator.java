@@ -256,12 +256,12 @@ public class HBMCreator {
 		}
 		
 		// fill to joins
-		Key[] keys = sct.keys();
-		Key key;
-		for(int i=0;i<keys.length;i++){
-			key=keys[i];
-			list=(java.util.List<Property>) sct.get(key,null);
-			joins.put(key.getString(), new PropertyCollection(key.getString(),list));
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			list=(java.util.List<Property>) e.getValue();
+			joins.put(e.getKey().getString(), new PropertyCollection(e.getKey().getString(),list));
 		}
 		
 		
@@ -816,7 +816,7 @@ public class HBMCreator {
 			if(info==null) {
 				String msg="table ["+tableName+"] has no column with name ["+columnName+"]";
 				if(columnsInfo!=null)
-					msg+=", column names are ["+List.arrayToList(columnsInfo.keysAsString(), ", ")+"]";
+					msg+=", column names are ["+List.arrayToList(columnsInfo.keys(), ", ")+"]";
 				ORMUtil.printError(msg, engine);
 				
 				//throw new ORMException(msg);
@@ -872,15 +872,17 @@ public class HBMCreator {
 				if(!sct.containsKey(SEQUENCE)) sct.setEL(SEQUENCE, toString(engine,cfc,prop,meta, "sequence",true));
 			}
 			
-			Key[] keys = sct.keys();
+			//Key[] keys = sct.keys();
+			Iterator<Entry<Key, Object>> it = sct.entryIterator();
+			Entry<Key, Object> e;
 			Element param;
-			for(int y=0;y<keys.length;y++){
-				
+			while(it.hasNext()){
+				e = it.next();
 				param = doc.createElement("param");
 				generator.appendChild(param);
 				
-				param.setAttribute( "name", keys[y].getLowerString());
-				param.appendChild(doc.createTextNode(Caster.toString(sct.get(keys[y]))));
+				param.setAttribute( "name", e.getKey().getLowerString());
+				param.appendChild(doc.createTextNode(Caster.toString(e.getValue())));
 				
 			}
 		//}

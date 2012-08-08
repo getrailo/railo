@@ -481,13 +481,13 @@ public class Util {
 		return rtn.toString();
 	}
     
-    public static String first(String str,String delimeter){
-		StringTokenizer st=new StringTokenizer(str,delimeter);
+    public static String first(String str,String delimiter){
+		StringTokenizer st=new StringTokenizer(str,delimiter);
 		return st.nextToken();
 	}
 	
-	public static String last(String str,String delimeter){
-		StringTokenizer st=new StringTokenizer(str,delimeter);
+	public static String last(String str,String delimiter){
+		StringTokenizer st=new StringTokenizer(str,delimiter);
 		String rtn=null;
 		while(st.hasMoreTokens())
 			rtn= st.nextToken();

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isk2serveronline
+ * Implements the CFML Function isk2serveronline
  */
 package railo.runtime.functions.decision;
 

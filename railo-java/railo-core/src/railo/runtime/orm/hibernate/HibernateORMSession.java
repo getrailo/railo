@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.hibernate.Criteria;
 import org.hibernate.FlushMode;
 import org.hibernate.NonUniqueResultException;
+import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -23,6 +24,8 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
@@ -43,6 +46,9 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.scope.Argument;
+import railo.runtime.type.scope.ArgumentImpl;
+import railo.runtime.type.util.CollectionUtil;
 
 public class HibernateORMSession implements ORMSession{
 
@@ -103,7 +109,7 @@ public class HibernateORMSession implements ORMSession{
 			PageException pe = HibernateException.toPageException(engine, cve);
 			if(pe instanceof PageExceptionImpl && !StringUtil.isEmpty(cve.getConstraintName())) {
 				//print.o(cve.getConstraintName());
-				((PageExceptionImpl)pe).setAdditional("constraint name", cve.getConstraintName() );
+				((PageExceptionImpl)pe).setAdditional(KeyImpl.init("constraint name"), cve.getConstraintName() );
 			}
 			throw pe;
 		}
@@ -271,11 +277,28 @@ public class HibernateORMSession implements ORMSession{
 		return _executeQuery(pc, hql, params, unique, queryOptions);
 	}
 	
-	private Object _executeQuery(PageContext pc,String hql, Object params, boolean unique,Struct options) throws PageException {
+	public Object _executeQuery(PageContext pc,String hql, Object params, boolean unique,Struct queryOptions) throws PageException {
+		try{
+			return __executeQuery(pc, hql, params, unique, queryOptions);
+		}
+		catch(QueryException qe) {
+			// argument scope is array and struct at the same time, by default it is handled as struct, if this fails try it as array
+			if(params instanceof Argument) {
+				try{
+					return __executeQuery(pc, hql, ArgumentImpl.toArray((Argument)params), unique, queryOptions);
+				}
+				catch(Throwable t){t.printStackTrace();}
+			}
+			throw qe;
+		}
+		
+		
+	}
+	
+	private Object __executeQuery(PageContext pc,String hql, Object params, boolean unique,Struct options) throws PageException {
 		//Session session = getSession(pc,null);
 		hql=hql.trim();
 		org.hibernate.Query query = session().createQuery(hql); 
-		
 		// options
 		if(options!=null){
 			// maxresults
@@ -316,36 +339,12 @@ public class HibernateORMSession implements ORMSession{
 			ParameterMetadata meta = plan.getParameterMetadata();
 			Type type;
 			Object obj;
-			// array
-			if(Decision.isArray(params)){
-				Array arr=Caster.toArray(params);
-				Iterator it = arr.valueIterator();
-				int index=0;
-				SQLItem item;
-				while(it.hasNext()){
-					obj=it.next();
-					if(obj instanceof SQLItem) {
-						item=(SQLItem) obj;
-						obj=item.getValue();
-						//HibernateCaster.toHibernateType(item.getType(), null); MUST
-						//query.setParameter(index, item.getValue(),type);
-					}
-					if(meta!=null){
-						type = meta.getOrdinalParameterExpectedType(index+1);
-						obj=HibernateCaster.toSQL(engine, type, obj);
-						query.setParameter(index, obj,type);
-					}
-					else
-						query.setParameter(index, obj);
-					index++;
-				}
-				if(meta.getOrdinalParameterCount()>index)
-					throw new ORMException(engine,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements");
-			}
+			
+
 			// struct
-			else if(Decision.isStruct(params)) {
+			if(Decision.isStruct(params)) {
 				Struct sct=Caster.toStruct(params);
-				Key[] keys = sct.keys();
+				Key[] keys = CollectionUtil.keys(sct);
 				String name;
 				// fix case-senstive
 				Struct names=new StructImpl();
@@ -357,19 +356,56 @@ public class HibernateORMSession implements ORMSession{
 					}
 				}
 				
+				RefBoolean isArray=new RefBooleanImpl();
 				for(int i=0;i<keys.length;i++){
 					obj=sct.get(keys[i],null);
 					if(meta!=null){
 						name=(String) names.get(keys[i],null);
 						if(name==null) continue; // param not needed will be ignored
 						type = meta.getNamedParameterExpectedType(name);
-						obj=HibernateCaster.toSQL(engine, type, obj);
-						query.setParameter(name, obj,type);
+						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
+						if(isArray.toBooleanValue())
+							query.setParameterList(name, (Object[])obj,type);
+						else
+							query.setParameter(name, obj,type);
+						
 						
 					}
 					else
 						query.setParameter(keys[i].getString(), obj);
 				}
+			}
+			
+			// array
+			else if(Decision.isArray(params)){
+				Array arr=Caster.toArray(params);
+				Iterator it = arr.valueIterator();
+				int index=0;
+				SQLItem item;
+				RefBoolean isArray=null;//new RefBooleanImpl();
+				while(it.hasNext()){
+					obj=it.next();
+					if(obj instanceof SQLItem) {
+						item=(SQLItem) obj;
+						obj=item.getValue();
+						//HibernateCaster.toHibernateType(item.getType(), null); MUST
+						//query.setParameter(index, item.getValue(),type);
+					}
+					if(meta!=null){
+						type = meta.getOrdinalParameterExpectedType(index+1);
+						obj=HibernateCaster.toSQL(engine, type, obj,isArray);
+						// TOOD can the following be done somehow
+						//if(isArray.toBooleanValue())
+						//	query.setParameterList(index, (Object[])obj,type);
+						//else
+							query.setParameter(index, obj,type);
+					}
+					else
+						query.setParameter(index, obj);
+					index++;
+				}
+				if(meta.getOrdinalParameterCount()>index)
+					throw new ORMException(engine,"parameter array is to small ["+arr.size()+"], need ["+meta.getOrdinalParameterCount()+"] elements");
 			}
 		}
 		
@@ -542,7 +578,7 @@ public class HibernateORMSession implements ORMSession{
 			if(!StringUtil.isEmpty(idName)){
 				Object idValue = scope.get(KeyImpl.init(idName),null);
 				if(idValue!=null){
-					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(engine, idType, idValue)));
+					criteria.add(Restrictions.eq(idName, HibernateCaster.toSQL(engine, idType, idValue,null)));
 				}
 			}
 			criteria.add(Example.create(cfc));
@@ -594,7 +630,7 @@ public class HibernateORMSession implements ORMSession{
 					entry=(Entry) it.next();
 					colName=HibernateUtil.validateColumnName(metaData, Caster.toString(entry.getKey()));
 					Type type = HibernateUtil.getPropertyType(metaData,colName,null);
-					value=HibernateCaster.toSQL(engine,type,entry.getValue());
+					value=HibernateCaster.toSQL(engine,type,entry.getValue(),null);
 					if(value!=null)	criteria.add(Restrictions.eq(colName, value));
 					else 			criteria.add(Restrictions.isNull(colName));
 					

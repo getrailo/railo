@@ -1,8 +1,10 @@
 package railo.runtime.text.xml;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -20,10 +22,13 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLObject;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
 import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.StructUtil;
 import railo.runtime.util.ArrayIterator;
 
 /**
@@ -78,22 +83,13 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return getLength();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		String[] keys=new String[getLength()];
+	@Override
+	public Collection.Key[] keys() {
+		Collection.Key[] keys=new Collection.Key[getLength()];
 		for(int i=1;i<=keys.length;i++) {
-			keys[i-1]=i+"";
+			keys[i-1]=KeyImpl.init(i+"");
 		}
 		return keys;
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
-	public Collection.Key[] keys() {
-		return StructUtil.toCollectionKeys(keysAsString());
 	}
 	
 	/**
@@ -281,27 +277,27 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		return new ArrayIterator(keysAsString());
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
+		return new KeyIterator(keys());
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 	
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		Object[] values=new Object[getLength()];
 		for(int i=0;i<values.length;i++) {
 			values[i]=item(i);
 		}
 		return new ArrayIterator(values);
-	}
-	
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return valueIterator();
 	}
 
 	/**
@@ -425,6 +421,12 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	public void sort(String sortType, String sortOrder)
 			throws ExpressionException {
 		throw new ExpressionException("can't sort a XML Node List Array","sorttype:"+sortType+";sortorder:"+sortOrder);
+	}
+	
+	@Override
+	public void sort(Comparator comp)
+			throws ExpressionException {
+		throw new ExpressionException("can't sort a XML Node List Array");
 	}
 
 	/**

@@ -8,6 +8,7 @@ import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
 import railo.transformer.library.tag.TagLibTag;
@@ -28,11 +29,8 @@ public class TagBase extends StatementBase implements Tag {
 	private Map<String, Attribute> metadata;
 
 
-	public TagBase(int startLine,int endLine) {
-    	super(startLine,endLine);
-	}
-	public TagBase(int startLine) {
-    	super(startLine,-1);
+	public TagBase(Position start, Position end) {
+    	super(start,end);
 	}
 
     

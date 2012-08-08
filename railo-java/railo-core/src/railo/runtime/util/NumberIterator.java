@@ -122,6 +122,11 @@ public final class NumberIterator {
 		return _current>=_from && _current<=_to;
 	}	
 	
+	public boolean isValid(int current) {
+		_current=current;
+		return _current>=_from && _current<=_to;
+	}	
+	
 	
 	
 	
@@ -162,6 +167,9 @@ public final class NumberIterator {
 	public static synchronized NumberIterator load(double from, double to) {
 		return _load((int)from,(int)to,(int)to);
 	}
+	public static synchronized NumberIterator load(int from, int to) {
+		return _load(from,to,to);
+	}
 	
 	/**
 	 * create a Number Iterator with value from and to
@@ -171,7 +179,15 @@ public final class NumberIterator {
 	 * @return NumberIterator
 	 */
 	public static synchronized NumberIterator load(double from, double to, double max) {
-	    return _load((int)from,(int)((from+max-1<to)?from+max-1:to),(int)to);
+	    return loadMax((int)from, (int)to, (int)max);
+	}
+	
+	public static synchronized NumberIterator loadMax(int from, int to, int max) {
+	    return _load(from,((from+max-1<to)?from+max-1:to),to);
+	}
+	
+	public static synchronized NumberIterator loadEnd(int from, int to, int end) {
+	    return _load(from,((end<to)?end:to),to);
 	}
 	
 	/**

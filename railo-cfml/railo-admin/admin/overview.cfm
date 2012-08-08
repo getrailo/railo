@@ -3,7 +3,7 @@ Defaults --->
 <cfset error.message="">
 <cfset error.detail="">
 <cfparam name="form.mainAction" default="none">
-
+<cfset fullMode=structKeyExists(session,"screenMode") && session.screenMode EQ "full">
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
@@ -73,36 +73,45 @@ Error Output --->
 	<cfargument name="usage" type="query" required="yes">
     <cfset var height=12>
     <cfset var width=100>
-	<cfset var used=evaluate(ValueList(usage.used,'+'))>
-	<cfset var max=evaluate(ValueList(usage.max,'+'))>
-	<cfset var init=evaluate(ValueList(usage.init,'+'))>
-	
-	<cfset var qry=QueryNew(usage.columnlist)>
-	<cfset QueryAddRow(qry)>
-	<cfset QuerySetCell(qry,"type",usage.type)>
-	<cfset QuerySetCell(qry,"name",pool[usage.type])>
-	<cfset QuerySetCell(qry,"init",init,qry.recordcount)>
-	<cfset QuerySetCell(qry,"max",max,qry.recordcount)>
-	<cfset QuerySetCell(qry,"used",used,qry.recordcount)>
+    	<cfset var used=evaluate(ValueList(arguments.usage.used,'+'))>
+    	<cfset var max=evaluate(ValueList(arguments.usage.max,'+'))>
+    	<cfset var init=evaluate(ValueList(arguments.usage.init,'+'))>
         
-    <cfset var usage=qry>
-	<cfset var ret = "" />
-	<cfsavecontent variable="ret"><cfoutput>
-    	<h3>#pool[usage.type]#</h3>
-		<cfloop query="usage">
-			<cfset var pused=int(100/usage.max*usage.used)>
-			<cfset var pfree=100-pused> 
-			<div class="percentagebar" title="#int((usage.max-usage.used)/1024)#kb (#pfree#%)"><!---
-				---><div style="width:#pused#%" title="#int(usage.used/1024)#kb (#pused#%)">#pused#% (#int(usage.used/1024/1024)#mb)</div><!---
-			---></div>
-    	</cfloop>
-        <cfif StructKeyExists(pool,usage.type& "_desc")>
-			<div class="comment">#pool[usage.type& "_desc"]#</div>
-		</cfif>
-	</cfoutput></cfsavecontent>
-	<cfreturn ret />
-</cffunction>
+		<cfset var qry=QueryNew(arguments.usage.columnlist)>
+		<cfset QueryAddRow(qry)>
+        <cfset QuerySetCell(qry,"type",arguments.usage.type)>
+        <cfset QuerySetCell(qry,"name",variables.pool[arguments.usage.type])>
+        <cfset QuerySetCell(qry,"init",init,qry.recordcount)>
+        <cfset QuerySetCell(qry,"max",max,qry.recordcount)>
+        <cfset QuerySetCell(qry,"used",used,qry.recordcount)>
+        
+        <cfset arguments.usage=qry>
+		<cfset var ret = "" />
+		<cfsavecontent variable="ret"><cfoutput>
+   			<h3>#pool[usage.type]#</h3>
+			<cfloop query="usage">
+       			<cfset local._used=int(width/arguments.usage.max*arguments.usage.used)>
+        		<cfset local._free=width-_used> 
+				<cfset local.pused=int(100/arguments.usage.max*arguments.usage.used)>
+       			<cfset local.pfree=100-pused>
+        		<div class="percentagebar" title="#int((usage.max-usage.used)/1024)#kb (#pfree#%)"><!---
+					---><div style="width:#pused#%" title="#int(usage.used/1024)#kb (#pused#%)">#pused#% (#int(usage.used/1024/1024)#mb)</div><!---
+				---></div>
+    		</cfloop>
+        	<cfif StructKeyExists(pool,usage.type& "_desc")>
+				<div class="comment">#pool[usage.type& "_desc"]#</div>
+			</cfif>
+		</cfoutput></cfsavecontent>
+		<cfreturn ret />
+	</cffunction>
 
+<cfset total=query(
+	name:["Total"],
+	type:[""],
+	used:[server.java.totalMemory-server.java.freeMemory],
+	max:[server.java.totalMemory],
+	init:[0]
+)>
 <cfoutput>
 	<div class="pageintro">
 		#stText.Overview.introdesc[request.adminType]#
@@ -243,6 +252,15 @@ Error Output --->
 								#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 							</td> 
 						</tr>
+<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+	<tr>
+		<td class="tblHead" width="150">Architecture</td>
+		<td class="tblContent">
+			<cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif>
+		</td> 
+	</tr>
+</cfif>
+<!---
 						<tr>
 							<th scope="row">Classpath</th>
 							<td>
@@ -259,6 +277,12 @@ Error Output --->
 			</td>
 			<td width="2%"></td>
 			<td valign="top" width="33%">
+				<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
+				<script type="text/javascript">
+					function doNothing(){return true;}
+				</script>
+				<cfdiv onBindError="doNothing" bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
+
 				<!--- Memory Usage --->
 				<cftry>
 					<cfsavecontent variable="memoryInfo">
@@ -349,8 +373,8 @@ Error Output --->
 								<input type="text" style="width:99%" name="label_#rst.currentrow#" value="#rst.label#"/>
 							</td>
 							<td><cfif len(rst.url)><a target="_blank" href="#rst.url#/railo-context/admin/web.cfm">#rst.url#</a></cfif></td>
-							<td><input type="text" style="width:99%" name="path_#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
-							<td><input type="text" style="width:99%" name="cf_#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
+							<td><input type="text" class="xlarge" name="path_#rst.currentrow#" value="#rst.path#" readonly="readonly"/></td>
+							<td><input type="text" class="xlarge" style="width:99%" name="cf_#rst.currentrow#" value="#rst.config_file#" readonly="readonly"/></td>
 						</tr>
 					</cfloop>
 				</tbody>

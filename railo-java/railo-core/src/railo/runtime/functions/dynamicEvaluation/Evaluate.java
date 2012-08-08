@@ -10,11 +10,11 @@ import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.CallerImpl;
 import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.Scope;
-import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 
 /**
- * Implements the Cold Fusion Function evaluate
+ * Implements the CFML Function evaluate
  */
 public final class Evaluate implements Function {
 	
@@ -46,9 +46,9 @@ public final class Evaluate implements Function {
 			}
 			
 			// Undefined Scope
-			else if(objs[objs.length-1] instanceof UndefinedImpl) {
+			else if(objs[objs.length-1] instanceof Undefined) {
 				PageContextImpl pci=(PageContextImpl) pc;
-				UndefinedImpl undefined=(UndefinedImpl) objs[objs.length-1];
+				Undefined undefined=(Undefined) objs[objs.length-1];
 				
 				boolean check=undefined.getCheckArguments();
 				Variables orgVar=pc.variablesScope();

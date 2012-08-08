@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listsetat
+ * Implements the CFML Function listsetat
  */
 package railo.runtime.functions.list;
 
@@ -18,10 +18,10 @@ public final class ListSetAt implements Function {
 		return call(pc,list,posNumber,value,",",false);
 	}
 
-	public static String call(PageContext pc , String list, double posNumber, String value, String delimeter) throws ExpressionException {
-		return call(pc,list,posNumber,value,delimeter,false);
+	public static String call(PageContext pc , String list, double posNumber, String value, String delimiter) throws ExpressionException {
+		return call(pc,list,posNumber,value,delimiter,false);
 	}
-	public static String call(PageContext pc , String list, double posNumber, String value, String delimeter, boolean includeEmptyFields) throws ExpressionException {
+	public static String call(PageContext pc , String list, double posNumber, String value, String delimiter, boolean includeEmptyFields) throws ExpressionException {
 		
 		if(list.length()==0)
 			throw new FunctionException(pc,"listSetAt",1,"list","can't be empty");
@@ -30,7 +30,7 @@ public final class ListSetAt implements Function {
 		int pos=((int) posNumber);
 		//int[] removedInfo=new int[2];
 		
-		Array arr = List.listToArray(list,delimeter);
+		Array arr = List.listToArray(list,delimiter);
 		int len=arr.size();
 		
 		// invalid index
@@ -40,7 +40,7 @@ public final class ListSetAt implements Function {
 			throw new FunctionException(pc,"listSetAt",2,"position","invalid string list index ["+(pos)+"], indexes go from 1 to "+(len));
 		}
 		
-		StringBuffer sb=new StringBuffer();//RepeatString.call(new StringBuffer(),delimeter,removedInfo[0]);
+		StringBuffer sb=new StringBuffer();//RepeatString.call(new StringBuffer(),delimiter,removedInfo[0]);
 		boolean hasStart=false;
 		boolean hasSet=false;
 		String v;
@@ -48,7 +48,7 @@ public final class ListSetAt implements Function {
 		for(int i=1;i<=len;i++) {
 			v=(String)arr.get(i,"");
 			if(hasStart) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 			}
 			else hasStart=true;
 			

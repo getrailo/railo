@@ -7,13 +7,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
-import railo.runtime.exp.PageException;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
+import railo.commons.net.http.Header;
+import railo.runtime.net.proxy.ProxyDataImpl;
 
 public class HTTPUtilImpl implements HTTPUtil {
 	
@@ -35,13 +34,13 @@ public class HTTPUtilImpl implements HTTPUtil {
 	}
 
 	/**
-	 * @see railo.commons.net.HTTPUtil#delete(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, org.apache.commons.httpclient.Header[])
+	 * @see railo.runtime.util.HTTPUtil#delete(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[])
 	 */
-	public HttpMethod delete(URL url, String username, String password,
+	public HTTPResponse delete(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
 			Header[] headers) throws IOException {
-		return railo.commons.net.HTTPUtil.delete(url, username, password, timeout, charset, useragent, proxyserver, proxyport, proxyuser, proxypassword, headers);
+		return HTTPEngine.delete(url, username, password, timeout,HTTPEngine.MAX_REDIRECT, charset, useragent, ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword), headers);
 	}
 
 	/**
@@ -55,40 +54,33 @@ public class HTTPUtilImpl implements HTTPUtil {
 	}
 
 	/**
-	 * @see railo.commons.net.HTTPUtil#head(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, org.apache.commons.httpclient.Header[])
+	 * @see railo.runtime.util.HTTPUtil#head(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[])
 	 */
-	public HttpMethod head(URL url, String username, String password,
+	public HTTPResponse head(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
 			Header[] headers) throws IOException {
-		return railo.commons.net.HTTPUtil.head(url, username, password, timeout, charset, useragent, proxyserver, proxyport, proxyuser, proxypassword, headers);
+		return HTTPEngine.head(url, username, password, timeout,HTTPEngine.MAX_REDIRECT, charset, useragent, ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword), headers);
 	}
 
 	/**
-	 * @see railo.commons.net.HTTPUtil#invoke(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, org.apache.commons.httpclient.Header[])
+	 * @see railo.runtime.util.HTTPUtil#get(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[])
 	 */
-	public HttpMethod get(URL url, String username, String password,
+	public HTTPResponse get(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
 			Header[] headers) throws IOException {
-		return railo.commons.net.HTTPUtil.invoke(url, username, password, timeout, charset, useragent, proxyserver, proxyport, proxyuser, proxypassword, headers);
+		return HTTPEngine.get(url, username, password, timeout,HTTPEngine.MAX_REDIRECT, charset, useragent, ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword), headers);
 	}
 
 	/**
-	 * @see railo.commons.net.HTTPUtil#put(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, org.apache.commons.httpclient.Header[], org.apache.commons.httpclient.methods.RequestEntity)
+	 * @see railo.runtime.util.HTTPUtil#put(java.net.URL, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, int, java.lang.String, java.lang.String, railo.commons.net.http.Header[], java.lang.Object)
 	 */
-	public HttpMethod put(URL url, String username, String password,
+	public HTTPResponse put(URL url, String username, String password,
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
-			Header[] headers, RequestEntity body) throws IOException {
-		return railo.commons.net.HTTPUtil.put(url, username, password, timeout, charset, useragent, proxyserver, proxyport, proxyuser, proxypassword, headers, body);
-	}
-
-	/**
-	 * @see railo.commons.net.HTTPUtil#toRequestEntity(java.lang.Object)
-	 */
-	public RequestEntity toRequestEntity(Object value) throws PageException {
-		return railo.commons.net.HTTPUtil.toRequestEntity(value);
+			Header[] headers, Object body) throws IOException {
+		return HTTPEngine.put(url, username, password, timeout,HTTPEngine.MAX_REDIRECT, charset, useragent, ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword), headers, body);
 	}
 
 	/**
@@ -104,15 +96,7 @@ public class HTTPUtilImpl implements HTTPUtil {
 	public URL toURL(String strUrl) throws MalformedURLException {
 		return railo.commons.net.HTTPUtil.toURL(strUrl);
 	}
-
-	/**
-	 * @see railo.commons.net.HTTPUtil#toURL(org.apache.commons.httpclient.HttpMethod)
-	 */
-	public Object toURL(HttpMethod httpMethod) {
-		return railo.commons.net.HTTPUtil.toURL(httpMethod);
-	}
 	
-
 	public URI toURI(String strUrl) throws URISyntaxException {
 		return railo.commons.net.HTTPUtil.toURI(strUrl);
 	}

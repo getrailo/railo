@@ -13,10 +13,13 @@ import org.xml.sax.SAXException;
 
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngine;
 import railo.runtime.config.Config;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 
 /**
@@ -94,7 +97,7 @@ public final class SchedulerImpl implements Scheduler {
     }
 
 	private void init(ScheduleTask task) {
-		new ScheduledTaskThread(engine,config,log,task,charset).start();
+		new ScheduledTaskThread(engine,this,config,log,task,charset).start();
 	}
 
 	/**
@@ -105,7 +108,7 @@ public final class SchedulerImpl implements Scheduler {
     private ScheduleTaskImpl[] readInAllTasks() throws PageException {
         Element root = doc.getDocumentElement();
         NodeList children = root.getChildNodes();
-        ArrayList list=new ArrayList();
+        ArrayList<ScheduleTaskImpl> list=new ArrayList<ScheduleTaskImpl>();
         
         int len=children.getLength();
         for(int i=0;i<len;i++) {
@@ -114,7 +117,7 @@ public final class SchedulerImpl implements Scheduler {
                 list.add(readInTask((Element)n));
             } 
         }
-        return (ScheduleTaskImpl[]) list.toArray(new ScheduleTaskImpl[list.size()]);
+        return list.toArray(new ScheduleTaskImpl[list.size()]);
     }
     
     
@@ -142,14 +145,17 @@ public final class SchedulerImpl implements Scheduler {
                     su.toString(el,"interval"),
                     timeout,
                     su.toCredentials(el,"username","password"),
-                    su.toString(el,"proxyHost"),
-                    su.toInt(el,"proxyPort",80),
-                    su.toCredentials(el,"proxyUser","proxyPassword"),
+                    ProxyDataImpl.getInstance(
+                    		su.toString(el,"proxyHost"),
+                    		su.toInt(el,"proxyPort",80),
+                    		su.toString(el,"proxyUser"),
+                    		su.toString(el,"proxyPassword")),
                     su.toBoolean(el,"resolveUrl"),
                     su.toBoolean(el,"publish"),
                     su.toBoolean(el,"hidden",false),
                     su.toBoolean(el,"readonly",false),
-                    su.toBoolean(el,"paused",false));
+                    su.toBoolean(el,"paused",false),
+                    su.toBoolean(el,"autoDelete",false));
             return st;
         } catch (Exception e) {e.printStackTrace();
             throw Caster.toPageException(e);
@@ -202,13 +208,16 @@ public final class SchedulerImpl implements Scheduler {
         su.setString(el,"interval",task.getIntervalAsString());
         su.setInt(el,"timeout",(int)task.getTimeout());
         su.setCredentials(el,"username","password",task.getCredentials());
-        su.setString(el,"proxyHost",task.getProxyHost());
-        su.setInt(el,"proxyPort",task.getProxyPort());
-        su.setCredentials(el,"proxyUser","proxyPassword",task.getProxyCredentials());
+        ProxyData pd = task.getProxyData();
+        su.setString(el,"proxyHost",StringUtil.emptyIfNull(pd==null?"":pd.getServer()));
+        su.setString(el,"proxyUser",StringUtil.emptyIfNull(pd==null?"":pd.getUsername()));
+        su.setString(el,"proxyPassword",StringUtil.emptyIfNull(pd==null?"":pd.getPassword()));
+        su.setInt(el,"proxyPort",pd==null?0:pd.getPort());
         su.setBoolean(el,"resolveUrl",task.isResolveURL());  
         su.setBoolean(el,"publish",task.isPublish());   
         su.setBoolean(el,"hidden",((ScheduleTaskImpl)task).isHidden());  
         su.setBoolean(el,"readonly",((ScheduleTaskImpl)task).isReadonly());  
+        su.setBoolean(el,"autoDelete",((ScheduleTaskImpl)task).isAutoDelete());  
     }
     
     /**
@@ -246,11 +255,11 @@ public final class SchedulerImpl implements Scheduler {
      * @see railo.runtime.schedule.Scheduler#getAllScheduleTasks()
      */
 	public ScheduleTask[] getAllScheduleTasks() {
-		ArrayList list=new ArrayList();
+		ArrayList<ScheduleTask> list=new ArrayList<ScheduleTask>();
 		for(int i=0;i<tasks.length;i++) {
 	        if(!tasks[i].isHidden()) list.add(tasks[i]);
 	    }
-	    return (ScheduleTask[]) list.toArray(new ScheduleTask[list.size()]);
+	    return list.toArray(new ScheduleTask[list.size()]);
 	}
 	
 	/**
@@ -278,8 +287,7 @@ public final class SchedulerImpl implements Scheduler {
 	    su.store(doc,schedulerFile);
 	}
 	
-
-    // FUTURE add to interface
+	@Override
 	public void pauseScheduleTask(String name, boolean pause, boolean throwWhenNotExist) throws ScheduleException, IOException {
 
 	    for(int i=0;i<tasks.length;i++) {
@@ -334,6 +342,17 @@ public final class SchedulerImpl implements Scheduler {
 	    //init();
 	    su.store(doc,schedulerFile);
 	}
+	
+	public synchronized void removeIfNoLonerValid(ScheduleTask task) throws IOException {
+		ScheduleTaskImpl sti=(ScheduleTaskImpl) task;
+		if(sti.isValid() || !sti.isAutoDelete()) return;
+		
+		
+		try {
+			removeScheduleTask(task.getTask(), false);
+		} catch (ScheduleException e) {}
+	}
+	
 
 	/**
      * @see railo.runtime.schedule.Scheduler#runScheduleTask(java.lang.String, boolean)
@@ -357,15 +376,6 @@ public final class SchedulerImpl implements Scheduler {
     public void execute(ScheduleTask task) {
     	new ExecutionThread(config,log,task,charset).start();
     } 
-    
-
-    /**
-     * @see railo.runtime.schedule.Scheduler#getNextExecutionTime()
-     */
-    public long getNextExecutionTime() {
-    	// no longer called and used
-        return -1;
-    }
 
     /**
      * @see railo.runtime.schedule.Scheduler#getLogger()
@@ -373,11 +383,4 @@ public final class SchedulerImpl implements Scheduler {
     public LogAndSource getLogger() {
         return log;
     }
-
-    /*
-     * FUTURE remove
-     * */
-	public void execute() {
-		
-	}
 }

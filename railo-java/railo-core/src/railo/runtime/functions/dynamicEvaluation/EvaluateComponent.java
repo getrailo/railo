@@ -1,5 +1,8 @@
 package railo.runtime.functions.dynamicEvaluation;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
@@ -8,9 +11,12 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public final class EvaluateComponent {
 	public static Object call(PageContext pc, String name, String md5, Struct sctThis) throws PageException {
@@ -44,18 +50,21 @@ public final class EvaluateComponent {
 		// this	
 		// delete this scope data members
 		ComponentWrap cw = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,comp);
-		Collection.Key[] keys = cw.keys();
+		Collection.Key[] cwKeys = CollectionUtil.keys(cw);
 		Object member;
-		for(int i=0;i<keys.length;i++) {
-			member = cw.get(keys[i]);
+		for(int i=0;i<cwKeys.length;i++) {
+			member = cw.get(cwKeys[i]);
 			if(member instanceof UDF) continue;
-            cw.removeEL(keys[i]);
+            cw.removeEL(cwKeys[i]);
 		}
 		
 		// set this scope data members
-		keys = sctThis.keys();
-		for(int i=0;i<keys.length;i++) {
-            comp.set(keys[i],sctThis.get(keys[i]));
+		Iterator<Entry<Key, Object>> it = sctThis.entryIterator();
+		Entry<Key, Object> e;
+		//keys = sctThis.keys();
+		while(it.hasNext()) {
+			e=it.next();
+            comp.set(e.getKey(),e.getValue());
 		}
 		
 	// Variables
@@ -63,18 +72,20 @@ public final class EvaluateComponent {
         	ComponentScope scope = comp.getComponentScope();
         	
         	// delete variables scope data members
-        	keys = scope.keys();
-    		for(int i=0;i<keys.length;i++) {
-    			if("this".equalsIgnoreCase(keys[i].getString())) continue;
-    			if(scope.get(keys[i]) instanceof UDF) continue;
-                scope.removeEL(keys[i]);
+        	Key[] sKeys = CollectionUtil.keys(scope);
+    		for(int i=0;i<sKeys.length;i++) {
+    			if(KeyConstants._this.equals(sKeys[i])) continue;
+    			if(scope.get(sKeys[i]) instanceof UDF) continue;
+                scope.removeEL(sKeys[i]);
     		}
         	
         	
         	// set variables scope data members
-        	keys = sctVariables.keys();
-			for(int i=0;i<keys.length;i++) {
-				scope.set(keys[i],sctVariables.get(keys[i]));
+    		it=sctVariables.entryIterator();
+        	//keys = sctVariables.keys();
+			while(it.hasNext()) {
+				e=it.next();
+				scope.set(e.getKey(),e.getValue());
 			}
         
 	}

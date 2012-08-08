@@ -1,6 +1,7 @@
 package railo.runtime.type.trace;
 
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.debug.Debugger;
@@ -8,6 +9,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
 
 abstract class TOCollection extends TOObjects implements Collection {
@@ -33,25 +35,29 @@ abstract class TOCollection extends TOObjects implements Collection {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		log();
 		return coll.keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	log();
+    	return coll.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		log();
+		return coll.entryIterator();
 	}
 
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		log();
 		return coll.valueIterator();
-	}
-
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		log();
-		return coll.iterator();
 	}
 
 	public String castToString() throws PageException {
@@ -164,14 +170,6 @@ abstract class TOCollection extends TOObjects implements Collection {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		log();
-		return coll.keysAsString();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
@@ -202,7 +200,7 @@ abstract class TOCollection extends TOObjects implements Collection {
 	 */
 	public Object get(String key) throws PageException {
 		log(key);
-		return coll.get(key);
+		return coll.get(KeyImpl.init(key));
 		//return TraceObjectSupport.toTraceObject(debugger,coll.get(key),type,category,text);
 	}
 

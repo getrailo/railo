@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function de
+ * Implements the CFML Function de
  */
 package railo.runtime.functions.dynamicEvaluation;
 

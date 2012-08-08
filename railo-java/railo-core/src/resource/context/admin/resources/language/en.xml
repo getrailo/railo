@@ -159,6 +159,7 @@
 	<data key="menu.server.label">Settings</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regional</data>
+	<data key="menu.server.compiler">Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
 	<data key="menu.server.application">Application</data>
@@ -198,6 +199,7 @@
 	<data key="menu.documentation.label">Documentation</data>
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
+	<data key="menu.documentation.objRef">Object Reference</data>
 	<data key="charset.templatecharsetdescription">Default character set for templates (*.cfm and *.cfc files)</data>
 	<data key="charset.webcharsetdescription">Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header</data>
 	<data key="charset.webcharset">Web charset</data>
@@ -415,7 +417,7 @@
 	<data key="search.last_update">Last update</data>
 	<data key="search.online">Online</data>
 	<data key="search.name">Name</data>
-	<data key="components.triggerdatamember">Magic functions</data>
+	<data key="components.triggerdatamember">Implicit notation</data>
 	<data key="components.componentlocalsearchdesc">Search relative to the caller directory for the component</data>
 	<data key="components.componentdumptemplate">Component &quot;dump&quot; template</data>
 	<data key="components.basecomponent">Base/Root Component</data>
@@ -569,6 +571,27 @@
 	<data key="scopes.standard">standard (CFML Default)</data>
 	<data key="scopes.domaincookiesdescription">Enable or disable domain cookies. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.applicationtimeout">Application timeout</data>
+	
+
+	
+	<data key="setting.compiler">Railo compiler settings, this affects how the Railo Compiler parses the source code. Changing this settings flushes all existing class files and triggers a recompilation.</data>
+<data key="setting.dotNotation">Dot notation</data>
+<data key="setting.dotNotationDesc">Convert all struct keys defined with "dot notation" to upper case (CFML Default) 
+or keep them in original case (according to the "bracket notation").
+Example:
+Convert to upper case:
+sct.dotNotation --> keyname: "DOTNOTATION"
+sct[""bracketNotation""] --> keyname: "bracketNotation"
+
+Keep original case:
+sct.dotNotation --> keyname: "dotNotation"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
+<data key="setting.dotNotationOriginalCase">Keep original case</data>
+	
+	
+
+	
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Clear template cache</data>
 	<data key="setting.querycache">Query Cache</data>
@@ -622,6 +645,7 @@
 	<data key="buttons.verify">verify</data>
 	<data key="buttons.flush">flush</data>
 	<data key="buttons.stopstart">stop/start</data>
+	<data key="buttons.back">back</data>
 	<data key="buttons.previous">previous</data>
 	<data key="buttons.addarchive">assign archive to mapping</data>
 	<data key="buttons.cancel">cancel</data>
@@ -912,7 +936,7 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="overview.Hash">Hash</data>
 	<data key="overview.config">Configuration File</data>
 	<data key="overview.webroot">Webroot</data>
-	<data key="overview.info">Info</data>
+	<data key="overview.info">General Info</data>
 	<data key="overview.featurerequest">Feature request</data>
 	<data key="overview.contextcount">Context count</data>
 	<data key="doc.arg.name">Name</data>
@@ -1012,7 +1036,9 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
 	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for template caching (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
-	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for the caching of the tag cfquery</data>
+	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for caching the results of the tag cfquery</data>
+	<data key="settings.cache.defaulttypeFunction">Function</data>
+	<data key="settings.cache.defaulttypeFunctionDesc">This cache connection is used for caching the results of the tag cffunction/function</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">This cache connection is used for the Ram Resource (ram://...)</data>
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
@@ -1069,8 +1095,8 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="services.update.location_devDesc">This Update Provider (dev.getrailo.org) returns ""Bleeding Edge"" versions. Usually only a small amount of testing has been performed on these versions. This source should NOT be used for production environments.</data>
 	<data key="services.update.location_custom">Custom</data>
 	<data key="services.update.location_customDesc">Here you can define your own Update Provider. This is a URL of the form ""http://my.domainname.org""</data>
-		<data key="services.update.lib">Update JARs</data>
-	<data key="services.update.libDesc">Your JARs are out of date. In order to update your JARs, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JARs from our download section and update the JARs manually. You have to restart your Servlet engine, so that the changes take effect.</data>
+		<data key="services.update.lib">Update JAR's</data>
+	<data key="services.update.libDesc">Your JAR's are out of date. In order to update your JAR's, please click the button below. This might not work if you do not have a proper internet connection. If the download did not succeed, please download the latest JAR's from our download section and update the JAR's manually. You have to restart your Servlet engine, so that the changes take effect.</data>
 	<data key="settings.gateway.ListenerCfcPath">Listener CFC Path</data>
 	<data key="settings.gateway.startupMode">Startup Mode</data>
 	<data key="settings.gateway.startupModeAutomatic">Automatic</data>

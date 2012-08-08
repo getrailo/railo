@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getprofilestring
+ * Implements the CFML Function getprofilestring
  */
 package railo.runtime.functions.system;
 

@@ -52,7 +52,7 @@ public final class TagOther {
 	private static final Method SET_DYNAMIC_ATTRIBUTE = new Method(
 			"setDynamicAttribute",
 			Type.VOID_TYPE,
-			new Type[]{Types.STRING,Types.STRING,Types.OBJECT});
+			new Type[]{Types.STRING,Types.COLLECTION_KEY,Types.OBJECT});
 	
 	private static final Method SET_META_DATA = new Method(
 			"setMetaData",
@@ -139,7 +139,7 @@ public final class TagOther {
 
 		Label tagBegin=new Label();
 		Label tagEnd=new Label();
-		ExpressionUtil.visitLine(bc, tag.getLine());
+		ExpressionUtil.visitLine(bc, tag.getStart());
 		// TODO adapter.visitLocalVariable("tag", "L"+currType.getInternalName()+";", null, tagBegin, tagEnd, currLocal);
 
 		adapter.visitLabel(tagBegin);
@@ -204,7 +204,7 @@ public final class TagOther {
 		    				Variable.registerKey(bc, LitString.toExprString((String)entry.getKey()));
 			    			adapter.push((String)entry.getValue());
 		    				adapter.invokeStatic(MISSING_ATTRIBUTE, NEW_INSTANCE_MAX);
-		    			av.visitEndItem(bc);
+		    			av.visitEndItem(bc.getAdapter());
 		            }
 		            av.visitEnd();
 				}
@@ -258,7 +258,8 @@ public final class TagOther {
 			if(attr.isDynamicType()){
 				adapter.loadLocal(currLocal);
 				adapter.visitInsn(Opcodes.ACONST_NULL);
-				adapter.push(attr.getName());
+				//adapter.push(attr.getName());
+				Variable.registerKey(bc, LitString.toExprString(attr.getName()));
 				attr.getValue().writeOut(bc, Expression.MODE_REF);
 				adapter.invokeVirtual(currType, SET_DYNAMIC_ATTRIBUTE);
 			}
@@ -359,7 +360,7 @@ public final class TagOther {
 		
 
 		adapter.visitLabel(tagEnd);
-		ExpressionUtil.visitLine(bc, tag.getEndLine());
+		ExpressionUtil.visitLine(bc, tag.getEnd());
 
 	}
 
@@ -381,7 +382,7 @@ public final class TagOther {
 		try {
 			return tlt.getTagType();
 		} catch (ClassException e) {
-			throw new BytecodeException(e,tag.getLine());
+			throw new BytecodeException(e,tag.getStart());
 		}
 	}
 }

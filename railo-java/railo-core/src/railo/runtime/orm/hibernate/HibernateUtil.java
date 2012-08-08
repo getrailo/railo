@@ -40,9 +40,9 @@ public class HibernateUtil {
 	private static final Key FIELDTYPE = KeyImpl.intern("fieldtype");
 	static {
 		Array arr = List.listToArray(KEYWORDS, ',');
-		Iterator<String> it = arr.valueIterator();
+		Iterator<Object> it = arr.valueIterator();
 		while(it.hasNext()){
-			keywords.add(it.next());
+			keywords.add(Caster.toString(it.next(),null));
 		}
 	}
 	

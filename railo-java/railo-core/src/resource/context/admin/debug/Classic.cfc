@@ -33,6 +33,7 @@
 		,field("Tracing","tracing",true,false,"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.","checkbox")
 		
 		,field("Timer","timer",true,false,"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. ","checkbox")
+		,field("Implicit variable Access","implicitAccess",true,false,"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). ","checkbox")
 		
 		
 		,group("Output Format","Define details to the fomrat of the debug output",3)
@@ -87,8 +88,10 @@ private function isColumnEmpty(string columnName){
     
     <cffunction name="output" returntype="void">
     	<cfargument name="custom" type="struct" required="yes">
-		<cfargument name="debugging" required="true" type="struct"><cfsilent>
+		<cfargument name="debugging" required="true" type="struct">
+		<cfargument name="context" type="string" default="web"><cfsilent>
 <cfset time=getTickCount()>
+<cfset var _cgi=structKeyExists(debugging,'cgi')?debugging.cgi:cgi>
 
 <cfset pages=debugging.pages>
 <cfset queries=debugging.queries>
@@ -101,6 +104,8 @@ private function isColumnEmpty(string columnName){
 <cfset timers=debugging.timers>
 <cfset traces=debugging.traces>
 <cfset querySort(pages,"avg","desc")>
+<cfset implicitAccess=debugging.implicitAccess>
+<cfset querySort(implicitAccess,"template,line,count","asc,asc,desc")>
 
 <cfparam name="custom.unit" default="millisecond">
 <cfparam name="custom.color" default="black">
@@ -117,7 +122,7 @@ millisecond:"ms"
 
 
 
-</cfsilent></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
+</cfsilent><cfif context EQ "web"></td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp></cfif>
 <style type="text/css">
 <cfoutput>
 .cfdebug {color:#custom.color#;background-color:#custom.bgcolor#;font-family:"#custom.font#";
@@ -150,7 +155,7 @@ millisecond:"ms"
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Template </td>
-			<td class="cfdebug">#cgi.SCRIPT_NAME# (#getBaseTemplatePath()#)</td>
+			<td class="cfdebug">#_cgi.SCRIPT_NAME# (#expandPath(_cgi.SCRIPT_NAME)#)</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Time Stamp </td>
@@ -166,15 +171,15 @@ millisecond:"ms"
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> User Agent </td>
-			<td class="cfdebug">#cgi.http_user_agent#</td>
+			<td class="cfdebug">#_cgi.http_user_agent#</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Remote IP </td>
-			<td class="cfdebug">#cgi.remote_addr#</td>
+			<td class="cfdebug">#_cgi.remote_addr#</td>
 		</tr>
 		<tr>
 			<td class="cfdebug" nowrap> Host Name </td>
-			<td class="cfdebug">#cgi.server_name#</td>
+			<td class="cfdebug">#_cgi.server_name#</td>
 		</tr>
 		<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")><tr>
 			<td class="cfdebug" nowrap> Architecture</td>
@@ -273,6 +278,29 @@ millisecond:"ms"
  </table>
 </cfif>
 
+<!--- Access Scope --->
+<cfif structKeyExists(custom,"implicitAccess") and custom.implicitAccess and implicitAccess.recordcount>
+	<p class="cfdebug"><hr/><b class="cfdebuglge">Implicit variable Access</b></p>
+		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
+		<tr>
+			<td class="cfdebug"><b>Scope</b></td>
+			<td class="cfdebug"><b>Template</b></td>
+			<td class="cfdebug"><b>Line</b></td>
+			<td class="cfdebug"><b>Var</b></td>
+			<td class="cfdebug"><b>Count</b></td>
+		</tr>
+<cfset total=0>
+<cfloop query="implicitAccess">
+		<tr>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.scope#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.template#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.line#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.name#</td>
+			<td align="left" class="cfdebug" nowrap>#implicitAccess.count#</td>
+		</tr>
+</cfloop>                
+ </table>
+</cfif> 
 
 <!--- Traces --->
 <cfif structKeyExists(custom,"tracing") and custom.tracing and traces.recordcount>

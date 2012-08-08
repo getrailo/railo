@@ -26,12 +26,6 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	public int size() {
 		return 0;
 	}
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return null;
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#keys()
@@ -48,19 +42,19 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 		return null;
 	}
 	
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws ExpressionException {
+	 * /
+	public Object remove (String key) throws ExpressionException {
 	    throw new ExpressionException(NOT_SUPPORTED);
-	}
+	}*/
 	
 	/**
 	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
-		return remove(key.getString());
+	    throw new ExpressionException(NOT_SUPPORTED);
 	}
 	
 	/**
@@ -106,7 +100,22 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
+		return null;
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return null;
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return null;
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
 		return null;
 	}
 
@@ -121,10 +130,13 @@ public final class ClusterNotSupported extends StructSupport implements Cluster 
 	 */
 	public void initialize(PageContext pc) {
 	}
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	
+	@Override
 	public void release() {
+	}
+	
+	@Override
+	public void release(PageContext pc) {
 	}
 	
 	/**

@@ -14,6 +14,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * List is not a type, only some static method to manipulate String lists
@@ -28,16 +29,16 @@ public final class List {
 	 * 
 	 * 
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @param quotes quotes of the list
 	 * @return Array Object
 	 */
-	public static Array listWithQuotesToArray(String list, String delimeter,String quotes) {
+	public static Array listWithQuotesToArray(String list, String delimiter,String quotes) {
 		if(list.length()==0) return new ArrayImpl();
 		
 		int len=list.length();
 		int last=0;
-		char[] del=delimeter.toCharArray();
+		char[] del=delimiter.toCharArray();
 		char[] quo=quotes.toCharArray();
 		char c;
 		char inside=0;
@@ -70,15 +71,15 @@ public final class List {
 	/**
 	 * casts a list to Array object
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @return Array Object
 	 */
-	public static Array listToArray(String list, String delimeter) {
-	    if(delimeter.length()==1)return listToArray(list, delimeter.charAt(0));
+	public static Array listToArray(String list, String delimiter) {
+	    if(delimiter.length()==1)return listToArray(list, delimiter.charAt(0));
 		if(list.length()==0) return new ArrayImpl();
 		int len=list.length();
 		int last=0;
-		char[] del=delimeter.toCharArray();
+		char[] del=delimiter.toCharArray();
 		char c;
 		
 		ArrayImpl array=new ArrayImpl();
@@ -98,17 +99,17 @@ public final class List {
 		return array;
 	}
 	
-	public static Array listToArray(String list, String delimeter, boolean multiCharDelim) {
-		if(!multiCharDelim) return listToArray(list, delimeter);
-		if(delimeter.length()==1)return listToArray(list, delimeter.charAt(0));
+	public static Array listToArray(String list, String delimiter, boolean multiCharDelim) {
+		if(!multiCharDelim) return listToArray(list, delimiter);
+		if(delimiter.length()==1)return listToArray(list, delimiter.charAt(0));
 		int len=list.length();
 		if(len==0) return new ArrayImpl();
 		 
 		Array array=new ArrayImpl();
 		int from=0;
 		int index;
-		int dl=delimeter.length();
-		while((index=list.indexOf(delimeter,from))!=-1){
+		int dl=delimiter.length();
+		while((index=list.indexOf(delimiter,from))!=-1){
 			array.appendEL(list.substring(from,index));
 			from=index+dl;
 		}
@@ -120,10 +121,10 @@ public final class List {
 	/**
 	 * casts a list to Array object
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @return Array Object
 	 */
-	public static Array listToArray(String list, char delimeter) {
+	public static Array listToArray(String list, char delimiter) {
 		if(list.length()==0) return new ArrayImpl();
 		int len=list.length();
 		int last=0;
@@ -131,7 +132,7 @@ public final class List {
 		Array array=new ArrayImpl();
 		try{
 			for(int i=0;i<len;i++) {
-				if(list.charAt(i)==delimeter) {
+				if(list.charAt(i)==delimiter) {
 					array.append(list.substring(last,i));
 					last=i+1;
 				}
@@ -145,13 +146,13 @@ public final class List {
 	/**
 	 * casts a list to Array object remove Empty Elements
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @return Array Object
 	 */
-	public static Array listToArrayRemoveEmpty(String list, String delimeter, boolean multiCharDelim) {
-		if(!multiCharDelim) return listToArrayRemoveEmpty(list, delimeter);
+	public static Array listToArrayRemoveEmpty(String list, String delimiter, boolean multiCharDelim) {
+		if(!multiCharDelim) return listToArrayRemoveEmpty(list, delimiter);
 		
-	    if(delimeter.length()==1)return listToArrayRemoveEmpty(list, delimeter.charAt(0));
+	    if(delimiter.length()==1)return listToArrayRemoveEmpty(list, delimiter.charAt(0));
 		
 	    int len=list.length();
 		if(len==0)  return new ArrayImpl();
@@ -160,8 +161,8 @@ public final class List {
 		Array array=new ArrayImpl();
 		int from=0;
 		int index;
-		int dl=delimeter.length();
-		while((index=list.indexOf(delimeter,from))!=-1){
+		int dl=delimiter.length();
+		while((index=list.indexOf(delimiter,from))!=-1){
 			if(from<index)array.appendEL(list.substring(from,index));
 			from=index+dl;
 		}
@@ -173,14 +174,14 @@ public final class List {
 	
 	
 	
-	public static Array listToArrayRemoveEmpty(String list, String delimeter) {
-	    if(delimeter.length()==1)return listToArrayRemoveEmpty(list, delimeter.charAt(0));
+	public static Array listToArrayRemoveEmpty(String list, String delimiter) {
+	    if(delimiter.length()==1)return listToArrayRemoveEmpty(list, delimiter.charAt(0));
 		int len=list.length();
 		ArrayImpl array=new ArrayImpl();
 		if(len==0) return array;
 		int last=0;
 		
-		char[] del = delimeter.toCharArray();
+		char[] del = delimiter.toCharArray();
 		char c;
 		for(int i=0;i<len;i++) {
 		    c=list.charAt(i);
@@ -199,17 +200,17 @@ public final class List {
     /**
      * casts a list to Array object remove Empty Elements
      * @param list list to cast
-     * @param delimeter delimter of the list
+     * @param delimiter delimter of the list
      * @return Array Object
      */
-    public static Array listToArrayRemoveEmpty(String list, char delimeter) {
+    public static Array listToArrayRemoveEmpty(String list, char delimiter) {
         int len=list.length();
         ArrayImpl array=new ArrayImpl();
         if(len==0) return array;
         int last=0;
         
         for(int i=0;i<len;i++) {
-            if(list.charAt(i)==delimeter) {
+            if(list.charAt(i)==delimiter) {
                 if(last<i)array._append(list.substring(last,i));
                 last=i+1;
             }
@@ -222,16 +223,16 @@ public final class List {
 	/**
 	 * casts a list to Array object remove Empty Elements
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @return Array Object
 	 */
-	public static String rest(String list, String delimeter, boolean ignoreEmpty) {
-	    //if(delimeter.length()==1)return rest(list, delimeter.charAt(0));
+	public static String rest(String list, String delimiter, boolean ignoreEmpty) {
+	    //if(delimiter.length()==1)return rest(list, delimiter.charAt(0));
 		int len=list.length();
 		if(len==0) return "";
 		//int last=-1;
 		
-		char[] del = delimeter.toCharArray();
+		char[] del = delimiter.toCharArray();
 		char c;
 		
 		if(ignoreEmpty)list=ltrim(list,del);
@@ -258,7 +259,7 @@ public final class List {
 		    for(int i=0;i<del.length;i++) {
 		        if(c==del[i]) {
 		            list=list.substring(1);
-		            list.length();
+		            len=list.length();
 		            continue outer;
 		        }
 		    }
@@ -270,17 +271,17 @@ public final class List {
     /**
      * casts a list to Array object remove Empty Elements
      * @param list list to cast
-     * @param delimeter delimter of the list
+     * @param delimiter delimter of the list
      * @return Array Object
      */
-    public static StringList listToStringListRemoveEmpty(String list, char delimeter) {
+    public static StringList listToStringListRemoveEmpty(String list, char delimiter) {
         int len=list.length();
         StringList rtn=new StringList();
         if(len==0) return rtn.reset();
         int last=0;
         
         for(int i=0;i<len;i++) {
-            if(list.charAt(i)==delimeter) {
+            if(list.charAt(i)==delimiter) {
                 if(last<i)rtn.add(list.substring(last,i));
                 last=i+1;
             }
@@ -293,13 +294,13 @@ public final class List {
 	/**
 	 * casts a list to Array object, remove all empty items at start and end of the list
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @return Array Object
 	 */
-	public static Array listToArrayTrim(String list, String delimeter) {
-	    if(delimeter.length()==1)return listToArrayTrim(list, delimeter.charAt(0));
+	public static Array listToArrayTrim(String list, String delimiter) {
+	    if(delimiter.length()==1)return listToArrayTrim(list, delimiter.charAt(0));
 		if(list.length()==0) return new ArrayImpl();
-		char[] del = delimeter.toCharArray();
+		char[] del = delimiter.toCharArray();
 		char c;
 		
 		// remove at start
@@ -326,20 +327,20 @@ public final class List {
 		    }
 		    break;
 		}
-		return listToArray(list, delimeter);
+		return listToArray(list, delimiter);
 	}
 	
 	/**
 	 * casts a list to Array object, remove all empty items at start and end of the list and store count to info
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @param info
 	 * @return Array Object
 	 */
-	public static Array listToArrayTrim(String list, String delimeter, int[] info) {
-	    if(delimeter.length()==1)return listToArrayTrim(list, delimeter.charAt(0),info);
+	public static Array listToArrayTrim(String list, String delimiter, int[] info) {
+	    if(delimiter.length()==1)return listToArrayTrim(list, delimiter.charAt(0),info);
 		if(list.length()==0) return new ArrayImpl();
-		char[] del = delimeter.toCharArray();
+		char[] del = delimiter.toCharArray();
 		char c;
 		
 		// remove at start
@@ -368,22 +369,22 @@ public final class List {
 		    }
 		    break;
 		}
-		return listToArray(list, delimeter);
+		return listToArray(list, delimiter);
 	}
     
     /**
      * casts a list to Array object, remove all empty items at start and end of the list and store count to info
      * @param list list to cast
-     * @param delimeter delimter of the list
+     * @param delimiter delimter of the list
      * @param info
      * @return Array Object
      * @throws ExpressionException 
      */
-    public static String listInsertAt(String list, int pos, String value, String delimeter, boolean ignoreEmpty) throws ExpressionException {
+    public static String listInsertAt(String list, int pos, String value, String delimiter, boolean ignoreEmpty) throws ExpressionException {
         if(pos<1)
             throw new ExpressionException("invalid string list index ["+(pos)+"]");
    
-        char[] del = delimeter.toCharArray();
+        char[] del = delimiter.toCharArray();
         char c;
         StringBuilder result=new StringBuilder();
         String end="";
@@ -464,51 +465,51 @@ public final class List {
 	/**
 	 * casts a list to Array object, remove all empty items at start and end of the list
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @return Array Object
 	 */
-    public static Array listToArrayTrim(String list, char delimeter) {
+    public static Array listToArrayTrim(String list, char delimiter) {
         if(list.length()==0) return new ArrayImpl();
         // remove at start
-        while(list.indexOf(delimeter)==0) {
+        while(list.indexOf(delimiter)==0) {
             list=list.substring(1);
         }
         int len=list.length();
         if(len==0) return new ArrayImpl();
-        while(list.lastIndexOf(delimeter)==len-1) {
+        while(list.lastIndexOf(delimiter)==len-1) {
             list=list.substring(0,len-1<0?0:len-1);
             len=list.length();
         }
-        return listToArray(list, delimeter);
+        return listToArray(list, delimiter);
     }
 
     /**
      * @param list
-     * @param delimeter
+     * @param delimiter
      * @return trimmed list
      */
-    public static StringList toListTrim(String list, char delimeter) {
+    public static StringList toListTrim(String list, char delimiter) {
         if(list.length()==0) return new StringList();
         // remove at start
-        while(list.indexOf(delimeter)==0) {
+        while(list.indexOf(delimiter)==0) {
             list=list.substring(1);
         }
         int len=list.length();
         if(len==0) return new StringList();
-        while(list.lastIndexOf(delimeter)==len-1) {
+        while(list.lastIndexOf(delimiter)==len-1) {
             list=list.substring(0,len-1<0?0:len-1);
             len=list.length();
         }
         
-        return toList(list, delimeter);
+        return toList(list, delimiter);
     }
     
     /**
      * @param list
-     * @param delimeter
+     * @param delimiter
      * @return list
      */
-    public static StringList toList(String list, char delimeter) {
+    public static StringList toList(String list, char delimiter) {
         if(list.length()==0) return new StringList();
         int len=list.length();
         int last=0;
@@ -516,7 +517,7 @@ public final class List {
         StringList rtn=new StringList();
        
         for(int i=0;i<len;i++) {
-            if(list.charAt(i)==delimeter) {
+            if(list.charAt(i)==delimiter) {
                 rtn.add(list.substring(last,i));
                 last=i+1;
             }
@@ -548,25 +549,25 @@ public final class List {
 	/**
 	 * casts a list to Array object, remove all empty items at start and end of the list
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @param info
 	 * @return Array Object
 	 */
-	public static Array listToArrayTrim(String list, char delimeter, int[] info) {
+	public static Array listToArrayTrim(String list, char delimiter, int[] info) {
 		if(list.length()==0) return new ArrayImpl();
 		// remove at start
-		while(list.indexOf(delimeter)==0) {
+		while(list.indexOf(delimiter)==0) {
 			info[0]++;
 			list=list.substring(1);
 		}
 		int len=list.length();
 		if(len==0) return new ArrayImpl();
-		while(list.lastIndexOf(delimeter)==len-1) {
+		while(list.lastIndexOf(delimiter)==len-1) {
 			info[1]++;
 			list=list.substring(0,len-1<0?0:len-1);
 			len=list.length();
 		}
-		return listToArray(list, delimeter);
+		return listToArray(list, delimiter);
 	}
     
 
@@ -584,11 +585,11 @@ public final class List {
 	 * finds a value inside a list, do not ignore case
 	 * @param list list to search
 	 * @param value value to find
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list (0-n) or -1
 	 */
-	public static int listFindNoCase(String list, String value, String delimeter) {
-		return listFindNoCase(list, value, delimeter, true);
+	public static int listFindNoCase(String list, String value, String delimiter) {
+		return listFindNoCase(list, value, delimiter, true);
 	}	
 
 	
@@ -596,12 +597,12 @@ public final class List {
 	 * finds a value inside a list, do not ignore case
 	 * @param list list to search
 	 * @param value value to find
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @param trim trim the list or not
 	 * @return position in list (0-n) or -1
 	 */
-	public static int listFindNoCase(String list, String value, String delimeter,boolean trim) {
-		Array arr = trim?listToArrayTrim(list,delimeter):listToArray(list,delimeter);
+	public static int listFindNoCase(String list, String value, String delimiter,boolean trim) {
+		Array arr = trim?listToArrayTrim(list,delimiter):listToArray(list,delimiter);
 		int len=arr.size();
 		for(int i=1;i<=len;i++) {
 			if(((String)arr.get(i,"")).equalsIgnoreCase(value)) return i-1;
@@ -609,10 +610,10 @@ public final class List {
 		return -1;
 	}
 
-	public static int listFindForSwitch(String list, String value, String delimeter) {
-		if(list.indexOf(delimeter)==-1 && list.equalsIgnoreCase(value)) return 1;
+	public static int listFindForSwitch(String list, String value, String delimiter) {
+		if(list.indexOf(delimiter)==-1 && list.equalsIgnoreCase(value)) return 1;
 		
-		Array arr = listToArray(list,delimeter);
+		Array arr = listToArray(list,delimiter);
 		int len=arr.size();
 		for(int i=1;i<=len;i++) {
 			if(((String)arr.get(i,"")).equalsIgnoreCase(value)) return i;
@@ -624,17 +625,17 @@ public final class List {
 	 * finds a value inside a list, ignore case, ignore empty items
 	 * @param list list to search
 	 * @param value value to find
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listFindNoCaseIgnoreEmpty(String list, String value, String delimeter) {
-	    if(delimeter.length()==1)return listFindNoCaseIgnoreEmpty(list, value, delimeter.charAt(0));
+	public static int listFindNoCaseIgnoreEmpty(String list, String value, String delimiter) {
+	    if(delimiter.length()==1)return listFindNoCaseIgnoreEmpty(list, value, delimiter.charAt(0));
 	    if(list==null) return -1;
 		int len=list.length();
 		if(len==0) return -1;
 		int last=0;
 		int count=0;
-		char[] del = delimeter.toCharArray();
+		char[] del = delimiter.toCharArray();
 		char c;
 		
 		for(int i=0;i<len;i++) {
@@ -660,10 +661,10 @@ public final class List {
 	 * finds a value inside a list, ignore case, ignore empty items
 	 * @param list list to search
 	 * @param value value to find
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listFindNoCaseIgnoreEmpty(String list, String value, char delimeter) {
+	public static int listFindNoCaseIgnoreEmpty(String list, String value, char delimiter) {
 		if(list==null) return -1;
 		int len=list.length();
 		if(len==0) return -1;
@@ -671,7 +672,7 @@ public final class List {
 		int count=0;
 		
 		for(int i=0;i<len;i++) {
-			if(list.charAt(i)==delimeter) {
+			if(list.charAt(i)==delimiter) {
 				if(last<i) {
 					if(list.substring(last,i).equalsIgnoreCase(value)) return count;
 					count++;
@@ -702,11 +703,11 @@ public final class List {
 	 * finds a value inside a list, do not case sensitive
 	 * @param list list to search
 	 * @param value value to find
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listFind(String list, String value, String delimeter) {
-		Array arr = listToArrayTrim(list,delimeter);
+	public static int listFind(String list, String value, String delimiter) {
+		Array arr = listToArrayTrim(list,delimiter);
 		int len=arr.size();
 		for(int i=1;i<=len;i++) {
 			if(arr.get(i,"").equals(value)) return i-1;
@@ -719,17 +720,17 @@ public final class List {
 	 * finds a value inside a list, case sensitive, ignore empty items
 	 * @param list list to search
 	 * @param value value to find
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listFindIgnoreEmpty(String list, String value, String delimeter) {
-	    if(delimeter.length()==1)return listFindIgnoreEmpty(list, value, delimeter.charAt(0));
+	public static int listFindIgnoreEmpty(String list, String value, String delimiter) {
+	    if(delimiter.length()==1)return listFindIgnoreEmpty(list, value, delimiter.charAt(0));
 		if(list==null) return -1;
 		int len=list.length();
 		if(len==0) return -1;
 		int last=0;
 		int count=0;
-		char[] del = delimeter.toCharArray();
+		char[] del = delimiter.toCharArray();
 		char c;
 		
 		for(int i=0;i<len;i++) {
@@ -755,10 +756,10 @@ public final class List {
 	 * finds a value inside a list, case sensitive, ignore empty items
 	 * @param list list to search
 	 * @param value value to find
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listFindIgnoreEmpty(String list, String value, char delimeter) {
+	public static int listFindIgnoreEmpty(String list, String value, char delimiter) {
 		if(list==null) return -1;
 		int len=list.length();
 		if(len==0) return -1;
@@ -766,7 +767,7 @@ public final class List {
 		int count=0;
 		
 		for(int i=0;i<len;i++) {
-			if(list.charAt(i)==delimeter) {
+			if(list.charAt(i)==delimiter) {
 				if(last<i) {
 					if(list.substring(last,i).equals(value)) return count;
 					count++;
@@ -784,13 +785,13 @@ public final class List {
 	 * returns if a value of the list contains given value, ignore case
 	 * @param list list to search in
 	 * @param value value to serach
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listContainsNoCase(String list, String value, String delimeter) {
+	public static int listContainsNoCase(String list, String value, String delimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
 		
-		Array arr=listToArray(list,delimeter);
+		Array arr=listToArray(list,delimiter);
 		int len=arr.size();
 		
 		for(int i=1;i<=len;i++) {
@@ -803,12 +804,12 @@ public final class List {
 	 * returns if a value of the list contains given value, ignore case, ignore empty values
 	 * @param list list to search in
 	 * @param value value to serach
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listContainsIgnoreEmptyNoCase(String list, String value, String delimeter) {
+	public static int listContainsIgnoreEmptyNoCase(String list, String value, String delimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
-		Array arr=listToArrayRemoveEmpty(list,delimeter);
+		Array arr=listToArrayRemoveEmpty(list,delimiter);
 		int count=0;
 		int len=arr.size();
 		
@@ -824,13 +825,13 @@ public final class List {
 	 * returns if a value of the list contains given value, case sensitive
 	 * @param list list to search in
 	 * @param value value to serach
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listContains(String list, String value, String delimeter) {
+	public static int listContains(String list, String value, String delimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
 		
-			Array arr=listToArray(list,delimeter);
+			Array arr=listToArray(list,delimiter);
 			int len=arr.size();
 			
 			for(int i=1;i<=len;i++) {
@@ -844,12 +845,12 @@ public final class List {
 	 * returns if a value of the list contains given value, case sensitive, ignore empty positions
 	 * @param list list to search in
 	 * @param value value to serach
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return position in list or 0
 	 */
-	public static int listContainsIgnoreEmpty(String list, String value, String delimeter) {
+	public static int listContainsIgnoreEmpty(String list, String value, String delimiter) {
 		if(StringUtil.isEmpty(value)) return -1;
-		Array arr=listToArrayRemoveEmpty(list,delimeter);
+		Array arr=listToArrayRemoveEmpty(list,delimiter);
 		int count=0;
 		int len=arr.size();
 		
@@ -864,25 +865,25 @@ public final class List {
 	/**
 	 * convert a string array to string list, removes empty values at begin and end of the list
 	 * @param array array to convert
-	 * @param delimeter delimeter for the new list
+	 * @param delimiter delimiter for the new list
 	 * @return list generated from string array
 	 */
-	public static String arrayToListTrim(String[] array, String delimeter) {
-		return trim(arrayToList(array,delimeter),delimeter);
+	public static String arrayToListTrim(String[] array, String delimiter) {
+		return trim(arrayToList(array,delimiter),delimiter);
 	}
 	
 	/**
 	 * convert a string array to string list
 	 * @param array array to convert
-	 * @param delimeter delimeter for the new list
+	 * @param delimiter delimiter for the new list
 	 * @return list generated from string array
 	 */
-	public static String arrayToList(String[] array, String delimeter) {
+	public static String arrayToList(String[] array, String delimiter) {
 		if(ArrayUtil.isEmpty(array)) return "";
 		StringBuilder sb=new StringBuilder(array[0]);
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(array[i]);
@@ -890,7 +891,7 @@ public final class List {
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(array[i]);
 			}
 		}
@@ -899,12 +900,12 @@ public final class List {
 		return sb.toString();
 	}
 	
-	public static String arrayToList(Collection.Key[] array, String delimeter) {
+	public static String arrayToList(Collection.Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuilder sb=new StringBuilder(array[0].getString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(array[i].getString());
@@ -912,7 +913,7 @@ public final class List {
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(array[i].getString());
 			}
 		}
@@ -924,23 +925,23 @@ public final class List {
 	/**
 	 * convert Array Object to string list
 	 * @param array array to convert
-	 * @param delimeter delimeter for the new list
+	 * @param delimiter delimiter for the new list
 	 * @return list generated from string array
 	 * @throws PageException
 	 */
-	public static String arrayToList(Array array, String delimeter) throws PageException {
+	public static String arrayToList(Array array, String delimiter) throws PageException {
 		if(array.size()==0) return "";
 		StringBuilder sb=new StringBuilder(Caster.toString(array.getE(1)));
 		int len=array.size();
 		
 		for(int i=2;i<=len;i++) {
-			sb.append(delimeter);
+			sb.append(delimiter);
 			sb.append(array.get(i,""));
 		}
 		return sb.toString();
 	}
 	
-	public static String listToList(java.util.List list, String delimeter) throws PageException {
+	public static String listToList(java.util.List list, String delimiter) throws PageException {
 		if(list.size()==0) return "";
 		StringBuilder sb=new StringBuilder();
 		Iterator it = list.iterator();
@@ -948,7 +949,7 @@ public final class List {
 		if(it.hasNext()) sb.append(Caster.toString(it.next()));
 			
 		while(it.hasNext()) {
-			sb.append(delimeter);
+			sb.append(delimiter);
 			sb.append(Caster.toString(it.next()));
 		}
 		return sb.toString();
@@ -987,29 +988,29 @@ public final class List {
 	}
 
 	/**
-	 * trims a string list, remove all empty delimeter at start and the end
+	 * trims a string list, remove all empty delimiter at start and the end
 	 * @param list list to trim
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @return trimed list
 	 */
-	public static String trim(String list, String delimeter) {
-		return trim(list,delimeter,new int[2]);
+	public static String trim(String list, String delimiter) {
+		return trim(list,delimiter,new int[2]);
 	}
 	
 	/**
-	 * trims a string list, remove all empty delimeter at start and the end
+	 * trims a string list, remove all empty delimiter at start and the end
 	 * @param list list to trim
-	 * @param delimeter delimeter of the list
+	 * @param delimiter delimiter of the list
 	 * @param removeInfo int array contain count of removed values (removeInfo[0]=at the begin;removeInfo[1]=at the end)
 	 * @return trimed list
 	 */
-	public static String trim(String list, String delimeter,int[] removeInfo) {
+	public static String trim(String list, String delimiter,int[] removeInfo) {
 
 		if(list.length()==0)return "";
 		int from=0;
 		int to=list.length();
-		//int len=delimeter.length();
-		char[] del=delimeter.toCharArray();
+		//int len=delimiter.length();
+		char[] del=delimiter.toCharArray();
 		char c;
 		
 		// remove at start
@@ -1051,7 +1052,7 @@ public final class List {
 	 * @param list list to sort
 	 * @param sortType sort type (numeric,text,textnocase)
 	 * @param sortOrder sort order (asc,desc)
-	 * @param delimiter list delimeter
+	 * @param delimiter list delimiter
 	 * @return sorted list
 	 * @throws PageException
 	 */
@@ -1064,7 +1065,7 @@ public final class List {
 	 * @param list list to sort
 	 * @param sortType sort type (numeric,text,textnocase)
 	 * @param sortOrder sort order (asc,desc)
-	 * @param delimiter list delimeter
+	 * @param delimiter list delimiter
 	 * @return sorted list
 	 * @throws PageException
 	 */
@@ -1179,31 +1180,31 @@ public final class List {
 	/**
 	 * return first element of the list
 	 * @param list
-	 * @param delimeter
+	 * @param delimiter
 	 * @return returns the first element of the list
-	 * @deprecated use instead  first(String list, String delimeter, boolean ignoreEmpty)
+	 * @deprecated use instead  first(String list, String delimiter, boolean ignoreEmpty)
 	 */
-	public static String first(String list, String delimeter) {
-		return first(list, delimeter,true);
+	public static String first(String list, String delimiter) {
+		return first(list, delimiter,true);
 	}
 	
 	/**
 	 * return first element of the list
 	 * @param list
-	 * @param delimeter
+	 * @param delimiter
 	 * @param ignoreEmpty
 	 * @return returns the first element of the list
 	 */
-	public static String first(String list, String delimeter, boolean ignoreEmpty) {
+	public static String first(String list, String delimiter, boolean ignoreEmpty) {
 		
 		if(StringUtil.isEmpty(list)) return "";
 		
 		char[] del;
-		if(StringUtil.isEmpty(delimeter)) {
+		if(StringUtil.isEmpty(delimiter)) {
 		    del=new char[]{','};
 		}
 		else {
-			del=delimeter.toCharArray();
+			del=delimiter.toCharArray();
 		}
 		
 		int offset=0;
@@ -1238,31 +1239,31 @@ public final class List {
 	/**
 	 * return last element of the list
 	 * @param list
-	 * @param delimeter
+	 * @param delimiter
 	 * @return returns the last Element of a list
-	 * @deprecated use instead last(String list, String delimeter, boolean ignoreEmpty)
+	 * @deprecated use instead last(String list, String delimiter, boolean ignoreEmpty)
 	 */
-	public static String last(String list, String delimeter) {
-		return last(list, delimeter, true);
+	public static String last(String list, String delimiter) {
+		return last(list, delimiter, true);
 	}
 	
 	/**
 	 * return last element of the list
 	 * @param list
-	 * @param delimeter
+	 * @param delimiter
 	 * @param ignoreEmpty
 	 * @return returns the last Element of a list
 	 */
-	public static String last(String list, String delimeter, boolean ignoreEmpty) {
+	public static String last(String list, String delimiter, boolean ignoreEmpty) {
 
 		if(StringUtil.isEmpty(list)) return "";
 		int len=list.length();
 		
 		char[] del;
-		if(StringUtil.isEmpty(delimeter)) {
+		if(StringUtil.isEmpty(delimiter)) {
 		    del=new char[]{','};
 		}
-		else del=delimeter.toCharArray();
+		else del=delimiter.toCharArray();
 		
 		int index;
 		int x;
@@ -1292,19 +1293,19 @@ public final class List {
     /**
      * return last element of the list
      * @param list
-     * @param delimeter
+     * @param delimiter
      * @return returns the last Element of a list
      */
 	
 	
-    public static String last(String list, char delimeter) {
+    public static String last(String list, char delimiter) {
 
         int len=list.length();
         if(len==0) return "";
         int index=0;
         
         while(true) {
-            index=list.lastIndexOf(delimeter);
+            index=list.lastIndexOf(delimiter);
             if(index==-1) {
                 return list;
             }
@@ -1321,10 +1322,10 @@ public final class List {
 	/**
 	 * returns count of items in the list
 	 * @param list
-	 * @param delimeter
+	 * @param delimiter
 	 * @return list len
 	 */
-	public static int len(String list, char delimeter,boolean ignoreEmpty) {
+	public static int len(String list, char delimiter,boolean ignoreEmpty) {
 		int len=StringUtil.length(list);
 		if(len==0) return 0;
 
@@ -1332,7 +1333,7 @@ public final class List {
 		int last=0;
 		
 		for(int i=0;i<len;i++) {
-			if(list.charAt(i)==delimeter) {
+			if(list.charAt(i)==delimiter) {
 				if(!ignoreEmpty || last<i)count++;
 				last=i+1;
 			}
@@ -1344,12 +1345,12 @@ public final class List {
 	/**
 	 * returns count of items in the list
 	 * @param list
-	 * @param delimeter
+	 * @param delimiter
 	 * @return list len
 	 */
-	public static int len(String list, String delimeter, boolean ignoreEmpty) {
-	    if(delimeter.length()==1)return len(list, delimeter.charAt(0),ignoreEmpty);
-		char[] del=delimeter.toCharArray();
+	public static int len(String list, String delimiter, boolean ignoreEmpty) {
+	    if(delimiter.length()==1)return len(list, delimiter.charAt(0),ignoreEmpty);
+		char[] del=delimiter.toCharArray();
 	    int len=StringUtil.length(list);
 		if(len==0) return 0;
 		
@@ -1382,19 +1383,19 @@ public final class List {
 	/**
 	 * gets a value from list
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @param position
 	 * @return Array Object
 	 */
-	public static String getAt(String list, String delimeter, int position, boolean ignoreEmpty) {
-	    if(delimeter.length()==1)return getAt(list, delimeter.charAt(0), position,ignoreEmpty);
+	public static String getAt(String list, String delimiter, int position, boolean ignoreEmpty) {
+	    if(delimiter.length()==1)return getAt(list, delimiter.charAt(0), position,ignoreEmpty);
 		int len=list.length();
 		
 		if(len==0) return null;
 		int last=0;
 		int count=0;
 		
-		char[] del = delimeter.toCharArray();
+		char[] del = delimiter.toCharArray();
 		char c;
 		for(int i=0;i<len;i++) {
 		    c=list.charAt(i);
@@ -1417,18 +1418,18 @@ public final class List {
 	/**
 	 * get a elemnt at a specified position in list
 	 * @param list list to cast
-	 * @param delimeter delimter of the list
+	 * @param delimiter delimter of the list
 	 * @param position
 	 * @return Array Object
 	 */
-	public static String getAt(String list, char delimeter, int position, boolean ignoreEmpty) {
+	public static String getAt(String list, char delimiter, int position, boolean ignoreEmpty) {
 		int len=list.length();
 		if(len==0) return null;
 		int last=0;
 		int count=0;
 		
 		for(int i=0;i<len;i++) {
-			if(list.charAt(i)==delimeter) {
+			if(list.charAt(i)==delimiter) {
 				if(!ignoreEmpty || last<i) {
 				    if(count++==position) {
 				        return list.substring(last,i);
@@ -1442,8 +1443,8 @@ public final class List {
 		return null;
 	}
 
-	public static String[] listToStringArray(String list, char delimeter) {
-		Array array = List.listToArrayRemoveEmpty(list,delimeter);
+	public static String[] listToStringArray(String list, char delimiter) {
+		Array array = List.listToArrayRemoveEmpty(list,delimiter);
 		String[] arr=new String[array.size()];
         for(int i=0;i<arr.length;i++) {
             arr[i]=Caster.toString(array.get(i+1,""),"");
@@ -1470,7 +1471,7 @@ public final class List {
 	 * @throws PageException 
 	 */
 	public static Array trimItems(Array arr) throws PageException {
-		Key[] keys = arr.keys();
+		Key[] keys = CollectionUtil.keys(arr);
 		
 		for(int i=0;i<keys.length;i++) {
 			arr.setEL(keys[i], Caster.toString(arr.get(keys[i],null)).trim());
@@ -1478,11 +1479,11 @@ public final class List {
 		return arr;
 	}
 
-	public static Set<String> listToSet(String list, String delimeter,boolean trim) {
+	public static Set<String> listToSet(String list, String delimiter,boolean trim) {
 	    if(list.length()==0) return new HashSet<String>();
 		int len=list.length();
 		int last=0;
-		char[] del=delimeter.toCharArray();
+		char[] del=delimiter.toCharArray();
 		char c;
 		
 		HashSet<String> set=new HashSet<String>();
@@ -1499,7 +1500,7 @@ public final class List {
 		return set;
 	}
 
-	public static Set<String> listToSet(String list, char delimeter,boolean trim) {
+	public static Set<String> listToSet(String list, char delimiter,boolean trim) {
 	    if(list.length()==0) return new HashSet<String>();
 		int len=list.length();
 		int last=0;
@@ -1508,7 +1509,7 @@ public final class List {
 		HashSet<String> set=new HashSet<String>();
 		for(int i=0;i<len;i++) {
 		    c=list.charAt(i);
-				if(c==delimeter) {
+				if(c==delimiter) {
 					set.add(trim?list.substring(last,i).trim():list.substring(last,i));
 					last=i+1;
 				}

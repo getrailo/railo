@@ -283,7 +283,7 @@ public class ImageFilter {
 		sb.append("\n");
 		sb.append("		// check for arguments not supported\n");
 		sb.append("		if(parameters.size()>0) {\n");
-		sb.append("			throw new FunctionException(ThreadLocalPageContext.get(), \"ImageFilter\", 3, \"parameters\", \"the parameter\"+(parameters.size()>1?\"s\":\"\")+\" [\"+List.arrayToList(parameters.keysAsString(),\", \")+\"] \"+(parameters.size()>1?\"are\":\"is\")+\" not allowed, only the following parameters are supported ["+names+"]\");\n");
+		sb.append("			throw new FunctionException(ThreadLocalPageContext.get(), \"ImageFilter\", 3, \"parameters\", \"the parameter\"+(parameters.size()>1?\"s\":\"\")+\" [\"+List.arrayToList(parameters.keys(),\", \")+\"] \"+(parameters.size()>1?\"are\":\"is\")+\" not allowed, only the following parameters are supported ["+names+"]\");\n");
 		sb.append("		}\n");
 		sb.append("\n");
 		

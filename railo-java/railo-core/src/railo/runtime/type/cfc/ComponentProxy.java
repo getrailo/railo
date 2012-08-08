@@ -6,18 +6,22 @@ import java.util.Set;
 
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentScope;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ComponentProxy implements Component {
+public abstract class ComponentProxy implements ComponentPro {
 	
 	public abstract Component getComponent(); 
 	
@@ -116,13 +120,6 @@ public abstract class ComponentProxy implements Component {
 	}
 
 	/**
-	 * @see railo.runtime.Component#getPage()
-	 */
-	public Page getPage() {
-		return getComponent().getPage();
-	}
-
-	/**
 	 * @see railo.runtime.type.Collection#size()
 	 */
 	public int size() {
@@ -134,13 +131,6 @@ public abstract class ComponentProxy implements Component {
 	 */
 	public Key[] keys() {
 		return getComponent().keys();
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return getComponent().keysAsString();
 	}
 
 	/**
@@ -168,7 +158,7 @@ public abstract class ComponentProxy implements Component {
 	 * @see railo.runtime.type.Collection#get(java.lang.String)
 	 */
 	public Object get(String key) throws PageException {
-		return getComponent().get(key);
+		return get(KeyImpl.init(key));
 	}
 
 	/**
@@ -246,22 +236,25 @@ public abstract class ComponentProxy implements Component {
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return getComponent().keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return getComponent().keysAsStringIterator();
+    }
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return getComponent().entryIterator();
 	}
 
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return getComponent().valueIterator();
-	}
-
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return getComponent().iterator();
 	}
 
 	/**
@@ -419,24 +412,10 @@ public abstract class ComponentProxy implements Component {
 	}
 
 	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object get(PageContext pc, String key, Object defaultValue) {
-		return getComponent().get(pc, key, defaultValue);
-	}
-
-	/**
 	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(PageContext pc, Key key, Object defaultValue) {
 		return getComponent().get(pc, key, defaultValue);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
-	 */
-	public Object get(PageContext pc, String key) throws PageException {
-		return getComponent().get(pc, key);
 	}
 
 	/**
@@ -447,26 +426,11 @@ public abstract class ComponentProxy implements Component {
 	}
 
 	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object set(PageContext pc, String propertyName, Object value)
-			throws PageException {
-		return getComponent().set(pc, propertyName, value);
-	}
-
-	/**
 	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(PageContext pc, Key propertyName, Object value)
 			throws PageException {
 		return getComponent().set(pc, propertyName, value);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object setEL(PageContext pc, String propertyName, Object value) {
-		return getComponent().setEL(pc, propertyName, value);
 	}
 
 	/**
@@ -491,19 +455,15 @@ public abstract class ComponentProxy implements Component {
 			Struct args) throws PageException {
 		return getComponent().callWithNamedValues(pc, methodName, args);
 	}
-
-	/**
-	 * @see railo.runtime.type.Objects#isInitalized()
-	 */
-	public boolean isInitalized() {
-		return getComponent().isInitalized();
-	}
-
-	/**
-	 * @see railo.runtime.Component#getProperties(boolean)
-	 */
+	
+	@Override
 	public Property[] getProperties(boolean onlyPeristent) {
 		return getComponent().getProperties(onlyPeristent);
+	}
+	
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return ((ComponentPro)getComponent()).getProperties(onlyPeristent,includeBaseProperties);
 	}
 
 	/**
@@ -561,4 +521,24 @@ public abstract class ComponentProxy implements Component {
 	public Object clone(){
 		return duplicate(true);
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	getComponent().registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+    	getComponent().registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+    	getComponent().registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+    	getComponent().registerUDF(key, props);
+    }
 }

@@ -4,7 +4,11 @@ import java.io.Serializable;
 
 import javax.servlet.http.Cookie;
 
+import railo.runtime.type.scope.CookieImpl;
+
 public class SerializableCookie implements Serializable {
+
+	private static final long serialVersionUID = -7167614871212402517L;
 
 	private String comment;
 	private String domain;
@@ -14,9 +18,10 @@ public class SerializableCookie implements Serializable {
 	private boolean secure;
 	private String value;
 	private int version;
+	private boolean httpOnly;
 
 
-	public SerializableCookie(String comment, String domain, int maxAge, String name, String path, boolean secure, String value, int version) {
+	public SerializableCookie(String comment, String domain, int maxAge, String name, String path, boolean secure, String value, int version, boolean httpOnly) {
 		this.comment = comment;
 		this.domain = domain;
 		this.maxAge = maxAge;
@@ -25,6 +30,7 @@ public class SerializableCookie implements Serializable {
 		this.secure = secure;
 		this.value = value;
 		this.version = version;
+		this.httpOnly = httpOnly;
 	}
 	
 	public SerializableCookie(Cookie cookie) {
@@ -36,6 +42,7 @@ public class SerializableCookie implements Serializable {
 		this.secure = cookie.getSecure();
 		this.value = cookie.getValue();
 		this.version = cookie.getVersion();
+		this.httpOnly = CookieImpl.isHTTPOnly(cookie);
 	}
 
 	/**
@@ -93,6 +100,10 @@ public class SerializableCookie implements Serializable {
 	public int getVersion() {
 		return version;
 	}
+	
+	public boolean isHttpOnly(){
+		return httpOnly;
+	}
 
 	/**
 	 * @see javax.servlet.http.Cookie#setComment(java.lang.String)
@@ -142,6 +153,10 @@ public class SerializableCookie implements Serializable {
 	public void setVersion(int version) {
 		this.version=version;
 	}
+	
+	public void setHttpOnly(boolean httpOnly){
+		this.httpOnly=httpOnly;
+	}
 
 	
 	public Cookie toCookie() {
@@ -152,6 +167,7 @@ public class SerializableCookie implements Serializable {
 		if(path!=null)c.setPath(path);
 		c.setSecure(secure);
 		c.setVersion(version);
+		if(httpOnly)CookieImpl.setHTTPOnly(c);
 		return c;
 	}
 

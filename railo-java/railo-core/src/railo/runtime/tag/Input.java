@@ -1,6 +1,8 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.tagext.Tag;
 
@@ -13,10 +15,11 @@ import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 // FUTURE tag input 
 //attr validateAt impl tag atrr
@@ -513,11 +516,11 @@ public class Input extends TagImpl {
     public void setPassthrough(Object passthrough) throws PageException {
         if(passthrough instanceof Struct) {
             Struct sct = (Struct) passthrough;
-            railo.runtime.type.Collection.Key[] keys=sct.keys();
-            railo.runtime.type.Collection.Key key;
-            for(int i=0;i<keys.length;i++) {
-                key=keys[i];
-                attributes.setEL(key,sct.get(key,null));
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e;
+            while(it.hasNext()) {
+            	e=it.next();
+                attributes.setEL(e.getKey(),e.getValue());
             }
         }
         else this.passthrough = Caster.toString(passthrough);
@@ -575,7 +578,7 @@ public class Input extends TagImpl {
      * @param name The name to set.
      */
     public void setName(String name) {
-        attributes.setEL(KeyImpl.NAME,name);
+        attributes.setEL(KeyConstants._name,name);
         input.setName(name);
     }
     /**
@@ -626,14 +629,16 @@ public class Input extends TagImpl {
         // start output
         pageContext.forceWrite("<input");
         
-        railo.runtime.type.Collection.Key[] keys = attributes.keys();
-        railo.runtime.type.Collection.Key key;
-        for(int i=0;i<keys.length;i++) {
-            key = keys[i];
+        //railo.runtime.type.Collection.Key[] keys = attributes.keys();
+        //railo.runtime.type.Collection.Key key;
+        Iterator<Entry<Key, Object>> it = attributes.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+            e = it.next();
             pageContext.forceWrite(" ");
-            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite(e.getKey().getString());
             pageContext.forceWrite("=\"");
-            pageContext.forceWrite(enc(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite(enc(Caster.toString(e.getValue())));
             pageContext.forceWrite("\"");
            
         }

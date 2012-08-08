@@ -1,7 +1,9 @@
 package railo.runtime.tag;
 
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
+import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -61,6 +63,13 @@ public final class Application extends TagImpl {
 	private Struct ormsettings;
 	private Struct s3;
 	
+	private Boolean triggerDataMember=null;
+	private String cacheFunction;
+	private String cacheQuery;
+	private String cacheTemplate;
+	private String cacheObject;
+	private String cacheResource;
+	
      
     /**
      * @see javax.servlet.jsp.tagext.Tag#release()
@@ -96,6 +105,14 @@ public final class Application extends TagImpl {
         ormsettings=null;
         s3=null;
         //appContext=null;
+        
+        triggerDataMember=null;
+
+    	cacheFunction=null;
+    	cacheQuery=null;
+    	cacheTemplate=null;
+    	cacheObject=null;
+    	cacheResource=null;
     }
     
     /** set the value setclientcookies
@@ -189,6 +206,34 @@ public final class Application extends TagImpl {
 	}
 	
 
+	public void setCachefunction(String cacheFunction)	{
+		if(StringUtil.isEmpty(cacheFunction,true)) return;
+		this.cacheFunction=cacheFunction.trim();
+	}
+	public void setCachequery(String cacheQuery)	{
+		if(StringUtil.isEmpty(cacheQuery,true)) return;
+		this.cacheQuery=cacheQuery.trim();
+	}
+	public void setCachetemplate(String cacheTemplate)	{
+		if(StringUtil.isEmpty(cacheTemplate,true)) return;
+		this.cacheTemplate=cacheTemplate.trim();
+	}
+	public void setCacheobject(String cacheObject)	{
+		if(StringUtil.isEmpty(cacheObject,true)) return;
+		this.cacheObject=cacheObject.trim();
+	}
+	public void setCacheresource(String cacheResource)	{
+		if(StringUtil.isEmpty(cacheResource,true)) return;
+		this.cacheResource=cacheResource.trim();
+	}
+	
+
+	public void setTriggerdatamember(boolean triggerDataMember)	{
+		this.triggerDataMember=triggerDataMember?Boolean.TRUE:Boolean.FALSE;
+	}
+	public void setInvokeimplicitaccessor(boolean invokeimplicitaccessor)	{
+		setTriggerdatamember(invokeimplicitaccessor);
+	}
 
 	/**
 	 * @param ormenabled the ormenabled to set
@@ -290,7 +335,7 @@ public final class Application extends TagImpl {
         ApplicationContext ac;
         boolean initORM;
         if(action==ACTION_CREATE){
-        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false);
+        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource()));
         	initORM=set(ac);
         	pageContext.setApplicationContext(ac);
         }
@@ -332,6 +377,14 @@ public final class Application extends TagImpl {
 		if(setSessionManagement!=null)			ac.setSetSessionManagement(setSessionManagement.booleanValue());
 		if(localMode!=-1) 						ac.setLocalMode(localMode);
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
+		if(triggerDataMember!=null) 			ac.setTriggerComponentDataMember(triggerDataMember.booleanValue());
+		
+		if(cacheFunction!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_FUNCTION, cacheFunction);
+		if(cacheObject!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_OBJECT, cacheObject);
+		if(cacheQuery!=null) 					ac.setDefaultCacheName(Config.CACHE_DEFAULT_QUERY, cacheQuery);
+		if(cacheResource!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_RESOURCE, cacheResource);
+		if(cacheTemplate!=null) 				ac.setDefaultCacheName(Config.CACHE_DEFAULT_TEMPLATE, cacheTemplate);
+		
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
@@ -304,12 +305,14 @@ public class VideoPlayerJW extends BodyTagSupport {
 		
 		
 		if(passthrough!=null) {
-			Key[] keys = passthrough.keys();
+			Iterator<Entry<Key, Object>> it = passthrough.entryIterator();
+			Entry<Key, Object> e;
 			String key;
-			for(int i=0;i<keys.length;i++) {
-				key=keys[i].getString();
+			while(it.hasNext()) {
+				e = it.next();
+				key=e.getKey().getString();
 				if(StringUtil.startsWithIgnoreCase(key, "div."))
-					write(sb,key.substring(4)+"=\""+Caster.toString(passthrough.get(keys[i]))+"\" ");
+					write(sb,key.substring(4)+"=\""+Caster.toString(e.getValue())+"\" ");
 			}
 		}
 		write(sb,(align!=null?"align=\""+align+"\"":"")+" id=\""+placeholderId+"\"><a href=\"http://www.macromedia.com/go/getflashplayer\">Get the Flash Player</a> to see this player.</a></div>");			
@@ -349,17 +352,19 @@ public class VideoPlayerJW extends BodyTagSupport {
 		addVariable(sb,"screencolor",format("0x",screencolor));
 		
 		if(passthrough!=null) {
-			Key[] keys = passthrough.keys();
+			Iterator<Entry<Key, Object>> it = passthrough.entryIterator();
+			Entry<Key, Object> e;
 			String key;
-			for(int i=0;i<keys.length;i++) {
-				key=keys[i].getString();
+			while(it.hasNext()) {
+				e = it.next();
+				key=e.getKey().getString();
 				if(StringUtil.startsWithIgnoreCase(key, "param."))
-					addParam(sb,key.substring(6),Caster.toString(passthrough.get(keys[i])));
+					addParam(sb,key.substring(6),Caster.toString(e.getValue()));
 				else if(StringUtil.startsWithIgnoreCase(key, "variable."))
-					addVariable(sb,key.substring(9),Caster.toString(passthrough.get(keys[i])));
+					addVariable(sb,key.substring(9),Caster.toString(e.getValue()));
 				else if(StringUtil.startsWithIgnoreCase(key, "div."));
 				else
-					addVariable(sb,key,Caster.toString(passthrough.get(keys[i])));
+					addVariable(sb,key,Caster.toString(e.getValue()));
 			}
 		}
 

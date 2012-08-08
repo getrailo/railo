@@ -1,20 +1,10 @@
 package railo.transformer.cfml.script;
 
-import japa.parser.JavaParser;
-import japa.parser.ast.CompilationUnit;
-
-import java.io.ByteArrayInputStream;
-
-import org.objectweb.asm.Label;
-
-import railo.commons.lang.StringUtil;
-import railo.runtime.config.Config;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.ScriptBody;
-import railo.transformer.bytecode.statement.java.DataBag;
-import railo.transformer.bytecode.statement.java.JavaParserVisitor;
 import railo.transformer.bytecode.statement.tag.Tag;
+import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.cfml.tag.CFMLTransformer;
@@ -25,7 +15,7 @@ import railo.transformer.util.CFMLString;
 
 
 /**	
- * Innerhalb des Tag script kann in Cold Fusion eine eigene Scriptsprache verwendet werden, 
+ * Innerhalb des Tag script kann in CFML eine eigene Scriptsprache verwendet werden, 
  * welche sich an Javascript orientiert. 
  * Da der data.cfml Transformer keine Spezialfälle zulässt, 
  * also Tags einfach anhand der eingegeben TLD einliest und transformiert, 
@@ -36,12 +26,12 @@ import railo.transformer.util.CFMLString;
  */
 public final class JavaScriptTransformer extends CFMLExprTransformer implements TagDependentBodyTransformer {
 	
-	public void transform(Config config,Page page,CFMLTransformer parent, EvaluatorPool ep,
-			FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag, CFMLString cfml)
+	public void transform(Page page,CFMLTransformer parent, EvaluatorPool ep,
+			FunctionLib[] flibs, Tag tag, TagLibTag tagLibTag,TagLibTag[] scriptTags, CFMLString cfml,TransfomerSettings settings)
 			throws TemplateException {
 		
 		StringBuilder sb=new StringBuilder();
-		int startline=cfml.getLine();
+		//MUST add again int startline=cfml.getLine();
 		while(!cfml.isAfterLast() && !cfml.isCurrent("</",tagLibTag.getFullName())){
 			sb.append(cfml.getCurrent());
 			cfml.next();
@@ -51,22 +41,22 @@ public final class JavaScriptTransformer extends CFMLExprTransformer implements 
 			throw new TemplateException(cfml,"missing end tag"); // TODO better error message
 		
 		
+		if(true) throw new RuntimeException("not implemented");
+		//MUST add again String dummyStart="public class Susi {public static void code(){"+StringUtil.repeatString("\n", startline-1);
 		
-		String dummyStart="public class Susi {public static void code(){"+StringUtil.repeatString("\n", startline-1);
+		//MUST add again String dummyEnd="}}";
+		//MUST add again String src=dummyStart+sb+dummyEnd;
+		//MUST add again Label start=new Label();
+		//MUST add again Label end=new Label();
 		
-		String dummyEnd="}}";
-		String src=dummyStart+sb+dummyEnd;
-		Label start=new Label();
-		Label end=new Label();
-		
-		ByteArrayInputStream bais = new ByteArrayInputStream(src.getBytes());
+		//MUST add again ByteArrayInputStream bais = new ByteArrayInputStream(src.getBytes());
 		
 		try {
-			CompilationUnit cu = JavaParser.parse(bais);
-			DataBag db = new DataBag();
+			//MUST add again CompilationUnit cu = JavaParser.parse(bais);
+			//MUST add again DataBag db = new DataBag();
 			ScriptBody body=new ScriptBody();
 			tag.setBody(body);
-			new JavaParserVisitor(body,start,end).visit(cu, db);
+			//MUST add again new JavaParserVisitor(body,start,end).visit(cu, db);
 			
 		} 
 		catch (Exception e) {

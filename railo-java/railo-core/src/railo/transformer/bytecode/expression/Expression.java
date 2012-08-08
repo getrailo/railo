@@ -5,6 +5,7 @@ import org.objectweb.asm.Type;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 
 
 /**
@@ -30,17 +31,11 @@ public interface Expression {
      */
     public Type writeOut(BytecodeContext bc, int mode) throws BytecodeException;
 
-    /**
-     * Returns the value of line.
-     * @return value line
-     */
-    public int getLine();
-    
-    /* *T ODO entfernen/ersetzten durch return type von writeOut();
-     * @return return type as String (Types.XYZ)
-     */
-    //public char getType();
+    public Position getStart();
 
+    public Position getEnd();
 
-	public void setLine(int l);
+    public void setStart(Position start);
+
+    public void setEnd(Position end);
 }

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isstruct
+ * Implements the CFML Function isstruct
  */
 package railo.runtime.functions.struct;
 

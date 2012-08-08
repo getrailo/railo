@@ -4,6 +4,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
 import railo.transformer.bytecode.BytecodeContext;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
 public final class WhileVisitor implements LoopVisitor {
@@ -21,7 +22,7 @@ public final class WhileVisitor implements LoopVisitor {
 		bc.getAdapter().ifZCmp(Opcodes.IFEQ, end);
 	}
 
-	public void visitAfterBody(BytecodeContext bc,int endline) {
+	public void visitAfterBody(BytecodeContext bc,Position endline) {
 		bc.getAdapter().visitJumpInsn(Opcodes.GOTO, begin);
 		bc.getAdapter().visitLabel(end);
 		ExpressionUtil.visitLine(bc, endline);

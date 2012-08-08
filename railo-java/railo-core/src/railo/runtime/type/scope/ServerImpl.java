@@ -11,6 +11,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ReadOnlyStruct;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 
 
 /**
@@ -28,29 +29,29 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key PRODUCT_CONTEXT_COUNT = KeyImpl.intern("productcontextcount");
     private static final Key PRODUCT_VERSION = KeyImpl.intern("productversion");
     private static final Key SERIAL_NUMBER = KeyImpl.intern("serialnumber");
-    private static final Key APP_SERVER = KeyImpl.intern("appserver");
+    private static final Key APP_SERVER =KeyConstants._appserver;
     private static final Key EXPIRATION = KeyImpl.intern("expiration");
     private static final Key INSTALL_KIT = KeyImpl.intern("installkit");
     private static final Key ROOT_DIR = KeyImpl.intern("rootdir");
     private static final Key SUPPORTED_LOCALES = KeyImpl.intern("supportedlocales");
-    private static final Key  COLDFUSION= KeyImpl.intern("coldfusion");
-    private static final Key  SERVLET= KeyImpl.intern("servlet");
+    private static final Key  COLDFUSION= KeyConstants._coldfusion;
+    private static final Key  SERVLET= KeyConstants._servlet;
     private static final Key  ARCH= KeyImpl.intern("arch");
     private static final Key  ARCH_MODEL= KeyImpl.intern("archModel");
-    private static final Key  VERSION= KeyImpl.intern("version");
+    private static final Key  VERSION= KeyConstants._version;
     private static final Key  ADDITIONAL_INFORMATION= KeyImpl.intern("additionalinformation");
     private static final Key BUILD_NUMBER = KeyImpl.intern("buildnumber");
-    private static final Key OS = KeyImpl.intern("os");
-    private static final Key STATE = KeyImpl.intern("state");
+    private static final Key OS = KeyConstants._os;
+    private static final Key STATE = KeyConstants._state;
     private static final Key RELEASE_DATE = KeyImpl.intern("release-date");
-    private static final Key RAILO = KeyImpl.intern("railo");
-    private static final Key FILE = KeyImpl.intern("file");
-    private static final Key SEPARATOR = KeyImpl.intern("separator");
+    private static final Key RAILO = KeyConstants._railo;
+    private static final Key FILE = KeyConstants._file;
+    private static final Key SEPARATOR = KeyConstants._separator;
     private static final Key VENDOR = KeyImpl.intern("vendor");
     private static final Key FREE_MEMORY = KeyImpl.intern("freeMemory");
     private static final Key MAX_MEMORY = KeyImpl.intern("maxMemory");
     private static final Key TOTAL_MEMORY = KeyImpl.intern("totalMemory");
-    private static final Key JAVA = KeyImpl.intern("java");
+    private static final Key JAVA = KeyConstants._java;
 	private static final Key VERSION_NAME = KeyImpl.intern("versionName");
 	private static final Key VERSION_NAME_EXPLANATION = KeyImpl.intern("versionNameExplanation");
 
@@ -111,7 +112,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		super.setEL (COLDFUSION,coldfusion);
 		
 		ReadOnlyStruct os=new ReadOnlyStruct();
-			os.setEL(KeyImpl.NAME,System.getProperty("os.name") );
+			os.setEL(KeyConstants._name,System.getProperty("os.name") );
 			os.setEL(ARCH,System.getProperty("os.arch") );
 			int arch=SystemUtil.getOSArch();
 			if(arch!=SystemUtil.ARCH_UNKNOW)os.setEL(ARCH_MODEL,new Double(arch) );
@@ -134,7 +135,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		ReadOnlyStruct separator=new ReadOnlyStruct();
 			separator.setEL(KeyImpl.PATH,System.getProperty("path.separator"));
 			separator.setEL(FILE,System.getProperty("file.separator"));
-			separator.setEL(KeyImpl.LINE,System.getProperty("line.separator"));
+			separator.setEL(KeyConstants._line,System.getProperty("line.separator"));
 			separator.setReadOnly(true);
 		super.setEL (SEPARATOR,separator);
 			
@@ -157,7 +158,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 				name=pc.getServletContext().getServerInfo();
 			}
 			catch(Throwable t){}
-			servlet.setEL(KeyImpl.NAME,name);
+			servlet.setEL(KeyConstants._name,name);
 			servlet.setReadOnly(true);
 			
 			

@@ -5,7 +5,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function evaluate
+ * Implements the CFML Function evaluate
  */
 public final class PrecisionEvaluate implements Function {
 

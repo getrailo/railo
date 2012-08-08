@@ -25,6 +25,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * 
@@ -100,7 +101,7 @@ public class InterfaceImpl implements Interface {
     private static void loadImplements(PageContext pc, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
     	
     	Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(lstExtend, ',');
-    	Iterator<?> it = arr.iterator();
+    	Iterator<Object> it = arr.valueIterator();
     	InterfaceImpl ic;
     	String extend;
 
@@ -239,12 +240,12 @@ public class InterfaceImpl implements Interface {
         
         
         if(!StringUtil.isEmpty(icfc.hint,true))sct.set(KeyImpl.HINT,icfc.hint);
-        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(ComponentImpl.DISPLAY_NAME,icfc.dspName);
+        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(KeyConstants._displayname,icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
             Set<String> _set = railo.runtime.type.List.listToSet(icfc.extend,',',true);
             Struct ex=new StructImpl();
-        	sct.set(ComponentImpl.EXTENDS,ex);
+        	sct.set(KeyConstants._extends,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
         		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
         		ex.setEL(KeyImpl.init(icfc.superInterfaces[i].getCallPath()),_getMetaData(pc,icfc.superInterfaces[i]));
@@ -252,10 +253,10 @@ public class InterfaceImpl implements Interface {
         	
         }
         
-        if(arr.size()!=0)sct.set(ComponentImpl.FUNCTIONS,arr);
+        if(arr.size()!=0)sct.set(KeyConstants._functions,arr);
         PageSource ps = icfc.pageSource;
-        sct.set(KeyImpl.NAME,ps.getComponentName());
-        sct.set(ComponentImpl.FULLNAME,ps.getComponentName());
+        sct.set(KeyConstants._name,ps.getComponentName());
+        sct.set(KeyConstants._fullname,ps.getComponentName());
        
         sct.set(KeyImpl.PATH,ps.getDisplayPath());
         sct.set(KeyImpl.TYPE,"interface");

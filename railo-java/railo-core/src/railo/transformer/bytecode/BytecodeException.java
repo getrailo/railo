@@ -5,27 +5,20 @@ import railo.runtime.exp.TemplateException;
 
 public final class BytecodeException extends TemplateException {
 
-	private int line;
+	private Position pos;
 
-	public BytecodeException(String message, int line) {
+	public BytecodeException(String message, Position pos) {
 		super(message);
-		this.line=line;
+		this.pos=pos;
 	}
 
-	public BytecodeException(ClassException cause, int line) {
-		this(cause.getMessage(),line);
+	public BytecodeException(ClassException cause, Position start) {
+		this(cause.getMessage(),start);
 		initCause(cause);
 	}
 
-	/**
-	 * @return the line
-	 */
-	public int getLineAsInt() {
-		return line;
-	}
-
-	public int getColumnAsInt() {
-		return 0;
+	public Position getPosition() {
+		return pos;
 	}
 
 }

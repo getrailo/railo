@@ -28,6 +28,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class SpoolerEngineImpl implements SpoolerEngine {
 	
@@ -279,9 +280,9 @@ public class SpoolerEngineImpl implements SpoolerEngine {
     	int row = qry.addRow();
 		try{
 			qry.setAt(KeyImpl.TYPE, row, task.getType());
-			qry.setAt(KeyImpl.NAME, row, task.subject());
-			qry.setAt(KeyImpl.DETAIL, row, task.detail());
-			qry.setAt(KeyImpl.ID, row, task.getId());
+			qry.setAt(KeyConstants._name, row, task.subject());
+			qry.setAt(KeyConstants._detail, row, task.detail());
+			qry.setAt(KeyConstants._id, row, task.getId());
 
 			
 			qry.setAt(LAST_EXECUTION, row,new DateTimeImpl(task.lastExecution(),true));
@@ -303,7 +304,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	
 	private Array translateTime(Array exp) {
 		exp=(Array) exp.duplicate(true);
-		Iterator it = exp.iterator();
+		Iterator<Object> it = exp.valueIterator();
 		Struct sct;
 		while(it.hasNext()) {
 			sct=(Struct) it.next();

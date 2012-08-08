@@ -16,7 +16,8 @@
                 password="#session["password"&request.adminType]#"
                 remoteClients="#request.getRemoteClients()#"
                 
-                list="#structKeyExists(form,'list') and form.list#">				
+                list="#structKeyExists(form,'list') and form.list#"
+                >				
 		</cfcase>
         <!--- reset/settings --->
 		<cfcase value="#stText.Buttons.resetServerAdmin#">
@@ -26,7 +27,8 @@
                 password="#session["password"&request.adminType]#"
                 remoteClients="#request.getRemoteClients()#"
                 
-                list="">				
+                list=""
+                >				
 		</cfcase>
         <!--- save/mapping --->
 		<cfcase value="#stText.Buttons.save#">
@@ -108,6 +110,8 @@ Error Output --->
 <cfset stText.rest.setting="Settings">
 <cfset stText.rest.list="List services">
 <cfset stText.rest.listDesc="List Services when ""/rest/"" is called ">
+<cfset stText.rest.changes="Allow Change Mappings">
+<cfset stText.rest.changesDesc="Allow to add or remove Mappings in the Application with help of the function restInitApplication/restDeleteApplication.">
 <cfset stText.rest.mapping="Mappings">
 <cfset stText.rest.mappingDesc="Mappings ...">
 

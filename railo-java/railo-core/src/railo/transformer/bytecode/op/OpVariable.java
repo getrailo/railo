@@ -12,6 +12,6 @@ public final class OpVariable extends Assign {
 	}
 
 	public OpVariable(Variable variable, double value) {
-		super(variable, LitDouble.toExprDouble(value, variable.getLine()));
+		super(variable, LitDouble.toExprDouble(value, variable.getStart(),variable.getEnd()));
 	}
 }

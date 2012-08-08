@@ -11,6 +11,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.CollectionUtil;
 
 public final class UDFSetterProperty extends UDFGSProperty {
 
@@ -23,7 +24,11 @@ public final class UDFSetterProperty extends UDFGSProperty {
 
 	public UDFSetterProperty(ComponentImpl component,Property prop) throws PageException {
 		super(component,"set"+StringUtil.ucFirst(prop.getName()),new FunctionArgument[]{
-			new FunctionArgumentImpl(prop.getName(),prop.getType(),true)
+			new FunctionArgumentImpl(
+					KeyImpl.init(prop.getName()),
+					prop.getType(),
+					CFTypes.toShortStrict(prop.getType(),CFTypes.TYPE_UNKNOW),
+					true)
 		},CFTypes.TYPE_ANY,"wddx");
 		
 		
@@ -83,7 +88,7 @@ public final class UDFSetterProperty extends UDFGSProperty {
 		Object value = values.get(propName,null);
 		
 		if(value==null){
-			Key[] keys = values.keys();
+			Key[] keys = CollectionUtil.keys(values);
 			if(keys.length==1) {
 				value=values.get(keys[0]);
 			}

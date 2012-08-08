@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-
 import railo.commons.io.res.Resource;
 import railo.commons.lang.Md5;
 import railo.commons.net.HTTPUtil;
+import railo.commons.security.Credentials;
+import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.Date;
 import railo.runtime.type.dt.Time;
@@ -31,9 +30,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
     private int interval;
     private long timeout;
     private Credentials credentials;
-    private String proxyHost;
-    private int proxyPort;
-    private Credentials proxyCredentials;
+    private ProxyData proxy;
     private boolean resolveURL;
 
     private long nextExecution;
@@ -45,6 +42,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 	private boolean hidden;
 	private boolean readonly;
 	private boolean paused;
+	private boolean autoDelete;
 	private String md5;
 
     
@@ -72,14 +70,13 @@ public final class ScheduleTaskImpl implements ScheduleTask {
      * @throws ScheduleException
      */
     public ScheduleTaskImpl(String task, Resource file, Date startDate, Time startTime, 
-            Date endDate, Time endTime, String url, int port, String interval, 
-            long timeout, Credentials credentials, String proxyHost, int proxyPort, 
-            Credentials proxyCredentials, boolean resolveURL, boolean publish,boolean hidden, 
-            boolean readonly,boolean paused) throws IOException, ScheduleException {
+            Date endDate, Time endTime, String url, int port, String interval,
+            long timeout, Credentials credentials, ProxyData proxy, boolean resolveURL, boolean publish,boolean hidden, 
+            boolean readonly,boolean paused, boolean autoDelete) throws IOException, ScheduleException {
     	
     	
     	String md5=task.toLowerCase()+file+startDate+startTime+endDate+endTime+url+port+interval+timeout+
-    	credentials+proxyHost+proxyPort+proxyCredentials+resolveURL+publish+hidden+readonly+paused;
+    	credentials+proxy+resolveURL+publish+hidden+readonly+paused;
     	md5=Md5.getDigestAsString(md5);
     	this.md5=md5;
         
@@ -108,14 +105,13 @@ public final class ScheduleTaskImpl implements ScheduleTask {
         this.strInterval=interval;
         this.timeout=timeout;
         this.credentials=credentials;
-        this.proxyHost=proxyHost!=null && proxyHost.length()>0?proxyHost:null;
-        this.proxyPort=proxyPort<1?80:proxyPort;
-        this.proxyCredentials=proxyCredentials;
+        this.proxy=proxy;
         this.resolveURL=resolveURL;
         this.publish=publish;
         this.hidden=hidden;
         this.readonly=readonly;
         this.paused=paused;
+        this.autoDelete=autoDelete;
     }
 
 
@@ -169,12 +165,6 @@ public final class ScheduleTaskImpl implements ScheduleTask {
      */
     public boolean hasCredentials() {	return credentials!=null;	}
     
-    
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getUPCredentials()
-     */
-    public UsernamePasswordCredentials getUPCredentials() {	return (UsernamePasswordCredentials)credentials;	}
-    
     /**
      * @see railo.runtime.schedule.ScheduleTask#getResource()
      */
@@ -195,27 +185,7 @@ public final class ScheduleTaskImpl implements ScheduleTask {
     /**
      * @see railo.runtime.schedule.ScheduleTask#getProxyHost()
      */
-    public String getProxyHost() {	return proxyHost;	}
-    
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getProxyPort()
-     */
-    public int getProxyPort() {	return proxyPort;	}
-
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#hasProxyCredentials()
-     */
-    public boolean hasProxyCredentials() {	return proxyCredentials!=null;	}
-
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getProxyCredentials()
-     */
-    public Credentials getProxyCredentials() {	return proxyCredentials;	}
-
-    /**
-     * @see railo.runtime.schedule.ScheduleTask#getUPProxyCredentials()
-     */
-    public UsernamePasswordCredentials getUPProxyCredentials() {	return (UsernamePasswordCredentials)proxyCredentials;	}
+    public ProxyData getProxyData() {	return proxy;	}
     
     /**
      * @see railo.runtime.schedule.ScheduleTask#isResolveURL()
@@ -346,6 +316,17 @@ public final class ScheduleTaskImpl implements ScheduleTask {
 
 	public void setPaused(boolean paused) {
 		this.paused=paused;
+	}
+	
+
+	public boolean isAutoDelete() {
+		return autoDelete;
+	}
+
+
+
+	public void setAutoDelete(boolean autoDelete) {
+		this.autoDelete=autoDelete;
 	}
 
 

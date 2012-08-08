@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structcount
+ * Implements the CFML Function structcount
  */
 package railo.runtime.functions.struct;
 

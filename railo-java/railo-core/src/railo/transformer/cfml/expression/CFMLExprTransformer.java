@@ -4,9 +4,11 @@ import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.cfml.ExprTransformer;
+import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.cfml.script.AbstrCFMLScriptTransformer;
 import railo.transformer.library.function.FunctionLib;
+import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
 public class CFMLExprTransformer extends AbstrCFMLScriptTransformer implements ExprTransformer {
@@ -14,8 +16,8 @@ public class CFMLExprTransformer extends AbstrCFMLScriptTransformer implements E
 	/**
 	 * @see railo.transformer.data.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
-	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
-		return transformAsString(init(page,ep,fld, cfml,allowLowerThan),new String[]{" ", ">", "/>"});
+	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings, boolean allowLowerThan) throws TemplateException {
+		return transformAsString(init(page,ep,fld,scriptTags, cfml,settings,allowLowerThan),new String[]{" ", ">", "/>"});
 	}
 	
 	
@@ -37,8 +39,8 @@ public class CFMLExprTransformer extends AbstrCFMLScriptTransformer implements E
 	 * @return Element CFXD Element
 	 * @throws TemplateException
 	 */
-	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml) throws TemplateException {
-		Data data = init(page,ep,fld, cfml,false);
+	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
+		Data data = init(page,ep,fld,scriptTags, cfml,settings,false);
 		comments(data);
 		return assignOp(data);
 	}

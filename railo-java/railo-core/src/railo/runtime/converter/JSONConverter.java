@@ -1,6 +1,8 @@
 package railo.runtime.converter;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -10,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.w3c.dom.Node;
@@ -37,18 +40,18 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 
 /**
  * class to serialize and desirilize WDDX Packes
  */
-public final class JSONConverter {
+public final class JSONConverter extends ConverterSupport {
     
 	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 
@@ -225,19 +228,21 @@ public final class JSONConverter {
     	
     	sb.append(goIn());
         sb.append("{");
-        Key[] keys = struct.keys();
-        Key key;
+        //Key[] keys = struct.keys();
+        //Key key;
+        Iterator<Entry<Key, Object>> it = struct.entryIterator();
+        Entry<Key, Object> e;
         Object value;
         boolean doIt=false;
-        for(int i=0;i<keys.length;i++) {
-        	key=keys[i];
-        	value=struct.get(key,null);
-        	
+        while(it.hasNext()) {
+        	e = it.next();
+        	//key=keys[i];
+        	value=e.getValue();
         	if(!addUDFs && (value instanceof UDF || value==null))continue;
         	if(doIt)sb.append(',');
             doIt=true;
             sb.append('"');
-            sb.append(escape(key.getString()));
+            sb.append(escape(e.getKey().getString()));
             sb.append('"');
             sb.append(':');
             _serialize(pc,test,value,sb,serializeQueryByColumns,done);
@@ -250,7 +255,7 @@ public final class JSONConverter {
         	try {
 				ComponentAccess ca = ComponentUtil.toComponentAccess(cp);
 				isPeristent=ca.isPersistent();
-			} catch (ExpressionException e) {}
+			} catch (ExpressionException ee) {}
 			
         	Property[] props = cp.getProperties(false);
         	ComponentScope scope = cp.getComponentScope();
@@ -263,7 +268,7 @@ public final class JSONConverter {
         			else if(!remotingFetch.booleanValue()) continue;
             		
         		}
-        		key=KeyImpl.getInstance(props[i].getName());
+        		Key key = KeyImpl.getInstance(props[i].getName());
             	value=scope.get(key,null);
             	if(!addUDFs && (value instanceof UDF || value==null))continue;
             	if(doIt)sb.append(',');
@@ -289,7 +294,7 @@ public final class JSONConverter {
 				return Caster.toString(cfc.call(pc, TO_JSON, new Object[0]));
 			} catch (PageException e) {
 				e.printStackTrace();
-				throw new ConverterException(e);
+				throw toConverterException(e);
 			}
 		}
 		return defaultValue;
@@ -338,7 +343,7 @@ public final class JSONConverter {
 	    	_serializeStruct(pc,test,cw, sb, serializeQueryByColumns,false,done);
 		} 
     	catch (ExpressionException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
     }
     
@@ -354,14 +359,14 @@ public final class JSONConverter {
 			sct.setEL("MethodAttributes", meta.get("PARAMETERS"));
 		} 
 		catch (PageException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 		
 		sct.setEL("Access", ComponentUtil.toStringAccess(udf.getAccess(),"public"));
 		sct.setEL("Output", Caster.toBoolean(udf.getOutput()));
 		sct.setEL("ReturnType", udf.getReturnTypeAsString());
 		try{
-			sct.setEL("PagePath", ((UDFImpl)udf).getPageSource().getResource().getAbsolutePath());
+			sct.setEL("PagePath", udf.getPageSource().getResource().getAbsolutePath());
 		}catch(Throwable t){}
 		
 		_serializeStruct(pc,test,sct, sb, serializeQueryByColumns, true,done);
@@ -380,7 +385,7 @@ public final class JSONConverter {
 	 */
 	private void _serializeQuery(PageContext pc,Set test,Query query, StringBuffer sb, boolean serializeQueryByColumns, Set<Object> done) throws ConverterException {
 		
-		String[] keys = query.keysAsString();
+		Collection.Key[] _keys = CollectionUtil.keys(query);
 		sb.append(goIn());
 		sb.append("{");
 		
@@ -413,12 +418,12 @@ public final class JSONConverter {
 			sb.append('{');
 			boolean oDoIt=false;
 			int len=query.getRecordcount();
-			for(int i=0;i<keys.length;i++) {
+			for(int i=0;i<_keys.length;i++) {
 			    if(oDoIt)sb.append(',');
 			    oDoIt=true;
 			    sb.append(goIn());
 	            sb.append('"');
-	            sb.append(escape(keys[i]));
+	            sb.append(escape(_keys[i].getString()));
 	            sb.append('"');
 				sb.append(":[");
 				boolean doIt=false;
@@ -426,7 +431,7 @@ public final class JSONConverter {
 					    if(doIt)sb.append(',');
 					    doIt=true;
 					    try {
-							_serialize(pc,test,query.getAt(keys[i],y),sb,serializeQueryByColumns,done);
+							_serialize(pc,test,query.getAt(_keys[i],y),sb,serializeQueryByColumns,done);
 						} catch (PageException e) {
 							_serialize(pc,test,e.getMessage(),sb,serializeQueryByColumns,done);
 						}
@@ -447,11 +452,11 @@ public final class JSONConverter {
 	
 				sb.append("[");
 				boolean doIt=false;
-					for(int col=0;col<keys.length;col++) {
+					for(int col=0;col<_keys.length;col++) {
 					    if(doIt)sb.append(',');
 					    doIt=true;
 					    try {
-							_serialize(pc,test,query.getAt(keys[col],row),sb,serializeQueryByColumns,done);
+							_serialize(pc,test,query.getAt(_keys[col],row),sb,serializeQueryByColumns,done);
 						} catch (PageException e) {
 							_serialize(pc,test,e.getMessage(),sb,serializeQueryByColumns,done);
 						}
@@ -677,6 +682,12 @@ public final class JSONConverter {
 		StringBuffer sb=new StringBuffer();
 		_serialize(pc,null,object,sb,serializeQueryByColumns,new HashSet<Object>());
 		return sb.toString();
+	}
+
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(serialize(pc,source,false));
+		writer.flush();
 	}
 	
 	

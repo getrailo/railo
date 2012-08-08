@@ -16,7 +16,6 @@ import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.type.scope.FormUpload;
 import railo.runtime.util.EnumerationWrapper;
 
 /**
@@ -195,7 +194,9 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	}
 
 	public Enumeration getAttributeNames() {
-		if(disconnected) return new EnumerationWrapper(disconnectedData);
+		if(disconnected) {
+			return new EnumerationWrapper(disconnectedData);
+		}
 		return req.getAttributeNames();
 		
 	}
@@ -211,7 +212,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			if(!firstRead) {
 				PageContext pc = ThreadLocalPageContext.get();
 				if(pc!=null) {
-					return ((FormUpload)pc.formScope()).getInputStream();
+					return pc.formScope().getInputStream();
 				}
 				return new ServletInputStreamDummy(new byte[]{});	//throw new IllegalStateException();
 			}

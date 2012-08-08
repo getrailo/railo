@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listprepend
+ * Implements the CFML Function listprepend
  */
 package railo.runtime.functions.list;
 
@@ -15,11 +15,11 @@ public final class ListPrepend implements Function {
 		if(list.length()==0) return value;
 		return new StringBuffer(value).append(',').append(list).toString();
 	}
-	public static String call(PageContext pc , String list, String value, String delimeter) {
+	public static String call(PageContext pc , String list, String value, String delimiter) {
 		if(list.length()==0) return value;
-		if(StringUtil.isEmpty(delimeter)) {
+		if(StringUtil.isEmpty(delimiter)) {
 		    return call(pc,list,value);
         }
-        return new StringBuffer(value).append(delimeter.charAt(0)).append(list).toString();
+        return new StringBuffer(value).append(delimiter.charAt(0)).append(list).toString();
 	}
 }

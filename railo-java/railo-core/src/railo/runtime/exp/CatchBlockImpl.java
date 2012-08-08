@@ -22,14 +22,17 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Objects{
 	
-	public static final Key MESSAGE = KeyImpl.intern("Message");
-	public static final Key DETAIL = KeyImpl.intern("Detail");
+	public static final Key MESSAGE = KeyConstants._Message;
+	public static final Key DETAIL = KeyConstants._Detail;
 	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
 	public static final Key EXTENDEDINFO = KeyImpl.intern("ExtendedInfo");
 	public static final Key EXTENDED_INFO = KeyImpl.intern("Extended_Info");
@@ -309,21 +312,6 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return list.toArray(new Key[list.size()]);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#keysAsString()
-	 */
-	public String[] keysAsString() {
-		Key[] keys = keys();
-		String[] strKeys=new String[keys.length];
-		for(int i=0;i<keys.length;i++){
-			strKeys[i]=keys[i].getString();
-		}
-		return strKeys;
-	}
-
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.StructImpl#remove(railo.runtime.type.Collection.Key)
-	 */
 	@Override
 	public Object remove(Key key) throws PageException {
 		Object curr = super.get(key,null);
@@ -346,18 +334,19 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		return super.remove(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
 
-	/**
-	 * @see railo.runtime.type.util.StructSupport#keySet()
-	 */
-	public Set keySet() {
-		return StructUtil.keySet(this);
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 
 	/**
@@ -407,6 +396,11 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
 		Object obj=exception;
 		if(exception instanceof NativeException) obj=((NativeException)exception).getRootCause();
+		if("dump".equalsIgnoreCase(methodName)){
+			print(pc);
+			return null;
+		}
+		
 		try{
 			return Reflector.callMethod(obj, methodName, arguments);
 		}
@@ -447,7 +441,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Object get(Key key) throws PageException {
 		Object res = get(key,NULL);
 		if(res!=NULL) return res;
-		throw StructImpl.invalidKey(keysAsString(), key);
+		throw StructImpl.invalidKey(keys(), key);
 	}
 	public Object get(PageContext pc, String key, Object defaultValue) {
 		return get(key,defaultValue);
@@ -467,9 +461,9 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
 		return call(pc, methodName.getString(), arguments);
 	}
-	public Object remove(String key) throws PageException {
+	/*public Object remove (String key) throws PageException {
 		return remove(KeyImpl.init(key));
-	}
+	}*/
 	public Object removeEL(Key key) {
 		try {
 			return remove(key);

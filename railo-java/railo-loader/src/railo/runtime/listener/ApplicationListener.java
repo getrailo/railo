@@ -39,7 +39,7 @@ public interface ApplicationListener {
 	 * @throws PageException
 	 * @throws ServletException
 	 */
-	public void onRequest(PageContext pc,PageSource requestedPage) throws PageException;
+	public void onRequest(PageContext pc,PageSource requestedPage, RequestListener rl) throws PageException;
 
 	/**
 	 * this method will be called when a new session starts

@@ -136,11 +136,14 @@ public final class ExceptonImpl implements Excepton {
         return new ExpressionException(message, detail);
     }
     
-    /**
-     * @see railo.runtime.util.Excepton#createFunctionException(railo.runtime.PageContext, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
+    @Override
     public PageException createFunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message) {
-        return new FunctionException(pc,functionName, badArgumentPosition, badArgumentName,message);
+        return new FunctionException(pc,functionName, badArgumentPosition, badArgumentName,message,null);
+    }
+    
+    @Override
+    public PageException createFunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message, String detail) {
+        return new FunctionException(pc,functionName, badArgumentPosition, badArgumentName,message,detail);
     }
     
     /**

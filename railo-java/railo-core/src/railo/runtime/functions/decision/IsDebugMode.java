@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isdebugmode
+ * Implements the CFML Function isdebugmode
  */
 package railo.runtime.functions.decision;
 

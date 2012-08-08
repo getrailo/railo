@@ -84,8 +84,8 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
 public final class CFMLEngineImpl implements CFMLEngine {
     
     
-	private static Map initContextes=new HashTable();
-    private static Map contextes=new HashTable();
+	private static Map<String,CFMLFactory> initContextes=new HashTable();
+    private static Map<String,CFMLFactory> contextes=new HashTable();
     private static ConfigServerImpl configServer=null;
     private static CFMLEngineImpl engine=null;
     //private ServletConfig config;
@@ -181,10 +181,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
             // Load Config
             Resource configDir=getConfigDirectory(sg,configServer,countExistingContextes);
             
-            QueryCacheSupport queryCache=QueryCacheSupport.getInstance(configServer);
+            QueryCacheSupport queryCache=QueryCacheSupport.getInstance();
             CFMLFactoryImpl factory=new CFMLFactoryImpl(this,queryCache);
             ConfigWebImpl config=ConfigWebFactory.newInstance(factory,configServer,configDir,sg);
-            queryCache.setConfigWeb(config);
             factory.setConfig(config);
             return factory;
         }
@@ -326,9 +325,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		req=new HTTPServletRequestWrap(req);
 		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         ConfigWeb config = factory.getConfig();
-        Resource res = ((ConfigWebImpl)config).getPhysical(null,req.getServletPath(),true);
+        Resource res = ((ConfigWebImpl)config).getPhysicalResourceExisting(null, null, req.getServletPath(), false, true, true); 
         
-		if(!res.exists()) {
+		if(res==null) {
     		rsp.sendError(404);
     	}
     	else {
@@ -419,10 +418,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
         CFMLFactoryImpl cfmlFactory;
         //ScopeContext scopeContext;
         try {
-	        Iterator it = contextes.keySet().iterator();
+	        Iterator<String> it = contextes.keySet().iterator();
 	        while(it.hasNext()) {
 	        	try {
-		            cfmlFactory=(CFMLFactoryImpl)contextes.get(it.next());
+		            cfmlFactory=(CFMLFactoryImpl) contextes.get(it.next());
 		            if(configId!=null && !configId.equals(cfmlFactory.getConfigWebImpl().getId())) continue;
 		            	
 		            // scopes
@@ -432,7 +431,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		            try{cfmlFactory.resetPageContext();}catch(Throwable t){t.printStackTrace();}
 		            
 		            // Query Cache
-		            try{ cfmlFactory.getQueryCache().clear();}catch(Throwable t){t.printStackTrace();}
+		            try{ cfmlFactory.getDefaultQueryCache().clear(null);}catch(Throwable t){t.printStackTrace();}
 		            
 		            // Gateway
 		            try{ cfmlFactory.getConfigWebImpl().getGatewayEngine().reset();}catch(Throwable t){t.printStackTrace();}
@@ -481,7 +480,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @see railo.loader.engine.CFMLEngine#getCreationUtil()
      */
     public Creation getCreationUtil() {
-        return CreationImpl.getInstance();
+        return CreationImpl.getInstance(this);
     }
 
 	/**
@@ -500,7 +499,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		return new FDControllerImpl(engine,engine.getConfigServerImpl().getSerialNumber());
 	}
 
-	public Map getCFMLFactories() {
+	public Map<String,CFMLFactory> getCFMLFactories() {
 		return initContextes;
 	}
 
@@ -518,11 +517,14 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		return HTTPUtilImpl.getInstance();
 	}
 
-	/**
-	 * @see railo.loader.engine.CFMLEngine#getThreadPageContext()
-	 */
+	@Override
 	public PageContext getThreadPageContext() {
 		return ThreadLocalPageContext.get();
+	}
+
+	@Override
+	public void registerThreadPageContext(PageContext pc) {
+		ThreadLocalPageContext.register(pc);
 	}
 
 	/**
