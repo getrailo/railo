@@ -598,6 +598,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getMailServers()
      */
     public Server[] getMailServers() {
+    	if(mailServers==null) mailServers=new Server[0];
         return mailServers;
     }
     
@@ -769,6 +770,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     public railo.runtime.rest.Mapping[] getRestMappings() {
+    	if(restMappings==null) restMappings=new railo.runtime.rest.Mapping[0];
         return restMappings;
     }
   
@@ -3369,6 +3371,7 @@ public abstract class ConfigImpl implements Config {
 	}
 
 	public DebugEntry[] getDebugEntries() {
+		if(debugEntries==null)debugEntries=new DebugEntry[0];
 		return debugEntries;
 	}
 	
