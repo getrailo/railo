@@ -141,20 +141,17 @@ Redirtect to entry --->
 Error Output --->
 <cfset printError(error)>
 
-<cfoutput>#stText.Security.desc#</cfoutput>
-<br><br>
+<cfoutput><div class="pageintro">#stText.Security.desc#</div></cfoutput>
+
 <cfset prefix="default">
 <cfset tabs=structNew("linked")>
 <cfset tabs.generell=stText.Security.tabGeneral>
 <cfset tabs.special=stText.Security.tabSpecial>
 <cfmodule template="tabbedPane.cfm" name="sec" tabs="#tabs#" default="generell">
 	<cfmodule template="tab.cfm" name="generell">
-		<table class="tbl" width="600">
-		<tr>
-			<td colspan="2"><cfoutput>#stText.Security.generalDesc#</cfoutput></td>
-		</tr>
-		</table>
-		
+		<!---
+		<cfoutput><div class="itemintro">#stText.Security.generalDesc#</div></cfoutput>
+		--->
 		<cfset type="generell">
 		<cfadmin 
 			action="getDefaultSecurityManager"
@@ -165,11 +162,7 @@ Error Output --->
 		<cfinclude template="security.access.form.cfm">
 	</cfmodule>
 	<cfmodule template="tab.cfm" name="special">
-		<table class="tbl" width="600">
-		<tr>
-			<td colspan="2"><cfoutput>#stText.Security.specialDesc#</cfoutput></td>
-		</tr>
-		</table>	
+		<cfoutput><div class="itemintro">#stText.Security.specialDesc#</div></cfoutput>
 		<cfset type="special">
 		<cfinclude template="security.access.special.cfm">
 	</cfmodule>

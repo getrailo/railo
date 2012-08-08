@@ -176,7 +176,8 @@ Redirtect to entry --->
 						<th width="39%">#stText.Settings.cache.name#</th>
 						<th width="40%"># stText.Settings.cache.type#</th>
 						<th width="10%"># stText.Settings.cache.storage#</th>
-						<th width="10%">#stText.Settings.DBCheck#</th>
+						<th width="7%">#stText.Settings.DBCheck#</th>
+						<th width="3%"></th>
 					</tr>
 				</thead>
 				<tbody>

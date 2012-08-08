@@ -55,94 +55,74 @@ Redirtect to entry --->
 <!--- 
 Error Output --->
 <cfset printError(error)>
-<!--- 
-Create Datasource --->
+
 <cfoutput>
+	<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
+	<div class="pageintro">#stText.services.certificate.desc#</div>
+	<cfform action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.services.certificate.host#</th>
+					<td>
+						<cfinput type="text" name="host" value="#_host#" class="large" required="yes">
+						<div class="comment">#stText.services.certificate.hostDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.services.certificate.port#</th>
+					<td>
+						<cfinput type="text" name="port" value="#_port#" class="number" required="yes" validate="integer"><br />
+						<div class="comment">#stText.services.certificate.portDesc#</div>
+					</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+						<input class="button submit" type="submit" name="mainAction" value="#stText.services.certificate.list#">
+						<input class="button submit" type="submit" name="mainAction" value="#stText.services.certificate.install#">
+						<input class="button reset" type="reset" name="cancel" value="#stText.Buttons.Cancel#">
+						<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
 
-
-<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
-
-
-
-<table class="tbl" width="740">
-<colgroup>
-    <col width="150">
-    <col width="590">
-</colgroup>
-<tr>
-	<td colspan="2">
-#stText.services.certificate.desc#
-	</td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
-
-<tr>
-	<th scope="row">#stText.services.certificate.host#</th>
-	<td>
-    	<cfinput type="text" name="host" value="#_host#" style="width:200px" required="yes"><br />
-		<div class="comment">#stText.services.certificate.hostDesc#</div><br>
-		
-	</td>
-</tr>
-<tr>
-	<th scope="row">#stText.services.certificate.port#</th>
-	<td>
-    	<cfinput type="text" name="port" value="#_port#" style="width:40px" required="yes" validate="integer"><br />
-		<div class="comment">#stText.services.certificate.portDesc#</div><br>
-		
-	</td>
-</tr>
-
-
-<tr>
-	<td colspan="2">
-		<input class="button submit" type="submit" name="mainAction" value="#stText.services.certificate.list#">
-		<input class="button submit" type="submit" name="mainAction" value="#stText.services.certificate.install#">
-		<input class="button reset" type="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr>
-
-</cfform>
-</table>
-<cfif len(_host) and len(_port)><br><br>
-
-<cftry>
-<cfadmin 
+	<cfif len(_host) and len(_port)>
+		<cftry>
+			<cfadmin 
                 type="#request.adminType#"
 				password="#session["password"&request.adminType]#"
-	action="getsslcertificate" host="#_host#"port="#_port#" returnvariable="qry">
+				action="getsslcertificate" host="#_host#" port="#_port#" returnvariable="qry">
 
-
-
-<h2>#replace(stText.services.certificate.result,'{host}',_host)#</h2>
-<cfif qry.recordcount>
-<table class="tbl" width="740">
-<tr>
-	<th scope="row">#stText.services.certificate.subject#</th>
-	<th scope="row">#stText.services.certificate.issuer#</th>
-</tr>
-<cfloop query="qry">
-<tr>
-	<td>#qry.subject#</td>
-	<td>#qry.issuer#</td>
-</tr>
-</cfloop>
-</table>
-<cfelse>
-	<br /><p class="CheckError">#stText.services.certificate.noCert#</p>
-
-</cfif>
-	<cfcatch>
-    	<br /><p class="CheckError">#cfcatch.message#</p>
-    </cfcatch>
-</cftry>
-
-
-</cfif>
-
-
+			<h2>#replace(stText.services.certificate.result,'{host}',_host)#</h2>
+			<cfif qry.recordcount>
+				<table class="maintbl">
+					<thead>
+						<tr>
+							<th>#stText.services.certificate.subject#</th>
+							<th>#stText.services.certificate.issuer#</th>
+						</tr>
+					</thead>
+					<tbody>
+						<cfloop query="qry">
+							<tr>
+								<td>#qry.subject#</td>
+								<td>#qry.issuer#</td>
+							</tr>
+						</cfloop>
+					</tbody>
+				</table>
+			<cfelse>
+				<div class="error">#stText.services.certificate.noCert#</div>
+			</cfif>
+			<cfcatch>
+				<cfset session.certHost = "">
+				<cfset session.certPort = "443">
+				<div class="error">#cfcatch.message# #cfcatch.detail#</div>
+			</cfcatch>
+		</cftry>
+	</cfif>
 </cfoutput>

@@ -210,7 +210,7 @@ Defaults --->
 					<td>
 						<cfif hasAccess>
 							<cfset levels=array("INFO","DEBUG","WARN","ERROR","FATAL")>
-							<select name="logLevel" class="medium">
+							<select name="logLevel" class="small">
 								<cfloop index="idx" from="1" to="#arrayLen(levels)#"><option<cfif levels[idx] EQ mail.logLevel> selected</cfif>>#levels[idx]#</option></cfloop>
 							</select>
 						<cfelse>

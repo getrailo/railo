@@ -165,31 +165,32 @@
 	</h2>
 	<div class="pageintro">#driver.getDescription()#</div>
 	
-	<cfif actionType EQ "update">
-		<h3>Datasource details</h3>
-		<table class="maintbl">
-			<tbody>
-				<tr>
-					<th scope="row">Class</th>
-					<td>#datasource.classname#</td>
-				</tr>
-				<tr>
-					<th scope="row">DNS</th>
-					<td>
-						<cfif len(datasource._password)>
-							#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#
-						<cfelse>
-							#datasource.dsnTranslated#
-						</cfif>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</cfif>
-
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 		<input type="hidden" name="name" value="#datasource.name#">
 		<input type="hidden" name="type" value="#datasource.type#">
+		
+		<cfif actionType EQ "update">
+			<h3>Datasource details</h3>
+			<table class="maintbl">
+				<tbody>
+					<tr>
+						<th scope="row">Class</th>
+						<td>#datasource.classname#</td>
+					</tr>
+					<tr>
+						<th scope="row">DNS</th>
+						<td>
+							<cfif len(datasource._password)>
+								#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#
+							<cfelse>
+								#datasource.dsnTranslated#
+							</cfif>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</cfif>
+
 		<cfsilent>
 			<cfset TYPE_HIDDEN=0>
 			<cfset TYPE_FREE=1>
@@ -242,7 +243,7 @@
 						<th scope="row">#stText.Settings.dbPort#</th>
 						<td>
 							<cfinput type="text" name="port" validate="integer" 
-							value="#datasource.port#" class="year" required="#typePort EQ TYPE_REQUIRED#">
+							value="#datasource.port#" class="small" required="#typePort EQ TYPE_REQUIRED#">
 							<div class="comment">#stText.Settings.dbPortDesc#</div>
 						</td>
 					</tr>
@@ -251,7 +252,7 @@
 				<tr>
 					<th scope="row">#stText.Settings.dbtimezone#</th>
 					<td>
-						<select name="timezone">
+						<select name="timezone" class="large">
 							<option value=""> ---- #stText.Settings.dbtimezoneSame# ---- </option>
 							<cfoutput query="timezones">
 								<option value="#timezones.id#"
@@ -274,7 +275,7 @@
 						<th scope="row">#stText.Settings.dbUser#</th>
 						<td>
 							<cfinput type="text" name="username" 
-							value="#datasource.username#" class="large" required="#typeUsername EQ TYPE_REQUIRED#">
+							value="#datasource.username#" class="medium" required="#typeUsername EQ TYPE_REQUIRED#">
 							<div class="comment">#stText.Settings.dbUserDesc#</div>
 						</td>
 					</tr>
@@ -285,7 +286,7 @@
 						<th scope="row">#stText.Settings.dbPass#</th>
 						<td>
 							<cfinput type="password" name="Password"  passthrough='autocomplete="off"'
-							value="#datasource.password#" class="large" onClick="this.value='';" required="#typePassword EQ TYPE_REQUIRED#">
+							value="#datasource.password#" class="medium" onClick="this.value='';" required="#typePassword EQ TYPE_REQUIRED#">
 							<div class="comment">#stText.Settings.dbPassDesc#</div>
 						</td>
 					</tr>

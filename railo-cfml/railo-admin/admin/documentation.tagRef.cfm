@@ -60,7 +60,7 @@
 		</cfif>
 		<!--- Desc --->
 		<div class="text">
-			<cfif not StructKeyExists(data, "description")>
+			<cfif not StructKeyExists(data, "description") or data.description eq "">
 				<em>No decription found</em>
 			<cfelse>
 				#data.description#

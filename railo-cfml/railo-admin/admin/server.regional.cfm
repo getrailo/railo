@@ -118,27 +118,6 @@ Create Datasource --->
 		</cfif>
 	</div>
 	
-	<h4>
-		Current time settings
-	</h4>
-
-	<table class="tbl">
-		<tbody>
-			<tr>
-				<th scope="row" nowrap="nowrap">#stText.Overview.ServerTime#</th>
-				<td>#lsdateFormat(date:now(),timezone:"jvm")#
-					#lstimeFormat(time:now(),timezone:"jvm")#
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">#stText.Overview.DateTime#</th>
-				<td>#lsdateFormat(now())#
-					#lstimeFormat(now())#
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<br /><br />
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<!---
 		replaced with encoding output
@@ -228,5 +207,26 @@ Create Datasource --->
 				</tfoot>
 			</cfif>
 		</table>
+
+		<h3>
+			Current time settings
+		</h3>
+		<table class="tbl">
+			<tbody>
+				<tr>
+					<th scope="row" nowrap="nowrap">#stText.Overview.ServerTime#</th>
+					<td>#lsdateFormat(date:now(),timezone:"jvm")#
+						#lstimeFormat(time:now(),timezone:"jvm")#
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Overview.DateTime#</th>
+					<td>#lsdateFormat(now())#
+						#lstimeFormat(now())#
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</cfform>
+
 </cfoutput>

@@ -203,10 +203,10 @@
 						<tr>
 							<th scope="row">#stText.Search.Language#</th>
 							<td>
-								<select name="collLanguage" class="large">
+								<select name="collLanguage" class="medium">
 									<cfset aLangs = StructKeyArray(stText.SearchLng)>
 									<cfset ArraySort(aLangs, "text")>
-									<cfloop from="1" to="25" index="iLng">
+									<cfloop from="1" to="25" index="iLng"> 
 										<option value="#aLangs[iLng]#" <cfif aLangs[iLng] eq "english">selected</cfif>>#stText.SearchLng[aLangs[iLng]]#</option>
 									</cfloop>
 								</select>
@@ -296,7 +296,7 @@
 							</tr>
 							<tr>
 								<th scope="row">#stText.Search.Language#</th>
-								<td><select name="language" class="large">
+								<td><select name="language" class="medium">
 									<cfloop collection="#stText.SearchLng#" item="key">
 										<option value="#key#" <cfif key eq "english">selected</cfif>>#stText.SearchLng[key]#</option>
 									</cfloop>

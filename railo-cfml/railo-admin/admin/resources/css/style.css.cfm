@@ -488,9 +488,13 @@ label:hover {
 	padding:0;
 	margin:0;
 }
+.radiolist > li {
+	clear:both;
+}
 .radiolist.float li {
 	float:left;
 	padding-right:0px;
+	clear:none;
 }
 .radiolist .comment {
 	padding-left:20px;
@@ -761,7 +765,8 @@ div.tooltip {
 	padding: 5px 3px;
 }
 
-/* css for tag and function documentation */
+/* css for tag, object, and function documentation */
 .syntaxTag, .syntaxFunc{color:#993300;}
 .syntaxText {color:#CC0000;}
 .syntaxAttr {color:#000099;}
+.syntaxType {color:##000099;}

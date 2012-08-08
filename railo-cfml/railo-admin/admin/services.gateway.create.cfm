@@ -241,6 +241,7 @@ Redirtect to entry --->
 								</cfloop>
 							</ul>
 						<cfelse>
+							<cfset item = field.getValues() />
 							<cfinput type="#type#" class="#type#" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
 						</cfif>
 						<cfif isStruct(desc) and StructKeyExists(desc,'_bottom')>
@@ -260,6 +261,8 @@ Redirtect to entry --->
 				<tr>
 					<td colspan="2">
 						<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.submit#">
+<!---						<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button cancel" name="cancel" value="#stText.Buttons.Cancel#">
+--->
 					</td>
 				</tr>
 			</tfoot>
