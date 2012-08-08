@@ -252,15 +252,14 @@ Error Output --->
 								#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 							</td> 
 						</tr>
-<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
-	<tr>
-		<td class="tblHead" width="150">Architecture</td>
-		<td class="tblContent">
-			<cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif>
-		</td> 
-	</tr>
-</cfif>
-<!---
+						<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+							<tr>
+								<td class="tblHead" width="150">Architecture</td>
+								<td class="tblContent">
+									<cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif>
+								</td> 
+							</tr>
+						</cfif>
 						<tr>
 							<th scope="row">Classpath</th>
 							<td>
@@ -277,11 +276,17 @@ Error Output --->
 			</td>
 			<td width="2%"></td>
 			<td valign="top" width="33%">
-				<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
 				<script type="text/javascript">
-					function doNothing(){return true;}
+					function updateBindError()
+					{
+						console.log(arguments);
+						$('##updateinfo').after('<div class=""error"">Update info could not be retrieved</div>');
+					}
 				</script>
-				<cfdiv onBindError="doNothing" bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
+				<h2 id="updateinfo">Update Info</h2>
+				<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
+				<cfdiv onBindError="updateBindError"
+				bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
 
 				<!--- Memory Usage --->
 				<cftry>

@@ -331,7 +331,7 @@ td.fieldPadded {
 }
 .commentHead{font-size : 11px;color:#DFE9F6;}
 div.comment + * {
-	margin-top: 10px;
+	margin-top: 5px;
 }
 .checkbox + .comment, .radio + .comment, .radiolist label + .comment.inline {
 	display:inline;
