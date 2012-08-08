@@ -31,6 +31,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.MD5;
@@ -320,7 +321,7 @@ public final class ConfigWebFactory {
     public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
-    	
+    	long start=System.currentTimeMillis();
     	// fix
     	if(ConfigWebAdmin.fixS3(doc) | ConfigWebAdmin.fixPSQ(doc)) {
     		XMLCaster.writeTo(doc,config.getConfigFile());
@@ -393,7 +394,7 @@ public final class ConfigWebFactory {
 
     	//doNew(config.getConfigDir(), false);
     	
-    	ThreadLocalConfig.release();
+    	ThreadLocalConfig.release();print.e(System.currentTimeMillis()-start);
     }
 
     private static void loadResourceProvider(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ClassException {
@@ -1714,7 +1715,9 @@ public final class ConfigWebFactory {
 	            hasChanged= true;
 	        }
 		} 
-		catch (IOException e) {}
+		catch (IOException e) {
+			e.printStackTrace(config.getErrWriter());
+		}
         
         
 		if(hasChanged) {
@@ -1747,9 +1750,12 @@ public final class ConfigWebFactory {
 		        	}
 		        }
 	        }
-	        catch(Exception e){
+	        catch(Throwable e){
+	        	e.printStackTrace();
 	        	clazz=ConsoleExecutionLog.class;
-	        }
+	        } 
+	        if(clazz!=null)SystemOut.printDate(config.getOutWriter(),"loaded ExecutionLog class "+clazz.getName());
+	        
 	     // arguments
 	        String strArgs = el.getAttribute("arguments");
 	        if(StringUtil.isEmpty(strArgs))strArgs = el.getAttribute("class-arguments");
