@@ -24,6 +24,8 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.comparator.TextComparator;
+import railo.runtime.type.scope.Form;
+import railo.runtime.type.scope.URL;
 
 /**
  * 
@@ -192,5 +194,20 @@ public final class StructUtil {
 			entry=(Entry) it.next();
 			if(entry.getValue()==value)it.remove();
 		}
+	}
+
+	
+    public static Struct merge(Struct[] scts) { 
+		Struct sct=new StructImpl();
+		
+		for(int i=scts.length-1;i>=0;i--){
+			Iterator<Entry<Key, Object>> it = scts[i].entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()){
+				e = it.next();
+				sct.setEL(e.getKey(), e.getValue());
+			}
+		}
+		return sct;
 	}
 }

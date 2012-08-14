@@ -81,7 +81,8 @@ public abstract class ComponentPage extends Page  {
 	 */
 	public void call(PageContext pc) throws PageException {
 		// remote persistent (only type server is supported)
-		String strRemotePersisId = Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT_ID,null),null);
+		String strRemotePersisId = Caster.toString(getURLorForm(pc,REMOTE_PERSISTENT_ID,null),null);//Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT_ID,null),null);
+		
 		if(!StringUtil.isEmpty(strRemotePersisId,true)) {
 			strRemotePersisId=strRemotePersisId.trim();
 		}
@@ -156,7 +157,7 @@ public abstract class ComponentPage extends Page  {
                     return;
             	}
     			// WDDX
-                else if((method=pc.urlFormScope().get(KeyConstants._method,null))!=null) {
+                else if((method=getURLorForm(pc, KeyConstants._method, null))!=null) {
                     callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
             		//close(pc);
                     return;
@@ -173,7 +174,7 @@ public abstract class ComponentPage extends Page  {
                     return;
                 } 
     			// WDDX
-                else if((method=pc.urlFormScope().get(KeyConstants._method,null))!=null) {
+                else if((method=getURLorForm(pc, KeyConstants._method, null))!=null) {
                     callWDDX(pc,component,KeyImpl.toKey(method),suppressContent);
                     //close(pc); 
                     return;
@@ -217,6 +218,12 @@ public abstract class ComponentPage extends Page  {
 		}
 	}
 	
+	private Object getURLorForm(PageContext pc, Key key, Object defaultValue) {
+		Object res = pc.formScope().get(key,null);
+		if(res!=null) return res;
+		return pc.urlScope().get(key,defaultValue);
+	}
+
 	private void callRest(PageContext pc, Component component, String path, Result result, boolean suppressContent) throws IOException, ConverterException {
 		String method = pc.getHttpServletRequest().getMethod();
 		String[] subPath = result.getPath();
@@ -520,8 +527,8 @@ public abstract class ComponentPage extends Page  {
 	
 	
     private void callWDDX(PageContext pc, Component component, Collection.Key methodName, boolean suppressContent) throws IOException, ConverterException, PageException {
-    	Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
-
+    	//Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
+    	Struct url=StructUtil.merge(new Struct[]{pc.formScope(),pc.urlScope()});
         // define args
         url.removeEL(KeyImpl.FIELD_NAMES);
         url.removeEL(METHOD);
@@ -585,7 +592,7 @@ public abstract class ComponentPage extends Page  {
         
     }
     
-    private void setFormat(HttpServletResponse rsp, int format) {
+	private void setFormat(HttpServletResponse rsp, int format) {
     	switch(format){
         case UDF.RETURN_FORMAT_WDDX:
         	rsp.setContentType("text/xml; charset=UTF-8");
