@@ -20,7 +20,7 @@ public final class Break extends StatementBase {
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		FlowControl fc = ASMUtil.getAncestorFlowControlStatement(this);
+		FlowControlBreak fc = ASMUtil.getAncestorBreakFCStatement(this);
 		if(fc!=null)
 			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, fc.getBreakLabel());
 		else throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",getStart());

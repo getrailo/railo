@@ -7,6 +7,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.statement.FlowControl;
+import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.util.ASMUtil;
 
 public final class TagBreak extends TagBase {
@@ -21,7 +22,7 @@ public final class TagBreak extends TagBase {
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 
-		FlowControl fc = ASMUtil.getAncestorFlowControlStatement(this);
+		FlowControlBreak fc = ASMUtil.getAncestorBreakFCStatement(this);
 		
 		if(fc!=null)
 			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, fc.getBreakLabel());
