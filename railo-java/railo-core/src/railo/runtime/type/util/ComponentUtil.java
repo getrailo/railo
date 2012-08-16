@@ -23,6 +23,7 @@ import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.Page;
@@ -403,7 +404,7 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(ComponentUtil.getProperties(component,false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(component.getProperties(false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
@@ -580,12 +581,14 @@ public final class ComponentUtil {
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}
 
-	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
+		if(c instanceof ComponentPro)
+			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties);
 		return c.getProperties(onlyPeristent);
 	}
 	
-	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {
-		Property[] props = getProperties(c, onlyPeristent);
+	public static Property[] getIDProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
+		Property[] props = getProperties(c,onlyPeristent,includeBaseProperties);
 		java.util.List<Property> tmp=new ArrayList<Property>();
 		for(int i=0;i<props.length;i++){
 			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))

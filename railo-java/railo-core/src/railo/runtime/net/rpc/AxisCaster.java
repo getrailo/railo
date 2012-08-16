@@ -268,7 +268,7 @@ public final class AxisCaster {
     	comp=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ca);
 		ComponentScope scope = ca.getComponentScope();
     	
-    	Property[] props=ComponentUtil.getProperties(comp,false);
+    	Property[] props=comp.getProperties(false);
     	//Map rtn=new HashTable();
     	Object obj=null;
 		try {

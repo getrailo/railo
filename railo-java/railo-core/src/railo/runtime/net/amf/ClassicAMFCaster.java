@@ -134,7 +134,7 @@ public class ClassicAMFCaster implements AMFCaster {
 		if(cfc instanceof ComponentAccess)c=ComponentWrap.toComponentWrap(methodAccessLevel,cfc);
 		
 
-		Property[] prop = ComponentUtil.getProperties(cfc,false);
+		Property[] prop = cfc.getProperties(false);
 		Object v; UDF udf;
     	if(prop!=null)for(int i=0;i<prop.length;i++) {
     		boolean remotingFetch = Caster.toBooleanValue(prop[i].getDynamicAttributes().get(REMOTING_FETCH,Boolean.TRUE),true);
