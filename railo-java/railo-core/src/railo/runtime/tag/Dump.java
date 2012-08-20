@@ -39,6 +39,7 @@ public final class Dump extends TagImpl {
 	private boolean metainfo=true;
 	private boolean abort=false;
 
+	private boolean enabled=true;
 
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -94,6 +95,13 @@ public final class Dump extends TagImpl {
 	public void setExpand(boolean expand)	{
 		this.expand=expand;
 	}
+	
+	
+	public void setEnabled(boolean value) {
+		
+		this.enabled = value;
+	}
+	
 
 	/** set the value var
 	*  Variable to display. Enclose a variable name in pound signs
@@ -141,6 +149,10 @@ public final class Dump extends TagImpl {
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
+		
+		if ( !this.enabled )
+			return SKIP_BODY;
+		
 	    if(var==null && eval!=null) {
 	        var=Evaluate.call(pageContext,new Object[]{eval});
 	        if(label==null)label=Caster.toString(eval);
