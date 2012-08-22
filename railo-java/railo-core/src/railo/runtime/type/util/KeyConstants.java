@@ -748,6 +748,7 @@ public class KeyConstants {
 	public static final Key _skipCFCWithError = KeyImpl._const("skipCFCWithError");
 	public static final Key _destination = KeyImpl._const("destination");
 	public static final Key _codec = KeyImpl._const("codec");
+	public static final Key _chaining = KeyImpl._const("chaining");
 	
 	
 	

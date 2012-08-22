@@ -33,6 +33,7 @@ public final class BIFCall extends RefSupport implements Ref {
 		
 	private Ref[] refArgs;
     private FunctionLibFunction flf;
+	private Object obj;
 
 
 	/**
@@ -42,6 +43,11 @@ public final class BIFCall extends RefSupport implements Ref {
 	 * @param refArgs 
 	 */
 	public BIFCall(FunctionLibFunction flf,Ref[] refArgs) {
+		this.flf=flf;
+		this.refArgs=refArgs;
+	}
+	public BIFCall(Object obj,FunctionLibFunction flf,Ref[] refArgs) {
+		this.obj=obj;
 		this.flf=flf;
 		this.refArgs=refArgs;
 	}
@@ -114,6 +120,11 @@ public final class BIFCall extends RefSupport implements Ref {
         }
         Class clazz=flf.getCazz();
         if(clazz==null)throw new ExpressionException("class "+clazz+" not found");
+        
+        if(flf.getMemberChaining() && obj!=null) {
+        	Reflector.callStaticMethod(clazz,"call",arguments);
+        	return obj;
+        }
         return Caster.castTo(pc,flf.getReturnTypeAsString(),Reflector.callStaticMethod(clazz,"call",arguments),false);
 	}
 	
