@@ -3736,7 +3736,7 @@ public final class ConfigWebAdmin {
 	}
 
 
-	public void updateCompilerSettings(Boolean dotNotationUpperCase) throws PageException {
+	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean supressWSBeforeArg) throws PageException {
 		
 		Element element = _getRootElement("compiler");
 		
@@ -3748,5 +3748,16 @@ public final class ConfigWebAdmin {
     	else {
     		element.setAttribute("dot-notation-upper-case", Caster.toString(dotNotationUpperCase));
     	}
+    	
+    	if(supressWSBeforeArg==null){
+			if(element.hasAttribute("supress-ws-before-arg"))
+				element.removeAttribute("supress-ws-before-arg");
+		}
+    	else {
+    		element.setAttribute("supress-ws-before-arg", Caster.toString(supressWSBeforeArg));
+    	}
+    	
+    	
+    	
 	}
 }

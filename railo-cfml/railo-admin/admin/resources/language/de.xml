@@ -553,7 +553,9 @@ sct.dotNotation --> keyname: "dotNotation"
 sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
 	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
-	
+	<data key="setting.supressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
+	<data key="setting.supressWSBeforeArgDesc">Wenn gesetzt, unterdrückt Railo White-Spaces definiert zwischen dem "cffunction" Starttag und dem letzten "cfargument" Tag.
+	Dieses Setting wird ignoriert wenn es zwischen den Tags ein andere Ausgabe als White-Spaces hat.</data>
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Template Cache leeren</data>
 	<data key="setting.querycache">Query Cache</data>

@@ -19,7 +19,7 @@ public interface Body extends Statement {
 	 * returns all statements
 	 * @return the statements
 	 */
-	public abstract List getStatements();
+	public abstract List<Statement> getStatements();
 
 	/**
 	 * move all statements to target body

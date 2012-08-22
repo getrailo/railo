@@ -3413,6 +3413,17 @@ public abstract class ConfigImpl implements Config {
 		return dotNotationUpperCase;
 	}
 
+	private boolean getSupressWSBeforeArg=true;
+	protected void setSupressWSBeforeArg(boolean getSupressWSBeforeArg) {
+		this.getSupressWSBeforeArg=getSupressWSBeforeArg;
+	}
+
+	public boolean getSupressWSBeforeArg() {
+		return getSupressWSBeforeArg;
+	}
+	
+	
+
 	public abstract Cluster createClusterScope() throws PageException;
 
 

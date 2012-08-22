@@ -2932,7 +2932,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     
 
     private void doUpdateCompilerSettings() throws SecurityException, PageException {
-    	admin.updateCompilerSettings(getBoolObject("admin", "UpdateCompilerSettings", "dotNotationUpperCase"));
+    	admin.updateCompilerSettings(
+    			getBoolObject("admin", "UpdateCompilerSettings", "dotNotationUpperCase"),
+    			getBoolObject("admin", "UpdateCompilerSettings", "supressWSBeforeArg")
+				);
         store();
         adminSync.broadcast(attributes, config);
 	}
@@ -2969,8 +2972,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	String returnVariable=getString("admin",action,"returnVariable");
     	Struct sct=new StructImpl();
     	pageContext.setVariable(returnVariable,sct);
-    	
+
     	sct.set("DotNotationUpperCase", config.getDotNotationUpperCase()?Boolean.TRUE:Boolean.FALSE);
+    	sct.set("supressWSBeforeArg", config.getSupressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
     }
     
     private void doGetLogSettings() throws  PageException {

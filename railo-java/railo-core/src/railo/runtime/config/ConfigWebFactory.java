@@ -1438,6 +1438,10 @@ public final class ConfigWebFactory {
 		sb.append(config.getDotNotationUpperCase());
 		sb.append(';');
 		
+		// supress ws before arg
+		sb.append(config.getSupressWSBeforeArg());
+		sb.append(';');
+		
 		// tld
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
@@ -4068,9 +4072,16 @@ public final class ConfigWebFactory {
         
     	
         Element compiler=getChildByName(doc.getDocumentElement(),"compiler");
-      	
 
-        // Scope Logger
+        
+        String supress=compiler.getAttribute("supress-ws-before-arg");
+        if(!StringUtil.isEmpty(supress,true)){
+        	config.setSupressWSBeforeArg(Caster.toBooleanValue(supress,true));
+        }
+        else if(hasCS){
+        	config.setSupressWSBeforeArg(configServer.getSupressWSBeforeArg());
+        }
+
         String _case=compiler.getAttribute("dot-notation-upper-case");
         if(!StringUtil.isEmpty(_case,true)){
         	config.setDotNotationUpperCase(Caster.toBooleanValue(_case,true));
