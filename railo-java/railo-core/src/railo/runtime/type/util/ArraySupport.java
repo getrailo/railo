@@ -15,6 +15,7 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Sizeable;
@@ -90,10 +91,12 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	 */
 	public final boolean retainAll(java.util.Collection c) {
 		boolean modified = false;
-		Iterator it = iterator();
-		while (it.hasNext()) {
-		    if(!c.contains(it.next())) {
-		    	it.remove();
+		Key[] keys = CollectionUtil.keys(this);
+		Key k;
+		for(int i=keys.length-1;i>=0;i--) {
+			k = keys[i];
+			if(!c.contains(get(k,null))) {
+		    	removeEL(k);
 		    	modified = true;
 		    }
 		}
