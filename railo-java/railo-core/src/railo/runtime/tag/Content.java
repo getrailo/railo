@@ -206,7 +206,7 @@ public final class Content extends BodyTagImpl {
             				to=ranges[i].to;
             			}
             			rsp.addHeader("Content-Range", "bytes "+off+"-"+to+"/"+Caster.toString(length));	
-            			//print.out("Content-Range: bytes "+off+"-"+to+"/"+Caster.toString(length));
+            			rsp.setStatus(206);
             			IOUtil.copy(is, os,off,len);
             		}
             	}
