@@ -783,7 +783,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        
 	    // header		
 	        cfhttp.set(HEADER,raw.toString());
-	        if(rsp.getStatusCode()!=STATUS_OK){
+	        if(!isStatusOK(rsp.getStatusCode())){
 	        	String msg=rsp.getStatusCode()+" "+rsp.getStatusText();
 	            cfhttp.setEL(ERROR_DETAIL,msg);
 	            if(throwonerror){
@@ -795,6 +795,10 @@ public final class Http4 extends BodyTagImpl implements Http {
 			//rsp.release();
 		}
 	    
+	}
+
+	public static boolean isStatusOK(int statusCode) {
+		return statusCode>=200 && statusCode<=299;
 	}
 
 	private PageException toPageException(Throwable t) {
