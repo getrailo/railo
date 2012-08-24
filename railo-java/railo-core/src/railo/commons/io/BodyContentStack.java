@@ -8,6 +8,7 @@ import railo.runtime.writer.BodyContentImpl;
 import railo.runtime.writer.CFMLWriter;
 import railo.runtime.writer.CFMLWriterImpl;
 import railo.runtime.writer.CFMLWriterWhiteSpace;
+import railo.runtime.writer.CFMLWriterWhiteSpacePref;
 import railo.runtime.writer.DevNullBodyContent;
 
 /**
@@ -37,7 +38,7 @@ public final class BodyContentStack {
     public void init(HttpServletRequest req, HttpServletResponse rsp, boolean suppresswhitespace, boolean closeConn, boolean showVersion, boolean contentLength,boolean allowCompression) {
 //      this.base=new JSPWriterWhiteSpace(rsp,-1,false);
         if(suppresswhitespace)
-            this.base=new CFMLWriterWhiteSpace(req,rsp,-1,false,closeConn,showVersion,contentLength,allowCompression);
+            this.base=new CFMLWriterWhiteSpacePref(req,rsp,-1,false,closeConn,showVersion,contentLength,allowCompression);
         else 
             this.base=new CFMLWriterImpl(req,rsp,-1,false,closeConn,showVersion,contentLength,allowCompression);
     }
