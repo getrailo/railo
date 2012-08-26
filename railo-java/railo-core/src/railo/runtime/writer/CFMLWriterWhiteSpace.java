@@ -18,6 +18,7 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 
 	private char lastChar = 0;
 
+	private int codDepth = 0;
 	private int preDepth = 0;
 	private int txtDepth = 0;
 
@@ -93,7 +94,10 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 
 			String substr = sb.substring( 1, 6 );								// we know that the 1st char is < so no need to test it
 
-			if ( substr.equalsIgnoreCase( "/pre>" ) ) {
+			if ( substr.equalsIgnoreCase( "/code" ) ) {
+
+				if ( --codDepth < 0 )   codDepth = 0;							// decrement and ensure non-negative
+			} else if ( substr.equalsIgnoreCase( "/pre>" ) ) {
 
 				if ( --preDepth < 0 )   preDepth = 0;							// decrement and ensure non-negative
 			} else if ( substr.equalsIgnoreCase( "/text" ) ) {
@@ -108,7 +112,10 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 
 			String substr = sb.substring( 1, 5 );
 
-			if ( substr.equalsIgnoreCase( "pre>" ) ) {
+			if ( substr.equalsIgnoreCase( "code" ) ) {
+
+				codDepth++;
+			} else if ( substr.equalsIgnoreCase( "pre>" ) ) {
 
 				preDepth++;
 			} else if ( substr.equalsIgnoreCase( "text" ) ) {
@@ -152,7 +159,7 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 
 		if ( isWS || !addToBuffer( c ) ) {
 
-			if ( preDepth + txtDepth == 0 ) {									// we're not in PRE nor TEXTAREA; suppress whitespace
+			if ( codDepth + preDepth + txtDepth == 0 ) {						// we're not in PRE nor TEXTAREA; suppress whitespace
 
 				if ( isWS ) {													// this char is WS
 
