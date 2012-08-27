@@ -98,10 +98,17 @@ public final class ArrayUtil {
 	 * @throws ExpressionException
 	 */
 	public static void swap(Array array, int left, int right) throws ExpressionException {
+		int len=array.size();
+		if(len==0)
+			throw new ExpressionException("array is empty");
+		if(left<1 || left>len)
+			throw new ExpressionException("invalid index ["+left+"]","valid indexes are from 1 to "+len);
+		if(right<1 || right>len)
+			throw new ExpressionException("invalid index ["+right+"]","valid indexes are from 1 to "+len);
 		
 		try {
-			Object leftValue=array.getE(left);
-			Object rightValue=array.getE(right);
+			Object leftValue=array.get(left,null);
+			Object rightValue=array.get(right,null);
 			array.setE(left,rightValue);
 			array.setE(right,leftValue);
 		} catch (PageException e) {
