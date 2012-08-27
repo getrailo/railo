@@ -191,7 +191,7 @@ All elements in the array must contain values that can be automatically converte
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
-			<type>string</type>
+			<type>object</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
 		</argument>
@@ -215,7 +215,7 @@ All elements in the array must contain values that can be automatically converte
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
-			<type>string</type>
+			<type>object</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
 		</argument>
