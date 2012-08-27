@@ -14,19 +14,35 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 	public static final char CHAR_NL = '\n';
 	public static final char CHAR_CR = '\r';
 	public static final char CHAR_SP = ' ';
+	public static final char CHAR_GT = '>';
 	public static final char CHAR_LT = '<';
+	public static final char CHAR_SL = '/';
 
+	private static String[] tagsWs	= { "code", "pre", "textarea" };
+	private static int minTagLen = 64;
+	
+	private int[] depths;
+	private int depthSum = 0;
+	
 	private char lastChar = 0;
-
-	private int codDepth = 0;
-	private int preDepth = 0;
-	private int txtDepth = 0;
 
 	private boolean isFirstChar = true;
 	private boolean doChangeWsToSpace = true;       // can help fight XSS attacks with characters like Vertical Tab
 
 	private StringBuilder sb = new StringBuilder();
 
+
+	static {
+		
+		// TODO: set tagsWs to value from WebConfigImpl
+		
+		for ( String s : tagsWs )
+			if ( s.length() < minTagLen )
+				minTagLen = s.length();
+		
+		minTagLen++;															// add 1 for LessThan symbol
+	}
+	
 
 	/**
 	 * constructor of the class
@@ -36,7 +52,10 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 	 */
 	public CFMLWriterWhiteSpace(HttpServletRequest req, HttpServletResponse rsp, int bufferSize, boolean autoFlush, boolean closeConn, 
 			boolean showVersion, boolean contentLength, boolean allowCompression) {
+		
 		super(req,rsp, bufferSize, autoFlush,closeConn,showVersion,contentLength,allowCompression);
+		
+		depths = new int[ tagsWs.length ];
 	}
 
 
@@ -90,41 +109,76 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 
 		sb.append( c );															// if we reached this point then we will return true
 
-		if ( ++len > 5 ) {														// increment len as it was sampled before we appended c
-
-			String substr = sb.substring( 1, 6 );								// we know that the 1st char is < so no need to test it
-
-			if ( substr.equalsIgnoreCase( "/code" ) ) {
-
-				if ( --codDepth < 0 )   codDepth = 0;							// decrement and ensure non-negative
-			} else if ( substr.equalsIgnoreCase( "/pre>" ) ) {
-
-				if ( --preDepth < 0 )   preDepth = 0;							// decrement and ensure non-negative
-			} else if ( substr.equalsIgnoreCase( "/text" ) ) {
-
-				if ( --txtDepth < 0 )   txtDepth = 0;							// decrement and ensure non-negative
-			}
-
-			printBuffer();
-
-			lastChar = 0;														// needed to allow WS after buffer was printed
-		} else if ( len == 5 ) {
-
-			String substr = sb.substring( 1, 5 );
-
-			if ( substr.equalsIgnoreCase( "code" ) ) {
-
-				codDepth++;
-			} else if ( substr.equalsIgnoreCase( "pre>" ) ) {
-
-				preDepth++;
-			} else if ( substr.equalsIgnoreCase( "text" ) ) {
-
-				txtDepth++;
-			}
+		if ( ++len >= minTagLen ) {												// increment len as it was sampled before we appended c
+			
+			boolean isClosingTag = ( len >= 2 && sb.charAt( 1 ) == CHAR_SL );
+			
+			String substr;
+			
+			if ( isClosingTag )
+				substr = sb.substring( 2 );										// we know that the 1st two chars are "</"
+			else
+				substr = sb.substring( 1 );										// we know that the 1st char is "<"
+			
+			for ( int i=0; i<tagsWs.length; i++ ) {								// loop thru list of WS-preserving tags
+				
+				if ( substr.equalsIgnoreCase( tagsWs[ i ] ) ) {					// we have a match
+					
+					if ( isClosingTag ) {
+						
+						depthDec( i );											// decrement the depth at i and calc depthSum
+					
+						printBuffer();
+						
+						lastChar = 0;											// needed to allow WS after buffer was printed
+					} else {
+						
+						depthInc( i );											// increment the depth at i and calc depthSum
+					}
+				}
+			}	
 		}
 
 		return true;
+	}
+
+	
+	/**
+	 * decrement the depth at index and calc the new depthSum
+	 * @param index
+	 */
+	private void depthDec( int index ) {
+		
+		if ( --depths[ index ] < 0 )
+			depths[ index ] = 0;
+		
+		depthCalc();
+	}
+	
+
+	/**
+	 * increment the depth at index and calc the new depthSum
+	 * @param index
+	 */
+	private void depthInc( int index ) {
+		
+		depths[ index ]++;
+		
+		depthCalc();
+	}
+	
+
+	/**
+	 * calc the new depthSum
+	 */
+	private void depthCalc() {
+		
+		int sum = 0;
+		
+		for ( int d : depths )
+			sum += d;
+		
+		depthSum = sum;
 	}
 
 
@@ -149,7 +203,7 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 
 			if ( sb.length() > 0 ) {
 
-				printBuffer();													// buffer should never contain WS so no need to call addToBuffer()
+				printBuffer();													// buffer should never contain WS so flush it
 
 				super.print( c == CHAR_NL ? CHAR_NL : ( doChangeWsToSpace ? CHAR_SP : c ) );
 			}
@@ -157,9 +211,12 @@ public final class CFMLWriterWhiteSpace extends CFMLWriterImpl implements WhiteS
 
 		isFirstChar = false;
 
+		if ( c == CHAR_GT && sb.length() > 0 )	
+			printBuffer();														// buffer should never contain ">" so flush it
+
 		if ( isWS || !addToBuffer( c ) ) {
 
-			if ( codDepth + preDepth + txtDepth == 0 ) {						// we're not in PRE nor TEXTAREA; suppress whitespace
+			if ( depthSum == 0 ) {												// we're not in a WS-preserving tag; suppress whitespace
 
 				if ( isWS ) {													// this char is WS
 
