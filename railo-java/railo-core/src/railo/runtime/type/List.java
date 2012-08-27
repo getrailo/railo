@@ -426,7 +426,7 @@ public final class List {
         int last=0;
         
         int count=0;
-        for(int i=0;i<len;i++) {
+        outer:for(int i=0;i<len;i++) {
             c=list.charAt(i);
             for(int y=0;y<del.length;y++) {
                 if(c==del[y]) {
@@ -440,6 +440,7 @@ public final class List {
                     result.append(list.substring(last,i));
                     result.append(c);
                     last=i+1;
+                    continue outer;
                 }
             }
         }
