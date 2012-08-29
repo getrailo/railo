@@ -253,7 +253,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	
     	}
     	finally {
-    		ThreadLocalDuplication.remove(this);
+    		// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
     	}
     	
 		return trg;

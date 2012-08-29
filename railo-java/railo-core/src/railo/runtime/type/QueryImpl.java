@@ -1308,7 +1308,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	        return newResult;
         }
         finally {
-        	ThreadLocalDuplication.remove(this);
+        	// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
         }
     }
 
@@ -3455,7 +3455,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	        return newResult;
         }
         finally {
-        	ThreadLocalDuplication.remove(qry);
+        	// ThreadLocalDuplication.remove(qry); removed "remove" to catch sisters and brothers
         }
     }
 	

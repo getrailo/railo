@@ -626,7 +626,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		}
 		catch (ExpressionException e) {}
 		finally{
-			ThreadLocalDuplication.remove(this);
+			// ThreadLocalDuplication.remove(this);  removed "remove" to catch sisters and brothers
 		}
 		
 		return arr;

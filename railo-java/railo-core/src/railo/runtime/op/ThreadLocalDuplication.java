@@ -17,7 +17,7 @@ public class ThreadLocalDuplication {
 		return touch();
 	}
 	
-	public static void remove(Object o) {
+	public static void removex(Object o) {
 		touch().remove(o);
 	}
 	

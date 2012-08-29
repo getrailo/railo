@@ -164,7 +164,7 @@ public final class Duplicator {
                 if(deepCopy)newMap.put(StringUtil.toLowerCase(Caster.toString(key)),duplicate(map.get(key), deepCopy));
                 else newMap.put(StringUtil.toLowerCase(Caster.toString(key)),map.get(key));
             }
-            ThreadLocalDuplication.remove(map);
+            //ThreadLocalDuplication.remove(map); removed "remove" to catch sisters and brothers
             return newMap;
         }
         return duplicateMap(map,deepCopy);
@@ -179,7 +179,7 @@ public final class Duplicator {
     	}
 		ThreadLocalDuplication.set(map,other);
         duplicateMap(map,other, deepCopy);
-        ThreadLocalDuplication.remove(map);
+        //ThreadLocalDuplication.remove(map); removed "remove" to catch sisters and brothers
         return other;
     }
     

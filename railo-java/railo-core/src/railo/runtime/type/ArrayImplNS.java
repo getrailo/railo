@@ -636,7 +636,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		} 
 		catch (ExpressionException e) {}
 		finally{
-			ThreadLocalDuplication.remove(this);
+			// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
 		}
 		
 		return arr;

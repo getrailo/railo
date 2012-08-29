@@ -185,7 +185,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(src);
+			//ThreadLocalDuplication.remove(src); removed "remove" to catch sisters and brothers
 		}
 	}
 

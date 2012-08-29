@@ -176,7 +176,7 @@ public final class StructImplString extends StructImpl implements Struct {
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(src);
+			// ThreadLocalDuplication.remove(src);  removed "remove" to catch sisters and brothers
 		}
 	}
 
