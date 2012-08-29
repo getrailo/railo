@@ -98,6 +98,7 @@ import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMConfigurationImpl;
@@ -3503,7 +3504,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	}
 
 	private Array translateTime(Array exp) {
-		exp=(Array) exp.duplicate(true);
+		exp=(Array) Duplicator.duplicate(exp,true);
 		Iterator<Object> it = exp.valueIterator();
 		Struct sct;
 		while(it.hasNext()) {

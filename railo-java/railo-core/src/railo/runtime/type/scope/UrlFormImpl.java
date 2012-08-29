@@ -15,6 +15,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
@@ -327,7 +328,7 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return form.duplicate(deepCopy);
+		return (Collection) Duplicator.duplicate(form,deepCopy);
 	}
 	
 	@Override

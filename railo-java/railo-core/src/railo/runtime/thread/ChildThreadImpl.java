@@ -27,6 +27,7 @@ import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.HttpUtil;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
@@ -158,7 +159,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		
 		Undefined undefined=pc.us();
 		
-		Argument newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));
+		Argument newArgs=new ArgumentThreadImpl((Struct) Duplicator.duplicate(attrs,false));
         LocalImpl newLocal=pc.getScopeFactory().getLocalInstance();
         //Key[] keys = attrs.keys();
         Iterator<Entry<Key, Object>> it = attrs.entryIterator();

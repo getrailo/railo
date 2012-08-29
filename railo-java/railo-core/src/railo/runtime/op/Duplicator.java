@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.types.RefBoolean;
+import railo.commons.lang.types.RefBooleanImpl;
 import railo.runtime.converter.JavaConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
@@ -95,28 +98,31 @@ public final class Duplicator {
         if(object instanceof Date)		return ((Date)object).clone();
         if(object instanceof Boolean)	return object;
 		
-		
-		
-		Object copy = ThreadLocalDuplication.get(object);
-    	if(copy!=null){
-    		return copy;
-    	}
-    	
-
-    	if(object instanceof CollectionPlus)return ((CollectionPlus)object).duplicate(deepCopy,ThreadLocalDuplication.getMap());
-    	if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy);
-    	if(object instanceof Duplicable)return ((Duplicable)object).duplicate(deepCopy);
-    	if(object instanceof UDF)		return ((UDF)object).duplicate();
-        if(object instanceof List)		return duplicateList((List)object,deepCopy);
-        if(object instanceof Map) 		return duplicateMap((Map)object,deepCopy);
-		if(object instanceof Serializable) {
-			try {
-				String ser = JavaConverter.serialize((Serializable)object);
-				return JavaConverter.deserialize(ser);
-				
-			} catch (Throwable t) {}
-		}
-	        
+        RefBoolean before=new RefBooleanImpl();
+		try{
+			Object copy = ThreadLocalDuplication.get(object,before);
+			if(copy!=null){
+	    		return copy;
+	    	}
+	    	
+	
+	    	//if(object instanceof CollectionPlus)return ((CollectionPlus)object).duplicate(deepCopy,ThreadLocalDuplication.getMap());
+	    	if(object instanceof Collection)return ((Collection)object).duplicate(deepCopy);
+	    	if(object instanceof Duplicable)return ((Duplicable)object).duplicate(deepCopy);
+	    	if(object instanceof UDF)		return ((UDF)object).duplicate();
+	        if(object instanceof List)		return duplicateList((List)object,deepCopy);
+	        if(object instanceof Map) 		return duplicateMap((Map)object,deepCopy);
+			if(object instanceof Serializable) {
+				try {
+					String ser = JavaConverter.serialize((Serializable)object);
+					return JavaConverter.deserialize(ser);
+					
+				} catch (Throwable t) {}
+			}
+        }  
+        finally {
+        	if(!before.toBooleanValue())ThreadLocalDuplication.reset();
+        }
 	    
 		return object;
     }

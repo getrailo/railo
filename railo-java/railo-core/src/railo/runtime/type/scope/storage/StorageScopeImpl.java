@@ -18,6 +18,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
@@ -106,7 +107,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @param deepCopy
 	 */
 	public StorageScopeImpl(StorageScopeImpl other, boolean deepCopy) {
-		this.sct=(Struct)other.sct.duplicate(deepCopy);
+		this.sct=(Struct)Duplicator.duplicate(other.sct,deepCopy);
 		this.timecreated=other.timecreated;
 		this._lastvisit=other._lastvisit;
 		this.hitcount=other.hitcount;

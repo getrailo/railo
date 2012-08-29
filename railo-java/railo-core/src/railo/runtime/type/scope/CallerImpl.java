@@ -7,6 +7,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
@@ -295,7 +296,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
     public Collection duplicate(boolean deepCopy) {
-        return variablesScope.duplicate(deepCopy);
+        return (Collection) Duplicator.duplicate(variablesScope,deepCopy);
     }
 
 	/**

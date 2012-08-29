@@ -10,6 +10,7 @@ import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.KeyImpl;
@@ -47,7 +48,7 @@ public class CFFunction {
 		else if(objArr[3] instanceof FunctionValue){
 			FunctionValue fv;
 			namedArguments=new StructImpl();
-			if(caller)namedArguments.setEL(CALLER, pc.undefinedScope().duplicate(false));
+			if(caller)namedArguments.setEL(CALLER, Duplicator.duplicate(pc.undefinedScope(),false));
 			for(int i=3;i<objArr.length;i++){
 				fv=toFunctionValue(name,objArr[i]);
 				namedArguments.set(fv.getName(), fv.getValue());
@@ -56,7 +57,7 @@ public class CFFunction {
 		else {
 			int offset=(caller?2:3);
 			arguments=new Object[objArr.length-offset];
-			if(caller)arguments[0]=pc.undefinedScope().duplicate(false);
+			if(caller)arguments[0]=Duplicator.duplicate(pc.undefinedScope(),false);
 			for(int i=3;i<objArr.length;i++){
 				arguments[i-offset]=toObject(name,objArr[i]);
 			}

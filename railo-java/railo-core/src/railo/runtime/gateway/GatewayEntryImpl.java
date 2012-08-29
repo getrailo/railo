@@ -14,6 +14,7 @@ import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
@@ -103,7 +104,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	 * @see railo.runtime.gateway.GatewayEntry#getCustom()
 	 */
 	public Struct getCustom() {
-		return (Struct) custom.duplicate(true);
+		return (Struct) Duplicator.duplicate(custom,true);
 	}
 
 	/**

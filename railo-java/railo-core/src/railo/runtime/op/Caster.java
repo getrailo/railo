@@ -2304,11 +2304,11 @@ public final class Caster {
      */
     public static Map toMap(Object o, boolean duplicate) throws PageException {
         if(o instanceof Struct) {
-            if(duplicate) return (Map) ((Struct)o).duplicate(false);
+            if(duplicate) return (Map) Duplicator.duplicate(o,false);
             return ((Struct)o);
         }
         else if(o instanceof Map){
-            if(duplicate) return Duplicator.duplicateMap((Map)o,false);
+            if(duplicate) return (Map)Duplicator.duplicate(o,false);
             return (Map)o;
         }
         else if(o instanceof Node) {

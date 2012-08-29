@@ -61,6 +61,7 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
@@ -1227,7 +1228,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public boolean addColumn(Collection.Key columnName, Array content, int type) throws DatabaseException {
 		//disconnectCache();
         // TODO Meta type
-		content=(Array) content.duplicate(false);
+		content=(Array) Duplicator.duplicate(content,false);
 		
 	 	if(getIndexFromKey(columnName)!=-1)
 	 		throw new DatabaseException("column name ["+columnName.getString()+"] already exist",null,sql,null);

@@ -9,6 +9,7 @@ import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
@@ -32,7 +33,7 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return getComponentAccess().duplicate(deepCopy);
+		return (Collection) Duplicator.duplicate(getComponentAccess(),deepCopy);
 	}
 
 	/**

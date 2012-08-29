@@ -5,6 +5,7 @@ import java.util.List;
 
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 
@@ -161,7 +162,7 @@ public class TOArray extends TOCollection implements Array {
 	@Override
 	public Collection duplicate(boolean deepCopy) {
 		log();
-		return new TOArray(debugger,(Array)arr.duplicate(deepCopy),type,category,text);
+		return new TOArray(debugger,(Array)Duplicator.duplicate(arr,deepCopy),type,category,text);
 	}
 
 	@Override
