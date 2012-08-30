@@ -70,7 +70,7 @@ function checkTheBox(field) {
 			style="width:100%" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<!--- primary --->
-		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
+		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>#stText.Mappings.Physical#<cfelse>#stText.Mappings.Archive#</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
 			<option value="physical" <cfif mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Physical#</option>
 			<option value="archive" <cfif not mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
 		</select></cfif></td>
