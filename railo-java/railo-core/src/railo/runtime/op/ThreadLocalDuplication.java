@@ -3,7 +3,6 @@ package railo.runtime.op;
 import java.util.HashMap;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 
@@ -33,7 +32,7 @@ public class ThreadLocalDuplication {
 	
 
 
-	public static Object get(Object object, RefBoolean before) {print.ds("inside:"+isInside());
+	public static Object get(Object object, RefBoolean before) {
 		if(!isInside()){
 			reset();
 			setIsInside(true);
