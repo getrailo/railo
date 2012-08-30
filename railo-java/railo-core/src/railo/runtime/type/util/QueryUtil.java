@@ -1,6 +1,7 @@
 package railo.runtime.type.util;
 
 import java.sql.Clob;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
@@ -187,5 +188,13 @@ public class QueryUtil {
 
 	public static boolean execute(Statement stat, boolean createGeneratedKeys, SQL sql) throws SQLException {
 		return createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+	}
+
+	public static String getColumnName(ResultSetMetaData meta, int column) throws SQLException {
+		try {
+			return meta.getColumnLabel(column);
+		} catch (SQLException e) {
+			return meta.getColumnName(column);
+		}
 	}
 }

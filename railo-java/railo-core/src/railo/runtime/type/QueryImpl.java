@@ -346,7 +346,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		Collection.Key key;
 		String columnName;
 		for(int i=0;i<columncount;i++) {
-			columnName=meta.getColumnName(i+1);
+			columnName=QueryUtil.getColumnName(meta,i+1);
 			if(StringUtil.isEmpty(columnName))columnName="column_"+i;
 			key=KeyImpl.init(columnName);
 			int index=getIndexFrom(tmpColumnNames,key,0,i);
