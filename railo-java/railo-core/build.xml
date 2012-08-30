@@ -19,7 +19,7 @@
     	<loadfile property="core.version" srcFile="src/railo/runtime/Info.ini">
 			<filterchain>
 				<linecontainsregexp>
-					<regexp pattern="number=[0-3]+.[0-9]+.[0-9]+.[0-9]+"/>
+					<regexp pattern="number=[0-9]+.[0-9]+.[0-9]+.[0-9]+"/>
 				</linecontainsregexp>
 				<replacetokens begintoken="n" endtoken="=">
 					<token key="umber" value=""/>
