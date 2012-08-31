@@ -218,7 +218,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             			String scriptName = ReqRspUtil.getScriptName(req);
 
             			if ( pathInfo != null && pathInfo.startsWith(scriptName) )
-						pathInfo = pathInfo.substring(scriptName.length());
+            				pathInfo = pathInfo.substring(scriptName.length());
             		}
             	    
             		if(!StringUtil.isEmpty(pathInfo,true)) return pathInfo;
