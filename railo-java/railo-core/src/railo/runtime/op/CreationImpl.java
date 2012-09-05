@@ -65,13 +65,12 @@ import railo.runtime.util.Creation;
 /**
  * implemention of the ctration object
  */
-public final class CreationImpl implements Creation {
+public final class CreationImpl implements Creation,Serializable {
 
     private static CreationImpl singelton;
-	private CFMLEngine engine;
 
     private CreationImpl(CFMLEngine engine) {
-		this.engine=engine;
+    	// !!! do not store engine Object, the engine is not serializable
 	}
 
 	/**
