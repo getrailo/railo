@@ -5771,6 +5771,27 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>sets if first row of csv is file</description>
 		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>authType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>authentication type for a request with username and password, valid values are "BASIC" (default) and "NTLM" </description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>workstation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The workstation the authentication request is originating from. Essentially, the computer name for this machine. this attribute is only used when authenication type is "NTLM"</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>domain</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The domain to authenticate within. this attribute is only used when authenication type is "NTLM"</description>
+		</attribute>
 	</tag>
 	<!-- HttpParam -->
 	<tag>
