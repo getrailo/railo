@@ -118,7 +118,7 @@ public class ORMUtil {
 		
 		if(cpl==null || cpr==null) return false;
 		if(!cpl.getPageSource().equals(cpr.getPageSource())) return false;
-		Property[] props = cpl.getProperties(true);
+		Property[] props = getProperties(cpl);
 		Object l,r;
 		props=HBMCreator.getIds(null,null,props,null,true);
 		for(int i=0;i<props.length;i++){
@@ -131,7 +131,16 @@ public class ORMUtil {
 	
 	public static Object getPropertyValue(Component cfc, String name, Object defaultValue) {
 		ComponentPro cp =ComponentUtil.toComponentPro(cfc,null);
-		return cp.getComponentScope().get(KeyImpl.getInstance(name),defaultValue);
 		
+		Property[] props = getProperties(cp);
+		for(int i=0;i<props.length;i++){
+			if(!props[i].getName().equalsIgnoreCase(name)) continue;
+			return cp.getComponentScope().get(KeyImpl.getInstance(name),null);
+		}
+		return defaultValue;
+	}
+
+	private static Property[] getProperties(ComponentPro cp) {
+		return cp.getProperties(true, true); 
 	}
 }

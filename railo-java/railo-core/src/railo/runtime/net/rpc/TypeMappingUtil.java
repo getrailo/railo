@@ -20,7 +20,7 @@ public class TypeMappingUtil {
                 new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
 	}
 	
-	public static void registerBeanTypeMapping(javax.xml.rpc.encoding.TypeMapping tm, Class clazz, QName qName) {
+	public static void registerBeanTypeMapping(TypeMapping tm, Class clazz, QName qName) {
 		
 		if(tm.isRegistered(clazz, qName)) return;
 		tm.register(

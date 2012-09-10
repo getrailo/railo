@@ -618,12 +618,9 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
 	}
-
-	/**
-	 * @see railo.runtime.ComponentPro#getProperties()
-	 */
-	public Property[] getProperties(boolean onlyPeristent,boolean includeSuper) {
-		return comp.getProperties(onlyPeristent,includeSuper);
+	
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return comp.getProperties(onlyPeristent,includeBaseProperties);
 	}
 	
 	/**
@@ -673,5 +670,5 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public String getWSDLFile() {
 		return comp.getWSDLFile();
 	}
-	
+
 }

@@ -779,7 +779,7 @@ public final class Http extends BodyTagImpl {
 	    // header		
 	        cfhttp.set(HEADER,raw.toString());
 	       
-	        if(status!=STATUS_OK){
+	        if(!isStatusOK(status)){
 	            cfhttp.setEL(ERROR_DETAIL,httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
 	            if(throwonerror)throw new HTTPException(httpMethod);
 	        }
@@ -788,6 +788,9 @@ public final class Http extends BodyTagImpl {
 			releaseConnection(httpMethod);
 		}
 	    
+	}
+	public static boolean isStatusOK(int statusCode) {
+	 	 return statusCode>=200 && statusCode<=299;
 	}
 
 	public static boolean isText(String mimetype) {

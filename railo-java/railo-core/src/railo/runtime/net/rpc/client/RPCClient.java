@@ -357,11 +357,9 @@ public final class RPCClient implements Objects, Iteratorable{
             //print.ln(name);
 			Object value = outputs.get(name);
 			if(value == null && pos == 0) {
-				sct.setEL(name, AxisCaster.toRailoType(null,ret));
+				value= ret;
 			}
-			else {
-				sct.setEL(name, AxisCaster.toRailoType(null,value));
-			}
+			sct.setEL(name, AxisCaster.toRailoType(null,value));
 		}
 		return sct;
 	}

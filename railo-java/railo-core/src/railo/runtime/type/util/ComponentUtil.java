@@ -245,9 +245,14 @@ public final class ComponentUtil {
      * @return
      */
     private static Class registerTypeMapping(Class clazz,String namespace) throws AxisFault {
-    	PageContext pc = ThreadLocalPageContext.get();
-    	RPCServer server=RPCServer.getInstance(pc.getId(),pc.getServletContext());
+    	RPCServer server=getRPCServer(); 
+    	
 		return registerTypeMapping(server, clazz, namespace);
+    }
+    
+    private static RPCServer getRPCServer() throws AxisFault {
+    	PageContext pc = ThreadLocalPageContext.get();
+    	return RPCServer.getInstance(pc.getId(),pc.getServletContext());
     }
     /**
      * search in methods of a class for complex types

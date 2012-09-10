@@ -381,8 +381,10 @@ public final class AxisCaster {
         if(Decision.isStruct(value)) {
         	if(value instanceof Component) {
         		Object pojo= toPojo(tm,(Component)value,targetClass,done,namespace);
+        		String className = pojo.getClass().getName();
+        		className = className.substring(className.lastIndexOf(".")+1);
         		try	{	
-	        		QName name = new QName("http://" + namespace,pojo.getClass().getName());
+	        		QName name = new QName("http://" + namespace,className);
 		    		TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), name);
 	        		
         		}
@@ -590,7 +592,7 @@ public final class AxisCaster {
         		}
         		
         		
-        		Property[] props = c.getProperties(false);
+        		Property[] props = c.getProperties(false,true);
         		Property prop;
         		for(int i=0;i<props.length;i++){
         			prop=props[i];

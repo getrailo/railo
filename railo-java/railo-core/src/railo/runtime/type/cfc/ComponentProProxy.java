@@ -506,11 +506,8 @@ public abstract class ComponentProProxy implements ComponentPro {
 		return getComponentPro().getProperties(onlyPeristent);
 	}
 	
-	/**
-	 * @see railo.runtime.ComponentPro#getProperties(boolean,boolean)
-	 */
-	public Property[] getProperties(boolean onlyPeristent, boolean includeSuper) {
-		return getComponentPro().getProperties(onlyPeristent,includeSuper);
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return getComponentPro().getProperties(onlyPeristent,includeBaseProperties);
 	}
 
 	/**
