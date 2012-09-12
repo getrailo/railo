@@ -768,9 +768,11 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		// there is no physical resource
 		if(res==null){
         	String path=getDisplayPath();
-        	if(path.startsWith("ra://"))
-        		path="zip://"+path.substring(5);
-        	res=ResourceUtil.toResourceExisting(pc, path,false);
+        	if(path!=null){
+        		if(path.startsWith("ra://"))
+        			path="zip://"+path.substring(5);
+        		res=ResourceUtil.toResourceExisting(pc, path,false);
+        	}
         }
 		return res;
     }
@@ -837,6 +839,15 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		for(int i=0;i<arr.length;i++) {
 			if(pageExist(arr[i])) return arr[i];
 		}
+		
+		// get the best none existing
+		for(int i=0;i<arr.length;i++) {
+			if(arr[i].getPhyscalFile()!=null) return arr[i];
+		}
+		for(int i=0;i<arr.length;i++) {
+			if(arr[i].getDisplayPath()!=null) return arr[i];
+		}
+		
 		return arr[0];
 	}
 
