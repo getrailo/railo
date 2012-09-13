@@ -749,6 +749,7 @@ public class KeyConstants {
 	public static final Key _destination = KeyImpl._const("destination");
 	public static final Key _codec = KeyImpl._const("codec");
 	public static final Key _chaining = KeyImpl._const("chaining");
+	public static final Key _protocol = KeyImpl._const("protocol");
 	
 	
 	
