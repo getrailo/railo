@@ -1933,7 +1933,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 						p = it.next().getValue();
 						if(p.isPeristent())
 						{
-							setProperty(p);
+							// MZ: Top to bottom scan, should ignore nested
+							if (!top.properties.properties.containsKey(StringUtil.toLowerCase(p.getName())))
+							{
+								setProperty(p);
+							}
 						}
 					}
 				}
