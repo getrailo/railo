@@ -33,6 +33,7 @@ import railo.runtime.dump.DumpWriter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.other.GetHTTPRequestData;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.net.http.ReqRspUtil;
@@ -366,12 +367,14 @@ public abstract class ComponentPage extends Page  {
 
 	private void _callRest(PageContext pc, Component component, UDF udf,String path, Struct variables, Result result, MimeType best,MimeType[] produces, boolean suppressContent, Key methodName) throws PageException, IOException, ConverterException {
 		FunctionArgument[] fa=udf.getFunctionArguments();
-		Struct args=new StructImpl();
+		Struct args=new StructImpl(),meta;
+		
 		Key name;
 		String restArgSource;
 		for(int i=0;i<fa.length;i++){
 			name = fa[i].getName();
-			restArgSource=Caster.toString(fa[i].getMetaData().get(RestUtil.REST_ARG_SOURCE,""),"");
+			meta=fa[i].getMetaData();
+			restArgSource=meta==null?"":Caster.toString(meta.get(RestUtil.REST_ARG_SOURCE,""),"");
 			if("path".equalsIgnoreCase(restArgSource))
 				args.setEL(name, variables.get(name,null));
 			if("query".equalsIgnoreCase(restArgSource) || "url".equalsIgnoreCase(restArgSource))
@@ -385,7 +388,11 @@ public abstract class ComponentPage extends Page  {
 			if("matrix".equalsIgnoreCase(restArgSource))
 				args.setEL(name, result.getMatrix().get(name,null));
 			
-			// TODO matrix, header, else
+			if("body".equalsIgnoreCase(restArgSource) || StringUtil.isEmpty(restArgSource,true))
+				args.setEL(name, ReqRspUtil.getRequestBody(pc,true,null));
+			
+			
+			// TODO  header, else
 		}
 		Object rtn=null;
 		try{
@@ -445,13 +452,15 @@ public abstract class ComponentPage extends Page  {
         	props.format=result.getFormat();
         	
         	if(result.hasFormatExtension()){
-        		pc.forceWrite(convertResult(pc, props, null, rtn));
+        		setFormat(pc.getHttpServletResponse(), props.format);
+    			pc.forceWrite(convertResult(pc, props, null, rtn));
         	}
         	else {
         		if(best!=null && !MimeType.ALL.same(best)) {
             		int f = MimeType.toFormat(best, -1);
             		if(f!=-1) {
             			props.format=f;
+            			setFormat(pc.getHttpServletResponse(), f);
             			pc.forceWrite(convertResult(pc, props, null, rtn));
             		}
             		else {
@@ -468,7 +477,6 @@ public abstract class ComponentPage extends Page  {
 
 	private void writeOut(PageContext pc, Props props, Object obj, MimeType mt) throws PageException, IOException, ConverterException {
 		// TODO miemtype mapping with converter defintion from external file
-		
 		// Images
 		if(mt.same(MimeType.IMAGE_GIF)) writeOut(pc,obj,mt,new ImageConverter("gif"));
 		else if(mt.same(MimeType.IMAGE_JPG)) writeOut(pc,obj,mt,new ImageConverter("jpeg"));
