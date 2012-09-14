@@ -3,6 +3,7 @@
  */
 package railo.runtime;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -521,7 +522,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see railo.runtime.ComponentImpl#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return comp.top.toDumpData(pageContext, maxlevel,dp);
+		return comp.top.toDumpData(pageContext, maxlevel, dp);
 	}
 
 
@@ -541,7 +542,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see java.util.Map#containsKey(java.lang.Object)
 	 */
 	public boolean containsKey(Object key) {
-		return containsKey(KeyImpl.toKey(key,null));
+		return containsKey(KeyImpl.toKey(key, null));
 	}
 
 
@@ -557,7 +558,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see java.util.Map#get(java.lang.Object)
 	 */
 	public Object get(Object key) {
-		return get(KeyImpl.toKey(key,null), null);
+		return get(KeyImpl.toKey(key, null), null);
 	}
 
 
@@ -580,7 +581,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see java.util.Map#put(K, V)
 	 */
 	public Object put(Object key, Object value) {
-		return setEL(KeyImpl.toKey(key,null), value);
+		return setEL(KeyImpl.toKey(key, null), value);
 	}
 
 	/**
@@ -594,7 +595,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see java.util.Map#remove(java.lang.Object)
 	 */
 	public Object remove(Object key) {
-		return removeEL(KeyImpl.toKey(key,null));
+		return removeEL(KeyImpl.toKey(key, null));
 	}
 
 	/**
@@ -621,6 +622,12 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 */
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
+	}
+
+	@Override
+	public HashMap<String, Property> getAllPersistentProperties()
+	{
+		return comp.getAllPersistentProperties();
 	}
 
 	/**

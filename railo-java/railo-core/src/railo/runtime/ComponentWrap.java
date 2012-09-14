@@ -1,5 +1,6 @@
 package railo.runtime;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -167,21 +168,21 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
 	public Object call(PageContext pc, Collection.Key key, Object[] args) throws PageException {
-		return component.call(pc,access,key,args);
+		return component.call(pc, access, key, args);
 	}
 
     /**
      * @see railo.runtime.Component#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
      */
     public Object callWithNamedValues(PageContext pc, String key, Struct args)throws PageException {
-        return callWithNamedValues(pc,KeyImpl.init(key),args);
+        return callWithNamedValues(pc, KeyImpl.init(key), args);
     }
 
 	/**
 	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
 	 */
 	public Object callWithNamedValues(PageContext pc, Collection.Key key, Struct args) throws PageException {
-		return component.callWithNamedValues(pc,access,key,args);
+		return component.callWithNamedValues(pc, access, key, args);
 	}
 
     /**
@@ -235,7 +236,7 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Collection.Key key, Object defaultValue) {
-		 return component.get(access,key, defaultValue);
+		 return component.get(access, key, defaultValue);
 	}
 
 	/**
@@ -243,7 +244,7 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Collection.Key key, Object value) throws PageException {
-		return component.set(key,value);
+		return component.set(key, value);
 	}
 
 	/**
@@ -251,7 +252,7 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Collection.Key key, Object value) {
-		return component.setEL(key,value);
+		return component.setEL(key, value);
 	}
 
     /**
@@ -287,7 +288,7 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-	    return component.toDumpData(pageContext,maxlevel,dp,access);
+	    return component.toDumpData(pageContext, maxlevel, dp, access);
     }
 
     /**
@@ -381,7 +382,7 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
      * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
      */
     public Object get(PageContext pc, String key, Object defaultValue) {
-        return get(pc,KeyImpl.init(key),defaultValue);
+        return get(pc, KeyImpl.init(key), defaultValue);
     }
 
 	/**
@@ -389,14 +390,14 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
-		return component.get(access,key,defaultValue);
+		return component.get(access, key, defaultValue);
 	}
 
     /**
      * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
      */
     public Object get(PageContext pc, String key) throws PageException {
-        return get(pc,KeyImpl.init(key));
+        return get(pc, KeyImpl.init(key));
     }
 
 	/**
@@ -425,7 +426,7 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
-		return component.set(propertyName,value);
+		return component.set(propertyName, value);
 	}
 
     /**
@@ -469,7 +470,13 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 	public Property[] getProperties(boolean onlyPeristent) {
 		return component.getProperties(onlyPeristent);
 	}
-	
+
+	@Override
+	public HashMap<String, Property> getAllPersistentProperties()
+	{
+		return component.getAllPersistentProperties();
+	}
+
 	/**
 	 * @see railo.runtime.Component#getComponentScope()
 	 */

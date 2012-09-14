@@ -1908,23 +1908,42 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		}
 	}
 
-	private void initProperties() throws PageException
+	private void initProperties() throws PageException {
+		top.properties.properties=new LinkedHashMap<String,Property>();
+
+		// MappedSuperClass
+		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
+			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(KeyConstants._mappedSuperClass,Boolean.FALSE),false);
+			if(msc){
+				Property p;
+				Iterator<Entry<String, Property>> it = top.base.properties.properties.entrySet().iterator();
+				while(it.hasNext())	{
+					p = it.next().getValue();
+					if(p.isPeristent()) {
+
+						setProperty(p);
+					}
+				}
+			}
+		}
+	}
+
+	public HashMap<String,Property> getAllPersistentProperties()
 	{
-		top.properties.properties = new LinkedHashMap<String,Property>();
+		HashMap<String,Property> result = new HashMap<String,Property>();
 
-		if (!isPersistent()) { return; }
+		if (!isPersistent()) { return result; }
 
-		ComponentImpl offsetComponent = top.base;
+		ComponentImpl offsetComponent = top;
 		while (offsetComponent != null)
 		{
-			// MZ: Original version: Stop traversing the inheritance tree when embedded persistency is detected
-			// MZ: Removed - seems to restrict inherited components, though marked as mappedSuperClass
-			//if (offsetComponent.isPersistent()) { return; }
-
 			// MappedSuperClass
-			if (offsetComponent.properties.properties != null && offsetComponent.properties.meta != null)
+			Boolean isMappedSuperClass = (offsetComponent.properties.meta != null) && Caster.toBooleanValue(offsetComponent.properties.meta.get(KeyConstants._mappedSuperClass, Boolean.FALSE), false);
+			Boolean isBaseComponent = (offsetComponent == top);
+			Boolean includeProperties = (isBaseComponent || isMappedSuperClass);
+			if (offsetComponent.properties.properties != null)
 			{
-				if (Caster.toBooleanValue(offsetComponent.properties.meta.get(KeyConstants._mappedSuperClass, Boolean.FALSE), false))
+				if (includeProperties)
 				{
 					Property p;
 					Iterator<Entry<String, Property>> it = offsetComponent.properties.properties.entrySet().iterator();
@@ -1934,9 +1953,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 						if(p.isPeristent())
 						{
 							// MZ: Top to bottom scan, should ignore nested
-							if (!top.properties.properties.containsKey(StringUtil.toLowerCase(p.getName())))
+							if (!result.containsKey(StringUtil.toLowerCase(p.getName())))
 							{
-								setProperty(p);
+								result.put(p.getName().toLowerCase(), p);
 							}
 						}
 					}
@@ -1945,7 +1964,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			// MZ: RAILO-1939: Walk down the inheritance tree
 			offsetComponent = offsetComponent.base;
 		}
+
+		return result;
+
 	}
+
 
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];
