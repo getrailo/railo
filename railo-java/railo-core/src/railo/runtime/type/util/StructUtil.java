@@ -24,8 +24,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.comparator.TextComparator;
-import railo.runtime.type.scope.Form;
-import railo.runtime.type.scope.URL;
 
 /**
  * 

@@ -3,7 +3,6 @@ package railo.runtime.type.cfc;
 import java.util.Iterator;
 import java.util.Set;
 
-import railo.runtime.Component;
 import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;

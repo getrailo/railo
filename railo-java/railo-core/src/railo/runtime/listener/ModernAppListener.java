@@ -44,7 +44,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
-import railo.runtime.type.util.StructUtil;
 
 public class ModernAppListener extends AppListenerSupport {
 
