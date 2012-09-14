@@ -1,14 +1,13 @@
 package railo.runtime;//.orm.hibernate.tuplizer.proxy;
 
 
-import java.io.Serializable;
-
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
-
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCLazyInitializer;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.cfc.ComponentAccessProxy;
+
+import java.io.Serializable;
 
 /**
  * Proxy for "dynamic-map" entity representations.

@@ -1896,12 +1896,10 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		}
 	}
 
-	
-
 	private void initProperties() throws PageException {
 		top.properties.properties=new LinkedHashMap<String,Property>();
-		
-		// MappedSuperClass  
+
+		// MappedSuperClass
 		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
 			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(KeyConstants._mappedSuperClass,Boolean.FALSE),false);
 			if(msc){
@@ -1910,13 +1908,55 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				while(it.hasNext())	{
 					p = it.next().getValue();
 					if(p.isPeristent()) {
-						
+
 						setProperty(p);
 					}
 				}
 			}
 		}
 	}
+
+	public HashMap<String,Property> getAllPersistentProperties()
+	{
+		HashMap<String,Property> result = new HashMap<String,Property>();
+
+		if (!isPersistent()) { return result; }
+
+		ComponentImpl offsetComponent = top;
+		while (offsetComponent != null)
+		{
+			// MappedSuperClass
+			Boolean isMappedSuperClass = (offsetComponent.properties.meta != null) && Caster.toBooleanValue(offsetComponent.properties.meta.get(KeyConstants._mappedSuperClass, Boolean.FALSE), false);
+			Boolean isBaseComponent = (offsetComponent == top);
+			Boolean includeProperties = (isBaseComponent || isMappedSuperClass);
+			if (offsetComponent.properties.properties != null)
+			{
+				if (includeProperties)
+				{
+					Property p;
+					Iterator<Entry<String, Property>> it = offsetComponent.properties.properties.entrySet().iterator();
+					while(it.hasNext())
+					{
+						p = it.next().getValue();
+						if(p.isPeristent())
+						{
+							// MZ: Top to bottom scan, should ignore nested
+							if (!result.containsKey(StringUtil.toLowerCase(p.getName())))
+							{
+								result.put(p.getName().toLowerCase(), p);
+							}
+						}
+					}
+				}
+			}
+			// MZ: RAILO-1939: Walk down the inheritance tree
+			offsetComponent = offsetComponent.base;
+		}
+
+		return result;
+
+	}
+
 
 	public Property[] getProperties(boolean onlyPeristent) {
 		if(top.properties.properties==null) return new Property[0];

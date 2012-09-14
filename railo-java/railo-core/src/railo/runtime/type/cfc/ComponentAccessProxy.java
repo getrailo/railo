@@ -1,11 +1,13 @@
 package railo.runtime.type.cfc;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
+import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
@@ -20,7 +22,13 @@ public abstract class ComponentAccessProxy extends ComponentProxy implements Com
 	public Component getComponent() {
 		return getComponentAccess();
 	}
-	
+
+	@Override
+	public HashMap<String, Property> getAllPersistentProperties()
+	{
+		return getComponentAccess().getAllPersistentProperties();
+	}
+
 	/**
 	 * @see railo.runtime.Component#getWSDLFile()
 	 */

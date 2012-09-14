@@ -1,16 +1,9 @@
 package railo.runtime.orm.hibernate;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
@@ -23,15 +16,17 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.Collection;
+import railo.runtime.type.*;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class HBMCreator {
 	
@@ -170,23 +165,26 @@ public class HBMCreator {
 	}
 	
 	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
-		Property[] _props = cfci.getProperties(true);
-		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
+
+		HashMap<String, Property> _props = cfci.getAllPersistentProperties();
+		Property[] result = new Property[_props.size()];
+
+		if(isClass && _props.size()==0 && ormConf.useDBForMapping())
+		{
 			if(meta==null)meta = cfci.getMetaData(pc);
-        	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
+        	result = HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
         }
-		return _props;
+		else
+		{
+			int i = 0;
+			for (Property prop : _props.values())
+			{
+				result[i] = prop;
+				i++;
+			}
+		}
+		return result;
 	}
-
-
-
-
-
-
-
-
-
-
 
 
 	private static void addId(Component cfc,Document doc, Element clazz, PageContext pc, Struct meta, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws PageException {
