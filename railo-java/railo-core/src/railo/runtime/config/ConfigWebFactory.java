@@ -31,7 +31,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.MD5;
@@ -321,7 +320,6 @@ public final class ConfigWebFactory {
     public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
-    	long start=System.currentTimeMillis();
     	// fix
     	if(ConfigWebAdmin.fixS3(doc) | ConfigWebAdmin.fixPSQ(doc)) {
     		XMLCaster.writeTo(doc,config.getConfigFile());
@@ -394,7 +392,7 @@ public final class ConfigWebFactory {
 
     	//doNew(config.getConfigDir(), false);
     	
-    	ThreadLocalConfig.release();print.e(System.currentTimeMillis()-start);
+    	ThreadLocalConfig.release();
     }
 
     private static void loadResourceProvider(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ClassException {
