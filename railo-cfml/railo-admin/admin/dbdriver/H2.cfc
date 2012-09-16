@@ -1,11 +1,11 @@
 <cfcomponent extends="Driver" implements="IDriver">
 	<cfset fields=array(
-		field("path","path","",true,"Path where the database is or should be located (only Filesystem, virtual Resources like ""ram"" not supported)"),
-		field("mode","mode","MySQL,PostgreSQL,HSQLDB",true,"All database engines behave a little bit different. For certain features, this database can emulate the behavior of specific databases. Not all features or differences of those databases are implemented. Currently, this feature is mainly used for randomized comparative testing","radio")
+		field("Path","path","",true,"Path where the database is or should be located (only Filesystem, virtual Resources like ""ram"" not supported)"),
+		field("Protocol", "protocol", "File,Mem,SSL,TCP,ZIP", true, "Use File, Mem, or ZIP for embedded mode, and TCP or SSL for server mode.", "radio"),
+		field("Additional Paramters", "additional", "", false, "Any additional connection string parameters. Separate multiple values with a semi-colon, e.g. MODE=MSSQLServer;IGNORECASE=TRUE")
 	)>
-	<cfset this.type.host=this.TYPE_HIDDEN>
 	
-	<cfset this.dsn="jdbc:h2:{path}{database};MODE={mode}">
+	<cfset this.dsn="jdbc:h2:{protocol}{host}{path}{database}{additional}">
 	<cfset this.className="org.h2.Driver">
 
 	<cfset SLASH=struct(
@@ -15,15 +15,6 @@
 	
 	
 	<cffunction name="onBeforeUpdate" returntype="void" output="no">
-		<cfset form.custom_path=replace(
-						form.custom_path,
-						SLASH[server.separator.file],
-						server.separator.file,
-						'all')>
-		<cfif right(form.custom_path,1) NEQ server.separator.file>
-			<cfset form.custom_path=form.custom_path&server.separator.file>
-		</cfif>
-		
 		
 		<cfif not directoryExists(form.custom_path)>
 			<cfset var parent=mid(form.custom_path,1,len(form.custom_path)-1)>
@@ -33,6 +24,26 @@
 			<cfelse>
 				<cfthrow message="directory [#form.custom_path#] doesn't exist">
 			</cfif>
+		</cfif>
+		
+		<cfset form.custom_protocol = lcase( form.custom_protocol )>
+		<cfif ( form.custom_protocol == "tcp" ) || ( form.custom_protocol == "ssl" )>
+		
+			<cfset form.custom_protocol &= "://">
+			
+			<cfif right( form.host, 1 ) != "/">
+
+				<cfset form.host &= "/">
+			</cfif>
+		<cfelse>
+		
+			<cfset form.custom_protocol &= ":">
+			<cfset form.host = "">
+		</cfif>
+		
+		<cfif len( form.custom_additional ) && left( form.custom_additional, 1 ) != ';'>
+		
+			<cfset form.custom_additional = ';' & form.custom_additional>
 		</cfif>
 	</cffunction>
 	
