@@ -379,7 +379,6 @@ list all mappings and display necessary edit fields --->
 	
 	<cfset keys=StructKeyArray(cdList)>
 	<cfset ArraySort(keys,"textNoCase")>
-
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.Type#</td>
 		<td class="tblContent" width="300"><select name="type">

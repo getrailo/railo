@@ -1,6 +1,5 @@
 <cfinterface>
 
-
 	
 	<cffunction name="getName" returntype="string"  output="no"
 		hint="returns display name of the driver">

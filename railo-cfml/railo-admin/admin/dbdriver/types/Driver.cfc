@@ -88,16 +88,4 @@
 	</cffunction>
 	
 
-
-	<cffunction name="isDriverSelector" output="false" returntype="boolean" hint="retrun true if this is a Driver selector as in the case of H2 or MSSQL databases where there is more than one option for the driver. default is false.">
-
-		<cfreturn false>
-	</cffunction>
-
-	<cffunction name="getSelectorOptions" output="false" hint="returns an array of drivers to choose from. the first item in the array is selected by default.">
-
-		<cfthrow message="abstract method getSelectorOptions must be implemented in extending components if isDriverSelector() returns true">
-	</cffunction>
-
-
 </cfcomponent>
