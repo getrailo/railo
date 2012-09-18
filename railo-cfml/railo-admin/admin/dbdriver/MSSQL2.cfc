@@ -41,7 +41,7 @@
 	
 	<cffunction name="getDescription" returntype="string" output="no"
 		hint="returns description for the driver">
-		<cfreturn "Microsoft SQL Server Driver">
+		<cfreturn "Open Source Microsoft SQL Server Driver from jTDS.  see http://jtds.sourceforge.net/ for details.">
 	</cffunction>
 
 	<cffunction name="equals" returntype="string" output="no"

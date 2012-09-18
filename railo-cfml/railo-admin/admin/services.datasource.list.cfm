@@ -359,13 +359,26 @@ list all mappings and display necessary edit fields --->
 	</tr>
 	<cfset keys=StructKeyArray(drivers)>
 	<cfset ArraySort(keys,"textNoCase")>
+
+	<cfset optionsSkip = {}>
+	<cfloop collection="#drivers#" item="keyOuter">
+
+		<cfif drivers[ keyOuter ].isDriverSelector()>
+
+			<cfloop array="#drivers[ keyOuter ].getSelectorOptions()#" index="key">
+
+				<cfset optionsSkip[ key ] = true>
+			</cfloop>
+		</cfif>
+	</cfloop>
+
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.Type#</td>
 		<td class="tblContent" width="300"><select name="type">
 					<cfoutput><cfloop collection="#keys#" item="idx">
 					<cfset key=keys[idx]>
 					<cfset driver=drivers[key]>
-					<cfif not findNoCase("(old)",driver.getName())>
+					<cfif !findNoCase("(old)",driver.getName()) && !structKeyExists( optionsSkip, key )>
 						<option value="#key#">#driver.getName()#</option>
 					</cfif></cfloop></cfoutput>
 				</select></td>

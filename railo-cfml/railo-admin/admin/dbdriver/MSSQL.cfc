@@ -50,7 +50,7 @@
 	
 	<cffunction name="getDescription" returntype="string" output="no"
 		hint="returns description for the driver">
-		<cfreturn "Microsoft SQL Server Driver">
+		<cfreturn "Microsoft SQL Server Driver from Microsoft">
 	</cffunction>
 
 	<cffunction name="equals" returntype="string" output="no"

@@ -162,6 +162,50 @@ Error Output--->
 </cfsilent>
 <cfoutput>
 
+
+
+<cfif driver.isDriverSelector()>
+
+	<cfset arrSelectOptions = []>
+
+	<cfloop array="#driver.getSelectorOptions()#" index="selectorOptName">
+
+		<cfset selectorOpt = createObject( "component", "dbdriver." & selectorOptName )>
+
+		<cfset arrayAppend( arrSelectOptions, selectorOpt )>
+	</cfloop>
+
+	<h2>#stText.Settings.dbdriverselectorchoose#</h2>
+
+	<p>#driver.getDescription()#
+
+	<form method="POST">
+
+		<cfloop from="1" to="#arrayLen( arrSelectOptions )#" index="ii">
+
+			<cfset optDriver = arrSelectOptions[ ii ]>
+
+			<cfset optDriverType = listLast( getMetaData( optDriver ).name, '.' )>
+
+			<div style="margin-bottom:1.5em;">
+				<label><input type="radio" name="type" value="#optDriverType#" <cfif ii EQ 1>checked="checked"</cfif>> #optDriver.getName()#</label>
+				<p style="padding-left:1.5em;">#optDriver.getDescription()#</p>
+			</div>
+		</cfloop>
+
+		<cfloop collection="#Form#" item="key">
+
+			<cfif key NEQ "type">
+
+				<input type="hidden" name="#key#" value="#Form[ key ]#">
+			</cfif>
+		</cfloop>
+
+		<input type="submit" class="submit" value="Continue">
+	</form>
+<cfelse>	<!--- driver.isDriverSelector() !--->
+
+
 <cfif actionType EQ "update">
 <i><b>Class:</b> #datasource.classname#</i><br />
 <i><b>DNS:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
@@ -505,4 +549,9 @@ storage --->
 </tr>
 </cfform>
 </table>
+
+
+</cfif>	<!--- driver.isDriverSelector() !--->
+
+
 </cfoutput>

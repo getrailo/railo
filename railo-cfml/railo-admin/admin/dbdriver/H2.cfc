@@ -38,7 +38,7 @@
 	
 	<cffunction name="getName" returntype="string"  output="no"
 		hint="returns display name of the driver">
-		<cfreturn "H2 Database Engine">
+		<cfreturn "H2 Database Engine in Embedded Mode">
 	</cffunction>
 	
 	<cffunction name="getDescription" returntype="string"  output="no"
