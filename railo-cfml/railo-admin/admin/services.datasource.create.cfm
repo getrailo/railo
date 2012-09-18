@@ -116,6 +116,9 @@ Error Output--->
 
 <cfset driver=createObject("component","dbdriver."&datasource.type)>
 
+<cfset isDriverSelector = isInstanceOf( driver, "types.IDriverSelector" )>
+
+<cfif !isDriverSelector>
 
 <cfif isInsert>
 	<cfset datasource.host=driver.getValue('host')>
@@ -158,24 +161,17 @@ Error Output--->
 	locale="#stText.locale#"
 	returnVariable="timezones">
 
-
+</cfif>	<!--- !isDriverSelector !--->
 </cfsilent>
 <cfoutput>
 
 
 
-<cfif driver.isDriverSelector()>
+<cfif isDriverSelector>
 
-	<cfset arrSelectOptions = []>
+	<cfset arrSelectOptions = driver.getOptions()>
 
-	<cfloop array="#driver.getSelectorOptions()#" index="selectorOptName">
-
-		<cfset selectorOpt = createObject( "component", "dbdriver." & selectorOptName )>
-
-		<cfset arrayAppend( arrSelectOptions, selectorOpt )>
-	</cfloop>
-
-	<h2>#stText.Settings.dbdriverselectorchoose#</h2>
+	<h2>Choose a Database Driver</h2>	<!--- #stText.Settings.dbdriverselectorchoose# not found? !--->
 
 	<p>#driver.getDescription()#
 
@@ -183,9 +179,8 @@ Error Output--->
 
 		<cfloop from="1" to="#arrayLen( arrSelectOptions )#" index="ii">
 
-			<cfset optDriver = arrSelectOptions[ ii ]>
-
-			<cfset optDriverType = listLast( getMetaData( optDriver ).name, '.' )>
+			<cfset optDriverType = arrSelectOptions[ ii ]>
+			<cfset optDriver = variables.drivers[ optDriverType ]>
 
 			<div style="margin-bottom:1.5em;">
 				<label><input type="radio" name="type" value="#optDriverType#" <cfif ii EQ 1>checked="checked"</cfif>> #optDriver.getName()#</label>
@@ -203,7 +198,7 @@ Error Output--->
 
 		<input type="submit" class="submit" value="Continue">
 	</form>
-<cfelse>	<!--- driver.isDriverSelector() !--->
+<cfelse>	<!--- isDriverSelector !--->
 
 
 <cfif actionType EQ "update">
@@ -551,7 +546,7 @@ storage --->
 </table>
 
 
-</cfif>	<!--- driver.isDriverSelector() !--->
+</cfif>	<!--- isDriverSelector !--->
 
 
 </cfoutput>

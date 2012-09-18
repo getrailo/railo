@@ -1,4 +1,4 @@
-<cfcomponent extends="Driver" implements="IDriver">
+<cfcomponent extends="types.Driver" implements="types.IDatasource">
 	
 	<cfset this.type.port=this.TYPE_FREE>
 	
@@ -34,21 +34,14 @@
 		hint="returns the form data">
 		<cfset data=duplicate(form)>
 	</cffunction>
+
 	
-	<cffunction name="getClass" returntype="string" output="no"
-		hint="return driver Java Class">
-		<cfreturn this.className>
-	</cffunction>
-	
-	<cffunction name="getDSN" returntype="string" output="no"
-		hint="return DSN">
-		<cfreturn this.dsn>
-	</cffunction>
-	
-	<cffunction name="equals" returntype="string" output="no"
+	<cffunction name="equals" returntype="boolean" output="false"
 		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfargument name="dsn" required="true">
+		
+		<cfargument name="className"	required="true">
+		<cfargument name="dsn"			required="true">
+		
 		<cfreturn this.className EQ arguments.className and findNoCase("sybase",arguments.dsn)>
 	</cffunction>
 	
