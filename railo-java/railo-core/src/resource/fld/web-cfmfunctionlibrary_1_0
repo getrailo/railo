@@ -832,6 +832,7 @@ if you define a closure/function, the closure/function must accept 2 parameters 
     </argument>
 		<argument>
 			<name>sort_order</name>
+			<alias>sortOrder</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>asc</default>
@@ -839,6 +840,14 @@ if you define a closure/function, the closure/function must accept 2 parameters 
 sort direction:		
 - asc(default): ascending sort order
 - desc: descending sort order.</description>
+    </argument>
+		<argument>
+			<name>locale_sensitive</name>
+			<alias>localeSensitive</alias>
+			<type>boolean</type>
+			<required>No</required>
+			<default>false</default>
+		<description>if true it does a locale sensitive sorting.</description>
     </argument>
 		<return>
 			<type>boolean</type>

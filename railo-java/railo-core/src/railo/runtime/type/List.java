@@ -1073,44 +1073,10 @@ public final class List {
 	public static String sort(String list, String sortType, String sortOrder, String delimiter) throws PageException {
 		return _sort(toStringArray(listToArray(list,delimiter)),sortType, sortOrder, delimiter);
 	}
-	private static String _sort(Object[] arr, String sortType, String sortOrder, String delimiter) throws ExpressionException {
+	private static String _sort(Object[] arr, String sortType, String sortOrder, String delimiter) throws PageException {
 
-				
+		Arrays.sort(arr,ArrayUtil.toComparator(null, sortType, sortOrder, false));
 		
-		// check sortorder
-		boolean isAsc=true;
-		PageException ee=null;
-		if(sortOrder.equalsIgnoreCase("asc"))isAsc=true;
-		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
-		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
-		
-		
-		
-		// text
-		if(sortType.equalsIgnoreCase("text")) {
-			TextComparator comp=new TextComparator(isAsc,false);
-			Arrays.sort(arr,comp);
-			ee=comp.getPageException();
-		}
-		// text no case
-		else if(sortType.equalsIgnoreCase("textnocase")) {
-			TextComparator comp=new TextComparator(isAsc,true);
-			Arrays.sort(arr,comp);
-			ee=comp.getPageException();
-		}
-		// numeric
-		else if(sortType.equalsIgnoreCase("numeric")) {
-			NumberComparator comp=new NumberComparator(isAsc);
-			Arrays.sort(arr,comp);
-			ee=comp.getPageException();
-			
-		}
-		else {
-			throw new ExpressionException("invalid sort type ["+sortType+"], sort types are [text, textNoCase, numeric]");
-		}
-		if(ee!=null) {
-			throw new ExpressionException("invalid value to sort the list",ee.getMessage());
-		}
 		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<arr.length;i++) {
 			if(i!=0)sb.append(delimiter);
