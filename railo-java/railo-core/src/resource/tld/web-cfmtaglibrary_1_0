@@ -10350,6 +10350,13 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>trim result</description>
 		</attribute>
+		<attribute>
+			<type>boolean</type>
+			<name>append</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>if true, the saved content will be appended to the variable instead of overwriting it.</description>
+		</attribute>
 	</tag>
 	<!-- Schedule -->
 	<tag>

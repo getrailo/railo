@@ -2,6 +2,8 @@ package railo.runtime.tag;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.interpreter.VariableInterpreter;
+import railo.runtime.op.Caster;
 
 /**
 * Saves the generated content inside the tag body in a variable.
@@ -62,9 +64,9 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 	
 		String value = trim ? bodyContent.getString().trim() : bodyContent.getString();
 		
-		if ( append ) {
+		if ( append && VariableInterpreter.isDefined( pageContext, variable) ) {
 		
-			String current = (String) pageContext.getVariable( variable );
+			String current = Caster.toString( pageContext.getVariable( variable ), null );
 			
 			if ( current != null )
 				value = current + value;
