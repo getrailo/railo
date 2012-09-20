@@ -14,6 +14,7 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 	/** The name of the variable in which to save the generated content inside the tag. */
 	private String variable;
 	private boolean trim;
+	private boolean append;
 	
 	/**
 	* @see javax.servlet.jsp.tagext.Tag#release()
@@ -22,6 +23,7 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 		super.release();
 		variable=null;
 		trim=false;
+		append=false;
 	}
 
 
@@ -39,6 +41,13 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 	}
 	
 	/**
+	* if true, and a variable with the passed name already exists, the content will be appended to the variable instead of overwriting it
+	*/
+	public void setAppend(boolean append)	{
+		this.append=append;
+	}
+	
+	/**
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag()	{
@@ -50,15 +59,22 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
 	*/
 	public int doAfterBody() throws PageException	{
-		pageContext.setVariable(variable,trim?bodyContent.getString().trim():bodyContent.getString());
+	
+		String value = trim ? bodyContent.getString().trim() : bodyContent.getString();
+		
+		if ( append ) {
+		
+			String current = (String) pageContext.getVariable( variable );
+			
+			if ( current != null )
+				value = current + value;
+		}
+		
+		pageContext.setVariable( variable, value );
 		bodyContent.clearBody();
 		
 		return SKIP_BODY;
 	}
 
-	
-	
-	
-	
 	
 }
