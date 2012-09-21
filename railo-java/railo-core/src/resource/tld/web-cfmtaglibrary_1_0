@@ -10355,7 +10355,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>append</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>if true, the saved content will be appended to the variable instead of overwriting it.</description>
+			<description>if true, the saved content will be appended to an already existing variable instead of overwriting it.</description>
 		</attribute>
 	</tag>
 	<!-- Schedule -->
