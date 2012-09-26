@@ -336,17 +336,20 @@ public final class ComponentUtil {
 	}
 
 
-	public static Object getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException {
+	public static Object getClientComponentPropertiesObject(Config config, String className, ASMProperty[] props, Class superClass) throws PageException {
 		try {
-			return _getClientComponentPropertiesObject(config, className, properties);
+			return _getClientComponentPropertiesObject(config, className, props,superClass);
 		} catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
 	}
 	
+	public static Object getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException {
+		return getClientComponentPropertiesObject(config, className, properties,null);
+	}
 
     
-    private static Object _getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException, IOException, ClassNotFoundException {
+    private static Object _getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties, Class superClass) throws PageException, IOException, ClassNotFoundException {
     	String real=className.replace('.','/');
     	
 		//Config config = pc.getConfig();
@@ -368,8 +371,11 @@ public final class ComponentUtil {
 				
 			}
 		}
+		if(superClass == null) {
+			superClass = Object.class;
+		}
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{Pojo.class},null);
+		byte[] barr = ASMUtil.createPojo(real, properties,superClass,new Class[]{Pojo.class},null);
     	boolean exist=classFile.exists();
 		ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);

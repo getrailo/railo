@@ -568,15 +568,24 @@ public final class AxisCaster {
     }
 
     public static Object toRailoType(PageContext pc, Object value) throws PageException {
+    	return toRailoType(pc,value,false);
+    	
+    }
+    public static Object toRailoType(PageContext pc, Object value,boolean isClientCall) throws PageException {
     	pc=ThreadLocalPageContext.get(pc);
     	if(pc!=null && value instanceof Pojo) {
     		try{
     			
     			// get the path of the component 
     			String className = value.getClass().getName();
-
-    			String componentPath = ComponentUtil.getComponentNameFromClass(value.getClass());
-    			Component comp = pc.loadComponent(componentPath);
+    			Component comp = null;
+    			if(isClientCall) {
+    				comp = pc.loadComponent(className);
+    			} else {
+    				String componentPath = ComponentUtil.getComponentNameFromClass(value.getClass());
+    				comp = pc.loadComponent(componentPath);
+    			}
+    			
 
     			ComponentAccess c = ComponentUtil.toComponentAccess(comp);
     			
@@ -597,7 +606,7 @@ public final class AxisCaster {
         		for(int i=0;i<props.length;i++){
         			prop=props[i];
         			try{
-        				cw.set(pc, prop.getName(), toRailoType(pc,Reflector.callGetter(value, prop.getName())));
+        				cw.set(pc, prop.getName(), toRailoType(pc,Reflector.callGetter(value, prop.getName()),isClientCall));
         			}
         			catch(PageException pe){
         				pe.printStackTrace();
