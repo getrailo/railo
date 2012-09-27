@@ -409,7 +409,7 @@ public final class ConfigWebFactory {
         	String strDefaultProviderClass=defaultProvider.getAttribute("class");
         	if(!StringUtil.isEmpty(strDefaultProviderClass)) {
 	        	strDefaultProviderClass=strDefaultProviderClass.trim();
-	        	config.setDefaultResourceProvider(strDefaultProviderClass,toArguments(defaultProvider.getAttribute("arguments")));
+	        	config.setDefaultResourceProvider(strDefaultProviderClass,toArguments(defaultProvider.getAttribute("arguments"),true));
 	        }
         }
         
@@ -434,12 +434,12 @@ public final class ConfigWebFactory {
         		if(!StringUtil.isEmpty(strProviderClass) && !StringUtil.isEmpty(strProviderScheme)) {
         			strProviderClass=strProviderClass.trim();
             		strProviderScheme=strProviderScheme.trim().toLowerCase();
-            		config.addResourceProvider(strProviderScheme,strProviderClass,toArguments(providers[i].getAttribute("arguments")));
+            		config.addResourceProvider(strProviderScheme,strProviderClass,toArguments(providers[i].getAttribute("arguments"),true));
             		
     	        	// patch for user not having 
     	        	if(strProviderScheme.equalsIgnoreCase("http"))	{
     	        		httpClass=strProviderClass;
-    	        		httpArgs = toArguments(providers[i].getAttribute("arguments"));
+    	        		httpArgs = toArguments(providers[i].getAttribute("arguments"),true);
             		}
     	        	else if(strProviderScheme.equalsIgnoreCase("https"))
     	        		hasHTTPs=true;
@@ -454,7 +454,7 @@ public final class ConfigWebFactory {
         	}
         	// adding s3 when not exist
     		if(!hasS3 && config instanceof ConfigServer) {
-    			config.addResourceProvider("s3",s3Class,toArguments("lock-timeout:10000;"));
+    			config.addResourceProvider("s3",s3Class,toArguments("lock-timeout:10000;",false));
     		}
         }
 	}
@@ -520,7 +520,7 @@ public final class ConfigWebFactory {
     
 
 
-	private static Map<String,String> toArguments(String attributes) {
+	private static Map<String,String> toArguments(String attributes, boolean decode) {
 		Map<String,String> map=new HashTable();
 		if(attributes==null) return map;
 		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
@@ -528,9 +528,15 @@ public final class ConfigWebFactory {
 		for(int i=0;i<arr.length;i++) {
 			index=arr[i].indexOf(':');
 			if(index==-1)map.put(arr[i].trim(), "");
-			else map.put(arr[i].substring(0,index).trim(), arr[i].substring(index+1).trim());
+			else map.put(dec(arr[i].substring(0,index).trim(),decode), dec(arr[i].substring(index+1).trim(),decode));
 		}
 		return map;
+	}
+
+
+	private static String dec(String str, boolean decode) {
+		if(!decode) return str;
+		return URLDecoder.decode(str, false);
 	}
 
 
@@ -1679,9 +1685,9 @@ public final class ConfigWebFactory {
         // arguments
         String strArgs = el.getAttribute("caster-arguments");
         if(StringUtil.isEmpty(strArgs))strArgs = el.getAttribute("caster-class-arguments");
-        toArguments(strArgs);
+        toArguments(strArgs,false);
         
-        if(!StringUtil.isEmpty(strCaster))config.setAMFCaster(strCaster,toArguments(strArgs));
+        if(!StringUtil.isEmpty(strCaster))config.setAMFCaster(strCaster,toArguments(strArgs,false));
         else if(configServer!=null)config.setAMFCaster(config.getAMFCasterClass(), config.getAMFCasterArguments());
         
         
@@ -1761,7 +1767,7 @@ public final class ConfigWebFactory {
 	     // arguments
 	        String strArgs = el.getAttribute("arguments");
 	        if(StringUtil.isEmpty(strArgs))strArgs = el.getAttribute("class-arguments");
-	        Map<String, String> args = toArguments(strArgs);
+	        Map<String, String> args = toArguments(strArgs,true);
 
 	        config.setExecutionLogFactory(new ExecutionLogFactory(clazz,args));
         }

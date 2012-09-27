@@ -9,6 +9,7 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -66,6 +67,7 @@ import railo.runtime.config.RemoteClientImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
+import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
@@ -544,6 +546,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("getRunningThreads",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetRunningThreads();
         else if(check("getMonitors",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doGetMonitors();
         else if(check("getMonitor",     ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doGetMonitor();
+        else if(check("getExecutionLog",     ACCESS_FREE) && check2(ACCESS_READ  )) doGetExecutionLog();
         else if(check("gateway",     ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_READ  )) doGateway();
         
     	
@@ -639,6 +642,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateGatewayEntry",  ACCESS_NOT_WHEN_SERVER) && check2(ACCESS_WRITE  )) doUpdateGatewayEntry();
         else if(check("updateLogSettings",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateUpdateLogSettings();
         else if(check("updateMonitor",  ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE  )) doUpdateMonitor();
+        else if(check("updateExecutionLog",  ACCESS_FREE) && check2(ACCESS_WRITE  )) doUpdateExecutionLog();
         
     	
         //else if(check("removeproxy",       		ACCESS_NOT_WHEN_SERVER  )) doRemoveProxy();
@@ -3153,6 +3157,23 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
 	}
 	
+
+
+	private void doGetExecutionLog() throws PageException {
+		ExecutionLogFactory factory = config.getExecutionLogFactory();
+		Struct sct=new StructImpl();
+		
+		sct.set(KeyConstants._enabled, Caster.toBoolean(config.getExecutionLogEnabled()));
+		Class clazz = factory.getClazz();
+		sct.set(KeyConstants._class, clazz!=null?clazz.getName():"");
+		sct.set(KeyConstants._arguments, factory.getArgumentsAsStruct());
+		
+		pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
+	}
+	
+	
+	
+	
 	private void doGetMonitors(Query qry, Monitor[] monitors) {
 		Monitor m;
 		int row;
@@ -3740,6 +3761,17 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         store();
         adminSync.broadcast(attributes, config);
     }
+    
+	private void doUpdateExecutionLog() throws PageException {
+		admin.updateExecutionLog(
+    			getString("admin", "updateExecutionLog", "class"),
+    			getStruct("admin", "updateExecutionLog", "arguments"),
+    			getBool("admin", "updateExecutionLog", "enabled")
+    	);
+        store();
+        adminSync.broadcast(attributes, config);
+	}
+    
 
     private void doRemoveMonitor() throws PageException  {
     	admin.removeMonitor(
