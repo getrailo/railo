@@ -30,6 +30,7 @@ $(function(){
 
 	$('table.checkboxtbl').each(function(){
 		var btns = $('tfoot input.submit', this);
+		/* when admin sync is active, an extra table is added*/
 		if (btns.length==0)
 		{
 			btns = $(this).next('h4.rsync').next('table.rsync').find('tfoot input.submit');
