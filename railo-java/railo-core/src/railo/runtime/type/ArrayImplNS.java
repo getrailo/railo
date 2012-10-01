@@ -617,10 +617,10 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	
 	public Iterator iterator() {
 		ArrayList lst=new ArrayList();
-		int count=0;
+		//int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
-			count++;
+			//count++;
 			if(o!=null) lst.add(o);
 		}
 		return lst.iterator();

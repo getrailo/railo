@@ -155,7 +155,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		int columncount = meta.getColumnCount();
 		List<Key> tmpKeys=new ArrayList<Key>();
 		//List<Integer> tmpTypes=new ArrayList<Integer>();
-		int count=0;
+		//int count=0;
 		Collection.Key key;
 		String columnName;
 		int type;
@@ -175,7 +175,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 				//tmpTypes.add(type);
 				columns.put(key.getLowerString(), new SimpleQueryColumn(this,res, key,type, i+1));
 				
-				count++;
+				//count++;
 			}
 			
 		}
