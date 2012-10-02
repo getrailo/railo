@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
@@ -30,13 +32,26 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @return returns an invalid key Exception
 	 */
 	protected ExpressionException invalidKey(Key key) {
-		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+CollectionUtil.getKeyList(this, ",")+")");
+
+		return new ExpressionException( "key [" + key.getString() + "] doesn't exist in struct " + ( this.containsKey( key ) ? "or points to a null value " : "" ) + "(keys:" + CollectionUtil.getKeyList( this, "," ) + ")" );
 	}
+
 	public static ExpressionException invalidKey(String[] keys, Key key) {
-		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keys, ",")+")");
+
+		String skey = key.getString();
+
+		for ( String k : keys ) {
+
+			if ( k.equalsIgnoreCase( skey ) )
+				return new ExpressionException( "key [" + skey + "] doesn't exist in struct or points to a null value (keys:" + List.arrayToList( keys, "," ) + ")" );
+		}
+
+		return new ExpressionException( "key [" + skey + "] doesn't exist in struct (keys:" + List.arrayToList( keys, "," ) + ")" );
 	}
+
 	public static ExpressionException invalidKey(Collection.Key[] keys, Key key) {
-		return new ExpressionException("key ["+key.getString()+"] doesn't exist in struct (keys:"+List.arrayToList(keys, ",")+")");
+
+		return new ExpressionException( "key [" + key.getString() + "] doesn't exist in struct " + ( Arrays.asList( keys ).contains( key ) ? "or points to a null value " : "" ) + "(keys:" + List.arrayToList( keys, "," ) + ")" );
 	}
 	
 	
