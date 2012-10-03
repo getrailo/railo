@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
@@ -15,7 +13,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
@@ -31,29 +28,27 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @param key Invalid key
 	 * @return returns an invalid key Exception
 	 */
-	protected ExpressionException invalidKey(Key key) {
-
-		return new ExpressionException( "key [" + key.getString() + "] doesn't exist in struct " + ( this.containsKey( key ) ? "or points to a null value " : "" ) + "(keys:" + CollectionUtil.getKeyList( this, "," ) + ")" );
-	}
-
-	public static ExpressionException invalidKey(String[] keys, Key key) {
-
-		String skey = key.getString();
-
-		for ( String k : keys ) {
-
-			if ( k.equalsIgnoreCase( skey ) )
-				return new ExpressionException( "key [" + skey + "] doesn't exist in struct or points to a null value (keys:" + List.arrayToList( keys, "," ) + ")" );
+	public static ExpressionException invalidKey(Struct sct,Key key) {
+		StringBuilder sb=new StringBuilder();
+		Iterator<Key> it = sct.keyIterator();
+		Key k;
+		boolean isNull=false;
+		while(it.hasNext()){
+			k = it.next();
+			if(!isNull && k.equals(key)) isNull=true;
+			if(sb.length()>0)sb.append(',');
+			sb.append(k.getString());
 		}
-
-		return new ExpressionException( "key [" + skey + "] doesn't exist in struct (keys:" + List.arrayToList( keys, "," ) + ")" );
+		
+		
+		return new ExpressionException( 
+				(isNull?
+						"the value from key [" + key.getString() + "] is null, what is the same as not existing in CFML":
+						"key [" + key.getString() + "] doesn't exist ")
+						
+				
+				+ " (existing keys:" + sb.toString() + ")" );
 	}
-
-	public static ExpressionException invalidKey(Collection.Key[] keys, Key key) {
-
-		return new ExpressionException( "key [" + key.getString() + "] doesn't exist in struct " + ( Arrays.asList( keys ).contains( key ) ? "or points to a null value " : "" ) + "(keys:" + List.arrayToList( keys, "," ) + ")" );
-	}
-	
 	
 	@Override
 	public long sizeOf() {

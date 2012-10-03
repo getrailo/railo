@@ -441,7 +441,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	public Object get(Key key) throws PageException {
 		Object res = get(key,NULL);
 		if(res!=NULL) return res;
-		throw StructImpl.invalidKey(keys(), key);
+		throw StructImpl.invalidKey(this, key);
 	}
 	public Object get(PageContext pc, String key, Object defaultValue) {
 		return get(key,defaultValue);

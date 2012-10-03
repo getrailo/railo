@@ -283,7 +283,7 @@ public class Excel extends StructSupport implements Cloneable,Struct {
 	public Object get(Key key) throws PageException {
 		Object value = get(key,null);
 		if(value!=null) return value;
-		throw invalidKey(key);
+		throw invalidKey(this,key);
 	}
 
 

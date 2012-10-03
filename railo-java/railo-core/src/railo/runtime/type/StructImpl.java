@@ -74,7 +74,7 @@ public class StructImpl extends StructSupport {
 	public Object get(Collection.Key key) throws PageException {//print.out("k:"+(kcount++));
 		Object rtn=map.get(key);
 		if(rtn!=null) return rtn;
-		throw invalidKey(key);
+		throw invalidKey(this,key);
 	}
 	
 	/**
