@@ -454,7 +454,7 @@ public final class Zip extends BodyTagImpl {
 		}
 
 		if((params==null || params.isEmpty())) {
-			throw new ApplicationException("No source/content specified");
+			throw new ApplicationException("No source/content specified"); 
 		}
 		
 		
