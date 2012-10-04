@@ -345,7 +345,7 @@ millisecond:"ms"
 <cfloop query="queries">	
 <code><b>#queries.name#</b> (Datasource=#queries.datasource#, Time=#formatUnit(custom.unit, queries.time)#, Records=#queries.count#) in #queries.src#</code><br />
 <cfif ListFindNoCase(queries.columnlist,'usage') and IsStruct(queries.usage)><cfset usage=queries.usage><cfset lstNeverRead="">
-<cfloop collection="#usage#" index="local.item" item="local._val"><cfif not _val><cfset lstNeverRead=ListAppend(lstNeverRead,item,', ')></cfif></cfloop>
+<cfloop collection="#usage#" item="item"><cfif not usage[item]><cfset lstNeverRead=ListAppend(lstNeverRead,item,', ')></cfif></cfloop>
 <cfif len(lstNeverRead)><font color="red">the following colum(s) are never read within the request:#lstNeverRead#</font><br /></cfif>
 </cfif>
 <pre>#queries.sql#</pre></cfloop>
@@ -413,3 +413,4 @@ millisecond:"ms"
     </cfif>
 </cffunction>--->
 </cfcomponent>
+

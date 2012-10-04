@@ -282,10 +282,10 @@ long start = System.currentTimeMillis();
 mn = 10000;
 mx = -10000;
 		exponents = new float[(int)octaves+1];
-		//float frequency = 1.0f;
+		float frequency = 1.0f;
 		for (int i = 0; i <= (int)octaves; i++) {
 			exponents[i] = (float)Math.pow(2, -i);
-			//frequency *= lacunarity;
+			frequency *= lacunarity;
 		}
 
 		//min = -1;

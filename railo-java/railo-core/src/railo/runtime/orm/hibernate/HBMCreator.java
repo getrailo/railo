@@ -1,16 +1,9 @@
 package railo.runtime.orm.hibernate;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
@@ -23,15 +16,17 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.Collection;
+import railo.runtime.type.*;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class HBMCreator {
 	
@@ -53,8 +48,9 @@ public class HBMCreator {
 		
 		String extend = cfc.getExtends();
 		boolean isClass=StringUtil.isEmpty(extend);
-		
-		Property[] _props=getProperties(pc,engine,cfc,dc,ormConf,meta,isClass);
+
+		// MZ: Fetches all inherited persistent properties
+		Property[] _props=getAllPersistentProperties(pc,engine,cfc,dc,ormConf,meta,isClass);
 		
 		
 		
@@ -88,6 +84,10 @@ public class HBMCreator {
 		}
 		// extended CFC
 		else{
+			// MZ: Fetches one level deep
+			_props=getProperties(pc,engine,cfc,dc,ormConf,meta,isClass);
+			propColl = splitJoins(engine,cfc,joins, _props);
+
 			String ext = List.last(extend,'.').trim();
 			try {
 				Component base = engine.getEntityByCFCName(ext, false);
@@ -116,13 +116,36 @@ public class HBMCreator {
 		        }
 		        
 			}
-			else {
-				clazz = doc.createElement("joined-subclass");
-				hibernateMapping.appendChild(clazz);
-				clazz.setAttribute("extends",ext);
-				Element key = doc.createElement("key");
-			    clazz.appendChild(key);
-		        key.setAttribute("column", formatColumn(engine,toString(engine,cfc,null,meta,"joincolumn",true)));
+			else
+			{
+
+				String joinColumn = toString(engine,cfc,null,meta,"joincolumn",false);
+				if (!StringUtil.isEmpty(discriminatorValue,true))
+				{
+					clazz = doc.createElement("joined-subclass");
+					hibernateMapping.appendChild(	clazz);
+					clazz.setAttribute("extends",ext);
+					Element key = doc.createElement("key");
+					clazz.appendChild(key);
+					key.setAttribute("column", formatColumn(engine,joinColumn));
+				}
+				else
+				{
+					// MZ: PATCH: When no joinColumn exists, default to an explicit table per class
+					clazz = doc.createElement("union-subclass");
+					clazz.setAttribute("extends",ext);
+					doTable = true;
+//			        clazz.setAttribute("table", escape(engine.convertTableName(getTableName(engine,pc,meta,cfc))));
+					hibernateMapping.appendChild(	clazz);
+//					Element key = doc.createElement("key");
+//					clazz.appendChild(key);
+//					key.setAttribute("column", formatColumn(engine, "id"));
+//					doTable=true;
+//					isClass = true;
+//					clazz = doc.createElement("class");
+//					hibernateMapping.appendChild(clazz);
+				}
+
 			}
 
 		}
@@ -168,7 +191,32 @@ public class HBMCreator {
 
 		
 	}
-	
+
+
+
+	private static Property[] getAllPersistentProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
+
+		HashMap<String, Property> _props = cfci.getAllPersistentProperties();
+		Property[] result = new Property[_props.size()];
+
+		if(isClass && _props.size()==0 && ormConf.useDBForMapping())
+		{
+			if(meta==null)meta = cfci.getMetaData(pc);
+        	result = HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
+        }
+		else
+		{
+			int i = 0;
+			for (Property prop : _props.values())
+			{
+				result[i] = prop;
+				i++;
+			}
+		}
+		return result;
+	}
+
+
 	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
 		Property[] _props = cfci.getProperties(true);
 		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
@@ -177,16 +225,6 @@ public class HBMCreator {
         }
 		return _props;
 	}
-
-
-
-
-
-
-
-
-
-
 
 
 	private static void addId(Component cfc,Document doc, Element clazz, PageContext pc, Struct meta, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws PageException {
@@ -1311,7 +1349,11 @@ public class HBMCreator {
 			Component other = loadForeignCFC(pc, engine, cfc, prop, meta);
 			if(other!=null){
 				boolean isClass=StringUtil.isEmpty(other.getExtends());
-				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
+//				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
+
+				// MZ: Load up all properties
+				Property[] _props=getAllPersistentProperties(pc,engine,other,dc,ormConf,meta,isClass);
+
 				PropertyCollection _propColl = splitJoins(engine,cfc,new HashMap<String, PropertyCollection>(), _props);
 				_props=_propColl.getProperties();
 				

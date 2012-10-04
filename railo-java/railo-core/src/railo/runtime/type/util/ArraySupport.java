@@ -15,6 +15,7 @@ import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Sizeable;
@@ -384,11 +385,4 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	public java.util.Iterator<Object> getIterator() {
     	return valueIterator();
     } 
-
-	@Override
-	public synchronized void sort(String sortType, String sortOrder) throws PageException {
-		if(getDimension()>1)
-			throw new ExpressionException("only 1 dimensional arrays can be sorted");
-		sort(ArrayUtil.toComparator(null, sortType, sortOrder,false));
-	}
 }

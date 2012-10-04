@@ -35,7 +35,7 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
 public class CFMLEngineFactory {
 	
 	 // set to false to disable patch loading, for example in major alpha releases
-    private static final boolean PATCH_ENABLED = true;
+    private static final boolean PATCH_ENABLED = false;
     
 	private static CFMLEngineFactory factory;
     private static File railoServerRoot;

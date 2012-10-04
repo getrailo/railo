@@ -4,11 +4,10 @@ package railo.runtime;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Objects;
-import railo.runtime.type.Struct;
-import railo.runtime.type.UDF;
-import railo.runtime.type.UDFProperties;
+import railo.runtime.type.*;
+
+import java.util.HashMap;
+
 /**
  * interface for a Component
  */
@@ -133,7 +132,9 @@ public interface Component extends Struct,Objects,CFObject {
 	 */
 	public Property[] getProperties(boolean onlyPeristent);// FUTURE deprecated
 	// FUTURE public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties); 
-	
+
+	public HashMap<String,Property> getAllPersistentProperties();
+
 	public void setProperty(Property property) throws PageException;
 	
 	public ComponentScope getComponentScope();

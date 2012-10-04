@@ -1,7 +1,7 @@
 <cfcomponent extends="Driver" implements="IDriver">
 	<cfset fields=array(
 		field("Class","class","",true,"The class that implement the Driver"),
-		field("Connection String","dsn","",true,"The Datasource Connection String")
+		field("DSN","dsn","",true,"The Datasource Connection String")
 	)>
 	
 	<cfset this.className="net.sourceforge.jtds.jdbc.Driver">
@@ -27,7 +27,7 @@
 		</cfif>
 		<cfset fields=array(
 			field("Class","class",data.classname,true,"The class that implement the Driver"),
-			field("Connection String","dsn",data.dsn,true,"The Datasource Connection String")
+			field("DSN","dsn",data.dsn,true,"The Datasource Connection String")
 		)>
 		
 	</cffunction>

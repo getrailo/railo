@@ -112,10 +112,7 @@ public final class SourceFileImpl implements SourceFile {
 					String tmp="/"+list(arr,0,i);
 					if(strRoot.lastIndexOf(tmp)==rootLen-tmp.length()) {
 						StringBuilder rtn=new StringBuilder();
-						while(i<count-i) {
-							count--;
-							rtn.append("../");
-						}
+						for(int y=0;i<count-i;y++) rtn.append("../");
 						isOutSide=rtn.length()!=0;
 						return rtn.toString()+(rtn.length()==0?"/":"")+list(arr,i,arr.length);
 					}

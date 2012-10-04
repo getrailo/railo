@@ -7,7 +7,6 @@ import java.util.Comparator;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.CasterException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
@@ -16,30 +15,17 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Closure;
 import railo.runtime.type.UDF;
-import railo.runtime.type.util.ArrayUtil;
 
 public final class ArraySort implements Function {
-
-	private static final long serialVersionUID = -747941236369495141L;
-
 	public static boolean call(PageContext pc , Array array, Object sortTypeOrClosure) throws PageException {
-		return call(pc , array, sortTypeOrClosure, "asc",false);
+		return call(pc , array, sortTypeOrClosure, "asc");
 	}
 	public static boolean call(PageContext pc , Array array, Object sortTypeOrClosure, String sortorder) throws PageException {
-		return call(pc , array, sortTypeOrClosure, sortorder,false);
-	}
-	
-	public static boolean call(PageContext pc , Array array, Object sortTypeOrClosure, String sortorder, boolean localeSensitive) throws PageException {
-		if(array.getDimension()>1)
-			throw new ExpressionException("only 1 dimensional arrays can be sorted");
-
 		if(sortTypeOrClosure instanceof UDF){
 			UDFComparator comp=new UDFComparator(pc, (UDF)sortTypeOrClosure);
 			array.sort(comp);
 		}
-		else {
-			array.sort(ArrayUtil.toComparator(pc,Caster.toString(sortTypeOrClosure), sortorder,localeSensitive));
-		}
+		else array.sort(Caster.toString(sortTypeOrClosure), sortorder);
 		return true;
 	}
 }

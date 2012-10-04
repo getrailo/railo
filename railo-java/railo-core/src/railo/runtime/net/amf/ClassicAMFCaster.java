@@ -42,6 +42,7 @@ import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 import railo.runtime.type.wrap.ListAsArray;
 import railo.runtime.type.wrap.MapAsStruct;

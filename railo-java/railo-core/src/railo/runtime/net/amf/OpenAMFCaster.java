@@ -21,6 +21,7 @@ import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
+import railo.runtime.type.util.ComponentUtil;
 import flashgateway.io.ASObject;
 
 /**

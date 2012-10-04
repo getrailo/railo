@@ -56,7 +56,6 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.other.CreateObject;
-import railo.runtime.functions.other.URLEncodedFormat;
 import railo.runtime.functions.string.Hash;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
@@ -1559,23 +1558,14 @@ public final class ConfigWebAdmin {
 		while(it.hasNext()) {
 			e = it.next();
             if(rtn.length()>0)rtn.append(';');
-            rtn.append(encode(e.getKey().getString()));
+            rtn.append(URLEncoder.encode(e.getKey().getString()));
             rtn.append(':');
-            rtn.append(encode(Caster.toString(e.getValue(),"")));
+            rtn.append(URLEncoder.encode(Caster.toString(e.getValue(),"")));
         }
         return rtn.toString();
     }
 
-    private static String encode(String str) {
-		try {
-			return URLEncodedFormat.invoke(str, "UTF-8",false);
-		} catch (PageException e) {
-			return URLEncoder.encode(str);
-		}
-	}
-
-
-	public Query getResourceProviders() throws PageException {
+    public Query getResourceProviders() throws PageException {
     	checkReadAccess();
         // check parameters
         Element parent=_getRootElement("resources");
@@ -3112,21 +3102,6 @@ public final class ConfigWebAdmin {
       	monitor.setAttribute("name",name);
       	monitor.setAttribute("log",Caster.toString(logEnabled));
 	}
-	
-
-
-
-	public void updateExecutionLog(String className, Struct args, boolean enabled) {
-		Element el=_getRootElement("execution-log");
-		el.setAttribute("class",className);
-		el.setAttribute("arguments",toStringCSSStyle(args));
-		el.setAttribute("enabled",Caster.toString(enabled));
-	}
-	
-	
-	
-	
-	
 
 	public void removeMonitor(String name) throws PageException {
 		checkWriteAccess();
