@@ -11,6 +11,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
+import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.util.Methods_Caster;
 import railo.transformer.bytecode.util.Types;
@@ -415,6 +416,12 @@ public final class Cast extends ExpressionBase {
                 	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_QUERY);
                 return Types.QUERY;
             }
+            if("querycolumn".equals(lcType)) {
+            	rtn=(expr instanceof Variable)?((Variable)expr).writeOutCollection(bc, mode):expr.writeOut(bc,MODE_REF);
+                if(!rtn.equals(Types.QUERY_COLUMN))
+                	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_QUERY_COLUMN);
+                return Types.QUERY_COLUMN;
+            }
             else if("timespan".equals(lcType)) {
             	rtn=expr.writeOut(bc,MODE_REF);
                 if(!rtn.equals(Types.TIMESPAN))
@@ -514,6 +521,7 @@ public final class Cast extends ExpressionBase {
         break;
         case 'q':
         	if("query".equals(lcType)) 							return Types.QUERY;
+        	if("querycolumn".equals(lcType)) 							return Types.QUERY_COLUMN;
         break;
         case 't':
         	if("timespan".equals(lcType))						return Types.TIMESPAN;

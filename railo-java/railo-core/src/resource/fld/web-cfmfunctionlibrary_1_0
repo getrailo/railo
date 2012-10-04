@@ -13207,7 +13207,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
 			<name>query_column</name>
-			<type>variable_string</type>
+			<type>queryColumn</type>
 			<required>Yes</required>
 		<description>Name of an executed query and column. Separate query name and column name with a period.</description>
     </argument>
@@ -15399,7 +15399,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
 			<name>query_column</name>
-			<type>variable_string</type>
+			<type>queryColumn</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
@@ -15416,7 +15416,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
 			<name>query_column</name>
-			<type>variable_string</type>
+			<type>queryColumn</type>
 			<required>Yes</required>
 		<description>Name of an executed query and column. Separate query name and column name with a period.</description>
     </argument>

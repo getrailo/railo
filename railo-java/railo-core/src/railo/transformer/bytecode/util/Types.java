@@ -141,6 +141,7 @@ public final class Types {
 
 
     public final static Type QUERY=Type.getType(railo.runtime.type.Query.class);
+    public final static Type QUERY_COLUMN=Type.getType(railo.runtime.type.QueryColumn.class);
     //public final static Type QUERY_IMPL=Type.getType(railo.runtime.type.QueryImpl.class);
     
     public final static Type PAGE_EXCEPTION=Type.getType(PageException.class);
@@ -313,6 +314,7 @@ public final class Types {
         
         default:
             if("query".equals(lcType))								return QUERY;
+            if("querycolumn".equals(lcType))						return QUERY_COLUMN;
             if("timespan".equals(lcType))							return TIMESPAN;
         }
         
