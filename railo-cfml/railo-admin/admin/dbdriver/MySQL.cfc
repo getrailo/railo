@@ -1,4 +1,4 @@
-<cfcomponent extends="Driver" output="no" implements="IDriver">
+<cfcomponent extends="types.Driver" output="no" implements="types.IDatasource">
 	
 	<cfset fields=array(
 		field("Use Unicode","useUnicode","true,false",true,"Should the driver use Unicode character encodings when handling strings? Should only be used when the driver can't determine the character set mapping, or you are trying to 'force' the driver to use a character set that MySQL either doesn't natively support (such as UTF-8)","radio"),
@@ -54,22 +54,6 @@
 		hint="returns array of fields">
 		<cfreturn fields>
 	</cffunction>
-	
-	<cffunction name="getClass" returntype="string" output="no"
-		hint="return driver Java Class">
-		<cfreturn this.className>
-	</cffunction>
-	
-	<cffunction name="getDSN" returntype="string" output="no"
-		hint="return DSN">
-		<cfreturn this.dsn>
-	</cffunction>
-	
-	<cffunction name="equals" returntype="string" output="no"
-		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfargument name="dsn" required="true">
-		<cfreturn this.className EQ arguments.className and this.dsn EQ arguments.dsn>
-	</cffunction>
+
 	
 </cfcomponent>

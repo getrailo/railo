@@ -826,6 +826,8 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.dbuserdesc">The username for the database</data>
 	<data key="settings.datasourcedescriptionupdate">Update datasource connection</data>
 	
+	<data key="settings.dbdriverselectorchoose">Choose a Database Driver</data>
+	
 	<data key="settings.dbtimezone">Timezone</data>
 	
 	<data key="settings.dbtimezoneDesc">

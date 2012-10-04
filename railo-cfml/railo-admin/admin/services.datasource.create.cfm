@@ -116,6 +116,9 @@ Error Output--->
 
 <cfset driver=createObject("component","dbdriver."&datasource.type)>
 
+<cfset isDriverSelector = isInstanceOf( driver, "types.IDriverSelector" )>
+
+<cfif !isDriverSelector>
 
 <cfif isInsert>
 	<cfset datasource.host=driver.getValue('host')>
@@ -158,9 +161,45 @@ Error Output--->
 	locale="#stText.locale#"
 	returnVariable="timezones">
 
-
+</cfif>	<!--- !isDriverSelector !--->
 </cfsilent>
 <cfoutput>
+
+
+
+<cfif isDriverSelector>
+
+	<cfset arrSelectOptions = driver.getOptions()>
+
+	<h2>Choose a Database Driver</h2>	<!--- #stText.Settings.dbdriverselectorchoose# not found? !--->
+
+	<p>#driver.getDescription()#
+
+	<form method="POST">
+
+		<cfloop from="1" to="#arrayLen( arrSelectOptions )#" index="ii">
+
+			<cfset optDriverType = arrSelectOptions[ ii ]>
+			<cfset optDriver = variables.drivers[ optDriverType ]>
+
+			<div style="margin-bottom:1.5em;">
+				<label><input type="radio" name="type" value="#optDriverType#" <cfif ii EQ 1>checked="checked"</cfif>> #optDriver.getName()#</label>
+				<p style="padding-left:1.5em;">#optDriver.getDescription()#</p>
+			</div>
+		</cfloop>
+
+		<cfloop collection="#Form#" item="key">
+
+			<cfif key NEQ "type">
+
+				<input type="hidden" name="#key#" value="#Form[ key ]#">
+			</cfif>
+		</cfloop>
+
+		<input type="submit" class="submit" value="Continue">
+	</form>
+<cfelse>	<!--- isDriverSelector !--->
+
 
 <cfif actionType EQ "update">
 <i><b>Class:</b> #datasource.classname#</i><br />
@@ -505,4 +544,9 @@ storage --->
 </tr>
 </cfform>
 </table>
+
+
+</cfif>	<!--- isDriverSelector !--->
+
+
 </cfoutput>

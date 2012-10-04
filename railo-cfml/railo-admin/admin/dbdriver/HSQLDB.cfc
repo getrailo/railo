@@ -1,4 +1,4 @@
-<cfcomponent extends="Driver" implements="IDriver">
+<cfcomponent extends="types.Driver" implements="types.IDatasource">
 	<cfset fields=array(
 		field("Path","path","",true,"Path where the database is or should be located (only Filesystem, virtual Resources like ""ram"" not supported)")
 	)>
@@ -52,20 +52,5 @@
 		<cfreturn fields>
 	</cffunction>
 	
-	<cffunction name="getClass" returntype="string" output="no"
-		hint="return driver Java Class">
-		<cfreturn this.className>
-	</cffunction>
-	
-	<cffunction name="getDSN" returntype="string" hint="return DSN"output="no">
-		<cfreturn this.dsn>
-	</cffunction>
-	
-	<cffunction name="equals" returntype="string" output="no"
-		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfargument name="dsn" required="true">
-		<cfreturn this.className EQ arguments.className and this.dsn EQ arguments.dsn>
-	</cffunction>
 	
 </cfcomponent>

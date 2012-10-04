@@ -1,4 +1,4 @@
-<cfcomponent extends="Driver" output="false" implements="IDriver">
+<cfcomponent extends="types.Driver" output="false" implements="types.IDatasource">
 	<cfset this.className="com.microsoft.jdbc.sqlserver.SQLServerDriver">
 	<cfset this.dsn="jdbc:sqlserver://{host}:{port}">
 		
@@ -33,16 +33,6 @@
 		<cfreturn fields>
 	</cffunction>
 	
-	<cffunction name="getClass" returntype="string" output="no"
-		hint="return driver Java Class">
-		<cfreturn this.className>
-	</cffunction>
-	
-	<cffunction name="getDSN" returntype="string" output="no"
-		hint="return DSN">
-		<cfreturn this.dsn>
-	</cffunction>
-	
 	<cffunction name="getName" returntype="string" output="no"
 		hint="returns display name of the driver">
 		<cfreturn "MSSQL - Microsoft SQL Server (Vendor Microsoft)">
@@ -50,13 +40,15 @@
 	
 	<cffunction name="getDescription" returntype="string" output="no"
 		hint="returns description for the driver">
-		<cfreturn "Microsoft SQL Server Driver">
+		<cfreturn "Microsoft SQL Server Driver from Microsoft">
 	</cffunction>
 
-	<cffunction name="equals" returntype="string" output="no"
+	<cffunction name="equals" returntype="boolean" output="false"
 		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfargument name="dsn" required="true">
+		
+		<cfargument name="className"	required="true">
+		<cfargument name="dsn"			required="true">
+		
 		<cfreturn this.className EQ arguments.className and findNoCase("sqlserver",arguments.dsn)>
 	</cffunction>
 	
