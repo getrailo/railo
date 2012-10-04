@@ -1,4 +1,4 @@
-<cfcomponent extends="Driver" implements="IDriver">
+<cfcomponent extends="types.Driver" implements="types.IDatasource">
 	
 	<cfset fields=array()>
     
@@ -57,20 +57,12 @@
 		<cfreturn fields>
 	</cffunction>
 	
-	<cffunction name="getClass" returntype="string" output="no"
-		hint="return driver Java Class">
-		<cfreturn this.className>
-	</cffunction>
-	
-	<cffunction name="getDSN" returntype="string" output="no"
-		hint="return DSN">
-        <cfreturn this.dsn>
-	</cffunction>
-	
-	<cffunction name="equals" returntype="string" output="no"
+	<cffunction name="equals" returntype="boolean" output="false"
 		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfargument name="dsn" required="true">
+		
+		<cfargument name="className"	required="true">
+		<cfargument name="dsn"			required="true">
+		
 		<cfreturn this.className EQ arguments.className and (this.dsn EQ arguments.dsn or this.dsnOld EQ arguments.dsn)>
 	</cffunction>
 	

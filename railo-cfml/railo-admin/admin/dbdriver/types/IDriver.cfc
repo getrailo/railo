@@ -1,4 +1,16 @@
 <cfinterface>
+
+	
+	<cffunction name="getName" returntype="string"  output="no"
+		hint="returns display name of the driver">
+		
+	</cffunction>
+	
+	<cffunction name="getDescription" returntype="string"  output="no"
+		hint="returns description for the driver">
+		
+	</cffunction>
+
 	
 	<!---
 	<cffunction name="equals" returntype="string" output="no" 

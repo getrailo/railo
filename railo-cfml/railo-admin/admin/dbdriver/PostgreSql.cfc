@@ -1,4 +1,4 @@
-<cfcomponent extends="Driver" implements="IDriver">
+<cfcomponent extends="types.Driver" implements="types.IDatasource">
 	<cfset this.dsn="jdbc:postgresql://{host}:{port}/{database}">
 	<cfset this.className="org.postgresql.Driver">
 	
@@ -22,16 +22,6 @@
 		<cfreturn fields>
 	</cffunction>
 	
-	<cffunction name="getClass" returntype="string" output="no"
-		hint="return driver Java Class">
-		<cfreturn this.className>
-	</cffunction>
-	
-	<cffunction name="getDSN" returntype="string" output="no"
-		hint="return DSN">
-		<cfreturn this.dsn>
-	</cffunction>
-	
 	<cffunction name="getUsername" returntype="string" output="no"
 		hint="return Username">
 		<cfreturn data.username>
@@ -42,11 +32,5 @@
 		<cfreturn data.password>
 	</cffunction>
 	
-	<cffunction name="equals" returntype="string" output="no"
-		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfargument name="dsn" required="true">
-		<cfreturn this.className EQ arguments.className and this.dsn EQ arguments.dsn>
-	</cffunction>
 	
 </cfcomponent>

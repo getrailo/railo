@@ -18,11 +18,20 @@
 		</cfcatch>		
 	</cftry>
 </cfif>
-<cfset variables.drivers=struct()>
+
+<cfset variables.drivers	= struct()>
+<cfset variables.selectors	= struct()>
 <cfoutput query="dbdriver">
 	<cfset n=listFirst(dbdriver.name,".")>
-	<cfif n NEQ "Driver" and n NEQ "IDriver">
-		<cfset variables.drivers[n]=createObject("component","dbdriver."&n)>
+	
+	<cfset obj = createObject("component","dbdriver."&n)>
+	
+	<cfif isInstanceOf( obj, "types.IDriverSelector" )>
+	
+		<cfset variables.selectors[n] = obj>
+	<cfelseif isInstanceOf( obj, "types.IDatasource" )>
+		
+		<cfset variables.drivers[n] = obj>
 	</cfif>
 </cfoutput>
 

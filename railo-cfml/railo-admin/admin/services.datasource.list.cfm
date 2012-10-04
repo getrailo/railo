@@ -357,17 +357,35 @@ list all mappings and display necessary edit fields --->
 		<td class="tblContent" width="300"><cfinput type="text" name="name" value="" style="width:300px" required="yes" 
 			message="#stText.Settings.NameMissing#"></td>
 	</tr>
-	<cfset keys=StructKeyArray(drivers)>
+	
+	<cfset cdList = {}>
+	<cfset cdSkip = {}>
+	<cfloop collection="#variables.selectors#" item="key">
+
+		<cfset cdList[ key ] = variables.selectors[ key ].getName()>
+
+		<cfloop array="#variables.selectors[ key ].getOptions()#" index="keySkip">
+
+			<cfset cdSkip[ keySkip ] = true>
+		</cfloop>
+	</cfloop>
+	<cfloop collection="#variables.drivers#" item="key">
+	
+		<cfif !structKeyExists( cdSkip, key ) && !findNoCase( "(old)", variables.drivers[ key ].getName() )>
+		
+			<cfset cdList[ key ] = variables.drivers[ key ].getName()>
+		</cfif>
+	</cfloop>
+	
+	<cfset keys=StructKeyArray(cdList)>
 	<cfset ArraySort(keys,"textNoCase")>
 	<tr>
 		<td class="tblHead" width="50">#stText.Settings.Type#</td>
 		<td class="tblContent" width="300"><select name="type">
-					<cfoutput><cfloop collection="#keys#" item="idx">
-					<cfset key=keys[idx]>
-					<cfset driver=drivers[key]>
-					<cfif not findNoCase("(old)",driver.getName())>
-						<option value="#key#">#driver.getName()#</option>
-					</cfif></cfloop></cfoutput>
+					<cfloop array="#keys#" index="key">
+					
+						<option value="#key#">#cdList[ key ]#</option>
+					</cfloop>
 				</select></td>
 	</tr>
 	<tr>

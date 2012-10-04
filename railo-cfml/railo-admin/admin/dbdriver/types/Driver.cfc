@@ -44,10 +44,13 @@
 	</cffunction>
 	
 	
-	<cffunction name="equals" returntype="string"  output="no"
+	<cffunction name="equals" returntype="boolean" output="false"
 		hint="return if String class match this">
-		<cfargument name="className" required="true">
-		<cfthrow message="implement the function equals">
+		
+		<cfargument name="className"	required="true">
+		<cfargument name="dsn"			required="true">
+		
+		<cfreturn this.className EQ arguments.className and this.dsn EQ arguments.dsn>
 	</cffunction>
 	
 	<cffunction name="getType" returntype="numeric" output="no">
@@ -62,12 +65,14 @@
 	
 	<cffunction name="getClass" returntype="string" output="no" 
 		hint="return driver Java Class">
-		<cfthrow message="implement the function getClass">
+		
+		<cfreturn this.className>
 	</cffunction>
 	
 	<cffunction name="getDSN" returntype="string" output="no" 
 		hint="return DSN">
-		<cfthrow message="implement the function getDSN">
+		
+		<cfreturn this.dsn>
 	</cffunction>
 	
 	<cffunction name="onBeforeUpdate" returntype="void" output="false">
@@ -82,4 +87,5 @@
 		
 	</cffunction>
 	
+
 </cfcomponent>
