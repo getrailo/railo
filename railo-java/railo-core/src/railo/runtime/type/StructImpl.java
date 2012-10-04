@@ -180,7 +180,7 @@ public class StructImpl extends StructSupport {
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(src);
+			//ThreadLocalDuplication.remove(src);
 		}	
 	}
 	

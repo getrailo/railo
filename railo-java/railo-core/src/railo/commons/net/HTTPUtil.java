@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
 import railo.runtime.PageContext;
@@ -755,7 +756,8 @@ public final class HTTPUtil {
 		return StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/atom+xml")  || 
-    	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  ||  
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/json")  || 
     	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
     	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
     	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
@@ -765,6 +767,17 @@ public final class HTTPUtil {
     	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
 		
 		// "application/x-www-form-urlencoded" ???
+	}
+	
+	public static boolean isTextMimeType(MimeType mimetype) {
+		if(mimetype==null) return false;
+		if(MimeType.APPLICATION_JSON.same(mimetype)) return true;
+		if(MimeType.APPLICATION_PLAIN.same(mimetype)) return true;
+		if(MimeType.APPLICATION_CFML.same(mimetype)) return true;
+		if(MimeType.APPLICATION_WDDX.same(mimetype)) return true;
+		if(MimeType.APPLICATION_XML.same(mimetype)) return true;
+		
+		return isTextMimeType(mimetype.toString());
 	}
 
 	public static boolean isSecure(URL url) {

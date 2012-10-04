@@ -23,6 +23,7 @@ import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.Page;
@@ -77,11 +78,11 @@ public final class ComponentUtil {
      * @return
      * @throws PageException
      */
-	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
-		return _getComponentJavaAccess(component, isNew,create,writeLog);
+	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
+		return _getComponentJavaAccess(component, isNew,create,writeLog,supressWSbeforeArg);
 	}
 	    
-    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
     	String className=getClassname(component).concat("_wrap");
@@ -133,7 +134,7 @@ public final class ComponentUtil {
         int max;
         for(int i=0;i<keys.length;i++){
         	max=-1;
-        	while((max=createMethod(statConstr,constr,_keys,cw,real,component.get(keys[i]),max, writeLog))!=-1){
+        	while((max=createMethod(statConstr,constr,_keys,cw,real,component.get(keys[i]),max, writeLog,supressWSbeforeArg))!=-1){
         		break;// for overload remove this
         	}
         }
@@ -142,7 +143,7 @@ public final class ComponentUtil {
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
 		adapter.loadThis();
         adapter.invokeConstructor(Types.OBJECT, CONSTRUCTOR_OBJECT);
-        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
+        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog,supressWSbeforeArg), _keys);
         adapter.returnValue();
         adapter.endMethod();
         
@@ -403,14 +404,14 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(ComponentUtil.getProperties(component,false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(component.getProperties(false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
 		return cl.loadClass(className); //ClassUtil.loadInstance(cl.loadClass(className));
     }
 
-	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List keys,ClassWriter cw,String className, Object member,int max,boolean writeLog) throws PageException {
+	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List keys,ClassWriter cw,String className, Object member,int max,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
 		
 		boolean hasOptionalArgs=false;
 		
@@ -429,7 +430,7 @@ public final class ComponentUtil {
         			types
             		);
             GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,keys,cw,className,adapter,method,writeLog);
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,keys,cw,className,adapter,method,writeLog,supressWSbeforeArg);
             Label start=adapter.newLabel();
             adapter.visitLabel(start);
             
@@ -580,12 +581,14 @@ public final class ComponentUtil {
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}
 
-	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
+		if(c instanceof ComponentPro)
+			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties);
 		return c.getProperties(onlyPeristent);
 	}
 	
-	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {
-		Property[] props = getProperties(c, onlyPeristent);
+	public static Property[] getIDProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
+		Property[] props = getProperties(c,onlyPeristent,includeBaseProperties);
 		java.util.List<Property> tmp=new ArrayList<Property>();
 		for(int i=0;i<props.length;i++){
 			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))

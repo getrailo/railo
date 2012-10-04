@@ -113,9 +113,9 @@ public class BodyBase extends StatementBase implements Body {
 	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
 		Iterator it = statements.iterator();
 		//int lastLine=-1;
-		int count=0;
+		//int count=0;
 		while(it.hasNext()) {
-			count++;
+			//count++;
 			Statement s = ((Statement)it.next());
 			
 	    	s.writeOut(bc);

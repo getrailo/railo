@@ -164,7 +164,7 @@ Error Output--->
 
 <cfif actionType EQ "update">
 <i><b>Class:</b> #datasource.classname#</i><br />
-<i><b>DNS:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
+<i><b>Connection String:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
 </cfif>
 <h2>
 	<cfif actionType EQ "update">

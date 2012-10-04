@@ -171,19 +171,20 @@ public final class Content extends BodyTagImpl {
             pageContext.clear();
         	InputStream is=null;
             OutputStream os=null;
-            long length;
+            long totalLength,contentLength;
             try {
             	os=getOutputStream();
             	
             	if(content!=null) {
-            		ReqRspUtil.setContentLength(rsp,content.length);
-                    length=content.length;
+            		//ReqRspUtil.setContentLength(rsp,content.length);
+            		contentLength=content.length;
+            		totalLength=content.length;
                      is=new BufferedInputStream(new ByteArrayInputStream(content));  
                 }
                 else {
                     ReqRspUtil.setContentLength(rsp,file.length());
                     pageContext.getConfig().getSecurityManager().checkFileLocation(file);
-                    length=file.length();
+                    contentLength=totalLength=file.length();
                     is=IOUtil.toBufferedInputStream(file.getInputStream());
                 }
             	
@@ -191,31 +192,33 @@ public final class Content extends BodyTagImpl {
             	if(!hasRanges)
             		IOUtil.copy(is,os,false,false);
             	else {
-            		//print.out("do part");
-            		//print.out(ranges);
-            		long off,len;
-            		long to;
+            		contentLength=0;
+            		long off,len,to;
             		for(int i=0;i<ranges.length;i++) {
             			off=ranges[i].from;
             			if(ranges[i].to==-1) {
             				len=-1;
-            				to=length;
+            				to=totalLength;
             			}
             			else {
             				len=ranges[i].to-ranges[i].from+1;
             				to=ranges[i].to;
             			}
-            			rsp.addHeader("Content-Range", "bytes "+off+"-"+to+"/"+Caster.toString(length));	
-            			//print.out("Content-Range: bytes "+off+"-"+to+"/"+Caster.toString(length));
+            			rsp.addHeader("Content-Range", "bytes "+off+"-"+to+"/"+Caster.toString(totalLength));
+            			rsp.setStatus(206);
+            			//print.e("Content-Range: bytes "+off+"-"+to+"/"+Caster.toString(totalLength));
+            			contentLength+=to-off+1;
+                        // ReqRspUtil.setContentLength(rsp,len);
             			IOUtil.copy(is, os,off,len);
             		}
             	}
+            	ReqRspUtil.setContentLength(rsp,contentLength);
             } 
             catch(IOException ioe) {}
             finally {
                 IOUtil.flushEL(os);
                 IOUtil.closeEL(is,os);
-                if(deletefile && file!=null) file.delete();
+                if(deletefile && file!=null) ResourceUtil.removeEL(file, true);
                 ((PageContextImpl)pageContext).getRootOut().setClosed(true);
             }
             throw new railo.runtime.exp.Abort(railo.runtime.exp.Abort.SCOPE_REQUEST);
@@ -265,12 +268,13 @@ public final class Content extends BodyTagImpl {
 	private Range[] getRanges() {
 		HttpServletRequest req = pageContext.getHttpServletRequest();
 		Enumeration names = req.getHeaderNames();
+		
 		if(names==null) return null;
 		String name;
 		Range[] range;
 		while(names.hasMoreElements()) {
 			name=(String) names.nextElement();
-			//print.out("header:"+name);
+			
 			if("range".equalsIgnoreCase(name)){
 				range = getRanges(name,req.getHeader(name));
 				if(range!=null) return range;

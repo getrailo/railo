@@ -19,6 +19,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.library.tag.TagLibFactory;
@@ -254,6 +255,8 @@ public final class FunctionLibFactory extends DefaultHandler {
 
 				else if(inside.equals("member-name"))
 					function.setMemberName(value);
+				else if(inside.equals("member-chaining"))
+					function.setMemberChaining(Caster.toBooleanValue(value,false));
 				
 				else if(inside.equals("status"))
 					function.setStatus(TagLibFactory.toStatus(value));

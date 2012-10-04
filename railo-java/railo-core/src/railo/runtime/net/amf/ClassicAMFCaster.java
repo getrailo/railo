@@ -42,7 +42,6 @@ import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
-import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 import railo.runtime.type.wrap.ListAsArray;
 import railo.runtime.type.wrap.MapAsStruct;
@@ -134,7 +133,7 @@ public class ClassicAMFCaster implements AMFCaster {
 		if(cfc instanceof ComponentAccess)c=ComponentWrap.toComponentWrap(methodAccessLevel,cfc);
 		
 
-		Property[] prop = ComponentUtil.getProperties(cfc,false);
+		Property[] prop = cfc.getProperties(false);
 		Object v; UDF udf;
     	if(prop!=null)for(int i=0;i<prop.length;i++) {
     		boolean remotingFetch = Caster.toBooleanValue(prop[i].getDynamicAttributes().get(REMOTING_FETCH,Boolean.TRUE),true);

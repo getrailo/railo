@@ -76,11 +76,11 @@ public class SimpleHTMLDumpWriter implements DumpWriter {
 		for(int i=0;i<rows.length;i++) {
 			writer.write("<tr>");
 			DumpData[] items=rows[i].getItems();
-			int comperator=1;
+			//int comperator=1;
 			for(int y=0;y<cols;y++) {
 				if(y<=items.length-1) value=items[y];
 				else value=new SimpleDumpData("&nbsp;");
-				comperator*=2;
+				//comperator*=2;
 				if(value==null)value=new SimpleDumpData("null");
 				//else if(value.equals(""))value="&nbsp;";
 				if(!inside){

@@ -118,12 +118,12 @@
 	</td>
 </tr>
 </cfif>
+</table>
 <!---
 
 
 
 Create Archive --->
-</table>
 <br />
 <h2>#stText.Mappings.archiveTitle#</h2>
 #stText.Mappings.archiveDesc#

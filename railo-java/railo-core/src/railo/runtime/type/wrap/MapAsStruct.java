@@ -40,6 +40,10 @@ public  class MapAsStruct extends StructSupport implements Struct {
     }
     
 
+    public static Struct toStruct(Map map) {
+    	return toStruct(map,false);
+	}
+
     public static Struct toStruct(Map map, boolean caseSensitive) {
     	if(map instanceof Struct) return ((Struct)map);
 		return new MapAsStruct(map,caseSensitive);
@@ -213,7 +217,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
      */
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct ["+getClass().getName()+"] to String",
-          "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
+          "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
 	/**
 	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)

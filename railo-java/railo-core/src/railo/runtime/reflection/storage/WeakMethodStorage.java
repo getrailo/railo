@@ -17,7 +17,7 @@ import railo.runtime.type.StructImpl;
  * Method Storage Class
  */
 public final class WeakMethodStorage {
-	private Map map=new ReferenceMap();
+	private Map<Class,Struct> map=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	
 	/**
 	 * returns a methods matching given criteria or null if method doesn't exist
@@ -26,21 +26,17 @@ public final class WeakMethodStorage {
 	 * @param count wished count of arguments
 	 * @return matching Methods as Array
 	 */
-	public Method[] getMethods(Class clazz,Collection.Key methodName, int count) {
-		Object o=map.get(clazz);
-		Struct methodsMap;
-		if(o==null) {
+	public synchronized Method[] getMethods(Class clazz,Collection.Key methodName, int count) {
+		Struct methodsMap = map.get(clazz); 
+		if(methodsMap==null) 
 			methodsMap=store(clazz);
-		}
-		else methodsMap=(Struct) o;
 		
-		o=methodsMap.get(methodName,null);
+		Object o = methodsMap.get(methodName,null);
 		if(o==null) return null;
 		Array methods=(Array) o;
 		o=methods.get(count+1,null);
 		if(o==null) return null;
 		return (Method[]) o;
-		
 	}
 
 

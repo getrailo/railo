@@ -50,6 +50,7 @@ public final class FunctionLibFunction {
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private String memberName;
 	private short memberType=CFTypes.TYPE_UNKNOW;
+	private boolean memberChaining;
 
 	
 	/**
@@ -307,14 +308,18 @@ public final class FunctionLibFunction {
 	}
 	public void setMemberName(String memberName) {
 		if(StringUtil.isEmpty(memberName,true)) return;
-		this.memberName=memberName.trim();
-		
+		this.memberName=memberName.trim();	
 	}
 	public String getMemberName() {
 		return memberName;
 	}
+	public void setMemberChaining(boolean memberChaining) {
+		this.memberChaining=memberChaining;	
+	}
+	public boolean getMemberChaining() {
+		return memberChaining;
+	}
 	
-
 	public short getMemberType() {
 		if(memberName!=null && memberType==CFTypes.TYPE_UNKNOW){
 			ArrayList<FunctionLibFunctionArg> args = getArg();

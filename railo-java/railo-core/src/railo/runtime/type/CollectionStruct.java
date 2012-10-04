@@ -6,6 +6,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
@@ -35,7 +36,7 @@ public final class CollectionStruct extends StructSupport implements ObjectWrap,
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return coll.duplicate(deepCopy);
+		return (Collection) Duplicator.duplicate(coll,deepCopy);
 	}
 	
 

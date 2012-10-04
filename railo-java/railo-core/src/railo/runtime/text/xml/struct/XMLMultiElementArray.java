@@ -14,6 +14,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
@@ -239,7 +240,7 @@ public class XMLMultiElementArray extends ArraySupport {
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return new XMLMultiElementArray((XMLMultiElementStruct)struct.duplicate(deepCopy));
+		return new XMLMultiElementArray((XMLMultiElementStruct)Duplicator.duplicate(struct,deepCopy));
 	}
 	
 

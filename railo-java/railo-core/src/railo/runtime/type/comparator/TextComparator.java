@@ -1,17 +1,20 @@
 package railo.runtime.type.comparator;
 
+import java.util.Comparator;
+
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 
 
 /**
  * comparator implementation to compare textes
  */
-public final class TextComparator implements ExceptionComparator {
+public final class TextComparator implements Comparator {
 	
 	private boolean isAsc;
 	private boolean ignoreCase;
-	private PageException pageException=null;
 
 	/**
 	 * constructor of the class
@@ -24,23 +27,15 @@ public final class TextComparator implements ExceptionComparator {
 	}
 	
 	/**
-	 * @return Returns the expressionException.
-	 */
-	public PageException getPageException() {
-		return pageException;
-	}
-	
-	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	public int compare(Object oLeft, Object oRight) {
 		try {
-			if(pageException!=null) return 0;
-			else if(isAsc) return compareObjects(oLeft, oRight);
-			else return compareObjects(oRight, oLeft);
-		} catch (PageException e) {
-			pageException=e;
-			return 0;
+			if(isAsc) return compareObjects(oLeft, oRight);
+			return compareObjects(oRight, oLeft);
+		} 
+		catch (PageException e) {
+			throw new PageRuntimeException(new ExpressionException("can only sort arrays with simple values",e.getMessage()));
 		}
 	}
 	

@@ -23,7 +23,7 @@ public final class Continue extends StatementBase {
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		FlowControl ls = ASMUtil.getAncestorFlowControlStatement(this);
+		FlowControlContinue ls = ASMUtil.getAncestorContinueFCStatement(this);
 		if(ls!=null)
 			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, ls.getContinueLabel());
 	}

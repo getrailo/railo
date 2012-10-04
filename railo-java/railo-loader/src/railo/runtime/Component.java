@@ -131,7 +131,8 @@ public interface Component extends Struct,Objects,CFObject {
 	 * @param onlyPeristent if true return only columns where attribute persistent is not set to false
 	 * @return
 	 */
-	public Property[] getProperties(boolean onlyPeristent);
+	public Property[] getProperties(boolean onlyPeristent);// FUTURE deprecated
+	// FUTURE public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties); 
 	
 	public void setProperty(Property property) throws PageException;
 	

@@ -10,6 +10,7 @@ import org.apache.poi.ss.formula.functions.T;
 
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 
 public class ArrayAsArrayList extends ArrayList {
@@ -240,7 +241,7 @@ public class ArrayAsArrayList extends ArrayList {
 	 * @see java.util.ArrayList#clone()
 	 */
 	public Object clone() {
-		return toArrayList((Array) array.duplicate(true));
+		return toArrayList((Array) Duplicator.duplicate(array,true));
 	}
 
 	/**

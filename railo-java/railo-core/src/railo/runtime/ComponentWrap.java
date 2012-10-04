@@ -21,7 +21,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.StructSupport;
 
-public final class ComponentWrap extends StructSupport implements Component, Objects {
+public final class ComponentWrap extends StructSupport implements ComponentPro, Objects {
    
     private int access;
     private ComponentAccess component;
@@ -458,11 +458,14 @@ public final class ComponentWrap extends StructSupport implements Component, Obj
 		return component.getWSDLFile();
 	}
 
-	/**
-	 * @see railo.runtime.Component#getProperties()
-	 */
+	@Override
 	public Property[] getProperties(boolean onlyPeristent) {
 		return component.getProperties(onlyPeristent);
+	}
+	
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return ((ComponentPro)component).getProperties(onlyPeristent,includeBaseProperties);
 	}
 	
 	/**

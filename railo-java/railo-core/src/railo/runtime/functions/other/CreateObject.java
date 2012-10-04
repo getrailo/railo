@@ -104,20 +104,8 @@ public final class CreateObject implements Function {
         if(pc.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==SecurityManager.VALUE_YES) {
         	ConfigImpl ci = ((ConfigImpl)pc.getConfig());
         	
-        	java.util.List<Resource> resources=new ArrayList<Resource>();
-        	
-        	// get Resources from application context
-        	JavaSettings settings=pc.getApplicationContext().getJavaSettings();
-        	Resource[] _resources = settings==null?null:settings.getResources();
-        	if(_resources!=null)for(int i=0;i<_resources.length;i++){
-        		/*Resource res = pc.getConfig().getResource(paths[i]);
-                if(!res.exists()) {
-                	res=ResourceUtil.getCanonicalResourceEL(.getParentResource().getRealResource(path));
-                    
-                }*/
-        		resources.add(_resources[i]);
-        	}
-        	
+        	// get java settings from application.cfc
+        	java.util.List<Resource> resources=getJavaSettings(pc);
         	
         	// load resources
         	//Resource[] reses=null;
@@ -143,7 +131,19 @@ public final class CreateObject implements Function {
         throw new SecurityException("can't create Java Object ["+className+"], direct java access is deinied by security manager");
 	} 
     
-    public static Object doCOM(PageContext pc,String className) {
+    public static java.util.List<Resource> getJavaSettings(PageContext pc) {
+    	java.util.List<Resource> resources=new ArrayList<Resource>();
+    	
+    	// get Resources from application context
+    	JavaSettings settings=pc.getApplicationContext().getJavaSettings();
+    	Resource[] _resources = settings==null?null:settings.getResources();
+    	if(_resources!=null)for(int i=0;i<_resources.length;i++){
+    		resources.add(_resources[i]);
+    	}
+    	
+		return resources;
+	}
+	public static Object doCOM(PageContext pc,String className) {
 		return new COMObject(className);
 	} 
     

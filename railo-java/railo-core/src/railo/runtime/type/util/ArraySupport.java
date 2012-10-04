@@ -90,10 +90,12 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	 */
 	public final boolean retainAll(java.util.Collection c) {
 		boolean modified = false;
-		Iterator it = iterator();
-		while (it.hasNext()) {
-		    if(!c.contains(it.next())) {
-		    	it.remove();
+		Key[] keys = CollectionUtil.keys(this);
+		Key k;
+		for(int i=keys.length-1;i>=0;i--) {
+			k = keys[i];
+			if(!c.contains(get(k,null))) {
+		    	removeEL(k);
 		    	modified = true;
 		    }
 		}
@@ -244,7 +246,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
      */
     public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Array to String",
-          "Use Build-In-Function \"serialize(Array):String\" to create a String from Array");
+          "Use Built-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
     /**
@@ -382,4 +384,11 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	public java.util.Iterator<Object> getIterator() {
     	return valueIterator();
     } 
+
+	@Override
+	public synchronized void sort(String sortType, String sortOrder) throws PageException {
+		if(getDimension()>1)
+			throw new ExpressionException("only 1 dimensional arrays can be sorted");
+		sort(ArrayUtil.toComparator(null, sortType, sortOrder,false));
+	}
 }

@@ -15,6 +15,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
@@ -143,7 +144,7 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return new ArgumentThreadImpl((Struct)sct.duplicate(deepCopy));
+		return new ArgumentThreadImpl((Struct)Duplicator.duplicate(sct,deepCopy));
 	}
 
 	/**

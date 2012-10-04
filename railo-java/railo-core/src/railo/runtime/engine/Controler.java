@@ -270,11 +270,11 @@ public final class Controler extends Thread {
 
 	private PageSourcePool[] getPageSourcePools(Mapping... mappings) {
         PageSourcePool[] pools=new PageSourcePool[mappings.length];
-        int size=0;
+        //int size=0;
         
         for(int i=0;i<mappings.length;i++) {
             pools[i]=((MappingImpl)mappings[i]).getPageSourcePool();
-            size+=pools[i].size();
+            //size+=pools[i].size();
         }
         return pools;
     }

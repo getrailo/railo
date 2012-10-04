@@ -10,6 +10,7 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpMessage;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
@@ -233,7 +234,7 @@ public class HTTPEngine4Impl {
         	HttpConnectionParams.setSoTimeout(params, (int)timeout);
         }
 	}
-	
+
 	public static void setCredentials(DefaultHttpClient client, String username,String password) {
         // set Username and Password
         if(!StringUtil.isEmpty(username,true)) {
@@ -242,6 +243,17 @@ public class HTTPEngine4Impl {
             cp.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
                 new UsernamePasswordCredentials(username,password));
+            //httpMethod.setDoAuthentication( true );
+        }
+	}
+	public static void setNTCredentials(DefaultHttpClient client, String username,String password, String workStation, String domain) {
+        // set Username and Password
+        if(!StringUtil.isEmpty(username,true)) {
+            if(password==null)password="";
+            CredentialsProvider cp = client.getCredentialsProvider();
+            cp.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
+                new NTCredentials(username,password,workStation,domain));
             //httpMethod.setDoAuthentication( true );
         }
 	}

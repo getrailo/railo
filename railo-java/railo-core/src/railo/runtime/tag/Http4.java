@@ -146,6 +146,9 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static final Key EXPLANATION = KeyImpl.intern("explanation");
 	private static final Key RESPONSEHEADER = KeyImpl.intern("responseheader");
 	private static final Key SET_COOKIE = KeyImpl.intern("set-cookie");
+	
+	private static final short AUTH_TYPE_BASIC = 0;
+	private static final short AUTH_TYPE_NTLM = 1;
 
 	
 	
@@ -248,6 +251,10 @@ public final class Http4 extends BodyTagImpl implements Http {
     private String result="cfhttp";
     
     private boolean addtoken=false;
+    
+    private short authType=AUTH_TYPE_BASIC;
+    private String workStation=null;
+    private String domain=null;
 
 	
 	/**
@@ -285,6 +292,10 @@ public final class Http4 extends BodyTagImpl implements Http {
 		multiPartType=MULTIPART_FORM_DATA;
         result="cfhttp";
         addtoken=false;
+        
+        authType=AUTH_TYPE_BASIC;
+        workStation=null;
+        domain=null;
 	}
 	
 	/**
@@ -472,6 +483,23 @@ public final class Http4 extends BodyTagImpl implements Http {
 	**/
 	public void setName(String name)	{
 		this.name=name;
+	}
+	
+	public void setAuthtype(String strAuthType) throws ExpressionException{
+		if(StringUtil.isEmpty(strAuthType,true)) return;
+		strAuthType=strAuthType.trim();
+		if("basic".equalsIgnoreCase(strAuthType)) authType=AUTH_TYPE_BASIC;
+		else if("ntlm".equalsIgnoreCase(strAuthType)) authType=AUTH_TYPE_NTLM;
+		else
+			throw new ExpressionException("invalid value ["+strAuthType+"] for attribute authType, value must be one of the following [basic,ntlm]");
+	}
+
+	public void setWorkstation(String workStation)	{
+		this.workStation=workStation;
+	}
+
+	public void setDomain(String domain)	{
+		this.domain=domain;
 	}
 
 	/** set the value method
@@ -783,7 +811,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        
 	    // header		
 	        cfhttp.set(HEADER,raw.toString());
-	        if(rsp.getStatusCode()!=STATUS_OK){
+	        if(!isStatusOK(rsp.getStatusCode())){
 	        	String msg=rsp.getStatusCode()+" "+rsp.getStatusText();
 	            cfhttp.setEL(ERROR_DETAIL,msg);
 	            if(throwonerror){
@@ -795,6 +823,10 @@ public final class Http4 extends BodyTagImpl implements Http {
 			//rsp.release();
 		}
 	    
+	}
+
+	public static boolean isStatusOK(int statusCode) {
+		return statusCode>=200 && statusCode<=299;
 	}
 
 	private PageException toPageException(Throwable t) {
@@ -1126,7 +1158,15 @@ public final class Http4 extends BodyTagImpl implements Http {
 	// set Username and Password
 		if(http.username!=null) {
 			if(http.password==null)http.password="";
-			HTTPEngine4Impl.setCredentials(client, http.username, http.password);
+			if(AUTH_TYPE_NTLM==http.authType) {
+				if(StringUtil.isEmpty(http.workStation,true))
+	                throw new ApplicationException("attribute workstation is required when authentication type is [NTLM]");
+				if(StringUtil.isEmpty(http.domain,true))
+	                throw new ApplicationException("attribute domain is required when authentication type is [NTLM]");
+					
+				HTTPEngine4Impl.setNTCredentials(client, http.username, http.password, http.workStation,http.domain);
+			}
+			else HTTPEngine4Impl.setCredentials(client, http.username, http.password);
 		}
 	
 	// set Proxy

@@ -176,7 +176,7 @@ public final class StructImplString extends StructImpl implements Struct {
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(src);
+			// ThreadLocalDuplication.remove(src);  removed "remove" to catch sisters and brothers
 		}
 	}
 
@@ -206,7 +206,7 @@ public final class StructImplString extends StructImpl implements Struct {
      */
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
-          "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
+          "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
 
 	/**

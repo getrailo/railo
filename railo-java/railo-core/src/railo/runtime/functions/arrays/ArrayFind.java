@@ -43,13 +43,13 @@ public final class ArrayFind implements Function {
         return 0;
     }
 	
-    public static int find(Array array, Object value, boolean caseSensitive) throws PageException {
+    public static int find(Array array, Object value, boolean caseSensitive) {
         int len=array.size();
         boolean valueIsSimple=Decision.isSimpleValue(value);
         Object o;
         for(int i=1;i<=len;i++) {
             o=array.get(i,null);
-            if(o!=null && Operator.equals(o, value,caseSensitive,!valueIsSimple)) return i;
+            if(o!=null && Operator.equalsEL(o, value,caseSensitive,!valueIsSimple)) return i;
         }
         return 0;
     }

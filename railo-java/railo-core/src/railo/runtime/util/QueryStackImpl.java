@@ -2,6 +2,7 @@ package railo.runtime.util;
 
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
@@ -23,7 +24,7 @@ public final class QueryStackImpl implements QueryStack {
 		if(deepCopy) {
 			qs.queries=new Query[queries.length];
 			for(int i=0;i<queries.length;i++) {
-				qs.queries[i]=(Query)queries[i].duplicate(deepCopy);
+				qs.queries[i]=(Query)Duplicator.duplicate(queries[i],deepCopy);
 			}
 		}
 		else qs.queries=queries;

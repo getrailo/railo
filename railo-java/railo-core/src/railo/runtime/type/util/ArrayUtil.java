@@ -1,7 +1,9 @@
 package railo.runtime.type.util;
 
 import java.sql.Types;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -11,6 +13,8 @@ import java.util.Set;
 import railo.commons.lang.ArrayUtilException;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -19,7 +23,9 @@ import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Array;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.SortRegister;
+import railo.runtime.type.comparator.TextComparator;
 
 /**
  * Util for diffrent methods to manipulate arrays
@@ -98,10 +104,17 @@ public final class ArrayUtil {
 	 * @throws ExpressionException
 	 */
 	public static void swap(Array array, int left, int right) throws ExpressionException {
+		int len=array.size();
+		if(len==0)
+			throw new ExpressionException("array is empty");
+		if(left<1 || left>len)
+			throw new ExpressionException("invalid index ["+left+"]","valid indexes are from 1 to "+len);
+		if(right<1 || right>len)
+			throw new ExpressionException("invalid index ["+right+"]","valid indexes are from 1 to "+len);
 		
 		try {
-			Object leftValue=array.getE(left);
-			Object rightValue=array.getE(right);
+			Object leftValue=array.get(left,null);
+			Object rightValue=array.get(right,null);
 			array.setE(left,rightValue);
 			array.setE(right,leftValue);
 		} catch (PageException e) {
@@ -775,5 +788,38 @@ public final class ArrayUtil {
 		
 		Object arr = java.lang.reflect.Array.newInstance(clazz, list.size());
 		return list.toArray((Object[]) arr);	
+	}
+	
+
+	public static Comparator toComparator(PageContext pc,String sortType, String sortOrder, boolean localeSensitive) throws PageException {
+		// check sortorder
+		boolean isAsc=true;
+		if(sortOrder.equalsIgnoreCase("asc"))isAsc=true;
+		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
+		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
+		
+		// text
+		if(sortType.equalsIgnoreCase("text")) {
+			if(localeSensitive)return toCollator(pc,Collator.IDENTICAL);
+			return new TextComparator(isAsc,false);
+		}
+		// text no case
+		else if(sortType.equalsIgnoreCase("textnocase")) {
+			if(localeSensitive)return toCollator(pc,Collator.TERTIARY);
+			return new TextComparator(isAsc,true);
+		}
+		// numeric
+		else if(sortType.equalsIgnoreCase("numeric")) {
+			return new NumberComparator(isAsc);
+		}
+		else {
+			throw new ExpressionException("invalid sort type ["+sortType+"], sort types are [text, textNoCase, numeric]");
+		}	
+	}
+	private static Comparator toCollator(PageContext pc, int strength) {
+		Collator c=Collator.getInstance(ThreadLocalPageContext.getLocale(pc));
+		c.setStrength(strength);
+		c.setDecomposition(Collator.CANONICAL_DECOMPOSITION);
+		return c;
 	}
 }

@@ -28,6 +28,9 @@ Defaults --->
 			<cfif isDefined('form.dotNotation') and form.dotNotation EQ "oc">
             	<cfset dotNotUpper=false>
             </cfif>
+            <cfif not isDefined('form.supressWSBeforeArg')>
+            	<cfset form.supressWSBeforeArg=false>
+            </cfif>
             
 			<cfadmin 
 				action="updateCompilerSettings"
@@ -35,7 +38,7 @@ Defaults --->
 				password="#session["password"&request.adminType]#"
 				
 				dotNotationUpperCase="#dotNotUpper#"
-                
+                supressWSBeforeArg="#form.supressWSBeforeArg#"
 				remoteClients="#request.getRemoteClients()#">
 	
 		</cfcase>
@@ -48,6 +51,7 @@ Defaults --->
 				password="#session["password"&request.adminType]#"
 				
 				dotNotationUpperCase=""
+				supressWSBeforeArg=""
 				
 				remoteClients="#request.getRemoteClients()#">
 	
@@ -102,7 +106,7 @@ Create Datasource --->
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
-<!--- Supress Whitespace --->
+<!--- Dot Notation Upper Case --->
 <tr>
 	<td class="tblHead" width="150">#stText.setting.dotNotation#</td>
 	<td class="tblContent">
@@ -116,6 +120,19 @@ Create Datasource --->
 			<b>#(setting.dotNotationUpperCase)?stText.setting.dotNotationUpperCase:stText.setting.dotNotationOriginalCase#</b><input type="hidden" name="dotNotation" value="#setting.dotNotationUpperCase?'uc':'oc'#">
 		</cfif><span class="comment">#replace(stText.setting.dotNotationDesc,'
 ','<br />','all')#</span>
+	</td>
+</tr>
+
+<!--- Supress Whitespace in front of cfargument --->
+<tr>
+	<td class="tblHead" width="150">#stText.setting.supressWSBeforeArg#</td>
+	<td class="tblContent">
+		
+		<cfif hasAccess>
+        	<input type="checkbox" name="supressWSBeforeArg" value="true" <cfif setting.supressWSBeforeArg>checked="checked"</cfif> />
+		<cfelse>
+			<b>#yesNoFormat(setting.supressWSBeforeArg)#</b><br /><input type="hidden" name="supressWSBeforeArg" value="#setting.supressWSBeforeArg#">
+		</cfif><span class="comment">#stText.setting.supressWSBeforeArgDesc#</span>
 	</td>
 </tr>
 

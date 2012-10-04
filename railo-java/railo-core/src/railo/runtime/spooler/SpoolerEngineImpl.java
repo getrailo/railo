@@ -20,6 +20,7 @@ import railo.runtime.engine.ThreadLocalConfig;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -303,7 +304,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	}
 	
 	private Array translateTime(Array exp) {
-		exp=(Array) exp.duplicate(true);
+		exp=(Array) Duplicator.duplicate(exp,true);
 		Iterator<Object> it = exp.valueIterator();
 		Struct sct;
 		while(it.hasNext()) {

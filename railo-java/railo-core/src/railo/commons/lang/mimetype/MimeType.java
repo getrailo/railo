@@ -342,6 +342,7 @@ public class MimeType {
 	}
 	
 	public static int toFormat(MimeType mt, int defaultValue) {
+		if(mt==null) return defaultValue;
 		if(MimeType.APPLICATION_JSON.same(mt)) return  UDF.RETURN_FORMAT_JSON;
 		if(MimeType.APPLICATION_WDDX.same(mt)) return  UDF.RETURN_FORMAT_WDDX;
 		if(MimeType.APPLICATION_CFML.same(mt)) return  UDF.RETURN_FORMAT_SERIALIZE;

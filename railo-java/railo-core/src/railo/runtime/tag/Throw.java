@@ -1,12 +1,21 @@
 package railo.runtime.tag;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.CustomTypeException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.ObjectWrap;
+import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * The cfthrow tag raises a developer-specified exception that can be caught with cfcatch tag 
@@ -117,6 +126,44 @@ public final class Throw extends TagImpl {
 			Throwable t=(Throwable)object;
 			return new CustomTypeException(t.getMessage(),"","",t.getClass().getName(),"");
 		}
+		if(object instanceof Struct){
+			Struct sct=(Struct) object;
+			String type=Caster.toString(sct.get(KeyConstants._type,""),"").trim();
+			String msg=Caster.toString(sct.get(KeyConstants._message,null),null);
+			if(!StringUtil.isEmpty(msg, true)) {
+				String detail=Caster.toString(sct.get(KeyConstants._detail,null),null);
+				String errCode=Caster.toString(sct.get("ErrorCode",null),null);
+				String extInfo=Caster.toString(sct.get("ExtendedInfo",null),null);
+				
+				PageException pe=null;
+				if("application".equalsIgnoreCase(type)) 
+					pe = new ApplicationException(msg, detail);
+				else if("expression".equalsIgnoreCase(type)) 
+					pe = new ExpressionException(msg, detail);
+				else 
+					pe=new CustomTypeException(msg, detail, errCode, type, extInfo);
+				
+				// Extended Info
+				if(!StringUtil.isEmpty(extInfo,true))pe.setExtendedInfo(extInfo);
+	
+				// Error Code
+				if(!StringUtil.isEmpty(errCode,true))pe.setErrorCode(errCode);
+				
+				// Additional
+				if(pe instanceof PageExceptionImpl) {
+					PageExceptionImpl pei=(PageExceptionImpl) pe;
+					sct=Caster.toStruct(sct.get("additional",null),null);
+					Iterator<Entry<Key, Object>> it = sct.entryIterator();
+					Entry<Key, Object> e;
+					while(it.hasNext()){
+						e = it.next();
+						pei.setAdditional(e.getKey(), e.getValue());
+					}
+				}
+				return pe;
+			}
+		}
+		
 		return defaultValue;
 		
 	}

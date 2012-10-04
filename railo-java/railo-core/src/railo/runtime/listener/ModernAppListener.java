@@ -33,6 +33,7 @@ import railo.runtime.net.http.HttpServletRequestDummy;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -43,7 +44,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
-import railo.runtime.type.util.StructUtil;
 
 public class ModernAppListener extends AppListenerSupport {
 
@@ -118,7 +118,7 @@ public class ModernAppListener extends AppListenerSupport {
 			Object method;
 			if(isCFC && app.contains(pc,ON_CFCREQUEST) && (method=pc.urlFormScope().get(ComponentPage.METHOD,null))!=null) { 
 				
-				Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
+				Struct url = (Struct)Duplicator.duplicate(pc.urlFormScope(),true);
 		        
 		        url.removeEL(KeyImpl.FIELD_NAMES);
 		        url.removeEL(ComponentPage.METHOD);

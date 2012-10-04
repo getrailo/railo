@@ -276,7 +276,7 @@ public final class CFMLTransformer {
 
 		SourceFile source=cfml.getSourceFile(); 
 		
-		Page page=new Page(source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog());
+		Page page=new Page(source.getPhyscalFile(),source.getFullClassName(),Info.getFullVersionInfo(),sourceLastModified,cfml.getWriteLog(),config.getSupressWSBeforeArg());
 		Data data = new Data(_tlibs,flibs,config.getCoreTagLib().getScriptTags(),cfml,config,page);
 		
 		//Body body=page;
@@ -912,7 +912,7 @@ public final class CFMLTransformer {
     		allowDefaultValue.setValue(false);
     		TagLibTagAttr attr = tag.getDefaultAttribute();
     		if(attr==null)
-    			throw new TemplateException(data.cfml,"Invalid Identifer.");
+    			throw new TemplateException(data.cfml,"Invalid Identifier.");
     		name=attr.getName();
     		sbType.append(attr.getType());
     		isDefaultValue=true;
@@ -1065,7 +1065,7 @@ public final class CFMLTransformer {
 	public static String identifier(CFMLString cfml,boolean throwError) throws TemplateException  {
 		int start = cfml.getPos();
 		if(!cfml.isCurrentBetween('a','z') && !cfml.isCurrent('_')) {
-			if(throwError)throw new TemplateException(cfml,"Invalid Identifer.");
+			if(throwError)throw new TemplateException(cfml,"Invalid Identifier.");
 			return null;
 		}
 		do {

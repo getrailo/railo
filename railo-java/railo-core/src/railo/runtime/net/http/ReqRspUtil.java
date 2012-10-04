@@ -9,10 +9,14 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.xml.sax.InputSource;
+
+import railo.commons.io.IOUtil;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.mimetype.MimeType;
@@ -21,8 +25,15 @@ import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.converter.WDDXConverter;
+import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsLocalHost;
+import railo.runtime.interpreter.CFMLExpressionInterpreter;
+import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLCaster;
+import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.type.UDF;
 
 public final class ReqRspUtil {
 
@@ -346,4 +357,93 @@ public final class ReqRspUtil {
 		if(rtn==null) return MimeType.ALL;
 		return rtn;
 	}
+    
+    public static String getContentTypeAsString(PageContext pc,String defaultValue) {
+    	MimeType mt = getContentType(pc);
+    	if(mt==MimeType.ALL) return defaultValue;
+    	return mt.toString();
+    }
+
+	/**
+	 * returns the body of the request
+	 * @param pc
+	 * @param deserialized if true railo tries to deserialize the body based on the content-type, for example when the content type is "application/json"
+	 * @param defaultValue value returned if there is no body
+	 * @return
+	 */
+	public static Object getRequestBody(PageContext pc,boolean deserialized, Object defaultValue) {
+		HttpServletRequest req = pc.getHttpServletRequest();
+    	
+		MimeType contentType = getContentType(pc);
+		String strContentType=contentType==MimeType.ALL?null:contentType.toString();
+        String charEncoding = req.getCharacterEncoding();
+        Object obj = "";
+        
+        boolean isBinary =!(
+        		strContentType == null || 
+        		HTTPUtil.isTextMimeType(contentType) ||
+        		strContentType.toLowerCase().startsWith("application/x-www-form-urlencoded"));
+        
+        if(req.getContentLength() > -1) {
+        	ServletInputStream is=null;
+            try {
+                byte[] data = IOUtil.toBytes(is=req.getInputStream());//new byte[req.getContentLength()];
+                
+                if(isBinary) return data;
+                
+                String str;
+                if(charEncoding != null && charEncoding.length() > 0)
+                    obj = str = new String(data, charEncoding);
+                else
+                    obj = str = new String(data);
+                
+                if(deserialized){
+                	int format = MimeType.toFormat(contentType, -1);
+                	switch(format) {
+                	case UDF.RETURN_FORMAT_JSON:
+                		try{
+                			obj=new JSONExpressionInterpreter().interpret(pc, str);
+                		}
+                		catch(PageException pe){}
+                	break;
+                	case UDF.RETURN_FORMAT_SERIALIZE:
+                		try{
+                			obj=new CFMLExpressionInterpreter().interpret(pc, str);
+                		}
+                		catch(PageException pe){}
+                	break;
+                	case UDF.RETURN_FORMAT_WDDX:
+                		try{
+                			WDDXConverter converter =new WDDXConverter(pc.getTimeZone(),false,true);
+                			converter.setTimeZone(pc.getTimeZone());
+                			obj = converter.deserialize(str,false);
+                		}
+                		catch(Exception pe){}
+                	break;
+                	case UDF.RETURN_FORMAT_XML:
+                		try{
+                			InputSource xml = XMLUtil.toInputSource(pc,str.trim());
+                			InputSource validator =null;
+                			obj = XMLCaster.toXMLStruct(XMLUtil.parse(xml,validator,false),true);
+                		}
+                		catch(Exception pe){}
+                	break;
+                	}
+                }
+               
+                
+                
+            }
+            catch(Exception e) {
+            	return defaultValue;
+            }
+            finally {
+            	IOUtil.closeEL(is);
+            }
+        }
+        else {
+        	return defaultValue;
+        }
+        return obj;
+    }
 }

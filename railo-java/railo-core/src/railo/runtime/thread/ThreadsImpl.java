@@ -115,7 +115,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(this);
+			//ThreadLocalDuplication.remove(this);  removed "remove" to catch sisters and brothers
 		}
 		return sct;
 	}

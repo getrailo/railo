@@ -7,6 +7,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Struct;
 
 public class ORMExecuteQuery {
@@ -36,7 +37,9 @@ public class ORMExecuteQuery {
 	private static Object _call(PageContext pc,String hql, Object params, boolean unique, Struct queryOptions) throws PageException {
 		ORMSession session=ORMUtil.getSession(pc);
 		//ORMEngine engine= ORMUtil.getEngine(pc);
-		if(Decision.isStruct(params))
+		if(params==null)
+			return session.executeQuery(pc,hql,new ArrayImpl(),unique,queryOptions);
+		else if(Decision.isStruct(params))
 			return session.executeQuery(pc,hql,Caster.toStruct(params),unique,queryOptions);
 		else if(Decision.isArray(params))
 			return session.executeQuery(pc,hql,Caster.toArray(params),unique,queryOptions);

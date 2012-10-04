@@ -24,8 +24,6 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.SQL;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -165,12 +163,13 @@ public final class DebuggerImpl implements Debugger {
         return arrPages;
     }
 
-	private DumpData _toDumpData(int value) {
+	/*private DumpData _toDumpData(int value) {
         return new SimpleDumpData(_toString(value));
     }
 	private DumpData _toDumpData(long value) {
         return new SimpleDumpData(_toString(value));
-    }
+    }*/
+	
 	private String _toString(long value) {
         if(value<=0) return "0";
         return String.valueOf(value);
@@ -483,7 +482,7 @@ public final class DebuggerImpl implements Debugger {
 			catch(PageException dbe) {}
         }
         
-        Query history=new QueryImpl(new String[]{},0,"history");
+        Query history=new QueryImpl(new Collection.Key[]{},0,"history");
         try {
 			history.addColumn(KeyConstants._id, historyId);
 	        history.addColumn(KeyConstants._level, historyLevel);
@@ -516,22 +515,22 @@ public final class DebuggerImpl implements Debugger {
         DebugQueryColumn dqc;
         outer:if(qry!=null) {
         	Struct usage=null;
-        	String[] columnNames = qry.getColumns();
-        	Collection.Key colName;
+        	Collection.Key[] columnNames = qry.getColumnNames();
+        	Collection.Key columnName; 
         	for(int i=0;i<columnNames.length;i++){
-        		colName=KeyImpl.init(columnNames[i]);
-        		c = qry.getColumn(colName);
+        		columnName=columnNames[i];
+        		c = qry.getColumn(columnName);
         		if(!(c instanceof DebugQueryColumn)) break outer;
         		dqc=(DebugQueryColumn) c;
         		if(usage==null) usage=new StructImpl();
-        		usage.setEL(colName, Caster.toBoolean(dqc.isUsed()));
+        		usage.setEL(columnName, Caster.toBoolean(dqc.isUsed()));
         	}
         	return usage;
         }
         return null;
 	}
 
-	private static String getUsageList(QueryEntry qe) throws PageException  {
+	/*private static String getUsageList(QueryEntry qe) throws PageException  {
 		Query qry = ((QueryEntryImpl)qe).getQry();
         StringBuilder sb=new StringBuilder();
         QueryColumn c;
@@ -551,7 +550,7 @@ public final class DebuggerImpl implements Debugger {
         	}
         }
         return sb.toString();
-	}
+	}*/
 
 	@Override
 	public DebugTimer addTimer(String label, long time, String template) {
@@ -574,6 +573,7 @@ public final class DebuggerImpl implements Debugger {
 			StackTraceElement trace=_traces[i];
     		if(trace.getClassName().startsWith(clazz)) {
     			line=trace.getLineNumber();
+    			break;
 			}
 		}
 		

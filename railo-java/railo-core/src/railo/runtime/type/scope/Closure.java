@@ -8,6 +8,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
@@ -172,7 +173,7 @@ public class Closure extends ScopeSupport implements Variables {
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return new Closure(ThreadLocalPageContext.get(),(Argument)arg.duplicate(deepCopy), (Local)local.duplicate(deepCopy), (Variables)var.duplicate(deepCopy));
+		return new Closure(ThreadLocalPageContext.get(),(Argument)Duplicator.duplicate(arg,deepCopy), (Local)Duplicator.duplicate(local,deepCopy), (Variables)Duplicator.duplicate(var,deepCopy));
 	}
 
 	/**

@@ -253,7 +253,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	
     	}
     	finally {
-    		ThreadLocalDuplication.remove(this);
+    		// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
     	}
     	
 		return trg;
@@ -1432,7 +1432,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyImpl.PATH,ps.getDisplayPath());
         sct.set(KeyImpl.TYPE,"component");
             
-        Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false);
+        Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
         
         HttpServletRequest req = pc.getHttpServletRequest();
@@ -1868,14 +1868,14 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @throws PageException
      */
     public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
-    	return getJavaAccessClass(isNew, false,true,true);
+    	return getJavaAccessClass(isNew, false,true,true,true);
     }
 
-    public Class getJavaAccessClass(RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create) throws PageException {
+    public Class getJavaAccessClass(RefBoolean isNew,boolean writeLog, boolean takeTop, boolean create, boolean supressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	ComponentProperties props =(takeTop)?top.properties:properties;
     	if(props.javaAccessClass==null) {
-    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(this,isNew,create,writeLog);
+    		props.javaAccessClass=ComponentUtil.getComponentJavaAccess(this,isNew,create,writeLog,supressWSbeforeArg);
 		}
     	return props.javaAccessClass;
     }
@@ -1918,33 +1918,32 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		}
 	}
 
-	public Property[] getProperties(boolean onlyPeristent) {
-		if(top.properties.properties==null) return new Property[0];
+	public Property[] getProperties(boolean onlyPeristent) {//print.ds();
+		return getProperties(onlyPeristent, false);
+	}
+
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		Map<String,Property> props=new HashMap<String,Property>();
+		_getProperties(top,props,onlyPeristent, includeBaseProperties);
+		return props.values().toArray(new Property[props.size()]);
+	}
+	
+	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent, boolean includeBaseProperties) {
+		//if(c.properties.properties==null) return new Property[0];
 		
-		
-		// for faster execution we have this
-		if(!onlyPeristent) {
-			int index=0;
-			Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
-			Property[] props=new Property[top.properties.properties.size()];
-			while(it.hasNext())	{
-				props[index++]=it.next().getValue();
-			}
-		}
-		
+		if(includeBaseProperties && c.base!=null) _getProperties(c.base, props, onlyPeristent, includeBaseProperties);
 		
 		// collect with filter
-		Property p;
-		java.util.List<Property> props=new ArrayList<Property>();
-		Iterator<Entry<String, Property>> it = top.properties.properties.entrySet().iterator();
-		while(it.hasNext())	{
-			p = it.next().getValue();
-			if(p.isPeristent()) {
-				props.add(p);
+		if(c.properties.properties!=null){
+			Property p;
+			Iterator<Entry<String, Property>> it = c.properties.properties.entrySet().iterator();
+			while(it.hasNext())	{
+				p = it.next().getValue();
+				if(!onlyPeristent || p.isPeristent()) {
+					props.put(p.getName().toLowerCase(),p);
+				}
 			}
 		}
-		
-		return props.toArray(new Property[props.size()]);
 	}
 
 	public ComponentScope getComponentScope() {

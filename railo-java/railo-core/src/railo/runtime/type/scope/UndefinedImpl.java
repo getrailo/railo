@@ -12,6 +12,7 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
@@ -602,13 +603,13 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		UndefinedImpl dupl = new UndefinedImpl(pc, type);
 		dupl.allowImplicidQueryCall=allowImplicidQueryCall;
 		dupl.checkArguments=checkArguments;
-		dupl.argument=deepCopy?(Argument)argument.duplicate(deepCopy):argument;
+		dupl.argument=deepCopy?(Argument)Duplicator.duplicate(argument,deepCopy):argument;
 		dupl.isInit=isInit;
-		dupl.local=deepCopy?(Local)local.duplicate(deepCopy):local;
+		dupl.local=deepCopy?(Local)Duplicator.duplicate(local,deepCopy):local;
 		dupl.localAlways=localAlways;
-		dupl.qryStack= (deepCopy?(QueryStackImpl)qryStack.duplicate(deepCopy):qryStack);
+		dupl.qryStack= (deepCopy?(QueryStackImpl)Duplicator.duplicate(qryStack,deepCopy):qryStack);
 		
-		dupl.variable=deepCopy?(Variables)variable.duplicate(deepCopy):variable;
+		dupl.variable=deepCopy?(Variables)Duplicator.duplicate(variable,deepCopy):variable;
 		dupl.pc=pc;
 		dupl.debug=debug;
 		
@@ -616,7 +617,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		if(deepCopy) {
 			dupl.scopes=new Scope[scopes.length];
 			for(int i=0;i<scopes.length;i++) {
-				dupl.scopes[i]=(Scope)scopes[i].duplicate(deepCopy);
+				dupl.scopes[i]=(Scope)Duplicator.duplicate(scopes[i],deepCopy);
 			}
 		}
 		else dupl.scopes=scopes;
@@ -638,7 +639,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
      */
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
-          "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
+          "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
     
 	/**

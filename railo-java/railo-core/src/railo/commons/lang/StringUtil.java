@@ -898,4 +898,15 @@ public final class StringUtil {
 		}
 		return true;
 	}
+
+	public static boolean isWhiteSpace(String str) {
+		if(str==null) return false;
+		int len=str.length();
+		char c;
+		for(int i=0;i<len;i++){
+			c=str.charAt(i);
+			if(c!=' ' && c!='\t' && c!='\b' && c!='\r' && c!='\n') return false;
+		}
+		return true;
+	}
 }

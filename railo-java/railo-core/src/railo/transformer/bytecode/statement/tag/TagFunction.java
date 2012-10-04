@@ -21,6 +21,7 @@ import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.IFunction;
+import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.statement.udf.FunctionImpl;
  
@@ -58,12 +59,64 @@ public final class TagFunction extends TagBase implements IFunction {
 		Function func = createFunction(bc.getPage(),functionBody);
 		func.setParent(getParent());
 
-		List statements = getBody().getStatements();
+		List<Statement> statements = getBody().getStatements();
 		Statement stat;
 		Tag tag;
-		Iterator it = statements.iterator();
+		
+		// supress WS between cffunction and the last cfargument
+		Tag last=null;
+		if(bc.getSupressWSbeforeArg()){
+			// check if there is a cfargument at all
+			Iterator<Statement> it = statements.iterator();
+			while (it.hasNext()) {
+				stat = it.next();
+				if (stat instanceof Tag) {
+					tag = (Tag) stat;
+					if (tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Argument")) {
+						last=tag;
+					}
+				}
+			}
+			
+			// check if there are only literal WS printouts
+			if(last!=null) {
+				it = statements.iterator();
+				while (it.hasNext()) {
+					stat = it.next();
+					if(stat==last) break;
+					
+					if(stat instanceof PrintOut){
+						PrintOut po=(PrintOut) stat;
+						Expression expr = po.getExpr();
+						if(!(expr instanceof LitString) || !StringUtil.isWhiteSpace(((LitString)expr).getString())) {
+							last=null;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		
+		
+		Iterator<Statement> it = statements.iterator();
+		boolean beforeLastArgument=last!=null;
 		while (it.hasNext()) {
-			stat = (Statement) it.next();
+			stat = it.next();
+			if(beforeLastArgument) {
+				if(stat==last) {
+					beforeLastArgument=false;
+				}
+				else if(stat instanceof PrintOut){
+					PrintOut po=(PrintOut) stat;
+					Expression expr = po.getExpr();
+					if(expr instanceof LitString) {
+						LitString ls=(LitString) expr;
+						if(StringUtil.isWhiteSpace(ls.getString())) continue;
+					}
+				}
+				
+			}
 			if (stat instanceof Tag) {
 				tag = (Tag) stat;
 				if (tag.getTagLibTag().getTagClassName().equals(
@@ -74,7 +127,6 @@ public final class TagFunction extends TagBase implements IFunction {
 			}
 			functionBody.addStatement(stat);
 		}
-		;
 		func._writeOut(bc,type);
 
 	}

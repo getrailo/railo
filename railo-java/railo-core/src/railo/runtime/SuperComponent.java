@@ -15,6 +15,7 @@ import railo.runtime.component.Property;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
@@ -28,7 +29,7 @@ import railo.runtime.type.util.StructUtil;
 /**
  * 
  */
-public class SuperComponent extends MemberSupport implements Component, Member,Sizeable {
+public class SuperComponent extends MemberSupport implements ComponentPro, Member,Sizeable {
 	
 	private ComponentImpl comp;
 
@@ -214,7 +215,7 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	 * @see railo.runtime.ComponentImpl#duplicate(boolean)
 	 */
 	public synchronized Collection duplicate(boolean deepCopy) {
-		return new SuperComponent((ComponentImpl) comp.duplicate(deepCopy));
+		return new SuperComponent((ComponentImpl) Duplicator.duplicate(comp,deepCopy));
 	}
 
 	/**
@@ -606,6 +607,12 @@ public class SuperComponent extends MemberSupport implements Component, Member,S
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
 	}
+	
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return comp.getProperties(onlyPeristent,includeBaseProperties);
+	}
+	
+	
 
 	/**
 	 * @see railo.runtime.Component#getComponentScope()

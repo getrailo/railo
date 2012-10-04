@@ -1267,14 +1267,10 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	    Return rtn;
 	    
 	    comments(data);
-	    if(data.cfml.forwardIfCurrent(';')) rtn=new Return(line,data.cfml.getPosition());
+	    if(checkSemiColonLineFeed(data, false)) rtn=new Return(line,data.cfml.getPosition());
 	    else {
 	    	Expression expr = expression(data);
-	    	
-	    	if(!data.cfml.forwardIfCurrent(';'))
-				throw new TemplateException(data.cfml,"Missing [;] after expression");
-			
-	    	
+	    	checkSemiColonLineFeed(data, true);
 	    	rtn=new Return(expr,line,data.cfml.getPosition());
 	    }
 		comments(data);

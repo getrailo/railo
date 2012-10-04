@@ -1601,16 +1601,16 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 			<name>path</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>Absolute path to a Verity/Lucene/SOLR collection.</description>
+		<description>Absolute path to a Lucene collection.</description>
     </attribute>
 		<attribute>
 			<type>string</type>
 			<name>language</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		<description>Options are listed in Usage section. Requires the
-            appropriate (European or Asian) Verity Locales language
-            pack.</description>
+		<description>language the collection is based on: possible values are:
+		english,german,russian,dutch,french,italian,norwegian,portuguese,spanish,brazilian,chinese,greek,thai,danish,japanese,norwegian,korean
+		</description>
     </attribute>
 		<attribute>
 			<type>string</type>
@@ -5770,6 +5770,27 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>sets if first row of csv is file</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>authType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>authentication type for a request with username and password, valid values are "BASIC" (default) and "NTLM" </description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>workstation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The workstation the authentication request is originating from. Essentially, the computer name for this machine. this attribute is only used when authenication type is "NTLM"</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>domain</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The domain to authenticate within. this attribute is only used when authenication type is "NTLM"</description>
 		</attribute>
 	</tag>
 	<!-- HttpParam -->
@@ -10718,7 +10739,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>suggestions</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Specifies whether Verity/SOLR returns spelling suggestions
+			<description>Specifies whether Lucene returns spelling suggestions
             for possibly misspelled words.</description>
 		</attribute>
 		<attribute>
@@ -10726,7 +10747,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>contextPassages</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The number of passages/sentences Verity returns in
+			<description>The number of passages/sentences Lucene returns in
             the context summary (that is, the context column of
             the results).
             Default: 3</description>
@@ -10736,7 +10757,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>contextBytes</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>The maximum number of bytes Verity returns in the
+			<description>The maximum number of bytes Lucene returns in the
             context summary.
             Default: 300</description>
 		</attribute>
@@ -10769,7 +10790,7 @@ dWord: creates a value of 0 (zero)</description>
 			<rtexprvalue>true</rtexprvalue>
 			<status>unimplemented</status>
 			<description>The name of a result set from an existing set of search
-            results. Verity searches the result set for criteria
+            results. Lucene searches the result set for criteria
             without regard to the previous search score or rank.
             Use this attribute to implement searching within result
             sets.</description>

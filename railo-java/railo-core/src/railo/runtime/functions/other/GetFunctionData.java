@@ -83,6 +83,7 @@ public final class GetFunctionData implements Function {
         	StructImpl mem = new StructImpl();
         	sct.set(KeyConstants._member, mem);
         	mem.set(KeyConstants._name,mm);
+        	mem.set(KeyConstants._chaining,Caster.toBoolean(function.getMemberChaining()));
             mem.set(KeyConstants._type, function.getMemberTypeAsString());
         }
 		

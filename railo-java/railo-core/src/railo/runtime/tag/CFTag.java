@@ -27,6 +27,7 @@ import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -370,7 +371,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     }
     
     private static void setCaller(PageContext pageContext, Struct args) throws PageException {
-    	args.set(KeyConstants._CALLER, pageContext.undefinedScope().duplicate(false));
+    	args.set(KeyConstants._CALLER, Duplicator.duplicate(pageContext.undefinedScope(),false));
 	}
 
 	private static void validateAttributes(Component cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {

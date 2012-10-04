@@ -8,10 +8,6 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;
 
-import railo.cli.servlet.ServletConfigImpl;
-import railo.cli.servlet.ServletContextImpl;
-import railo.loader.engine.CFMLEngine;
-import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.Util;
 
 public class CLI {
@@ -43,18 +39,19 @@ public class CLI {
 		// servletNane
 		String servletName=config.get("servlet-name");
 		if(Util.isEmpty(servletName,true))servletName="CFMLServlet";
+		CLIFactory factory = new CLIFactory(root,servletName,config);
+		factory.setDaemon(false);
+		factory.start();
 		
-		Map<String,Object> attributes=new HashMap<String, Object>();
-		Map<String, String> initParameters=new HashMap<String, String>();
-		initParameters.put("railo-server-directory", new File(root,"server").getAbsolutePath());
+		//Map<String,Object> attributes=new HashMap<String, Object>();
+		//Map<String, String> initParameters=new HashMap<String, String>();
+		//initParameters.put("railo-server-directory", new File(root,"server").getAbsolutePath());
 		
 		
-		
-		ServletContextImpl servletContext = new ServletContextImpl(root, attributes, initParameters, 1, 0);
-		ServletConfigImpl servletConfig = new ServletConfigImpl(servletContext, servletName);
-		CFMLEngine engine = CFMLEngineFactory.getInstance(servletConfig);
-		
-		engine.cli(config,servletConfig);
+		//ServletContextImpl servletContext = new ServletContextImpl(root, attributes, initParameters, 1, 0);
+		//ServletConfigImpl servletConfig = new ServletConfigImpl(servletContext, servletName);
+		//CFMLEngine engine = CFMLEngineFactory.getInstance(servletConfig);
+		//engine.cli(config,servletConfig);
 		
 
 	}

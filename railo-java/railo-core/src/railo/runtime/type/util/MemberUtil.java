@@ -66,7 +66,7 @@ public class MemberUtil {
 					arg = _args.get(y+1);
 					refs.add(new Casting(arg.getTypeAsString(),arg.getType(),args[y]));
 				}
-				return new BIFCall( member, refs.toArray(new Ref[refs.size()])).getValue(pc);
+				return new BIFCall(coll, member, refs.toArray(new Ref[refs.size()])).getValue(pc);
 			}
 			
 		}
@@ -118,7 +118,7 @@ public class MemberUtil {
 					}
 					
 				}
-				return new BIFCall(member, refs.toArray(new Ref[refs.size()])).getValue(pc);
+				return new BIFCall(coll,member, refs.toArray(new Ref[refs.size()])).getValue(pc);
 			}
 			
 		}

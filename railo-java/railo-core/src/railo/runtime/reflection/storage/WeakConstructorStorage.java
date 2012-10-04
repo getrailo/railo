@@ -3,6 +3,8 @@ package railo.runtime.reflection.storage;
 import java.lang.reflect.Constructor;
 import java.util.WeakHashMap;
 
+import org.apache.commons.collections.map.ReferenceMap;
+
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
@@ -10,7 +12,7 @@ import railo.runtime.type.ArrayImpl;
  * Constructor Storage Class
  */
 public final class WeakConstructorStorage {
-	private WeakHashMap map=new WeakHashMap();
+	private WeakHashMap map=new WeakHashMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
 	
 	/**
 	 * returns a constructor matching given criteria or null if Constructor doesn't exist

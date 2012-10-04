@@ -40,6 +40,7 @@ import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMException;
@@ -627,7 +628,7 @@ public class HibernateORMEngine implements ORMEngine {
 		if(info!=null) {
 			Component cfc = info.getCFC();
 			if(unique){
-				cfc=(Component)cfc.duplicate(false);
+				cfc=(Component)Duplicator.duplicate(cfc,false);
 				if(cfc.contains(pc,INIT))cfc.call(pc, "init",new Object[]{});
 			}
 			return cfc;
@@ -662,7 +663,7 @@ public class HibernateORMEngine implements ORMEngine {
 				cfc=it2.next();
 				names[index++]=cfc.getName();
 				if(isEntity(cfc,cfcName,name)) //if(cfc.equalTo(name))
-					return unique?(Component)cfc.duplicate(false):cfc;
+					return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 			}
 		}
 		else {
@@ -673,7 +674,7 @@ public class HibernateORMEngine implements ORMEngine {
 				entry=it.next();
 				cfc=entry.getValue().getCFC();
 				if(isEntity(cfc,cfcName,name)) //if(cfc.instanceOf(name))
-					return unique?(Component)cfc.duplicate(false):cfc;
+					return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 				
 				//if(name.equalsIgnoreCase(HibernateCaster.getEntityName(cfc)))
 				//	return cfc;
@@ -685,7 +686,7 @@ public class HibernateORMEngine implements ORMEngine {
 		CFCInfo info = cfcs.get(name.toLowerCase());
 		if(info!=null) {
 			cfc=info.getCFC();
-			return unique?(Component)cfc.duplicate(false):cfc;
+			return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 		}
 		
 		throw new ORMException(this,"entity ["+name+"] "+(StringUtil.isEmpty(cfcName)?"":"with cfc name ["+cfcName+"] ")+"does not exist, existing  entities are ["+railo.runtime.type.List.arrayToList(names, ", ")+"]");
@@ -719,7 +720,7 @@ public class HibernateORMEngine implements ORMEngine {
 		CFCInfo info = cfcs.get(entityName.toLowerCase());
 		if(info!=null) {
 			cfc=info.getCFC();
-			return unique?(Component)cfc.duplicate(false):cfc;
+			return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 		}
 		
 		if(arr!=null){
@@ -727,7 +728,7 @@ public class HibernateORMEngine implements ORMEngine {
 			while(it2.hasNext()){
 				cfc=it2.next();
 				if(HibernateCaster.getEntityName(cfc).equalsIgnoreCase(entityName))
-					return unique?(Component)cfc.duplicate(false):cfc;
+					return unique?(Component)Duplicator.duplicate(cfc,false):cfc;
 			}
 		}
 		

@@ -54,7 +54,7 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 			HashMap<String, String> map = new HashMap<String, String>();
 			Component cfc=(Component) id;
 			ComponentScope scope = cfc.getComponentScope();
-			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true);
+			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true,true);
 			String name,value;
 			for(int i=0;i<props.length;i++){
 				name=props[i].getName();

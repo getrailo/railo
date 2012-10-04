@@ -15,7 +15,7 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 
-public final class Switch extends StatementBase implements FlowControl,HasBodies {
+public final class Switch extends StatementBase implements FlowControlBreak,HasBodies {
     
 	private static final Type ARRAY_IMPL=Type.getType(railo.runtime.type.ArrayImpl.class);
 

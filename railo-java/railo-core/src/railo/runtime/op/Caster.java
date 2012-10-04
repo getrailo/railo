@@ -1609,7 +1609,7 @@ public final class Caster {
      * @throws PageException
      */
     public static short toShortValue(Object o) throws PageException {
-        if(o instanceof Short) return ((Byte)o).byteValue();
+        if(o instanceof Short) return ((Short)o).shortValue();
         if(o instanceof Character) return (short)(((Character)o).charValue());
         else if(o instanceof Boolean) return (short)((((Boolean)o).booleanValue())?1:0);
         else if(o instanceof Number) return (((Number)o).shortValue());
@@ -1637,7 +1637,7 @@ public final class Caster {
      * @return casted short value
      */
     public static short toShortValue(Object o, short defaultValue) {
-        if(o instanceof Short) return ((Byte)o).byteValue();
+        if(o instanceof Short) return ((Short)o).shortValue();
         if(o instanceof Character) return (short)(((Character)o).charValue());
         else if(o instanceof Boolean) return (short)((((Boolean)o).booleanValue())?1:0);
         else if(o instanceof Number) return (((Number)o).shortValue());
@@ -2304,11 +2304,11 @@ public final class Caster {
      */
     public static Map toMap(Object o, boolean duplicate) throws PageException {
         if(o instanceof Struct) {
-            if(duplicate) return (Map) ((Struct)o).duplicate(false);
+            if(duplicate) return (Map) Duplicator.duplicate(o,false);
             return ((Struct)o);
         }
         else if(o instanceof Map){
-            if(duplicate) return Duplicator.duplicateMap((Map)o,false);
+            if(duplicate) return (Map)Duplicator.duplicate(o,false);
             return (Map)o;
         }
         else if(o instanceof Node) {

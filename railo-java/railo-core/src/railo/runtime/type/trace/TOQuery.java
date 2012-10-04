@@ -24,6 +24,7 @@ import railo.runtime.db.SQL;
 import railo.runtime.debug.Debugger;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
@@ -2162,7 +2163,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	@Override
 	public Collection duplicate(boolean deepCopy) {
 		log();
-		return new TOQuery(debugger,(Query)qry.duplicate(deepCopy), type,category,text);
+		return new TOQuery(debugger,(Query)Duplicator.duplicate(qry,deepCopy), type,category,text);
 	}
 
 	@Override

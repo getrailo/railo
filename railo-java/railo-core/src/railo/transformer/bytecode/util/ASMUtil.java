@@ -44,7 +44,8 @@ import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.FlowControl;
+import railo.transformer.bytecode.statement.FlowControlBreak;
+import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -113,21 +114,21 @@ public final class ASMUtil {
 		
 	}
 	
-	/**
-	 * has ancestor LoopStatement 
-	 * @param stat
-	 * @return
-	 */
-	public static boolean hasAncestorLoopStatement(Statement stat) {
-		return getAncestorFlowControlStatement(stat)!=null;
+	public static boolean hasAncestorBreakFCStatement(Statement stat) {
+		return getAncestorBreakFCStatement(stat)!=null;
 	}
 	
-	/**
+	public static boolean hasAncestorContinueFCStatement(Statement stat) {
+		return getAncestorContinueFCStatement(stat)!=null;
+	}
+	
+	
+	/* *
 	 * get ancestor LoopStatement 
 	 * @param stat
 	 * @param ingoreScript 
 	 * @return
-	 */
+	 * /
 	public static FlowControl getAncestorFlowControlStatement(Statement stat) {
 		Statement parent = stat;
 		while(true)	{
@@ -139,9 +140,39 @@ public final class ASMUtil {
 					if(scriptBodyParent!=null) return scriptBodyParent;
 					return (FlowControl)parent;
 				}
-				
-				
 				return (FlowControl) parent;
+			}
+		}
+	}*/
+	
+	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat) {
+		Statement parent = stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			if(parent instanceof FlowControlBreak)	{
+				if(parent instanceof ScriptBody){
+					FlowControlBreak scriptBodyParent = getAncestorBreakFCStatement(parent);
+					if(scriptBodyParent!=null) return scriptBodyParent;
+					return (FlowControlBreak)parent;
+				}
+				return (FlowControlBreak) parent;
+			}
+		}
+	}
+	
+	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat) {
+		Statement parent = stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			if(parent instanceof FlowControlContinue)	{
+				if(parent instanceof ScriptBody){
+					FlowControlContinue scriptBodyParent = getAncestorContinueFCStatement(parent);
+					if(scriptBodyParent!=null) return scriptBodyParent;
+					return (FlowControlContinue)parent;
+				}
+				return (FlowControlContinue) parent;
 			}
 		}
 	}

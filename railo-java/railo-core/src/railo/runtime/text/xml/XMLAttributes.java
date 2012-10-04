@@ -344,7 +344,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(this);
+			// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
 		}
 		return sct;
 	}

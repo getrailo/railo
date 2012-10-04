@@ -269,7 +269,7 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
 	        return svs;
         }
         finally{
-        	ThreadLocalDuplication.remove(this);
+        	// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
         }
     }
 
