@@ -135,15 +135,7 @@ public class HBMCreator {
 					clazz = doc.createElement("union-subclass");
 					clazz.setAttribute("extends",ext);
 					doTable = true;
-//			        clazz.setAttribute("table", escape(engine.convertTableName(getTableName(engine,pc,meta,cfc))));
 					hibernateMapping.appendChild(	clazz);
-//					Element key = doc.createElement("key");
-//					clazz.appendChild(key);
-//					key.setAttribute("column", formatColumn(engine, "id"));
-//					doTable=true;
-//					isClass = true;
-//					clazz = doc.createElement("class");
-//					hibernateMapping.appendChild(clazz);
 				}
 
 			}
