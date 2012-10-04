@@ -120,7 +120,7 @@ public class HBMCreator {
 			{
 
 				String joinColumn = toString(engine,cfc,null,meta,"joincolumn",false);
-				if (!StringUtil.isEmpty(discriminatorValue,true))
+				if (!StringUtil.isEmpty(joinColumn,true))
 				{
 					clazz = doc.createElement("joined-subclass");
 					hibernateMapping.appendChild(	clazz);
