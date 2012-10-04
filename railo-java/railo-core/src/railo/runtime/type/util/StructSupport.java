@@ -29,25 +29,20 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 	 * @return returns an invalid key Exception
 	 */
 	public static ExpressionException invalidKey(Struct sct,Key key) {
+
 		StringBuilder sb=new StringBuilder();
 		Iterator<Key> it = sct.keyIterator();
 		Key k;
-		boolean isNull=false;
+
 		while(it.hasNext()){
 			k = it.next();
-			if(!isNull && k.equals(key)) isNull=true;
+			if( k.equals( key ) )
+				return new ExpressionException( "the value from key [" + key.getString() + "] is NULL, which is the same as not existing in CFML" );
 			if(sb.length()>0)sb.append(',');
 			sb.append(k.getString());
 		}
-		
-		
-		return new ExpressionException( 
-				(isNull?
-						"the value from key [" + key.getString() + "] is null, what is the same as not existing in CFML":
-						"key [" + key.getString() + "] doesn't exist ")
-						
-				
-				+ " (existing keys:" + sb.toString() + ")" );
+
+		return new ExpressionException( "key [" + key.getString() + "] doesn't exist (existing keys:" + sb.toString() + ")" );
 	}
 	
 	@Override
