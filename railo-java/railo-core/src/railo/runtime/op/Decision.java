@@ -45,6 +45,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
+import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
@@ -571,6 +572,13 @@ public final class Decision {
 		if(object instanceof Query)return true;
 		else if(object instanceof ObjectWrap) {
             return isQuery(((ObjectWrap)object).getEmbededObject(null));
+        }
+        return false;
+	}
+	public static boolean isQueryColumn(Object object) {
+		if(object instanceof QueryColumn)return true;
+		else if(object instanceof ObjectWrap) {
+            return isQueryColumn(((ObjectWrap)object).getEmbededObject(null));
         }
         return false;
 	}
@@ -1216,6 +1224,7 @@ public final class Decision {
         case CFTypes.TYPE_STRUCT:       return isCastableToStruct(o);
         case CFTypes.TYPE_ARRAY:        return isCastableToArray(o);
         case CFTypes.TYPE_QUERY:        return isQuery(o);
+        case CFTypes.TYPE_QUERY_COLUMN: return isQueryColumn(o);
         case CFTypes.TYPE_DATETIME:     return isDateAdvanced(o, true);
         case CFTypes.TYPE_VOID:         return isVoid(o);//Caster.toVoid(o,Boolean.TRUE)!=Boolean.TRUE;
         case CFTypes.TYPE_BINARY:       return isCastableToBinary(o,true);

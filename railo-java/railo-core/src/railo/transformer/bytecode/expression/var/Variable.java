@@ -156,8 +156,18 @@ public class Variable extends ExpressionBase implements Invoker {
 		else countFM++;
 		members.add(member);
 	}
+	
+	public final Type writeOutCollection(BytecodeContext bc, int mode) throws BytecodeException {
+        ExpressionUtil.visitLine(bc, getStart());
+    	Type type = _writeOut(bc,mode, Boolean.TRUE);
+        ExpressionUtil.visitLine(bc, getEnd());
+        return type;
+    }
 
 	public Type _writeOut(BytecodeContext bc, int mode) throws BytecodeException {
+		return _writeOut(bc, mode, null);
+	}
+	private Type _writeOut(BytecodeContext bc, int mode,Boolean asCollection) throws BytecodeException {
 		
 		
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -197,13 +207,14 @@ public class Variable extends ExpressionBase implements Invoker {
 						adapter.invokeStatic(VARIABLE_UTIL_IMPL, COLUMNLIST);
 					}
 					else {
-						if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET_KEY:GET_COLLECTION_KEY);
-						else adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET:GET_COLLECTION);
+						
+						if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION_KEY:GET_KEY);
+						else adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION:GET);
 					}
 				}
 				else{
-					if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET_KEY:GET_COLLECTION_KEY);
-					else adapter.invokeVirtual(Types.PAGE_CONTEXT,last?GET:GET_COLLECTION);
+					if(registerKey(bc,name))adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION_KEY:GET_KEY);
+					else adapter.invokeVirtual(Types.PAGE_CONTEXT,asCollection(asCollection, last)?GET_COLLECTION:GET);
 				}
 				rtn=Types.OBJECT;
 			}
@@ -223,6 +234,11 @@ public class Variable extends ExpressionBase implements Invoker {
     	return rtn;
 	}
 	
+	private boolean asCollection(Boolean asCollection, boolean last) {
+		if(!last) return true;
+		return asCollection!=null && asCollection.booleanValue();
+	}
+
 	public static boolean registerKey(BytecodeContext bc,Expression name) throws BytecodeException {
 		return registerKey(bc, name, false);
 	}

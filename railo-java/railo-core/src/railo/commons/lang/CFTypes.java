@@ -86,6 +86,7 @@ public final class CFTypes {
     public static final short TYPE_GUID = 22;
 
     public static final short TYPE_FUNCTION = 23;
+    public static final short TYPE_QUERY_COLUMN=24;
     
     /**
 	 * Wandelt einen String Datentypen in ein CFML short Typ um.
@@ -104,6 +105,7 @@ public final class CFTypes {
 			case TYPE_GUID:return "guid";
 			case TYPE_NUMERIC:return "numeric";
 			case TYPE_QUERY:return "query";
+			case TYPE_QUERY_COLUMN:return "querycolumn";
 			case TYPE_STRING:return "string";
 			case TYPE_STRUCT:return "struct";
 			case TYPE_TIMESPAN:return "timespan";
@@ -151,6 +153,7 @@ public final class CFTypes {
 	        	    break;
 	        	case 'q':
 	        	    if(type.equals("query")) return TYPE_QUERY;
+	        	    if(type.equals("querycolumn")) return TYPE_QUERY_COLUMN;
 	        	    break;
 	        	case 's':
 	        	    if(type.equals("string")) return TYPE_STRING;
@@ -242,6 +245,7 @@ public final class CFTypes {
 	        	    break;
 	        	case 'q':
 	        	    if(type.equals("query")) return TYPE_QUERY;
+	        	    if(type.equals("querycolumn")) return TYPE_QUERY_COLUMN;
 	        	    break;
 	        	case 's':
 	        	    if(type.equals("string")) return TYPE_STRING;

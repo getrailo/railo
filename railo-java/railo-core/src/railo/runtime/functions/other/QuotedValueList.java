@@ -10,14 +10,23 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.QueryColumn;
 
 public final class QuotedValueList extends ValueList {
+
+	private static final long serialVersionUID = -6617432857065704955L;
+
 	public static String call(PageContext pc , String strQueryColumn) throws PageException {
-		return call(pc,strQueryColumn,",");
+		return call(pc, toColumn(pc,strQueryColumn), ",");
 	}
 	public static String call(PageContext pc , String strQueryColumn, String delimiter) throws PageException {
-		
-		QueryColumn column = toColumn(pc,strQueryColumn);
+		return call(pc, toColumn(pc,strQueryColumn), delimiter);
+	}
+
+	public static String call(PageContext pc , QueryColumn column) throws PageException {
+		return call(pc, column, ",");
+	}
+
+	public static String call(PageContext pc , QueryColumn column, String delimiter) throws PageException {
 		int size=column.size();
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
 		
 		for(int i=1;i<=size;i++) {
 			if(i>1)sb.append(delimiter);

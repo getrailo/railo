@@ -2752,6 +2752,10 @@ public final class Caster {
         if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
         throw new CasterException(o,"query");
     }
+    public static QueryColumn toQueryColumn(Object o) throws PageException {
+    	if(o instanceof QueryColumn) return (QueryColumn)o;
+    	throw new CasterException(o,"querycolumn");
+    }
 
     /**
      * cast a Object to a Query Object
@@ -3478,6 +3482,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_DATETIME)       return DateCaster.toDateAdvanced(o,pc.getTimeZone());
         else if(type==CFTypes.TYPE_NUMERIC)        return toDouble(o);
         else if(type==CFTypes.TYPE_QUERY)          return toQuery(o);
+        else if(type==CFTypes.TYPE_QUERY_COLUMN)   return toQueryColumn(o);
         else if(type==CFTypes.TYPE_STRING)         return toString(o);
         else if(type==CFTypes.TYPE_STRUCT)         return toStruct(o);
         else if(type==CFTypes.TYPE_TIMESPAN)       return toTimespan(o);
@@ -3512,6 +3517,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_DATETIME)       return DateCaster.toDateAdvanced(o,pc.getTimeZone());
         else if(type==CFTypes.TYPE_NUMERIC)        return toDouble(o);
         else if(type==CFTypes.TYPE_QUERY)          return toQuery(o);
+        else if(type==CFTypes.TYPE_QUERY_COLUMN)   return toQueryColumn(o);
         else if(type==CFTypes.TYPE_STRING)         return toString(o);
         else if(type==CFTypes.TYPE_STRUCT)         return toStruct(o);
         else if(type==CFTypes.TYPE_TIMESPAN)       return toTimespan(o);
