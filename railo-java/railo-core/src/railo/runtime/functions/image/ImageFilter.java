@@ -229,9 +229,9 @@ public class ImageFilter {
 			child=children[i];
 			name=child.getName();
 			if(name.endsWith("Filter.java")){
-				String key=name.substring(0,name.length()-11);
+				//String key=name.substring(0,name.length()-11);
 				//print.o("filters.put(\""+key.toLowerCase()+"\","+key+"Filter.class);");
-				StringBuilder sb=new StringBuilder();
+				//StringBuilder sb=new StringBuilder();
 				//Class clazz = ClassUtil.loadClass("railo.runtime.img.filter."+key+"Filter");
 				//if(clazz!=GlowFilter.class) continue;
 				
@@ -283,7 +283,7 @@ public class ImageFilter {
 		sb.append("\n");
 		sb.append("		// check for arguments not supported\n");
 		sb.append("		if(parameters.size()>0) {\n");
-		sb.append("			throw new FunctionException(ThreadLocalPageContext.get(), \"ImageFilter\", 3, \"parameters\", \"the parameter\"+(parameters.size()>1?\"s\":\"\")+\" [\"+List.arrayToList(parameters.keysAsString(),\", \")+\"] \"+(parameters.size()>1?\"are\":\"is\")+\" not allowed, only the following parameters are supported ["+names+"]\");\n");
+		sb.append("			throw new FunctionException(ThreadLocalPageContext.get(), \"ImageFilter\", 3, \"parameters\", \"the parameter\"+(parameters.size()>1?\"s\":\"\")+\" [\"+List.arrayToList(parameters.keys(),\", \")+\"] \"+(parameters.size()>1?\"are\":\"is\")+\" not allowed, only the following parameters are supported ["+names+"]\");\n");
 		sb.append("		}\n");
 		sb.append("\n");
 		

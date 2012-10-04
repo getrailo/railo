@@ -54,7 +54,7 @@ function submitTheForm(field) {
 }
 //--></script>
 
-<cfform action="#go(url.action,"restart")#" method="post">
+<cfform onerror="customError" action="#go(url.action,"restart")#" method="post">
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
 	<td colspan="2">

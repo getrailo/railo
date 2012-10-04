@@ -9,7 +9,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -17,12 +16,17 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
-import railo.runtime.tag.Http;
+import railo.runtime.tag.Http3;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
+import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 
 public class ThreadsImpl extends StructSupport implements railo.runtime.type.scope.Threads {
@@ -37,7 +41,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	
 	private static final Key[] DEFAULT_KEYS=new Key[]{
 		KEY_ELAPSEDTIME,
-		KeyImpl.NAME_UC,
+		KeyConstants._NAME,
 		KEY_OUTPUT,
 		KEY_PRIORITY,
 		KEY_STARTTIME,
@@ -71,32 +75,34 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getTypeAsString()
+	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
 	 */
 	public String getTypeAsString() {
 		return "thread";
 	}
 
+	@Override
 	public void initialize(PageContext pc) {
 		
 	}
 
+	@Override
 	public boolean isInitalized() {
 		return true;
 	}
 
-	public void release() {
-		
-	}
+	@Override
+	public void release() {}
+	
+	@Override
+	public void release(PageContext pc) {}
 
+	@Override
 	public void clear() {
 		ct.content.clear();
 	}
 
-
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		StructImpl sct=new StructImpl();
 		ThreadLocalDuplication.set(this, sct);
@@ -109,7 +115,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(this);
+			//ThreadLocalDuplication.remove(this);  removed "remove" to catch sisters and brothers
 		}
 		return sct;
 	}
@@ -117,7 +123,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 
 	private Object getMeta(Key key) {
 		if(KEY_ELAPSEDTIME.equalsIgnoreCase(key)) return new Double(System.currentTimeMillis()-ct.getStartTime());
-		if(KeyImpl.NAME_UC.equalsIgnoreCase(key)) return ct.getTagName();
+		if(KeyConstants._NAME.equalsIgnoreCase(key)) return ct.getTagName();
 		if(KEY_OUTPUT.equalsIgnoreCase(key)) return getOutput();
 		if(KEY_PRIORITY.equalsIgnoreCase(key)) return ThreadUtil.toStringPriority(ct.getPriority());
 		if(KEY_STARTTIME.equalsIgnoreCase(key)) return new DateTimeImpl(ct.getStartTime(),true);
@@ -146,7 +152,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		if(ct.output==null)return "";
 
 		InputStream is = new ByteArrayInputStream(ct.output.toByteArray());
-		return Http.getOutput(is, ct.contentType, ct.contentEncoding,true);
+		return Http3.getOutput(is, ct.contentType, ct.contentEncoding,true);
 		
 	}
 
@@ -204,7 +210,7 @@ The current status of the thread; one of the following values:
 	 * @see railo.runtime.type.StructImpl#keys()
 	 */
 	public Key[] keys() {
-		Key[] skeys = ct.content.keys();
+		Key[] skeys = CollectionUtil.keys(ct.content);
 		
 		if(skeys.length==0 && ct.catchBlock==null) return DEFAULT_KEYS;
 		
@@ -280,7 +286,7 @@ The current status of the thread; one of the following values:
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Key[] keys = keys();
-		DumpTable table = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
+		DumpTable table = new DumpTable("struct","#9999ff","#ccccff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		int maxkeys=dp.getMaxKeys();
@@ -294,20 +300,25 @@ The current status of the thread; one of the following values:
 		return table;
 	}
 
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new railo.runtime.type.it.KeyIterator(keys());
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
 	
-
-	public String[] keysAsString() {
-		Key[] keys = keys();
-		String[] strKeys=new String[keys.length];
-		for(int i=0;i<keys.length;i++) {
-			strKeys[i]=keys[i].getString();
-		}
-		return null;
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
-
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
+	}
 
 	/**
 	 * @see railo.runtime.op.Castable#castToBooleanValue()

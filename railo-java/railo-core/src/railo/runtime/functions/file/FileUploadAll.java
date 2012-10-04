@@ -29,6 +29,6 @@ public class FileUploadAll {
 		int nc = FileTag.toNameconflict(nameConflict);
 	    int m=FileTag.toMode(mode);
 	    
-	    return FileTag.actionUploadAll(pc,securityManager,destination, nc, accept, m, attributes, acl, null);
+	    return FileTag.actionUploadAll(pc,securityManager,destination, nc, accept,true, m, attributes, acl, null);
 	}
 }

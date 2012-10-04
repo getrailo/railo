@@ -10,13 +10,15 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.ref.VariableReference;
 import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.CallerImpl;
+import railo.runtime.type.scope.Local;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
-import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * Class to check and interpret Variable Strings
@@ -38,9 +40,9 @@ public final class VariableInterpreter {
         if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
         
         while(list.hasNextNext()) {
-            collection=Caster.toCollection(collection.get(list.next()));
+            collection=Caster.toCollection(collection.get(KeyImpl.init(list.next())));
         }
-        return collection.get(list.next());
+        return collection.get(KeyImpl.init(list.next()));
 	}
 	
 	public static String scopeInt2String(int type) {
@@ -133,14 +135,14 @@ public final class VariableInterpreter {
 			}
 			
 			// Undefined Scope
-			else if(scope instanceof UndefinedImpl) {
+			else if(scope instanceof Undefined) {
 				PageContextImpl pci=(PageContextImpl) pc;
-				UndefinedImpl undefined=(UndefinedImpl) scope;
+				Undefined undefined=(Undefined) scope;
 				
 				boolean check=undefined.getCheckArguments();
 				Variables orgVar=pc.variablesScope();
 				Argument orgArgs=pc.argumentsScope();
-		        Scope orgLocal=pc.localScope();
+		        Local orgLocal=pc.localScope();
 				
 				pci.setVariablesScope(undefined.variablesScope());
 				if(check)pci.setFunctionScopes(undefined.localScope(), undefined.argumentsScope());
@@ -166,6 +168,7 @@ public final class VariableInterpreter {
 	 * @param pc Page Context
 	 * @param var variable string to get value to
 	 * @return the value
+	 * @deprecated use instead <code>getVariableEL(PageContext pc,String var, Object defaultValue)</code>
 	 */
 	public static Object getVariableEL(PageContext pc,String var) {
         StringList list = parse(pc,new ParserString(var),false);
@@ -190,6 +193,40 @@ public final class VariableInterpreter {
 		while(list.hasNext()) {
 			coll=pc.getVariableUtil().get(pc,coll,list.next(),null);
 			if(coll==null) return null;
+		}
+		return coll;
+    }
+	
+	/**
+	 * get a variable from page context
+	 * @param pc Page Context
+	 * @param var variable string to get value to
+	 * @param defaultValue value returnded if variable was not found
+	 * @return the value or default value if not found
+	 */
+	public static Object getVariableEL(PageContext pc,String var, Object defaultValue) {
+        StringList list = parse(pc,new ParserString(var),false);
+        if(list==null) return defaultValue;
+        
+		int scope=scopeString2Int(list.next());
+		Object coll =null; 
+		if(scope==Scope.SCOPE_UNDEFINED) {
+		    coll=pc.undefinedScope().get(list.current(),null);
+		    if(coll==null) return defaultValue;
+		}
+		else {
+		    try {
+                coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+		    	//coll=pc.scope(scope);
+            } 
+		    catch (PageException e) {
+                return defaultValue;
+            }
+		}
+		
+		while(list.hasNext()) {
+			coll=pc.getVariableUtil().get(pc,coll,list.next(),null);
+			if(coll==null) return defaultValue;
 		}
 		return coll;
     }
@@ -240,7 +277,7 @@ public final class VariableInterpreter {
 	 */
 	public static Object setVariable(PageContext pc,String var, Object value) throws PageException {			
 	    StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        if(list==null) throw new ExpressionException("invalid variable name declaration ["+var+"]");
 
 		if(list.size()==1) {
 			return pc.undefinedScope().set(list.next(),value);
@@ -460,27 +497,27 @@ public final class VariableInterpreter {
 	public static int scopeKey2Int(Collection.Key type) {
 		char c=type.lowerCharAt(0);
 		if('a'==c) {
-			if(ScopeSupport.APPLICATION.equalsIgnoreCase(type)) 		return Scope.SCOPE_APPLICATION;
+			if(KeyConstants._application.equalsIgnoreCase(type)) 		return Scope.SCOPE_APPLICATION;
 			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(type))	return Scope.SCOPE_ARGUMENTS;
 		}
 		else if('c'==c) {
-			if(ScopeSupport.CGI.equalsIgnoreCase(type))				return Scope.SCOPE_CGI;
-			if(ScopeSupport.COOKIE.equalsIgnoreCase(type))			return Scope.SCOPE_COOKIE;
-			if(ScopeSupport.CLIENT.equalsIgnoreCase(type))			return Scope.SCOPE_CLIENT;
-			if(ScopeSupport.CLUSTER.equalsIgnoreCase(type))			return Scope.SCOPE_CLUSTER; 
+			if(KeyConstants._cgi.equalsIgnoreCase(type))				return Scope.SCOPE_CGI;
+			if(KeyConstants._cookie.equalsIgnoreCase(type))			return Scope.SCOPE_COOKIE;
+			if(KeyConstants._client.equalsIgnoreCase(type))			return Scope.SCOPE_CLIENT;
+			if(KeyConstants._cluster.equalsIgnoreCase(type))			return Scope.SCOPE_CLUSTER; 
 		}
 		else if('f'==c) {
-			if(ScopeSupport.FORM.equalsIgnoreCase(type))				return Scope.SCOPE_FORM;
+			if(KeyConstants._form.equalsIgnoreCase(type))				return Scope.SCOPE_FORM;
 		}
 		else if('r'==c) {
-			if(ScopeSupport.REQUEST.equalsIgnoreCase(type))			return Scope.SCOPE_REQUEST;
+			if(KeyConstants._request.equalsIgnoreCase(type))			return Scope.SCOPE_REQUEST;
 		}
 		else if('s'==c) {
-			if(ScopeSupport.SESSION.equalsIgnoreCase(type))			return Scope.SCOPE_SESSION;
+			if(KeyConstants._session.equalsIgnoreCase(type))			return Scope.SCOPE_SESSION;
 			if(KeyImpl.SERVER.equalsIgnoreCase(type))			return Scope.SCOPE_SERVER;
 		}
 		else if('u'==c) {
-			if(ScopeSupport.URL.equalsIgnoreCase(type))				return Scope.SCOPE_URL;
+			if(KeyConstants._url.equalsIgnoreCase(type))				return Scope.SCOPE_URL;
 		}
 		else if('v'==c) {
 			if(KeyImpl.VARIABLES.equalsIgnoreCase(type))		return Scope.SCOPE_VARIABLES;

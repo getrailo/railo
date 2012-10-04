@@ -1,48 +1,130 @@
-activation-1.1
-axis-1-4
-axis-ant-1-4
-astranslator-1.5.8
-commons-codec-1.3
-commons-compress-20061229.jar
-commons-discovery-0.4
-commons-email-1.1
-commons-fileupload-1.2.1
-commons-httpclient-3.0.1
-commons-io-1.4
-commons-lang-2.4
-commons-logging-1.1
-commons-net-2.0
-commons-net-ftp-2.0
-commons-collections-3.2.1
-jakarta-oro-2.0.8
-jacob-1-9
+<?xml version="1.0" encoding="UTF-8"?>
+<jars>
+	<jar version="2.7.6" path="antlr.jar" comment="used by hibernate"/>
+	<jar version="1.6" path="apache-jakarta-commons-codec.jar" comment=""/>
+	<jar version="3.2.1" path="apache-jakarta-commons-collections.jar" comment=""/>
+	<jar version="1.3" path="apache-jakarta-commons-compress.jar" comment=""/>
+	<jar version="0.4" path="apache-jakarta-commons-discovery.jar" comment="used by 3 party"/>
+	<jar version="1.2" path="apache-jakarta-commons-email.jar" comment=""/>
+	<jar version="1.2.1" path="apache-jakarta-commons-fileupload.jar" comment=""/>
+	<jar version="3.0.1" path="apache-jakarta-commons-httpclient.jar" comment=""/>
+	<jar version="2.1" path="apache-jakarta-commons-io.jar" comment=""/>
+	<jar version="2.6" path="apache-jakarta-commons-lang.jar" comment=""/>
+	<jar version="1.1.1" path="apache-jakarta-commons-logging-adapters.jar" comment=""/>
+	<jar version="1.1.1" path="apache-jakarta-commons-logging-api.jar" comment=""/>
+	<jar version="1.1.1" path="apache-jakarta-commons-logging.jar" comment=""/>
+	<jar version="" path="apache-jakarta-commons-net-ftp.jar" comment="file is empty"/>
+	<jar version="3.1" path="apache-jakarta-commons-net.jar" comment=""/>
+	<jar version="2.0.8" path="apache-jakarta-oro.jar" comment="retired"/>
+	<jar version="1.2.16" path="apache-logging-log4j.jar" comment=""/>
+	<jar version="" path="apache-lucene-analyzers.jar" comment=""/>
+	<jar version="" path="apache-lucene-highlighter.jar" comment=""/>
+	<jar version="" path="apache-lucene-misc.jar" comment=""/>
+	<jar version="" path="apache-lucene-similarity.jar" comment=""/>
+	<jar version="" path="apache-lucene-snowball.jar" comment=""/>
+	<jar version="" path="apache-lucene-spellchecker.jar" comment=""/>
+	<jar version="" path="apache-lucene.jar" comment=""/>
+	<jar version="1.4" path="apache-ws-axis-ant.jar" comment=""/>
+	<jar version="1.4" path="apache-ws-axis.jar" comment=""/>
+	<jar version="2.7.1" path="apache-xml-xalan.jar" comment=""/>
+	<jar version="2.11" path="apache-xml-xerces.jar" comment=""/>
+	<jar version="" path="backport-util-concurrent.jar" comment=""/>
+	<jar version="" path="bcprov-jdk14.jar" comment=""/>
+	<jar version="" path="com.naryx.tagfusion.cfx.jar" comment=""/>
+	<jar version="" path="concurrent.jar" comment=""/>
+	<jar version="1.6.1" path="dom4j.jar" comment="used by hibernate"/>
+	<jar version="2.5.2" path="ehcache.jar" comment=""/>
+	<jar version="" path="flex-messaging-common.jar" comment=""/>
+	<jar version="" path="flex-messaging-core.jar" comment=""/>
+	<jar version="" path="flex-messaging-opt.jar" comment=""/>
+	<jar version="" path="flex-messaging-proxy.jar" comment=""/>
+	<jar version="" path="flex-messaging-remoting.jar" comment=""/>
+	<jar version="" path="fonts.jar" comment=""/>
+	<jar version="" path="fusiondebug-api-server.jar" comment=""/>
+	<jar version="1.3.165" path="h2.jar" comment=""/>
+	<jar version="3.5.5" path="hibernate.jar" comment=""/>
+	<jar version="" path="hypersonic-hsqldb.jar" comment=""/>
+	<jar version="" path="icepdf-core.jar" comment=""/>
+	<jar version="1.16.1" path="jacob.jar" comment=""/>
+	<jar version="1.0.8" path="javaparser.jar" comment=""/>
+	<jar version="" path="javassist.jar" comment=""/>
+	<jar version="" path="javax.servlet.jar" comment=""/>
+	<jar version="" path="jcommon.jar" comment=""/>
+	<jar version="" path="jencrypt.jar" comment=""/>
+	<jar version="" path="jffmpeg.jar" comment=""/>
+	<jar version="" path="jfreechart-patch.jar" comment=""/>
+	<jar version="" path="jfreechart.jar" comment=""/>
+	<jar version="" path="jmimemagic.jar" comment=""/>
+	<jar version="2.1" path="joda-time.jar" comment=""/>
+	<jar version="" path="jpedal_gpl.jar" comment=""/>
+	<jar version="" path="jta.jar" comment=""/>
+	<jar version="1.2.5" path="jtds.jar" comment=""/>
+	<jar version="" path="jug.jar" comment=""/>
+	<jar version="" path="lowagie.itext.jar" comment=""/>
+	<jar version="2.4.0-beta-1" path="metadata-extractor.jar" comment="retired"/>
+	<jar version="" path="microsoft-mssqlserver.jar" comment="only links to the driver in microsoft-sqljdbc.jar"/>
+	<jar version="4.0" path="microsoft-sqljdbc.jar" comment=""/>
+	<jar version="5.0.8" path="mysql-connector-java-bin.jar" comment=""/>
+	<jar version="4.0" path="objectweb-asm-all.jar" comment=""/>
+	<jar version="" path="ojdbc14.jar" comment=""/>
+	<jar version="1.5.8" path="openamf-astranslator.jar" comment="only used for backward compatibility"/>
+	<jar version="1.5.8" path="openamf.jar" comment="only used for backward compatibility"/>
+	<jar version="" path="org.mortbay.jetty.jar" comment=""/>
+	<jar version="" path="PDFBox.jar" comment=""/>
+	<jar version="" path="PDFRenderer.jar" comment=""/>
+	<jar version="9.1-902" path="postgresql.jar" comment=""/>
+	<jar version="" path="railo-sl4j.jar" comment=""/>
+	<jar version="" path="serializer.jar" comment="used by xerces"/>
+	<jar version="" path="resolver.jar" comment="used by xerces"/>
+	<jar version="1.6.1" path="slf4j-api.jar" comment="used by ehcache"/>
+	<jar version="" path="ss_css2.jar" comment=""/>
+	<jar version="1.1" path="sun-activation.jar" comment=""/>
+	<jar version="1.2.1" path="sun-jai_codec.jar" comment=""/>
+	<jar version="1.2.1" path="sun-jai_core.jar" comment=""/>
+	<jar version="1.2.4" path="sun-jndi-ldap.jar" comment=""/>
+	<jar version="1.2.4" path="sun-jndi-ldapbp.jar" comment=""/>
+	<jar version="1.2.4" path="sun-jndi-ldapsec.jar" comment=""/>
+	<jar version="1.2.4" path="sun-jndi-providerutil.jar" comment=""/>
+	<jar version="" path="sun-mail.jar" comment=""/>
+	<jar version="1.2.4" path="sun-security-jaas.jar" comment=""/>
+	<jar version="" path="sun-xml-jaxrpc.jar" comment=""/>
+	<jar version="1.5.1" path="sun-xml-wsdl4j.jar" comment=""/>
+	<jar version="" path="sun-xml.saaj.jar" comment=""/>
+	<jar version="1.2.1" path="tagsoup.jar" comment=""/>
+	<jar version="" path="w3c-dom.jar" comment=""/>
+	<jar version="" path="xdb.jar" comment=""/>
+	<jar version="" path="xml-apis.jar" comment="used by xerces and xalan"/>
+	<jar version="" path="xmlparserv2.jar" comment=""/>
+	<jar version="" path="org.eclipse.jdt.launching.JRE_CONTAINER" comment=""/>
+	<jar version="0.97" path="apache-commons-sanselan.jar" comment=""/>
+	<jar version="2.0.1" path="ESAPI.jar" comment=""/>
+	<jar version="3.8" path="apache-poi-ooxml-schemas.jar" comment=""/>
+	<jar version="3.8" path="apache-poi-ooxml.jar" comment=""/>
+	<jar version="3.8" path="apache-poi.jar" comment=""/>
+	<jar version="3.8" path="apache-poi-tm-extractors.jar" comment=""/>
+	<jar version="4.1.3" path="apache-commons-httpclient.jar" comment=""/>
+	<jar version="4.1.4" path="apache-commons-httpcore.jar" comment=""/>
+	<jar version="4.1.3" path="apache-commons-httpmime.jar" comment=""/>
+	<jar version="2.3.0" path="xmlbeans.jar" comment=""/>
+	<jar version="0.3.3" path="javasysmon.jar" comment=""/>
+
+<!-- 
 jmimemagic-0.1.0
-jtds-1.2-2
 kjc-2.1B-bin
 log4j-1.2.14
 lucene-2.4.1
-mysql-connector-java-5.0.6-bin
 PDFBox-0.7.3
-tagsoup-1.2
-wsdl4j-1.5.1
-xerces-2-9
-xalan-2-7
 hsqldb-2-7-1
 tm-extractors-0.4
-postgresql-8.3-604.jdbc3
-objectweb-asm-all-3.1
 iText-2.1.2u-1
 pd4ml_demo.jar
 jcommon-1.0.10
 jfreechart-1.0.12
 3.51b12_jpedal_gpl
 fusiondebug-api-server-1.0.20-SNAPSHOT
-joda-time-1.6
-hibernate 3.5.5
-dom4j-1.6.1
-antlr-2.7.6
 javassist-3.9.0.GA
 jta-1.1
 slf4j-api-1.5.8
-metadata-extractor-2.4.0-beta-1
 javaparser-1.0.8
+ -->
+</jars>

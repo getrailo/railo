@@ -62,7 +62,7 @@ public class CacheSetProperties {
 			else if(name.equalsIgnoreCase("object"))
 				list.add(config.getCacheDefaultConnection(ConfigImpl.CACHE_DEFAULT_OBJECT));
 			else{
-				CacheConnection cc= (CacheConnection) config.getCacheConnections().get(name);
+				CacheConnection cc= config.getCacheConnections().get(name);
 				if(cc==null) throw new CacheException("there is no cache defined with name ["+name+"]");
 				list.add(cc);
 			}

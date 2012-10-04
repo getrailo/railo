@@ -19,10 +19,9 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.InterfacePage;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
-import railo.runtime.PageContextImpl;
-import railo.runtime.PagePlus;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
+import railo.runtime.component.ImportDefintionImpl;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
@@ -32,17 +31,21 @@ import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
+import railo.runtime.poi.Excel;
+import railo.runtime.poi.ExcelUtil;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
+import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
@@ -105,7 +108,6 @@ public final class Types {
     public static final Type COMPONENT=Type.getType(railo.runtime.Component.class);
 
     public final static Type PAGE=Type.getType(Page.class);
-    public final static Type PAGE_PLUS=Type.getType(PagePlus.class);
     public final static Type PAGE_SOURCE=Type.getType(PageSource.class);
     public static final Type COMPONENT_PAGE=Type.getType(railo.runtime.ComponentPage.class);
 	public static final Type INTERFACE_PAGE = Type.getType(InterfacePage.class);
@@ -116,8 +118,10 @@ public final class Types {
     public static final Type DATE_TIME=Type.getType(railo.runtime.type.dt.DateTime.class);
     
     public static final Type DATE=Type.getType(java.util.Date.class);
-    
+
     public static final Type FILE=Type.getType(java.io.File.class);
+    public static final Type EXCEL=Type.getType(Excel.class);
+    public static final Type EXCEL_UTIL=Type.getType(ExcelUtil.class);
     
     public static final Type RESOURCE=Type.getType(Resource.class);
     
@@ -133,7 +137,7 @@ public final class Types {
     public static final Type OBJECT_ARRAY=Type.getType(Object[].class);
 
     public static final Type PAGE_CONTEXT=Type.getType(PageContext.class);
-    public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
+    //public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
 
 
     public final static Type QUERY=Type.getType(railo.runtime.type.Query.class);
@@ -184,19 +188,26 @@ public final class Types {
 	public static final Type MEMBER = Type.getType(Member.class);
 	public static final Type UDF = Type.getType(UDF.class);
 	public static final Type UDF_PROPERTIES = Type.getType(UDFProperties.class);
+	public static final Type UDF_PROPERTIES_IMPL = Type.getType(UDFPropertiesImpl.class);
 	public static final Type UDF_IMPL = Type.getType(UDFImpl.class);
+	public static final Type CLOSURE = Type.getType(Closure.class);
 	public static final Type UDF_PROPERTIES_ARRAY = Type.getType(UDFProperties[].class);
 	public static final Type UDF_IMPL_ARRAY = Type.getType(UDFImpl[].class);
 	public static final Type COLLECTION_KEY = Type.getType(Collection.Key.class);
 	public static final Type COLLECTION_KEY_ARRAY = Type.getType(Collection.Key[].class);
 	public static final Type UNDEFINED = Type.getType(Undefined.class);
 	public static final Type MAP = Type.getType(Map.class);
+	public static final Type MAP_ENTRY = Type.getType(Map.Entry.class);
 	public static final Type CHAR_ARRAY = Type.getType(char[].class);
 	public static final Type IOUTIL = Type.getType(IOUtil.class);
 	public static final Type BODY_CONTENT = Type.getType(BodyContent.class);
 	public static final Type BODY_CONTENT_UTIL = Type.getType(BodyContentUtil.class);
 	public static final Type IMPORT_DEFINITIONS = Type.getType(ImportDefintion.class);
+	public static final Type IMPORT_DEFINITIONS_IMPL = Type.getType(ImportDefintionImpl.class);
 	public static final Type IMPORT_DEFINITIONS_ARRAY = Type.getType(ImportDefintion[].class);
+	public static final Type CLASS = Type.getType(Class.class);
+	public static final Type CLASS_ARRAY = Type.getType(Class[].class);
+	public static final Type CLASS_LOADER = Type.getType(ClassLoader.class);
 	 
 
 	/**
@@ -236,10 +247,14 @@ public final class Types {
             if("double".equals(type)) 								return DOUBLE_VALUE;
             if("double".equals(lcType))								return DOUBLE;
         break;
+        case 'e':
+            if("excel".equals(lcType)) 								return EXCEL;
+        break;
         case 'f':
             if("file".equals(lcType)) 								return FILE;
             if("float".equals(type))								return FLOAT_VALUE;
             if("float".equals(lcType))								return FLOAT;
+            if("function".equals(lcType))								return UDF;
         break;
         case 'i':
             if("int".equals(lcType))								return INT_VALUE;
@@ -279,6 +294,9 @@ public final class Types {
             if("short".equals(type))								return SHORT_VALUE;
             if("short".equals(lcType))								return SHORT;
         break;
+        case 'u':
+            if("udf".equals(lcType))								return UDF;
+        break;
         case 'v':
             if("void".equals(lcType))								return VOID;
     	    if("variablestring".equals(lcType)) 					return STRING;
@@ -303,7 +321,7 @@ public final class Types {
 		try {
 			return Type.getType(ClassUtil.loadClass(type));
 		} catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),-1);
+			throw new BytecodeException(e,null);
 		}
 	}
 

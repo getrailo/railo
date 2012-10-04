@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lsparsecurrency
+ * Implements the CFML Function lsparsecurrency
  */
 package railo.runtime.functions.international;
 

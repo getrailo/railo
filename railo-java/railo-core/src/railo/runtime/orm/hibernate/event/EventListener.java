@@ -3,7 +3,6 @@ package railo.runtime.orm.hibernate.event;
 import org.hibernate.event.PreUpdateEvent;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -17,7 +16,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.util.ComponentUtil;
 
 public abstract class EventListener {
 
@@ -34,12 +32,13 @@ public abstract class EventListener {
 	
 
 	
-    protected ComponentPro component;
-	private boolean allEvents;
+    protected Component component;
+
+    private boolean allEvents;
 	private Key eventType;
     
 	public EventListener(Component component, Key eventType, boolean allEvents) {
-	       this.component=ComponentUtil.toComponentPro(component,null); 
+	       this.component=component; 
 	       this.allEvents=allEvents; 
 	       this.eventType=eventType;
     }
@@ -70,8 +69,8 @@ public abstract class EventListener {
     protected void invoke(Collection.Key name, Object obj, Struct data) {
     	if(eventType!=null && !eventType.equals(name)) return;
     	//print.e(name);
-    	ComponentPro caller = ComponentUtil.toComponentPro(Caster.toComponent(obj,null),null);
-    	ComponentPro c=allEvents?component:caller;
+    	Component caller = Caster.toComponent(obj,null);
+    	Component c=allEvents?component:caller;
     	if(c==null) return;
     	
     	if(!allEvents &&!caller.getPageSource().equals(component.getPageSource())) return;

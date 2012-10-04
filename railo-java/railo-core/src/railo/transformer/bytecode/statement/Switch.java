@@ -11,10 +11,11 @@ import org.objectweb.asm.commons.Method;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 
-public final class Switch extends StatementBase implements FlowControl,HasBodies {
+public final class Switch extends StatementBase implements FlowControlBreak,HasBodies {
     
 	private static final Type ARRAY_IMPL=Type.getType(railo.runtime.type.ArrayImpl.class);
 
@@ -45,17 +46,17 @@ public final class Switch extends StatementBase implements FlowControl,HasBodies
 	private NativeSwitch ns;
 
 
-    public Switch(Expression expr,int startline,int endline) {
-		super(startline, endline);
+    public Switch(Expression expr,Position start, Position end) {
+		super(start, end);
 		this.expr=expr;
 	}
     
     public void addCase(Expression expr, Body body) {
-        addCase(expr, body, -1, -1);
+        addCase(expr, body, null, null);
     }
-    public void addCase(Expression expr, Body body,int startline,int endline) {
+    public void addCase(Expression expr, Body body,Position start,Position end) {
         //if(cases==null) cases=new ArrayList();
-        cases.add(new Case(expr,body,startline,endline));
+        cases.add(new Case(expr,body,start,end));
         body.setParent(this);
     }
     public void setDefaultCase(Body body) {
@@ -67,14 +68,14 @@ public final class Switch extends StatementBase implements FlowControl,HasBodies
     public final class Case {
         private Expression expression;
         private Body body;
-		private int startline;
-		private int endline;
+		private Position startPos;
+		private Position endPos;
 
-        public Case(Expression expression, Body body,int startline,int endline) {
+        public Case(Expression expression, Body body,Position start,Position end) {
             this.expression=expression;
             this.body=body;
-            this.startline=startline;
-            this.endline=endline;
+            this.startPos=start;
+            this.endPos=end;
         }
     }
 
@@ -113,12 +114,12 @@ public final class Switch extends StatementBase implements FlowControl,HasBodies
 		adapter.storeLocal(result);
 		
 		// switch(result)
-		ns=new NativeSwitch(result,NativeSwitch.LOCAL_REF,getStartLine(),getEndLine());
+		ns=new NativeSwitch(result,NativeSwitch.LOCAL_REF,getStart(),getEnd());
 		it = cases.iterator();
 		int count=1;
 		while(it.hasNext()) {
 			c=(Case) it.next();
-			ns.addCase(count++, c.body,c.startline,c.endline,false);
+			ns.addCase(count++, c.body,c.startPos,c.endPos,false);
 		}
 		if(defaultCase!=null)ns.addDefaultCase(defaultCase);
 		

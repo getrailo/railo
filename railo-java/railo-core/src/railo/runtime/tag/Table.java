@@ -2,8 +2,7 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
-
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
@@ -162,8 +161,8 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	public int doStartTag() throws PageException	{
 		startNewRow=true;
 		initRow=query.getRecordcount();
-		query.go(startrow);
-		pageContext.undefinedScope().addCollection(query);
+		query.go(startrow,pageContext.getId());
+		pageContext.undefinedScope().addQuery(query);
 		return query.getRecordcount()>=startrow?EVAL_BODY_INCLUDE:SKIP_BODY;
 	}
 
@@ -215,7 +214,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	        pageContext.forceWrite("<pre>");
 	        if(header.length()>0) {
 		        pageContext.forceWrite(header.toString());
-		        pageContext.forceWrite(StringUtils.repeat("\n",headerlines-1));
+		        pageContext.forceWrite(StringUtil.repeatString("\n",headerlines-1));
 		    }
 	        pageContext.forceWrite(body.toString());
 	        pageContext.forceWrite("</pre>");
@@ -227,8 +226,8 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
      */
     public void doFinally() {
 		try {
-		    pageContext.undefinedScope().removeCollection();
-			if(query!=null)query.go(initRow);
+		    pageContext.undefinedScope().removeQuery();
+			if(query!=null)query.go(initRow,pageContext.getId());
 		} 
 		catch (PageException e) {	}
     }

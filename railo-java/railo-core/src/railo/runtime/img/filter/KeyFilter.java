@@ -16,15 +16,14 @@ limitations under the License.
 
 package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * An experimental filter which can be used for keying against a clean shot. Given a source image, a clean image and a destination image, 
@@ -134,12 +133,14 @@ public class KeyFilter extends AbstractBufferedImageOp  implements DynFiltering 
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
-		int type = src.getType();
-		WritableRaster srcRaster = src.getRaster();
+		//int type = src.getType();
+		//WritableRaster srcRaster = 
+		src.getRaster();
 
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
-		WritableRaster dstRaster = dst.getRaster();
+		//WritableRaster dstRaster = 
+        dst.getRaster();
 
         if ( destination != null && cleanImage != null ) {
             float[] hsb1 = null;
@@ -193,7 +194,7 @@ public class KeyFilter extends AbstractBufferedImageOp  implements DynFiltering 
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [HTolerance, STolerance, BTolerance, CleanImage]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [HTolerance, STolerance, BTolerance, CleanImage]");
 		}
 
 		return filter(src, dst);

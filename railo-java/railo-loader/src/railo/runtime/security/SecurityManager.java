@@ -98,6 +98,11 @@ public interface SecurityManager {
     public static final int TYPE_ACCESS_READ = 16;
     public static final int TYPE_ACCESS_WRITE = 17;
     public static final int TYPE_REMOTE = 18;
+    
+
+	public static final int TYPE_CACHE = 19;
+	public static final int TYPE_GATEWAY = 20;
+	public static final int TYPE_ORM = 21;
 
     /**
      * Field <code>VALUE_NO</code>

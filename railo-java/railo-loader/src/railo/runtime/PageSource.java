@@ -2,6 +2,7 @@ package railo.runtime;
 
 import java.io.IOException;
 
+import railo.commons.io.res.Resource;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 
@@ -18,7 +19,7 @@ public interface PageSource extends SourceFile {
      */
     public abstract Page loadPage(ConfigWeb config) throws PageException;
     
-    // FUTURE public abstract Page loadPage(PageContext pc) throws PageException;
+    public abstract Page loadPage(PageContext pc) throws PageException;
     
     /**
      * loads the Page from this PageSource
@@ -28,7 +29,7 @@ public interface PageSource extends SourceFile {
      * @throws PageException 
      */
     public abstract Page loadPage(ConfigWeb config, Page defaultValue) throws PageException;
- // FUTURE public abstract Page loadPage(PageContext pc, Page defaultValue) throws PageException;
+ 	public abstract Page loadPage(PageContext pc, Page defaultValue) throws PageException;
     
     /**
      * returns the ralpath without the mapping
@@ -51,6 +52,20 @@ public interface PageSource extends SourceFile {
      * @return return the file name of the source file (test.cfm)
      */
     public abstract String getFileName();
+
+    /**
+     * if the pageSource is based on a archive, Railo returns the ra:// path
+     * @return return the Resource matching this PageSource
+     */
+    public abstract Resource getResource();
+    
+
+    /**
+     * if the pageSource is based on a archive, translate the source to a zip:// Resource
+     * @return return the Resource matching this PageSource
+     * @param pc the Page Context Object
+     */
+    public abstract Resource getResourceTranslated(PageContext pc) throws PageException;
 
     /**
      * @return returns the a classname matching to filename (Example: /railo/web/test_cfm)

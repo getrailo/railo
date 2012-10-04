@@ -82,7 +82,7 @@ Error Output --->
 	<cfhttp 
 			url="#update.location#/railo/remote/version/Info.cfc?method=getpatchversionfor&level=#server.ColdFusion.ProductLevel#&version=#server.railo.version#" 
 		method="get" resolveurl="no" result="http">
-	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="wddx">
+	<cfwddx action="wddx2cfml" input="#http.fileContent#" output="local.wddx">
 	<cfset session.avaiableVersion=wddx>
 	<cfreturn session.avaiableVersion>
 		<cfcatch>
@@ -140,7 +140,7 @@ Settings --->
 </tr>
 
 
-<cfform action="#go(url.action,"settings")#" method="post">
+<cfform onerror="customError" action="#go(url.action,"settings")#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.services.update.provider#</td>
 	<td class="tblContent">
@@ -205,7 +205,7 @@ Info --->
 
 <cfif hasUpdate>
 <h2>#stText.services.update.infoTitle#</h2>
-#replace(replace(replace(stText.services.update.update,'{available}','<b>#avi#</b>'),'{current}','<b>#curr#</b>'),'{avaiable}','<b>#avi#</b>')#
+#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#
 <cfscript>
 // Jira
 jira=stText.services.update.jira;
@@ -254,7 +254,7 @@ run update --->
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
 
-<cfform action="#go(url.action,"Run")#" method="post">
+<cfform onerror="customError" action="#go(url.action,"Run")#" method="post">
 
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>
@@ -276,7 +276,7 @@ run update --->
     </tr>
     
     
-    <cfform action="#go(url.action,"updateJars")#" method="post">
+    <cfform onerror="customError" action="#go(url.action,"updateJars")#" method="post">
     
     <cfmodule template="remoteclients.cfm" colspan="2">
     <tr>
@@ -317,7 +317,7 @@ remove update --->
 </tr><cfset version=patches[i]>
 </cfloop>
 
-<cfform action="#go(url.action,"Remove")#" method="post">
+<cfform onerror="customError" action="#go(url.action,"Remove")#" method="post">
 
 <cfmodule template="remoteclients.cfm" colspan="2">
 <tr>

@@ -12,6 +12,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.net.ldap.LDAPClient;
 import railo.runtime.op.Caster;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.util.ArrayUtil;
@@ -93,8 +94,8 @@ public final class Ldap extends TagImpl {
      * @param filterfile The filterfile to set.
      * @throws ApplicationException 
      */
-    public void setFilterfile(String filterfile) throws ApplicationException {
-        throw new ApplicationException("the attribute filterfile with value ["+filterfile+"] is deprecated");
+    public void setFilterfile(String filterfile) {
+		DeprecatedUtil.tagAttribute(pageContext,"LDAP", "filterfile");
     }
     
     /** Specifies the character that cfldap uses to separate multiple 
@@ -103,7 +104,7 @@ public final class Ldap extends TagImpl {
      * the default delimiter character, which is the semicolon (;), 
      * such as mgrpmsgrejecttext;lang-en. The delimiter character is used by the query, 
      * add, and modify action attributes, and is used by cfldap to output multi-value attributes
-     * @param delimiter delimeter to set
+     * @param delimiter delimiter to set
      */ 
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;

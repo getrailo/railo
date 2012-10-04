@@ -21,26 +21,12 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
 	
     private static final Resource[] EMPTY_RESOURCE_ARRAY = new Resource[0];
 
-// FUTURE move to interface
-	public static final int TYPE_CACHE = 19;
-	public static final int TYPE_GATEWAY = 20;
-	public static final int TYPE_ORM = 21;
-
 
 	private short[] accesses=new short[22];
-    
-
-    //private ConfigWeb config;
-    //private Resource[] roots;
-
-
-	private Resource rootDirectory;
-
-
+    private Resource rootDirectory;
 	private Resource[] customFileAccess=EMPTY_RESOURCE_ARRAY;
    
-    private SecurityManagerImpl() {
-        
+    private SecurityManagerImpl() {        
     }
     
     /**
@@ -321,7 +307,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
             throw new SecurityException(createExceptionMessage(res,true),"access is prohibited by security manager");
         }
         // None
-        if( res == null || isValid(config,serverPassword)) return;
+        if(isValid(config,serverPassword)) return;
         
         // custom
         if(!ArrayUtil.isEmpty(customFileAccess)){

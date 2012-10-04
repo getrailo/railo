@@ -10,8 +10,9 @@ import railo.runtime.type.dt.TimeSpan;
 public class FileCacheEntry implements CacheEntry {
 
 	private static final String ENC = "utf-8";
-	private Resource res,directory;
-	private String name,raw;
+	private Resource res;
+	//private Resource directory;
+	//private String name,raw;
 	
 	
 	

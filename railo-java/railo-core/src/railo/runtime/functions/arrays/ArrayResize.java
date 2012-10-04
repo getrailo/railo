@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayresize
+ * Implements the CFML Function arrayresize
  */
 package railo.runtime.functions.arrays;
 

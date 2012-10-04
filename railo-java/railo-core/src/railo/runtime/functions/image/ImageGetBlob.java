@@ -9,7 +9,7 @@ public class ImageGetBlob {
 	public static Object call(PageContext pc, Object source) throws PageException {
 		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
 		//return Image.toImage(name).getByteArray();
-		return Image.createImage(pc, source, true,true,true).getImageBytes(null);
+		return Image.createImage(pc, source, true,true,true,null).getImageBytes(null);
 	}
 	
 }

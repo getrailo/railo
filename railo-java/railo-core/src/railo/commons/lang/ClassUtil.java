@@ -16,7 +16,6 @@ import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -105,7 +104,7 @@ public final class ClassUtil {
 	public static Class loadClass(String className) throws ClassException {
 		Class clazz = loadClass(null,className,null);
 		if(clazz!=null) return clazz;
-		throw new ClassException("can not load class through its string name, because no definition for the class with the specifed name ["+className+"] could be found");
+		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
 
 	/**
@@ -117,7 +116,7 @@ public final class ClassUtil {
 	public static Class loadClass(ClassLoader cl,String className, Class defaultValue) {
 		
 		if(cl==null){
-			ConfigImpl config = (ConfigImpl) ThreadLocalPageContext.getConfig();
+			Config config = ThreadLocalPageContext.getConfig();
 			if(config!=null)cl=config.getClassLoader();
 		}
 		
@@ -155,7 +154,7 @@ public final class ClassUtil {
 	public static Class loadClass(ClassLoader cl,String className) throws ClassException {
 		Class clazz = loadClass(cl,className,null);
 		if(clazz!=null) return clazz;
-		throw new ClassException("can not load class through its string name, because no definition for the class with the specifed name ["+className+"] could be found");
+		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
 
 	/**
@@ -487,7 +486,7 @@ public final class ClassUtil {
 		while(true){
 			tmp=clazz.getComponentType();
 			if(tmp==null) break;
-			else clazz=tmp;
+			clazz=tmp;
 		}
 		return clazz;
 	}

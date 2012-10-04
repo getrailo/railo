@@ -10,7 +10,7 @@ import railo.runtime.type.Struct;
 public class ImageInfo implements Function {
 	
 	public static Struct call(PageContext pc, Object source) throws PageException {
-		return Image.createImage(pc, source, true, false,true).info();
+		return Image.createImage(pc, source, true, false,true,null).info();
 		
 		//if(name instanceof String) name=pc.getVariable(Caster.toString(name));
 		//return Image.toImage(name).info();

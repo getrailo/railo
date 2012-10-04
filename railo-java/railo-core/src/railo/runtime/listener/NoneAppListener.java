@@ -13,49 +13,37 @@ public final class NoneAppListener  extends AppListenerSupport {
 	private int mode;
 	private String type;
 
-	/**
-	 *
-	 * @see railo.runtime.listener.ApplicationListener#onRequest(railo.runtime.PageContext, railo.runtime.PageSource)
-	 */
-	public void onRequest(PageContext pc,PageSource requestedPage) throws PageException {
+	@Override
+	public void onRequest(PageContext pc,PageSource requestedPage, RequestListener rl) throws PageException {
+		if(rl!=null) {
+			requestedPage=rl.execute(pc, requestedPage);
+			if(requestedPage==null) return;
+		}
 		pc.doInclude(requestedPage);
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationListener#onApplicationStart(railo.runtime.PageContext)
-	 */
+	@Override
 	public boolean onApplicationStart(PageContext pc) throws PageException {
 		// do nothing
 		return true;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.listener.ApplicationListener#onSessionStart(railo.runtime.PageContext)
-	 */
+	@Override
 	public void onSessionStart(PageContext pc) throws PageException {
 		// do nothing
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.listener.ApplicationListener#onApplicationEnd(railo.runtime.CFMLFactory, java.lang.String)
-	 */
+	@Override
 	public void onApplicationEnd(CFMLFactory factory, String applicationName) throws PageException {
 		// do nothing	
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.listener.ApplicationListener#onSessionEnd(railo.runtime.CFMLFactory, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void onSessionEnd(CFMLFactory cfmlFactory, String applicationName, String cfid) throws PageException {
 		// do nothing
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationListener#onDebug(railo.runtime.PageContext)
-	 */
+	@Override
 	public void onDebug(PageContext pc) throws PageException {
 		try {
 			pc.getDebugger().writeOut(pc);
@@ -65,10 +53,7 @@ public final class NoneAppListener  extends AppListenerSupport {
 		}
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.listener.ApplicationListener#onError(railo.runtime.PageContext, railo.runtime.exp.PageException)
-	 */
+	@Override
 	public void onError(PageContext pc,PageException pe) {
 		pc.handlePageException(pe);
 	}
@@ -77,25 +62,18 @@ public final class NoneAppListener  extends AppListenerSupport {
 		this.mode=mode;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.listener.ApplicationListener#getMode()
-	 */
+	@Override
 	public int getMode() {
 		return mode;
 	}
 	
 
-	/**
-	 * @return the type
-	 */
+	@Override
 	public String getType() {
 		return type;
 	}
 
-	/**
-	 * @param type the type to set
-	 */
+	@Override
 	public void setType(String type) {
 		this.type = type;
 	}

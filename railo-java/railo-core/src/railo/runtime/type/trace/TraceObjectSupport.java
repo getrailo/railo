@@ -3,10 +3,9 @@ package railo.runtime.type.trace;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.debug.Debugger;
-import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Array;
-import railo.runtime.type.QueryPro;
+import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
@@ -30,9 +29,6 @@ public class TraceObjectSupport implements TraceObject {
 		this.category=category;
 		this.text=text;
 		this.debugger=debugger;
-		//((DebuggerImpl)debugger).addObjectTrace(this);
-		
-		
 	}
 	
 	
@@ -98,7 +94,7 @@ public class TraceObjectSupport implements TraceObject {
 		qry.setAtEL(PARAMS, row, addional);
 		*/
 		String action=type(traces[2].getMethodName());
-		((DebuggerImpl)debugger).addTrace(type, category, text, template,line,action, varName, varValue);
+		debugger.addTrace(type, category, text, template,line,action, varName, varValue);
 			
 	}	
 	
@@ -125,8 +121,8 @@ public class TraceObjectSupport implements TraceObject {
 			return (TraceObject) obj;
 		else if(obj instanceof UDF)
 			return new TOUDF(debugger,(UDF) obj,type,category,text);
-		else if(obj instanceof QueryPro)
-			return new TOQuery(debugger,(QueryPro) obj,type,category,text);
+		else if(obj instanceof Query)
+			return new TOQuery(debugger,(Query) obj,type,category,text);
 		else if(obj instanceof Array)
 			return new TOArray(debugger,(Array) obj,type,category,text);
 		else if(obj instanceof Struct)

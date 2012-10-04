@@ -37,7 +37,7 @@ public final class Abort extends TagImpl {
         type=type.toLowerCase().trim();
         if(type.equals("page"))this.type=railo.runtime.exp.Abort.SCOPE_PAGE;
         else if(type.equals("request"))this.type=railo.runtime.exp.Abort.SCOPE_REQUEST;
-        else throw new ApplicationException("attribute type has a invalid value ["+type+"], valid values are [page,request]");
+        else throw new ApplicationException("attribute type has an invalid value ["+type+"], valid values are [page,request]");
     }
 
 

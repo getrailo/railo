@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isboolean
+ * Implements the CFML Function isboolean
  */
 package railo.runtime.functions.decision;
 

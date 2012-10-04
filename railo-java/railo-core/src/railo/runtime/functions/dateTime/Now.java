@@ -6,7 +6,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 
 /**
- * Implements the Cold Fusion Function now
+ * Implements the CFML Function now
  */
 public final class Now implements Function {
 	/**

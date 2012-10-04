@@ -8,7 +8,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -16,6 +15,7 @@ import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -90,7 +90,7 @@ public final class XMLEventParser extends DefaultHandler {
 	public void start(Resource xmlFile,String saxParserCass) throws PageException {
 		InputStream is=null;
 		try {
-			XMLReader xmlReader = XMLReaderFactory.createXMLReader(saxParserCass);
+			XMLReader xmlReader = XMLUtil.createXMLReader(saxParserCass);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.parse(new InputSource(is=IOUtil.toBufferedInputStream(xmlFile.getInputStream())));

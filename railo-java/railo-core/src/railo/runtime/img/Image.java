@@ -174,19 +174,24 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	}
 
 	public Image(byte[] binary) throws IOException {
-		this(binary, ImageUtil.getFormat(binary,null)); 
+		this(binary, null); 
 	}
 	
 	public Image(byte[] binary, String format) throws IOException {
+		if(StringUtil.isEmpty(format))format=ImageUtil.getFormat(binary,null);
 		checkRestriction();
 		this.format=format;
 		_image=ImageUtil.toBufferedImage(binary,format);
 		if(_image==null) throw new IOException("can not read in image");
 	}
-	
+
 	public Image(Resource res) throws IOException {
+		this(res,null);
+	}
+	public Image(Resource res, String format) throws IOException {
+		if(StringUtil.isEmpty(format))format=ImageUtil.getFormat(res);
 		checkRestriction();
-		format=ImageUtil.getFormat(res);
+		this.format=format;
 		_image=ImageUtil.toBufferedImage(res,format);
 		this.source=res;
 		if(_image==null) throw new IOException("can not read in file "+res);
@@ -200,7 +205,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	
 
 	public Image(String b64str) throws IOException, ExpressionException {
-		this(ImageUtil.readBase64(b64str));
+		this(ImageUtil.readBase64(b64str),null);
+	}
+	
+	public Image(String b64str, String format) throws IOException, ExpressionException {
+		this(ImageUtil.readBase64(b64str),format);
 	}
 
 	public Image(int width, int height, int imageType, Color canvasColor) throws ExpressionException {
@@ -527,7 +536,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	    	    else if("italicbold".equals(strStyle)) style=Font.BOLD+Font.ITALIC;
 	    	    else if("italic,bold".equals(strStyle)) style=Font.BOLD+Font.ITALIC;
 	    	    else throw new ExpressionException(
-	    	    		"key style of argument attributeCollection has a invalid value ["+strStyle+"], valid values are [plain,bold,italic,bolditalic]");
+	    	    		"key style of argument attributeCollection has an invalid value ["+strStyle+"], valid values are [plain,bold,italic,bolditalic]");
     	    }
 
     	 // strikethrough
@@ -578,7 +587,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	if("square".equals(strEndcaps))		endcaps = BasicStroke.CAP_SQUARE;
     	else if("butt".equals(strEndcaps))	endcaps = BasicStroke.CAP_BUTT;
     	else if("round".equals(strEndcaps))	endcaps = BasicStroke.CAP_ROUND;
-    	else throw new ExpressionException("key [endcaps] has a invalid value ["+strEndcaps+"], valid values are [square,round,butt]");
+    	else throw new ExpressionException("key [endcaps] has an invalid value ["+strEndcaps+"], valid values are [square,round,butt]");
     	
     	// linejoins
     	String strLinejoins=Caster.toString(attr.get("linejoins","miter"));
@@ -587,7 +596,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	if("bevel".equals(strLinejoins))		linejoins = BasicStroke.JOIN_BEVEL;
     	else if("miter".equals(strLinejoins))	linejoins = BasicStroke.JOIN_MITER;
     	else if("round".equals(strLinejoins))	linejoins = BasicStroke.JOIN_ROUND;
-    	else throw new ExpressionException("key [linejoins] has a invalid value ["+strLinejoins+"], valid values are [bevel,miter,round]");
+    	else throw new ExpressionException("key [linejoins] has an invalid value ["+strLinejoins+"], valid values are [bevel,miter,round]");
     	
     	// miterlimit
     	float miterlimit = 10.0F;
@@ -898,7 +907,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	
 	private void _writeOut(ImageOutputStream ios, String format,float quality,boolean noMeta) throws IOException, ExpressionException {
 		if(quality<0 || quality>1)
-			throw new IOException("quality has a invalid value ["+quality+"], value has to be between 0 and 1");
+			throw new IOException("quality has an invalid value ["+quality+"], value has to be between 0 and 1");
 		if(StringUtil.isEmpty(format))	format=this.format;
 		if(StringUtil.isEmpty(format))	throw new IOException("missing format");
 		
@@ -915,7 +924,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	
     	
     	if (iter.hasNext()) {
-    		writer = (ImageWriter)iter.next();
+    		writer = iter.next();
     	}
     	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
     	
@@ -1330,25 +1339,25 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		return false;
 	}
 
-	public static Image createImage(PageContext pc,Object obj, boolean check4Var, boolean clone, boolean checkAccess) throws PageException {
+	public static Image createImage(PageContext pc,Object obj, boolean check4Var, boolean clone, boolean checkAccess, String format) throws PageException {
 		try {
 			if(obj instanceof String || obj instanceof Resource || obj instanceof File) {
 				try {
 					Resource res = Caster.toResource(obj);
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
-					return new Image(res);
+					return new Image(res,format);
 				} 
 				catch (ExpressionException ee) {
 					if(check4Var && Decision.isVariableName(Caster.toString(obj))) {
 						try {
-							return createImage(pc, pc.getVariable(Caster.toString(obj)), false,clone,checkAccess);
+							return createImage(pc, pc.getVariable(Caster.toString(obj)), false,clone,checkAccess,format);
 						}
 						catch (Throwable t) {
 							throw ee;
 						}
 					}
 					try {
-						return new Image(Caster.toString(obj));
+						return new Image(Caster.toString(obj),format);
 					}
 					catch (Throwable t) {
 						throw ee;
@@ -1359,7 +1368,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 				if(clone)return (Image) ((Image)obj).clone();
 				return (Image)obj;
 			}
-			if(Decision.isBinary(obj))			return new Image(Caster.toBinary(obj));
+			if(Decision.isBinary(obj))			return new Image(Caster.toBinary(obj),format);
 			if(obj instanceof BufferedImage)	return new Image(((BufferedImage) obj));
 			if(obj instanceof java.awt.Image)	return new Image(toBufferedImage((java.awt.Image) obj));
 			
@@ -1541,14 +1550,6 @@ public class Image extends StructSupport implements Cloneable,Struct {
 
 	/**
 	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return _info().keysAsString();
-	}
-
-	/**
-	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
@@ -1601,8 +1602,23 @@ public class Image extends StructSupport implements Cloneable,Struct {
 	 *
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return _info().keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return _info().keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return _info().entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return _info().valueIterator();
 	}
 
 	/**

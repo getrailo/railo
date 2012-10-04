@@ -8,6 +8,7 @@ public class ExecutionLogFactory {
 	
 	private Class clazz;
 	private Map<String, String> arguments;
+	private ExecutionLog executionLog;
 
 	public ExecutionLogFactory(Class clazz, Map<String, String> arguments){
 		this.clazz=clazz;
@@ -15,14 +16,16 @@ public class ExecutionLogFactory {
 	} 
 	
 	public ExecutionLog getInstance(PageContext pc){
-		ExecutionLog el;
-		try {
-			el = (ExecutionLog) clazz.newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-			el=new ConsoleExecutionLog();
+		ExecutionLog el = executionLog;
+		if(el==null) {
+			
+			try {
+				el=executionLog = (ExecutionLog) clazz.newInstance();
+			} catch (Exception e) {
+				el= new ConsoleExecutionLog();
+			}
+			el.init(pc, arguments);
 		}
-		el.init(pc, arguments);
 		return el;
 	}
 	

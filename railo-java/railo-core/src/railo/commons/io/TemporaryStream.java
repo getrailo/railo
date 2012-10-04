@@ -1,16 +1,20 @@
 package railo.commons.io;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.engine.ThreadLocalPageContext;
 
 public final class TemporaryStream extends OutputStream {
 
 	private static final int MAX_MEMORY = 1024*1024;
 	private static int index=1;
+	private static Resource tempFile;
 	
 	private Resource persis;
 	private long count=0;
@@ -23,7 +27,7 @@ public final class TemporaryStream extends OutputStream {
 	 */
 	public TemporaryStream() {
 		do {
-		this.persis=SystemUtil.getTempDirectory().getRealResource("temporary-stream-"+(index++));
+		this.persis=getTempDirectory().getRealResource("temporary-stream-"+(index++));
 		}
 		while(persis.exists());
 		os=new java.io.ByteArrayOutputStream();
@@ -181,5 +185,40 @@ public final class TemporaryStream extends OutputStream {
 
 	public long length() {
 		return count;
+	}
+	
+	public static Resource getTempDirectory() {
+        if(tempFile!=null) return tempFile;
+        String tmpStr = System.getProperty("java.io.tmpdir");
+        if(tmpStr!=null) {
+        	
+        	tempFile=ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), tmpStr);
+        	//tempFile=CFMLEngineFactory.getInstance().getCastUtil().toResource(tmpStr,null);
+            
+            if(tempFile!=null && tempFile.exists()) {
+                tempFile=getCanonicalResourceEL(tempFile);
+                return tempFile;
+            }
+        }
+        File tmp =null;
+        try {
+        	tmp = File.createTempFile("a","a");
+        	tempFile=ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), tmp.getParent());
+        	//tempFile=CFMLEngineFactory.getInstance().getCastUtil().toResource(tmp.getParent(),null);
+            tempFile=getCanonicalResourceEL(tempFile);   
+        }
+        catch(IOException ioe) {}
+        finally {
+        	if(tmp!=null)tmp.delete();
+        }
+        return tempFile;
+    }
+	
+	private static Resource getCanonicalResourceEL(Resource res) {
+		try {
+			return res.getCanonicalResource();
+		} catch (IOException e) {
+			return res.getAbsoluteResource();
+		}
 	}
 }

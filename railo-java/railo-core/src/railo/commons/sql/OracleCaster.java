@@ -1,7 +1,5 @@
 package railo.commons.sql;
 
-import oracle.sql.OPAQUE;
-import oracle.sql.OpaqueDescriptor;
 import railo.commons.lang.ClassUtil;
 
 public class OracleCaster {
@@ -14,8 +12,8 @@ public class OracleCaster {
 		try {
 			byte[] bv = ((oracle.sql.OPAQUE)o).getBytes();
 			
-			OPAQUE op = ((oracle.sql.OPAQUE)o);
-			OpaqueDescriptor desc = ((oracle.sql.OPAQUE)o).getDescriptor();
+			//OPAQUE op = ((oracle.sql.OPAQUE)o);
+			//OpaqueDescriptor desc = ((oracle.sql.OPAQUE)o).getDescriptor();
 			
 			
 			//Method getBytesValue = o.getClass().getMethod("getBytesValue", new Class[0]);

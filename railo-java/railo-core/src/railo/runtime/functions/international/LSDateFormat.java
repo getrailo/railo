@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lsdateformat
+ * Implements the CFML Function lsdateformat
  */
 package railo.runtime.functions.international;
 
@@ -46,8 +46,7 @@ public final class LSDateFormat implements Function {
 
 	private static DateTime toDateLS(PageContext pc ,Locale locale, TimeZone timeZone, Object object) throws PageException {
 		//print.out("oh:"+object);
-		//DateTime res = Caster.toDateTime(locale,Caster.toString(object),pc.getTimeZone(),null,locale.equals(Locale.US));
-		DateTime res = Caster.toDateTime(locale,Caster.toString(object),timeZone,null,false);
+		DateTime res = Caster.toDateTime(locale,Caster.toString(object),timeZone,null,locale.equals(Locale.US));
 		if(res!=null)return res;
 		return DateCaster.toDateAdvanced(object,timeZone);
 		

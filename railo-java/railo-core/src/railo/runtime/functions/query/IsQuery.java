@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isquery
+ * Implements the CFML Function isquery
  */
 package railo.runtime.functions.query;
 

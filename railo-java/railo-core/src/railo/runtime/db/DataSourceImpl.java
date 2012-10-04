@@ -1,6 +1,8 @@
 package railo.runtime.db;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
@@ -11,8 +13,10 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 
 /**
@@ -117,9 +121,14 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         dsnTranslated=replace(dsnTranslated,"username",username,false);
         dsnTranslated=replace(dsnTranslated,"password",password,false);
         
-        Collection.Key[] keys = custom==null?new Collection.Key[0]:custom.keys();
-        for(int i=0;i<keys.length;i++) {
-            dsnTranslated=replace(dsnTranslated,keys[i].getString(),Caster.toString(custom.get(keys[i],null),""),true);
+        //Collection.Key[] keys = custom==null?new Collection.Key[0]:custom.keys();
+        if(custom!=null) {
+        	Iterator<Entry<Key, Object>> it = custom.entryIterator();
+        	Entry<Key, Object> e;
+            while(it.hasNext()) {
+	        	e = it.next();
+	            dsnTranslated=replace(dsnTranslated,e.getKey().getString(),Caster.toString(e.getValue(),""),true);
+	        }
         }
     }
 
@@ -129,7 +138,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         }
         if(!doQueryString) return src;
         if(clazz.getName().indexOf("microsoft")!=-1 || clazz.getName().indexOf("jtds")!=-1)
-        return src+=';'+name+'='+value;
+        	return src+=';'+name+'='+value;
         return src+=((src.indexOf('?')!=-1)?'&':'?')+name+'='+value;
     }
 
@@ -244,13 +253,14 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         return connectionTimeout;
     }
 
-
-	//FUTURE add to interface
+	/**
+	 * @see railo.runtime.db.DataSource#getMetaCacheTimeout()
+	 */
 	public long getMetaCacheTimeout() {
 		return metaCacheTimeout;
 	} 
 	
-	// FUTURE add to interface
+	@Override
 	public TimeZone getTimeZone() {
 		return timezone;
 	} 
@@ -259,14 +269,14 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      * @see railo.runtime.db.DataSource#getCustomValue(java.lang.String)
      */
     public String getCustomValue(String key) {
-        return Caster.toString(custom.get(key,null),"");
+        return Caster.toString(custom.get(KeyImpl.init(key),null),"");
     }
     
     /**
      * @see railo.runtime.db.DataSource#getCustomNames()
      */
     public String[] getCustomNames() {
-        return custom.keysAsString();
+        return CollectionUtil.keysAsString(custom);
     }
     
     /**

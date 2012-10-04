@@ -19,7 +19,7 @@ public class StructKeyExists implements FunctionEvaluator{
 			String str=((LitString)value).getString();
 			
 			// update first arg
-			arg.setValue(new CollectionKey(str,-1),Collection.Key.class.getName());
+			arg.setValue(new CollectionKey(str),Collection.Key.class.getName());
 		}
 		//print.out("bif:"+arg.getValue().getClass().getName());
 	}

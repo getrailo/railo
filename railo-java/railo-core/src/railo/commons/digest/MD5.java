@@ -33,7 +33,7 @@ public final class MD5	{
 		}
      }
 	
-	private static String stringify(byte digest[]) {
+	public static String stringify(byte digest[]) {
 		char[] chars = new char[2*digest.length];
 		int h;
 		int l;

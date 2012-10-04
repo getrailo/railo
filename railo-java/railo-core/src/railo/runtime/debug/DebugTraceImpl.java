@@ -4,6 +4,8 @@ import railo.commons.lang.StringUtil;
 
 public final class DebugTraceImpl implements DebugTrace {
 
+	private static final long serialVersionUID = -3619310656845433643L;
+	
 	private int type;
 	private String category;
 	private String text;
@@ -77,7 +79,7 @@ public final class DebugTraceImpl implements DebugTrace {
 	public String getVarName() {
 		return varName;
 	}
-	public String getAction() {// FUTURE add to interface
+	public String getAction() {
 		return action;
 	}
 	

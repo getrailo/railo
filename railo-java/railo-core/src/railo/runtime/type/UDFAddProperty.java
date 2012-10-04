@@ -11,6 +11,7 @@ import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.PropertyFactory;
 
 public final class UDFAddProperty extends UDFGSProperty {
@@ -97,7 +98,7 @@ public final class UDFAddProperty extends UDFGSProperty {
 			Key valueName = arguments[0].getName();
 			Object value = values.get(valueName,null);
 			if(value==null){
-				Key[] keys = values.keys();
+				Key[] keys = CollectionUtil.keys(values);
 				if(keys.length==1) {
 					value=values.get(keys[0]);
 				}

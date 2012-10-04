@@ -31,6 +31,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * represent a single Collection
@@ -515,7 +516,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             		qv = Caster.toQuery(pc.getVariable(queryName));
             	}
             	else {
-            		k=KeyImpl.ID;
+            		k=KeyConstants._id;
                     Key[] cols = new Key[]{k};
                     String[] types = new String[]{"VARCHAR"};
             		qv=new QueryImpl(cols,types, 1,"query");
@@ -672,15 +673,13 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             String custom3;
             String custom4;
             String url;
-            SearchResultItemPro record;
+            SearchResulItem record;
             SearchIndex si;
-            boolean hasContextSummary=false;
             for(int y=0;y<to;y++) {
             		
                 int row=len+y+1;
-                record = SearchResulItemImpl.toSearchResultItemPro(records[y]);
-                if(y==0)hasContextSummary=record instanceof SearchResultItemPro;
-            	si=(SearchIndex)indexes.get(record.getId());
+                record = records[y];
+            	si=indexes.get(record.getId());
 
                 title=record.getTitle();
                 custom1=record.getCustom1();
@@ -701,7 +700,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 qry.setAt(KeyImpl.SIZE,row,record.getSize());
 
                 qry.setAt("summary",row,record.getSummary());
-                if(hasContextSummary)qry.setAt("context",row,((SearchResultItemPro)record).getContextSummary());
+                qry.setAt("context",row,record.getContextSummary());
                 qry.setAt("score",row,new Float(record.getScore()));
                 qry.setAt(KeyImpl.KEY,row,record.getKey());
                 qry.setAt(KeyImpl.URL,row,url);

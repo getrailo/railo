@@ -3,13 +3,12 @@ package railo.runtime.util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-
-import railo.runtime.exp.PageException;
+import railo.commons.net.http.HTTPResponse;
+import railo.commons.net.http.Header;
 
 public interface HTTPUtil {
 
@@ -44,29 +43,29 @@ public interface HTTPUtil {
      * @return resulting inputstream
      * @throws IOException
      */
-    public HttpMethod get(URL url, String username, String password, int timeout, 
+    public HTTPResponse get(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException;
     
     
-    public HttpMethod put(URL url, String username, String password, int timeout, 
+    public HTTPResponse put(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
-            String proxypassword, Header[] headers, RequestEntity body) throws IOException ;
+            String proxypassword, Header[] headers, Object body) throws IOException ;
     
-    public HttpMethod delete(URL url, String username, String password, int timeout, 
+    public HTTPResponse delete(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException ;
 
-    public HttpMethod head(URL url, String username, String password, int timeout, 
+    public HTTPResponse head(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException ;
 
     
-	public RequestEntity toRequestEntity(Object value) throws PageException;
+	//public RequestEntity toRequestEntity(Object value) throws PageException;
     
     /**
      * cast a string to a url
@@ -85,7 +84,9 @@ public interface HTTPUtil {
      */
     public URL toURL(String strUrl) throws MalformedURLException;
 
-	public Object toURL(HttpMethod httpMethod);
+	public URI toURI(String strUrl) throws URISyntaxException;
+	
+	public URI toURI(String strUrl, int port) throws URISyntaxException;
 	
 	/**
 	 * translate a string in the URLEncoded Format

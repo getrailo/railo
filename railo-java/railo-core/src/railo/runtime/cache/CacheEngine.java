@@ -32,7 +32,7 @@ public class CacheEngine {
 	}
 
 
-	public void delete(String key,boolean throwWhenNotExists) throws CacheException {
+	public void delete(String key,boolean throwWhenNotExists) throws IOException {
 		if(!cache.remove(key) && throwWhenNotExists)
 			throw new CacheException("there is no entry in cache with key ["+key+"]");
 	}
@@ -41,7 +41,7 @@ public class CacheEngine {
 		return cache.contains(key);
 	}
 
-	public int flush(String key, String filter) throws MalformedPatternException {
+	public int flush(String key, String filter) throws MalformedPatternException, IOException {
 		if(!Util.isEmpty(key)) return cache.remove(key)?1:0;
 		if(!Util.isEmpty(filter)) return cache.remove(new WildCardFilter(filter,false));
 		return cache.remove(CacheKeyFilterAll.getInstance());

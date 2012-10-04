@@ -5,10 +5,10 @@ import railo.commons.io.res.Resource;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
-import railo.runtime.type.scope.ClientPlus;
+import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.storage.StorageScopeFile;
 
-public class ClientFile extends StorageScopeFile implements ClientPlus {
+public class ClientFile extends StorageScopeFile implements Client {
 
 	
 	/**
@@ -37,7 +37,7 @@ public class ClientFile extends StorageScopeFile implements ClientPlus {
 	 * @param log 
 	 * @return
 	 */
-	public static ClientPlus getInstance(String name, PageContext pc, Log log) {
+	public static Client getInstance(String name, PageContext pc, Log log) {
 
 		Resource res=_loadResource(pc.getConfig(),SCOPE_CLIENT,name,pc.getCFID());
 		Struct data=_loadData(pc,res,log);

@@ -5,9 +5,9 @@ import java.io.Serializable;
 /**
  * a Simple name value Pair
  */
-public final class Pair implements Serializable {
-	String name;
-	Object value;
+public final class Pair<K,V> implements Serializable {
+	K name;
+	V value;
 
 
 	/**
@@ -15,7 +15,7 @@ public final class Pair implements Serializable {
 	 * @param name
 	 * @param value
 	 */
-	public Pair(String name, Object value) {
+	public Pair(K name, V value) {
 		this.name = name;
 		this.value = value;
 	}
@@ -23,14 +23,14 @@ public final class Pair implements Serializable {
 	/**
 	 * @return the name
 	 */
-	public String getName() {
+	public K getName() {
 		return name;
 	}
 
 	/**
 	 * @param name the name to set
 	 */
-	public void setName(String name) {
+	public void setName(K name) {
 		this.name = name;
 	}
 
@@ -45,14 +45,14 @@ public final class Pair implements Serializable {
 	/**
 	 * @return the value
 	 */
-	public Object getValue() {
+	public V getValue() {
 		return value;
 	}
 
 	/**
 	 * @param value the value to set
 	 */
-	public void setValue(Object value) {
+	public void setValue(V value) {
 		this.value = value;
 	}
 

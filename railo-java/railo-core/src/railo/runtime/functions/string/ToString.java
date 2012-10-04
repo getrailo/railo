@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function tostring
+ * Implements the CFML Function tostring
  */
 package railo.runtime.functions.string;
 

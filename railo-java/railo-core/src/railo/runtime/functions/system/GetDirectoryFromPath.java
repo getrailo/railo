@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getdirectoryfrompath
+ * Implements the CFML Function getdirectoryfrompath
  */
 package railo.runtime.functions.system;
 

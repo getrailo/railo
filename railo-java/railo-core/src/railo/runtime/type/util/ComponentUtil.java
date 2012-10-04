@@ -50,7 +50,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.UDFProperties;
+import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.util.ASMProperty;
@@ -78,11 +78,11 @@ public final class ComponentUtil {
      * @return
      * @throws PageException
      */
-	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
-		return _getComponentJavaAccess(component, isNew,create,writeLog);
+	public static Class getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
+		return _getComponentJavaAccess(component, isNew,create,writeLog,supressWSbeforeArg);
 	}
 	    
-    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog) throws PageException {
+    private static Class _getComponentJavaAccess(ComponentAccess component, RefBoolean isNew,boolean create,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
     	isNew.setValue(false);
     	String classNameOriginal=component.getPageSource().getFullClassName();
     	String className=getClassname(component).concat("_wrap");
@@ -130,11 +130,11 @@ public final class ComponentUtil {
     	java.util.List _keys=new ArrayList();
     
         // remote methods
-        String[] keys = component.keysAsString(Component.ACCESS_REMOTE);
+        Collection.Key[] keys = component.keys(Component.ACCESS_REMOTE);
         int max;
         for(int i=0;i<keys.length;i++){
         	max=-1;
-        	while((max=createMethod(statConstr,constr,_keys,cw,real,component.get(keys[i]),max, writeLog))!=-1){
+        	while((max=createMethod(statConstr,constr,_keys,cw,real,component.get(keys[i]),max, writeLog,supressWSbeforeArg))!=-1){
         		break;// for overload remove this
         	}
         }
@@ -143,7 +143,7 @@ public final class ComponentUtil {
         GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC,CONSTRUCTOR_OBJECT,null,null,cw);
 		adapter.loadThis();
         adapter.invokeConstructor(Types.OBJECT, CONSTRUCTOR_OBJECT);
-        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog), _keys);
+        railo.transformer.bytecode.Page.registerFields(new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,_keys,cw,real,adapter,CONSTRUCTOR_OBJECT,writeLog,supressWSbeforeArg), _keys);
         adapter.returnValue();
         adapter.endMethod();
         
@@ -162,10 +162,16 @@ public final class ComponentUtil {
         catch(Throwable t) {
         	throw Caster.toPageException(t);
         }
-        
     }
 
-    /**
+    private static railo.transformer.bytecode.Page getPage(BytecodeContext bc1, BytecodeContext bc2) {
+    	railo.transformer.bytecode.Page page=null;
+    	if(bc1!=null)page=bc1.getPage();
+    	if(page==null && bc2!=null)page=bc2.getPage();
+    	return page;
+	}
+
+	/**
 	 * check if one of the children is changed
 	 * @param component
 	 * @param clazz
@@ -272,13 +278,20 @@ public final class ComponentUtil {
 	 * @param clazz
 	 */
 	private static void _registerTypeMapping(RPCServer server, Class clazz) {
-		if(!isComplexType(clazz)) return;
+		if(clazz==null) return;
+		
+		if(!isComplexType(clazz)) {
+			if(clazz.isArray()) {
+				_registerTypeMapping(server, clazz.getComponentType());
+			}
+			return;
+		}
 		server.registerTypeMapping(clazz);
 		registerTypeMapping(server,clazz);
 	}
 
-	private static String getClassname(Component component) throws ExpressionException {
-    	PageSource ps = ComponentUtil.toComponentPro(component).getPageSource();
+	public static String getClassname(Component component) {
+    	PageSource ps = component.getPageSource();
     	//ps.getRealpath()
     	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
     	String path=ps.getDisplayPath();// Must remove webroot
@@ -319,7 +332,6 @@ public final class ComponentUtil {
 
     
     private static Object _getClientComponentPropertiesObject(Config config, String className, ASMProperty[] properties) throws PageException, IOException, ClassNotFoundException {
-
     	String real=className.replace('.','/');
     	
 		//Config config = pc.getConfig();
@@ -341,7 +353,6 @@ public final class ComponentUtil {
 				
 			}
 		}
-		
 		// create file
 		byte[] barr = ASMUtil.createPojo(real, properties,Object.class,new Class[]{Pojo.class},null);
     	boolean exist=classFile.exists();
@@ -369,14 +380,14 @@ public final class ComponentUtil {
     	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
     	
-    	ComponentPro cp = ComponentUtil.toComponentPro(component);
     	
-    	Mapping mapping = cp.getPageSource().getMapping();
+    	Mapping mapping = component.getPageSource().getMapping();
 		Config config = mapping.getConfig();
 		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
 		
 		Resource classFile = cl.getDirectory().getRealResource(real.concat(".class"));
-		String classNameOriginal=cp.getPageSource().getFullClassName();
+		
+    	String classNameOriginal=component.getPageSource().getFullClassName();
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
 		
@@ -393,14 +404,14 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ComponentUtil.getProperties(component,false),Object.class,new Class[]{Pojo.class},cp.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(component.getProperties(false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
 		return cl.loadClass(className); //ClassUtil.loadInstance(cl.loadClass(className));
     }
 
-	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List keys,ClassWriter cw,String className, Object member,int max,boolean writeLog) throws PageException {
+	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List keys,ClassWriter cw,String className, Object member,int max,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
 		
 		boolean hasOptionalArgs=false;
 		
@@ -419,7 +430,7 @@ public final class ComponentUtil {
         			types
             		);
             GeneratorAdapter adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL , method, null, null, cw);
-            BytecodeContext bc = new BytecodeContext(statConstr,constr,null,keys,cw,className,adapter,method,writeLog);
+            BytecodeContext bc = new BytecodeContext(statConstr,constr,getPage(statConstr,constr),null,keys,cw,className,adapter,method,writeLog,supressWSbeforeArg);
             Label start=adapter.newLabel();
             adapter.visitLabel(start);
             
@@ -433,7 +444,7 @@ public final class ComponentUtil {
             for(int y=0;y<types.length;y++){
     			av.visitBeginItem(adapter, y);
     				adapter.loadArg(y);
-    			av.visitEndItem(bc);
+    			av.visitEndItem(bc.getAdapter());
             }
             av.visitEnd();
             adapter.invokeStatic(COMPONENT_CONTROLLER, INVOKE);
@@ -553,11 +564,11 @@ public final class ComponentUtil {
 		if(member==null) {
 			String strAccess = toStringAccess(access,"");
 			
-			String[] other;
+			Collection.Key[] other;
 			if(c instanceof ComponentAccess)
-				other=((ComponentAccess)c).keysAsString(access);
+				other=((ComponentAccess)c).keys(access);
 			else 
-				other=c.keysAsString();
+				other=CollectionUtil.keys(c);
 			
 			if(other.length==0)
 				return new ExpressionException(
@@ -570,26 +581,20 @@ public final class ComponentUtil {
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}
 
-	public static Property[] getProperties(Component c,boolean onlyPeristent) {
+	public static Property[] getProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
 		if(c instanceof ComponentPro)
-			return ((ComponentPro)c).getProperties(onlyPeristent);
-		
-		throw new RuntimeException("class ["+Caster.toClassName(c)+"] does not support method [getProperties(boolean)]");
+			return ((ComponentPro)c).getProperties(onlyPeristent, includeBaseProperties);
+		return c.getProperties(onlyPeristent);
 	}
 	
-	public static Property[] getIDProperties(Component c,boolean onlyPeristent) {
-		Property[] props = getProperties(c, onlyPeristent);
+	public static Property[] getIDProperties(Component c,boolean onlyPeristent, boolean includeBaseProperties) {
+		Property[] props = getProperties(c,onlyPeristent,includeBaseProperties);
 		java.util.List<Property> tmp=new ArrayList<Property>();
 		for(int i=0;i<props.length;i++){
 			if("id".equalsIgnoreCase(Caster.toString(props[i].getDynamicAttributes().get(FIELD_TYPE,null),"")))
 				tmp.add(props[i]);
 		}
 		return tmp.toArray(new Property[tmp.size()]);
-	}
-	
-	public static ComponentPro toComponentPro(Component comp) throws ExpressionException {
-		if(comp instanceof ComponentPro) return (ComponentPro) comp;
-		throw new ExpressionException("can't cast class ["+Caster.toClassName(comp)+"] to a class of type ComponentPro");
 	}
 
 	public static ComponentAccess toComponentAccess(Component comp) throws ExpressionException {
@@ -606,9 +611,9 @@ public final class ComponentUtil {
 	
 	
 	
-	public static ComponentPro toComponentPro(Object obj) throws ExpressionException {
-		if(obj instanceof ComponentPro) return (ComponentPro) obj;
-		throw new ExpressionException("can't cast class ["+Caster.toClassName(obj)+"] to a class of type ComponentPro");
+	public static Component toComponent(Object obj) throws ExpressionException {
+		if(obj instanceof Component) return (Component) obj;
+		throw new ExpressionException("can't cast class ["+Caster.toClassName(obj)+"] to a class of type Component");
 	}
 	
 
@@ -616,21 +621,15 @@ public final class ComponentUtil {
 	public static PageSource getPageSource(Component cfc) {
 		// TODO Auto-generated method stub
 		try {
-			return toComponentPro(cfc).getPageSource();
+			return toComponent(cfc).getPageSource();
 		} catch (ExpressionException e) {
 			return null;
 		}
 	}
-	
-	
-	public static ComponentPro toComponentPro(Component comp, ComponentPro defaultValue) {
-		if(comp instanceof ComponentPro) return (ComponentPro) comp;
-		return defaultValue;
-	}
 
 	public static ComponentAccess getActiveComponent(PageContext pc, ComponentAccess current) {
 		if(pc.getActiveComponent()==null) return current; 
-		if(pc.getActiveUDF()!=null && ((ComponentPro)pc.getActiveComponent()).getPageSource()==((ComponentPro)pc.getActiveUDF().getOwnerComponent()).getPageSource()){
+		if(pc.getActiveUDF()!=null && (pc.getActiveComponent()).getPageSource()==(pc.getActiveUDF().getOwnerComponent()).getPageSource()){
 			
 			return (ComponentAccess) pc.getActiveUDF().getOwnerComponent();
 		}
@@ -660,7 +659,7 @@ public final class ComponentUtil {
 			return p;
 		}
 		pc=ThreadLocalPageContext.get(pc);
-		return psi.loadPage(pc,pc.getConfig());
+		return psi.loadPage(pc);
 	}
 
 	public static Struct getPropertiesAsStruct(ComponentAccess ca, boolean onlyPersistent) {
@@ -671,7 +670,7 @@ public final class ComponentUtil {
 		}
 		return sct;
 	}
-	public static Struct getMetaData(PageContext pc,UDFProperties udf) throws PageException {
+	public static Struct getMetaData(PageContext pc,UDFPropertiesImpl udf) throws PageException {
 		StructImpl func=new StructImpl();
         pc=ThreadLocalPageContext.get(pc);
 		// TODO func.set("roles", value);
@@ -680,6 +679,7 @@ public final class ComponentUtil {
         Struct meta = udf.meta;
         if(meta!=null) StructUtil.copy(meta, func, true);
         
+        func.setEL(KeyImpl.CLOSURE, Boolean.FALSE);
 		
 		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
         String hint=udf.hint;
@@ -695,10 +695,10 @@ public final class ComponentUtil {
         
 	    	   
 	    int format = udf.returnFormat;
-        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyImpl.RETURN_FORMAT, "wddx");
-        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
-        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
-        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
+        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyConstants._returnFormat, "wddx");
+        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyConstants._returnFormat, "plain");
+        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyConstants._returnFormat, "json");
+        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyConstants._returnFormat, "serialize");
         
         
         FunctionArgument[] args =  udf.arguments;

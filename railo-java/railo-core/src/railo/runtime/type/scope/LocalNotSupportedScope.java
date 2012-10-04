@@ -9,14 +9,13 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Scope;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
 /**
  * 
  */
-public final class LocalNotSupportedScope extends StructSupport implements Scope,LocalPro {
+public final class LocalNotSupportedScope extends StructSupport implements Scope,Local {
 	
 	private static final long serialVersionUID = 6670210379924188569L;
 	
@@ -35,12 +34,6 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	public int size() {
 		return 0;
 	}
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return null;
-	}
 	
 	/**
 	 * @see railo.runtime.type.Collection#keys()
@@ -58,19 +51,19 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 		return null;
 	}
 	
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws ExpressionException {
+	 *  /
+	public Object remove (String key) throws ExpressionException {
 	    throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key+", Local Scope can only invoked inside a Function");
-	}
+	}*/
 	
 	/**
 	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
-		return remove(key.getString());
+	    throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key+", Local Scope can only invoked inside a Function");
 	}
 	
 	/**
@@ -110,25 +103,43 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
+		return null;
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return null;
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return null;
+	}
+
+	
+	@Override
+	public Iterator<Object> valueIterator() {
 		return null;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return false;
 	}
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
 	}
-	/**
-	 * @see railo.runtime.type.Scope#release()
-	 */
+	
+	@Override
 	public void release() {
+	}
+	@Override
+	public void release(PageContext pc) {
 	}
 	
 	/**

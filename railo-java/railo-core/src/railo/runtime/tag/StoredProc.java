@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.jsp.JspException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
@@ -29,7 +31,6 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallySupport;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
@@ -42,6 +43,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.util.KeyConstants;
 
 
 
@@ -134,7 +136,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		DeprecatedUtil.tagAttribute("StoredProc", "cachename");
+		DeprecatedUtil.tagAttribute(pageContext,"StoredProc", "cachename");
 	}
 
 	/** set the value cachedwithin
@@ -303,7 +305,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 							params.add(index, param);
 						}
 						else {								
-							ProcParamBean param=(ProcParamBean) params.get(index);
+							ProcParamBean param= params.get(index);
 							if(coll.metas[i].dataType!=Types.OTHER && coll.metas[i].dataType!=param.getType()){
 								param.setType(coll.metas[i].dataType);
 							}
@@ -388,24 +390,24 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 
 
 	private ProcResultBean getFirstResult() {
-		Key[] keys = results.keys();
-		if(keys.length==0) return null;
+		Iterator<Key> it = results.keyIterator();
+		if(!it.hasNext()) return null;
 			
-		return (ProcResultBean) results.removeEL(keys[0]);
+		return (ProcResultBean) results.removeEL(it.next());
 	}
 
 	/**
 	 * @see railo.runtime.ext.tag.TagSupport#doEndTag()
 	 */
 	public int doEndTag() throws JspException {
-		long start=System.currentTimeMillis();
+		long startNS=System.nanoTime();
 		
 		if(StringUtil.isEmpty(datasource)){
-			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+			datasource=pageContext.getApplicationContext().getDefaultDataSource();
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 		}
 		
 		
@@ -459,10 +461,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    Object cacheValue=null;
 			if(clearCache) {
 				hasCached=false;
-				pageContext.getQueryCache().remove(_sql,datasource,username,password);
+				pageContext.getQueryCache().remove(pageContext,_sql,datasource,username,password);
 			}
 			else if(hasCached) {
-				cacheValue = pageContext.getQueryCache().get(_sql,datasource,username,password,cachedafter);
+				cacheValue = pageContext.getQueryCache().get(pageContext,_sql,datasource,username,password,cachedafter);
 			}
 			int count=0;
 			if(cacheValue==null){
@@ -499,7 +501,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 			    // params
 			    it = params.iterator();
 			    while(it.hasNext()) {
-			    	param=(ProcParamBean) it.next();
+			    	param= it.next();
 			    	if(param.getDirection()!=ProcParamBean.DIRECTION_IN){
 			    		Object value=null;
 			    		if(!StringUtil.isEmpty(param.getVariable())){
@@ -517,7 +519,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				}
 			    if(hasCached){
 			    	cache.set(COUNT, Caster.toDouble(count));
-			    	pageContext.getQueryCache().set(_sql,datasource,username,password,cache,cachedbefore);
+			    	pageContext.getQueryCache().set(pageContext,_sql,datasource,username,password,cache,cachedbefore);
 			    }
 			    
 			}
@@ -525,12 +527,13 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				Struct sctCache = (Struct) cacheValue;
 				count=Caster.toIntValue(sctCache.removeEL(COUNT),0);
 				
-				
-				Key[] keys = sctCache.keys();
-				for(int i=0;i<keys.length;i++){
-					if(STATUS_CODE.getVariable().equals(keys[i].getString()))
-						res.set(KEY_SC, sctCache.get(keys[i]));
-					else setVariable(keys[i].getString(), sctCache.get(keys[i]));
+				Iterator<Entry<Key, Object>> cit = sctCache.entryIterator();
+				Entry<Key, Object> ce;
+				while(cit.hasNext()){
+					ce = cit.next();
+					if(STATUS_CODE.getVariable().equals(ce.getKey().getString()))
+						res.set(KEY_SC, ce.getValue());
+					else setVariable(ce.getKey().getString(), ce.getValue());
 				}
 				isFromCache=true;
 			}
@@ -539,11 +542,11 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    long exe;
 		    
 		    setVariable(this.result, res);
-		    res.set(QueryImpl.EXECUTION_TIME,Caster.toDouble(exe=(System.currentTimeMillis()-start)));
-		    res.set(QueryImpl.CACHED,Caster.toBoolean(isFromCache));
+		    res.set(KeyConstants._executionTime,Caster.toDouble(exe=(System.nanoTime()-startNS)));
+		    res.set(KeyConstants._cached,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {
-		    	pageContext.getDebugger().addQueryExecutionTime(datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
+		    	pageContext.getDebugger().addQuery(null,datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
 			}
 		    
 		    
@@ -609,8 +612,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	/**
 	 * @param timeout the timeout to set
 	 */
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
+	public void setTimeout(double timeout) {
+		this.timeout = (int) timeout;
 	}
 	
 	

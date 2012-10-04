@@ -7,6 +7,9 @@ public final class RefBooleanImpl implements RefBoolean {//MUST add interface Ca
 
     private boolean value;
 
+
+    public RefBooleanImpl() {}
+    
     /**
      * @param value
      */

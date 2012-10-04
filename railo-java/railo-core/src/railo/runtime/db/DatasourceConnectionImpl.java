@@ -1,24 +1,18 @@
 package railo.runtime.db;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import railo.commons.digest.MD5;
 import railo.runtime.op.Caster;
 
 /**
  * wrap for datasorce and connection from it
  */
-public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
+public final class DatasourceConnectionImpl implements DatasourceConnection {
     
-    private static final int MAX_PS = 100;
+    //private static final int MAX_PS = 100;
 	private Connection connection;
     private DataSource datasource;
     private long time;
@@ -149,61 +143,85 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 		return supportsGetGeneratedKeys.booleanValue();
 	}
 	
-	private Map<String,PreparedStatement> preparedStatements=new HashMap<String, PreparedStatement>();
+	//private Map<String,PreparedStatement> preparedStatements=new HashMap<String, PreparedStatement>();
 	
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
 	 */
-	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys) throws SQLException {
+	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys,boolean allowCaching) throws SQLException {
+		if(createGeneratedKeys)	return getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS);
+		return getConnection().prepareStatement(sql.getSQLString());
+	}
+	
+	
+	/*public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys,boolean allowCaching) throws SQLException {
 		// create key
 		String strSQL=sql.getSQLString();
 		String key=strSQL.trim()+":"+createGeneratedKeys;
 		try {
 			key = MD5.getDigestAsString(key);
 		} catch (IOException e) {}
-		PreparedStatement ps = preparedStatements.get(key);
-		if(ps!=null) return ps;
+		PreparedStatement ps = allowCaching?preparedStatements.get(key):null;
+		if(ps!=null) {
+			if(DataSourceUtil.isClosed(ps,true)) 
+				preparedStatements.remove(key);
+			else return ps;
+		}
+		
 		
 		if(createGeneratedKeys)	ps= getConnection().prepareStatement(strSQL,Statement.RETURN_GENERATED_KEYS);
 		else ps=getConnection().prepareStatement(strSQL);
 		if(preparedStatements.size()>MAX_PS)
 			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
-		preparedStatements.put(key,ps);
+		if(allowCaching)preparedStatements.put(key,ps);
 		return ps;
-	}
+	}*/
+	
 	
 
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
 	 */
 	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException {
+		return getConnection().prepareStatement(sql.getSQLString(),resultSetType,resultSetConcurrency);
+	}
+	
+	/*
+	 
+	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException {
+		boolean allowCaching=false;
 		// create key
 		String strSQL=sql.getSQLString();
 		String key=strSQL.trim()+":"+resultSetType+":"+resultSetConcurrency;
 		try {
 			key = MD5.getDigestAsString(key);
 		} catch (IOException e) {}
-		PreparedStatement ps = preparedStatements.get(key);
-		if(ps!=null) return ps;
+		PreparedStatement ps = allowCaching?preparedStatements.get(key):null;
+		if(ps!=null) {
+			if(DataSourceUtil.isClosed(ps,true)) 
+				preparedStatements.remove(key);
+			else return ps;
+		}
 		
 		ps=getConnection().prepareStatement(strSQL,resultSetType,resultSetConcurrency);
 		if(preparedStatements.size()>MAX_PS)
 			closePreparedStatements((preparedStatements.size()-MAX_PS)+1);
-		preparedStatements.put(key,ps);
+		if(allowCaching)preparedStatements.put(key,ps);
 		return ps;
 	}
+	 */
 	
 
 	/**
 	 * @see railo.runtime.db.DatasourceConnectionPro#close()
 	 */
 	public void close() throws SQLException {
-		closePreparedStatements(-1);
+		//closePreparedStatements(-1);
 		getConnection().close();
 	}
 	
 
-	public void closePreparedStatements(int maxDelete) throws SQLException {
+	/*public void closePreparedStatements(int maxDelete) throws SQLException {
 		Iterator<Entry<String, PreparedStatement>> it = preparedStatements.entrySet().iterator();
 		int count=0;
 		while(it.hasNext()){
@@ -216,7 +234,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnectionPro {
 			catch (SQLException e) {}
 		}
 		
-	}
+	}*/
 	
 	
 	/*protected void finalize() throws Throwable {

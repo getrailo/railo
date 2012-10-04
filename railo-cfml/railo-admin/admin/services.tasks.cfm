@@ -188,7 +188,7 @@ Error Output--->
 #replace(replace(stText.remote.ot.detailDesc[css],'<tries>',tasks.tries),'<triesleft>',tasks.triesMax-tasks.tries)#
 <table class="tbl" width="600">
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td colspan="4"></td>
 </tr>
@@ -312,7 +312,7 @@ Error Output--->
 <tr>
 	<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<cfoutput>
 
 	<!---

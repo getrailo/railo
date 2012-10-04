@@ -25,12 +25,12 @@ public class ImageCombiningFilter {
 	public int filterRGB(int x, int y, int rgb1, int rgb2) {
 		int a1 = (rgb1 >> 24) & 0xff;
 		int r1 = (rgb1 >> 16) & 0xff;
-		int g1 = (rgb1 >> 8) & 0xff;
-		int b1 = rgb1 & 0xff;
-		int a2 = (rgb2 >> 24) & 0xff;
+		//int g1 = (rgb1 >> 8) & 0xff;
+		//int b1 = rgb1 & 0xff;
+		//int a2 = (rgb2 >> 24) & 0xff;
 		int r2 = (rgb2 >> 16) & 0xff;
-		int g2 = (rgb2 >> 8) & 0xff;
-		int b2 = rgb2 & 0xff;
+		//int g2 = (rgb2 >> 8) & 0xff;
+		//int b2 = rgb2 & 0xff;
 		int r = PixelUtils.clamp(r1 + r2);
 		int g = PixelUtils.clamp(r1 + r2);
 		int b = PixelUtils.clamp(r1 + r2);

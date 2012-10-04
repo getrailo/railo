@@ -7,10 +7,11 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -22,8 +23,8 @@ public final class CallerImpl extends StructSupport implements Caller  {
 	
 	private PageContext pc;
     private Variables variablesScope;
-    private Scope localScope;
-    private Scope argumentsScope;
+    private Local localScope;
+    private Argument argumentsScope;
     private boolean checkArgs;
     
     
@@ -35,30 +36,30 @@ public final class CallerImpl extends StructSupport implements Caller  {
     	
     	char c=key.lowerCharAt(0);
 		if('a'==c) {
-			if(ScopeSupport.APPLICATION.equalsIgnoreCase(key)) 		return pc.applicationScope();
+			if(KeyConstants._application.equalsIgnoreCase(key)) 		return pc.applicationScope();
 			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
 		}
 		else if('c'==c) {
-			if(ScopeSupport.CGI.equalsIgnoreCase(key))					return pc.cgiScope();
-			if(ScopeSupport.COOKIE.equalsIgnoreCase(key))				return pc.cookieScope();
-			if(ScopeSupport.CLIENT.equalsIgnoreCase(key))				return pc.clientScope();
-			if(ScopeSupport.CLUSTER.equalsIgnoreCase(key))				return pc.clusterScope(); 
+			if(KeyConstants._cgi.equalsIgnoreCase(key))					return pc.cgiScope();
+			if(KeyConstants._cookie.equalsIgnoreCase(key))				return pc.cookieScope();
+			if(KeyConstants._client.equalsIgnoreCase(key))				return pc.clientScope();
+			if(KeyConstants._cluster.equalsIgnoreCase(key))				return pc.clusterScope(); 
 		}
 		else if('f'==c) {
-			if(ScopeSupport.FORM.equalsIgnoreCase(key))				return pc.formScope();
+			if(KeyConstants._form.equalsIgnoreCase(key))				return pc.formScope();
 		}
 		else if('r'==c) {
-			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
+			if(KeyConstants._request.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
 			if(KeyImpl.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
-			if(ScopeSupport.SESSION.equalsIgnoreCase(key))				return pc.sessionScope();
+			if(KeyConstants._session.equalsIgnoreCase(key))				return pc.sessionScope();
 			if(KeyImpl.SERVER.equalsIgnoreCase(key))				return pc.serverScope();
 		}
 		else if('u'==c) {
-			if(ScopeSupport.URL.equalsIgnoreCase(key))					return pc.urlScope();
+			if(KeyConstants._url.equalsIgnoreCase(key))					return pc.urlScope();
 		}
 		else if('v'==c) {
 			if(KeyImpl.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
@@ -101,7 +102,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
     	
     	char c=key.lowerCharAt(0);
 		if('a'==c) {
-			if(ScopeSupport.APPLICATION.equalsIgnoreCase(key)){
+			if(KeyConstants._application.equalsIgnoreCase(key)){
 				try {
 					return pc.applicationScope();
 				} 
@@ -110,15 +111,15 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
 		}
 		else if('c'==c) {
-			if(ScopeSupport.CGI.equalsIgnoreCase(key))					return pc.cgiScope();
-			if(ScopeSupport.COOKIE.equalsIgnoreCase(key))				return pc.cookieScope();
-			if(ScopeSupport.CLIENT.equalsIgnoreCase(key)){
+			if(KeyConstants._cgi.equalsIgnoreCase(key))					return pc.cgiScope();
+			if(KeyConstants._cookie.equalsIgnoreCase(key))				return pc.cookieScope();
+			if(KeyConstants._client.equalsIgnoreCase(key)){
 				try {
 					return pc.clientScope();
 				} 
 				catch (PageException e) {}
 			}
-			if(ScopeSupport.CLUSTER.equalsIgnoreCase(key)){
+			if(KeyConstants._cluster.equalsIgnoreCase(key)){
 				try {
 					return pc.clusterScope();
 				}
@@ -126,16 +127,16 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			}
 		}
 		else if('f'==c) {
-			if(ScopeSupport.FORM.equalsIgnoreCase(key))				return pc.formScope();
+			if(KeyConstants._form.equalsIgnoreCase(key))				return pc.formScope();
 		}
 		else if('r'==c) {
-			if(ScopeSupport.REQUEST.equalsIgnoreCase(key))				return pc.requestScope();
+			if(KeyConstants._request.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
 			if(KeyImpl.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
 		}
 		else if('s'==c) {
-			if(ScopeSupport.SESSION.equalsIgnoreCase(key)){
+			if(KeyConstants._session.equalsIgnoreCase(key)){
 				try {
 					return pc.sessionScope();
 				} 
@@ -149,7 +150,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			}
 		}
 		else if('u'==c) {
-			if(ScopeSupport.URL.equalsIgnoreCase(key))					return pc.urlScope();
+			if(KeyConstants._url.equalsIgnoreCase(key))					return pc.urlScope();
 		}
 		else if('v'==c) {
 			if(KeyImpl.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
@@ -176,33 +177,36 @@ public final class CallerImpl extends StructSupport implements Caller  {
     }
     
     /**
-     * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+     * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
      */
     public void initialize(PageContext pc) {
         this.pc=pc;
     }
 
     /**
-     * @see railo.runtime.type.scope.Caller#setScope(railo.runtime.type.Scope, railo.runtime.type.Scope, railo.runtime.type.Scope, boolean)
+     * @see railo.runtime.type.scope.Caller#setScope(railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope, boolean)
      */
-    public void setScope(Scope variablesScope, Scope localScope, Scope argumentsScope, boolean checkArgs) {
-        this.variablesScope = (Variables)variablesScope;
+    public void setScope(Variables variablesScope, Local localScope, Argument argumentsScope, boolean checkArgs) {
+        this.variablesScope = variablesScope;
         this.localScope = localScope;
         this.argumentsScope = argumentsScope;
         this.checkArgs = checkArgs;
     }
 
     /**
-     * @see railo.runtime.type.Scope#isInitalized()
+     * @see railo.runtime.type.scope.Scope#isInitalized()
      */
     public boolean isInitalized() {
         return pc!=null;
     }
 
-    /**
-     * @see railo.runtime.type.Scope#release()
-     */
+    @Override
     public void release() {
+        this.pc=null;
+    }
+
+    @Override
+    public void release(PageContext pc) {
         this.pc=null;
     }
 
@@ -211,13 +215,6 @@ public final class CallerImpl extends StructSupport implements Caller  {
      */
     public int size() {
         return variablesScope.size();
-    }
-
-    /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        return variablesScope.keysAsString();
     }
 
     /**
@@ -276,15 +273,30 @@ public final class CallerImpl extends StructSupport implements Caller  {
     /**
      * @see railo.runtime.type.Iteratorable#keyIterator()
      */
-    public Iterator keyIterator() {
+    public Iterator<Collection.Key> keyIterator() {
         return variablesScope.keyIterator();
     }
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return variablesScope.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return variablesScope.entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return variablesScope.valueIterator();
+	}
     
     /**
      * @see railo.runtime.type.Collection#duplicate(boolean)
      */
     public Collection duplicate(boolean deepCopy) {
-        return variablesScope.duplicate(deepCopy);
+        return (Collection) Duplicator.duplicate(variablesScope,deepCopy);
     }
 
 	/**
@@ -389,14 +401,14 @@ public final class CallerImpl extends StructSupport implements Caller  {
 	}
 
     /**
-     * @see railo.runtime.type.Scope#getType()
+     * @see railo.runtime.type.scope.Scope#getType()
      */
     public int getType() {
         return SCOPE_CALLER;
     }
 
     /**
-     * @see railo.runtime.type.Scope#getTypeAsString()
+     * @see railo.runtime.type.scope.Scope#getTypeAsString()
      */
     public String getTypeAsString() {
         return "caller";
@@ -416,25 +428,24 @@ public final class CallerImpl extends StructSupport implements Caller  {
 		return variablesScope.values();
 	}
 
-
-    /** FUTURE add to intrface Caller
-	 * @return the variablesScope
+	/**
+	 * @see railo.runtime.type.scope.Caller#getVariablesScope()
 	 */
 	public Variables getVariablesScope() {
 		return variablesScope;
 	}
 
-	/**FUTURE add to intrface Caller
-	 * @return the localScope
+	/**
+	 * @see railo.runtime.type.scope.Caller#getLocalScope()
 	 */
 	public Local getLocalScope() {
-		return (Local)localScope;
+		return localScope;
 	}
 
-	/**FUTURE add to intrface Caller
-	 * @return the argumentsScope
+	/**
+	 * @see railo.runtime.type.scope.Caller#getArgumentsScope()
 	 */
 	public Argument getArgumentsScope() {
-		return (Argument)argumentsScope;
+		return argumentsScope;
 	}
 }

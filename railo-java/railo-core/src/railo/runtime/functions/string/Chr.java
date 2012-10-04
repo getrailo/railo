@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function chr
+ * Implements the CFML Function chr
  */
 package railo.runtime.functions.string;
 

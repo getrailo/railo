@@ -15,7 +15,6 @@ public final class UDFCall extends RefSupport implements Ref {
 	
 	private Ref[] arguments;
     private String name;
-    private PageContext pc;
     private Ref parent;
     private Ref refName;
 
@@ -25,8 +24,7 @@ public final class UDFCall extends RefSupport implements Ref {
      * @param name
      * @param arguments
      */
-    public UDFCall(PageContext pc, Ref parent, String name, Ref[] arguments) {
-        this.pc=pc;
+    public UDFCall(Ref parent, String name, Ref[] arguments) {
         this.parent=parent;
         this.name=name;
         this.arguments=arguments;
@@ -38,34 +36,29 @@ public final class UDFCall extends RefSupport implements Ref {
      * @param refName
      * @param arguments
      */
-    public UDFCall(PageContext pc, Ref parent, Ref refName, Ref[] arguments) {
-        this.pc=pc;
+    public UDFCall(Ref parent, Ref refName, Ref[] arguments) {
         this.parent=parent;
         this.refName=refName;
         this.arguments=arguments;
     }
 
-    /**
-	 * @see railo.runtime.interpreter.ref.Ref#getValue()
-	 */
-	public Object getValue() throws PageException {
+    @Override
+	public Object getValue(PageContext pc) throws PageException {
         return pc.getVariableUtil().callFunction(
                 pc,
-                parent.getValue(),
-                getName(),
-                RefUtil.getValue(arguments)
+                parent.getValue(pc),
+                getName(pc),
+                RefUtil.getValue(pc,arguments)
         );
 	}
 
-	private String getName() throws PageException {
+	private String getName(PageContext pc) throws PageException {
         if(name!=null)return name;
-        return Caster.toString(refName.getValue());
+        return Caster.toString(refName.getValue(pc));
     }
 
-    /**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public String getTypeName() {
+	@Override
+    public String getTypeName() {
 		return "user defined function";
 	}
 }

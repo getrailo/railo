@@ -17,9 +17,9 @@ import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.functions.other.Dump;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.trace.TraceObjectSupport;
 
 public final class Trace extends BodyTagImpl {

@@ -22,20 +22,21 @@ import java.util.Map;
 
 import railo.runtime.db.SQL;
 import railo.runtime.debug.Debugger;
-import railo.runtime.exp.ExpressionException;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryPro;
+import railo.runtime.type.it.ForEachQueryIterator;
 
-public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Query {
+public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query {
 
 
-	private QueryPro qry;
+	private Query qry;
 
-	protected TOQuery(Debugger debugger,QueryPro qry, int type, String category, String text) {
+	protected TOQuery(Debugger debugger,Query qry, int type, String category, String text) {
 		super(debugger,qry,type,category,text);
 		this.qry=qry;
 	}
@@ -206,7 +207,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 * @see railo.runtime.type.QueryImpl#next(int)
 	 */
 	
-	public boolean next(int pid) {
+	public boolean next(int pid) throws PageException {
 		log();
 		return qry.next(pid);
 	}
@@ -224,7 +225,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 * @see railo.runtime.type.QueryImpl#reset(int)
 	 */
 	
-	public void reset(int pid) {
+	public void reset(int pid) throws PageException {
 		log();
 		qry.reset(pid);
 	}
@@ -241,11 +242,6 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow()
 	 */
-	
-	public int getCurrentrow() {
-		log();
-		return qry.getCurrentrow();
-	}
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow(int)
@@ -260,7 +256,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 * @see railo.runtime.type.QueryImpl#go(int, int)
 	 */
 	
-	public boolean go(int index, int pid) {
+	public boolean go(int index, int pid) throws PageException {
 		log();
 		return qry.go(index, pid);
 	}
@@ -402,7 +398,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	 */
 	
 	public synchronized void rename(Key columnName, Key newColumnName)
-			throws ExpressionException {
+			throws PageException {
 		log(columnName+":"+newColumnName);
 		qry.rename(columnName, newColumnName);
 	}
@@ -2167,13 +2163,7 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	@Override
 	public Collection duplicate(boolean deepCopy) {
 		log();
-		return new TOQuery(debugger,(QueryPro)qry.duplicate(deepCopy), type,category,text);
-	}
-
-	@Override
-	public boolean go(int index) throws PageException {
-		log(""+index);
-		return qry.go(index);
+		return new TOQuery(debugger,(Query)Duplicator.duplicate(qry,deepCopy), type,category,text);
 	}
 
 	@Override
@@ -2276,5 +2266,10 @@ public class TOQuery extends TOCollection implements QueryPro,com.allaire.cfx.Qu
 	public long getExecutionTime() {
 		return qry.getExecutionTime();
 	}
+	
+	@Override
+	public java.util.Iterator getIterator() {
+		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
+    } 
 
 }

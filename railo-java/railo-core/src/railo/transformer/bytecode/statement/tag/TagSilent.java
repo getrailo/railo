@@ -8,8 +8,10 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.NotVisitor;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 
 public final class TagSilent extends TagBase {
@@ -28,15 +30,8 @@ public final class TagSilent extends TagBase {
 			new Type[]{}
 	);
 	
-	/**
-	 * Constructor of the class
-	 * @param line
-	 */
-	public TagSilent(int line) {
-		super(line);
-	}
-	public TagSilent(int sl,int el) {
-		super(sl,el);
+	public TagSilent(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**
@@ -44,31 +39,32 @@ public final class TagSilent extends TagBase {
 	 * @see railo.transformer.bytecode.statement.tag.TagBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
+		final GeneratorAdapter adapter = bc.getAdapter();
 		
-		int silentMode=adapter.newLocal(Types.BOOLEAN_VALUE);
+		final int silentMode=adapter.newLocal(Types.BOOLEAN_VALUE);
 		
 		// boolean silentMode= pc.setSilent();
 		adapter.loadArg(0);
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_SILENT);
 		adapter.storeLocal(silentMode);
 		
-		TryFinallyVisitor tfv=new TryFinallyVisitor();
+		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
+			public void writeOut(BytecodeContext bc) {
+				// if(!silentMode)pc.unsetSilent();
+				Label _if=new Label();
+				adapter.loadLocal(silentMode);
+				NotVisitor.visitNot(bc);
+				adapter.ifZCmp(Opcodes.IFEQ, _if);
+					adapter.loadArg(0);
+					adapter.invokeVirtual(Types.PAGE_CONTEXT, UNSET_SILENT);
+					adapter.pop();
+				
+				adapter.visitLabel(_if);
+			}
+		});
 		tfv.visitTryBegin(bc);
 			getBody().writeOut(bc);
-		tfv.visitTryEndFinallyBegin(bc);
-			// if(!silentMode)pc.unsetSilent();
-			Label _if=new Label();
-			adapter.loadLocal(silentMode);
-			NotVisitor.visitNot(bc);
-			adapter.ifZCmp(Opcodes.IFEQ, _if);
-				adapter.loadArg(0);
-				adapter.invokeVirtual(Types.PAGE_CONTEXT, UNSET_SILENT);
-				adapter.pop();
-			
-			adapter.visitLabel(_if);
-		
-		tfv.visitFinallyEnd(bc);
+		tfv.visitTryEnd(bc);
 
 	}
 

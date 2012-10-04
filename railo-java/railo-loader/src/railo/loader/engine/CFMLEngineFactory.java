@@ -33,8 +33,11 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
  * Factory to load CFML Engine
  */
 public class CFMLEngineFactory {
-
-    private static CFMLEngineFactory factory;
+	
+	 // set to false to disable patch loading, for example in major alpha releases
+    private static final boolean PATCH_ENABLED = false;
+    
+	private static CFMLEngineFactory factory;
     private static File railoServerRoot;
     private static CFMLEngineWrapper engineListener;
     private CFMLEngine engine;
@@ -147,7 +150,7 @@ public class CFMLEngineFactory {
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-root");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-dir");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server");
-        initParam=Util.parsePlaceHolder(initParam);
+        initParam=Util.parsePlaceHolder(Util.removeQuotes(initParam,true));
         
         try {
             if(!Util.isEmpty(initParam)) {
@@ -167,8 +170,8 @@ public class CFMLEngineFactory {
         catch(IOException ioe){}
     }
     
-    
-    /**
+
+	/**
      * adds a listener to the factory that will be informed when a new engine will be loaded.
      * @param listener
      */
@@ -207,7 +210,7 @@ public class CFMLEngineFactory {
            throw new ServletException(e);
         }
         
-        File[] patches=patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        File[] patches=PATCH_ENABLED?patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()})):null;
         File railo=null;
         if(patches!=null) {
             for(int i=0;i<patches.length;i++) {
@@ -229,18 +232,19 @@ public class CFMLEngineFactory {
         try {
             // Load core version when no patch available
             if(railo==null) {
-                
+            	tlog("Load Build in Core");
                 // 
                 String coreExt=getCoreExtension();
                 engine=getCore(coreExt);
             	
                 
                 railo=new File(patcheDir,engine.getVersion()+"."+coreExt);
-                
-                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
-                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
-                Util.copy(bis,bos);
-                Util.closeEL(bis,bos);
+               if(PATCH_ENABLED) {
+	                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
+	                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
+	                Util.copy(bis,bos);
+	                Util.closeEL(bis,bos);
+                }
             }
             else {
             	try {
@@ -390,7 +394,7 @@ public class CFMLEngineFactory {
             Util.copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
         }
         else {
-            tlog("File for new Version already exists, dont copy new one");
+            tlog("File for new Version already exists, won't copy new one");
             return false;
         }
         try {
@@ -564,7 +568,7 @@ public class CFMLEngineFactory {
         throw new IOException("can't create/write to directory ["+dir+"], set \"init-param\" \"railo-server-directory\" with path to writable directory");
     }
     /**
-     * returns the path where the classloader ist located
+     * returns the path where the classloader is located
      * @param cl ClassLoader
      * @return file of the classloader root
      */

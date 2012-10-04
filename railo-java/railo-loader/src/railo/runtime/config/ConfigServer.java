@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.Map;
 
 import railo.loader.engine.CFMLEngine;
+import railo.runtime.CFMLFactory;
 import railo.runtime.security.SecurityManager;
 
 /**
@@ -26,7 +27,7 @@ public interface ConfigServer extends Config {
     /**
      * @return Returns the contextes.
      */
-    public abstract Map getJSPFactoriesAsMap();
+    public abstract Map<String,CFMLFactory> getJSPFactoriesAsMap();
 
     /**
      * @param id
@@ -45,11 +46,6 @@ public interface ConfigServer extends Config {
      * @return Returns the securityManager.
      */
     public abstract SecurityManager getDefaultSecurityManager();
-
-    /**
-     * @return Returns the engine.
-     */
-    public abstract CFMLEngine getCFMLEngine();
 
     /**
      * @param updateType The updateType to set.
@@ -87,5 +83,6 @@ public interface ConfigServer extends Config {
 
 	public RemoteClient[] getRemoteClients();
 
+    public abstract CFMLEngine getCFMLEngine();
 
 }

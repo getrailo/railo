@@ -61,10 +61,12 @@ public final class Methods {
     // Double toDouble (Object)
     final public static Method METHOD_TO_DOUBLE = new Method("toDouble",Types.DOUBLE,new Type[]{Types.OBJECT});
     final public static Method METHOD_TO_FLOAT = new Method("toFloat",Types.FLOAT,new Type[]{Types.OBJECT});
+    final public static Method METHOD_TO_INTEGER = new Method("toInteger",Types.INTEGER,new Type[]{Types.OBJECT});
     
     // double toDouble Value(Object)
     final public static Method METHOD_TO_DOUBLE_VALUE = new Method("toDoubleValue",Types.DOUBLE_VALUE,new Type[]{Types.OBJECT});
     final public static Method METHOD_TO_FLOAT_VALUE = new Method("toFloatValue",Types.FLOAT_VALUE,new Type[]{Types.OBJECT});
+    final public static Method METHOD_TO_INT_VALUE = new Method("toIntValue",Types.FLOAT_VALUE,new Type[]{Types.OBJECT});
     
 
     final public static Method METHOD_TO_INTEGER_FROM_INT = new Method("toInteger",Types.INTEGER,new Type[]{Types.INT_VALUE});
@@ -79,6 +81,11 @@ public final class Methods {
     // double toDoubleValue (double)
     //final public static Method METHOD_TO_DOUBLE_VALUE_FROM_DOUBLE = new Method("toDoubleValue",Types.DOUBLE_VALUE,new Type[]{Types.DOUBLE_VALUE});
     final public static Method METHOD_TO_FLOAT_VALUE_FROM_DOUBLE = new Method("toFloatValue",Types.FLOAT_VALUE,new Type[]{Types.DOUBLE_VALUE});
+
+    final public static Method METHOD_TO_INT_VALUE_FROM_DOUBLE = new Method("toIntValue",Types.INT_VALUE,new Type[]{Types.DOUBLE_VALUE});
+    final public static Method METHOD_TO_INTEGER_FROM_DOUBLE = new Method("toInteger",Types.INTEGER,new Type[]{Types.DOUBLE_VALUE});
+    
+    
     
     // Double toDouble (boolean)
     final public static Method METHOD_TO_DOUBLE_FROM_BOOLEAN = new Method("toDouble",Types.DOUBLE,new Type[]{Types.BOOLEAN_VALUE});
@@ -89,13 +96,19 @@ public final class Methods {
     final public static Method METHOD_TO_FLOAT_VALUE_FROM_BOOLEAN = new Method("toFloatValue",Types.FLOAT_VALUE,new Type[]{Types.BOOLEAN_VALUE});
     
 
+    final public static Method METHOD_TO_INT_VALUE_FROM_BOOLEAN = new Method("toIntValue",Types.INT_VALUE,new Type[]{Types.BOOLEAN_VALUE});
+    final public static Method METHOD_TO_INTEGER_FROM_BOOLEAN = new Method("toInteger",Types.INTEGER,new Type[]{Types.BOOLEAN_VALUE});
+    
+
     final public static Method METHOD_TO_DOUBLE_VALUE_FROM_DOUBLE = new Method("toDoubleValue",Types.DOUBLE_VALUE,new Type[]{Types.DOUBLE});
     
     // Double toDouble (String)
     final public static Method METHOD_TO_DOUBLE_FROM_STRING = new Method("toDouble",Types.DOUBLE,new Type[]{Types.STRING});
     final public static Method METHOD_TO_FLOAT_FROM_STRING = new Method("toFloat",Types.FLOAT,new Type[]{Types.STRING});
+    final public static Method METHOD_TO_INTEGER_FROM_STRING = new Method("toInteger",Types.INTEGER,new Type[]{Types.STRING});
     
     // double toDoubleValue (String)
     final public static Method METHOD_TO_DOUBLE_VALUE_FROM_STRING = new Method("toDoubleValue",Types.DOUBLE_VALUE,new Type[]{Types.STRING});
     final public static Method METHOD_TO_FLOAT_VALUE_FROM_STRING = new Method("toFloatValue",Types.FLOAT_VALUE,new Type[]{Types.STRING});
+    final public static Method METHOD_TO_INT_VALUE_FROM_STRING = new Method("toIntValue",Types.INT_VALUE,new Type[]{Types.STRING});
 }

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function acos
+ * Implements the CFML Function acos
  */
 package railo.runtime.functions.math;
 

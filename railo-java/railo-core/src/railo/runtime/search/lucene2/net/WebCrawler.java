@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 
@@ -19,6 +18,8 @@ import railo.commons.lang.HTMLUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.search.lucene2.DocumentUtil;
@@ -88,8 +89,8 @@ public final class WebCrawler {
      */
 
     private static Document toDocument(StringBuffer content,IndexWriter writer, String root, URL current,long timeout) throws IOException {
-    	HttpMethod method = HTTPUtil.invoke(current, null, null, timeout, null, "RailoBot", null, -1, null, null, null);
-    	Document doc = DocumentUtil.toDocument(content,root,current, method);
+    	HTTPResponse rsp = HTTPEngine.get(current, null, null, timeout,HTTPEngine.MAX_REDIRECT, null, "RailoBot", null, null);
+    	Document doc = DocumentUtil.toDocument(content,root,current, rsp);
     	
 		return doc;
 	}

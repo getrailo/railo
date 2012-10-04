@@ -13,8 +13,6 @@ import railo.runtime.component.ComponentLoader;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
-import railo.runtime.dump.Dumpable;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
@@ -27,12 +25,15 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * 
  * MUST add handling for new attributes (style, namespace, serviceportname, porttypename, wsdlfile, bindingname, and output)
  */ 
-public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for this and a base interface for this and Coponent
+public class InterfaceImpl implements Interface {
+
+	private static final long serialVersionUID = -2488865504508636253L;
 
 	private static final InterfaceImpl[] EMPTY = new InterfaceImpl[]{};
 	
@@ -93,14 +94,14 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
     public static InterfaceImpl[] loadImplements(PageContext pc, String lstExtend, Map interfaceUdfs) throws PageException {
     	List<InterfaceImpl> interfaces=new ArrayList<InterfaceImpl>();
     	loadImplements(pc, lstExtend, interfaces, interfaceUdfs);
-    	return (InterfaceImpl[]) interfaces.toArray(new InterfaceImpl[interfaces.size()]);
+    	return interfaces.toArray(new InterfaceImpl[interfaces.size()]);
     	
 	}
 
     private static void loadImplements(PageContext pc, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
     	
     	Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(lstExtend, ',');
-    	Iterator<?> it = arr.iterator();
+    	Iterator<Object> it = arr.valueIterator();
     	InterfaceImpl ic;
     	String extend;
 
@@ -193,7 +194,7 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-	    DumpTable table = new DumpTablePro("interface","#99cc99","#ffffff","#000000");
+	    DumpTable table = new DumpTable("interface","#99cc99","#ffffff","#000000");
         table.setTitle("Interface "+callPath+""+(" "+StringUtil.escapeHTML(dspName)));
         table.setComment("Interface can not directly invoked as a object");
         //if(top.properties.extend.length()>0)table.appendRow(1,new SimpleDumpData("Extends"),new SimpleDumpData(top.properties.extend));
@@ -239,12 +240,12 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
         
         
         if(!StringUtil.isEmpty(icfc.hint,true))sct.set(KeyImpl.HINT,icfc.hint);
-        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(ComponentImpl.DISPLAY_NAME,icfc.dspName);
+        if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(KeyConstants._displayname,icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
             Set<String> _set = railo.runtime.type.List.listToSet(icfc.extend,',',true);
             Struct ex=new StructImpl();
-        	sct.set(ComponentImpl.EXTENDS,ex);
+        	sct.set(KeyConstants._extends,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){
         		if(!_set.contains(icfc.superInterfaces[i].getCallPath())) continue;
         		ex.setEL(KeyImpl.init(icfc.superInterfaces[i].getCallPath()),_getMetaData(pc,icfc.superInterfaces[i]));
@@ -252,10 +253,10 @@ public class InterfaceImpl implements Dumpable { // FUTURE to a Interface for th
         	
         }
         
-        if(arr.size()!=0)sct.set(ComponentImpl.FUNCTIONS,arr);
+        if(arr.size()!=0)sct.set(KeyConstants._functions,arr);
         PageSource ps = icfc.pageSource;
-        sct.set(KeyImpl.NAME,ps.getComponentName());
-        sct.set(ComponentImpl.FULLNAME,ps.getComponentName());
+        sct.set(KeyConstants._name,ps.getComponentName());
+        sct.set(KeyConstants._fullname,ps.getComponentName());
        
         sct.set(KeyImpl.PATH,ps.getDisplayPath());
         sct.set(KeyImpl.TYPE,"interface");

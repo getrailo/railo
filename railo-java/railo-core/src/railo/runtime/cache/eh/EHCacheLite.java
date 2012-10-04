@@ -32,13 +32,13 @@ public class EHCacheLite extends EHCacheSupport {
 	private static final long TIME_TO_IDLE_SECONDS = 86400; 
 	private static final long TIME_TO_LIVE_SECONDS = 86400;
 	
-	private static final boolean REPLICATE_PUTS = true;
+	/*private static final boolean REPLICATE_PUTS = true;
 	private static final boolean REPLICATE_PUTS_VIA_COPY = true;
 	private static final boolean REPLICATE_UPDATES = true;
 	private static final boolean REPLICATE_UPDATES_VIA_COPY = true;
 	private static final boolean REPLICATE_REMOVALS = true;
 	private static final boolean REPLICATE_ASYNC = true;
-	private static final int ASYNC_REP_INTERVAL = 1000; 
+	private static final int ASYNC_REP_INTERVAL = 1000; */
 	private static Map managers=new HashMap();
 	
 	//private net.sf.ehcache.Cache cache;
@@ -240,10 +240,10 @@ public class EHCacheLite extends EHCacheSupport {
 
 	private static String createXML(String path, String[] cacheNames,Struct[] arguments, String[] hashes, String hash) {
 		
-		Struct global=null;
+		//Struct global=null;
 		for(int i=0;i<hashes.length;i++){
 			if(hash.equals(hashes[i])){
-				global=arguments[i];
+				//global=arguments[i];
 				break;
 			}
 		}

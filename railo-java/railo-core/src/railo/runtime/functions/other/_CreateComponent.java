@@ -4,7 +4,9 @@ import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
+import railo.runtime.functions.orm.EntityNew;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.KeyImpl;
@@ -17,13 +19,24 @@ public class _CreateComponent {
 	private static final Object[] EMPTY = new Object[0]; 
 
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
-		
 		String path = Caster.toString(objArr[objArr.length-1]);
 		Component cfc = CreateObject.doComponent(pc, path);
 		
-		
 		// no init method
 		if(!(cfc.get(INIT,null) instanceof UDF)){
+			
+			if(objArr.length>1) {
+				Object arg1 = objArr[0];
+				if(arg1 instanceof FunctionValue) {
+					Struct args=Caster.toFunctionValues(objArr,0,objArr.length-1);
+					EntityNew.setPropeties(pc, cfc, args,true);
+				}
+				else if(Decision.isStruct(arg1)){
+					Struct args=Caster.toStruct(arg1);
+					EntityNew.setPropeties(pc, cfc, args,true);
+				}
+			}
+			
 			return cfc;
 		}
 		

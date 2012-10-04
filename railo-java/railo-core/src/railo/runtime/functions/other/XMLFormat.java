@@ -4,12 +4,12 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function xmlformat
+ * Implements the CFML Function xmlformat
  */
 public final class XMLFormat implements Function {
 	public static String call(PageContext pc , String xmlString) {
 		int len=xmlString.length();
-		StringBuffer sb=new StringBuffer(len);
+		//StringBuffer sb=new StringBuffer(len);
 		int plus=0;
 		
 		for(int pos=0;pos<len;pos++) {

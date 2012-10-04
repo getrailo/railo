@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function bitxor
+ * Implements the CFML Function bitxor
  */
 package railo.runtime.functions.math;
 

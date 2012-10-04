@@ -213,7 +213,6 @@ public final class StringUtil {
 			else {	
 			    doCorrect=false;
 				rtn.append('_');
-				//if(!(c=='.' && str.substring(i).equals(".cfm")))
 				changes+=(c*(i+1));
 			}
 		}
@@ -851,7 +850,7 @@ public final class StringUtil {
 		if(isEmpty(str)) return str;
 		
 		StringBuilder sb=new StringBuilder();
-		int len=str.length();
+		//int len=str.length();
 		char c;
 		
 		sb.append(Character.toLowerCase(str.charAt(0)));
@@ -896,6 +895,17 @@ public final class StringUtil {
 			c = str.charAt(i);
 			if(c < 128)  continue;
 			return false;
+		}
+		return true;
+	}
+
+	public static boolean isWhiteSpace(String str) {
+		if(str==null) return false;
+		int len=str.length();
+		char c;
+		for(int i=0;i<len;i++){
+			c=str.charAt(i);
+			if(c!=' ' && c!='\t' && c!='\b' && c!='\r' && c!='\n') return false;
 		}
 		return true;
 	}

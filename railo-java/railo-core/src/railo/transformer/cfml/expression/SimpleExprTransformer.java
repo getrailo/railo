@@ -1,15 +1,19 @@
 package railo.transformer.cfml.expression;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.cfml.ExprTransformer;
+import railo.transformer.cfml.TransfomerSettings;
 import railo.transformer.cfml.evaluator.EvaluatorPool;
 import railo.transformer.library.function.FunctionLib;
+import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
 /**
- * Zum lesen von Attributen bei dem cold fusion expressions nicht geparst werden sollen (cfloop condition) 
+ * Zum lesen von Attributen bei dem CFML expressions nicht geparst werden sollen (cfloop condition) 
  */
 public final class SimpleExprTransformer implements ExprTransformer {
 	
@@ -34,14 +38,14 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	/**
 	 * @see railo.transformer.cfml.ExprTransformer#transformAsString(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
-	public Expression transformAsString(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml, boolean allowLowerThan) throws TemplateException {
-		return transform(ep,fld, cfml);
+	public Expression transformAsString(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings,boolean allowLowerThan) throws TemplateException {
+		return transform(page,ep,fld,scriptTags, cfml,settings);
 	}
 	
 	/**
 	 * @see railo.transformer.cfml.ExprTransformer#transform(railo.transformer.library.function.FunctionLib[], org.w3c.dom.Document, railo.transformer.util.CFMLString)
 	 */
-	public Expression transform(EvaluatorPool ep,FunctionLib[] fld, CFMLString cfml) throws TemplateException {
+	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags, CFMLString cfml, TransfomerSettings settings) throws TemplateException {
 			Expression expr=null;
 			// String
 				if((expr=string(cfml))!=null) {
@@ -64,7 +68,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		StringBuffer str=new StringBuffer();
 		boolean insideSpecial=false;
 	
-		int line=cfml.getLine();
+		Position line = cfml.getPosition();
 		while(cfml.hasNext()) {
 			cfml.next();
 			// check special
@@ -95,7 +99,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		if(!cfml.forwardIfCurrent(quoter))
 			throw new TemplateException(cfml,"Invalid Syntax Closing ["+quoter+"] not found");
 	
-		LitString rtn = new LitString(str.toString(),line);
+		LitString rtn = new LitString(str.toString(),line,cfml.getPosition());
 		cfml.removeSpace();
 		return rtn;
 	}
@@ -107,7 +111,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 	 */
 	public Expression simple(CFMLString cfml) throws TemplateException {
 		StringBuffer sb=new StringBuffer();
-		int line = cfml.getLine();
+		Position line = cfml.getPosition();
 		while(cfml.isValidIndex()) {
 			if(cfml.isCurrent(' ') || cfml.isCurrent('>') || cfml.isCurrent("/>")) break;
 			else if(cfml.isCurrent('"') || cfml.isCurrent('#') || cfml.isCurrent('\'')) {
@@ -118,7 +122,7 @@ public final class SimpleExprTransformer implements ExprTransformer {
 		}
 		cfml.removeSpace();
 		
-		return new LitString(sb.toString(),line);
+		return new LitString(sb.toString(),line,cfml.getPosition());
 	}
 	
 

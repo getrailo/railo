@@ -8,6 +8,7 @@ import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
 import railo.transformer.library.tag.TagLibTag;
@@ -21,18 +22,15 @@ public class TagBase extends StatementBase implements Tag {
 	private String appendix;
 	private String fullname;
 	private TagLibTag tagLibTag;
-	Map attributes=new LinkedHashMap();
-	Map missingAttributes=new HashMap();
+	Map<String,Attribute> attributes=new LinkedHashMap<String,Attribute>();
+	Map<String,String> missingAttributes=new HashMap<String,String>();
 	private boolean scriptBase=false;
 	
 	private Map<String, Attribute> metadata;
 
 
-	public TagBase(int startLine,int endLine) {
-    	super(startLine,endLine);
-	}
-	public TagBase(int startLine) {
-    	super(startLine,-1);
+	public TagBase(Position start, Position end) {
+    	super(start,end);
 	}
 
     
@@ -149,7 +147,7 @@ public class TagBase extends StatementBase implements Tag {
 	 * @see railo.transformer.bytecode.statement.tag.Tag#getAttribute(java.lang.String)
 	 */
 	public Attribute getAttribute(String name) {
-		return (Attribute) attributes.get(name.toLowerCase());
+		return attributes.get(name.toLowerCase());
 	}
 
 	/**
@@ -157,7 +155,7 @@ public class TagBase extends StatementBase implements Tag {
 	 * @see railo.transformer.bytecode.statement.tag.Tag#removeAttribute(java.lang.String)
 	 */
 	public Attribute removeAttribute(String name) {
-		return (Attribute) attributes.remove(name);
+		return attributes.remove(name);
 	}
 
 	/**

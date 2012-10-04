@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function cos
+ * Implements the CFML Function cos
  */
 package railo.runtime.functions.math;
 

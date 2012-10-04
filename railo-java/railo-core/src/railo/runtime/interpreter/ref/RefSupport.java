@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.util.RefUtil;
 
@@ -7,27 +8,20 @@ import railo.runtime.interpreter.ref.util.RefUtil;
  * Support class to implement the refs
  */
 public abstract class RefSupport implements Ref {
-
-    
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getCollection()
-     */
-    public Object getCollection() throws PageException {
-        return getValue();
+	
+	@Override
+    public Object getCollection(PageContext pc) throws PageException {
+        return getValue(pc);
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#touchValue()
-     */
-    public Object touchValue() throws PageException {
-        return getValue();
+	@Override
+    public Object touchValue(PageContext pc) throws PageException {
+        return getValue(pc);
     }
 
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#eeq(railo.runtime.interpreter.ref.Ref)
-	 */
-	public boolean eeq(Ref other) throws PageException {
-		return RefUtil.eeq(this,other);
+	@Override
+	public boolean eeq(PageContext pc, Ref other) throws PageException {
+		return RefUtil.eeq(pc,this,other);
 	}
 }

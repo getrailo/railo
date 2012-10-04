@@ -1,34 +1,41 @@
 package railo.runtime.listener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import railo.commons.io.res.Resource;
+import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
 import railo.runtime.ComponentWrap;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
-import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
+import railo.runtime.rest.RestSettingImpl;
+import railo.runtime.rest.RestSettings;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.KeyConstants;
 
-/**
- * @author mic
- *
- */
-/**
- * @author mic
- *
- */
 public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private static final long serialVersionUID = -8230105685329758613L;
@@ -39,6 +46,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SESSION_STORAGE = KeyImpl.intern("sessionStorage");
 	private static final Collection.Key LOGIN_STORAGE = KeyImpl.intern("loginStorage");
 	private static final Collection.Key SESSION_TYPE = KeyImpl.intern("sessionType");
+	private static final Collection.Key TRIGGER_DATA_MEMBER = KeyImpl.intern("triggerDataMember");
+	private static final Collection.Key INVOKE_IMPLICIT_ACCESSOR = KeyImpl.intern("InvokeImplicitAccessor");
 	private static final Collection.Key SESSION_MANAGEMENT = KeyImpl.intern("sessionManagement");
 	private static final Collection.Key SESSION_TIMEOUT = KeyImpl.intern("sessionTimeout");
 	private static final Collection.Key CLIENT_TIMEOUT = KeyImpl.intern("clientTimeout");
@@ -58,10 +67,13 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key DEFAULT_DATA_SOURCE = KeyImpl.intern("defaultdatasource");
 	private static final Collection.Key ORM_ENABLED = KeyImpl.intern("ormenabled");
 	private static final Collection.Key ORM_SETTINGS = KeyImpl.intern("ormsettings");
-	
+	private static final Collection.Key IN_MEMORY_FILESYSTEM = KeyImpl.intern("inmemoryfilesystem");
+	private static final Collection.Key REST_SETTING = KeyImpl.intern("restsettings");
+	private static final Collection.Key JAVA_SETTING = KeyImpl.intern("javasettings");
+
 	
 	private ComponentAccess component;
-	private ConfigWebImpl ci;
+	private ConfigWeb config;
 
 	private String name=null;
 	
@@ -89,6 +101,9 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private Mapping[] ctmappings;
 	private Mapping[] cmappings;
 	private Properties s3;
+	private boolean triggerComponentDataMember;
+	private Map<Integer,String> defaultCaches;
+	private Map<Integer,Boolean> sameFieldAsArrays;
 	
 	private boolean initApplicationTimeout;
 	private boolean initSessionTimeout;
@@ -106,34 +121,43 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initClientCluster;
 	private boolean initLoginStorage;
 	private boolean initSessionType;
+	private boolean initTriggerComponentDataMember;
 	private boolean initMappings;
+	private boolean initDefaultCaches;
+	private boolean initSameFieldAsArrays;
 	private boolean initCTMappings;
 	private boolean initCMappings;
 	private boolean initLocalMode;
 	private boolean initS3;
 	private boolean ormEnabled;
 	private ORMConfiguration ormConfig;
+	private boolean initRestSetting;
+	private RestSettings restSetting;
+	private boolean initJavaSettings;
+	private JavaSettings javaSettings;
 	private String ormDatasource;
+
+	private Resource[] restCFCLocations;
 		
 	public ModernApplicationContext(PageContext pc, ComponentAccess cfc, RefBoolean throwsErrorWhileInit) {
-		ci = ((ConfigWebImpl)pc.getConfig());
-    	setClientCookies=ci.isClientCookies();
-        setDomainCookies=ci.isDomainCookies();
-        setSessionManagement=ci.isSessionManagement();
-        setClientManagement=ci.isClientManagement();
-        sessionTimeout=ci.getSessionTimeout();
-        clientTimeout=ci.getClientTimeout();
-        applicationTimeout=ci.getApplicationTimeout();
-        scriptProtect=ci.getScriptProtect();
-        this.defaultDataSource=ci.getDefaultDataSource();
-        this.localMode=ci.getLocalMode();
-        this.sessionType=ci.getSessionType();
-        this.sessionCluster=ci.getSessionCluster();
-        this.clientCluster=ci.getClientCluster();
-        
-        
-        
-		this.component=cfc;
+		config = pc.getConfig();
+    	setClientCookies=config.isClientCookies();
+        setDomainCookies=config.isDomainCookies();
+        setSessionManagement=config.isSessionManagement();
+        setClientManagement=config.isClientManagement();
+        sessionTimeout=config.getSessionTimeout();
+        clientTimeout=config.getClientTimeout();
+        applicationTimeout=config.getApplicationTimeout();
+        scriptProtect=config.getScriptProtect();
+        this.defaultDataSource=config.getDefaultDataSource();
+        this.localMode=config.getLocalMode();
+        this.sessionType=config.getSessionType();
+        this.sessionCluster=config.getSessionCluster();
+        this.clientCluster=config.getClientCluster();
+        this.triggerComponentDataMember=config.getTriggerComponentDataMember();
+        this.restSetting=config.getRestSetting();
+        this.javaSettings=new JavaSettingsImpl();
+        this.component=cfc;
 		
 		pc.addPageSource(component.getPageSource(), true);
 		try {
@@ -161,7 +185,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		// datasource
 		Object o = get(component,KeyImpl.DATA_SOURCE,null);
 		if(o!=null) {
-			String ds = Caster.toString(o);
+			String ds;
+			if(Decision.isStruct(o)) {
+				Struct sct = Caster.toStruct(o);
+				ds=Caster.toString(sct.get(KeyConstants._name));
+			}
+			else ds = Caster.toString(o);
 			this.defaultDataSource = ds;
 			this.ormDatasource = ds;
 		}
@@ -198,7 +227,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 */
 	public String getName() {
 		if(this.name==null) {
-			this.name=Caster.toString(get(component,KeyImpl.NAME,""),"");
+			this.name=Caster.toString(get(component,KeyConstants._name,""),"");
 		}
 		return name;
 	}
@@ -244,7 +273,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getClientTimeout()
+	 * @see railo.runtime.listener.ApplicationContext#getClientTimeout()
 	 */
 	public TimeSpan getClientTimeout() {
 		if(!initClientTimeout) {
@@ -356,7 +385,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getSessionstorage()
+	 * @see railo.runtime.listener.ApplicationContext#getSessionstorage()
 	 */
 	public String getSessionstorage() {
 		if(!initSessionStorage) {
@@ -368,7 +397,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getSessionCluster()
+	 * @see railo.runtime.listener.ApplicationContext#getSessionCluster()
 	 */
 	public boolean getSessionCluster() {
 		if(!initSessionCluster) {
@@ -380,7 +409,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getClientCluster()
+	 * @see railo.runtime.listener.ApplicationContext#getClientCluster()
 	 */
 	public boolean getClientCluster() {
 		if(!initClientCluster) {
@@ -392,7 +421,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getSessionType()
+	 * @see railo.runtime.listener.ApplicationContext#getSessionType()
 	 */
 	public short getSessionType() {
 		if(!initSessionType) {
@@ -406,6 +435,117 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 		return sessionType;
 	}
+	
+
+
+
+
+	@Override
+	public boolean getTriggerComponentDataMember() {
+		if(!initTriggerComponentDataMember) {
+			Boolean b=null;
+			Object o = get(component,INVOKE_IMPLICIT_ACCESSOR,null);
+			if(o==null)o = get(component,TRIGGER_DATA_MEMBER,null);
+			if(o!=null){ 
+				b=Caster.toBoolean(o,null);
+				if(b!=null)triggerComponentDataMember=b.booleanValue();
+			}
+			initTriggerComponentDataMember=true; 
+		}
+		return triggerComponentDataMember;
+	}
+
+
+
+	@Override
+	public void setTriggerComponentDataMember(boolean triggerComponentDataMember) {
+		initTriggerComponentDataMember=true;
+		this.triggerComponentDataMember=triggerComponentDataMember;
+	}
+	
+
+
+	@Override
+	public boolean getSameFieldAsArray(int scope) {
+		if(!initSameFieldAsArrays) {
+			if(sameFieldAsArrays==null)sameFieldAsArrays=new HashMap<Integer, Boolean>();
+			
+			// Form
+			Object o = get(component,KeyImpl.init("sameformfieldsasarray"),null);
+			if(o!=null && Decision.isBoolean(o))
+				sameFieldAsArrays.put(Scope.SCOPE_FORM, Caster.toBooleanValue(o,false));
+			
+			// URL
+			o = get(component,KeyImpl.init("sameurlfieldsasarray"),null);
+			if(o!=null && Decision.isBoolean(o))
+				sameFieldAsArrays.put(Scope.SCOPE_URL, Caster.toBooleanValue(o,false));
+			
+			initSameFieldAsArrays=true; 
+		}
+		return Caster.toBooleanValue(sameFieldAsArrays.get(scope),false);
+	}
+	
+
+	@Override
+	public String getDefaultCacheName(int type) {
+		if(!initDefaultCaches) {
+			boolean hasResource=false;
+			if(defaultCaches==null)defaultCaches=new HashMap<Integer, String>();
+			Object o = get(component,KeyConstants._cache,null);
+			if(o!=null && Decision.isStruct(o)){ 
+				Struct sct = Caster.toStruct(o,null);
+				if(sct!=null){
+					// Function
+					String name=Caster.toString(sct.get(KeyConstants._function,null),null);
+					if(!StringUtil.isEmpty(name,true)) defaultCaches.put(Config.CACHE_DEFAULT_FUNCTION, name.trim());
+					// Query
+					name=Caster.toString(sct.get(KeyConstants._query,null),null);
+					if(!StringUtil.isEmpty(name,true)) defaultCaches.put(Config.CACHE_DEFAULT_QUERY, name.trim());
+					// Template
+					name=Caster.toString(sct.get(KeyConstants._template,null),null);
+					if(!StringUtil.isEmpty(name,true)) defaultCaches.put(Config.CACHE_DEFAULT_TEMPLATE, name.trim());
+					// Object
+					name=Caster.toString(sct.get(KeyConstants._object,null),null);
+					if(!StringUtil.isEmpty(name,true)) defaultCaches.put(Config.CACHE_DEFAULT_OBJECT, name.trim());
+					// Resource
+					name=Caster.toString(sct.get(KeyConstants._resource,null),null);
+					if(!StringUtil.isEmpty(name,true)) {
+						defaultCaches.put(Config.CACHE_DEFAULT_RESOURCE, name.trim());
+						hasResource=true;
+					}
+					
+				}
+			}
+			
+			// check alias inmemoryfilesystem 
+			if(!hasResource) {
+				String str = Caster.toString(get(component,IN_MEMORY_FILESYSTEM,null),null);
+				if(!StringUtil.isEmpty(str,true)) {
+					defaultCaches.put(Config.CACHE_DEFAULT_RESOURCE, str.trim());
+				}
+				
+			}
+			
+			
+			
+			initDefaultCaches=true; 
+		}
+		return defaultCaches.get(type);
+	}
+
+
+
+	@Override
+	public void setDefaultCacheName(int type, String cacheName) {
+		if(StringUtil.isEmpty(cacheName,true)) return;
+		
+		initDefaultCaches=true;
+		if(defaultCaches==null)defaultCaches=new HashMap<Integer, String>();
+		defaultCaches.put(type, cacheName.trim());
+	}
+	
+	
+	
 
 	/**
 	 * @see railo.runtime.util.ApplicationContext#getMappings()
@@ -413,7 +553,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getMappings() {
 		if(!initMappings) {
 			Object o = get(component,MAPPINGS,null);
-			if(o!=null)mappings=AppListenerUtil.toMappings(ci,o,mappings);
+			if(o!=null)mappings=AppListenerUtil.toMappings(config,o,mappings);
 			initMappings=true; 
 		}
 		return mappings;
@@ -425,26 +565,26 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public Mapping[] getCustomTagMappings() {
 		if(!initCTMappings) {
 			Object o = get(component,CUSTOM_TAG_PATHS,null);
-			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(ci,o,ctmappings);
+			if(o!=null)ctmappings=AppListenerUtil.toCustomTagMappings(config,o,ctmappings);
 			initCTMappings=true; 
 		}
 		return ctmappings;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getComponentMappings()
+	 * @see railo.runtime.listener.ApplicationContext#getComponentMappings()
 	 */
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
-			if(o!=null)cmappings=AppListenerUtil.toCustomTagMappings(ci,o,cmappings);
+			if(o!=null)cmappings=AppListenerUtil.toCustomTagMappings(config,o,cmappings);
 			initCMappings=true; 
 		}
 		return cmappings;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getLocalMode()
+	 * @see railo.runtime.listener.ApplicationContext#getLocalMode()
 	 */
 	public int getLocalMode() {
 		if(!initLocalMode) {
@@ -456,7 +596,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getS3()
+	 * @see railo.runtime.listener.ApplicationContext#getS3()
 	 */
 	public Properties getS3() {
 		if(!initS3) {
@@ -468,42 +608,36 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getDefaultDataSource()
+	 * @see railo.runtime.listener.ApplicationContext#getDefaultDataSource()
 	 */
 	public String getDefaultDataSource() {
 		return defaultDataSource;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#isORMEnabled()
-	 */
+	@Override
 	public boolean isORMEnabled() {
 		return this.ormEnabled;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getORMDatasource()
-	 */
+	@Override
 	public String getORMDatasource() {
 		return ormDatasource;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getORMConfiguration()
-	 */
+	@Override
 	public ORMConfiguration getORMConfiguration() {
 		return ormConfig;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getComponent()
+	 * @see railo.runtime.listener.ApplicationContext#getComponent()
 	 */
 	public ComponentAccess getComponent() {
 		return component;
 	}
 
 	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#getCustom(railo.runtime.type.Collection.Key)
+	 * @see railo.runtime.listener.ApplicationContext#getCustom(railo.runtime.type.Collection.Key)
 	 */
 	public Object getCustom(Key key) {
 		try {
@@ -531,73 +665,55 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 	
 	
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setApplicationTimeout(railo.runtime.type.dt.TimeSpan)
-	 */
+	@Override
 	public void setApplicationTimeout(TimeSpan applicationTimeout) {
 		initApplicationTimeout=true;
 		this.applicationTimeout=applicationTimeout;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSessionTimeout(railo.runtime.type.dt.TimeSpan)
-	 */
+	@Override
 	public void setSessionTimeout(TimeSpan sessionTimeout) {
 		initSessionTimeout=true;
 		this.sessionTimeout=sessionTimeout;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setClientTimeout(railo.runtime.type.dt.TimeSpan)
-	 */
+	@Override
 	public void setClientTimeout(TimeSpan clientTimeout) {
 		initClientTimeout=true;
 		this.clientTimeout=clientTimeout;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setClientstorage(java.lang.String)
-	 */
+	@Override
 	public void setClientstorage(String clientstorage) {
 		initClientStorage=true;
 		this.clientStorage=clientstorage;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSessionstorage(java.lang.String)
-	 */
+	@Override
 	public void setSessionstorage(String sessionstorage) {
 		initSessionStorage=true;
 		this.sessionStorage=sessionstorage;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setCustomTagMappings(railo.runtime.Mapping[])
-	 */
+	@Override
 	public void setCustomTagMappings(Mapping[] customTagMappings) {
 		initCTMappings=true;
 		this.ctmappings=customTagMappings;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setComponentMappings(railo.runtime.Mapping[])
-	 */
+	@Override
 	public void setComponentMappings(Mapping[] componentMappings) {
 		initCMappings=true;
 		this.cmappings=componentMappings;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setMappings(railo.runtime.Mapping[])
-	 */
+	@Override
 	public void setMappings(Mapping[] mappings) {
 		initMappings=true;
 		this.mappings=mappings;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setLoginStorage(int)
-	 */
+	@Override
 	public void setLoginStorage(int loginStorage) {
 		initLoginStorage=true;
 		this.loginStorage=loginStorage;
@@ -608,119 +724,205 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		this.defaultDataSource=datasource;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setScriptProtect(int)
-	 */
+	@Override
 	public void setScriptProtect(int scriptrotect) {
 		initScriptProtect=true;
 		this.scriptProtect=scriptrotect;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSecureJson(boolean)
-	 */
+	@Override
 	public void setSecureJson(boolean secureJson) {
 		initSecureJson=true;
 		this.secureJson=secureJson;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSecureJsonPrefix(java.lang.String)
-	 */
+	@Override
 	public void setSecureJsonPrefix(String secureJsonPrefix) {
 		initSecureJsonPrefix=true;
 		this.secureJsonPrefix=secureJsonPrefix;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetClientCookies(boolean)
-	 */
+	@Override
 	public void setSetClientCookies(boolean setClientCookies) {
 		initSetClientCookies=true;
 		this.setClientCookies=setClientCookies;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetClientManagement(boolean)
-	 */
+	@Override
 	public void setSetClientManagement(boolean setClientManagement) {
 		initSetClientManagement=true;
 		this.setClientManagement=setClientManagement;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetDomainCookies(boolean)
-	 */
+	@Override
 	public void setSetDomainCookies(boolean setDomainCookies) {
 		initSetDomainCookies=true;
 		this.setDomainCookies=setDomainCookies;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSetSessionManagement(boolean)
-	 */
+	@Override
 	public void setSetSessionManagement(boolean setSessionManagement) {
 		initSetSessionManagement=true;
 		this.setSessionManagement=setSessionManagement;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setLocalMode(int)
-	 */
+	@Override
 	public void setLocalMode(int localMode) {
 		initLocalMode=true;
 		this.localMode=localMode;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setSessionType(short)
-	 */
+	@Override
 	public void setSessionType(short sessionType) {
 		initSessionType=true;
 		this.sessionType=sessionType;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setClientCluster(boolean)
-	 */
+	@Override
 	public void setClientCluster(boolean clientCluster) {
 		initClientCluster=true;
 		this.clientCluster=clientCluster;
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.util.ApplicationContextPro#setSessionCluster(boolean)
-	 */
+	@Override
 	public void setSessionCluster(boolean sessionCluster) {
 		initSessionCluster=true;
 		this.sessionCluster=sessionCluster;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setS3(railo.runtime.net.s3.Properties)
-	 */
+	@Override
 	public void setS3(Properties s3) {
 		initS3=true;
 		this.s3=s3;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setORMEnabled(boolean)
-	 */
+	@Override
 	public void setORMEnabled(boolean ormEnabled) {
 		this.ormEnabled=ormEnabled;
 	}
 
+	@Override
 	public void setORMConfiguration(ORMConfiguration ormConfig) {
 		this.ormConfig=ormConfig;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContextPro#setORMDatasource(java.lang.String)
-	 */
+	@Override
 	public void setORMDatasource(String ormDatasource) {
 		this.ormDatasource=ormDatasource;
 	}
 
+	@Override
+	public Resource getSource() {
+		return component.getPageSource().getPhyscalFile();
+	}
 
+
+
+	@Override
+	public RestSettings getRestSettings() {
+		initRest();
+		return restSetting;
+	}
+
+	@Override
+	public Resource[] getRestCFCLocations() {
+		initRest();
+		return restCFCLocations;
+	}
+
+	private void initRest() {
+		if(!initRestSetting) {
+			Object o = get(component,REST_SETTING,null);
+			if(o!=null && Decision.isStruct(o)){
+				Struct sct = Caster.toStruct(o,null);
+				
+				// cfclocation
+				Object obj = sct.get(KeyConstants._cfcLocation,null);
+				if(obj==null) obj = sct.get(KeyConstants._cfcLocations,null);
+				List<Resource> list = ORMConfigurationImpl.loadCFCLocation(config, null, obj,true);
+				restCFCLocations=list==null?null:list.toArray(new Resource[list.size()]);
+				
+				// skipCFCWithError
+				boolean skipCFCWithError=Caster.toBooleanValue(sct.get(KeyConstants._skipCFCWithError,null),restSetting.getSkipCFCWithError());
+				
+				// returnFormat
+				int returnFormat=Caster.toIntValue(sct.get(KeyConstants._returnFormat,null),restSetting.getReturnFormat());
+				
+				restSetting=new RestSettingImpl(skipCFCWithError,returnFormat);
+				
+			}
+			initRestSetting=true; 
+		}
+	}
+	
+
+	@Override
+	public JavaSettings getJavaSettings() {
+		initJava();
+		return javaSettings;
+	}
+	
+	private void initJava() {
+		if(!initJavaSettings) {
+			Object o = get(component,JAVA_SETTING,null);
+			if(o!=null && Decision.isStruct(o)){
+				Struct sct = Caster.toStruct(o,null);
+				
+				// loadPaths
+				Object obj = sct.get(KeyImpl.init("loadPaths"),null);
+				List<Resource> paths;
+				if(obj!=null) {
+					paths = ORMConfigurationImpl.loadCFCLocation(config, null, obj,false);	
+				}
+				else paths=new ArrayList<Resource>();
+					
+				
+				// loadCFMLClassPath
+				Boolean loadCFMLClassPath=Caster.toBoolean(sct.get(KeyImpl.init("loadCFMLClassPath"),null),null);
+				if(loadCFMLClassPath==null)
+					loadCFMLClassPath=Caster.toBoolean(sct.get(KeyImpl.init("loadColdFusionClassPath"),null),null);
+				if(loadCFMLClassPath==null)loadCFMLClassPath=javaSettings.loadCFMLClassPath();
+					
+				// reloadOnChange
+				boolean reloadOnChange=Caster.toBooleanValue(sct.get(KeyImpl.init("reloadOnChange"),null),javaSettings.reloadOnChange());
+				
+				// watchInterval
+				int watchInterval=Caster.toIntValue(sct.get(KeyImpl.init("watchInterval"),null),javaSettings.watchInterval());
+				
+				// watchExtensions
+				obj = sct.get(KeyImpl.init("watchExtensions"),null);
+				List<String> extensions=new ArrayList<String>();
+				if(obj!=null) {
+					Array arr;
+					if(Decision.isArray(obj)) {
+						try {
+							arr = Caster.toArray(obj);
+						} catch (PageException e) {
+							arr=new ArrayImpl();
+						}
+					}
+					else {
+						arr=railo.runtime.type.List.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
+					}
+					Iterator<Object> it = arr.valueIterator();
+					String ext;
+					while(it.hasNext()){
+						ext=Caster.toString(it.next(),null);
+						if(StringUtil.isEmpty(ext))continue;
+						ext=ext.trim();
+						if(ext.startsWith("."))ext=ext.substring(1);
+						if(ext.startsWith("*."))ext=ext.substring(2);
+						extensions.add(ext);
+					}
+					
+				}
+				javaSettings=new JavaSettingsImpl(
+						paths.toArray(new Resource[paths.size()]),
+						loadCFMLClassPath,reloadOnChange,watchInterval,
+						extensions.toArray(new String[extensions.size()]));
+				
+			}
+			initJavaSettings=true; 
+		}
+	}
 }

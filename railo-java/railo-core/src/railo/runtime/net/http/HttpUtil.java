@@ -44,19 +44,19 @@ public class HttpUtil {
 		return attributes;
 	}
 
-	public static Pair[] getAttributes(HttpServletRequest req) {
-		List attributes=new ArrayList();
+	public static Pair<String,Object>[] getAttributes(HttpServletRequest req) {
+		List<Pair<String,Object>> attributes=new ArrayList<Pair<String,Object>>();
 		Enumeration e = req.getAttributeNames();
 		String name;
 		while(e.hasMoreElements()){
 			name=(String) e.nextElement();
-			attributes.add(new Pair(name, req.getAttribute(name)));
+			attributes.add(new Pair<String,Object>(name, req.getAttribute(name)));
 		}
-		return (Pair[]) attributes.toArray(new Pair[attributes.size()]);
+		return attributes.toArray(new Pair[attributes.size()]);
 	}
 
-	public static Pair[] cloneParameters(HttpServletRequest req) {
-		List parameters=new ArrayList();
+	public static Pair<String,String>[] cloneParameters(HttpServletRequest req) {
+		List<Pair<String,String>> parameters=new ArrayList<Pair<String,String>>();
 		Enumeration e = req.getParameterNames();
 		String[] values;
 		String name;
@@ -64,10 +64,10 @@ public class HttpUtil {
 			name=(String) e.nextElement();
 			values=req.getParameterValues(name);
 			for(int i=0;i<values.length;i++){
-				parameters.add(new Pair(name,values[i]));
+				parameters.add(new Pair<String,String>(name,values[i]));
 			}
 		}
-		return (Pair[]) parameters.toArray(new Pair[parameters.size()]);
+		return parameters.toArray(new Pair[parameters.size()]);
 	}
 	
 	public static Cookie[] cloneCookies(Config config,HttpServletRequest req) {

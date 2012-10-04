@@ -11,8 +11,8 @@ import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Scope;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.storage.StorageScopeEngine;
 import railo.runtime.type.scope.storage.StorageScopeFile;
 import railo.runtime.type.scope.storage.StorageScopeListener;
@@ -118,10 +118,8 @@ public class FileStorageScopeCleaner extends StorageScopeCleanerSupport {
 					if(expires<System.currentTimeMillis()){
 						return true;
 					}
-					else {
-						str=str.substring(index+1);
-						return false;
-					}
+					str=str.substring(index+1);
+					return false;
 				}
 			}
 			// old files not having a timestamp inside

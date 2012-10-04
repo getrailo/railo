@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function rand
+ * Implements the CFML Function rand
  */
 package railo.runtime.functions.math;
 

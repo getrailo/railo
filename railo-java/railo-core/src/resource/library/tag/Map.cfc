@@ -140,8 +140,8 @@
 		<cfsavecontent variable="js"><cfoutput>
 		<script type="text/javascript">
 		#rand#_on_Load = function(){
-			Railo.Map.init('#attributes.name#',#serializeJson(options)#);
-			<cfloop array="#children#" index="child">Railo.Map.addMarker('#attributes.name#',#serializeJson(child.getAtttributes())#);</cfloop>
+			Railo.Map.init('#attributes.name#',#this.serializeJsonSafe(options)#);
+			<cfloop array="#children#" index="child">Railo.Map.addMarker('#attributes.name#',#serializeJsonSafe(child.getAtttributes())#);</cfloop>
 		}		
 		Railo.Events.subscribe(#rand#_on_Load,'onLoad');	
 		</script>		
@@ -150,5 +150,16 @@
 		<cfset writeHeader(js,'#rand#') /> 
 			
 	</cffunction>
+
+    <cffunction name="serializeJsonSafe" output="false" access="private" returntype="string">
+    	<cfargument name="str" required="true"/>
+		<cfscript>
+		 var rtn={};
+			 loop collection="#str#" item="local.k" {
+			 rtn[lcase(k)]=str[k];
+		}
+		return serializeJson(rtn);
+		</cfscript>    			
+    </cffunction>
 		
 </cfcomponent>

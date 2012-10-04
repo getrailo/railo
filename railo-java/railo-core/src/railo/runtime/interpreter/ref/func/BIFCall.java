@@ -20,7 +20,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.util.ArrayUtil;
-import railo.transformer.cfml.expression.CFMLExprTransformer;
+import railo.runtime.type.util.UDFUtil;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
@@ -32,8 +32,8 @@ import railo.transformer.library.function.FunctionLibFunctionArg;
 public final class BIFCall extends RefSupport implements Ref {
 		
 	private Ref[] refArgs;
-	private PageContext pc;
     private FunctionLibFunction flf;
+	private Object obj;
 
 
 	/**
@@ -42,29 +42,31 @@ public final class BIFCall extends RefSupport implements Ref {
 	 * @param flf 
 	 * @param refArgs 
 	 */
-	public BIFCall(PageContext pc, FunctionLibFunction flf,Ref[] refArgs) {
-		this.pc=pc;
-        this.flf=flf;
+	public BIFCall(FunctionLibFunction flf,Ref[] refArgs) {
+		this.flf=flf;
+		this.refArgs=refArgs;
+	}
+	public BIFCall(Object obj,FunctionLibFunction flf,Ref[] refArgs) {
+		this.obj=obj;
+		this.flf=flf;
 		this.refArgs=refArgs;
 	}
 	
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getValue()
-	 */
-	public Object getValue() throws PageException {
+	@Override
+    public Object getValue(PageContext pc) throws PageException {
         
         Object[] arguments = null;
         
         
         if(isDynamic()){
-        	arguments = RefUtil.getValue(refArgs);
+        	arguments = RefUtil.getValue(pc,refArgs);
         	if(flf.hasDefaultValues()){
-        		List tmp=new ArrayList();
-        		ArrayList args = flf.getArg();
-        		Iterator it = args.iterator();
+        		List<Object> tmp=new ArrayList<Object>();
+        		ArrayList<FunctionLibFunctionArg> args = flf.getArg();
+        		Iterator<FunctionLibFunctionArg> it = args.iterator();
         		FunctionLibFunctionArg arg;
         		while(it.hasNext()){
-        			arg=(FunctionLibFunctionArg) it.next();
+        			arg=it.next();
         			if(arg.getDefaultValue()!=null)
         				tmp.add(new FunctionValueImpl(arg.getName(),arg.getDefaultValue()));
         		}
@@ -76,8 +78,8 @@ public final class BIFCall extends RefSupport implements Ref {
         	arguments=new Object[]{pc,arguments};
         }
         else {
-        	if(isNamed(refArgs)){
-        		FunctionValue[] fvalues=getFunctionValues(refArgs);
+        	if(isNamed(pc,refArgs)){
+        		FunctionValue[] fvalues=getFunctionValues(pc,refArgs);
         		String[] names = getNames(fvalues);
         		
         		ArrayList<FunctionLibFunctionArg> list = flf.getArg();
@@ -94,20 +96,20 @@ public final class BIFCall extends RefSupport implements Ref {
 					vt = getMatchingValueAndType(flfa,fvalues,names);
 					if(vt.index!=-1) 
 						names[vt.index]=null;
-					arguments[++index]=new Casting(pc, vt.type, CFTypes.toShort(vt.type, CFTypes.TYPE_UNKNOW), vt.value).getValue();	
+					arguments[++index]=new Casting( vt.type, CFTypes.toShort(vt.type, CFTypes.TYPE_UNKNOW), vt.value).getValue(pc);	
 				}
 				
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
 						ExpressionException ee = new ExpressionException("argument ["+names[y]+"] is not allowed for function ["+flf.getName()+"]");
-						CFMLExprTransformer.addFunctionDoc(ee, flf);
+						UDFUtil.addFunctionDoc(ee, flf);
 						throw ee;
 					}
 				}
         		
         	}
         	else {
-        		arguments = RefUtil.getValue(refArgs);
+        		arguments = RefUtil.getValue(pc,refArgs);
                 Object[] newAttr = new Object[arguments.length+1];
                 newAttr[0]=pc;
                 for(int i=0;i<arguments.length;i++) {
@@ -118,6 +120,11 @@ public final class BIFCall extends RefSupport implements Ref {
         }
         Class clazz=flf.getCazz();
         if(clazz==null)throw new ExpressionException("class "+clazz+" not found");
+        
+        if(flf.getMemberChaining() && obj!=null) {
+        	Reflector.callStaticMethod(clazz,"call",arguments);
+        	return obj;
+        }
         return Caster.castTo(pc,flf.getReturnTypeAsString(),Reflector.callStaticMethod(clazz,"call",arguments),false);
 	}
 	
@@ -155,47 +162,45 @@ public final class BIFCall extends RefSupport implements Ref {
 					return new VT(Constants.DOUBLE_ZERO,type,-1);
 				return new VT(null,type,-1);
 			}
-			else {
-				return new VT(defaultValue,type,-1);
-			}
+			return new VT(defaultValue,type,-1);
 			
 		}
 		ExpressionException ee = new ExpressionException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]");
-		CFMLExprTransformer.addFunctionDoc(ee, flfa.getFunction());
+		UDFUtil.addFunctionDoc(ee, flfa.getFunction());
 		throw ee;
 	}
 
-	private String[] getNames(FunctionValue[] fvalues) throws PageException {
+	private String[] getNames(FunctionValue[] fvalues) {
     	String[] names=new String[fvalues.length];
     	for(int i=0;i<fvalues.length;i++){
-			names[i]=fvalues[i].getName();
+			names[i]=fvalues[i].getNameAsString();
 		}
 		return names;
 	}
 
-	private FunctionValue[] getFunctionValues(Ref[] refArgs) throws PageException {
+	private FunctionValue[] getFunctionValues(PageContext pc,Ref[] refArgs) throws PageException {
 		FunctionValue[] fvalues=new FunctionValue[refArgs.length];
     	for(int i=0;i<refArgs.length;i++){
-			fvalues[i]=(FunctionValue) ((LFunctionValue) ((Casting)refArgs[i]).getRef()).getValue();
+			fvalues[i]=(FunctionValue) ((LFunctionValue) ((Casting)refArgs[i]).getRef()).getValue(pc);
 		}
 		return fvalues;
 	}
 
-	private boolean isNamed(Ref[] refArgs) throws PageException {
+	private boolean isNamed(PageContext pc,Ref[] refArgs) throws PageException {
     	if(ArrayUtil.isEmpty(refArgs)) return false;
 		Casting cast;
 		int count=0;
 		for(int i=0;i<refArgs.length;i++){
 			if(refArgs[i] instanceof Casting){
 				cast=(Casting) refArgs[i];
-				if(cast.getRef() instanceof LFunctionValue && ((LFunctionValue)cast.getRef()).getValue() instanceof FunctionValue) {
+				if(cast.getRef() instanceof LFunctionValue && ((LFunctionValue)cast.getRef()).getValue(pc) instanceof FunctionValue) {
 					count++;
 				}
 			}
 		}
 		if(count!=0 && count!=refArgs.length){
 			ExpressionException ee = new ExpressionException("invalid argument for function "+flf.getName()+", you can not mix named and unnamed arguments");
-			CFMLExprTransformer.addFunctionDoc(ee, flf);
+			UDFUtil.addFunctionDoc(ee, flf);
 			throw ee;
 		}
 		return count!=0;
@@ -205,10 +210,8 @@ public final class BIFCall extends RefSupport implements Ref {
         return flf.getArgType()==FunctionLibFunction.ARG_DYNAMIC;
     }
     
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public String getTypeName() {
+	@Override
+    public String getTypeName() {
 		return "built in function";
 	}
 

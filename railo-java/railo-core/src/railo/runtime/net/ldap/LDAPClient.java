@@ -360,18 +360,18 @@ public final class LDAPClient {
             }
         }
         finally {
-            if(context!=null)context.close();
+            context.close();
         }
         
         return qry;
     }
 
-    private static String[] toStringAttributes(String strAttributes,String delimeter) throws PageException {
-		return List.toStringArrayTrim(List.listToArrayRemoveEmpty(strAttributes,delimeter));		
+    private static String[] toStringAttributes(String strAttributes,String delimiter) throws PageException {
+		return List.toStringArrayTrim(List.listToArrayRemoveEmpty(strAttributes,delimiter));		
 	}
 	
-	private static Attributes toAttributes(String strAttributes,String delimeter, String separator) throws PageException {
-		String[] arrAttr = toStringAttributes(strAttributes,delimeter);
+	private static Attributes toAttributes(String strAttributes,String delimiter, String separator) throws PageException {
+		String[] arrAttr = toStringAttributes(strAttributes,delimiter);
 		
 		
 		BasicAttributes attributes = new BasicAttributes();

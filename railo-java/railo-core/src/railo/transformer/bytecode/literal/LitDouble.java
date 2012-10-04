@@ -3,9 +3,11 @@ package railo.transformer.bytecode.literal;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.commons.color.ConstantsDouble;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
@@ -15,13 +17,17 @@ import railo.transformer.bytecode.util.Types;
  * Literal Double Value
  */
 public final class LitDouble extends ExpressionBase implements Literal,ExprDouble {
-    
-	public static final LitDouble ZERO=new LitDouble(0,-1);
+
+	private static final Type CONSTANTS_DOUBLE = Type.getType(ConstantsDouble.class);
+	public static final LitDouble ZERO=new LitDouble(0,null,null);
 	
     private double d;
 
-	public static ExprDouble toExprDouble(double d, int line) {
-		return new LitDouble(d,line);
+	public static LitDouble toExprDouble(double d) {
+		return new LitDouble(d,null,null);
+	}
+	public static LitDouble toExprDouble(double d, Position start,Position end) {
+		return new LitDouble(d,start,end);
 	}
     
     /**
@@ -29,8 +35,8 @@ public final class LitDouble extends ExpressionBase implements Literal,ExprDoubl
      * @param d
      * @param line 
      */
-	public LitDouble(double d, int line) {
-        super(line);
+	private LitDouble(double d, Position start,Position end) {
+        super(start,end);
         
         this.d=d;
     }
@@ -75,11 +81,19 @@ public final class LitDouble extends ExpressionBase implements Literal,ExprDoubl
      */
     public Type _writeOut(BytecodeContext bc, int mode) {
     	GeneratorAdapter adapter = bc.getAdapter();
-        adapter.push(d);
         if(mode==MODE_REF) {
-            adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_DOUBLE_FROM_DOUBLE);
+        	String str=ConstantsDouble.getFieldName(d);
+        	if(str!=null) {
+				bc.getAdapter().getStatic(CONSTANTS_DOUBLE, str, Types.DOUBLE);
+			}
+			else {
+				adapter.push(d);
+		        adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_DOUBLE_FROM_DOUBLE);
+			}
             return Types.DOUBLE;
         }
+        adapter.push(d);
+        
         return Types.DOUBLE_VALUE;
     }
 

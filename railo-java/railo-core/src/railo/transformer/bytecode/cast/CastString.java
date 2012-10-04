@@ -27,7 +27,7 @@ public final class CastString extends ExpressionBase implements ExprString {
      * @param expr
      */
     private CastString(Expression expr) {
-        super(expr.getLine());
+        super(expr.getStart(),expr.getEnd());
         this.expr=expr;
     }
     
@@ -39,7 +39,7 @@ public final class CastString extends ExpressionBase implements ExprString {
      */
     public static ExprString toExprString(Expression expr) {
         if(expr instanceof ExprString) return (ExprString) expr;
-        if(expr instanceof Literal) return new LitString(((Literal)expr).getString(),expr.getLine());
+        if(expr instanceof Literal) return new LitString(((Literal)expr).getString(),expr.getStart(),expr.getEnd());
         return new CastString(expr);
     }
 

@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import railo.commons.lang.CFTypes;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
+import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
 import railo.transformer.cfml.evaluator.FunctionEvaluator;
 import railo.transformer.library.tag.TagLib;
@@ -46,6 +48,9 @@ public final class FunctionLibFunction {
 	private FunctionEvaluator eval;
 	private String tteClass;	
 	private short status=TagLib.STATUS_IMPLEMENTED;
+	private String memberName;
+	private short memberType=CFTypes.TYPE_UNKNOW;
+	private boolean memberChaining;
 
 	
 	/**
@@ -300,5 +305,31 @@ public final class FunctionLibFunction {
 	}
 	public void setTteClass(String tteClass) {
 		this.tteClass=tteClass;
+	}
+	public void setMemberName(String memberName) {
+		if(StringUtil.isEmpty(memberName,true)) return;
+		this.memberName=memberName.trim();	
+	}
+	public String getMemberName() {
+		return memberName;
+	}
+	public void setMemberChaining(boolean memberChaining) {
+		this.memberChaining=memberChaining;	
+	}
+	public boolean getMemberChaining() {
+		return memberChaining;
+	}
+	
+	public short getMemberType() {
+		if(memberName!=null && memberType==CFTypes.TYPE_UNKNOW){
+			ArrayList<FunctionLibFunctionArg> args = getArg();
+			if(args.size()>=1){
+				memberType=CFTypes.toShortStrict(args.get(0).getTypeAsString(),CFTypes.TYPE_UNKNOW);
+			}
+		}
+		return memberType;
+	}
+	public String getMemberTypeAsString() {
+		return CFTypes.toString(getMemberType(),"any");
 	}
 }

@@ -4,23 +4,16 @@ import org.objectweb.asm.Opcodes;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.statement.FlowControl;
+import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.util.ASMUtil;
 
 public final class TagBreak extends TagBase {
-
-	/**
-	 * Constructor of the class
-	 * @param tag
-	 */
-	public TagBreak(int line) {
-		super(line);
-		setHasFlowController(true);
-	}
 	
-	public TagBreak(int sl,int el) {
-		super(sl,el);
+	public TagBreak(Position start,Position end) {
+		super(start,end);
 		setHasFlowController(true);
 	}
 
@@ -29,11 +22,11 @@ public final class TagBreak extends TagBase {
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 
-		FlowControl fc = ASMUtil.getAncestorFlowControlStatement(this);
+		FlowControlBreak fc = ASMUtil.getAncestorBreakFCStatement(this);
 		
 		if(fc!=null)
 			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, fc.getBreakLabel());
-		else throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",getLine());
+		else throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",getStart());
 	}
 	
 	/**

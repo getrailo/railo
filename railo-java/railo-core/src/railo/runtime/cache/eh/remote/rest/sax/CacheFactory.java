@@ -9,9 +9,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.loader.util.Util;
+import railo.runtime.text.xml.XMLUtil;
 
 public class CacheFactory extends DefaultHandler {
 	
@@ -58,7 +58,7 @@ public class CacheFactory extends DefaultHandler {
 		try {
 			InputSource is=new InputSource(in);
 			
-			xmlReader=XMLReaderFactory.createXMLReader(DEFAULT_SAX_PARSER);
+			xmlReader=XMLUtil.createXMLReader(DEFAULT_SAX_PARSER);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.parse(is);
@@ -105,7 +105,7 @@ public class CacheFactory extends DefaultHandler {
 	
 	
 	
-    private void _setContent(String value) throws SAXException {
+    private void _setContent(String value) {
     	
     	/*if(insideError && insideMessage)	{
     		throw new SAXException(value);
@@ -114,7 +114,7 @@ public class CacheFactory extends DefaultHandler {
     	
     }
 
-    protected void setContent(String value) throws SAXException 	{
+    protected void setContent(String value) 	{
 		if(insideCacheConfiguration)	{
 			if("clearOnFlush".equalsIgnoreCase(inside))
 				cc.setClearOnFlush(toBooleanValue(value,true));

@@ -34,7 +34,7 @@ public class Attachment implements Serializable {
 		if(StringUtil.isEmpty(type)) {
 			InputStream is=null;
 			try {
-				type = IOUtil.getMymeType(is=resource.getInputStream(),null);
+				type = IOUtil.getMimeType(is=resource.getInputStream(),null);
 			} 
 			catch (IOException e) {}
 			finally {
@@ -51,7 +51,7 @@ public class Attachment implements Serializable {
 		if(StringUtil.isEmpty(this.fileName))this.fileName = "url.txt";
 		
 		try {
-			type = IOUtil.getMymeType(url.openStream(), null);
+			type = IOUtil.getMimeType(url.openStream(), null);
 		} catch (IOException e) {}	
 		
 	}

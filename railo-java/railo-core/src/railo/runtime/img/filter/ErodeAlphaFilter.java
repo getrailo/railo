@@ -21,8 +21,8 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 
@@ -75,9 +75,9 @@ public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 
 	public int filterRGB(int x, int y, int rgb) {
 		int a = (rgb >> 24) & 0xff;
-		int r = (rgb >> 16) & 0xff;
-		int g = (rgb >> 8) & 0xff;
-		int b = rgb & 0xff;
+		//int r = (rgb >> 16) & 0xff;
+		//int g = (rgb >> 8) & 0xff;
+		//int b = rgb & 0xff;
 		if ( a == 255 )
             return 0xffffffff;
         float f = ImageMath.smoothStep(lowerThreshold, upperThreshold, a);
@@ -104,7 +104,7 @@ public class ErodeAlphaFilter extends PointFilter  implements DynFiltering {
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Softness, Threshold, Dimensions]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Softness, Threshold, Dimensions]");
 		}
 
 		return filter(src, dst);

@@ -6,10 +6,10 @@ import org.w3c.dom.Node;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 
 /**
  * Element that can contain more than one Element
@@ -77,14 +77,14 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 	}
 	
     
-    /**
+    /* *
      * @see railo.runtime.type.Collection#remove(java.lang.String)
-     */
-    public Object remove(String key) throws PageException {
+     * /
+    public Object remove (String key) throws PageException {
         int index=Caster.toIntValue(key,Integer.MIN_VALUE);
         if(index==Integer.MIN_VALUE)return super.remove (KeyImpl.init(key));
         return remove(index);
-    }
+    }*/
 
     /**
      * @see railo.runtime.text.xml.struct.XMLNodeStruct#remove(railo.runtime.type.Collection.Key)
@@ -213,7 +213,7 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 
     public Collection duplicate(boolean deepCopy) {
         try {
-            return new XMLMultiElementStruct((Array) array.duplicate(deepCopy),getCaseSensitive());
+            return new XMLMultiElementStruct((Array) Duplicator.duplicate(array,deepCopy),getCaseSensitive());
         } catch (PageException e) {
             return null;
         }
@@ -224,7 +224,7 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 	 */
 	public Node cloneNode(boolean deep) {
 		try {
-            return new XMLMultiElementStruct((Array) array.duplicate(deep),getCaseSensitive());
+            return new XMLMultiElementStruct((Array) Duplicator.duplicate(array,deep),getCaseSensitive());
         } catch (PageException e) {
             return null;
         }

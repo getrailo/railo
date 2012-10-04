@@ -4,10 +4,12 @@ import org.hibernate.HibernateException;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
+import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.IPageException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
@@ -72,7 +74,7 @@ private PageException pe;
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
 	public Struct getCatchBlock(PageContext pc) {
-		return pe.getCatchBlock(pc);
+		return getCatchBlock(pc.getConfig());
 	}
 	
 	/**
@@ -80,7 +82,12 @@ private PageException pe;
 	 */
 	public Struct getCatchBlock() {
 		// TLPC
-		return pe.getCatchBlock(ThreadLocalPageContext.get());
+		return pe.getCatchBlock(ThreadLocalPageContext.getConfig());
+	}
+	
+
+	public CatchBlock getCatchBlock(Config config) {
+		return pe.getCatchBlock(config);
 	}
 	
 	/**

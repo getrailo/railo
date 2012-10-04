@@ -16,7 +16,7 @@ public interface Core {
 	public boolean concatSupported();
 	
 	/**
-	 * return a single Attr, if Attr does not exists it returns null
+	 * return a single Attr, if Attr does not exist it returns null
 	 * @param dc
 	 * @param path
 	 * @param name

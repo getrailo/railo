@@ -1,32 +1,39 @@
 package railo.runtime.type.scope;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
+import railo.runtime.type.UDF;
+import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.wrap.ArrayAsList;
 
 /**
  * implementation of the argument scope 
  */
-public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
+public final class ArgumentImpl extends ScopeSupport implements Argument {
 		
 	private boolean bind;
 	private Set functionArgumentNames;
@@ -47,6 +54,12 @@ public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 	public void release() {
 		functionArgumentNames=null;
 		super.release();
+	}
+	
+	@Override
+	public void release(PageContext pc) {
+		functionArgumentNames=null;
+		super.release(pc);
 	}
 	
 	
@@ -112,7 +125,9 @@ public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 		o=get(Caster.toIntValue(key.getString(),-1),null);
 		if(o!=null)return o;
 		if(super.containsKey(key)) return null;// that is only for compatibility to neo
-		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope");
+		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+				railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+				+"]");
 		
 	}
 
@@ -156,7 +171,7 @@ public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable htmlBox = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
+		DumpTable htmlBox = new DumpTable("struct","#9999ff","#ccccff","#000000");
 		htmlBox.setTitle("Scope Arguments");
 		if(size()>10 && dp.getMetainfo())htmlBox.setComment("Entries:"+size());
 	    
@@ -256,14 +271,14 @@ public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 		
 		// remove all upper
 			LinkedHashMap lhm = new LinkedHashMap();
-			String[] keys=keysAsString();
+			Collection.Key[] keys=keys();
 			
-			String k;
+			Collection.Key k;
 			for(int i=1;i<=keys.length;i++) {
 				if(i<index)continue;
 				k=keys[i-1];
-				lhm.put(k,get(k,null));
-				removeEL(KeyImpl.getInstance(k));
+				lhm.put(k.getString(),get(k,null));
+				removeEL(k);
 			}
 		
 		// set new value
@@ -329,6 +344,11 @@ public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 	public void sort(String sortType, String sortOrder) throws ExpressionException {
 		// TODO Impl.
 		throw new ExpressionException("can't sort ["+sortType+"-"+sortOrder+"] Argument Scope","not Implemnted Yet");
+	}
+
+	public void sort(Comparator com) throws ExpressionException {
+		// TODO Impl.
+		throw new ExpressionException("can't sort Argument Scope","not Implemnted Yet");
 	}
 
 	/**
@@ -450,5 +470,67 @@ public final class ArgumentImpl extends ScopeSupport implements ArgumentPro {
 	}
 */
 
+	/**
+	 * converts a argument scope to a regular struct
+	 * @param arg argument scope to convert
+	 * @return resulting struct
+	 */
+	public static Struct toStruct(Argument arg) {
+		Struct trg=new StructImpl();
+		StructImpl.copy(arg, trg, false);
+		return trg;
+	}
 
+	/**
+	 * converts a argument scope to a regular array
+	 * @param arg argument scope to convert
+	 * @return resulting array
+	 */
+	public static Array toArray(Argument arg) {
+		ArrayImpl trg=new ArrayImpl();
+		int[] keys = arg.intKeys();
+		for(int i=0;i<keys.length;i++){
+			trg.setEL(keys[i],
+					arg.get(keys[i],null));
+		}
+		return trg;
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key, defaultValue);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).call(pc,args,false);
+		}
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		}
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
+	}
 }

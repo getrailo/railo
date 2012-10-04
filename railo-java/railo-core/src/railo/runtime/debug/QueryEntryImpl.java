@@ -7,6 +7,9 @@ import railo.runtime.type.Query;
  * 
  */
 public final class QueryEntryImpl implements QueryEntry {
+
+	private static final long serialVersionUID = 8655915268130645466L;
+	
 	private String src;
 	private SQL sql;
 	private int exe;
@@ -31,46 +34,34 @@ public final class QueryEntryImpl implements QueryEntry {
 		this.exe=exe;
 		this.qry=qry;
 	}
-	/** FUTURE add to interface
-	 * @return the qry
-	 */
+	
+	@Override
 	public Query getQry() {
 		return qry;
 	}
-	/**
-     * @see railo.runtime.debug.QueryEntry#getExe()
-     */
+	
+	@Override
 	public int getExe() {
 		return exe;
 	}
-	/**
-     * @see railo.runtime.debug.QueryEntry#getSQL()
-     */
+	@Override
 	public SQL getSQL() {
 		return sql;
 	}
-	/**
-     * @see railo.runtime.debug.QueryEntry#getSrc()
-     */
+	@Override
 	public String getSrc() {
 		return src;
 	}
-    /**
-     * @see railo.runtime.debug.QueryEntry#getName()
-     */
-    public String getName() {
+	@Override
+	public String getName() {
         return name;
     }
-    /**
-     * @see railo.runtime.debug.QueryEntry#getRecordcount()
-     */
-    public int getRecordcount() {
+	@Override
+	public int getRecordcount() {
         return recordcount;
     }
-    /**
-     * @see railo.runtime.debug.QueryEntry#getDatasource()
-     */
-    public String getDatasource() {
+	@Override
+	public String getDatasource() {
         return datasource;
     }
 }

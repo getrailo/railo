@@ -33,7 +33,7 @@ public final class VariableRef extends ExpressionBase {
 			new Type[]{Types.OBJECT,Types.COLLECTION_KEY});
 
 	public VariableRef(Variable variable) {
-		super(variable.getLine());
+		super(variable.getStart(),variable.getEnd());
 		this.variable=variable;
 	}
 

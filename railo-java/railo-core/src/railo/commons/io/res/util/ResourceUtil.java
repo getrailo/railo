@@ -4,13 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicMatch;
-import railo.commons.io.DevNullOutputStream;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.ContentType;
@@ -23,13 +19,20 @@ import railo.commons.io.res.filter.ResourceNameFilter;
 import railo.commons.io.res.type.http.HTTPResource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.List;
+import railo.runtime.type.util.ArrayUtil;
 
 public final class ResourceUtil {
+
+	public static final int MIMETYPE_CHECK_EXTENSION=1;
+	public static final int MIMETYPE_CHECK_HEADER=2;
+	
 	
 	/**
      * Field <code>FILE_SEPERATOR</code>
@@ -79,7 +82,9 @@ public final class ResourceUtil {
     	EXT_MT.put("cgm","image/cgm");
     	EXT_MT.put("cmx","image/x-cmx");
     	EXT_MT.put("csh","application/x-csh");
-    	EXT_MT.put("css ","text/css");
+    	EXT_MT.put("cfm","text/html");
+    	EXT_MT.put("cfml","text/html");
+    	EXT_MT.put("css","text/css");
     	EXT_MT.put("doc","application/msword");
     	EXT_MT.put("docx","application/msword");
     	EXT_MT.put("eps","application/postscript");
@@ -112,6 +117,7 @@ public final class ResourceUtil {
     	EXT_MT.put("pict","image/x-pict");
     	EXT_MT.put("pl","application/x-perl");
     	EXT_MT.put("png","image/png");
+    	EXT_MT.put("php","text/html");
     	EXT_MT.put("pnm","image/x-portable-anymap");
     	EXT_MT.put("ppm","image/x-portable-pixmap");
     	EXT_MT.put("ppt","application/vnd.ms-powerpoint");
@@ -171,8 +177,17 @@ public final class ResourceUtil {
     	
         //if(allowRealpath){
 	        if(StringUtil.startsWith(path,'/')) {
-	        	res = pc.getPhysical(path,true);
-	            if(res!=null && res.exists()) return res;
+	        	PageContextImpl pci=(PageContextImpl) pc;
+	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),path,false,pci.useSpecialMappings(),true);
+	        	if(!ArrayUtil.isEmpty(reses)) {
+	        		for(int i=0;i<reses.length;i++){
+	        			res=reses[i];
+	        			if(res.exists()) return res;
+	        		}
+	        	}
+	        	//res = pc.getPhysical(path,true);
+	            //if(res!=null && res.exists()) return res;
 	        }
 	        res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(path));
 	        if(res.exists()) return res;
@@ -230,8 +245,17 @@ public final class ResourceUtil {
         }
         //if(allowRealpath){
 	        if(StringUtil.startsWith(destination,'/')) {
-	            res = pc.getPhysical(destination,true);
-	            if(res!=null && (res.exists() || parentExists(res))) return res;
+	        	PageContextImpl pci=(PageContextImpl) pc;
+	        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+	        	Resource[] reses = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),true);
+	        	if(!ArrayUtil.isEmpty(reses)) {
+	        		for(int i=0;i<reses.length;i++){
+	        			res=reses[i];
+	        			if(res.exists() || parentExists(res)) return res;
+	        		}
+	        	}
+	            //res = pc.getPhysical(destination,true);
+	            //if(res!=null && (res.exists() || parentExists(res))) return res;
 	        }
 	    	res=ResourceUtil.getCanonicalResourceEL(pc.getCurrentPageSource().getPhyscalFile().getParentResource().getRealResource(destination));
 	        if(res!=null && (res.exists() || parentExists(res))) return res;
@@ -265,10 +289,12 @@ public final class ResourceUtil {
     	
     	boolean isUNC;
         if(!(isUNC=isUNCPath(destination)) && StringUtil.startsWith(destination,'/')) {
-        	Resource res2 = pc.getPhysical(destination,SystemUtil.isWindows());
-            if(res2!=null) return res2;
-            //res2 = pc.getPhysical(destination,true);
-            //if(res2!=null && res2.exists()) return res2;
+        	PageContextImpl pci=(PageContextImpl) pc;
+        	ConfigWebImpl cwi=(ConfigWebImpl) pc.getConfig();
+        	Resource[] arr = cwi.getPhysicalResources(pc,pc.getApplicationContext().getMappings(),destination,false,pci.useSpecialMappings(),SystemUtil.isWindows());
+        	if(!ArrayUtil.isEmpty(arr)) return arr[0];
+        	//Resource res2 = pc.getPhysical(destination,SystemUtil.isWindows());
+            //if(res2!=null) return res2;
         }
         if(isUNC) {
         	res=pc.getConfig().getResource(destination.replace('/','\\'));
@@ -692,7 +718,7 @@ public final class ResourceUtil {
     
 
     /**
-     * similat to linux bash fuction toch, create file if not exists oherwise change last modified date
+     * similat to linux bash fuction toch, create file if not exist oherwise change last modified date
      * @param res
      * @throws IOException
      */
@@ -722,74 +748,41 @@ public final class ResourceUtil {
      * @param defaultValue 
      * @return mime type of the file
      */
-    public static String getMymeType(Resource res, String defaultValue) {
-        return getMymeType(res, false,defaultValue);
+    public static String getMimeType(Resource res, String defaultValue) {
+        return getMimeType(res, MIMETYPE_CHECK_HEADER,defaultValue);
     }
     
-    public static String getMymeType(Resource res, boolean alsoCheckExtension, String defaultValue) {
-        if(alsoCheckExtension) {
+    public static String getMimeType(Resource res, int checkingType, String defaultValue) {
+        
+    	// check Extension
+    	if((checkingType&MIMETYPE_CHECK_EXTENSION)!=0) {
         	String ext = getExtension(res, null);
 			if(!StringUtil.isEmpty(ext)){
         		String mt=EXT_MT.get(ext.trim().toLowerCase());
         		if(mt!=null) return mt;
 			}
         }
-    	PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            MagicMatch match = Magic.getMagicMatch(IOUtil.toBytes(res));
-            return match.getMimeType();
-        } 
-        catch (Exception e) {
-            return defaultValue;
-        }
-        finally {
-        	System.setOut(out);
-        }
+    	
+    	// check mimetype
+    	if((checkingType&MIMETYPE_CHECK_HEADER)!=0) {
+    		InputStream is=null;
+    		try {
+    			is = res.getInputStream();
+    			return IOUtil.getMimeType(is, defaultValue);
+			} 
+    		catch (Throwable t) {
+				return defaultValue;
+			}
+    		finally {
+    			IOUtil.closeEL(is);
+    		}
+    	}
+    	
+    	return defaultValue;
     }
 
-    /**
-     * return the mime type of a file, dont check extension
-     * @param barr
-     * @return mime type of the file
-     * @throws IOException 
-     */
-    public static String getMymeType(byte[] barr) throws IOException {
-        //if(mimeTypeParser==null)mimeTypeParser=new Magic();
-    	PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            MagicMatch match = Magic.getMagicMatch(barr);
-            return match.getMimeType();
-        } 
-        catch (Exception e) {
-            throw new IOException(e.getMessage());
-        }
-        finally {
-        	System.setOut(out);
-        }
-    }
-
-    /**
-     * return the mime type of a file, dont check extension
-     * @param barr
-     * @param defaultValue 
-     * @return mime type of the file
-     */
-    public static String getMymeType(byte[] barr, String defaultValue) {
-    	PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            MagicMatch match = Magic.getMagicMatch(barr);
-            return match.getMimeType();
-        } 
-        catch (Exception e) {
-            return defaultValue;
-        }
-        finally {
-        	System.setOut(out);
-        }
-    }
+    
+    
     
 	/**
 	 * check if file is a child of given directory
@@ -1092,7 +1085,7 @@ public final class ResourceUtil {
 
 	/**
 	 * return if Resource is empty, means is directory and has no children or a empty file,
-	 * if not exists return false.
+	 * if not exist return false.
 	 * @param res
 	 * @return
 	 */
@@ -1182,7 +1175,7 @@ public final class ResourceUtil {
 		}
 		
 		Resource parent = resource.getParentResource();
-		// when there is a parent but the parent does not exists
+		// when there is a parent but the parent does not exist
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
@@ -1210,7 +1203,7 @@ public final class ResourceUtil {
 		}
 		
 		Resource parent = resource.getParentResource();
-		// when there is a parent but the parent does not exists
+		// when there is a parent but the parent does not exist
 		if(parent!=null) {
 			if(!parent.exists()) {
 				if(createParentWhenNotExists)parent.createDirectory(true);
@@ -1232,7 +1225,7 @@ public final class ResourceUtil {
 		if(!source.isFile()) {
 			if(source.isDirectory())
 				throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], source is a directory");
-			throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exists");
+			throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exist");
 		}
 		else if(target.isDirectory()) {
 			throw new IOException("can't copy ["+source.getPath()+"] to ["+target.getPath()+"], target is a directory");
@@ -1247,7 +1240,7 @@ public final class ResourceUtil {
 	 */
 	public static void checkMoveToOK(Resource source, Resource target) throws IOException {
 		if(!source.exists()) {
-			throw new IOException("can't move ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exists");
+			throw new IOException("can't move ["+source.getPath()+"] to ["+target.getPath()+"], source file does not exist");
 		}
 		if(source.isDirectory() && target.isFile())
 			throw new IOException("can't move ["+source.getPath()+"] directory to ["+target.getPath()+"], target is a file");
@@ -1262,7 +1255,7 @@ public final class ResourceUtil {
 	 */
 	public static void checkGetInputStreamOK(Resource resource) throws IOException {
 		if(!resource.exists())
-			throw new IOException("file ["+resource.getPath()+"] does not exists");
+			throw new IOException("file ["+resource.getPath()+"] does not exist");
 		
 		if(resource.isDirectory())
 			throw new IOException("can't read directory ["+resource.getPath()+"] as a file");
@@ -1290,7 +1283,7 @@ public final class ResourceUtil {
 	 * @throws IOException
 	 */
 	public static void checkRemoveOK(Resource resource) throws IOException {
-		if(!resource.exists())throw new IOException("can't delete resource "+resource+", resource does not exists");
+		if(!resource.exists())throw new IOException("can't delete resource "+resource+", resource does not exist");
 		if(!resource.canWrite())throw new IOException("can't delete resource "+resource+", no access");
 		
 	}
@@ -1307,18 +1300,23 @@ public final class ResourceUtil {
 		}
 	}
 	
-	// FUTURE this method should be part of pagesource in a more proper way, there should be a method getResource() inside PageSource
-	public static Resource getResource(PageContext pc,PageSource ps) throws ExpressionException {
-		Resource res = ps.getPhyscalFile();
-		
-		// there is no physical resource
-		if(res==null){
-        	String path=ps.getDisplayPath();
-        	if(path.startsWith("ra://"))
-        		path="zip://"+path.substring(5);
-        	res=ResourceUtil.toResourceExisting(pc, path,false);
-        }
-		return res;
+	/**
+     * if the pageSource is based on a archive, translate the source to a zip:// Resource
+     * @return return the Resource matching this PageSource
+     * @param pc the Page Context Object
+     * @deprecated use instead <code>PageSource.getResourceTranslated(PageContext)</code>
+     */
+    public static Resource getResource(PageContext pc,PageSource ps) throws PageException {
+		return ps.getResourceTranslated(pc);
+	}
+	
+	public static Resource getResource(PageContext pc,PageSource ps, Resource defaultValue) {
+		try {
+			return ps.getResourceTranslated(pc);
+		} 
+		catch (Throwable t) {
+			return defaultValue;
+		}
 	}
 	
 	public static int directrySize(Resource dir,ResourceFilter filter) {

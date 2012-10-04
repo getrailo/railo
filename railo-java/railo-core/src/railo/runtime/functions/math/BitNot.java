@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function bitnot
+ * Implements the CFML Function bitnot
  */
 package railo.runtime.functions.math;
 

@@ -18,17 +18,27 @@ public class DumpTable implements DumpData {
 	private String fontColor;
 	private String width;
 	private String height;
+	private String type;
+	private String id;
+	private String ref;
+
+	public DumpTable(String highLightColor, String normalColor,String borderColor) {
+		this(null,highLightColor,normalColor,borderColor,borderColor);
+	}
+	public DumpTable(String type,String highLightColor, String normalColor,String borderColor) {
+		this(type,highLightColor,normalColor,borderColor,borderColor);
+	}
 	
-	
-	public DumpTable(String highLightColor, String normalColor, String borderColor, String fontColor) {
+	public DumpTable(String type,String highLightColor, String normalColor,String borderColor, String fontColor) {
 		this.highLightColor=highLightColor;
 		this.normalColor=normalColor;
 		this.borderColor=borderColor;
 		this.fontColor=fontColor;
+		this.type=type;
 	}
-	public DumpTable(String highLightColor, String normalColor, String borderColor) {
-		this(highLightColor, normalColor, borderColor, borderColor);
-	}
+	
+	
+	
 	
 	/**
 	 * @return returns if the box has content or not
@@ -197,5 +207,27 @@ public class DumpTable implements DumpData {
 	 */
 	public String getWidth() {
 		return width;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	public void setId(String id) {
+		this.id=id;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setRef(String ref) {
+		this.ref=ref;
+	}
+	public String getRef() {
+		return ref;
 	}
 }

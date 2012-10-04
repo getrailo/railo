@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structappend
+ * Implements the CFML Function structappend
  */
 package railo.runtime.functions.struct;
 

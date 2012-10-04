@@ -17,11 +17,10 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalConfig;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
@@ -30,6 +29,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class SpoolerEngineImpl implements SpoolerEngine {
 	
@@ -62,7 +62,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 
 	private int maxThreads;
 	
-	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log, int maxThreads) throws IOException {
+	public SpoolerEngineImpl(Config config,Resource persisDirectory,String label, Log log, int maxThreads) {
 		this.config=config;
 		this.persisDirectory=persisDirectory;
 
@@ -212,22 +212,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		if(plan==null)return -1;
 		return task.lastExecution()+(plan.getIntervall()*1000);
 	}
-
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#getOpenTasks()
-	 */
-	public SpoolerTask[] getOpenTasks() {
-		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
-	}
 	
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#getClosedTasks()
-	 */
-	public SpoolerTask[] getClosedTasks() {
-		throw new PageRuntimeException(new ApplicationException("this method is no longer supported"));
-	}
-	
-	// FUTURE add to interface
 	public Query getOpenTasksAsQuery(int startrow, int maxrow) throws PageException {
 		return getTasksAsQuery(createQuery(),openDirectory,startrow, maxrow);
 	}
@@ -264,7 +249,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	}
 	
 	
-	private Query getTasksAsQuery(Query qry,Resource dir, int startrow, int maxrow) throws PageException {
+	private Query getTasksAsQuery(Query qry,Resource dir, int startrow, int maxrow) {
 		String[] children = dir.list(FILTER);
 		if(ArrayUtil.isEmpty(children)) return qry;
 		if(children.length<maxrow)maxrow=children.length;
@@ -292,13 +277,13 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return qry;
 	}
 	
-	private void addQueryRow(railo.runtime.type.Query qry, SpoolerTask task) throws PageException {
+	private void addQueryRow(railo.runtime.type.Query qry, SpoolerTask task) {
     	int row = qry.addRow();
 		try{
 			qry.setAt(KeyImpl.TYPE, row, task.getType());
-			qry.setAt(KeyImpl.NAME, row, task.subject());
-			qry.setAt(KeyImpl.DETAIL, row, task.detail());
-			qry.setAt(KeyImpl.ID, row, task.getId());
+			qry.setAt(KeyConstants._name, row, task.subject());
+			qry.setAt(KeyConstants._detail, row, task.detail());
+			qry.setAt(KeyConstants._id, row, task.getId());
 
 			
 			qry.setAt(LAST_EXECUTION, row,new DateTimeImpl(task.lastExecution(),true));
@@ -319,8 +304,8 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	}
 	
 	private Array translateTime(Array exp) {
-		exp=(Array) exp.duplicate(true);
-		Iterator it = exp.iterator();
+		exp=(Array) Duplicator.duplicate(exp,true);
+		Iterator<Object> it = exp.valueIterator();
 		Struct sct;
 		while(it.hasNext()) {
 			sct=(Struct) it.next();
@@ -451,7 +436,6 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			finally {
 				sleeping=false;
 			}
-			//print.out(sleep+":"+(System.currentTimeMillis()-start));
 		}
 		
 	}

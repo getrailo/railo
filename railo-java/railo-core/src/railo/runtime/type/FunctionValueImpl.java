@@ -69,13 +69,20 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	public String getName() {
 		return getNameAsString();
 	}
-	//FUTURE replace geName with this
+	
+	/**
+	 * @see railo.runtime.type.FunctionValue#getNameAsString()
+	 */
 	public String getNameAsString() {
 		if(name==null){
 			return List.arrayToList(names, ".");
 		}
 		return name.getString();
 	}
+	
+	/**
+	 * @see railo.runtime.type.FunctionValue#getNameAsKey()
+	 */
 	public Collection.Key getNameAsKey() {
 		if(name==null){
 			return KeyImpl.init(List.arrayToList(names, "."));

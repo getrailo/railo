@@ -11,6 +11,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public class RemoteClientImpl implements RemoteClient {
 
@@ -112,7 +113,7 @@ public class RemoteClientImpl implements RemoteClient {
 		if(id!=null) return id;
 		
 		Struct attrColl = new StructImpl();
-		attrColl.setEL(KeyImpl.ACTION, "getToken");
+		attrColl.setEL(KeyConstants._action, "getToken");
 		
 		Struct args = new StructImpl();
 		args.setEL(KeyImpl.TYPE, getType());

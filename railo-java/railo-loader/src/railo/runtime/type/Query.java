@@ -2,6 +2,7 @@ package railo.runtime.type;
 
 import java.util.Map;
 
+import railo.runtime.db.SQL;
 import railo.runtime.exp.PageException;
 
 /**
@@ -25,10 +26,8 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	 */
 	public int getUpdateCount();
 	
-	// FUTURE public Query getGeneratedKeys();
-	
 	/**
-	 * return a value of the resultset by specifed colmn and row
+	 * return a value of the resultset by specified column and row
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
@@ -38,7 +37,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	public Object getAt(String key,int row) throws PageException;
 	
 	/**
-	 * return a value of the resultset by specifed colmn and row
+	 * return a value of the resultset by specified column and row
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
@@ -47,7 +46,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	public Object getAt(Collection.Key key,int row) throws PageException;
 	
 	/**
-	 * return a value of the resultset by specifed colmn and row, otherwise to getAt this method throw no exception if value dont exist (return null)
+	 * return a value of the resultset by specified column and row, otherwise to getAt this method throw no exception if value dont exist (return null)
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
@@ -56,7 +55,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 	public Object getAt(String key,int row, Object defaultValue);
 	
 	/**
-	 * return a value of the resultset by specifed colmn and row, otherwise to getAt this method throw no exception if value dont exist (return null)
+	 * return a value of the resultset by specified column and row, otherwise to getAt this method throw no exception if value dont exist (return null)
 	 * @param key column to get 
 	 * @param row row to get from (1-recordcount)
 	 * @return value at the called poition
@@ -234,7 +233,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
     /**
      * remove column matching to key
      * @param key key to remove
-     * @return QueryColumn object removed or null if column not exists
+     * @return QueryColumn object removed or null if column not exist
      * @deprecated use instead <code>{@link #removeColumnEL(railo.runtime.type.Collection.Key)}</code>
 	*/
     public QueryColumn removeColumnEL(String key);
@@ -243,7 +242,7 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
     /**
      * remove column matching to key
      * @param key key to remove
-     * @return QueryColumn object removed or null if column not exists
+     * @return QueryColumn object removed or null if column not exist
      */
     public QueryColumn removeColumnEL(Collection.Key key);
 
@@ -312,6 +311,23 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
      * @return returns array with meta data to the query (only column names and type)
      */
     public Array getMetaDataSimple();
+    
+	
+	
+	public void rename(Collection.Key columnName,Collection.Key newColumnName) throws PageException;
+	
+	public Collection.Key[] getColumnNames();
+	
+	public String[] getColumnNamesAsString();
+	
+	public Query getGeneratedKeys();
+	
+	public SQL getSql();
 
+	public String getTemplate();
+
+	public long getExecutionTime();
+	
+	
 	
 }

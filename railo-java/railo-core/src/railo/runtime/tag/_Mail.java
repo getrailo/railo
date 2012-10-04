@@ -28,7 +28,7 @@ public abstract class _Mail extends TagImpl {
     private int startrow=1;
     private int maxrows=-1;
     private boolean generateUniqueFilenames=false;
-    private boolean debug=false;
+    //private boolean debug=false;
     
     /**
      * @see railo.runtime.ext.tag.TagImpl#release()
@@ -46,7 +46,7 @@ public abstract class _Mail extends TagImpl {
         startrow=1;
         maxrows=-1;
         generateUniqueFilenames=false;
-        debug=false;
+        //debug=false;
         super.release();
         
     }
@@ -164,7 +164,7 @@ public abstract class _Mail extends TagImpl {
      * @param debug The debug to set.
      */
     public void setDebug(boolean debug) {
-        this.debug = debug;
+        //this.debug = debug;
     }
 
     /**

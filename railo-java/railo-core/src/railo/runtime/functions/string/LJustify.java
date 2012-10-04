@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function ljustify
+ * Implements the CFML Function ljustify
  */
 package railo.runtime.functions.string;
 

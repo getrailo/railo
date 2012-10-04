@@ -2,7 +2,8 @@ package railo.runtime.type.scope;
 
 import java.io.UnsupportedEncodingException;
 
-import railo.runtime.type.Scope;
+import railo.runtime.listener.ApplicationContext;
+
 
 /**
  * inteface for the url scope
@@ -15,13 +16,13 @@ public interface URL extends Scope {
     public abstract String getEncoding();
 
     /**
+     * @param ac current ApplicationContext 
      * @param encoding The encoding to set.
      * @throws UnsupportedEncodingException 
      */
-    public abstract void setEncoding(String encoding)
-            throws UnsupportedEncodingException;
+    public abstract void setEncoding(ApplicationContext ac,String encoding) throws UnsupportedEncodingException;
 
-	public abstract void setScriptProtecting(boolean b);
+	public abstract void setScriptProtecting(ApplicationContext ac,boolean b);
 	
 
 }

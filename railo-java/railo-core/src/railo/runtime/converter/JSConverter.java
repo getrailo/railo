@@ -1,38 +1,43 @@
 
 package railo.runtime.converter;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
-import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.CollectionUtil;
 
 
 /**
- * class to serialize to Convert Cold Fusion Objects (query,array,struct usw) to a JavaScript representation
+ * class to serialize to Convert CFML Objects (query,array,struct usw) to a JavaScript representation
  */
-public final class JSConverter {
+public final class JSConverter extends ConverterSupport {
 
 	private static final String NULL = "null";
 	private boolean useShortcuts=false;
 	private boolean useWDDX=true;
 
 	/**
-	 * serialize a Cold Fusion object to a JavaScript Object
+	 * serialize a CFML object to a JavaScript Object
 	 * @param object object to serialize
 	 * @param clientVariableName name of the variable to create 
 	 * @return vonverte Javascript Code as String
@@ -45,6 +50,24 @@ public final class JSConverter {
 		return clientVariableName+"="+str+(StringUtil.endsWith(str, ';')?"":";");
 		//return sb.toString();
 	}
+
+	
+
+	   
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(_serialize(source));
+		writer.flush();
+	}
+	private String _serialize(Object object) throws ConverterException {
+		StringBuffer sb=new StringBuffer();
+		_serialize("tmp",object,sb,new HashSet<Object>());
+		String str = sb.toString().trim();
+		return str+(StringUtil.endsWith(str, ';')?"":";");
+		//return sb.toString();
+	}
+	
+	
 	
 	private void _serialize(String name,Object object,StringBuffer sb,Set<Object> done) throws ConverterException {
 		// NULL
@@ -83,12 +106,12 @@ public final class JSConverter {
 			return;
 		}
 		
-		if(done.contains(object)){
+		Object raw = LazyConverter.toRaw(object);
+		if(done.contains(raw)){
 			sb.append(NULL+";");
 			return;
 		}
-		
-		done.add(object);
+		done.add(raw);
 		try {
 			// Struct
 			if(object instanceof Struct) {
@@ -117,7 +140,7 @@ public final class JSConverter {
 			}
 		}
 		finally {
-			done.remove(object);
+			done.remove(raw);
 		}
 		
 		throw new ConverterException("can't serialize Object of type ["+Caster.toClassName(object)+"] to a js representation");
@@ -179,17 +202,19 @@ public final class JSConverter {
 		if(useShortcuts)sb.append("{};");
 		else sb.append("new Object();");
 		
-		Key[] keys = struct.keys();
-		for(int i=0;i<keys.length;i++) {
+		Iterator<Entry<Key, Object>> it = struct.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()) {
+			e = it.next();
 			// lower case ist ok!
-			String key=StringUtil.escapeJS(Caster.toString(keys[i].getLowerString(),""));
+			String key=StringUtil.escapeJS(Caster.toString(e.getKey().getLowerString(),""));
             sb.append(name+"[\""+key+"\"]=");
-			try {
-				_serialize(name+"[\""+key+"\"]",struct.get(keys[i]),sb,done);
-			} 
-			catch (PageException e) {
-				_serialize(name+"[\""+key+"\"]",e.getMessage(),sb,done);
-			}
+			//try {
+				_serialize(name+"[\""+key+"\"]",e.getValue(),sb,done);
+			/*} 
+			catch (PageException pe) {
+				_serialize(name+"[\""+key+"\"]",pe.getMessage(),sb,done);
+			}*/
 		}
         return sb.toString();
 	}
@@ -231,21 +256,24 @@ public final class JSConverter {
 	}
 
 	private void _serializeWDDXQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
-		
-		Key[] keys = query.keys();
+		Iterator<Key> it = query.keyIterator();
+		Key k;
 		sb.append("new WddxRecordset();");
 		
 		int recordcount=query.getRecordcount();
-		for(int i=0;i<keys.length;i++) {
+		int i=-1;
+		while(it.hasNext()) {
+			i++;
+			k = it.next();
 			if(useShortcuts)sb.append("col"+i+"=[];");
 			else sb.append("col"+i+"=new Array();");
 			// lower case ist ok!
-			String skey = StringUtil.escapeJS(keys[i].getLowerString());
+			String skey = StringUtil.escapeJS(k.getLowerString());
 			for(int y=0;y<recordcount;y++) {
 				
 				sb.append("col"+i+"["+y+"]=");
 				
-				_serialize("col"+i+"["+y+"]",query.getAt(keys[i],y+1,null),sb,done);
+				_serialize("col"+i+"["+y+"]",query.getAt(k,y+1,null),sb,done);
 				
 			}
 			sb.append(name+"[\""+skey+"\"]=col"+i+";col"+i+"=null;");
@@ -253,10 +281,11 @@ public final class JSConverter {
 	}
 
 	private void _serializeASQuery(String name,Query query,StringBuffer sb, Set<Object> done) throws ConverterException {
-		
-		String[] keys = query.keysAsString();
-		for(int i=0;i<keys.length;i++) {
-			keys[i] = StringUtil.escapeJS(keys[i]);
+
+		Collection.Key[] keys = CollectionUtil.keys(query);
+		String[] strKeys = new String[keys.length];
+		for(int i=0;i<strKeys.length;i++) {
+			strKeys[i] = StringUtil.escapeJS(keys[i].getString());
 		}
 		if(useShortcuts)sb.append("[];");
 		else sb.append("new Array();");
@@ -266,9 +295,9 @@ public final class JSConverter {
 			if(useShortcuts)sb.append(name+"["+i+"]={};");
 			else sb.append(name+"["+i+"]=new Object();");
 			
-			for(int y=0;y<keys.length;y++) {
-				sb.append(name+"["+i+"]['"+keys[y]+"']=");
-				_serialize(name+"["+i+"]['"+keys[y]+"']",query.getAt(keys[y],i+1,null),sb,done);
+			for(int y=0;y<strKeys.length;y++) {
+				sb.append(name+"["+i+"]['"+strKeys[y]+"']=");
+				_serialize(name+"["+i+"]['"+strKeys[y]+"']",query.getAt(keys[y],i+1,null),sb,done);
 			}
 		}
 	}

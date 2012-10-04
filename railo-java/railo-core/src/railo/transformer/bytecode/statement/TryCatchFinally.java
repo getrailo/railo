@@ -10,10 +10,11 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.DataMember;
@@ -25,6 +26,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.TagTry;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 /**
@@ -73,7 +75,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	private Body tryBody;
 	private Body finallyBody;
 	private ArrayList catches=new ArrayList();
-	private int finallyLine;
+	private Position finallyLine;
 
 
 	/**
@@ -81,8 +83,8 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 * @param body
 	 * @param line
 	 */
-	public TryCatchFinally(Body body,int startline,int endline) {
-		super(startline,endline);
+	public TryCatchFinally(Body body,Position start, Position end) {
+		super(start,end);
 		this.tryBody=body;
 		body.setParent(this);
 	}
@@ -91,7 +93,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 * sets finally body
 	 * @param body
 	 */
-	public void setFinally(Body body, int finallyLine) {
+	public void setFinally(Body body, Position finallyLine) {
 		body.setParent(this);
 		this.finallyBody=body;
 		this.finallyLine=finallyLine;
@@ -105,9 +107,9 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		private ExprString type;
 		private Body body;
 		private VariableRef name;
-		private int line;
+		private Position line;
 
-		public Catch(ExprString type, VariableRef name, Body body, int line) {
+		public Catch(ExprString type, VariableRef name, Body body, Position line) {
 			this.type=type;
 			this.name=name;
 			this.body=body;
@@ -125,27 +127,23 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		// Reference ref=null;
-		int lRef=adapter.newLocal(Types.REFERENCE);
+		final int lRef=adapter.newLocal(Types.REFERENCE);
 		adapter.visitInsn(Opcodes.ACONST_NULL);
 		adapter.storeLocal(lRef);
 
-		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor();
+		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
+			
+			public void writeOut(BytecodeContext bc) throws BytecodeException {
+				_writeOutFinally(bc,lRef);
+			}
+		});
 
 		// try
 		tcfv.visitTryBegin(bc);
 			tryBody.writeOut(bc);
-		tcfv.visitTryEnd(bc);
-		
-		// catch
-		int lThrow = tcfv.visitCatchBegin(bc, Types.THROWABLE);
+		int lThrow = tcfv.visitTryEndCatchBeging(bc);
 			_writeOutCatch(bc, lRef, lThrow);
 		tcfv.visitCatchEnd(bc);
-			
-		// finally
-		tcfv.visitFinallyBegin(bc);
-			_writeOutFinally(bc,lRef);
-		tcfv.visitFinallyEnd(bc);
-		
 		
 	}
 	
@@ -197,8 +195,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	        // PageExceptionImpl old=pc.getCatch();
 	        int old=adapter.newLocal(Types.PAGE_EXCEPTION);
 	        adapter.loadArg(0);
-	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.GET_CATCH);
+	        adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.GET_CATCH);
 			adapter.storeLocal(old);
 	        
 	        
@@ -254,11 +251,10 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			else{
 			// pc.setCatch(pe,true);
 				adapter.loadArg(0);
-		        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 		        adapter.loadLocal(pe);
 		        adapter.push(false);
 		        adapter.push(false);
-		        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.SET_CATCH3);
+		        adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.SET_CATCH3);
 	            
 				
 				adapter.loadLocal(pe);
@@ -268,20 +264,18 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			
     		// PageExceptionImpl old=pc.setCatch(old);
             adapter.loadArg(0);
-            adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
             adapter.loadLocal(old);
-            adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.SET_CATCH_PE);
+            adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.SET_CATCH_PE);
 			
 	}
 
 	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter, Catch ct, int pe, int lRef,boolean caugth) throws BytecodeException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
-        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
         adapter.loadLocal(pe);
         adapter.push(caugth);
         adapter.push(false);
-        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, TagTry.SET_CATCH3);
+        adapter.invokeVirtual(Types.PAGE_CONTEXT, TagTry.SET_CATCH3);
         
         
         // ref=
@@ -305,7 +299,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 * @param body
 	 * @param line
 	 */
-	public void addCatch(ExprString type, VariableRef name, Body body, int line) {
+	public void addCatch(ExprString type, VariableRef name, Body body, Position line) {
 		body.setParent(this);
 		catches.add(new Catch(type,name,body,line));
 	}
@@ -317,23 +311,23 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 * @param line
 	 * @throws BytecodeException
 	 */
-	public void addCatch(Expression type, Expression name, Body b, int line) throws BytecodeException {
+	public void addCatch(Expression type, Expression name, Body b, Position line) throws BytecodeException {
 		
 		// type
 		if(type==null || type instanceof ExprString) ;
 		else if(type instanceof Variable) {
 			type=VariableString.toExprString(type);
 		}
-		else throw new BytecodeException("type from catch statement is invalid",type.getLine());
+		else throw new BytecodeException("type from catch statement is invalid",type.getStart());
 		
 		// name
 		if(name instanceof LitString){
-			Variable v = new Variable(Scope.SCOPE_UNDEFINED,name.getLine());
+			Variable v = new Variable(Scope.SCOPE_UNDEFINED,name.getStart(),name.getEnd());
 			v.addMember(new DataMember(name));
 			name=new VariableRef(v);
 		}
 		else if(name instanceof Variable) name=new VariableRef((Variable) name);
-		else throw new BytecodeException("name from catch statement is invalid",name.getLine());
+		else throw new BytecodeException("name from catch statement is invalid",name.getStart());
 		
 		addCatch((ExprString)type, (VariableRef)name, b, line);
 	}	

@@ -3,7 +3,7 @@ Defaults --->
 <cfset error.message="">
 <cfset error.detail="">
 <cfparam name="form.mainAction" default="none">
-
+<cfset fullMode=structKeyExists(session,"screenMode") && session.screenMode EQ "full">
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
@@ -42,13 +42,115 @@ Error Output --->
 <cfset printError(error)>
 
 
+
+
+<cfset pool['HEAP']="Heap">
+<cfset pool['NON_HEAP']="Non-Heap">
+
+<cfset pool['HEAP_desc']="The JVM (Java Virtual Machine) has a heap that is the runtime data area from which memory for all objects are allocated.">
+<cfset pool['NON_HEAP_desc']="Also, the JVM has memory other than the heap, referred to as non-heap memory. It stores all cfc/cfm templates, java classes, interned Strings and meta-data.">
+
+<cfset pool["Par Eden Space"]="The pool from which memory is initially allocated for most objects.">
+<cfset pool["Par Survivor Space"]="The pool containing objects that have survived the garbage collection of the Eden space.">
+<cfset pool["CMS Old Gen"]="The pool containing objects that have existed for some time in the survivor space.">
+<cfset pool["CMS Perm Gen"]="The pool containing all the reflective data of the virtual machine itself, such as class and method objects.">
+<cfset pool["Code Cache"]="The HotSpot Java VM also includes a code cache, containing memory that is used for compilation and storage of native code.">
+
+
+
+
+
+
+<cfset pool["Eden Space"]=pool["Par Eden Space"]>
+<cfset pool["PS Eden Space"]=pool["Par Eden Space"]>
+
+<cfset pool["Survivor Space"]=pool["Par Survivor Space"]>
+<cfset pool["PS Survivor Space"]=pool["Par Survivor Space"]>
+
+<cfset pool["Perm Gen"]=pool["CMS Perm Gen"]>
+
+<cfset pool["Tenured Gen"]=pool["CMS Old Gen"]>
+<cfset pool["PS Old Gen"]=pool["CMS Old Gen"]>
+
+
+<cffunction name="printMemory" output="yes">
+	<cfargument name="usage" type="query" required="yes">
+	
+    <cfset var height=6>
+    <cfset var width=100>
+    	<cfset var used=evaluate(ValueList(arguments.usage.used,'+'))>
+    	<cfset var max=evaluate(ValueList(arguments.usage.max,'+'))>
+    	<cfset var init=evaluate(ValueList(arguments.usage.init,'+'))>
+        
+		<cfset var qry=QueryNew(arguments.usage.columnlist)>
+		<cfset QueryAddRow(qry)>
+        <cfset QuerySetCell(qry,"type",arguments.usage.type)>
+        <cfset QuerySetCell(qry,"name",variables.pool[arguments.usage.type])>
+        <cfset QuerySetCell(qry,"init",init,qry.recordcount)>
+        <cfset QuerySetCell(qry,"max",max,qry.recordcount)>
+        <cfset QuerySetCell(qry,"used",used,qry.recordcount)>
+        
+        <cfset arguments.usage=qry>
+    	<b>#variables.pool[arguments.usage.type]#</b>
+        <cfif StructKeyExists(variables.pool,arguments.usage.type& "_desc")><br /><span class="comment">#variables.pool[arguments.usage.type& "_desc"]#</span></cfif>
+        
+        
+        
+        <table cellpadding="0" cellspacing="0">
+        <cfloop query="#arguments.usage#">
+        	<cfset local._used=int(width/arguments.usage.max*arguments.usage.used)>
+        	<cfset local._free=width-_used> 
+            
+			<cfset local.pused=int(100/arguments.usage.max*arguments.usage.used)>
+        	<cfset local.pfree=100-pused> 
+            
+            
+            
+        	<tr>  
+   				<td>
+            	<table class="tbl" height="#height#" width="#width#">
+                
+                <tr>
+                	<td colspan="2"><cfmodule template="tp.cfm" height="1" width="#width#" /></td>
+                </tr>
+                <tr>
+                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#" title="#int(arguments.usage.used/1024)#kb (#pused#%)"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
+                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#" title="#int((arguments.usage.max-arguments.usage.used)/1024)#kb (#pfree#%)"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
+                </tr>
+                </table>
+                </td>
+             </tr>
+    	</cfloop>
+        </table>
+        
+        
+        
+</cffunction>
+
+<cfset total=query(
+	name:["Total"],
+	type:[""],
+	used:[server.java.totalMemory-server.java.freeMemory],
+	max:[server.java.totalMemory],
+	init:[0]
+)>
 <cfoutput>
+
+
+
+
+
 <div style="width:740px">
 #stText.Overview.introdesc[request.adminType]#
 </div>
 <br />
 
-<table class="tbl" width="740">
+
+
+<table class="tbl" width="100%" border="0">
+<tr>
+<td valign="top" width="60%">
+<table class="tbl" width="100%">
 <tr>
 	<td colspan="2"><h2>#stText.Overview.Info#</h2></td>
 </tr>
@@ -185,30 +287,23 @@ Error Output --->
 		#server.java.version# (#server.java.vendor#)<cfif structKeyExists(server.java,"archModel")> #server.java.archModel#bit</cfif>
 	</td> 
 </tr>
-
-
-
-
-
-
-
-
+<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+<tr>
+	<td class="tblHead" width="150">Architecture</td>
+	<td class="tblContent">
+		<cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif>
+	</td> 
+</tr>
+</cfif>
 
 
 
 <!---
 <tr>
-	<td class="tblHead" width="150">Memory</td>
-	<td class="tblContent">
-    	##round((server.java.maxMemory)/1024/1024)##mb
-	</td> 
-</tr>
---->
-<tr>
 	<td class="tblHead" width="150">Classpath</td>
 	<td class="tblContent">
     	
-	<div class="tblContent" style="font-family:Courier New;font-size : 7pt;overflow:auto;width:100%;height:100px;border-style:solid;border-width:1px;padding:0px">
+	<div class="tblContent" style="font-family:Courier New;font-size : 7pt;overflow:auto;width:400;height:100px;border-style:solid;border-width:1px;padding:0px">
     <cfset arr=getClasspath()>
     <cfloop from="1" to="#arrayLen(arr)#" index="line">
     <span style="background-color:###line mod 2?'d2e0ee':'ffffff'#;display:block;padding:1px 5px 1px 5px ;">#arr[line]#</span>
@@ -216,174 +311,111 @@ Error Output --->
    </div>
 	</td> 
 </tr>
+--->
+</table>
 
 
+</td>
+<td valign="top" width="40%">
+
+<!--- Update Infoupdate.cfm?#session.urltoken#&adminType=#request.admintype# --->
+<script>
+function doNothing(){return true;}
+</script>
+<cfdiv onBindError="doNothing" bind="url:update.cfm?adminType=#request.admintype#" bindonload="true" id="updateInfo"/>
 
 
-<cffunction name="printMemoryOld" output="yes">
-	<cfargument name="type" type="string" required="yes">
-	
-    <cfset var usage=getmemoryUsage(arguments.type)>
-    
-    <cfset height=100>
-    <cfset width=10>
-       	<table cellpadding="0" cellspacing="0"> 
-        <tr>  
-        <cfloop query="usage">
-        	<cfset _used=int(height/usage.max*usage.used)>
-        	<cfset _free=height-_used>
-   			<td>
-            <table class="tbl" height="#height#" title="#usage.name# ">
-            <cfif usage.currentrow EQ 1>
-            
-            </cfif>
-            <tr>
-                <td class="tblContent" height="#_free#"><cfmodule template="tp.cfm" width="#width#" height="#_free#" /></td>
-            </tr>
-            <tr>
-                <td class="tblHead" style="background-color:red" height="#_used#"><cfmodule template="tp.cfm" width="#width#" height="#_used#" /></td>
-            </tr>
-            </table>
-            </td>
-    	</cfloop>
-        </tr>
-        </table>
-</cffunction>
-
-<cfset pool["Par Eden Space"]="The pool from which memory is initially allocated for most objects.">
-
-<cfset pool["Par Survivor Space"]="The pool containing objects that have survived the garbage collection of the Eden space.">
-<cfset pool["CMS Old Gen"]="The pool containing objects that have existed for some time in the survivor space.">
-<cfset pool["CMS Perm Gen"]="The pool containing all the reflective data of the virtual machine itself, such as class and method objects. With Java VMs that use class data sharing, this generation is divided into read-only and read-write areas.">
-<cfset pool["Code Cache"]="The HotSpot Java VM also includes a code cache, containing memory that is used for compilation and storage of native code.">
-
-<cfset pool["Eden Space"]=pool["Par Eden Space"]>
-<cfset pool["PS Eden Space"]=pool["Par Eden Space"]>
-
-<cfset pool["Survivor Space"]=pool["Par Survivor Space"]>
-<cfset pool["PS Survivor Space"]=pool["Par Survivor Space"]>
-
-<cfset pool["Perm Gen"]=pool["CMS Perm Gen"]>
-
-<cfset pool["Tenured Gen"]=pool["CMS Old Gen"]>
-<cfset pool["PS Old Gen"]=pool["CMS Old Gen"]>
-
-
-
-<cffunction name="printMemory" output="yes">
-	<cfargument name="usage" type="query" required="yes">
-	
-    <cfset height=6>
-    <cfset width=200>
-       	<table cellpadding="0" cellspacing="0">
-        <cfloop query="usage">
-        	<cfset _used=int(width/usage.max*usage.used)>
-        	<cfset _free=width-_used> 
-            
-			<cfset pused=int(100/usage.max*usage.used)>
-        	<cfset pfree=100-pused> 
-            
-            
-            
-        	<tr>  
-   				<td>
-            	<table class="tbl" height="#height#" width="#width#">
-                
-                <tr>
-                	<td colspan="2"><cfmodule template="tp.cfm" height="1" width="#width#" /></td>
-                </tr>
-                <tr>
-                    <td  colspan="2"><b>#usage.name#</b><cfif StructKeyExists(pool,usage.name)><br /><span class="comment">#pool[usage.name]#</span></cfif></td>
-                </tr>
-                <tr>
-                    <td class="tblHead" style="background-color:##eee2d4" height="#height#" width="#_used#"><cfmodule template="tp.cfm" height="#height#" width="#_used#" /></td>
-                    <td class="tblContent" style="background-color:##d6eed4" height="#height#" width="#_free#"><cfmodule template="tp.cfm" height="#height#" width="#_free#" /></td>
-                </tr>
-                </table>
-                </td>
-             </tr>
-             
-             <tr>
-                <td>
-                <table class="tbl">
-                <colgroup>
-                	<col width="30" />
-                	<col width="100" />
-                </colgroup>
-              
-                 <tr>
-                    <td class="tblHead" style="background-color:##eee2d4"><span class="comment">Used</span></td>
-                    <td ><span class="comment">#int(usage.used/1024)#kb (#pused#%)</span></td>
-                 
-                    <td class="tblContent" style="background-color:##d6eed4" ><span class="comment">Free</span></td>
-                    <td ><span class="comment">#int((usage.max-usage.used)/1024)#kb (#pfree#%)</span></td>
-                </tr>
-                <tr>
-                	<td colspan="2"><cfmodule template="tp.cfm" height="2" width="1" /></td>
-                </tr>
-                </table>
-                </td>
-        	</tr>
-    	</cfloop>
-        </table>
-</cffunction>
-
-<cfset total=query(
-	name:["Total"],
-	type:[""],
-	used:[server.java.totalMemory-server.java.freeMemory],
-	max:[server.java.totalMemory],
-	init:[0]
-)>
-<cfif request.admintype EQ "server">
+<!--- Memory Usage --->
 <cftry>
 <cfsavecontent variable="memoryInfo">
+
+<table class="tbl" width="100%">
+
 <tr>
-	<td colspan="2">&nbsp;<br />
-    <h2>Memory</h2>
- 
-The JVM (Java Virtual Machine) has a heap that is the runtime data area from which memory for all objects are allocated.
-The heap size may be configured with the following VM options:
-<li>Xmx{size} - to set the maximum Java heap size
-<li>Xms{size} - to set the initial Java heap size
-<br />
-<br />
-
-Also, the JVM has memory other than the heap, referred to as non-heap memory. It stores all cfc/cfm templates, java classes, interned Strings and meta-data.<br />
-
-The abnormal growth of non-heap memory mostly indicates that Railo has to load many cfc/cfm templates.
-
-If indeed, the application needs that much non-heap memory and the default maximum size of 64 Mb is not enough, you may enlarge the maximum size with the help of -XX:MaxPermSize VM option. For example, -XX:MaxPermSize=128m sets the size of 128 Mb.
-
-    
-    </td>
+	<td><h2>Memory Usage</h2></td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">Heap</td>
 	<td class="tblContent">
         <cfset printMemory(getmemoryUsage("heap"))>
     </td>
 </tr>
 <tr>
-	<td class="tblHead" width="150">Non-Heap</td>
 	<td class="tblContent">
         <cfset printMemory(getmemoryUsage("non_heap"))>
     </td>
 </tr>
-<!---
-<tr>
-	<td class="tblHead" width="150">Total</td>
-	<td class="tblContent">
-        <cfset printMemory(total)>
-    </td>
-</tr>
---->
 </cfsavecontent>
 #memoryInfo#
 <cfcatch></cfcatch>
 </cftry>
-</cfif>
 </table>
+
+
+
+<!--- Support --->
+<table class="tbl" width="100%">
+<tr>
+	<td colspan="2"><h2>#stText.Overview.Support#</h2></td>
+</tr>
+<tr>
+	<td class="tblContent" colspan="2">
+    
+    <!--- Professional --->
+    <a href="http://www.getrailo.com/index.cfm/services/support/" target="_blank">#stText.Overview.Professional#</a><br />
+    <span class="comment">#stText.Overview.ProfessionalDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    <!--- Mailing list --->
+    <a href="http://groups.google.com/group/railo" target="_blank">#stText.Overview.Mailinglist#</a><br />
+    <span class="comment">#stText.Overview.MailinglistDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    <!--- Book --->
+    <a href="http://groups.google.com/group/railo" target="_blank">#stText.Overview.book#</a><br />
+    <span class="comment">#stText.Overview.bookDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    
+    <!--- <a href="http://www.linkedin.com/e/gis/71368/0CF7D323BBC1" target="_blank">Linked in</a><br /><br />--->
+    
+    <!--- Jira --->
+    <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">#stText.Overview.issueTracker#</a><br />
+    <span class="comment">#stText.Overview.bookDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    <!--- Blog --->
+    <a href="http://www.railo-technologies.com/blog/" target="_blank">#stText.Overview.blog#</a><br />
+    <span class="comment">#stText.Overview.bookDesc#</span><br /><cfmodule template="tp.cfm" height="6" width="1" /><br />
+    
+    
+    
+    <!--- Twitter --->
+    <a href="https://twitter.com/##!/railo" target="_blank">#stText.Overview.twitter#</a><br />
+    <span class="comment">#stText.Overview.twitterDesc#</span>
+    
+    </td>
+</tr>
+</table>
+
+
+
+</td>
+</tr>
+</table>
+<table class="tbl" width="100%">
+
+<tr>
+	<td><h2>Classpath</h2></td>
+</tr>
+<tr>
+	<td class="tblContent">
+    	
+	<div class="tblContent" style="font-family:Courier New;font-size : #fullMode?9:8#pt;overflow:auto;width:100%;height:100px;border-style:solid;border-width:1px;padding:0px">
+    <cfset arr=getClasspath()>
+    <cfloop from="1" to="#arrayLen(arr)#" index="line">
+    <span style="background-color:###line mod 2?'d2e0ee':'ffffff'#;display:block;padding:1px 5px 1px 5px ;">#arr[line]#</span>
+    </cfloop>
+   </div>
+	</td> 
+</tr>
+</table>
+
 
 <br><br>
 
@@ -406,7 +438,7 @@ If indeed, the application needs that much non-heap memory and the default maxim
 	<td class="tblHead" width="220">#stText.Overview.contexts.webroot#</td>
 	<td class="tblHead" width="220">#stText.Overview.contexts.config_file#</td>
 </tr>
-<cfform action="#request.self#" method="post">
+<cfform onerror="customError" action="#request.self#" method="post">
 <cfloop query="rst">
 <input type="hidden" name="hash_#rst.currentrow#" value="#rst.hash#"/>
 <tr>
@@ -431,36 +463,7 @@ If indeed, the application needs that much non-heap memory and the default maxim
  
 
 
-<table class="tbl">
-<tr>
-	<td colspan="2"><h2>#stText.Overview.Support#</h2></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.Professional#</td>
-	<td class="tblContent"><a href="http://www.getrailo.com/index.cfm/services/support/" target="_blank">Support by Railo Technologies</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.Mailinglist_en#</td>
-	<td class="tblContent"><a href="http://groups.google.com/group/railo" target="_blank">groups.google.com.railo</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.Mailinglist_de#</td>
-	<td class="tblContent"><a href="http://de.groups.yahoo.com/group/railo/" target="_blank">de.groups.yahoo.com.railo</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">Linked in</td>
-	<td class="tblContent"><a href="http://www.linkedin.com/e/gis/71368/0CF7D323BBC1" target="_blank">Linked in</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.issueTracker#</td>
-	<td class="tblContent"><a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">jira.jboss.org.railo</a></td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Overview.blog#</td>
-	<td class="tblContent"><a href="http://www.railo-technologies.com/blog/" target="_blank">railo-technologies.com.blog</a></td>
-</tr>
 
-</table>
 <!---
 <cfif request.admintype EQ "server">
 	<h2>#stText.Overview.LanguageSupport#</h2>

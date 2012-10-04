@@ -2,19 +2,13 @@ package railo.transformer.bytecode.statement.tag;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.visitor.IfVisitor;
 
 public final class TagScript extends TagBase {
 	
-	/**
-	 * Constructor of the class
-	 * @param tag
-	 */
-	public TagScript(int line) {
-		super(line);
-	}
-	public TagScript(int sl,int el) {
-		super(sl,el);
+	public TagScript(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**

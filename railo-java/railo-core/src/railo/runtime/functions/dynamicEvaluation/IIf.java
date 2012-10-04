@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function iif
+ * Implements the CFML Function iif
  */
 package railo.runtime.functions.dynamicEvaluation;
 

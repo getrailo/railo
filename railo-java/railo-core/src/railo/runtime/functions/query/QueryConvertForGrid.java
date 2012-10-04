@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function querysetcell
+ * Implements the CFML Function querysetcell
  */
 package railo.runtime.functions.query;
 

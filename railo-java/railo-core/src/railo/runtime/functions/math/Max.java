@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function max
+ * Implements the CFML Function max
  */
 package railo.runtime.functions.math;
 

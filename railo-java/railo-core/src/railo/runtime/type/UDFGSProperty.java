@@ -40,13 +40,13 @@ public abstract class UDFGSProperty extends UDFImpl {
 				rtnType,
 				rtnFormat,
 				false,
-				false,
 				"public",
 				"",
 				"",
 				"",
 				Boolean.FALSE,
 				Boolean.FALSE,
+				0L,
 				new StructImpl()
 				
 		));
@@ -56,39 +56,39 @@ public abstract class UDFGSProperty extends UDFImpl {
 		this.component=component;
 	}
 
-	private static UDFProperties UDFProperties(PageSource pageSource,
+	private static UDFPropertiesImpl UDFProperties(PageSource pageSource,
 	        FunctionArgument[] arguments,
 			int index,
 	        String functionName, 
 	        short returnType, 
 	        String strReturnFormat, 
 	        boolean output, 
-	        boolean async, 
 	        String strAccess, 
 	        String displayName, 
 	        String description, 
 	        String hint, 
 	        Boolean secureJson,
 	        Boolean verifyClient,
+	        long cachedWithin,
 	        StructImpl meta) {
 		try {
-			return new UDFProperties( pageSource,
+			return new UDFPropertiesImpl( pageSource,
 			        arguments,
 					 index,
 			         functionName, 
 			         returnType, 
 			         strReturnFormat, 
-			         output, 
-			         async, 
+			         output,
 			         ComponentUtil.toIntAccess(strAccess), 
 			         displayName, 
 			         description, 
 			         hint, 
 			         secureJson,
 			         verifyClient,
+			         cachedWithin,
 			         meta);
 		} catch (ExpressionException e) {
-			return new UDFProperties();
+			return new UDFPropertiesImpl();
 		}
 	}
 
@@ -195,7 +195,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
-		return UDFImpl.toDumpData(pageContext, maxlevel, properties, this);
+		return UDFImpl.toDumpData(pageContext, maxlevel, properties, this,false);
 	}
 	
 	/**
@@ -209,7 +209,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	
 
 	final Object cast(FunctionArgument arg,Object value, int index) throws PageException {
-		if(Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
+		if(value==null || Decision.isCastableTo(arg.getType(),arg.getTypeAsString(),value)) 
 			return value;
 		throw new UDFCasterException(this,arg,value,index);
 	}

@@ -1,5 +1,6 @@
 package railo.runtime.config;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Map;
@@ -8,6 +9,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.xml.sax.SAXException;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.Log;
@@ -17,6 +19,7 @@ import railo.commons.io.log.LogConsole;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lock.KeyLock;
 import railo.runtime.CFMLFactoryImpl;
@@ -27,7 +30,8 @@ import railo.runtime.PageContext;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.compiler.CFMLCompilerImpl;
-import railo.runtime.engine.CFMLEngineImpl;
+import railo.runtime.debug.DebuggerPool;
+import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
@@ -35,9 +39,14 @@ import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
+import railo.runtime.type.scope.Cluster;
+import railo.transformer.library.function.FunctionLibException;
+import railo.transformer.library.tag.TagLibException;
 
 /**
  * Web Context
@@ -55,7 +64,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	private MappingImpl serverFunctionMapping;
 	private KeyLock<String> contextLock;
 	private GatewayEngineImpl gatewayEngine;
-    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");
+    private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
+    private DebuggerPool debuggerPool;
+	
 
     //private File deployDirectory;
 
@@ -141,13 +152,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     /**
      * @see railo.runtime.config.ConfigImpl#getConfigServerImpl()
      */
-    public ConfigServerImpl getConfigServerImpl() {
-        return configServer;
-    }
-    
-
-    public ConfigServer getConfigServer() {
-    	//throw new PageRuntimeException(new SecurityException("access on server config without password denied"));
+    protected ConfigServerImpl getConfigServerImpl() {
         return configServer;
     }
     
@@ -162,7 +167,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return configServer;
     }
     
-    // FUTURE
     public String getServerId() {
         return configServer.getId();
     }
@@ -237,7 +241,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	
 	 public Page getBaseComponentPage(PageContext pc) throws PageException {
 	        if(baseComponentPage==null) {
-	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource(pc)).loadPage(pc,this);
+	            baseComponentPage=((PageSourceImpl)getBaseComponentPageSource(pc)).loadPage(pc);
 				
 	        }
 	        return baseComponentPage;
@@ -262,11 +266,11 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    	}
 			return serverFunctionMapping;
 		}
-	    private Map applicationMappings=new ReferenceMap();
+	    private Map<String,Mapping> applicationMappings=new ReferenceMap();
 		private TagHandlerPool tagHandlerPool=new TagHandlerPool();
 		public Mapping getApplicationMapping(String virtual, String physical) {
 			String key=virtual.toLowerCase()+physical.toLowerCase();
-			Mapping m=(Mapping) applicationMappings.get(key);
+			Mapping m= applicationMappings.get(key);
 			if(m==null){
 				m=new MappingImpl(this,
 					virtual,
@@ -276,10 +280,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 				applicationMappings.put(key, m);
 			}
 			return m;
-		}
-
-		public CFMLEngineImpl getCFMLEngineImpl() {
-			return getConfigServerImpl().getCFMLEngineImpl();
 		}
 
 		public String getLabel() {
@@ -336,48 +336,23 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	    public void setGatewayLogger(LogAndSource gatewayLogger) {
 	    	this.gatewayLogger=gatewayLogger;
 	    }
-		/* *
-		 * this is a config web that reflect the configServer, this allows to run cfml code on server level
-		 * @param gatewayEngine 
-		 * @return
-		 * @throws PageException
-		 * /
-		public ConfigWeb createGatewayConfig(GatewayEngineImpl gatewayEngine) {
-			QueryCacheSupport cqc = QueryCacheSupport.getInstance(this);
-			CFMLEngineImpl engine = getConfigServerImpl().getCFMLEngineImpl();
-			CFMLFactoryImpl factory = new CFMLFactoryImpl(engine,cqc);
-			
-			ServletContextDummy sContext = new ServletContextDummy(
-					this,
-					getRootDirectory(),
-					new StructImpl(),
-					new StructImpl(),
-					1,1);
-			ServletConfigDummy sConfig = new ServletConfigDummy(sContext,"CFMLServlet");
-			ConfigWebImpl cwi = new ConfigWebImpl(
-					factory,
-					getConfigServerImpl(),
-					sConfig,
-					getConfigDir(),
-					getConfigFile(),true);
-			cqc.setConfigWeb(cwi);
-			try {
-				ConfigWebFactory.createContextFiles(getConfigDir(),sConfig);
-		        ConfigWebFactory.load(getConfigServerImpl(), cwi, ConfigWebFactory.loadDocument(getConfigFile()),true);
-		        ConfigWebFactory.createContextFilesPost(getConfigDir(),cwi,sConfig,true);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			cwi.setGatewayEngine(gatewayEngine);
-			
-			//cwi.setGatewayMapping(new MappingImpl(cwi,"/",gatewayEngine.getCFCDirectory().getAbsolutePath(),null,false,true,false,false,false));
-			return cwi;
-		}*/
 
 		public TagHandlerPool getTagHandlerPool() {
 			return tagHandlerPool;
+		}
+
+		public DebuggerPool getDebuggerPool() {
+			if(debuggerPool==null){
+				Resource dir = getConfigDir().getRealResource("debugger");
+				dir.mkdirs();
+				debuggerPool=new DebuggerPool(dir);
+			}
+			return debuggerPool;
+		}
+		
+
+		public ThreadQueueImpl getThreadQueue() {
+			return configServer.getThreadQueue();
 		}
 
 		@Override
@@ -389,5 +364,80 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public boolean getLoginCaptcha() {
 			return configServer.getLoginCaptcha();
 		}
+		
+		@Override
+		public Resource getSecurityDirectory(){
+			return configServer.getSecurityDirectory();
+		}
+		
+		@Override
+		public boolean isMonitoringEnabled(){
+			return configServer.isMonitoringEnabled();
+		}
+		
 
+		
+		public RequestMonitor[] getRequestMonitors(){
+			return configServer.getRequestMonitors();
+		}
+		
+		public RequestMonitor getRequestMonitor(String name) throws PageException{
+			return configServer.getRequestMonitor(name);
+		}
+		
+		public IntervallMonitor[] getIntervallMonitors(){
+			return configServer.getIntervallMonitors();
+		}
+
+		public IntervallMonitor getIntervallMonitor(String name) throws PageException{
+			return configServer.getIntervallMonitor(name);
+		}
+		
+		@Override
+		public void checkPermGenSpace(boolean check) {
+			configServer.checkPermGenSpace(check);
+		}
+
+		@Override
+		public Cluster createClusterScope() throws PageException {
+			return configServer.createClusterScope();
+		}
+
+		@Override
+		public boolean hasServerPassword() {
+			return configServer.hasPassword();
+		}
+		
+		public void setPassword(boolean server, String passwordOld, String passwordNew) 
+			throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
+	    	ConfigImpl config=server?configServer:this;
+	    	    
+		    if(!config.hasPassword()) { 
+		        config.setPassword(passwordNew);
+		        
+		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordNew);
+		        admin.setPassword(passwordNew);
+		        admin.store();
+		    }
+		    else {
+		    	ConfigWebUtil.checkGeneralWriteAccess(config,passwordOld);
+		        ConfigWebAdmin admin = ConfigWebAdmin.newInstance(config,passwordOld);
+		        admin.setPassword(passwordNew);
+		        admin.store();
+		    }
+		}
+
+		@Override
+		public Resource getConfigServerDir() {
+			return configServer.getConfigDir();
+		}
+
+		public Map<String, String> getAllLabels() {
+			return configServer.getLabels();
+		}
+
+		@Override
+		public boolean allowRequestTimeout() {
+			return configServer.allowRequestTimeout();
+		}
 }

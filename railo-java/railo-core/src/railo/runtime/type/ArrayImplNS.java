@@ -2,7 +2,9 @@ package railo.runtime.type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -10,7 +12,6 @@ import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -20,13 +21,15 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.comparator.NumberComparator;
 import railo.runtime.type.comparator.TextComparator;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
 
 
 
 /**
- * cold fusion array object
+ * CFML array object
  */
 public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	
@@ -313,36 +316,21 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	 */
 	public Collection.Key[] keys() {
 		
-		ArrayList lst=new ArrayList();
+		ArrayList<Collection.Key> lst=new ArrayList<Collection.Key>();
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
 			count++;
 			if(o!=null) lst.add(KeyImpl.getInstance(count+""));
 		}
-		return (Collection.Key[]) lst.toArray(new Collection.Key[lst.size()]);
-	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		
-		ArrayList lst=new ArrayList();
-		int count=0;
-		for(int i=offset;i<offset+size;i++) {
-			Object o=arr[i];
-			count++;
-			if(o!=null) lst.add(count+"");
-		}
-		return (String[]) lst.toArray(new String[lst.size()]);
+		return  lst.toArray(new Collection.Key[lst.size()]);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Array#intKeys()
 	 */
 	public int[] intKeys() {
-		ArrayList lst=new ArrayList();		
+		ArrayList<Integer> lst=new ArrayList<Integer>();		
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
@@ -353,7 +341,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		int[] ints=new int[lst.size()];
 		
 		for(int i=0;i<ints.length;i++){
-			ints[i]=((Integer)lst.get(i)).intValue();
+			ints[i]=lst.get(i).intValue();
 		}
 		return ints;
 	}
@@ -552,8 +540,14 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		}
 		if(ee!=null) {
 			throw new ExpressionException("can only sort arrays with simple values",ee.getMessage());
-		}
-			
+		}	
+	}
+
+	@Override
+	public synchronized void sort(Comparator comp) throws PageException {
+		if(getDimension()>1)
+			throw new ExpressionException("only 1 dimensional arrays can be sorted");
+		Arrays.sort(arr,offset,offset+size,comp);	
 	}
 	
 	/**
@@ -584,7 +578,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
+		DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 		table.setTitle("Array");
 		
 		int length=size();
@@ -630,31 +624,37 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	public Collection duplicate(boolean deepCopy) {
 		ArrayImplNS arr=new ArrayImplNS();
 		arr.dimension=dimension;
-		String[] keys=this.keysAsString();
+		Collection.Key[] keys=this.keys();
 		
 		ThreadLocalDuplication.set(this, arr);
 		try {
+			Collection.Key k;
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				arr.set(key,Duplicator.duplicate(this.get(key,null),deepCopy));
+				k=keys[i];
+				arr.set(k,Duplicator.duplicate(this.get(k,null),deepCopy));
 			}
 		} 
 		catch (ExpressionException e) {}
 		finally{
-			ThreadLocalDuplication.remove(this);
+			// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
 		}
 		
 		return arr;
 	}
 	
-
-	
-
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 	
 	public Iterator iterator() {

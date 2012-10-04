@@ -2,7 +2,7 @@
 /**
 * represent a cfform 
 */
-function RailoForms(form) {
+function RailoForms(form,onError) {
 	var pub=this;
 	var prv={};
 	
@@ -40,18 +40,20 @@ function RailoForms(form) {
     pub.VALIDATE_GUID=21;
     pub.VALIDATE_MAXLENGTH=22;
     pub.VALIDATE_NOBLANKS=23;
+    pub.VALIDATE_CFC=24;
     pub.VALIDATE_RANGE=16;
 	
 	prv.form=form;
+	prv.onError=onError;
 	prv.elements={};
 	prv.errors=[];
 			
 	/*
 	* adds a input definition to the for Object
 	*/
-	pub.addInput=function(name,required,type,validate,pattern,message,onerror,onvalidate,rangeMin,rangeMax,maxLength) {
+	pub.addInput=function(name,required,type,validate,pattern,message,onerror,onvalidate,rangeMin,rangeMax,maxLength,validateCFC) {
 		if((rangeMin || rangeMax) && validate!=pub.VALIDATE_FLOAT && validate!=pub.VALIDATE_INTEGER)validate=pub.VALIDATE_FLOAT;
-		prv.elements[name]={'maxlength':maxLength,'name':name,'required':required,'type':type,'validate':validate,'pattern':pattern,'message':message,'onerror':onerror,'onvalidate':onvalidate,'rangeMin':rangeMin,'rangeMax':rangeMax};
+		prv.elements[name]={'maxlength':maxLength,'name':name,'required':required,'type':type,'validate':validate,'pattern':pattern,'message':message,'onerror':onerror,'onvalidate':onvalidate,'rangeMin':rangeMin,'rangeMax':rangeMax,'validateCFC':validateCFC};
 	}
 	
 	/*
@@ -74,32 +76,40 @@ function RailoForms(form) {
 		}
 		if(prv.errors.length) {
 			var _errors=[];
-			for(var i=0;i<prv.errors.length;i++) {
+			var _form=document.forms[prv.form]
+            for(var i=0;i<prv.errors.length;i++) {
 				var err=prv.errors[i];
 				var el=err.element;
-				if(el.onerror && typeof(el.onerror) == "string" && typeof(eval(el.onerror)) == "function") {
-						var func=eval(el.onerror);
-                    var _form=document.forms[prv.form]
-                    var _input=_form[el.name];				
-                    var v=_input.value;
-						if(!v && err.value)v='';
+				var _input=_form[el.name];				
+                var v=_input.value;
+                if(!v && err.value)v='';
+                if(el.onerror && typeof(el.onerror) == "string" && typeof(eval(el.onerror)) == "function") {
+                	var func=eval(el.onerror);
                     func(_form,_input.name,v,err.error);
 				}		
                 else {
-                	_errors[_errors.length]=err.error;
+                	_errors[_errors.length]={form:_form,name:_input.name,value:v,error:err.error};
                 }
-					}
-            if(_errors.length==1)
-            	alert(_errors[0]);
-            else if(_errors.length>1) {
-            	var msg="";
-            	for(var x=0;x<_errors.length;x++) {
-                	msg+="- "+_errors[x]+"\n";
-				}		
-                alert(msg);
 			}
-			
-			
+            
+            if(_errors.length>0) {
+                // general on error
+                if(prv.onError && typeof(prv.onError) == "string" && typeof(eval(prv.onError)) == "function") {
+                	var func=eval(prv.onError);
+                    func(_errors);
+                }
+                else {                
+                    if(_errors.length==1)
+                        alert(_errors[0].error);
+                    else if(_errors.length>1) {
+                        var msg="";
+                        for(var x=0;x<_errors.length;x++) {
+                            msg+="- "+_errors[x].error+"\n";
+                        }
+                        alert(msg);
+                    }
+                }
+			}
 			prv.errors=[];
 			return false;
 		}
@@ -185,8 +195,16 @@ function RailoForms(form) {
 		
 	}
 	
+    prv.validate=function(el,value) {
+    	try{
+        	prv._validate(el,value);
+        }
+        catch(e){
+        	alert(e);
+        }
+    }
 	
-	prv.validate=function(el,value) {
+	prv._validate=function(el,value) {
 		var v=el.validate;
 		
         
@@ -198,7 +216,7 @@ function RailoForms(form) {
 				if(func(f,i,value));
 				else {
 					if(el.message && el.message.length>0)prv.addError(el,el.message);
-					else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid value');
+					else prv.addError(el,'value ('+value+') of field '+el.name+' has an invalid value');
 					
 				}
 			}
@@ -226,7 +244,57 @@ function RailoForms(form) {
 		else if(v==pub.VALIDATE_CREDITCARD) 			prv.validateCreditCard(el,value);
 		else if(v==pub.VALIDATE_SOCIAL_SECURITY_NUMBER)	prv.validateSocialSecurityNumber(el,value);
 		else if(v==pub.VALIDATE_REGULAR_EXPRESSION)		prv.validateRegularExpression(el,value);
+		else if(v==pub.VALIDATE_CFC)					prv.validateCFC(el,value);
 		
+	}
+	
+	/*
+	* check if value contains a time value or not (hh:mm:ss)
+	* @param el Element with all data to the input field
+	* @param value value from input field
+	*/
+	prv.validateCFC=function(el,value) {
+    	var id=el.validateCFC.id;
+    	var funcName=el.validateCFC.funcName;
+        var args=el.validateCFC.args;
+        
+        // do el lower case
+        var ellc={};
+        for(var key in el){
+        	ellc[key.toLowerCase()]=el[key];
+        }
+        
+        
+        // populateArgs
+        var _args=[];
+        for(var i=0;i < args.length;i++){
+        	if(args[i]=="value")
+            	_args[i]=value;
+            else if(ellc[args[i].toLowerCase()])
+            	_args[i]=ellc[args[i].toLowerCase()];
+            else {
+            	try{
+            		_args[i]=eval(args[i]);
+                }
+                catch(e){
+                	_args[i]=args[i];
+                }
+            }
+        }
+        
+        var clazz=eval(id);
+    	var validator = new clazz(); 
+    	try{
+        	var answer=validator[funcName].apply(validator, Array.prototype.slice.call(_args, 0));   
+            if(answer && answer!="") 
+        		prv.addError(el,answer);
+        }
+        catch(e){
+        	prv.addError(el,"error while calling remote functionn "+funcName+":"+e);
+        }
+        
+        
+        
 	}
 	
 	/*
@@ -356,7 +424,7 @@ function RailoForms(form) {
 		else {
 			if(el.rangeMin && el.rangeMin>nbr || el.rangeMax && el.rangeMax<nbr) {
 				if(el.message && el.message.length>0)prv.addError(el,el.message);
-				else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
+				else prv.addError(el,'value ('+value+') of field '+el.name+' has an invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
 			}
 		}
 	}
@@ -375,7 +443,7 @@ function RailoForms(form) {
 		else {
 			if(el.rangeMin && el.rangeMin>nbr || el.rangeMax && el.rangeMax<nbr) {
 				if(el.message && el.message.length>0)prv.addError(el,el.message);
-				else prv.addError(el,'value ('+value+') of field '+el.name+' has a invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
+				else prv.addError(el,'value ('+value+') of field '+el.name+' has an invalid range, valid range is from '+el.rangeMin+' to '+el.rangeMax);
 			}
 		}
 	}

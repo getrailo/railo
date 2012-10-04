@@ -39,7 +39,7 @@ public final class Log extends TagImpl {
 	/**  */
 	private String file;
 
-	/** Specifies whether to log the application name if one has been specified in a cfapplication tag. */
+	/** Specifies whether to log the application name if one has been specified in a application tag. */
 	private boolean application;
 	private String charset=null;
 	
@@ -106,7 +106,7 @@ public final class Log extends TagImpl {
 	**/
 	public void setTime(boolean useTime) throws ApplicationException	{
 		if(useTime) return;
-		DeprecatedUtil.tagAttribute("Log", "time");
+		DeprecatedUtil.tagAttribute(pageContext,"Log", "time");
 	    throw new ApplicationException("attribute [time] for tag [log] is deprecated, only the value true is allowed");
 	}
 
@@ -131,7 +131,7 @@ public final class Log extends TagImpl {
 	**/
 	public void setDate(boolean useDate) throws ApplicationException	{
 		if(useDate) return;
-		DeprecatedUtil.tagAttribute("Log", "date");
+		DeprecatedUtil.tagAttribute(pageContext,"Log", "date");
 	    throw new ApplicationException("attribute [date] for tag [log] is deprecated, only the value true is allowed");
 	}
 
@@ -145,12 +145,12 @@ public final class Log extends TagImpl {
 	**/
 	public void setThread(boolean thread) throws ApplicationException	{
 		if(thread) return;
-		DeprecatedUtil.tagAttribute("Log", "thread");
+		DeprecatedUtil.tagAttribute(pageContext,"Log", "thread");
 	    throw new ApplicationException("attribute [thread] for tag [log] is deprecated, only the value true is allowed");
 	}
 
 	/** set the value application
-	*  Specifies whether to log the application name if one has been specified in a cfapplication tag.
+	*  Specifies whether to log the application name if one has been specified in a application tag.
 	* @param application value to set
 	**/
 	public void setApplication(boolean application)	{

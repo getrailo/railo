@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structsort
+ * Implements the CFML Function structsort
  */
 package railo.runtime.functions.struct;
 
@@ -13,11 +13,13 @@ import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.comparator.ExceptionComparator;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
+import railo.runtime.type.util.CollectionUtil;
 
 public final class StructSort implements Function {
 	public static Array call(PageContext pc , Struct base) throws PageException {
@@ -37,7 +39,7 @@ public final class StructSort implements Function {
 		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
 		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
 		
-		String[] keys = base.keysAsString();
+		Collection.Key[] keys = CollectionUtil.keys(base);
 		SortRegister[] arr=new SortRegister[keys.length];
 		boolean hasSubDef=pathToSubElement!=null;
 		
@@ -73,7 +75,7 @@ public final class StructSort implements Function {
 		
 		Array rtn=new ArrayImpl();
 		for(int i=0;i<arr.length;i++) {
-		    rtn.append(keys[arr[i].getOldPosition()]);
+		    rtn.append(keys[arr[i].getOldPosition()].getString());
 		}
 		return rtn;
 			

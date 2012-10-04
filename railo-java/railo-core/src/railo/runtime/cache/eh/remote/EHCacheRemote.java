@@ -13,6 +13,7 @@ import railo.runtime.cache.eh.remote.rest.RESTClient;
 import railo.runtime.cache.eh.remote.rest.sax.CacheConfiguration;
 import railo.runtime.cache.eh.remote.soap.Element;
 import railo.runtime.cache.eh.remote.soap.SoapClient;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.KeyImpl;
@@ -30,11 +31,11 @@ public class EHCacheRemote extends CacheSupport {
 	public EHCacheRemote() {	
 	}
 	
-	public static void init(ConfigWeb config,String[] cacheNames,Struct[] arguments) throws IOException {
+	public static void init(ConfigWeb config,String[] cacheNames,Struct[] arguments) {
 		
 	}
 
-	public void init(String name, Struct arguments) throws IOException {
+	public void init(Config config,String name, Struct arguments) throws IOException {
 		Cast caster = CFMLEngineFactory.getInstance().getCastUtil();
 		String strUrl=null;
 		

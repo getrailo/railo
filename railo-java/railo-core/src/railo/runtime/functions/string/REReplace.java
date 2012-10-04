@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function rereplace
+ * Implements the CFML Function rereplace
  */
 package railo.runtime.functions.string;
 

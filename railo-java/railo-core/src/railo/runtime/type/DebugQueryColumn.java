@@ -3,6 +3,8 @@ package railo.runtime.type;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import railo.runtime.exp.DatabaseException;
 
 /**
@@ -90,7 +92,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		used=true;
 		return super.valueIterator();
 	}

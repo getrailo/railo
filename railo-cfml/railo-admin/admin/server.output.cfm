@@ -81,10 +81,10 @@ Redirtect to entry --->
 
 <!--- 
 Create Datasource --->
-<cfoutput><table class="tbl" width="740">
+<cfoutput><table class="tbl" width="100%">
 <colgroup>
-    <col width="250">
-    <col width="490">
+    <col width="230">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">#stText.setting[request.adminType]#</td>
@@ -92,7 +92,7 @@ Create Datasource --->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <!--- Supress Whitespace --->
 <tr>

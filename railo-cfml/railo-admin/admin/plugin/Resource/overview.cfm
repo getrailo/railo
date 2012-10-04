@@ -32,7 +32,7 @@ function selectAll(field) {
 <h2>#lang.listing#</h2>
 #lang.descListing#<br /><br />
 <table class="tbl">
-<cfform action="#action('delete')#" method="post">
+<cfform onerror="customError" action="#action('delete')#" method="post">
     <tr>
         <td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
             </td>

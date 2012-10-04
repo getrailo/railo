@@ -107,10 +107,10 @@ Create Datasource --->
 
 
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">
@@ -123,7 +123,7 @@ Create Datasource --->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <!---
 replaced with encoding output
 <tr>
@@ -191,7 +191,7 @@ replaced with encoding output
 	<td class="tblHead" width="150">#stText.Regional.TimeServer#</td>
 	<td class="tblContent"><span class="comment">#stText.Regional.TimeServerDescription#</span>
 	<cfif hasAccess>
-		<br /><cfinput type="text" name="timeserver" value="#regional.timeserver#" 
+		<cfinput type="text" name="timeserver" value="#regional.timeserver#" 
 			style="width:200px" required="no" message="#stText.Regional.TimeServerMissing#">
 		<br /><input type="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
 	<cfelse>

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraymin
+ * Implements the CFML Function arraymin
  */
 package railo.runtime.functions.query;
 
@@ -7,6 +7,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 
@@ -33,9 +34,9 @@ public final class QuerySlice implements Function {
 	}
 
 	private static Query get(Query qry, int from, int to) throws PageException {
-		String[] columns;
+		Collection.Key[] columns;
 		//print.out(from+"::"+to);
-		Query nq=new QueryImpl(columns=qry.getColumns(),0,qry.getName());
+		Query nq=new QueryImpl(columns=qry.getColumnNames(),0,qry.getName());
 		
 		int row=1;
 		for(int i=from;i<=to;i++) {nq.addRow();

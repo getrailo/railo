@@ -14,7 +14,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.List;
 
 /**
- * Implements the Cold Fusion Function compress
+ * Implements the CFML Function compress
  */
 public final class Compress implements Function {
     

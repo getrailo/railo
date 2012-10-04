@@ -13,6 +13,8 @@ import railo.commons.io.res.ResourceMetaData;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 
 
@@ -50,7 +52,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		return provider.getCore(parent,name);
 	}
 
-	private void removeCore() {
+	private void removeCore() throws IOException {
 		provider.removeCore(parent,name);
 	}
 	
@@ -113,7 +115,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		provider.read(this);
 		CacheResourceCore core = getCore();
 		if(core==null)
-			throw new IOException("can't remove resource ["+getPath()+"],resource does not exists");
+			throw new IOException("can't remove resource ["+getPath()+"],resource does not exist");
 		
 		Resource[] children = listResources();
 		if(children!=null && children.length>0) {
@@ -208,7 +210,11 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 		if(core.getType()!=CacheResourceCore.TYPE_DIRECTORY)
 			return null;
 		
-		return provider.getChildNames(getInnerPath());
+		try {
+			return provider.getChildNames(getInnerPath());
+		} catch (IOException e) {
+			throw new PageRuntimeException(Caster.toPageException(e));
+		}
 	}
 
 	/**
@@ -389,7 +395,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 	}
 	
 	public void setMode(int mode) throws IOException {
-		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exists");
+		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exist");
 		getCore().setMode(mode);
 	}
 	/**
@@ -405,7 +411,7 @@ public final class CacheResource extends ResourceSupport implements ResourceMeta
 	 * @see railo.commons.io.res.util.ResourceSupport#setAttribute(short, boolean)
 	 */
 	public void setAttribute(short attribute, boolean value) throws IOException {
-		if(!exists())throw new IOException("can't get attributes on resource ["+this+"], resource does not exists");
+		if(!exists())throw new IOException("can't get attributes on resource ["+this+"], resource does not exist");
 		int attr = getCore().getAttributes();
 		if(value) {
 			if((attr&attribute)==0) attr+=attribute;

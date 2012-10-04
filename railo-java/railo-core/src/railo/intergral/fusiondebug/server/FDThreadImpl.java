@@ -21,16 +21,12 @@ public class FDThreadImpl implements IFDThread {
 	private PageContextImpl pc;
 	private String name;
 	private FDControllerImpl engine;
-	private CFMLFactoryImpl factory;
-/*
-	public static List test(PageContextImpl pc){
-		return new FDThreadImpl(null,(CFMLFactoryImpl)pc.getConfig().getFactory(),"test",pc).getStack();
-	}
-*/
+	//private CFMLFactoryImpl factory;
+
 	
 	public FDThreadImpl(FDControllerImpl engine,CFMLFactoryImpl factory, String name, PageContextImpl pc) {
 		this.engine=engine;
-		this.factory=factory;
+		//this.factory=factory;
 		this.name=name;
 		this.pc=pc;
 	}

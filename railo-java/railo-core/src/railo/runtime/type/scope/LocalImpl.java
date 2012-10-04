@@ -1,8 +1,7 @@
 package railo.runtime.type.scope;
 
-import railo.runtime.type.Scope;
 
-public final class LocalImpl extends ScopeSupport implements Scope,LocalPro {// FUTURE create interface Local
+public final class LocalImpl extends ScopeSupport implements Scope,Local {
 
 	private boolean bind;
 	

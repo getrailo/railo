@@ -6,6 +6,7 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.StructSupport;
 
@@ -35,7 +36,7 @@ public final class CollectionStruct extends StructSupport implements ObjectWrap,
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return coll.duplicate(deepCopy);
+		return (Collection) Duplicator.duplicate(coll,deepCopy);
 	}
 	
 
@@ -58,13 +59,6 @@ public final class CollectionStruct extends StructSupport implements ObjectWrap,
 	 */
 	public Key[] keys() {
 		return coll.keys();
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return coll.keysAsString();
 	}
 
 	/**
@@ -102,11 +96,24 @@ public final class CollectionStruct extends StructSupport implements ObjectWrap,
 		return coll.size();
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return coll.keyIterator();
+	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return coll.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return coll.entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return coll.valueIterator();
 	}
 	
 

@@ -159,6 +159,7 @@
 	<data key="menu.server.label">Settings</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regional</data>
+	<data key="menu.server.compiler">Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
 	<data key="menu.server.application">Application</data>
@@ -184,12 +185,13 @@
 	<data key="menu.remote.clients">Clients</data>
 	<data key="menu.resources.label">Archives &amp;amp; Resources</data>
 	<data key="menu.resources.mappings">Mappings</data>
+	<data key="menu.resources.rest">Rest</data>
 	<data key="menu.resources.component">Component</data>
 	<data key="menu.resources.customtags">Custom tags</data>
 	<data key="menu.resources.cfx_tags">CFX tags</data>
-	<data key="menu.development.label">Development</data>
-	<data key="menu.monitor.label">Monitoring</data>
-	<data key="menu.development.debugging">Debugging</data>
+	<data key="menu.debugging.label">Debugging</data>
+	<data key="menu.debugging.logs">Logs</data>
+	<data key="menu.debugging.templates">Templates</data>
 	<data key="menu.security.label">Security</data>
 	<data key="menu.security.access">Access</data>
 	<data key="menu.security.password">Password</data>
@@ -197,6 +199,7 @@
 	<data key="menu.documentation.label">Documentation</data>
 	<data key="menu.documentation.tagRef">Tag Reference</data>
 	<data key="menu.documentation.funcRef">Function Reference</data>
+	<data key="menu.documentation.objRef">Object Reference</data>
 	<data key="charset.templatecharsetdescription">Default character set for templates (*.cfm and *.cfc files)</data>
 	<data key="charset.webcharsetdescription">Default character set for output streams, form-, url-, and cgi scope variables and reading/writing the header</data>
 	<data key="charset.webcharset">Web charset</data>
@@ -384,6 +387,7 @@
 	<data key="general.minuteerror">The field &quot;minute&quot; must contain a positive integer</data>
 	<data key="general.day">Day</data>
 	<data key="general.hours">Hours</data>
+	<data key="general.wait">Please wait...</data>
 	<data key="general.seconds">Seconds</data>
 	<data key="general.no">No</data>
 	<data key="general.days">Days</data>
@@ -413,7 +417,7 @@
 	<data key="search.last_update">Last update</data>
 	<data key="search.online">Online</data>
 	<data key="search.name">Name</data>
-	<data key="components.triggerdatamember">Magic functions</data>
+	<data key="components.triggerdatamember">Implicit notation</data>
 	<data key="components.componentlocalsearchdesc">Search relative to the caller directory for the component</data>
 	<data key="components.componentdumptemplate">Component &quot;dump&quot; template</data>
 	<data key="components.basecomponent">Base/Root Component</data>
@@ -441,6 +445,9 @@
 	<data key="components.triggerdatamemberdescription">If there is no accessible data member (property, element of the this scope) inside a component, Railo searches for available matching &amp;quot;getters&amp;quot; or &amp;quot;setters&amp;quot; for the requested property. The following example should clarify this behaviour. &amp;quot;somevar = myComponent.properyName&amp;quot;. If &amp;quot;myComponent&amp;quot; has no accessible data member named &amp;quot;propertyName&amp;quot;, Railo searches for a function member (method) named &amp;quot;getPropertyName&amp;quot;.</data>
 	<data key="components.physical">Resource</data>
 	<data key="components.trusted">Trusted</data>
+	<data key="components.componentDeepSearch">Search sub directories</data>
+	<data key="components.componentDeepSearchDesc">
+	Search for CFC in the sub directories of the defined "Addional Resources" below. this is not working for Archives!</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
@@ -564,6 +571,27 @@
 	<data key="scopes.standard">standard (CFML Default)</data>
 	<data key="scopes.domaincookiesdescription">Enable or disable domain cookies. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.applicationtimeout">Application timeout</data>
+	
+
+	
+	<data key="setting.compiler">Railo compiler settings, this affects how the Railo Compiler parses the source code. Changing this settings flushes all existing class files and triggers a recompilation.</data>
+<data key="setting.dotNotation">Dot notation</data>
+<data key="setting.dotNotationDesc">Convert all struct keys defined with "dot notation" to upper case (CFML Default) 
+or keep them in original case (according to the "bracket notation").
+Example:
+Convert to upper case:
+sct.dotNotation --> keyname: "DOTNOTATION"
+sct[""bracketNotation""] --> keyname: "bracketNotation"
+
+Keep original case:
+sct.dotNotation --> keyname: "dotNotation"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
+<data key="setting.dotNotationOriginalCase">Keep original case</data>
+	
+	
+
+	
 	<data key="setting.templatecache">Template Cache</data>
 	<data key="setting.templatecacheclear">Clear template cache</data>
 	<data key="setting.querycache">Query Cache</data>
@@ -617,6 +645,7 @@
 	<data key="buttons.verify">verify</data>
 	<data key="buttons.flush">flush</data>
 	<data key="buttons.stopstart">stop/start</data>
+	<data key="buttons.back">back</data>
 	<data key="buttons.previous">previous</data>
 	<data key="buttons.addarchive">assign archive to mapping</data>
 	<data key="buttons.cancel">cancel</data>
@@ -631,6 +660,7 @@
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">agree</data>
 	<data key="buttons.submit">submit</data>
+	<data key="buttons.stop">stop</data>
 	<data key="buttons.purge">purge</data>
 	<data key="buttons.ok">OK</data>
 	<data key="buttons.install">install</data>
@@ -796,6 +826,14 @@
 	<data key="settings.dbdatabasedesc">Name of the database to connect</data>
 	<data key="settings.dbuserdesc">The username for the database</data>
 	<data key="settings.datasourcedescriptionupdate">Update datasource connection</data>
+	
+	<data key="settings.dbtimezone">Timezone</data>
+	
+	<data key="settings.dbtimezoneDesc">
+When you define a date as a string (not with cfqueryparam) inside cfquery, there is normally no timezone information with it and the date string is based on the locale timezone. Therefore the database will interpret this date string based on it's own timezone.
+If the timezone of your Railo instance and your database is different, this can lead to problems. Because of that Railo now allows you to define a timezone for a specific datasource defintion. Be aware that you should only define a specific timezone, if you are a 100% sure that this timezone is used on the database server and it is different from the timezone of the Railo instance. This setting can be overwritten by the cfquery attribute "timezone".</data>
+	<data key="settings.dbtimezoneSame">Same as Railo Instance</data>
+	
 	<data key="settings.dbblobdesc">Enable binary large object retrieval (&lt;abbr title=&quot;binary large object&quot;&gt;BLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</data>
 	<data key="settings.dbpass">Password</data>
@@ -834,6 +872,9 @@
 	<data key="overview.installedtls">Installed tag&lt;br/&gt; libraries</data>
 	<data key="overview.bugreport">Bug report</data>
 	<data key="overview.issuetracker">Issue Tracker</data>
+	<data key="overview.issuetrackerDesc">If you think you've found a bug, please take the time to report it via our bug tracking system (JIRA on the JBoss community site).</data>
+	<data key="overview.book">Book (Railo 3 Beginner's Guide)</data>
+	<data key="overview.bookDesc">A complete guide to developing an application with Railo from start to finish.</data>
 	<data key="overview.datetime">Railo date/time</data>
 	<data key="overview.forum">Forum</data>
 	<data key="overview.featurerequestmail">features@railo.ch</data>
@@ -846,9 +887,21 @@
 	<data key="overview.licencedevelopmore">more</data>
 	<data key="overview.licencedevelop">Develop</data>
 	<data key="overview.server_name">Host Name</data>
+	<data key="overview.twitter">Twitter</data>
+	<data key="overview.twitterDesc">Follow us on Twitter.</data>
 	<data key="overview.blog">Blog</data>
-	<data key="overview.mailinglist_en">Mailinglist (english)</data>
+	<data key="overview.blogDesc"> The latest news from Railo is always posted on our blog.</data>
+	<data key="overview.mailinglist">Mailing list</data>
+	<data key="overview.mailinglistDesc">The mailing list is the focus of our community support program - help for users by users. </data>
+	
+	
+	
 	<data key="overview.professional">Professional Support</data>
+	<data key="overview.professionalDesc">For many organizations and individuals, the security of a formal paid support contract is a necessity and we're pleased to offer four standard packages as well as the flexibility to create a custom package should your needs go beyond our standard offerings.</data>
+	
+	
+	
+	
 	<data key="overview.licencedevelopdesc">The Develop Version is a version, addressing those users who are most likely to apply it in order for assembling CFML application . The version though is prohibited to be used commercially.</data>
 	<data key="overview.releasedate">Release date</data>
 	<data key="overview.contexts.webroot">Webroot</data>
@@ -883,7 +936,7 @@
 	<data key="overview.Hash">Hash</data>
 	<data key="overview.config">Configuration File</data>
 	<data key="overview.webroot">Webroot</data>
-	<data key="overview.info">Info</data>
+	<data key="overview.info">General Info</data>
 	<data key="overview.featurerequest">Feature request</data>
 	<data key="overview.contextcount">Context count</data>
 	<data key="doc.arg.name">Name</data>
@@ -979,11 +1032,13 @@
 	<data key="settings.cache.nameMissing">Cancel</data>
 	<data key="settings.cache.type">Type</data>
 	<data key="settings.cache.defaulttypeObject">Object</data>
-	<data key="settings.cache.defaulttypeObjectDesc">This cache connection is used for all cache operations (cacheGet,cachePut ...)</data>
+	<data key="settings.cache.defaulttypeObjectDesc">This cache connection is used for all object cache operations (cacheGet,cachePut, cfcache action="get|put" ...)</data>
 	<data key="settings.cache.defaulttypeTemplate">Template</data>
-	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for the tag cfcache</data>
+	<data key="settings.cache.defaulttypeTemplateDesc">This cache connection is used for template caching (cfcache action="content|cache|serverCache" ...)</data>
 	<data key="settings.cache.defaulttypeQuery">Query</data>
-	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for the caching of the tag cfquery</data>
+	<data key="settings.cache.defaulttypeQueryDesc">This cache connection is used for caching the results of the tag cfquery</data>
+	<data key="settings.cache.defaulttypeFunction">Function</data>
+	<data key="settings.cache.defaulttypeFunctionDesc">This cache connection is used for caching the results of the tag cffunction/function</data>
 	<data key="settings.cache.defaulttypeResource">Resource</data>
 	<data key="settings.cache.defaulttypeResourceDesc">This cache connection is used for the Ram Resource (ram://...)</data>
 	<data key="settings.cache.defaultDesc">Define the default cache connection for tempates (cfcache) and object (cacheGet, cachePut ...), this connection is used when no cache name is explicit defined</data>
@@ -998,30 +1053,30 @@
 	<data key="settings.orm.title">Settings</data>
 	<data key="settings.orm.desc">Here you can define the default settings for the ORM Configuration, this settings can be overwritten in the Application.cfc with the struct "ormsettings".</data>
 	<data key="settings.orm.autogenmap">Automatically generate mapping</data>
-	<data key="settings.orm.autogenmapDesc">Specifies whether Railo should automatically generate mapping for the persistent CFCs. If disabled, mapping should be provided in the form of .HBMXML files. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.autogenmap=true]</data>
+	<data key="settings.orm.autogenmapDesc">Specifies whether Railo should automatically generate mapping for the persistent CFCs. If disabled, mapping should be provided in the form of .HBMXML files. This setting can be overwritten in Application.cfc as follows [this.ormsettings.autogenmap=true]</data>
 	<data key="settings.orm.catalog">Catalog</data>
-	<data key="settings.orm.catalogDesc">Specifies the default Catalog that should be used by ORM. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.catalog='db']</data>
+	<data key="settings.orm.catalogDesc">Specifies the default Catalog that should be used by ORM. This setting can be overwritten in Application.cfc as follows [this.ormsettings.catalog='db']</data>
 	<data key="settings.orm.cfclocation">Persistent Component Location</data>
-	<data key="settings.orm.cfclocationDesc">Specifies the directory that should be used to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent Comonents. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.cfclocation='...']</data>
+	<data key="settings.orm.cfclocationDesc">Specifies the directory that should be used to search for persistent CFCs to generate the mapping. If cfclocation is set, Railo looks at only the paths specified in it. If it is not set, Railo looks at the application directory, its sub-directories, and its mapped directories to search for persistent Comonents. This setting can be overwritten in Application.cfc as follows [this.ormsettings.cfclocation='...']</data>
 	<data key="settings.orm.dbcreate">Creating Tables behavior</data>
-	<data key="settings.orm.dbcreateDesc">Railo ORM can automatically create the tables for your application in the database when ORM is initialized for the application. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.dbcreate='none']</data>
+	<data key="settings.orm.dbcreateDesc">Railo ORM can automatically create the tables for your application in the database when ORM is initialized for the application. This setting can be overwritten in Application.cfc as follows [this.ormsettings.dbcreate='none']</data>
 	<data key="settings.orm.dbcreateNone">Setting this value does not change anything in the database schema.</data>
 	<data key="settings.orm.dbcreateUpdate">Setting this value creates the table if it does not exist or update the table if it exists.</data>
 	<data key="settings.orm.dbcreateDropcreate"> Setting this value drops the table if it exists and then creates it.</data>
 	<data key="settings.orm.eventHandling">Event Handling</data>
-	<data key="settings.orm.eventHandlingDesc">Specifies whether ORM Event callbacks should be given. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.eventHandling=false]</data>
+	<data key="settings.orm.eventHandlingDesc">Specifies whether ORM Event callbacks should be given. This setting can be overwritten in Application.cfc as follows [this.ormsettings.eventHandling=false]</data>
 	<data key="settings.orm.flushatrequestend">Flush at request end</data>
-	<data key="settings.orm.flushatrequestendDesc">Specifies whether ormflush should be called automatically at request end. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.flushatrequestend=false]</data>
+	<data key="settings.orm.flushatrequestendDesc">Specifies whether ormflush should be called automatically at request end. This setting can be overwritten in Application.cfc as follows [this.ormsettings.flushatrequestend=false]</data>
 	<data key="settings.orm.logSQL">Log SQL</data>
-	<data key="settings.orm.logSQLDesc">Specifies whether the SQL queries that are executed by ORM will be logged. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.logSQL=false]</data>
+	<data key="settings.orm.logSQLDesc">Specifies whether the SQL queries that are executed by ORM will be logged. This setting can be overwritten in Application.cfc as follows [this.ormsettings.logSQL=false]</data>
 	<data key="settings.orm.savemapping">Save Mapping</data>
-	<data key="settings.orm.savemappingDesc">Specifies whether the generated Hibernate mapping file has to be saved to file system. If enabled, the Hibernate mapping XML file is saved with the filename ""CFC name"".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.savemapping=false]</data>
+	<data key="settings.orm.savemappingDesc">Specifies whether the generated Hibernate mapping file has to be saved to file system. If enabled, the Hibernate mapping XML file is saved with the filename ""CFC name"".hbm.xml in the same directory as the CFC. If any value of savemapping is specified in CFC, it will override the value specified in the ormsetting. This setting can be overwritten in Application.cfc as follows [this.ormsettings.savemapping=false]</data>
 	<data key="settings.orm.schema">Schema</data>
-	<data key="settings.orm.schemaDesc">Specifies the default Schema that should be used by ORM. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.schema='sch']</data>
+	<data key="settings.orm.schemaDesc">Specifies the default Schema that should be used by ORM. This setting can be overwritten in Application.cfc as follows [this.ormsettings.schema='sch']</data>
 	<data key="settings.orm.useDBForMapping">Use DB for mapping</data>
-	<data key="settings.orm.useDBForMappingDesc">Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.useDBForMapping=true]</data>
+	<data key="settings.orm.useDBForMappingDesc">Specifies whether the database has to be inspected to identify the missing information required to generate the Hibernate mapping. The database is inspected to get the column data type, primary key and foreign key information. This setting can be overwritten in Application.cfc as follows [this.ormsettings.useDBForMapping=true]</data>
 	<data key="settings.orm.sqlscript">SQL Script</data>
-	<data key="settings.orm.sqlscriptDesc">Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed. &lt;br&gt;This setting can be overwritten in Application.cfc as follows [this.ormsettings.sqlscript='...']</data>
+	<data key="settings.orm.sqlscriptDesc">Path to the SQL script file that gets executed after ORM is initialized. This applies if dbcreate is set to dropcreate. This must be the absolute file path or the path relative to the application.The SQL script file lets you populate the tables before the application is accessed. This setting can be overwritten in Application.cfc as follows [this.ormsettings.sqlscript='...']</data>
 	<data key="services.update.provider">Update Provider</data>
 	<data key="services.update.location_www">Stable releases</data>
 	<data key="services.update.location_wwwDesc">Dieser Update Provider (www.getrailo.org) gibt nur stabile Versionen zurück, welche ausführlich getestet wurden, diese Quelle sollte für produktive Systeme verwendet werden.</data>

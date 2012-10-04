@@ -3,23 +3,22 @@ package railo.runtime.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.xerces.parsers.DOMParser;
-import org.opencfml.eventgateway.GatewayException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
@@ -34,7 +33,10 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.net.IPRange;
 import railo.commons.net.URLEncoder;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.util.ExtensionFilter;
@@ -62,6 +64,7 @@ import railo.runtime.net.ntp.NtpClient;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.reflection.Reflector;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
@@ -70,6 +73,7 @@ import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
@@ -94,7 +98,7 @@ import com.allaire.cfx.CustomTag;
  */
 public final class ConfigWebAdmin {
     
-    private static final Object NULL = new Object();
+    //private static final Object NULL = new Object();
 	private ConfigImpl config;
     private Document doc;
 	private String password;
@@ -120,43 +124,6 @@ public final class ConfigWebAdmin {
     private void checkReadAccess() throws SecurityException {
     	ConfigWebUtil.checkGeneralReadAccess(config,password);
 	}
-    
-    
-    /**
-     * 
-     * @param config
-     * @param isServer 
-     * @param passwordOld
-     * @param passwordNew
-     * @throws SAXException
-     * @throws IOException
-     * @throws FunctionLibException
-     * @throws TagLibException
-     * @throws ClassNotFoundException
-     * @throws PageException
-     */
-    public static void setPassword(ConfigImpl config, boolean isServer, String passwordOld, String passwordNew) 
-		throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException {
-    	//if(config.hasPassword())ConfigWebUtil.checkGeneralWriteAccess(config,passwordOld);
-    	if(isServer)config=config.getConfigServerImpl();
-	        
-	        
-	    if(!config.hasPassword()) { 
-	        config.setPassword(passwordNew);
-	        
-	        ConfigWebAdmin admin = newInstance(config,passwordNew);
-	        admin.setPassword(passwordNew);
-	        admin.store();
-	    }
-	    else {
-	    	ConfigWebUtil.checkGeneralWriteAccess(config,passwordOld);
-	        ConfigWebAdmin admin = newInstance(config,passwordOld);
-	        admin.setPassword(passwordNew);
-	        admin.store();
-	    }
-	}
-    
-    
     
     /**
      * @param password
@@ -211,7 +178,7 @@ public final class ConfigWebAdmin {
         else { 
             ConfigServerImpl cs=(ConfigServerImpl)config;
             ConfigWebImpl cw=cs.getConfigWebImpl(contextPath);
-            if(cw!=null)setPassword(cw,false,cw.getPassword(),password);
+            if(cw!=null)cw.setPassword(false,cw.getPassword(),password);
         }
     }
     
@@ -228,7 +195,7 @@ public final class ConfigWebAdmin {
         }
         //setId(config.getId());
     }    
-    // FUTURE resources for old version of railo remove in never
+    // FUTURE resources for old version of railo remove in newer
     private void updateTo2(ConfigImpl config) throws PageException, ClassException, SAXException, IOException, TagLibException, FunctionLibException {
 //    	 Server
     	if(config instanceof ConfigServer) {
@@ -341,14 +308,15 @@ public final class ConfigWebAdmin {
             ConfigServerFactory.reloadInstance(cs);
             ConfigWeb[] webs=cs.getConfigWebs();
             for(int i=0;i<webs.length;i++) {
-                ConfigWebFactory.reloadInstance((ConfigImpl)webs[i],true);
+                ConfigWebFactory.reloadInstance((ConfigServerImpl) config,(ConfigWebImpl)webs[i],true);
             }
         }
         else {
             XMLCaster.writeTo(doc,config.getConfigFile());
             //SystemUtil.sleep(10);
+            ConfigServerImpl cs=((ConfigWebImpl)config).getConfigServerImpl();
             
-            ConfigWebFactory.reloadInstance(config,false);
+            ConfigWebFactory.reloadInstance(cs,(ConfigWebImpl)config,false);
         }
     }
     
@@ -553,7 +521,7 @@ public final class ConfigWebAdmin {
         
         // check virtual
             if(virtual==null || virtual.length()==0)
-                throw new ExpressionException("virtual path can be a empty value");
+                throw new ExpressionException("virtual path cannot be a empty value");
             virtual=virtual.replace('\\','/');
             
             if(!virtual.equals("/") && virtual.endsWith("/"))
@@ -631,6 +599,64 @@ public final class ConfigWebAdmin {
       	}
   		
     }
+    
+    public void updateRestMapping(String virtual, String physical,boolean _default) throws ExpressionException, SecurityException {
+    	checkWriteAccess();
+    	boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        virtual=virtual.trim(); 
+        physical=physical.trim();
+        if(!hasAccess)
+            throw new SecurityException("no access to update REST mapping");
+        
+        // check virtual
+            if(virtual==null || virtual.length()==0)
+                throw new ExpressionException("virtual path cannot be a empty value");
+            virtual=virtual.replace('\\','/');
+            if(virtual.equals("/"))
+                throw new ExpressionException("virtual path cannot be /");
+        
+            
+            if(virtual.endsWith("/"))
+    	            virtual=virtual.substring(0,virtual.length()-1);
+            
+            if(virtual.charAt(0)!='/') virtual="/"+virtual;
+        
+        if((physical.length())==0)
+        	throw new ExpressionException("physical path cannot be a empty value");
+        
+        Element rest=_getRootElement("rest");
+        Element[] children = ConfigWebFactory.getChildren(rest,"mapping");
+        
+        // remove existing default
+        if(_default) {
+        	for(int i=0;i<children.length;i++) {
+          	    if(Caster.toBooleanValue(children[i].getAttribute("default"),false))
+          	    	children[i].setAttribute("default", "false");
+          	}
+        }
+        
+        // Update
+        String v;
+        Element el=null;
+      	for(int i=0;i<children.length;i++) {
+      	    v=children[i].getAttribute("virtual");
+      	    if(v!=null && v.equals(virtual)) {
+      	        el=children[i];
+      	    }
+      	}
+      	
+      	
+      	// Insert
+      	if(el==null) {
+      		el=doc.createElement("mapping");
+      		rest.appendChild(el);
+      	}
+      	
+      	el.setAttribute("virtual",virtual);
+      	el.setAttribute("physical",physical);
+  		el.setAttribute("default",Caster.toString(_default));
+  		  		
+    }
 
 
     /**
@@ -643,7 +669,7 @@ public final class ConfigWebAdmin {
     	checkWriteAccess();
     	// check parameters
         if(virtual==null || virtual.length()==0)
-            throw new ExpressionException("virtual path can be a empty value");
+            throw new ExpressionException("virtual path cannot be a empty value");
         virtual=virtual.replace('\\','/');
         
         if(!virtual.equals("/") && virtual.endsWith("/"))
@@ -653,6 +679,37 @@ public final class ConfigWebAdmin {
         
         
         Element mappings=_getRootElement("mappings");
+
+        Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
+      	for(int i=0;i<children.length;i++) {
+      	    String v=children[i].getAttribute("virtual");
+      	    if(v!=null) {
+      	        if(!v.equals("/") && v.endsWith("/"))
+      	            v=v.substring(0,v.length()-1);
+	  	    	if(v!=null && v.equals(virtual)) {
+		      		Element el=children[i];
+		      		mappings.removeChild(el);
+	  			}
+      	    }
+      	}
+    }
+    
+
+    public void removeRestMapping(String virtual) throws ExpressionException, SecurityException {
+    	checkWriteAccess();
+    	// check parameters
+        if(virtual==null || virtual.length()==0)
+            throw new ExpressionException("virtual path cannot be a empty value");
+        virtual=virtual.replace('\\','/');
+        if(virtual.equals("/"))
+            throw new ExpressionException("virtual path cannot be /");
+        
+        if(virtual.endsWith("/")) virtual=virtual.substring(0,virtual.length()-1);
+        if(virtual.charAt(0)!='/') virtual="/"+virtual;
+        
+        
+        
+        Element mappings=_getRootElement("rest");
 
         Element[] children = ConfigWebFactory.getChildren(mappings,"mapping");
       	for(int i=0;i<children.length;i++) {
@@ -749,7 +806,7 @@ public final class ConfigWebAdmin {
 
     public void updateComponentMapping(String virtual,String physical,String archive,String primary, boolean trusted) throws ExpressionException, SecurityException {
     	checkWriteAccess();
-    	boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
+    	//boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
         //if(!hasAccess)
         //    throw new SecurityException("no access to change custom tag settings");
         
@@ -951,7 +1008,7 @@ public final class ConfigWebAdmin {
 	}
     
     
-    public static boolean fixPSQ(Document doc) throws SecurityException {
+    public static boolean fixPSQ(Document doc) {
     	
     	Element datasources=ConfigWebFactory.getChildByName(doc.getDocumentElement(),"data-sources",false,true);
         if(datasources!=null && datasources.hasAttribute("preserve-single-quote")){
@@ -980,7 +1037,7 @@ public final class ConfigWebAdmin {
         }
         
         
-        // FUTURE remove this part for version 4.0
+        // FUTURE remove this part in upcoming versions
         // add s3 when not
         Element el=doc.createElement("resource-provider");
         el.setAttribute("scheme", "s3");
@@ -1074,7 +1131,7 @@ public final class ConfigWebAdmin {
      */
     public void updateDataSource(String name, String newName, String clazzName, String dsn, String username,String password,
             String host,String database,int port,int connectionLimit, int connectionTimeout,long metaCacheTimeout,
-            boolean blob,boolean clob,int allow,boolean validate,boolean storage, Struct custom) throws ExpressionException, SecurityException {
+            boolean blob,boolean clob,int allow,boolean validate,boolean storage,String timezone, Struct custom) throws ExpressionException, SecurityException {
 
     	checkWriteAccess();
     	SecurityManager sm = config.getSecurityManager();
@@ -1130,6 +1187,8 @@ public final class ConfigWebAdmin {
 	      		el.setAttribute("password",ConfigWebFactory.encrypt(password));
 
                 el.setAttribute("host",host);
+                if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
+                else if(el.hasAttribute("timezone")) el.removeAttribute("timezone");
                 el.setAttribute("database",database);
                 el.setAttribute("port",Caster.toString(port));
                 el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
@@ -1162,6 +1221,7 @@ public final class ConfigWebAdmin {
   		if(password.length()>0)el.setAttribute("password",ConfigWebFactory.encrypt(password));
         
         el.setAttribute("host",host);
+        if(!StringUtil.isEmpty(timezone))el.setAttribute("timezone",timezone);
         el.setAttribute("database",database);
         if(port>-1)el.setAttribute("port",Caster.toString(port));
         if(connectionLimit>-1)el.setAttribute("connectionLimit",Caster.toString(connectionLimit));
@@ -1203,7 +1263,7 @@ public final class ConfigWebAdmin {
     	
         try {
         	if(!StringUtil.isEmpty(className)){
-	        	Class clazz = ClassUtil.loadClass(className);
+	        	ClassUtil.loadClass(className);
         	}
 		}
         catch (ClassException e) {
@@ -1288,6 +1348,9 @@ public final class ConfigWebAdmin {
         else if(_default==ConfigImpl.CACHE_DEFAULT_RESOURCE){
         	parent.setAttribute("default-resource",name);
         }
+        else if(_default==ConfigImpl.CACHE_DEFAULT_FUNCTION){
+        	parent.setAttribute("default-function",name);
+        }
         
         // Update
         //boolean isUpdate=false;
@@ -1338,6 +1401,9 @@ public final class ConfigWebAdmin {
         else if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE){
         	parent.removeAttribute("default-resource");
         }
+        else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
+        	parent.removeAttribute("default-function");
+        }
     }
 	
 	public void updateCacheDefaultConnection(int type,String name) throws PageException {
@@ -1359,6 +1425,9 @@ public final class ConfigWebAdmin {
         }
         else if(type==ConfigImpl.CACHE_DEFAULT_RESOURCE){
         	parent.setAttribute("default-resource", name);
+        }
+        else if(type==ConfigImpl.CACHE_DEFAULT_FUNCTION){
+        	parent.setAttribute("default-function", name);
         }
     }
 	
@@ -1467,29 +1536,31 @@ public final class ConfigWebAdmin {
 
 
 	private static String toStringURLStyle(Struct sct) {
-        String[] keys = sct.keysAsString();
+        Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
         StringBuffer rtn=new StringBuffer();
-        
-        for(int i=0;i<keys.length;i++) {
-            
-	            if(rtn.length()>0)rtn.append('&');
-	            rtn.append(URLEncoder.encode(keys[i]));
-	            rtn.append('=');
-	            rtn.append(URLEncoder.encode(Caster.toString(sct.get(keys[i],null),"")));
+        while(it.hasNext()) {
+            e = it.next();
+            if(rtn.length()>0)rtn.append('&');
+            rtn.append(URLEncoder.encode(e.getKey().getString()));
+            rtn.append('=');
+            rtn.append(URLEncoder.encode(Caster.toString(e.getValue(),"")));
         }
         return rtn.toString();
     }
 
 	private static String toStringCSSStyle(Struct sct) {
-        String[] keys = sct.keysAsString();
+        //Collection.Key[] keys = sct.keys();
         StringBuffer rtn=new StringBuffer();
+        Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
         
-        for(int i=0;i<keys.length;i++) {
-            
-	            if(rtn.length()>0)rtn.append(';');
-	            rtn.append(URLEncoder.encode(keys[i]));
-	            rtn.append(':');
-	            rtn.append(URLEncoder.encode(Caster.toString(sct.get(keys[i],null),"")));
+		while(it.hasNext()) {
+			e = it.next();
+            if(rtn.length()>0)rtn.append(';');
+            rtn.append(URLEncoder.encode(e.getKey().getString()));
+            rtn.append(':');
+            rtn.append(URLEncoder.encode(Caster.toString(e.getValue(),"")));
         }
         return rtn.toString();
     }
@@ -1617,11 +1688,7 @@ public final class ConfigWebAdmin {
   	    		Map conns = ((ConfigWebImpl)config).getGatewayEngine().getEntries();
   	    		GatewayEntry ge=(GatewayEntry) conns.get(n);
   	    		if(ge!=null){
-  	    			try {
-  	    				((ConfigWebImpl)config).getGatewayEngine().remove(ge);
-					} catch (GatewayException e) {
-						throw Caster.toPageException(e);
-					}
+  	    			((ConfigWebImpl)config).getGatewayEngine().remove(ge);
   	    		}
   	    		parent.removeChild(children[i]);
   			}
@@ -2087,6 +2154,26 @@ public final class ConfigWebAdmin {
         	scope.setAttribute("base",baseComponent);
     }
     
+    
+
+	public void updateComponentDeepSearch(Boolean deepSearch) throws SecurityException {
+		checkWriteAccess();
+	    boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+	    if(!hasAccess)
+	        throw new SecurityException("no access to update component setting");
+	    //config.resetBaseComponentPage();
+	    Element scope=_getRootElement("component");
+	    //if(baseComponent.trim().length()>0)
+	    if(deepSearch!=null)
+    	scope.setAttribute("deep-search",Caster.toString(deepSearch.booleanValue()));
+	    
+	    else {
+	        if(scope.hasAttribute("deep-search"))
+	        	scope.removeAttribute("deep-search");
+	    }
+		
+	}
+    
 
     public void updateComponentDefaultImport(String componentDefaultImport) throws SecurityException {
     	checkWriteAccess();
@@ -2536,7 +2623,36 @@ public final class ConfigWebAdmin {
         Element scope=_getRootElement("scope");
         scope.setAttribute("local-mode",mode);
     }
+    
 
+
+
+	public void updateRestList(Boolean list) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        if(!hasAccess) throw new SecurityException("no access to update rest setting");
+        
+        
+        Element rest=_getRootElement("rest");
+        if(list==null) {
+        	if(rest.hasAttribute("list"))rest.removeAttribute("list");
+        }
+        else rest.setAttribute("list", Caster.toString(list.booleanValue()));
+	}
+	
+	/*public void updateRestAllowChanges(Boolean allowChanges) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=true;// TODO ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        if(!hasAccess) throw new SecurityException("no access to update rest setting");
+        
+        
+        Element rest=_getRootElement("rest");
+        if(allowChanges==null) {
+        	if(rest.hasAttribute("allow-changes"))rest.removeAttribute("allow-changes");
+        }
+        else rest.setAttribute("allow-changes", Caster.toString(allowChanges.booleanValue()));
+	}*/
+	
 
     /**
      * updates update settingd for railo
@@ -2563,12 +2679,13 @@ public final class ConfigWebAdmin {
      * creates a individual security manager based on the default security manager
      * @param id
      * @throws DOMException 
-     * @throws SecurityException 
+     * @throws PageException 
      */
-    public void createSecurityManager(String id) throws SecurityException, DOMException {
+    public void createSecurityManager(String password,String id) throws DOMException, PageException {
     	checkWriteAccess();
-        SecurityManagerImpl dsm = (SecurityManagerImpl) config.getConfigServerImpl().getDefaultSecurityManager().cloneSecurityManager();
-        config.getConfigServerImpl().setSecurityManager(id,dsm);
+    	ConfigServerImpl cs=(ConfigServerImpl) config.getConfigServer(password);
+        SecurityManagerImpl dsm = (SecurityManagerImpl) cs.getDefaultSecurityManager().cloneSecurityManager();
+        cs.setSecurityManager(id,dsm);
         
         Element security=_getRootElement("security");
         Element accessor=null;
@@ -2613,11 +2730,11 @@ public final class ConfigWebAdmin {
     /**
      * remove security manager matching given id
      * @param id
-     * @throws SecurityException 
+     * @throws PageException 
      */
-    public void removeSecurityManager(String id) throws SecurityException {
+    public void removeSecurityManager(String password,String id) throws PageException {
     	checkWriteAccess();
-        config.getConfigServerImpl().removeSecurityManager(id);
+        ((ConfigServerImpl)config.getConfigServer(password)).removeSecurityManager(id);
         
         Element security=_getRootElement("security");
        
@@ -2628,16 +2745,15 @@ public final class ConfigWebAdmin {
                 security.removeChild(children[i]);
             }
         }
-        
     }
 
     /**
      * run update from cfml engine
      * @throws PageException
      */
-    public void runUpdate() throws PageException {
+    public void runUpdate(String password) throws PageException {
     	checkWriteAccess();
-        ConfigServerImpl cs = config.getConfigServerImpl();
+        ConfigServerImpl cs = (ConfigServerImpl) config.getConfigServer(password);
         CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
         synchronized(factory){
 	        try {
@@ -2654,33 +2770,26 @@ public final class ConfigWebAdmin {
      * run update from cfml engine
      * @throws PageException
      */
-    public void removeLatestUpdate() throws PageException {
-    	_removeUpdate(true);
+    public void removeLatestUpdate(String password) throws PageException {
+    	_removeUpdate(password,true);
     }
     
-    public void removeUpdate() throws PageException {
-    	_removeUpdate(false);
+    public void removeUpdate(String password) throws PageException {
+    	_removeUpdate(password,false);
     }
     
-    private void _removeUpdate(boolean onlyLatest) throws PageException {
+    private void _removeUpdate(String password,boolean onlyLatest) throws PageException {
     	checkWriteAccess();
-    	ConfigServerImpl cs = config.getConfigServerImpl();
+    	ConfigServerImpl cs = (ConfigServerImpl) config.getConfigServer(password);
         try {
         	CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
         	
         	if(onlyLatest){
-        		// FUTURE make direct call (see below)
-        		//factory.removeLatestUpdate(cs.getPassword());
         		try{
-        			Method removeLatestUpdate = factory.getClass().getMethod("removeLatestUpdate", new Class[]{String.class});
-        			removeLatestUpdate.invoke(factory, new Object[]{cs.getPassword()});
+        			factory.removeLatestUpdate(cs.getPassword());
         		}
-        		catch(NoSuchMethodException e)	{
-        			removeLatestUpdate(factory,cs.getPassword());
-        			//throw new SecurityException("this feature is not supported by your version, you have to update your railo.jar first");
-        		}
-        		catch(Throwable t){
-        			throw Caster.toPageException(t);
+        		catch(Throwable t)	{
+        			removeLatestUpdateOld(factory,cs.getPassword());
         		}
         	}
         	else factory.removeUpdate(cs.getPassword());
@@ -2692,7 +2801,6 @@ public final class ConfigWebAdmin {
         }
     }
     
-    // FUTURE remove this
 	private String getCoreExtension() throws ServletException {
     	URL res = new TP().getClass().getResource("/core/core.rcs");
         if(res!=null) return "rcs";
@@ -2703,13 +2811,11 @@ public final class ConfigWebAdmin {
         throw new ServletException("missing core file");
 	}
 	
-	// FUTURE remove this
 	private boolean isNewerThan(int left, int right) {
         return left>right;
     }
 	
-    // FUTURE remove this
-    private boolean removeLatestUpdate(CFMLEngineFactory factory, String password) throws IOException, ServletException {
+    private boolean removeLatestUpdateOld(CFMLEngineFactory factory, String password) throws IOException, ServletException {
     	File patchDir = new File(factory.getResourceRoot(),"patches");
         if(!patchDir.exists())patchDir.mkdirs();
         
@@ -2741,9 +2847,9 @@ public final class ConfigWebAdmin {
      * run update from cfml engine
      * @throws PageException
      */
-    public void restart() throws PageException {
+    public void restart(String password) throws PageException {
     	checkWriteAccess();
-        ConfigServerImpl cs = config.getConfigServerImpl();
+        ConfigServerImpl cs = (ConfigServerImpl) config.getConfigServer(password);
         CFMLEngineFactory factory = cs.getCFMLEngine().getCFMLEngineFactory();
         synchronized(factory){
 	        try {
@@ -2758,16 +2864,18 @@ public final class ConfigWebAdmin {
 	public void updateWebCharset(String charset) throws PageException {
     	checkWriteAccess();
 		
-    	if(StringUtil.isEmpty(charset)){
-			if(config instanceof ConfigWeb)charset=config.getConfigServerImpl().getWebCharset();
-			else charset="UTF-8";
+    	Element element = _getRootElement("charset");
+		if(StringUtil.isEmpty(charset)){
+			if(config instanceof ConfigWeb)
+				element.removeAttribute("web-charset");
+			else
+				element.setAttribute("web-charset", "UTF-8");
+		}
+		else {
+			charset=checkCharset(charset);
+			element.setAttribute("web-charset", charset);
 		}
     	
-    	charset=checkCharset(charset);
-		// update charset
-		Element element = _getRootElement("charset");
-		element.setAttribute("web-charset", charset.trim());
-		
 		element = _getRootElement("regional");
 		element.removeAttribute("default-encoding");// remove deprecated attribute
 		
@@ -2775,34 +2883,36 @@ public final class ConfigWebAdmin {
 
 	public void updateResourceCharset(String charset) throws PageException {
     	checkWriteAccess();
-    	if(StringUtil.isEmpty(charset)){
-			if(config instanceof ConfigWeb)charset=config.getConfigServerImpl().getResourceCharset();
-			else charset=SystemUtil.getCharset();
+    	
+    	Element element = _getRootElement("charset");
+		if(StringUtil.isEmpty(charset)){
+			element.removeAttribute("resource-charset");
 		}
-    	charset=checkCharset(charset);
+		else {
+			charset=checkCharset(charset);
+			element.setAttribute("resource-charset", charset);
+			
+		}
+    	
 		// update charset
-		Element element = _getRootElement("charset");
-		element.setAttribute("resource-charset", charset.trim());
 		
 	}
 
 	public void updateTemplateCharset(String charset) throws PageException {
     	checkWriteAccess();
-    	if(StringUtil.isEmpty(charset)){
-			if(config instanceof ConfigWeb)charset=config.getConfigServerImpl().getTemplateCharset();
-			else charset=SystemUtil.getCharset();
+    	
+    	Element element = _getRootElement("charset");
+		if(StringUtil.isEmpty(charset)){
+			element.removeAttribute("template-charset");
 		}
-    	charset=checkCharset(charset);
-    	
-    	
-    	
-		// update charset
-		Element element = _getRootElement("charset");
-		element.setAttribute("template-charset", charset.trim());
-		
+		else {
+			charset=checkCharset(charset);
+			element.setAttribute("template-charset", charset);
+		}
 	}
 	
 	private String checkCharset(String charset)  throws PageException{
+		charset=charset.trim();
 		if("system".equalsIgnoreCase(charset))
 			charset=SystemUtil.getCharset();
 		else if("jre".equalsIgnoreCase(charset))
@@ -3097,9 +3207,7 @@ public final class ConfigWebAdmin {
 		if(Decision.isUUId(id)) {
 			return Hash.invoke(config,id,null,null);
 		}
-		else {
-			return Hash.invoke(config,provider+id,null,null);
-		}
+		return Hash.invoke(config,provider+id,null,null);
 	}
 
 
@@ -3160,7 +3268,7 @@ public final class ConfigWebAdmin {
 		orm.setAttribute("cache-provider",Caster.toString(oc.getCacheProvider(),""));
 		orm.setAttribute("cache-config",Caster.toString(oc.getCacheConfig(),"true"));
 		orm.setAttribute("catalog",Caster.toString(oc.getCatalog(),""));
-		orm.setAttribute("db-create",ORMConfiguration.dbCreateAsString(oc.getDbCreate()));
+		orm.setAttribute("db-create",ORMConfigurationImpl.dbCreateAsString(oc.getDbCreate()));
 		orm.setAttribute("dialect",Caster.toString(oc.getDialect(),""));
 		orm.setAttribute("schema",Caster.toString(oc.getSchema(),""));
 		orm.setAttribute("log-sql",Caster.toString(oc.logSQL(),"false"));
@@ -3207,10 +3315,10 @@ public final class ConfigWebAdmin {
 	}
 	
 	public void verifyExtensionProvider(String strUrl) throws PageException {
-		HttpMethod method=null;
+		HTTPResponse method=null;
 		try {
 			URL url = HTTPUtil.toURL(strUrl+"?wsdl");
-			method = HTTPUtil.invoke(url, null, null, 2000, null, null, null, -1, null, null, null);
+			method = HTTPEngine.get(url, null, null, 2000,HTTPEngine.MAX_REDIRECT, null, null, null, null);
 		} 
 		catch (MalformedURLException e) {
 			throw new ApplicationException("url defintion ["+strUrl+"] is invalid");
@@ -3219,8 +3327,10 @@ public final class ConfigWebAdmin {
 			throw new ApplicationException("can't invoke ["+strUrl+"]",e.getMessage());
 		}
 		
-		if(method.getStatusCode()!=200){
-			throw new HTTPException(method);
+		if(method.getStatusCode()!=200){int code=method.getStatusCode();
+    	String text=method.getStatusText();
+    	String msg=code+" "+text;
+    	throw new HTTPException(msg,null,code,text,method.getURL());
 		}
 		//Object o = 
 			CreateObject.doWebService(null, strUrl+"?wsdl");
@@ -3530,6 +3640,91 @@ public final class ConfigWebAdmin {
   		
       	return true;
 	}
+	
+	
+	public void updateDebugSetting(int maxLogs) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
+        if(!hasAccess)
+            throw new SecurityException("no access to change debugging settings");
+		
+        
+        Element debugging=_getRootElement("debugging");
+        if(maxLogs==-1)
+        	debugging.removeAttribute("max-records-logged");
+        else
+        	debugging.setAttribute("max-records-logged", Caster.toString(maxLogs));
+	}
+
+
+	public void updateDebugEntry(String type, String iprange,String label,String path,String fullname, Struct custom) throws SecurityException, IOException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
+        if(!hasAccess)
+            throw new SecurityException("no access to change debugging settings");
+		
+        // leave this, this method throws a exception when ip range is not valid
+        IPRange.getInstance(iprange);
+        
+		String id=MD5.getDigestAsString(label.trim().toLowerCase());
+		type=type.trim();
+		iprange=iprange.trim();
+		label=label.trim();
+		
+        Element debugging=_getRootElement("debugging");
+        
+        // Update
+        Element[] children = ConfigWebFactory.getChildren(debugging,"debug-entry");
+        Element el=null;
+      	for(int i=0;i<children.length;i++) {
+      	    String _id=children[i].getAttribute("id");
+      	    if(_id!=null) {
+      	        if(_id.equals(id)) {
+		      		el=children[i];
+		      		break;
+	  			}
+      	    }
+      	}
+      	
+      	// Insert
+      	if(el==null) {
+      		el=doc.createElement("debug-entry");
+          	debugging.appendChild(el);
+          	el.setAttribute("id",id);
+      	}
+      	
+
+  		el.setAttribute("type",type);
+  		el.setAttribute("iprange",iprange);
+  		el.setAttribute("label",label);
+  		el.setAttribute("path",path);
+  		el.setAttribute("fullname",fullname);
+  		el.setAttribute("custom",toStringURLStyle(custom));
+	}
+
+
+
+
+	public void removeDebugEntry(String id) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
+        if(!hasAccess)
+            throw new SecurityException("no access to change debugging settings");
+
+    	
+        Element debugging=_getRootElement("debugging");
+        Element[] children = ConfigWebFactory.getChildren(debugging,"debug-entry");
+        String _id;
+        if(children.length>0) {
+	      	for(int i=0;i<children.length;i++) {
+	      	    Element el=children[i];
+	      	    _id=el.getAttribute("id");
+	  			if(_id!=null && _id.equalsIgnoreCase(id)) {
+		      		debugging.removeChild(children[i]);
+	  			}
+	      	}
+        }
+	}
 
 
 	public void updateLoginSettings(boolean captcha, int delay) {
@@ -3538,5 +3733,31 @@ public final class ConfigWebAdmin {
         login.setAttribute("captcha",Caster.toString(captcha));
         login.setAttribute("delay",Caster.toString(delay));
 		
+	}
+
+
+	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean supressWSBeforeArg) throws PageException {
+		
+		Element element = _getRootElement("compiler");
+		
+    	checkWriteAccess();
+    	if(dotNotationUpperCase==null){
+			if(element.hasAttribute("dot-notation-upper-case"))
+				element.removeAttribute("dot-notation-upper-case");
+		}
+    	else {
+    		element.setAttribute("dot-notation-upper-case", Caster.toString(dotNotationUpperCase));
+    	}
+    	
+    	if(supressWSBeforeArg==null){
+			if(element.hasAttribute("supress-ws-before-arg"))
+				element.removeAttribute("supress-ws-before-arg");
+		}
+    	else {
+    		element.setAttribute("supress-ws-before-arg", Caster.toString(supressWSBeforeArg));
+    	}
+    	
+    	
+    	
 	}
 }

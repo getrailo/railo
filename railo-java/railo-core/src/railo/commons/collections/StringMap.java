@@ -507,7 +507,7 @@ public class StringMap extends AbstractMap implements Externalizable
         if (key==null)
             return _nullEntry!=null;
         return
-            getEntry(key.toString(),0,key==null?0:key.toString().length())!=null;
+            getEntry(key.toString(),0,key.toString().length())!=null;
     }
     
     /* ------------------------------------------------------------ */

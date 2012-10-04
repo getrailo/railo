@@ -583,7 +583,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	            outer:for(int i=0;i<files.length;i++) {
 		        	if(removeCorrupt(files[i]))continue;
 	            	String strFile=files[i].toString();
-		            SearchIndex si = (SearchIndex)indexes.get(files[i].getName());
+		            SearchIndex si = indexes.get(files[i].getName());
 		            
 		            if(si==null)continue;
 		            ct=si.getCategoryTree();
@@ -942,7 +942,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		Double tmp;
 		
 		while(it.hasNext()) {
-			SearchIndex index=(SearchIndex) indexes.get(it.next());
+			SearchIndex index=indexes.get(it.next());
 			
 			// category tree
 			catTree = index.getCategoryTree();

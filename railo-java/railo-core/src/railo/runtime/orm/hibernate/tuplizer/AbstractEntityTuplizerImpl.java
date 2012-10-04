@@ -18,7 +18,7 @@ import org.hibernate.tuple.Instantiator;
 import org.hibernate.tuple.entity.AbstractEntityTuplizer;
 import org.hibernate.tuple.entity.EntityMetamodel;
 
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.hibernate.tuplizer.accessors.CFCAccessor;
@@ -50,11 +50,11 @@ public class AbstractEntityTuplizerImpl extends AbstractEntityTuplizer {
 	}
 
 	private Serializable toIdentifier(Serializable id) {
-		if(id instanceof ComponentPro) {
+		if(id instanceof Component) {
 			HashMap<String, String> map = new HashMap<String, String>();
-			ComponentPro cfc=(ComponentPro) id;
+			Component cfc=(Component) id;
 			ComponentScope scope = cfc.getComponentScope();
-			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true);
+			railo.runtime.component.Property[] props = ComponentUtil.getIDProperties(cfc, true,true);
 			String name,value;
 			for(int i=0;i<props.length;i++){
 				name=props[i].getName();

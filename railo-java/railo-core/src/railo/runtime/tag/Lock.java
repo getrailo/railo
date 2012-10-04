@@ -14,7 +14,6 @@ import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.ApplicationImpl;
 import railo.runtime.type.scope.RequestImpl;
 import railo.runtime.type.scope.ServerImpl;
-import railo.runtime.type.scope.SessionPlus;
 
 /**
 * Provides two types of locks to ensure the integrity of shared data: Exclusive lock and Read-only 
@@ -103,7 +102,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 			this.timeoutInMillis = (int)(Caster.toDoubleValue(oTimeout)*1000D);
 		//print.out(Caster.toString(timeoutInMillis));
 	}
-	public void setTimeout(double timeout) throws PageException {
+	public void setTimeout(double timeout) {
 		this.timeoutInMillis = (int)(timeout*1000D);
 	}
 
@@ -197,7 +196,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	        // Session
 	        else if(scope==SCOPE_SESSION){
 	            lockType="session"; 
-	            name="__session_"+cid+"__"+ ((SessionPlus)pageContext.sessionScope())._getId();
+	            name="__session_"+cid+"__"+ pageContext.sessionScope()._getId();
 	        }
 	        // Application 
 	        else if(scope==SCOPE_APPLICATION){

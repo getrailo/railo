@@ -7,6 +7,8 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.op.Caster;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.type.Collection;
+import railo.runtime.type.util.KeyConstants;
 
 
 /**
@@ -38,7 +40,7 @@ public class NativeException extends PageExceptionImpl {
         	}
         	else setStackTrace(st);
         }
-        setAdditional("Cause", t.getClass().getName());
+        setAdditional(KeyConstants._Cause, t.getClass().getName());
 	}
 
 	private boolean hasRailoRuntime(StackTraceElement[] st) {
@@ -70,7 +72,7 @@ public class NativeException extends PageExceptionImpl {
 	/**
 	 * @see railo.runtime.exp.PageExceptionImpl#setAdditional(java.lang.String, java.lang.Object)
 	 */
-	public void setAdditional(String key, Object value) {
+	public void setAdditional(Collection.Key key, Object value) {
 		super.setAdditional(key, value);
 	}
 }

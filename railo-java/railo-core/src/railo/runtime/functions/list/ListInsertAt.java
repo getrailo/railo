@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listinsertat
+ * Implements the CFML Function listinsertat
  */
 package railo.runtime.functions.list;
 
@@ -17,14 +17,14 @@ public final class ListInsertAt implements Function {
 		return call(pc,list,posNumber,value,",",false);
 	}
 	
-	public static String call(PageContext pc , String list, double posNumber, String value, String strDelimeter) throws ExpressionException {
-		return call(pc,list,posNumber,value,strDelimeter,false);
+	public static String call(PageContext pc , String list, double posNumber, String value, String strDelimiter) throws ExpressionException {
+		return call(pc,list,posNumber,value,strDelimiter,false);
 	}
 		
-	public static String call(PageContext pc , String list, double posNumber, String value, String strDelimeter, boolean includeEmptyFields) throws ExpressionException {
-		if(strDelimeter.length()==0)
-        throw new FunctionException(pc,"listInsertAt",4,"delimeter","invalid delimeter value, can't be a empty string"); 
+	public static String call(PageContext pc , String list, double posNumber, String value, String strDelimiter, boolean includeEmptyFields) throws ExpressionException {
+		if(strDelimiter.length()==0)
+        throw new FunctionException(pc,"listInsertAt",4,"delimiter","invalid delimiter value, can't be a empty string"); 
         
-        return List.listInsertAt(list,(int)posNumber,value,strDelimeter,!includeEmptyFields);
+        return List.listInsertAt(list,(int)posNumber,value,strDelimiter,!includeEmptyFields);
 	}
 }

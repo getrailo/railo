@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function decimalformat
+ * Implements the CFML Function decimalformat
  */
 package railo.runtime.functions.displayFormatting;
 

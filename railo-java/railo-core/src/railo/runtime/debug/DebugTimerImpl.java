@@ -1,6 +1,9 @@
 package railo.runtime.debug;
 
 public final class DebugTimerImpl implements DebugTimer {
+
+	private static final long serialVersionUID = -4552972253450654830L;
+	
 	private String label;
 	private long time;
 	private String template;

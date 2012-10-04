@@ -2,7 +2,6 @@ package railo.runtime.functions.orm;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.orm.ORMUtil;
@@ -19,7 +18,7 @@ public class ORMReload {
 				session.close(pc);
 			}
 		}
-		((ApplicationContextPro)pc.getApplicationContext()).reinitORM(pc);
+		pc.getApplicationContext().reinitORM(pc);
 		ORMUtil.resetEngine(pc,true);
 		return null;
 	}

@@ -98,10 +98,17 @@ public final class ArrayUtil {
 	 * @throws ExpressionException
 	 */
 	public static void swap(Array array, int left, int right) throws ExpressionException {
+		int len=array.size();
+		if(len==0)
+			throw new ExpressionException("array is empty");
+		if(left<1 || left>len)
+			throw new ExpressionException("invalid index ["+left+"]","valid indexes are from 1 to "+len);
+		if(right<1 || right>len)
+			throw new ExpressionException("invalid index ["+right+"]","valid indexes are from 1 to "+len);
 		
 		try {
-			Object leftValue=array.getE(left);
-			Object rightValue=array.getE(right);
+			Object leftValue=array.get(left,null);
+			Object rightValue=array.get(right,null);
 			array.setE(left,rightValue);
 			array.setE(right,leftValue);
 		} catch (PageException e) {
@@ -754,5 +761,26 @@ public final class ArrayUtil {
 			size+=SizeOf.size(it.next());
 		}
 		return size;
+	}
+
+
+	/**
+	 * creates a native array out of the input list, if all values are from the same type, this type is used for the array, otherwise object
+	 * @param list
+	 */
+	public static Object[] toArray(List<?> list) {
+		Iterator<?> it = list.iterator();
+		Class clazz=null;
+		while(it.hasNext()){
+			Object v = it.next();
+			if(v==null) continue;
+			if(clazz==null) clazz=v.getClass();
+			else if(clazz!=v.getClass()) return list.toArray();	
+		}
+		if(clazz==Object.class || clazz==null) 
+			return list.toArray();
+		
+		Object arr = java.lang.reflect.Array.newInstance(clazz, list.size());
+		return list.toArray((Object[]) arr);	
 	}
 }

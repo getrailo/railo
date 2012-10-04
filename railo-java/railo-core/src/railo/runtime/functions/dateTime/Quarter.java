@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function quarter
+ * Implements the CFML Function quarter
  */
 package railo.runtime.functions.dateTime;
 

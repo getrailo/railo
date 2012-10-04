@@ -157,13 +157,13 @@ function checkTheRadio(field) {
 
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <tr>
 	<td colspan="2"><h2>#stText.CustomTags.CustomtagSetting#</h2></td>
 </tr>
 
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <input type="hidden" name="subAction" value="setting" />
 <tr>
 	<td class="tblHead" width="150">#stText.CustomTags.customTagDeepSearch#</td>
@@ -267,19 +267,22 @@ function checkTheRadio(field) {
 
 <cfoutput>
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
+ 	<colgroup>
+        <col width="10">
+    </colgroup>
 <tr>
 	<td colspan="5"><h2>#stText.CustomTags.CustomtagMappings#</h2>
 #stText.CustomTags.CustomtagMappingsDesc#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" 
 			name="rro" onclick="selectAll(this)"></cfif></td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Physical#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Archive#</td>
 		<td class="tblHead" nowrap>#stText.CustomTags.Primary#</td>
-		<td class="tblHead" nowrap>#stText.CustomTags.Trusted#</td>
+		<td class="tblHead" nowrap>#stText.Mappings.TrustedHead#</td>
 	</tr>
 	<cfset count=0>
 
@@ -301,14 +304,14 @@ function checkTheRadio(field) {
 		<td class="tblContent#css#" title="#mappings.strphysical#
 #mappings.physical#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strphysical,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"  
-			style="width:260px" 
+			style="width:100%" 
 			message="#stText.CustomTags.PhysicalMissing##mappings.currentrow#)"></cfif></td>
 		
 		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" title="#mappings.strarchive#
 #mappings.archive#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strarchive,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"  
-			style="width:260px" 
+			style="width:100%" 
 			message="#stText.CustomTags.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<td class="tblContent" nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
@@ -316,8 +319,16 @@ function checkTheRadio(field) {
 			<option value="archive" <cfif not mappings.physicalFirst>selected</cfif>>#stText.CustomTags.archive#</option>
 		</select></cfif></td>
 		
-		<td class="tblContent" nowrap><cfif mappings.readOnly>#iif(mappings.Trusted,de("Yes"),de("No"))#<cfelse><input type="checkbox" class="checkbox" 
-		name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" value="yes" <cfif mappings.trusted>checked</cfif>></cfif></td>
+		<td class="tblContent" nowrap>
+		<cfif mappings.readOnly>
+            	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
+			<cfelse>
+            <select name="trusted_#mappings.currentrow#" onChange="checkTheBox(this)">
+                <option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+            </cfif>
+        </td>
 	</tr>
 </cfloop>
 <cfif hasAccess>
@@ -332,15 +343,21 @@ function checkTheRadio(field) {
 		
 		</td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:260px"></td>
+			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:100%"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:260px" ></td>
+			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:100%" ></td>
 		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
 			<option value="physical" selected>#stText.CustomTags.physical#</option>
 			<option value="archive">#stText.CustomTags.archive#</option>
 		</select></td>
-		<td class="tblContent" nowrap><input onClick="checkTheBox(this)" type="checkbox" class="checkbox" 
-		name="trusted_#mappings.recordcount+1#" value="yes"></td>
+		<td class="tblContent" nowrap>
+        
+        <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
+                <option value="true">#stText.setting.inspecttemplateneverShort#</option>
+                <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
+            </select>
+        
+        </td>
 	</tr>
 </cfif>
 <cfif hasAccess>

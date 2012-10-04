@@ -1,6 +1,5 @@
 package railo.runtime.tag;
 
-import railo.runtime.PageContextImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.tag.TagImpl;
@@ -47,9 +46,6 @@ public final class ImportTag extends TagImpl {
 	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws ExpressionException, ApplicationException {
-		PageContextImpl pci=null;
-		//pci.loadComponent(compPath)
-		
 		return SKIP_BODY;
 	}
 

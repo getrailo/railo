@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function decrementvalue
+ * Implements the CFML Function decrementvalue
  */
 package railo.runtime.functions.math;
 

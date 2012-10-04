@@ -1,8 +1,10 @@
 package railo.runtime.text.xml.struct;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,13 +14,16 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.wrap.ArrayAsArrayList;
-import railo.runtime.util.ArrayIterator;
 
 public class XMLMultiElementArray extends ArraySupport {
 
@@ -176,6 +181,23 @@ public class XMLMultiElementArray extends ArraySupport {
 			last=current;
 		}// MUST testen
 	}
+
+	public void sort(Comparator comp) throws PageException {
+		if(size()<=1) return;
+		
+		struct.getInnerArray().sort(comp);
+		
+		Object[] nodes = struct.getInnerArray().toArray();
+		Node last=(Node) nodes[nodes.length-1],current;
+		Node parent=last.getParentNode();
+		for(int i=nodes.length-2;i>=0;i--) {
+			current=(Node) nodes[i];
+			parent.insertBefore(current, last);
+			last=current;
+		}// MUST testen
+	}
+	
+	
 	/**
 	 *
 	 * @see railo.runtime.type.Array#toArray()
@@ -218,7 +240,7 @@ public class XMLMultiElementArray extends ArraySupport {
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return new XMLMultiElementArray((XMLMultiElementStruct)struct.duplicate(deepCopy));
+		return new XMLMultiElementArray((XMLMultiElementStruct)Duplicator.duplicate(struct,deepCopy));
 	}
 	
 
@@ -256,21 +278,6 @@ public class XMLMultiElementArray extends ArraySupport {
 	 */
 	public Key[] keys() {
 		return struct.getInnerArray().keys();
-	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return struct.getInnerArray().keysAsString();
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
-		return struct.remove(key);
 	}
 
 	/**
@@ -332,17 +339,20 @@ public class XMLMultiElementArray extends ArraySupport {
 	}
 
 	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return struct.getInnerArray().iterator();
-	}
-
-	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
-		return new ArrayIterator(keysAsString());
+	public Iterator<Collection.Key> keyIterator() {
+		return new KeyIterator(keys());
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 
 	/**

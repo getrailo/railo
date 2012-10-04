@@ -8,12 +8,12 @@ import railo.intergral.fusiondebug.server.type.FDValueSupport;
 import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.intergral.fusiondebug.server.util.FDCaster;
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.comparator.TextComparator;
+import railo.runtime.type.util.CollectionUtil;
 
 import com.intergral.fusiondebug.server.FDLanguageException;
 import com.intergral.fusiondebug.server.FDMutabilityException;
@@ -79,7 +79,7 @@ public class FDCollection extends FDValueSupport {
 	}
 	
 	private static Key[] keys(Collection coll) {
-		Key[] keys=coll.keys();
+		Key[] keys=CollectionUtil.keys(coll);
 		if(coll instanceof Array) return keys;
 		TextComparator comp=new TextComparator(true,true);
 		Arrays.sort(keys,comp);
@@ -133,7 +133,7 @@ public class FDCollection extends FDValueSupport {
 		if(coll instanceof Array)
 			return "["+fromto()+"]";
 		if(coll instanceof Component){
-			ComponentPro c=(ComponentPro) coll;
+			Component c=(Component) coll;
 			return "Component "+c.getName()+"("+c.getPageSource().getDisplayPath()+")";
 		}
 		if(coll instanceof Struct)

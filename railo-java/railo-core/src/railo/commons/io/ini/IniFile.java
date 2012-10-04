@@ -126,7 +126,7 @@ public final class IniFile {
 
  }
  /**
-  * Gets the KeyValue attribute of the IniFile object, if not exists return null
+  * Gets the KeyValue attribute of the IniFile object, if not exist return null
   *
   * @param strSection  section to get
   * @param key      key to get
@@ -170,7 +170,7 @@ public final class IniFile {
          // new key
          String key = read.substring(0, read.indexOf("=")).trim().toLowerCase();
          String value = read.substring(read.indexOf("=") + 1).trim();
-         if(section!=null)section.put(key, value);
+         section.put(key, value);
        }
      }
 

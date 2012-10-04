@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structkeyexists
+ * Implements the CFML Function structkeyexists
  */
 package railo.runtime.functions.arrays;
 

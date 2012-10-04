@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function parameterexists
+ * Implements the CFML Function parameterexists
  */
 package railo.runtime.functions.other;
 

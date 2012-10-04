@@ -46,7 +46,7 @@ public final class ExpressionInvoker extends ExpressionBase implements Invoker {
 	private List members=new ArrayList();
 
 	public ExpressionInvoker(Expression expr) {
-		super(expr.getLine());
+		super(expr.getStart(),expr.getEnd());
 		this.expr=expr;
 	}
 

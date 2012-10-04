@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function structisempty
+ * Implements the CFML Function structisempty
  */
 package railo.runtime.functions.struct;
 

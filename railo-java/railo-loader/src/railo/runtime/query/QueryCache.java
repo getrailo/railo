@@ -1,7 +1,9 @@
 package railo.runtime.query;
 
+import java.io.IOException;
 import java.util.Date;
 
+import railo.runtime.PageContext;
 import railo.runtime.db.SQL;
 import railo.runtime.type.Query;
 
@@ -12,8 +14,9 @@ public interface QueryCache {
 
     /**
      * clear expired queries from cache
+     * @throws IOException 
      */
-    public abstract void clearUnused();
+    public abstract void clearUnused(PageContext pc) throws IOException;
 
     /**
      * returns a Query from Query Cache or null if no match found
@@ -24,9 +27,9 @@ public interface QueryCache {
      * @param cacheAfter
      * @return Query
      */
-    public abstract Query getQuery(SQL sql, String datasource, String username,
-            String password, Date cacheAfter);
-
+    public abstract Query getQuery(PageContext pc,SQL sql, String datasource, String username, String password, Date cacheAfter);
+    
+    
     /**
      * sets a Query to Cache
      * @param sql
@@ -36,13 +39,20 @@ public interface QueryCache {
      * @param value
      * @param cacheBefore
      */
-    public abstract void set(SQL sql, String datasource, String username,
+    public abstract void set(PageContext pc,SQL sql, String datasource, String username,
             String password, Object value, Date cacheBefore);
 
     /**
      * clear the cache
+     * @throws IOException 
      */
-    public abstract void clear();
+    public abstract void clear(PageContext pc);
+
+	/**
+	 * clear the cache
+     * @param filter
+	 */
+	public abstract void clear(PageContext pc, QueryCacheFilter filter);
 
 	/**
 	 * removes query from cache
@@ -50,9 +60,11 @@ public interface QueryCache {
 	 * @param datasource
 	 * @param username
 	 * @param password
+	 * @throws IOException 
 	 */
-	public abstract void remove(SQL sql, String datasource,String username, String password);
+	public abstract void remove(PageContext pc,SQL sql, String datasource,String username, String password);
 
-	public abstract Object get(SQL sql, String datasource,String username, String password, Date cachedafter);
+	public abstract Object get(PageContext pc,SQL sql, String datasource,String username, String password, Date cachedafter);
 
+	public abstract int size(PageContext pc);
 }

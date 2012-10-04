@@ -1,28 +1,29 @@
 package railo.runtime.type.cfc;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import railo.runtime.ComponentPro;
+import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
-public abstract class ComponentAccessProxy extends ComponentProProxy implements ComponentAccess {
+import java.util.Iterator;
+import java.util.Set;
+
+public abstract class ComponentAccessProxy extends ComponentProxy implements ComponentAccess {
 
 	public abstract ComponentAccess getComponentAccess();
 	
 
-	public ComponentPro getComponentPro() {
+	public Component getComponent() {
 		return getComponentAccess();
 	}
 	
 	/**
-	 * @see railo.runtime.ComponentPro#getWSDLFile()
+	 * @see railo.runtime.Component#getWSDLFile()
 	 */
 	public String getWSDLFile() {
 		return getComponentAccess().getWSDLFile();
@@ -32,7 +33,7 @@ public abstract class ComponentAccessProxy extends ComponentProProxy implements 
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return getComponentAccess().duplicate(deepCopy);
+		return (Collection) Duplicator.duplicate(getComponentAccess(),deepCopy);
 	}
 
 	/**
@@ -77,18 +78,22 @@ public abstract class ComponentAccessProxy extends ComponentProProxy implements 
 	}
 
 	/**
-	 * @see railo.runtime.type.cfc.ComponentAccess#keysAsString(int)
-	 */
-	public String[] keysAsString(int access) {
-		return getComponentAccess().keysAsString(access);
-	}
-
-	/**
 	 * @see railo.runtime.type.cfc.ComponentAccess#keys(int)
 	 */
 	public Key[] keys(int access) {
 		return getComponentAccess().keys(access);
 	}
+
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator(int access) {
+		return getComponentAccess().entryIterator(access);
+	}
+
+	@Override
+	public Iterator<Object> valueIterator(int access) {
+		return getComponentAccess().valueIterator(access);
+	}
+	
 
 	/**
 	 * @see railo.runtime.type.cfc.ComponentAccess#get(int, railo.runtime.type.Collection.Key)
@@ -107,8 +112,12 @@ public abstract class ComponentAccessProxy extends ComponentProProxy implements 
 	/**
 	 * @see railo.runtime.type.cfc.ComponentAccess#iterator(int)
 	 */
-	public Iterator iterator(int access) {
-		return getComponentAccess().iterator(access);
+	public Iterator<Collection.Key> keyIterator(int access) {
+		return getComponentAccess().keyIterator(access);
+	}
+	
+	public Iterator<String> keysAsStringIterator(int access) {
+		return getComponentAccess().keysAsStringIterator(access);
 	}
 
 	/**

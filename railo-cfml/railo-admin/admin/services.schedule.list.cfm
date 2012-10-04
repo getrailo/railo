@@ -20,8 +20,8 @@ Defaults --->
 	<cfargument name="exact" required="no" type="boolean" default="false">
 	
 	<cfset arguments.filter=replace(arguments.filter,'*','',"all")>
-    <cfset filter=trim(filter)>
-	<cfif not len(filter)>
+    <cfset arguments.filter=trim(arguments.filter)>
+	<cfif not len(arguments.filter)>
 		<cfreturn true>
 	</cfif>
 	<cfif exact>
@@ -170,21 +170,25 @@ List --->
 
 
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%" border="0">
+
+ 	<colgroup>
+        <col width="10">
+    </colgroup>
 <tr>
-	<td colspan="4"><cfoutput><h2>#stText.Schedule.Detail#</h2>
+	<td colspan="5"><cfoutput><h2>#stText.Schedule.Detail#</h2>
 #stText.Schedule.DetailDescription#</cfoutput></td>
 </tr>
 <tr>
-	<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
+	<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<cfoutput>
 	<tr>
-		<td width="20"></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="nameFilter" style="width:225px" value="#session.st.nameFilter#" /></td>
-		<td width="130" class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:130px" value="#session.st.IntervalFilter#" /></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="urlFilter" style="width:225px" value="#session.st.urlFilter#" /></td>
+		<td></td>
+		<td class="tblHead" nowrap><input type="text" name="nameFilter" style="width:100%" value="#session.st.nameFilter#" /></td>
+		<td class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:100%" value="#session.st.IntervalFilter#" /></td>
+		<td class="tblHead" nowrap><input type="text" name="urlFilter" style="width:100%" value="#session.st.urlFilter#" /></td>
 		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
 	</tr>
 	<tr>
@@ -193,14 +197,14 @@ List --->
     
     
     <tr>
-		<td width="20"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
-		<td width="140" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=task">#stText.Schedule.Name#
+		<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
+		<td class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=task">#stText.Schedule.Name#
 		<cfif session.st.sortName EQ "task" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
-		<td width="160" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=interval">#stText.Schedule.Interval#
+		<td class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=interval">#stText.Schedule.Interval#
 		<cfif session.st.sortName EQ "interval" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
-		<td width="170" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=url">#stText.Schedule.URL#
+		<td class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=url">#stText.Schedule.URL#
 		<cfif session.st.sortName EQ "url" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
-		<td width="60" class="tblHead" nowrap>#stText.Schedule.paused#</td>
+		<td class="tblHead" nowrap>#stText.Schedule.paused#</td>
 	</tr>
 	
 	<cfloop query="tasks">
@@ -277,7 +281,7 @@ Create Task --->
 <tr>
 	<td colspan="2"><h2>#stText.Schedule.CreateTask#</h2></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <tr>
 	<td class="tblHead" width="100">#stText.Schedule.Name#</td>
 	<td class="tblContent" width="500"><cfinput type="text" name="name" value="" style="width:200px" required="yes" 
@@ -287,7 +291,7 @@ Create Task --->
 	<td class="tblHead">#stText.Schedule.URL#</td>
 	<td class="tblContent">
 		<span class="comment">#stText.Schedule.URLDescription#</span><br>
-		<cfinput type="text" name="url" value="" style="width:350px" required="yes" 
+		<cfinput type="text" name="url" value="" style="width:100%" required="yes" 
 		message="#stText.Schedule.URLMissing#"></td>
 </tr>
 <tr>

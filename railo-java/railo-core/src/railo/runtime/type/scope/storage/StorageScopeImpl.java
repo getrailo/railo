@@ -1,11 +1,14 @@
 package railo.runtime.type.scope.storage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import railo.commons.lang.RandomUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -14,41 +17,50 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
-import railo.runtime.op.Caster;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.listener.ApplicationContext;
+import railo.runtime.op.Duplicator;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
 public abstract class StorageScopeImpl extends StructSupport implements StorageScope,Sizeable {
-	
+
+	public static Collection.Key CFID=KeyConstants._cfid;
+	public static Collection.Key CFTOKEN=KeyConstants._cftoken;
+	public static Collection.Key URLTOKEN=KeyConstants._urltoken;
+	public static Collection.Key LASTVISIT=KeyConstants._lastvisit;
+	public static Collection.Key HITCOUNT=KeyConstants._hitcount;
+	public static Collection.Key TIMECREATED=KeyConstants._timecreated;
+	public static Collection.Key SESSION_ID=KeyConstants._sessionid;
 
 
 	private static int _id=0;
 	private int id=0;
 
 	private static final long serialVersionUID = 7874930250042576053L;
-	private static Set<String> FIX_KEYS=new HashSet<String>();
+	private static Set<Collection.Key> FIX_KEYS=new HashSet<Collection.Key>();
 	static {
-		FIX_KEYS.add("cfid");
-		FIX_KEYS.add("cftoken");
-		FIX_KEYS.add("urltoken");
-		FIX_KEYS.add("lastvisit");
-		FIX_KEYS.add("hitcount");
-		FIX_KEYS.add("timecreated");
+		FIX_KEYS.add(CFID);
+		FIX_KEYS.add(CFTOKEN);
+		FIX_KEYS.add(URLTOKEN);
+		FIX_KEYS.add(LASTVISIT);
+		FIX_KEYS.add(HITCOUNT);
+		FIX_KEYS.add(TIMECREATED);
 	}
 	
 
-	protected static Set<String> ignoreSet=new HashSet<String>();
+	protected static Set<Collection.Key> ignoreSet=new HashSet<Collection.Key>();
 	static {
-		ignoreSet.add("cfid");
-		ignoreSet.add("cftoken");
-		ignoreSet.add("urltoken");
+		ignoreSet.add(CFID);
+		ignoreSet.add(CFTOKEN);
+		ignoreSet.add(URLTOKEN);
 	}
 	
 	
@@ -63,6 +75,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	private int type;
 	private long timeSpan=-1;
 	private String storage;
+	private Map<String, String> tokens; 
 	
 	
 	/**
@@ -94,7 +107,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @param deepCopy
 	 */
 	public StorageScopeImpl(StorageScopeImpl other, boolean deepCopy) {
-		this.sct=(Struct)other.sct.duplicate(deepCopy);
+		this.sct=(Struct)Duplicator.duplicate(other.sct,deepCopy);
 		this.timecreated=other.timecreated;
 		this._lastvisit=other._lastvisit;
 		this.hitcount=other.hitcount;
@@ -107,7 +120,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void touchBeforeRequest(PageContext pc) {
 		
@@ -117,8 +130,8 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		
 		//lastvisit=System.currentTimeMillis();
 		if(sct==null) sct=new StructImpl();
-		sct.setEL(KeyImpl.CFID, pc.getCFID());
-		sct.setEL(KeyImpl.CFTOKEN, pc.getCFToken());
+		sct.setEL(KeyConstants._cfid, pc.getCFID());
+		sct.setEL(KeyConstants._cftoken, pc.getCFToken());
 		sct.setEL(URLTOKEN, pc.getURLToken());
 		sct.setEL(LASTVISIT, _lastvisit);
 		_lastvisit=new DateTimeImpl(pc.getConfig());
@@ -126,71 +139,66 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		
 		if(type==SCOPE_CLIENT){
 			sct.setEL(HITCOUNT, new Double(hitcount++));
-			sct.setEL(TIMECREATED, timecreated);
 		}
 		else {
 			sct.setEL(SESSION_ID, pc.getApplicationContext().getName()+"_"+pc.getCFID()+"_"+pc.getCFToken());
 		}
+		sct.setEL(TIMECREATED, timecreated);
+	}
+
+	public void resetEnv(PageContext pc){
+		_lastvisit=new DateTimeImpl(pc.getConfig());
+		timecreated=new DateTimeImpl(pc.getConfig());
+		touchBeforeRequest(pc);
+		
 	}
 	
 	void setTimeSpan(PageContext pc) {
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext ac=pc.getApplicationContext();
 		this.timeSpan=getType()==SCOPE_SESSION?
 				ac.getSessionTimeout().getMillis():
 				ac.getClientTimeout().getMillis();
 	}
 	
-
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#setMaxInactiveInterval(int)
-	 */
 	@Override
 	public void setMaxInactiveInterval(int interval) {
 		this.timeSpan=interval*1000L;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getMaxInactiveInterval()
-	 */
 	@Override
 	public int getMaxInactiveInterval() {
 		return (int)(this.timeSpan/1000L);
 	}
 	
-	
-	
-
-	/**
-	 * @see railo.runtime.type.Scope#isInitalized()
-	 */
+	@Override
 	public final boolean isInitalized() {
 		return isinit;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public final void initialize(PageContext pc) {
 		// StorageScopes need only request initialisation no global init, they are not reused;
 	}
 	
-	/**
-	 * @see railo.runtime.type.SharedScope#release(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		
 		sct.setEL(LASTVISIT, _lastvisit);
+		sct.setEL(TIMECREATED, timecreated);
 		
 		if(type==SCOPE_CLIENT){
 			sct.setEL(HITCOUNT, new Double(hitcount));
-			sct.setEL(TIMECREATED, timecreated);
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.Scope#release()
-	 */
+	@Override
 	public final void release() {
+		clear();
+		isinit=false;
+	}
+	
+	@Override
+	public final void release(PageContext pc) {
 		clear();
 		isinit=false;
 	}
@@ -200,16 +208,14 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	 * @return returns if the scope is empty or not, this method ignore the "constant" entries of the scope (cfid,cftoken,urltoken)
 	 */
 	public boolean hasContent() {
-		if(sct.size()==(type==SCOPE_CLIENT?6:4) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyImpl.CFTOKEN) && sct.containsKey(KeyImpl.CFID)) {
+		if(sct.size()==(type==SCOPE_CLIENT?6:5) && sct.containsKey(URLTOKEN) && sct.containsKey(KeyConstants._cftoken) && sct.containsKey(KeyConstants._cfid)) {
 			return false;
 		}
 		return true;
 	}
-
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
-	public void clear() {
+	
+	@Override
+	public void  clear() {
 		sct.clear();
 	}
 
@@ -237,25 +243,31 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		return sct.get(key, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return sct.keyIterator();
 	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return sct.keysAsString();
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return sct.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return sct.entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return sct.valueIterator();
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public railo.runtime.type.Collection.Key[] keys() {
-		return sct.keys();
+		return CollectionUtil.keys(this);
 	}
 
 
@@ -398,15 +410,15 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		return lastvisit;
 	}
 
-	public String[] pureKeys() {
-		List keys=new ArrayList();
-		Iterator it = keyIterator();
-		String key;
+	public Collection.Key[] pureKeys() {
+		List<Collection.Key> keys=new ArrayList<Collection.Key>();
+		Iterator<Key> it = keyIterator();
+		Collection.Key key;
 		while(it.hasNext()){
-			key=Caster.toString(it.next(),"").toLowerCase();
+			key=it.next();
 			if(!FIX_KEYS.contains(key))keys.add(key);
 		}
-		return (String[]) keys.toArray(new String[keys.size()]);
+		return keys.toArray(new Collection.Key[keys.size()]);
 	}
 	
 	/**
@@ -509,7 +521,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 				sb.append(c);
 			else {
 				sb.append('$');
-				sb.append(Integer.toString(((int)c),Character.MAX_RADIX));
+				sb.append(Integer.toString((c),Character.MAX_RADIX));
 				sb.append('$');
 			}
 		}
@@ -539,5 +551,36 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	
     public int _getId() {
         return id;
+    }
+    
+
+	
+	public long getCreated() {
+		return timecreated==null?0:timecreated.getTime();
+	}
+	
+	@Override
+	public synchronized String generateToken(String key, boolean forceNew) {
+        if(tokens==null) 
+        	tokens = new HashMap<String,String>();
+        
+        // get existing
+        String token;
+        if(!forceNew) {
+        	token = tokens.get(key);
+        	if(token!=null) return token;
+        }
+        
+        // create new one
+        token = RandomUtil.createRandomStringLC(40);
+        tokens.put(key, token);
+        return token;
+    }
+	
+	@Override
+	public synchronized boolean verifyToken(String token, String key) {
+		if(tokens==null) return false;
+        String _token = tokens.get(key);
+        return _token!=null && _token.equalsIgnoreCase(token);
     }
 }

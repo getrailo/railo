@@ -13,9 +13,10 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
- * Implements the Cold Fusion Function createGuid
+ * Implements the CFML Function createGuid
  */
 public final class GetRailoId implements Function {
 
@@ -30,13 +31,13 @@ public final class GetRailoId implements Function {
 	    ConfigWeb config = pc.getConfig();
     	
 		web.set(SECURITY_KEY, ((ConfigImpl)config).getSecurityKey());
-		web.set(KeyImpl.ID, config.getId());
+		web.set(KeyConstants._id, config.getId());
 		sct.set(WEB, web);
     	
     	if(config instanceof ConfigWebImpl){
     		ConfigWebImpl cwi = (ConfigWebImpl)config;
     		server.set(SECURITY_KEY, cwi.getServerSecurityKey());
-    		server.set(KeyImpl.ID, cwi.getServerId());
+    		server.set(KeyConstants._id, cwi.getServerId());
     		sct.set(KeyImpl.SERVER, server);
     	}
     	

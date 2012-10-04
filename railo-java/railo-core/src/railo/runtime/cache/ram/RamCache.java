@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.io.SystemUtil;
-import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.runtime.cache.CacheSupport;
 import railo.runtime.config.Config;
@@ -33,12 +32,7 @@ public class RamCache extends CacheSupport {
 		
 	}
 	
-
-	public void init(Cache cache,String cacheName, Struct arguments) throws IOException {
-		init(cacheName, arguments);
-	}
-	
-	public void init(String cacheName, Struct arguments) throws IOException {
+	public void init(Config config,String cacheName, Struct arguments) throws IOException {
 		until=Caster.toLongValue(arguments.get("timeToLiveSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		idleTime=Caster.toLongValue(arguments.get("timeToIdleSeconds",Constants.LONG_ZERO),Constants.LONG_ZERO)*1000;
 		controlIntervall=Caster.toIntValue(arguments.get("controlIntervall",null),DEFAULT_CONTROL_INTERVALL)*1000;
@@ -94,7 +88,8 @@ public class RamCache extends CacheSupport {
 		return missCount;
 	}
 
-	public List keys() {
+	@Override
+	public List<String> keys() {
 		List<String> list=new ArrayList<String>();
 		
 		Iterator<Entry<String, RamCacheEntry>> it = entries.entrySet().iterator();

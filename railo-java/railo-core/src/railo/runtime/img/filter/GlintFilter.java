@@ -21,8 +21,8 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * A filter which renders "glints" on bright parts of the image.
@@ -235,8 +235,8 @@ public class GlintFilter extends AbstractBufferedImageOp  implements DynFilterin
 						dstPixels[j] = PixelUtils.combinePixels( dstPixels[j], colors[k], PixelUtils.ADD );
 
 					// Diagonals
-					int xymin = Math.max( xmin2, ymin2 );
-					int xymax = Math.min( xmax2, ymax2 );
+					//int xymin = Math.max( xmin2, ymin2 );
+					//int xymax = Math.min( xmax2, ymax2 );
 					// SE
 					int count = Math.min( xmax2, ymax2 );
 					for ( int i = 1, j = index+width+1, k = 0; i <= count; i++, j += width+1, k++ )
@@ -276,7 +276,7 @@ public class GlintFilter extends AbstractBufferedImageOp  implements DynFilterin
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Amount, Blur, GlintOnly, Length, Threshold]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Colormap, Amount, Blur, GlintOnly, Length, Threshold]");
 		}
 
 		return filter(src, dst);

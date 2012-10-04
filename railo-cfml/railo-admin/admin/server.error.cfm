@@ -95,11 +95,15 @@ Error Output --->
 
 <!--- 
 Create Datasource --->
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
+<colgroup>
+    <col width="150">
+    <col>
+</colgroup>
 <tr>
 	<td colspan="2">#stText.err.descr#</td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfloop list="500,404" index="statusCode">
 <tr>
 	<td class="tblHead" width="150" height="28">#stText.err.errorTemplate[statusCode]#</td>

@@ -5,7 +5,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.List;
 
 /**
- * Implements the Cold Fusion Function listlast
+ * Implements the CFML Function listlast
  */
 public final class ListLast implements Function {
 	
@@ -14,11 +14,11 @@ public final class ListLast implements Function {
 	public static String call(PageContext pc , String list) {
 		return List.last(list,",",true);
 	}
-	public static String call(PageContext pc , String list, String delimeter) {
-		return List.last(list,delimeter,true);
+	public static String call(PageContext pc , String list, String delimiter) {
+		return List.last(list,delimiter,true);
 	}
-	public static String call(PageContext pc , String list, String delimeter, boolean includeEmptyFields) {
-		return List.last(list,delimeter,!includeEmptyFields);
+	public static String call(PageContext pc , String list, String delimiter, boolean includeEmptyFields) {
+		return List.last(list,delimiter,!includeEmptyFields);
 	}
 	
 }

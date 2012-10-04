@@ -34,7 +34,6 @@ import railo.commons.lang.StringUtil;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
 import railo.runtime.db.DatasourceConnection;
-import railo.runtime.db.DatasourceConnectionPro;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
@@ -57,15 +56,18 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryColumnRef;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.CollectionIterator;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.ForEachQueryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.QueryUtil;
 
-public class SimpleQuery implements QueryPro, ResultSet, Objects {
+public class SimpleQuery implements Query, ResultSet, Objects {
 	
 	static final Object DEFAULT_VALUE = new Object();
 	private ResultSet res;
@@ -107,13 +109,12 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = ((DatasourceConnectionPro)dc).getPreparedStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+	        	PreparedStatement preStat = dc.getPreparedStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
 		        hasResult=preStat.execute();    
 	        }
-			int uc;
 			ResultSet res;
 			
 			do {
@@ -122,8 +123,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 					init(res);
 					break;
 				}
-				else 
-					throw new ApplicationException("Simple queries can only be used for queries returning a resultset");
+				throw new ApplicationException("Simple queries can only be used for queries returning a resultset");
 			}
 			while(true);
 		} 
@@ -224,23 +224,6 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	public Key[] keys() {
 		return columnNames;
 	}
-	
-	
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#keysAsString()
-	 */
-	
-	public String[] keysAsString() {
-		return QueryUtil.toStringArray(keys());
-	}
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#removeEL(java.lang.String)
-	 */
-	public synchronized Object removeEL(String key) {
-		throw notSupported();
-	}
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#removeEL(railo.runtime.type.Collection.Key)
@@ -250,13 +233,12 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 		throw notSupported();
 	}
 
-	/**
+	/* *
 	 * @see railo.runtime.type.QueryImpl#remove(java.lang.String)
-	 */
-	
-	public synchronized Object remove(String key) throws PageException {
+	 * /
+	public synchronized Object remove (String key) {
 		throw notSupported();
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#remove(railo.runtime.type.Collection.Key)
@@ -279,7 +261,8 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 */
 	
 	public Object get(Key key, Object defaultValue) {
-		return getAt(key, getCurrentrow(),getPid(),defaultValue);
+		int pid = getPid();
+		return getAt(key, getCurrentrow(pid),pid,defaultValue);
 	}
 
 	/**
@@ -303,7 +286,8 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 */
 	
 	public Object get(Key key) throws PageException {
-		return getAt(key, getCurrentrow(),getPid());
+		int pid = getPid();
+		return getAt(key, getCurrentrow(pid),pid);
 	}
 
 	/**
@@ -313,11 +297,11 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	public Object getAt(Key key, int row, int pid, Object defaultValue) {
 		char c=key.lowerCharAt(0);
     	if(c=='r') {
-            if(key.equals(QueryImpl.RECORDCOUNT)) return new Double(getRecordcount());
+            if(key.equals(KeyConstants._RECORDCOUNT)) return new Double(getRecordcount());
         }
     	else if(c=='c') {
-            if(key.equals(QueryImpl.CURRENTROW)) return new Double(getCurrentrow(pid));
-            else if(key.equals(QueryImpl.COLUMNLIST)) return getColumnlist();
+            if(key.equals(KeyConstants._CURRENTROW)) return new Double(getCurrentrow(pid));
+            else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist();
         }
         
         SimpleQueryColumn column = columns.get(key.getLowerString());
@@ -526,14 +510,6 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	}
 
 	/**
-	 * @see railo.runtime.type.QueryImpl#getCurrentrow()
-	 */
-	
-	public synchronized int getCurrentrow() {
-		return getCurrentrow(getPid());
-	}
-
-	/**
 	 * @see railo.runtime.type.QueryImpl#getCurrentrow(int)
 	 */
 	
@@ -549,7 +525,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 		StringBuffer sb=new StringBuffer();
 		for(int i=0;i<columnNames.length;i++) {
 			if(i>0)sb.append(',');
-			sb.append(upperCase?columnNames[i].getString().toUpperCase():columnNames[i].getString());// FUTURE getUpperString
+			sb.append(upperCase?columnNames[i].getUpperString():columnNames[i].getString());
 		}
 		return sb.toString();
 	}
@@ -772,11 +748,11 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 		if(key.getString().length()>0) {
         	char c=key.lowerCharAt(0);
         	if(c=='r') {
-	            if(key.equals(QueryImpl.RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._RECORDCOUNT)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
         	else if(c=='c') {
-	            if(key.equals(QueryImpl.CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
-	            else if(key.equals(QueryImpl.COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            if(key.equals(KeyConstants._CURRENTROW)) return new QueryColumnRef(this,key,Types.INTEGER);
+	            else if(key.equals(KeyConstants._COLUMNLIST)) return new QueryColumnRef(this,key,Types.INTEGER);
 	        }
 	        SimpleQueryColumn col = columns.get(key.getLowerString());
 	        if(col!=null) return col;
@@ -892,7 +868,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 * @see railo.runtime.type.QueryImpl#setColumnNames(railo.runtime.type.Collection.Key[])
 	 */
 	
-	public void setColumnNames(Key[] trg) throws PageException {
+	public void setColumnNames(Key[] trg) {
 		throw notSupported();
 	}
 
@@ -1080,7 +1056,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	        while(it.hasNext()){
 	        	sqc=it.next();
 	        	column=new StructImpl();
-	        	column.setEL(KeyImpl.NAME,sqc.getKey());
+	        	column.setEL(KeyConstants._name,sqc.getKey());
 	        	column.setEL("isCaseSensitive",Boolean.FALSE);
 	        	column.setEL("typeName",sqc.getTypeAsString());
 	        	cols.appendEL(column);
@@ -1137,15 +1113,6 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	}
 
 	/**
-	 * @see railo.runtime.type.QueryImpl#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-	 */
-	
-	public Object call(PageContext pc, String methodName, Object[] arguments)
-			throws PageException {
-		throw notSupported();
-	}
-
-	/**
 	 * @see railo.runtime.type.QueryImpl#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
 	 */
 	
@@ -1154,14 +1121,6 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 		throw notSupported();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
-	
-	public Object callWithNamedValues(PageContext pc, String methodName,
-			Struct args) throws PageException {
-		throw notSupported();
-	}
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
@@ -1177,7 +1136,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, String key, Object defaultValue) {
-		return getAt(KeyImpl.init(key), getCurrentrow(), pc.getId(),defaultValue);
+		return getAt(KeyImpl.init(key), getCurrentrow(pc.getId()), pc.getId(),defaultValue);
 	}
 
 	/**
@@ -1185,7 +1144,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, Key key, Object defaultValue) {
-		return getAt(key, getCurrentrow(), pc.getId(),defaultValue);
+		return getAt(key, getCurrentrow(pc.getId()), pc.getId(),defaultValue);
 	}
 
 	/**
@@ -1193,7 +1152,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, String key) throws PageException {
-		return getAt(KeyImpl.init(key), getCurrentrow(), pc.getId());
+		return getAt(KeyImpl.init(key), getCurrentrow(pc.getId()), pc.getId());
 	}
 
 	/**
@@ -1201,7 +1160,7 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	 */
 	
 	public Object get(PageContext pc, Key key) throws PageException {
-		return getAt(key, getCurrentrow(), pc.getId());
+		return getAt(key, getCurrentrow(pc.getId()), pc.getId());
 	}
 
 	/**
@@ -1210,15 +1169,6 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	
 	public boolean isInitalized() {
 		return true;
-	}
-
-	/**
-	 * @see railo.runtime.type.QueryImpl#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	
-	public Object set(PageContext pc, String propertyName, Object value)
-			throws PageException {
-		throw notSupported();
 	}
 
 	/**
@@ -2333,22 +2283,24 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	  /**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
 	
-
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return keyIterator();
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 	
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return new CollectionIterator(keys(),this);
 	}
 	
@@ -2848,5 +2800,10 @@ public class SimpleQuery implements QueryPro, ResultSet, Objects {
 	public long getExecutionTime() {
 		return exeTime;
 	}
+	
+	@Override
+	public java.util.Iterator getIterator() {
+		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
+    }
 
 }

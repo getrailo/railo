@@ -36,7 +36,7 @@ public final class CastBoolean extends ExpressionBase implements ExprBoolean {
      * @param expr
      */
     private CastBoolean(Expression expr) {
-        super(expr.getLine());
+        super(expr.getStart(),expr.getEnd());
         this.expr=expr;
     }
     
@@ -50,7 +50,7 @@ public final class CastBoolean extends ExpressionBase implements ExprBoolean {
         if(expr instanceof ExprBoolean) return (ExprBoolean) expr;
         if(expr instanceof Literal) {
             Boolean bool = ((Literal)expr).getBoolean(null);
-            if(bool!=null) return new LitBoolean(bool.booleanValue(),expr.getLine());
+            if(bool!=null) return new LitBoolean(bool.booleanValue(),expr.getStart(),expr.getEnd());
             // TODO throw new TemplateException("can't cast value to a boolean value");
         }
         return new CastBoolean(expr);

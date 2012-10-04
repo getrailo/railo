@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function rtrim
+ * Implements the CFML Function rtrim
  */
 package railo.runtime.functions.string;
 

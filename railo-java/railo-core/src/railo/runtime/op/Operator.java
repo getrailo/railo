@@ -266,7 +266,7 @@ public final class Operator {
 	 * @param left 
 	 * @param right 
 	 * @return difference as int
-	 */ 
+	 */
 	public static int compare(String left, String right) { 
 		if(Decision.isNumeric(left)) {
 			if(Decision.isNumeric(right)){
@@ -279,13 +279,14 @@ public final class Operator {
 				}
 				return compare(Caster.toDoubleValue(left,Double.NaN),Caster.toDoubleValue(right,Double.NaN));
 			}
+			
+			return compare(Caster.toDoubleValue(left,Double.NaN),right);
 		}
-		else if(Decision.isBoolean(left)) {
+		if(Decision.isBoolean(left))
 			return compare(Caster.toBooleanValue(left,false)?1D:0D,right);
-		}
 //		 NICE Date compare, perhaps datetime to double
 		return left.compareToIgnoreCase(right); 
-	} 
+	}
 
     /** 
      * compares a String with a double 
@@ -296,7 +297,10 @@ public final class Operator {
     public static int compare(String left, double right) { 
     	if(Decision.isNumeric(left)) {
             if(left.length()>9) {
-            	return new BigDecimal(left).compareTo(new BigDecimal(right));
+            	try{
+            		return new BigDecimal(left).compareTo(new BigDecimal(right));
+            	}
+            	catch(Throwable t){}
             }
     		return compare(Caster.toDoubleValue(left,Double.NaN),right); 
     	}

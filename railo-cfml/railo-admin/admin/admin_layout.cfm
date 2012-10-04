@@ -7,6 +7,7 @@
 
 <cfscript>
 ad=request.adminType;
+fgColor=(ad EQ "server")?"##9c0000":"##007bb7";
 
 hasNavigation=len(attributes.navigation) GT 0;
 
@@ -45,15 +46,10 @@ if(structKeyExists(url,'action'))otherURL&="?action="&url.action;
 	  
 		body {background-image:url(<cfmodule type="css" template="img.cfm" src="#ad#-back.png" />);background-repeat:repeat-x;background-color:##f7f7f7;margin-top:0px;margin-left:0px;}
 		body, tr, td,div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:##3c3e40;}
-		.box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:##568bc1;}
-		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:##568bc1;}
-		h2 {height:6pt;font-size : 12pt;font-weight:normal;color:##568bc1;}
+		.box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:#fgColor#;}
+		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:#fgColor#;}
+		h2 {height:6pt;font-size : 12pt;font-weight:normal;color:#fgColor#;}
 		
-		div.navtop		{margin-top:8px;margin-bottom:3px;color:##333333;font-weight:bold;font-size : 9pt;}
-    	a.navtop		{text-decoration:none;font-weight:bold;font-size : 9pt;}
-		
-    	a.navsub		{text-decoration:none;color:##568bc1;font-size : 8pt;}
-    	a.navsub_active	{text-decoration:none;color:##568bc1;font-size : 8pt;font-weight:bold;}
 		
 		.comment{font-size : 10px;color:##787a7d;text-decoration:none;}
 		.commentHead{font-size : 10px;color:##DFE9F6;}
@@ -91,8 +87,52 @@ background-color:white;
 		select {font-size : 11px;color:##3c3e40;margin:3px 0px 3px 0px;}
 		.checkbox,.radio {border:0px;}
 		
-		a{color:##568bc1;}
+		a{color:#fgColor#;}
 		
+		
+	
+ul##menu, ul##menu ul {
+  list-style-type:none;
+  margin: 0;
+  padding: 0;
+}
+
+ul##menu a {
+  display: block;
+  text-decoration: none;	
+}
+
+ul##menu li {margin-top: 1px;}
+
+ul##menu li a {margin-top:8px;margin-bottom:3px;color:##333;font-weight:bold;font-size : 9pt;}
+ul##menu li a:hover {color:##000;}
+
+ul##menu li ul li a {
+margin-top:0px;margin-bottom:0px;font-weight:normal;
+ text-decoration:none;color:#fgColor#;font-size : 8pt;
+  padding-left: 10px;
+  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow.gif" width="4" height="7" />);background-repeat:no-repeat;
+}
+
+ul##menu li ul li a:hover {
+ 
+margin-top:0px;margin-bottom:0px;font-weight:normal;
+ text-decoration:none;color:#fgColor#;font-size : 8pt;
+  padding-left: 10px;
+  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow-active.gif" width="4" height="7" />);background-repeat:no-repeat;
+}
+
+ul##menu li ul li a.menu_active {
+margin-top:0px;margin-bottom:0px;font-weight:bold;
+ text-decoration:none;color:#fgColor#;font-size : 8pt;
+  padding-left: 10px;
+  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow-active.gif" width="4" height="7" />);background-repeat:no-repeat;
+}
+		.commentError{font-size : 10px;color:##cc0000;text-decoration:none;}
+		
+		
+		.InputError{
+			background: url(<cfmodule type="css" template="img.cfm" src="input-shadow-error.png" />) repeat-x 0 0;background-color:##fae2e2;}
 		
 		<!---/*
 		.darker{background-color:##e0e0e0;}
@@ -101,47 +141,71 @@ background-color:white;
 		*/--->
 		</style></cfoutput>
 	</head>
-	<body <cfif structKeyExists(attributes,"onload")>onload="<cfoutput>#attributes.onload#</cfoutput>"</cfif>>
-
+	<body id="body" <cfif structKeyExists(attributes,"onload")>onload="<cfoutput>#attributes.onload#</cfoutput>"</cfif>>
+<cfset request.mode="full">
 <cfoutput>
-<table align="center" cellpadding="0" cellspacing="0" border="0">
-<colgroup>
-    <col width="4">
-    <col width="158">
+<center>
+<table align="center" cellpadding="0" cellspacing="0" border="0"<cfif session.screenMode EQ "full"> width="100%"</cfif>>
+<!---<colgroup>
+    <col width="11">
+    <col width="170">
 	<cfif hasNavigation><col width="1"></cfif>
-	<col width="815">
+	<col width="100%">
 	<col width="1">
 	<col width="9">
 </colgroup>
+--->
 
+<colgroup>
+    <col width="11">
+    <col width="170">
+	<cfif hasNavigation><col width="1"></cfif>
+	<cfif session.screenMode EQ "full"><col width="100%"><cfelse><col width="825"></cfif>
+	<col width="11">
+</colgroup>
 <tr>
-	<td colspan="#hasNavigation?3:2#" height="91" valign="bottom"><cfmodule template="tp.cfm" width="1" height="34" /><br>
-    <a href="#request.self#"><cfmodule template="img.cfm" src="railo.png" width="92" height="59" vspace="10"/></a></td>
+	<td width="#hasNavigation?182:181#" colspan="#hasNavigation?3:2#" valign="bottom"><cfif session.screenMode NEQ "full"><cfmodule template="tp.cfm" width="1" height="34" /><br></cfif>
+    <a href="#request.self#"><cfif session.screenMode EQ "full"><cfmodule template="img.cfm" src="#ad#-railo-small.png" hspace="5" vspace="3"/><cfelse><cfmodule template="img.cfm" src="#ad#-railo.png" width="102" height="69" vspace="5"/></cfif></a></td>
     
-    <td colspan="2" height="91" align="right" valign="bottom"><a <cfif ad EQ "web">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="left-tab-#ad#.png" /></a><a <cfif ad EQ "server">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="right-tab-#ad#.png" /></a></td>
-    <td><cfmodule template="tp.cfm" width="1" height="1" /></td>
+    <td align="right" valign="bottom"><a <cfif ad EQ "web">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="left-tab-#ad#.png" /></a><a <cfif ad EQ "server">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="right-tab-#ad#.png" /></a></td>
+    <td width="11" rowspan="2"><cfmodule template="tp.cfm" width="11" height="1" /></td>
 </tr>
 <tr>
-	<td rowspan="2" width="4" valign="top"><cfmodule template="img.cfm" vspace="77" src="shadow-left.gif" /></td>
-	<td valign="top"  width="158" style="background-image:url(<cfmodule type="css" template="img.cfm" src="back-left.png" />);"><cfmodule template="img.cfm" src="left.png" />
+	<td width="11"><cfmodule template="tp.cfm" width="11" height="1" /></td>
+	<td width="170" style="background-image:url(<cfmodule type="css" template="img.cfm" src="left.png" />);"><cfmodule template="img.cfm" hspace="6" src="left.png"/></td>
+	<cfif hasNavigation><td width="1" style="background-color:##d2d2d2;"></td></cfif>
+	<td style="background-color:white"></td>
+</tr>
+
+<tr>
+	<td width="11" valign="top"><cfmodule template="img.cfm" vspace="#session.screenMode EQ "full"?140:67#" src="shadow-left.gif" /></td>
+	<td valign="top"  width="170" style="background-color:##e6e6e6;">
+    <script>document.write('<a href="#request.self#?realScreenSize='+$(document).width()+'&screenmode=#session.screenmode=='compact'?'full':'compact'#<cfif isDefined('url.action')>&action=#url.action#</cfif>">');</script>
+	
+	<cfmodule template="img.cfm" hspace="8" src="#session.screenMode EQ "full"?'min':'max'#l.png" width="22" height="22" border="0"/></a><br>
 		<cfif hasNavigation><div style="margin:10px 0px 0px 20px;">
-			<cfoutput>#attributes.navigation#<!---<div style="padding-top:30px;padding-bottom:30px;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout"><cfmodule template="img.cfm" src="arrow.gif" border="0" width="4" height="7" /> Logout</a></div>---></cfoutput>
+			<cfoutput>#attributes.navigation#</cfoutput>
 		</div></cfif><br><br>
 	</td>
-	<cfif hasNavigation><td rowspan="1" width="1" style="background-color:##d2d2d2;"></td></cfif>
-	<td width="815" height="31" valign="top" align="right" style="background-color:white" >
-    <cfmodule template="img.cfm" src="tp.gif" width="8" height="8" align="top" style="margin:0px 4px 18px 0px;" />
-		
-        
+	<cfif hasNavigation><td width="1" style="background-color:##d2d2d2;"></td></cfif>
+	<td height="31" valign="top" align="right" style="background-color:white" >
+    	<cfmodule template="img.cfm" hspace="8" src="tp.gif" width="22" height="22"/><br>
 			<cfoutput>
-			<div id="title" style="text-align:left;margin:0px 10px 10px 20px;">
-            <table cellpadding="0" cellspacing="0" border="0">
+			<div id="title" style="text-align:left;margin:0px 30px 10px 20px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            
+            <colgroup>
+                <col width="4">
+                <col>
+                <cfif hasNavigation><col>
+                <col></cfif>
+                <col width="4">
+                <col width="20">
+            </colgroup>
             <tr>
             	<td><cfmodule template="img.cfm" src="box-left.png" /></td>
-            	<td width="352" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;">
-               
-				<cfif len(attributes.title) GT 0><span class="box"><cfmodule template="img.cfm" src="tp.gif" width="7" height="1" />#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span></cfif>
-                </td>
+            	<td style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;">
+               		<cfif len(attributes.title) GT 0><span class="box"><cfmodule template="img.cfm" src="tp.gif" width="7" height="1" />#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span></cfif></td>
             	<cfif hasNavigation>
                 <td width="352" align="right" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;"><cfmodule template="img.cfm" src="box-del.png" /></td>
             	<td width="65" align="center" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">Logout</a></td>
@@ -152,34 +216,23 @@ background-color:white;
             </tr>
             </table><br><br>
             </div>
-		<!---<div id="title" style="text-align:left;margin:0px 10px 10px 20px;">
-			<cfif len(attributes.title) GT 0><h1>#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></h1></cfif><!------>
-		</div>--->
-         <div id="content" style="text-align:left;margin:0px 10px 10px 30px;">         
+         <div id="content" style="text-align:left;margin:0px 30px 10px 30px;">         
            #thistag.generatedContent#</cfoutput>
 		
 		</div>
 	</td>
     
-	<td rowspan="1" width="1" style="background-color:##eeeeee;"></td>
-	<td valign="top" width="7"><cfmodule vspace="77" template="img.cfm" src="shadow-right.gif" width="11" height="329" /></td>
-</tr>
-
-<tr>
-
-	<td colspan="2" height="1" style="background-color:##e6e6e6;"></td>
-	<td colspan="2" height="1" style="background-color:##eeeeee;"></td>
-	<td colspan="2" height="1"></td>
+	<td width="11" valign="top"><cfmodule template="img.cfm" vspace="#session.screenMode EQ "full"?140:67#" src="shadow-right.gif" /></td>
 </tr>
 <tr>
-			<td colspan="#iif(hasNavigation,de(6),de(5))#" align="center" class="copy"><cfoutput>&copy; #Year(Now())# <a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>. All Rights Reserved. | Designed by <a href="http://www.blueriver.com/from/railo/" target="_blank">Blue River Interactive Group, Inc.</a>
+			<td colspan="#iif(hasNavigation,de(5),de(4))#" align="center" class="copy"><cfoutput>&copy; #Year(Now())# <a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>. All Rights Reserved. | Designed by <a href="http://www.blueriver.com/from/railo/" target="_blank">Blue River Interactive Group, Inc.</a>
 			</cfoutput><br><br></td>
 		</tr>
 
-</table>
+</table></center>
 </body>
 </html>
-<cfif StructKeyExists(application,'notTranslated')>
+<cfif false and StructKeyExists(application,'notTranslated')>
 <cfset keys=structKeyArray(application.notTranslated)>
 <cfset ArraySort(keys,'textnocase')>
 <!--

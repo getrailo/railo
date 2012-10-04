@@ -14,11 +14,15 @@ function checkTheBox(field) {
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
 #stText.Mappings.IntroText#
-<table class="tbl">
+<table class="tbl" width="100%" border="0">
+ 	<colgroup>
+        <col width="10">
+        <col width="10">
+    </colgroup>
 <tr>
 	<td colspan="7"><cfmodule template="tp.cfm" width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 	<tr>
 		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
@@ -56,17 +60,17 @@ function checkTheBox(field) {
 		<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" nowrap <cfif len(mappings.strPhysical)>title="#mappings.Physical#"</cfif>><cfif mappings.readOnly>#cut(mappings.strPhysical,36)#<cfelse><cfinput  onKeyDown="checkTheBox(this)" type="text" 
 			name="physical_#mappings.currentrow#" value="#mappings.strPhysical#" required="no"  
-			style="width:200px" message="#stText.Mappings.PhysicalMissing##mappings.currentrow#)"></cfif></td>
+			style="width:100%" message="#stText.Mappings.PhysicalMissing##mappings.currentrow#)"></cfif></td>
 		
 		
 		<!--- archive --->
 		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
 		<td class="tblContent#css#" nowrap <cfif len(mappings.strArchive)>title="#mappings.Archive#"</cfif>><cfif mappings.readOnly>#cut(mappings.strArchive,36)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
 			name="archive_#mappings.currentrow#" value="#mappings.strArchive#" required="no"  
-			style="width:200px" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
+			style="width:100%" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
 		
 		<!--- primary --->
-		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
+		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>#stText.Mappings.Physical#<cfelse>#stText.Mappings.Archive#</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
 			<option value="physical" <cfif mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Physical#</option>
 			<option value="archive" <cfif not mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
 		</select></cfif></td>
@@ -99,11 +103,11 @@ function checkTheBox(field) {
 		
 		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="virtual_#mappings.recordcount+1#" value="" required="no" style="width:100px"></td>
+			name="virtual_#mappings.recordcount+1#" value="" required="no" style="width:100%"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:200px"></td>
+			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:100%"></td>
 		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:200px" ></td>
+			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:100%" ></td>
 		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
 			<option value="physical" selected>#stText.Mappings.Physical#</option>
 			<option value="archive">#stText.Mappings.Archive#</option>

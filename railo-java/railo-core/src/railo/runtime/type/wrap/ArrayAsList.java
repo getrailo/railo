@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Array;
@@ -106,7 +108,7 @@ public class ArrayAsList implements List {
 	}
 
 	public int indexOf(Object o) {
-		Iterator it=array.iterator();
+		Iterator<Object> it=array.valueIterator();
 		int index=0;
 		while(it.hasNext()) {
 			if(it.next().equals(o))return index;
@@ -126,11 +128,11 @@ public class ArrayAsList implements List {
 	 * @see java.util.List#iterator()
 	 */
 	public Iterator iterator() {
-		return array.iterator();
+		return array.valueIterator();
 	}
 
 	public int lastIndexOf(Object o) {
-		Iterator it=array.iterator();
+		Iterator<Object> it=array.valueIterator();
 		int index=0;
 		int rtn=-1;
 		while(it.hasNext()) {

@@ -1,5 +1,6 @@
 package railo.runtime;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -14,6 +15,8 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ComponentUtil;
@@ -23,7 +26,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
    
     private int access;
     private ComponentAccess component;
-    private ComponentImpl ci;
+    //private ComponentImpl ci;
 
     /**
      * constructor of the class
@@ -39,14 +42,9 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     public static ComponentWrap  toComponentWrap(int access, Component component) throws ExpressionException {
     	return new ComponentWrap(access, ComponentUtil.toComponentAccess(component));
     }
-    
-
-    public Page getPage(){
-    	return component.getPage();
-    }
 
     /**
-     * @see railo.runtime.ComponentPro#getPageSource()
+     * @see railo.runtime.Component#getPageSource()
      */
     public PageSource getPageSource(){
     	return component.getPageSource();
@@ -102,7 +100,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     }
     
     /**
-     * @see railo.runtime.ComponentPro#getBaseAbsName()
+     * @see railo.runtime.Component#getBaseAbsName()
      */
     public String getBaseAbsName() {
         return component.getBaseAbsName();
@@ -190,13 +188,6 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     }
 
     /**
-     * @see railo.runtime.type.Collection#keysAsString()
-     */
-    public String[] keysAsString() {
-        return component.keysAsString(access);
-    }
-
-    /**
      * @see railo.runtime.type.Collection#keys()
      */
     public Collection.Key[] keys() {
@@ -262,9 +253,24 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     /**
      * @see railo.runtime.type.Iteratorable#keyIterator()
      */
-    public Iterator keyIterator() {
-        return component.iterator(access);
+    public Iterator<Collection.Key> keyIterator() {
+        return component.keyIterator(access);
     }
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return component.keysAsStringIterator(access);
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return component.entryIterator(access);
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return component.valueIterator(access);
+	}
     
 	/**
 	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
@@ -434,13 +440,6 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	}
 
     /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
-    public boolean isInitalized() {
-        return component.isInitalized();
-    }
-
-    /**
      *
      * @see railo.runtime.Component#getAccess()
      */
@@ -460,15 +459,24 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return component.getWSDLFile();
 	}
 
-	/**
-	 * @see railo.runtime.ComponentPro#getProperties()
-	 */
+	@Override
 	public Property[] getProperties(boolean onlyPeristent) {
 		return component.getProperties(onlyPeristent);
 	}
+
+	@Override
+	public HashMap<String, Property> getAllPersistentProperties()
+	{
+		return component.getAllPersistentProperties();
+	}
+
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
+		return ((ComponentPro)component).getProperties(onlyPeristent,includeBaseProperties);
+	}
 	
 	/**
-	 * @see railo.runtime.ComponentPro#getComponentScope()
+	 * @see railo.runtime.Component#getComponentScope()
 	 */
 	public ComponentScope getComponentScope(){
 		return component.getComponentScope();
@@ -479,21 +487,21 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
+	 * @see railo.runtime.Component#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
 	 */
 	public boolean contains(PageContext pc, Key key) {
 		return component.contains(access,key);
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
+	 * @see railo.runtime.Component#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
 	 */
 	public Member getMember(int access, Key key, boolean dataMember,boolean superAccess) {
 		return component.getMember(access, key, dataMember, superAccess);
 	}
 
 	/**
-	 * @see railo.runtime.ComponentPro#setProperty(railo.runtime.component.Property)
+	 * @see railo.runtime.Component#setProperty(railo.runtime.component.Property)
 	 */
 	public void setProperty(Property property) throws PageException {
 		component.setProperty(property);
@@ -502,4 +510,24 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	public boolean equalTo(String type) {
 		return component.equalTo(type);
 	}
+	
+	@Override
+    public void registerUDF(String key, UDF udf){
+    	component.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDF udf){
+		component.registerUDF(key, udf);
+    }
+    
+	@Override
+    public void registerUDF(String key, UDFProperties props){
+		component.registerUDF(key, props);
+    }
+    
+	@Override
+    public void registerUDF(Collection.Key key, UDFProperties props){
+		component.registerUDF(key, props);
+    }
 }

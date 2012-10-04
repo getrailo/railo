@@ -1,5 +1,9 @@
 package railo.runtime.listener;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -7,28 +11,30 @@ import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
+import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
-import railo.runtime.util.ApplicationContext;
 
 public final class AppListenerUtil {
 	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
@@ -50,15 +56,15 @@ public final class AppListenerUtil {
 	}
 	
 	public static PageSource getApplicationPageSourceRoot(PageContext pc, String filename) {
-		PageSource res = pc.getPageSource("/".concat(filename));
-		if(res.exists()) return res;
+		PageSource ps = ((PageContextImpl)pc).getPageSourceExisting("/".concat(filename));
+		if(ps!=null) return ps;
 		return null;
 	}
 	
 	public static PageSource getApplicationPageSourceCurr2Root(PageContext pc,PageSource requestedPage, String filename) {
-		PageSource res=requestedPage.getRealPage(filename);
-	    if(res.exists()) { 
-			return res;
+		PageSource ps=requestedPage.getRealPage(filename);
+	    if(ps.exists()) { 
+			return ps;
 		}
 	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
 	    //Config config = pc.getConfig();
@@ -69,9 +75,9 @@ public final class AppListenerUtil {
 			    sb.append('/');
 			}
 			sb.append(filename);
-			res = pc.getPageSource(sb.toString());
-			if(res.exists()) {
-				return res;
+			ps = ((PageContextImpl)pc).getPageSourceExisting(sb.toString());
+			if(ps!=null) {
+				return ps;
 			}
 		}
 		return null;
@@ -86,35 +92,35 @@ public final class AppListenerUtil {
 	}
 	
 	public static PageSource getApplicationPageSourceCurrent(PageSource requestedPage, RefBoolean isCFC) {
-		PageSource res=requestedPage.getRealPage("Application.cfc");
+		PageSource res=requestedPage.getRealPage(Constants.APP_CFC);
 	    if(res.exists()) {
 	    	isCFC.setValue(true);
 	    	return res;
 	    }
-	    res=requestedPage.getRealPage("Application.cfm");
+	    res=requestedPage.getRealPage(Constants.APP_CFM);
 	    if(res.exists()) return res;
 		return null;
 	}
 	
 	public static PageSource getApplicationPageSourceRoot(PageContext pc, RefBoolean isCFC) {
-		PageSource res = pc.getPageSource("/Application.cfc");
-		if(res.exists()) {
+		PageSource ps = ((PageContextImpl)pc).getPageSourceExisting("/"+Constants.APP_CFC);
+		if(ps!=null) {
 			isCFC.setValue(true);
-	    	return res;
+	    	return ps;
 		}
-		res = pc.getPageSource("/Application.cfm");
-		if(res.exists()) return res;
+		ps = ((PageContextImpl)pc).getPageSourceExisting("/"+Constants.APP_CFM);
+		if(ps!=null) return ps;
 		return null;
 	}
 	
 
 	public static PageSource getApplicationPageSourceCurr2Root(PageContext pc,PageSource requestedPage, RefBoolean isCFC) {
-	    PageSource res=requestedPage.getRealPage("Application.cfc");
+	    PageSource res=requestedPage.getRealPage(Constants.APP_CFC);
 	    if(res.exists()) {
 	    	isCFC.setValue(true);
 	    	return res;
 	    }
-	    res=requestedPage.getRealPage("Application.cfm");
+	    res=requestedPage.getRealPage(Constants.APP_CFM);
 	    if(res.exists()) return res;
 	    
 	    Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(requestedPage.getFullRealpath(),"/");
@@ -127,14 +133,13 @@ public final class AppListenerUtil {
 			    sb.append('/');
 			}
 			path=sb.toString();
-			res = pc.getPageSource(path.concat("Application.cfc"));
-			if(res.exists()) {
+			res = ((PageContextImpl)pc).getPageSourceExisting(path.concat(Constants.APP_CFC));
+			if(res!=null) {
 				isCFC.setValue(true);
 				return res;
 			}
-
-			res = pc.getPageSource(path.concat("Application.cfm"));
-			if(res.exists()) return res;
+			res = ((PageContextImpl)pc).getPageSourceExisting(path.concat(Constants.APP_CFM));
+			if(res!=null) return res;
 		}
 		return null;
 	}
@@ -164,17 +169,19 @@ public final class AppListenerUtil {
 
 	public static Mapping[] toMappings(ConfigWeb cw,Object o) throws PageException {
 		Struct sct = Caster.toStruct(o);
-		Key[] keys = sct.keys();
-		Mapping[] mappings=new Mapping[keys.length];
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		java.util.List<Mapping> mappings=new ArrayList<Mapping>();
 		ConfigWebImpl config=(ConfigWebImpl) cw;
 		String virtual,physical;
-		for(int i=0;i<keys.length;i++) {
-			virtual=translateMappingVirtual(keys[i].getString());
-			physical=Caster.toString(sct.get(keys[i]));
-			mappings[i]=config.getApplicationMapping(virtual,physical);
+		while(it.hasNext()) {
+			e = it.next();
+			virtual=translateMappingVirtual(e.getKey().getString());
+			physical=Caster.toString(e.getValue());
+			mappings.add(config.getApplicationMapping(virtual,physical));
 			
 		}
-		return mappings;
+		return mappings.toArray(new Mapping[mappings.size()]);
 	}
 	
 
@@ -201,9 +208,9 @@ public final class AppListenerUtil {
 		else if(o instanceof Struct){
 			array=new ArrayImpl();
 			Struct sct=(Struct) o;
-			Key[] keys = sct.keys();
-			for(int i=0;i<keys.length;i++) {
-				array.append(sct.get(keys[i]));
+			Iterator<Object> it = sct.valueIterator();
+			while(it.hasNext()) {
+				array.append(it.next());
 			}
 		}
 		else {
@@ -240,7 +247,7 @@ public final class AppListenerUtil {
 	public static int toLocalMode(String strMode) throws ApplicationException {
 		int lm = toLocalMode(strMode, -1);
 		if(lm!=-1) return lm;
-		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag application/application.cfc, valid values are [always,update]");
+		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [always,update]");
 	}
 
 	public static short toSessionType(String str, short defaultValue) {
@@ -266,7 +273,7 @@ public final class AppListenerUtil {
 			if("j".equals(str)) return Config.SESSION_TYPE_J2EE;
 			if("c".equals(str)) return Config.SESSION_TYPE_J2EE;
 		}
-		throw new ApplicationException("invalid sessionType definition ["+str+"] for tag application/application.cfc, valid values are [cfml,j2ee]");
+		throw new ApplicationException("invalid sessionType definition ["+str+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [cfml,j2ee]");
 	}
 	
 	public static Properties toS3(Struct sct) {
@@ -282,7 +289,7 @@ public final class AppListenerUtil {
 	}
 
 	public static Properties toS3(String accessKeyId, String awsSecretKey, String defaultLocation, String host) {
-		Properties s3 = new Properties();
+		PropertiesImpl s3 = new PropertiesImpl();
 		if(!StringUtil.isEmpty(accessKeyId))s3.setAccessKeyId(accessKeyId);
 		if(!StringUtil.isEmpty(awsSecretKey))s3.setSecretAccessKey(awsSecretKey);
 		if(!StringUtil.isEmpty(defaultLocation))s3.setDefaultLocation(defaultLocation);
@@ -290,11 +297,11 @@ public final class AppListenerUtil {
 		return s3;
 	}
 
-	public static void setORMConfiguration(PageContext pc, ApplicationContextPro ac,Struct sct) throws PageException {
+	public static void setORMConfiguration(PageContext pc, ApplicationContext ac,Struct sct) throws PageException {
 		if(sct==null)sct=new StructImpl();
 		Resource res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
-		ac.setORMConfiguration(ORMConfiguration.load(config,sct,res,config.getORMConfig()));
+		ac.setORMConfiguration(ORMConfigurationImpl.load(config,ac,sct,res,config.getORMConfig()));
 		
 		// datasource
 		Object o = sct.get(KeyImpl.DATA_SOURCE,null);

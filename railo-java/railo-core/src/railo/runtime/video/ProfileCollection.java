@@ -30,7 +30,7 @@ public class ProfileCollection  {
 	
 	private static VideoUtil util=VideoUtilImpl.getInstance();
 	
-	private Map profiles;
+	private Map<String,VideoProfile> profiles;
 
 	public ProfileCollection(Config config) throws ApplicationException {
 		init(config,true);
@@ -64,7 +64,7 @@ public class ProfileCollection  {
 	/**
 	 * @return the qualities
 	 */
-	public Map getProfiles() {
+	public Map<String,VideoProfile> getProfiles() {
 		return profiles;
 	}
 	
@@ -76,8 +76,8 @@ public class ProfileCollection  {
 	 * @return
 	 * @throws PageException
 	 */
-	private static Map translateVideoXML(Element video) throws PageException {
-		Map profiles=new LinkedHashMap();
+	private static Map<String,VideoProfile> translateVideoXML(Element video) throws PageException {
+		Map<String,VideoProfile> profiles=new LinkedHashMap<String,VideoProfile>();
 		// quality
 	    Element qd = getChildByName(video, "profiles", false);
 	    Element[] items = getChildren(qd, "profile");

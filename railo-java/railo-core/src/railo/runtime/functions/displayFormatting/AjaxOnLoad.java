@@ -6,7 +6,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function AjaxLink
+ * Implements the CFML Function AjaxLink
  */
 public final class AjaxOnLoad implements Function {
 	

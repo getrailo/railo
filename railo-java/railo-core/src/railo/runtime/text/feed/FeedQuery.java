@@ -1,6 +1,10 @@
 package railo.runtime.text.feed;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.CastableArray;
@@ -204,7 +208,7 @@ public class FeedQuery {
 	};
 	
 	
-	public static Query toQuery(Struct data,boolean hasDC) {
+	public static Query toQuery(Struct data,boolean hasDC) throws DatabaseException {
 		Query qry=new QueryImpl(hasDC?COLUMNS_WITH_DC:COLUMNS,0,"");
 		
 		String version=Caster.toString(data.get(VERSION,""),"");
@@ -232,16 +236,18 @@ public class FeedQuery {
 		int len=items.size();
 		Struct item;
 		int row=0;
-		Collection.Key[] keys;
+		Iterator<Entry<Key, Object>> it;
+		Entry<Key, Object> e;
 		for(int i=1;i<=len;i++) {
 			item=Caster.toStruct(items.get(i, null),null,false);
 			if(item==null) continue;
 			qry.addRow();
 			row++;
-			keys=item.keys();
-			for(int y=0;y<keys.length;y++) {
-				if(isRss)setQueryValueRSS(qry,keys[y],item.get(keys[y],null),row);
-				else setQueryValueAtom(qry,keys[y],item.get(keys[y],null),row);
+			it = item.entryIterator();
+			while(it.hasNext()) {
+				e = it.next();
+				if(isRss)setQueryValueRSS(qry,e.getKey(),e.getValue(),row);
+				else setQueryValueAtom(qry,e.getKey(),e.getValue(),row);
 			}
 			
 		}
@@ -502,18 +508,22 @@ public class FeedQuery {
 			Struct sct=new StructImpl(),row;
 			Array arr = (Array)value;
 			int len=arr.size();
-			Key[] keys;
+			//Key[] keys;
+			Iterator<Entry<Key, Object>> it;
+			Entry<Key, Object> e;
 			String nw;
 			Object ext;
 			for(int i=1;i<=len;i++){
 				row=Caster.toStruct(arr.get(i,null),null,false);
 				if(row==null)continue;
-				keys = row.keys();
-				for(int y=0;y<keys.length;y++){
-					ext=sct.get(keys[y],null);
-					nw=Caster.toString(row.get(keys[y],null),null);
+				it = row.entryIterator();
+				//keys = row.keys();
+				while(it.hasNext()){
+					e = it.next();
+					ext=sct.get(e.getKey(),null);
+					nw=Caster.toString(e.getValue(),null);
 					if(nw!=null){
-						if(ext==null) sct.setEL(keys[y], nw);
+						if(ext==null) sct.setEL(e.getKey(), nw);
 						else if(ext instanceof CastableArray){
 							((CastableArray)ext).appendEL(nw);
 						}
@@ -521,7 +531,7 @@ public class FeedQuery {
 							CastableArray ca=new CastableArray();
 							ca.appendEL(Caster.toString(ext,null));
 							ca.appendEL(nw);
-							sct.setEL(keys[y], ca);
+							sct.setEL(e.getKey(), ca);
 						}
 						
 					}

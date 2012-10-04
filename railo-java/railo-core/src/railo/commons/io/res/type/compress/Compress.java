@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.compress.archivers.tar.TarOutputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 import railo.commons.digest.MD5;
 import railo.commons.io.CompressUtil;
@@ -228,10 +228,10 @@ public final class Compress {
 			}
 		}
 		private void runTar(Resource res) {
-			TarOutputStream tos=null;
+			TarArchiveOutputStream tos=null;
 			try {
-				tos=new TarOutputStream(res.getOutputStream());
-				tos.setLongFileMode(TarOutputStream.LONGFILE_GNU);
+				tos=new TarArchiveOutputStream(res.getOutputStream());
+				tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
 		        // wait for sync		
 				while(true) {
 					sleepEL();

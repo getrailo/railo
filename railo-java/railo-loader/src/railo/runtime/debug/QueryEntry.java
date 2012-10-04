@@ -1,11 +1,14 @@
 package railo.runtime.debug;
 
+import java.io.Serializable;
+
 import railo.runtime.db.SQL;
+import railo.runtime.type.Query;
 
 /**
  * a single query entry
  */
-public interface QueryEntry {
+public interface QueryEntry extends Serializable {
 
     /**
      * @return Returns the exe.
@@ -16,6 +19,12 @@ public interface QueryEntry {
      * @return Returns the query.
      */
     public abstract SQL getSQL();
+    
+    /**
+     * return the query of this entry (can be null, if the quer has not produced a resultset)
+     * @return
+     */
+    public Query getQry();
 
     /**
      * @return Returns the src.

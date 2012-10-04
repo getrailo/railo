@@ -1,6 +1,8 @@
 package railo.runtime.debug;
 
-public interface DebugTimer {
+import java.io.Serializable;
+
+public interface DebugTimer extends Serializable {
 	/**
 	 * @return the label
 	 */

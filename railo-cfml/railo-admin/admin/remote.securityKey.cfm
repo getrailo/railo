@@ -38,7 +38,7 @@
 	<h2 style="display:inline">#getRailoId()[request.adminType].securityKey#</h2>
 </div>
 <br /><br /><br />
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.reset#">
 </cfform>
 

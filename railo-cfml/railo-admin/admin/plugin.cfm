@@ -7,12 +7,6 @@
 	<cflocation url="#request.self#" addtoken="no">
 </cfif>
 
-<!--- load language
-<cfif not structKeyExists(application.pluginLanguage[session.railo_admin_lang],url.plugin)>
-	<cfset application.pluginLanguage[session.railo_admin_lang][url.plugin]=loadPluginLanguage(pluginDir,url.plugin)>
-</cfif> --->
-
-
 <!--- load plugin --->
 <cfif not structKeyExists(application.plugin,url.plugin)>
 	<cfset application.plugin[url.plugin].application=struct()>

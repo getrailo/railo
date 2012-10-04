@@ -95,10 +95,10 @@ Error Output --->
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">
@@ -113,7 +113,7 @@ Error Output --->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
 	<td class="tblHead" width="150">#stText.Scopes.Cascading#</td>
 	<td class="tblContent">
@@ -226,10 +226,7 @@ Merge URL and Form --->
 	<td class="tblContent">
 		<span class="comment">#stText.Scopes.LocalModeDesc#</span>
 		<cfif hasAccess>
-			
-		
-			
-			<select name="LocalMode">
+			<br /><select name="LocalMode">
 				<option value="always" <cfif scope.LocalMode EQ "always">selected</cfif>>#stText.Scopes.LocalModeAlways#</option>
 				<option value="update" <cfif scope.LocalMode EQ "update">selected</cfif>>#stText.Scopes.LocalModeUpdate#</option>
 			</select>

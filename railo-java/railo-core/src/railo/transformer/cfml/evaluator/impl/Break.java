@@ -24,7 +24,7 @@ public final class Break extends EvaluatorSupport {
 		String whileName=ns+"while";
 		
 		
-		if(!ASMUtil.hasAncestorLoopStatement(tag))
+		if(!ASMUtil.hasAncestorBreakFCStatement(tag))
 			throw new EvaluatorException("Wrong Context, tag "+libTag.getFullName()+" must be inside a "+loopName+" or "+whileName+" tag");
 
 	}

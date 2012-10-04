@@ -2,6 +2,7 @@ package railo.runtime.converter;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.ComponentScope;
 import railo.runtime.ComponentWrap;
+import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -26,6 +28,7 @@ import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
@@ -40,7 +43,7 @@ import railo.runtime.type.util.ComponentUtil;
 /**
  * class to serialize and desirilize WDDX Packes
  */
-public final class ScriptConverter {
+public final class ScriptConverter extends ConverterSupport {
 	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
     
 	private int deep=1;
@@ -69,7 +72,7 @@ public final class ScriptConverter {
 	    try {
 		    sb.append(JavaConverter.serialize(serializable));
         } catch (IOException e) {
-            throw new ConverterException(e);
+            throw toConverterException(e);
         }
 	    sb.append("')");
         
@@ -102,7 +105,7 @@ public final class ScriptConverter {
 		    sb.append(')');
 		} 
 	    catch (PageException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 	}
 
@@ -167,21 +170,22 @@ public final class ScriptConverter {
         sb.append('}');
     }
     
-    public String serializeStruct(Struct struct, Set ignoreSet) throws ConverterException {
+    public String serializeStruct(Struct struct, Set<Collection.Key> ignoreSet) throws ConverterException {
     	StringBuffer sb =new StringBuffer();
         sb.append(goIn());
         sb.append("struct(");
         boolean hasIgnores=ignoreSet!=null;
-        Iterator it=struct.keyIterator();
+        Iterator<Key> it = struct.keyIterator();
         boolean doIt=false;
         deep++;
+        Key key;
         while(it.hasNext()) {
-            String key=Caster.toString(it.next(),"");
-            if(hasIgnores && ignoreSet.contains(key.toLowerCase())) continue;
+            key = it.next();
+            if(hasIgnores && ignoreSet.contains(key)) continue;
             if(doIt)sb.append(',');
             doIt=true;
             sb.append('\'');
-            sb.append(escape(key));
+            sb.append(escape(key.getString()));
             sb.append('\'');
             sb.append(':');
             _serialize(struct.get(key,null),sb,new HashSet<Object>());
@@ -241,7 +245,7 @@ public final class ScriptConverter {
         try {
         	sb.append("evaluateComponent('"+c.getAbsName()+"','"+ComponentUtil.md5(ci)+"',struct(");
 		} catch (Exception e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
         
 		boolean doIt=false;
@@ -319,7 +323,9 @@ public final class ScriptConverter {
 	 */
 	private void _serializeQuery(Query query, StringBuffer sb, Set<Object> done) throws ConverterException {
 		
-		String[] keys = query.keysAsString();
+		//Collection.Key[] keys = query.keys();
+		Iterator<Key> it = query.keyIterator();
+		Key k;
 		sb.append(goIn());
 		sb.append("query(");
 		
@@ -327,12 +333,13 @@ public final class ScriptConverter {
 		deep++;
 		boolean oDoIt=false;
 		int len=query.getRecordcount();
-		for(int i=0;i<keys.length;i++) {
+		while(it.hasNext()) {
+			k = it.next();
 		    if(oDoIt)sb.append(',');
 		    oDoIt=true;
 		    sb.append(goIn());
             sb.append('\'');
-            sb.append(escape(keys[i]));
+            sb.append(escape(k.getString()));
             sb.append('\'');
 			sb.append(":[");
 			boolean doIt=false;
@@ -340,7 +347,7 @@ public final class ScriptConverter {
 			    if(doIt)sb.append(',');
 			    doIt=true;
 			    try {
-					_serialize(query.getAt(keys[i],y),sb,done);
+					_serialize(query.getAt(k,y),sb,done);
 				} catch (PageException e) {
 					_serialize(e.getMessage(),sb,done);
 				}
@@ -415,7 +422,7 @@ public final class ScriptConverter {
 				try {
 					_serialize(((ObjectWrap)object).getEmbededObject(), sb,done);
 				} catch (PageException e) {
-					throw new ConverterException(e);
+					throw toConverterException(e);
 				}
 			    deep--;
 			    return;
@@ -426,15 +433,15 @@ public final class ScriptConverter {
 			    deep--;
 			    return;
 	        }
-			
-	        if(done.contains(object)) {
+			Object raw = LazyConverter.toRaw(object);
+	        if(done.contains(raw)) {
 	        	sb.append(goIn());
 			    sb.append("nullValue()");
 			    deep--;
 			    return;
 	        }
 			
-			done.add(object);
+			done.add(raw);
 			try {
 		        // Component
 		        if(object instanceof Component) {
@@ -486,7 +493,7 @@ public final class ScriptConverter {
 				}
 			}
 			finally {
-				done.remove(object);
+				done.remove(raw);
 			}
 			throw new ConverterException("can't serialize Object of type [ "+Caster.toClassName(object)+" ]");
 			//deep--;
@@ -526,6 +533,12 @@ public final class ScriptConverter {
 	private String escape(String str) {
         return StringUtil.replace(StringUtil.replace(str,"'","''",false),"#","##",false);
     }
+
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(serialize(source));
+		writer.flush();
+	}
 
     /**
 	 * serialize a Object to his literal Format

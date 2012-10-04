@@ -6,6 +6,7 @@ import java.util.TimeZone;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
@@ -20,7 +21,6 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
@@ -33,13 +33,13 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.query.SimpleQuery;
+import railo.runtime.type.util.KeyConstants;
 
 
 
@@ -173,7 +173,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			returntype=RETURN_TYPE_ARRAY_OF_ENTITY;
 		    //mail.setType(railo.runtime.mail.Mail.TYPE_TEXT);
 		else
-			throw new ApplicationException("attribute returntype of tag query has a invalid value","valid values are [query,array-of-entity] but value is now ["+strReturntype+"]");
+			throw new ApplicationException("attribute returntype of tag query has an invalid value","valid values are [query,array-of-entity] but value is now ["+strReturntype+"]");
 	}
 
 
@@ -239,7 +239,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param cachename value to set
 	**/
 	public void setCachename(String cachename)	{
-		DeprecatedUtil.tagAttribute("query", "cachename");
+		DeprecatedUtil.tagAttribute(pageContext,"query", "cachename");
 		//this.cachename=cachename;
 	}
 
@@ -263,7 +263,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setProviderdsn(String providerdsn) throws ApplicationException	{
-	    throw new ApplicationException("attribute providerdsn (with value ["+providerdsn+"]) is Deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "providerdsn");
 	}
 
 	/** set the value connectstring
@@ -271,7 +271,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	 * @throws ApplicationException
 	**/
 	public void setConnectstring(String connectstring) throws ApplicationException	{
-	    throw new ApplicationException("attribute connectstring (with value ["+connectstring+"]) is Deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "connectstring");
 	}
 	
 
@@ -312,8 +312,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param dbname value to set
 	 * @throws ApplicationException
 	**/
-	public void setDbname(String dbname) throws ApplicationException	{
-	    throw new ApplicationException("attribute dbname (with value ["+dbname+"]) is Deprecated");
+	public void setDbname(String dbname) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "dbname");
 	}
 
 	/** set the value maxrows
@@ -338,8 +338,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param provider value to set
 	 * @throws ApplicationException
 	**/
-	public void setProvider(String provider) throws ApplicationException	{
-	    throw new ApplicationException("attribute provider (with value ["+provider+"]) is Deprecated");
+	public void setProvider(String provider) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "provider");
 	}
 
 	/** set the value dbserver
@@ -348,8 +348,8 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param dbserver value to set
 	 * @throws ApplicationException
 	**/
-	public void setDbserver(String dbserver) throws ApplicationException	{
-	    throw new ApplicationException("attribute dbserver (with value ["+dbserver+"]) is Deprecated");
+	public void setDbserver(String dbserver) {
+		DeprecatedUtil.tagAttribute(pageContext,"Query", "dbserver");
 	}
 
 	/** set the value name
@@ -385,11 +385,11 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	public int doStartTag() throws PageException	{
 		// default datasource
 		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
-			String str = ((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+			String str = pageContext.getApplicationContext().getDefaultDataSource();
 			if(StringUtil.isEmpty(str))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 			
 			datasource=pageContext.getConfig().getDataSource(str);
 		}
@@ -419,13 +419,11 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @throws PageException
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
-	public int doEndTag() throws PageException	{
-		
-		
+	public int doEndTag() throws PageException	{		
 		if(hasChangedPSQ)pageContext.setPsq(orgPSQ);
 		String strSQL=bodyContent.getString();
 		if(strSQL.length()==0) throw new DatabaseException("no sql string defined, inside query tag",null,null,null);
-		SQL sql=items.size()>0?new SQLImpl(strSQL,(SQLItem[])items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
+		SQL sql=items.size()>0?new SQLImpl(strSQL,items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
 		
 		railo.runtime.type.Query query=null;
 		int exe=0;
@@ -434,17 +432,17 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		if(clearCache) {
 			hasCached=false;
-			pageContext.getQueryCache().remove(sql,datasource!=null?datasource.getName():null,username,password);
+			pageContext.getQueryCache().remove(pageContext,sql,datasource!=null?datasource.getName():null,username,password);
 		}
 		else if(hasCached) {
-			query=pageContext.getQueryCache().getQuery(sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
+			query=pageContext.getQueryCache().getQuery(pageContext,sql,datasource!=null?datasource.getName():null,username,password,cachedafter);
 		}
 		
 		
 		if(query==null) {
 			if("query".equals(dbtype)) 		query=executeQoQ(sql);
 			else if("orm".equals(dbtype) || "hql".equals(dbtype)) 	{
-				long start=System.currentTimeMillis();
+				long start=System.nanoTime();
 				Object obj = executeORM(sql,returntype,ormoptions);
 				
 				if(obj instanceof railo.runtime.type.Query){
@@ -456,18 +454,18 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 					}
 					if(result!=null){
 						Struct sct=new StructImpl();
-						sct.setEL(QueryImpl.CACHED, Boolean.FALSE);
-						sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(System.currentTimeMillis()-start));
-						sct.setEL(QueryImpl.SQL, sql.getSQLString());
+						sct.setEL(KeyConstants._cached, Boolean.FALSE);
+						sct.setEL(KeyConstants._executionTime, Caster.toDouble(System.nanoTime()-start));
+						sct.setEL(KeyConstants._SQL, sql.getSQLString());
 						if(Decision.isArray(obj)){
 							
 						}
-						else sct.setEL(QueryImpl.RECORDCOUNT, Caster.toDouble(1));
+						else sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(1));
 							
 						pageContext.setVariable(result, sct);
 					}
 					else
-						setExecutionTime(System.currentTimeMillis()-start);
+						setExecutionTime(System.nanoTime()-start);
 					return EVAL_PAGE;
 				}
 			}
@@ -478,7 +476,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				DateTimeImpl cachedBefore = null;
 				//if(cachedWithin!=null)
 					cachedBefore=new DateTimeImpl(pageContext,System.currentTimeMillis()+cachedWithin.getMillis(),false);
-	                pageContext.getQueryCache().set(sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
+	                pageContext.getQueryCache().set(pageContext,sql,datasource!=null?datasource.getName():null,username,password,query,cachedBefore);
                 
                 
 			}
@@ -488,7 +486,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		
 		if(pageContext.getConfig().debug() && debug) {
 			boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-			((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
+			pageContext.getDebugger().addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 		}
 		
 		if(!query.isEmpty() && !StringUtil.isEmpty(name)) {
@@ -499,19 +497,18 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		if(result!=null) {
 			
 			Struct sct=new StructImpl();
-			sct.setEL(QueryImpl.CACHED, Caster.toBoolean(query.isCached()));
-			if(!query.isEmpty())sct.setEL(QueryImpl.COLUMNLIST, List.arrayToList(query.getColumns(),","));
+			sct.setEL(KeyConstants._cached, Caster.toBoolean(query.isCached()));
+			if(!query.isEmpty())sct.setEL(KeyConstants._COLUMNLIST, List.arrayToList(query.getColumnNamesAsString(),","));
 			int rc=query.getRecordcount();
 			if(rc==0)rc=query.getUpdateCount();
-			sct.setEL(QueryImpl.RECORDCOUNT, Caster.toDouble(rc));
-			sct.setEL(QueryImpl.EXECUTION_TIME, Caster.toDouble(query.executionTime()));
-			sct.setEL(QueryImpl.SQL, sql.getSQLString());
+			sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(rc));
+			sct.setEL(KeyConstants._executionTime, Caster.toDouble(query.executionTime()));
+			sct.setEL(KeyConstants._SQL, sql.getSQLString());
 			
 			// GENERATED KEYS
-			// FUTURE when getGeneratedKeys() exist in interface the toQueryImpl can be removed
-			QueryPro qi = Caster.toQueryPro(query,null);
+			railo.runtime.type.Query qi = Caster.toQuery(query,null);
 			if(qi !=null){
-				QueryPro qryKeys = Caster.toQueryPro(qi.getGeneratedKeys(),null);
+				railo.runtime.type.Query qryKeys = Caster.toQuery(qi.getGeneratedKeys(),null);
 				if(qryKeys!=null){
 					StringBuffer generatedKey=new StringBuffer(),sb;
 					Collection.Key[] columnNames = qryKeys.getColumnNames();
@@ -619,7 +616,7 @@ cachename: Name of the cache in secondary cache.
 				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());
 			
 			
-			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData);
+			return new QueryImpl(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath(),createUpdateData,true);
 		}
 		finally {
 			manager.releaseConnection(pageContext,dc);

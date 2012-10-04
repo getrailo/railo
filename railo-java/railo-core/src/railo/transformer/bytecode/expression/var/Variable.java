@@ -11,12 +11,15 @@ import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.TemplateException;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.UDFUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
@@ -30,13 +33,13 @@ import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.TypeScope;
 import railo.transformer.bytecode.util.Types;
-import railo.transformer.cfml.expression.CFMLExprTransformer;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
 
 public class Variable extends ExpressionBase implements Invoker {
 	 
 
+	private static final Type KEY_CONSTANTS = Type.getType(KeyConstants.class);
 
 	// java.lang.Object get(java.lang.String)
 	final static Method METHOD_SCOPE_GET_KEY = new Method("get",
@@ -125,12 +128,12 @@ public class Variable extends ExpressionBase implements Invoker {
 	int countFM=0;
 	private boolean ignoredFirstMember;
 
-	public Variable(int line) {
-		super(line);
+	public Variable(Position start,Position end) {
+		super(start,end);
 	}
 	
-	public Variable(int scope,int line) {
-		super(line);
+	public Variable(int scope,Position start,Position end) {
+		super(start,end);
 		this.scope=scope;
 	}
 	
@@ -232,7 +235,11 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 				lit=lit.duplicate();
 				lit.upperCase();
 			}
-			
+			String key=KeyConstants.getFieldName(lit.getString());
+			if(key!=null){
+				bc.getAdapter().getStatic(KEY_CONSTANTS, key, Types.COLLECTION_KEY);
+				return true;
+			}
 			int index=bc.registerKey(lit);
 			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, 
 					bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
@@ -246,7 +253,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 		return false;
 	}
 
-	public static boolean canRegisterKey(Expression name) throws BytecodeException {
+	public static boolean canRegisterKey(Expression name) {
 		return name instanceof LitString;
 	}
 
@@ -271,14 +278,12 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 			 m = TypeScope.METHOD_ARGUMENT_BIND;
 		}
 		else if(scope==Scope.SCOPE_LOCAL) {
-			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);// FUTURE remove when function localScope(boolean) is part of class PageContext
-			t=Types.PAGE_CONTEXT_IMPL;
+			t=Types.PAGE_CONTEXT;
 			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_LOCAL_BIND;
 		}
 		else if(scope==ScopeSupport.SCOPE_VAR) {
-			adapter.checkCast(Types.PAGE_CONTEXT_IMPL);// FUTURE remove when function localScope(boolean) is part of class PageContext
-			t=Types.PAGE_CONTEXT_IMPL;
+			t=Types.PAGE_CONTEXT;
 			LitBoolean.TRUE.writeOut(bc, MODE_VALUE);
 			 m = TypeScope.METHOD_VAR_BIND;
 		}
@@ -298,10 +303,10 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
     	else if(member instanceof UDF)
     		return _writeOutFirstUDF(bc,(UDF)member,scope,doOnlyScope);
     	else
-    		return _writeOutFirstBIF(bc,(BIF)member,mode,last,getLine());
+    		return _writeOutFirstBIF(bc,(BIF)member,mode,last,getStart());
 	}
 	
-	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last,int line) throws BytecodeException {
+	static Type _writeOutFirstBIF(BytecodeContext bc, BIF bif, int mode,boolean last,Position line) throws BytecodeException {
     	GeneratorAdapter adapter = bc.getAdapter();
 		adapter.loadArg(0);
 		// class
@@ -344,8 +349,8 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 				
 				for(int y=0;y<names.length;y++){
 					if(names[y]!=null) {
-						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getLine());
-						CFMLExprTransformer.addFunctionDoc(bce, bif.getFlf());
+						BytecodeException bce = new BytecodeException("argument ["+names[y]+"] is not allowed for function ["+bif.getFlf().getName()+"]", args[y].getStart());
+						UDFUtil.addFunctionDoc(bce, bif.getFlf());
 						throw bce;
 					}
 				}
@@ -461,14 +466,14 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	
 	
 
-	private static VT getMatchingValueAndType(FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, int line) throws BytecodeException {
+	private static VT getMatchingValueAndType(FunctionLibFunctionArg flfa, NamedArgument[] nargs,String[] names, Position line) throws BytecodeException {
 		String flfan=flfa.getName();
 		
 		// first search if a argument match
 		for(int i=0;i<nargs.length;i++){
 			if(names[i]!=null && names[i].equalsIgnoreCase(flfan)) {
-				nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
-				return new VT(nargs[i].getValue(),flfa.getType(),i);
+				nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
+				return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 			}
 		}
 		
@@ -478,8 +483,8 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 			//String[] arrAlias = railo.runtime.type.List.toStringArray(railo.runtime.type.List.trimItems(railo.runtime.type.List.listToArrayRemoveEmpty(alias, ',')));
 			for(int i=0;i<nargs.length;i++){
 				if(names[i]!=null && railo.runtime.type.List.listFindNoCase(alias, names[i])!=-1){
-					nargs[i].setValue(nargs[i].getRawValue(),flfa.getType());
-					return new VT(nargs[i].getValue(),flfa.getType(),i);
+					nargs[i].setValue(nargs[i].getRawValue(),flfa.getTypeAsString());
+					return new VT(nargs[i].getValue(),flfa.getTypeAsString(),i);
 				}
 			}
 		}
@@ -496,13 +501,10 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 					return new VT(LitDouble.ZERO,type,-1);
 				return new VT(null,type,-1);
 			}
-			else {
-				return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
-			}
-			
+			return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
-		CFMLExprTransformer.addFunctionDoc(be, flfa.getFunction());
+		UDFUtil.addFunctionDoc(be, flfa.getFunction());
 		throw be;
 	}
 	
@@ -511,7 +513,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 
 	private static String getName(Expression expr) throws BytecodeException {
 		String name = ASMUtil.toString(expr);
-		if(name==null) throw new BytecodeException("cannot extract a string from a object of type ["+expr.getClass().getName()+"]",-1);
+		if(name==null) throw new BytecodeException("cannot extract a string from a object of type ["+expr.getClass().getName()+"]",null);
 		return name;
 	}
 
@@ -539,13 +541,13 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	 * @return
 	 * @throws BytecodeException
 	 */
-	private static  boolean isNamed(String funcName,Argument[] args) throws BytecodeException {
+	private static  boolean isNamed(Object funcName,Argument[] args) throws BytecodeException {
 		if(ArrayUtil.isEmpty(args)) return false;
 		boolean named=false;
 		for(int i=0;i<args.length;i++){
 			if(args[i] instanceof NamedArgument)named=true;
 			else if(named)
-				throw new BytecodeException("invalid argument for function "+funcName+", you can not mix named and unnamed arguments", args[i].getLine());
+				throw new BytecodeException("invalid argument for function "+funcName+", you can not mix named and unnamed arguments", args[i].getStart());
 		}
 		
 		

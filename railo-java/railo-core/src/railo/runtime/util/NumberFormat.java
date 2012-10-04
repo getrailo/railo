@@ -1,5 +1,6 @@
 package railo.runtime.util;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Locale;
 
@@ -158,6 +159,7 @@ public final class NumberFormat  {
 		df.applyPattern(mask);
 		df.setGroupingSize(gs);
 		df.setGroupingUsed(useComma);
+		df.setRoundingMode(RoundingMode.HALF_UP);
 		
 		String formattedNum = df.format(StrictMath.abs(number));
 		StringBuffer formattedNumBuffer = new StringBuffer(formattedNum);

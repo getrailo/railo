@@ -10,6 +10,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.CollectionUtil;
 
 public class Dialect {
 	private static Struct dialects=new StructImpl();
@@ -110,10 +111,11 @@ public class Dialect {
 	 */
 	public static String getDialect(DataSource ds){
 		String name=ds.getClazz().getName();
-		if("net.sourceforge.jtds.jdbc.Driver".equals(name)){
+		if("net.sourceforge.jtds.jdbc.Driver".equalsIgnoreCase(name)){
 			String dsn=ds.getDsnTranslated();
 			if(StringUtil.indexOfIgnoreCase(dsn, "sybase")!=-1)
-				return getDialect("SQLServer");
+				return getDialect("Sybase");
+			return getDialect("SQLServer");
 		}
 		return getDialect(name);
 	}
@@ -126,12 +128,6 @@ public class Dialect {
 	}
 	
 	public static String[] listDialectNames(){
-		return dialects.keysAsString();
+		return CollectionUtil.keysAsString(dialects);
 	}
-	
-	/*public static void main(String[] args) {
-		String[] arr = listDialectNames();
-		Arrays.sort(arr);
-		print.o(List.arrayToList(arr, ", "));
-	}*/
 }

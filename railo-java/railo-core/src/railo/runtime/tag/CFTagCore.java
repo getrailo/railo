@@ -41,7 +41,7 @@ public class CFTagCore extends CFTag {
      
     }
 	
-	public static InitFile createInitFile(PageContext pageContext,boolean isweb,String filename) throws PageException {
+	public static InitFile createInitFile(PageContext pageContext,boolean isweb,String filename) {
     	ConfigWebImpl config = (ConfigWebImpl) pageContext.getConfig();
     	Mapping mapping=isweb?config.getTagMapping():config.getServerTagMapping();
     	

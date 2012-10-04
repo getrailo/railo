@@ -9,10 +9,13 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -20,17 +23,11 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
 
-
-//JDK6: uncomment this for compiling with JDK6 
-import java.sql.NClob;
-import java.sql.RowId;
-import java.sql.SQLXML;
-
-
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 
 import com.allaire.cfx.Query;
@@ -83,8 +80,6 @@ public class QueryWrap implements Query {
 		return rst.getColumns();
 	}
 	
-	/*
-	FUTURE
 	public Collection.Key[] getColumnNames() {
     	return rst.getColumnNames();
     }
@@ -92,7 +87,7 @@ public class QueryWrap implements Query {
 
 	public String[] getColumnNamesAsString() {
 		return rst.getColumnNamesAsString();
-	}*/
+	}
 
 	/**
 	 * @see com.allaire.cfx.Query#getData(int, int)
@@ -624,12 +619,14 @@ public class QueryWrap implements Query {
 	public boolean isLast() throws SQLException {
 		return rst.isLast();
 	}
+	
 	/**
 	 * @return iterator for he keys
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return rst.keyIterator();
 	}
+	
 	/**
 	 * @return all keys of the Query
 	 */

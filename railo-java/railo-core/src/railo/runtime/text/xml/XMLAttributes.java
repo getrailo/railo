@@ -13,7 +13,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -27,8 +26,11 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.StructSupport;
-import railo.runtime.util.ArrayIterator;
 
 /**
  * represent a Struct and a NamedNodeMap
@@ -67,19 +69,20 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		String[] keys=keysAsString();
+		Collection.Key[] keys=keys();
 		maxlevel--;
-		DumpTable table = new DumpTablePro("xml","#999966","#cccc99","#000000");
+		DumpTable table = new DumpTable("xml","#999966","#cccc99","#000000");
 		table.setTitle("Struct (XML Attributes)");
 
 		int maxkeys=dp.getMaxKeys();
 		int index=0;
+		Collection.Key k;
 		for(int i=0;i<keys.length;i++) {
-			String key=keys[i];
+			k=keys[i];
 			
-			if(DumpUtil.keyValid(dp,maxlevel, key)){
+			if(DumpUtil.keyValid(dp,maxlevel, k)){
 				if(maxkeys<=index++)break;
-				table.appendRow(1,new SimpleDumpData(key),DumpUtil.toDumpData(get(key,null), pageContext,maxlevel,dp));
+				table.appendRow(1,new SimpleDumpData(k.getString()),DumpUtil.toDumpData(get(k.getString(),null), pageContext,maxlevel,dp));
 			}
 		}
 		return table;
@@ -92,21 +95,6 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	public int size() {
 		return nodeMap.getLength();
 	}
-
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		int len=nodeMap.getLength();
-		ArrayList list = new ArrayList();
-		for(int i=0;i<len;i++) {
-			Node item = nodeMap.item(i);
-			if(item instanceof Attr)
-				list.add(((Attr)item).getName());
-		}
-		return (String[]) list.toArray(new String[list.size()]);
-	}
 	
 	/**
 	 *
@@ -114,21 +102,22 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	 */
 	public Collection.Key[] keys() {
 		int len=nodeMap.getLength();
-		ArrayList list = new ArrayList();
+		ArrayList<Collection.Key> list =new ArrayList<Collection.Key>();
 		for(int i=0;i<len;i++) {
 			Node item = nodeMap.item(i);
 			if(item instanceof Attr)
 				list.add(KeyImpl.init(((Attr)item).getName()));
 		}
-		return (Collection.Key[]) list.toArray(new Collection.Key[list.size()]);
+		return list.toArray(new Collection.Key[list.size()]);
 	}
-
-    /**
-     * @throws ExpressionException
-     * @see railo.runtime.type.Struct#remove(java.lang.String)
-     */
-    public Object remove(String key) throws ExpressionException {
-    	Node rtn=null;
+    
+	/**
+	 *
+	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
+	 */
+	public Object remove(Collection.Key k) throws PageException {
+		String key=k.getString();
+		Node rtn=null;
 		if(!caseSensitive){
 			int len = nodeMap.getLength();
 			String nn;
@@ -141,21 +130,14 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		
 		if(rtn!=null) return rtn.getNodeValue();
 		throw new ExpressionException("can't remove element with name ["+key+"], element doesn't exist");
-    }
-    
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
-	public Object remove(Collection.Key key) throws PageException {
-		return remove(key.getString());
 	}	
     
     /**
      * @see railo.runtime.type.Struct#removeEL(java.lang.String)
      */
-    public Object removeEL(String key) {
-    	Node rtn=null;
+    public Object removeEL(Collection.Key k) {
+    	String key=k.getString();
+		Node rtn=null;
 		if(!caseSensitive){
 			int len = nodeMap.getLength();
 			String nn;
@@ -170,21 +152,21 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return null;
     }
     
-	/**
+	/* *
 	 *
 	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	 * /
 	public Object removeEL(Collection.Key key) {
 		return removeEL(key.getString());
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()
 	 */
 	public void clear() {
-		String[] keys=keysAsString();
+		Collection.Key[] keys=keys();
 		for(int i=0;i<keys.length;i++) {
-			nodeMap.removeNamedItem(keys[i]);
+			nodeMap.removeNamedItem(keys[i].getString());
 		}
 	}
 
@@ -270,12 +252,24 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return value;
 	}
 	
-
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		return new ArrayIterator(keysAsString());
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
+		return new KeyIterator(keys());
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this,keys());
 	}
 
 	/**
@@ -342,14 +336,15 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		XMLAttributes sct=new XMLAttributes(owner,nodeMap,caseSensitive);
 		ThreadLocalDuplication.set(this, sct);
 		try{
-			String[] keys=keysAsString();
+			Collection.Key[] keys=keys();
+			Collection.Key k;
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				sct.setEL(key,Duplicator.duplicate(get(key,null),deepCopy));
+				k=keys[i];
+				sct.setEL(k,Duplicator.duplicate(get(k,null),deepCopy));
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(this);
+			// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
 		}
 		return sct;
 	}

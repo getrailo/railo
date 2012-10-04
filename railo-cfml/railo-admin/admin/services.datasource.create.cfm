@@ -43,6 +43,7 @@ ACTIONS --->
 			host="#form.host#"
 			database="#form.database#"
 			port="#form.port#"
+			timezone="#form.timezone#"
 			dbusername="#form.username#"
 			dbpassword="#form.password#"
 			
@@ -120,6 +121,7 @@ Error Output--->
 	<cfset datasource.host=driver.getValue('host')>
 	<cfset datasource.database=driver.getValue('database')>
 	<cfset datasource.port=driver.getValue('port')>
+	<cfset datasource.timezone="">
 	<cfset datasource.username=driver.getValue('username')>
 	<cfset datasource.password=driver.getValue('password')>
 	<cfset datasource.ConnectionLimit=driver.getValue('ConnectionLimit')>
@@ -151,12 +153,18 @@ Error Output--->
 <cfset fields=driver.getFields()>
 
 
+<cfadmin 
+	action="getTimeZones"
+	locale="#stText.locale#"
+	returnVariable="timezones">
+
+
 </cfsilent>
 <cfoutput>
 
 <cfif actionType EQ "update">
 <i><b>Class:</b> #datasource.classname#</i><br />
-<i><b>DNS:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
+<i><b>Connection String:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
 </cfif>
 <h2>
 	<cfif actionType EQ "update">
@@ -165,10 +173,10 @@ Error Output--->
 	#stText.Settings.DatasourceDescriptionCreate#
 	</cfif> #driver.getName()#</h2>
 
-<table class="tbl" width="740">
+<table class="tbl" width="100%">
 <colgroup>
     <col width="150">
-    <col width="590">
+    <col>
 </colgroup>
 <tr>
 	<td colspan="2">#driver.getDescription()#</td>
@@ -176,7 +184,7 @@ Error Output--->
 <tr>
 	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
 </tr>
-<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 <input type="hidden" name="name" value="#datasource.name#">
 <input type="hidden" name="type" value="#datasource.type#">
 
@@ -240,6 +248,32 @@ Port --->
 </cfif>
 <!--- 
 
+Timezone --->
+<tr>
+	<td class="tblHead" width="150">#stText.Settings.dbtimezone#</td>
+	<td class="tblContent" width="300">
+		<span class="comment">#stText.Settings.dbtimezoneDesc#</span><br>
+       <select name="timezone">
+        	<option value=""> ---- #stText.Settings.dbtimezoneSame# ---- </option>
+			<cfoutput query="timezones">
+				<option value="#timezones.id#"
+				<cfif timezones.id EQ datasource.timezone>selected</cfif>>
+				#timezones.id# - #timezones.display#</option>
+			</cfoutput>
+		</select>
+        
+        <br /><span class="CheckError">
+This feature is currently in Beta State.
+If you have any problems while using this Implementation, please post the bugs and errors in our <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
+</span>
+        
+        </td>
+</tr>
+
+
+
+<!--- 
+
 Username --->
 <cfif typeUsername NEQ TYPE_HIDDEN>
 <tr>
@@ -250,6 +284,8 @@ Username --->
 		value="#datasource.username#" style="width:300px" required="#typeUsername EQ TYPE_REQUIRED#"></td>
 </tr>
 </cfif>
+
+
 <!--- 
 
 Password --->
@@ -417,7 +453,7 @@ storage --->
 <cfset type=field.getType()>
 <tr>
 	<td class="tblHead" width="150">#field.getDisplayName()#</td>
-	<td class="tblContent" width="300"><span class="comment">#field.getDescription()#</span>
+	<td class="tblContent" width="300"><cfif len(trim(field.getDescription()))><span class="comment">#field.getDescription()#</span><br /></cfif>
 	<cfif type EQ "text" or type EQ "password">
 	<cfinput type="#type#" 
 		name="custom_#field.getName()#" 

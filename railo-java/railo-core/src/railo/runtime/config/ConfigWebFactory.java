@@ -1,24 +1,6 @@
 package railo.runtime.config;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-
-import javax.servlet.ServletConfig;
-
+import com.jacob.com.LibraryLoader;
 import org.apache.xerces.parsers.DOMParser;
 import org.jfree.chart.block.LabelBlockImpl;
 import org.safehaus.uuid.UUIDGenerator;
@@ -29,7 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import railo.aprint;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
@@ -47,21 +28,11 @@ import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.ByteSizeParser;
-import railo.commons.lang.ClassException;
-import railo.commons.lang.ClassLoaderHelper;
-import railo.commons.lang.ClassUtil;
-import railo.commons.lang.Md5;
-import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
+import railo.commons.lang.*;
 import railo.commons.net.URLDecoder;
 import railo.loader.TP;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.runtime.CFMLFactoryImpl;
-import railo.runtime.Component;
-import railo.runtime.Info;
-import railo.runtime.Mapping;
-import railo.runtime.MappingImpl;
+import railo.runtime.*;
 import railo.runtime.cache.CacheConnection;
 import railo.runtime.cache.CacheConnectionImpl;
 import railo.runtime.cache.ServerCacheConnection;
@@ -75,16 +46,8 @@ import railo.runtime.config.component.ComponentFactory;
 import railo.runtime.crypt.BlowfishEasy;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
-import railo.runtime.dump.ClassicHTMLDumpWriter;
-import railo.runtime.dump.DumpWriter;
-import railo.runtime.dump.DumpWriterEntry;
-import railo.runtime.dump.HTMLDumpWriter;
-import railo.runtime.dump.SimpleHTMLDumpWriter;
-import railo.runtime.dump.TextDumpWriter;
-import railo.runtime.engine.ConsoleExecutionLog;
-import railo.runtime.engine.ExecutionLog;
-import railo.runtime.engine.ExecutionLogFactory;
-import railo.runtime.engine.ThreadLocalConfig;
+import railo.runtime.dump.*;
+import railo.runtime.engine.*;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -96,12 +59,7 @@ import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.gateway.GatewayEntryImpl;
-import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationListener;
-import railo.runtime.listener.ClassicAppListener;
-import railo.runtime.listener.MixedAppListener;
-import railo.runtime.listener.ModernAppListener;
-import railo.runtime.listener.NoneAppListener;
+import railo.runtime.listener.*;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.IntervallMonitorWrap;
 import railo.runtime.monitor.RequestMonitor;
@@ -113,6 +71,7 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.orm.ORMConfiguration;
+import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.reflection.Reflector;
@@ -121,7 +80,6 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.text.xml.XMLCaster;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -129,25 +87,25 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuter;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibException;
 
+import javax.servlet.ServletConfig;
+import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.Map.Entry;
+
 /**
  * 
  */
 public final class ConfigWebFactory {
-
-	
-
-
-
-	
-
-
-
 	/**
      * creates a new ServletConfig Impl Object
      * @param configServer
@@ -191,6 +149,9 @@ public final class ConfigWebFactory {
     			"===================================================================\n"
     			
     			);
+    	
+    	boolean doNew=doNew(configDir);
+    	
         
     	Resource configFile=configDir.getRealResource("railo-web.xml.cfm");
     	Resource configFileOld=configDir.getRealResource("railo-web.xml");
@@ -241,11 +202,11 @@ public final class ConfigWebFactory {
     	if(configDir.exists())createHtAccess(configDir.getRealResource(".htaccess"));
     		
         
-        createContextFiles(configDir,servletConfig);
+        createContextFiles(configDir,servletConfig,doNew);
 		ConfigWebImpl configWeb=new ConfigWebImpl(factory,configServer, servletConfig,configDir,configFile);
 		
-		load(configServer,configWeb,doc,false);
-		createContextFilesPost(configDir,configWeb,servletConfig,false);
+		load(configServer,configWeb,doc,false,doNew);
+		createContextFilesPost(configDir,configWeb,servletConfig,false,doNew);
 	    return configWeb;
     }
     
@@ -279,23 +240,29 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */
-    public static void reloadInstance(ConfigImpl config, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
-        // first sleep a little bit
-    	
-    	Resource configFile=config.getConfigFile();
-        Resource configDir=config.getConfigDir();
+    public static void reloadInstance(ConfigServerImpl cs, ConfigWebImpl cw, boolean force) throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
+        Resource configFile=cw.getConfigFile();
+        Resource configDir=cw.getConfigDir();
+        
+        boolean doNew=doNew(configDir);
         
         if(configFile==null) return ;
         
-        if(second(config.getLoadTime())>second(configFile.lastModified()) && !force) return ;
+        if(second(cw.getLoadTime())>second(configFile.lastModified()) && !force) return ;
         
         Document doc=loadDocument(configFile);
-        createContextFiles(configDir,null);
-        config.reset();
+        createContextFiles(configDir,null,doNew);
+        cw.reset();
         
-		load(config.getConfigServerImpl(),config,doc,true);
-		createContextFilesPost(configDir,config,null,false);
+        
+		load(cs,cw,doc,true,doNew);
+		createContextFilesPost(configDir,cw,null,false,doNew);
     }
+    
+    
+    
+    
+    
     
     private static long second(long ms) {
 		return ms/1000;
@@ -312,10 +279,9 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) 
+    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
-    	
     	// fix
     	if(ConfigWebAdmin.fixS3(doc) | ConfigWebAdmin.fixPSQ(doc)) {
     		XMLCaster.writeTo(doc,config.getConfigFile());
@@ -342,6 +308,7 @@ public final class ConfigWebFactory {
     	loadResourceProvider(cs,config,doc);
         loadCharset(configServer,config,doc);
         loadMappings(configServer,config,doc);
+        loadRest(configServer,config,doc);
         loadExtensions(configServer,config,doc);
         loadPagePool(configServer,config,doc);
         loadDataSources(configServer,config,doc);
@@ -349,9 +316,10 @@ public final class ConfigWebFactory {
         loadCustomTagsMappings(configServer,config,doc);
     	loadPassword(cs,config,doc);
     	//loadLabel(cs,config,doc);
-    	loadFilesystem(cs,config,doc); // load tlds
+    	loadFilesystem(cs,config,doc, doNew); // load tlds
     	loadTag(cs,config,doc); // load tlds
         loadRegional(configServer,config,doc);
+        loadCompiler(configServer,config,doc);
     	loadScope(configServer,config,doc);
     	loadMail(configServer,config,doc);
         loadSearch(configServer,config,doc);
@@ -373,6 +341,7 @@ public final class ConfigWebFactory {
     	loadDumpWriter(cs, config, doc);
     	loadGatewayEL(configServer,config,doc);
     	loadExeLog(configServer,config,doc);
+    	loadThreadQueue(configServer, config, doc);
     	loadMonitors(configServer,config,doc);
     	loadLogin(configServer, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
@@ -383,7 +352,7 @@ public final class ConfigWebFactory {
     	}
     	catch(Throwable t){}
 
-    	doNew(config.getConfigDir(), false);
+    	//doNew(config.getConfigDir(), false);
     	
     	ThreadLocalConfig.release();
     }
@@ -402,7 +371,7 @@ public final class ConfigWebFactory {
         	String strDefaultProviderClass=defaultProvider.getAttribute("class");
         	if(!StringUtil.isEmpty(strDefaultProviderClass)) {
 	        	strDefaultProviderClass=strDefaultProviderClass.trim();
-	        	config.setDefaultResourceProvider(strDefaultProviderClass,toArguments(defaultProvider.getAttribute("arguments")));
+	        	config.setDefaultResourceProvider(strDefaultProviderClass,toArguments(defaultProvider.getAttribute("arguments"),true));
 	        }
         }
         
@@ -427,12 +396,12 @@ public final class ConfigWebFactory {
         		if(!StringUtil.isEmpty(strProviderClass) && !StringUtil.isEmpty(strProviderScheme)) {
         			strProviderClass=strProviderClass.trim();
             		strProviderScheme=strProviderScheme.trim().toLowerCase();
-            		config.addResourceProvider(strProviderScheme,strProviderClass,toArguments(providers[i].getAttribute("arguments")));
+            		config.addResourceProvider(strProviderScheme,strProviderClass,toArguments(providers[i].getAttribute("arguments"),true));
             		
     	        	// patch for user not having 
     	        	if(strProviderScheme.equalsIgnoreCase("http"))	{
     	        		httpClass=strProviderClass;
-    	        		httpArgs = toArguments(providers[i].getAttribute("arguments"));
+    	        		httpArgs = toArguments(providers[i].getAttribute("arguments"),true);
             		}
     	        	else if(strProviderScheme.equalsIgnoreCase("https"))
     	        		hasHTTPs=true;
@@ -441,13 +410,13 @@ public final class ConfigWebFactory {
         		}
             }
         	
-        	// adding https when not exists
+        	// adding https when not exist
         	if(!hasHTTPs && httpClass!=null){
         		config.addResourceProvider("https",httpClass,httpArgs);
         	}
         	// adding s3 when not exist
     		if(!hasS3 && config instanceof ConfigServer) {
-    			config.addResourceProvider("s3",s3Class,toArguments("lock-timeout:10000;"));
+    			config.addResourceProvider("s3",s3Class,toArguments("lock-timeout:10000;",false));
     		}
         }
 	}
@@ -494,37 +463,42 @@ public final class ConfigWebFactory {
         }
         else {
         	//print.err("yep");
-        	if(!hasRich)sct.put("html",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_RICH,"html", new HTMLDumpWriter()));
-        	if(!hasPlain)sct.put("text",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_PLAIN,"text", new TextDumpWriter()));  
+        	if(!hasRich)sct.setEL(KeyConstants._html,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_RICH,"html", new HTMLDumpWriter()));
+        	if(!hasPlain)sct.setEL(KeyConstants._text,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_PLAIN,"text", new TextDumpWriter()));  
         	
-        	sct.put("classic",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"classic", new ClassicHTMLDumpWriter()));  
-        	sct.put("simple",new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"simple", new SimpleHTMLDumpWriter()));  
+        	sct.setEL(KeyConstants._classic,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"classic", new ClassicHTMLDumpWriter()));  
+        	sct.setEL(KeyConstants._simple,new DumpWriterEntry(HTMLDumpWriter.DEFAULT_NONE,"simple", new SimpleHTMLDumpWriter()));  
 
         	
         }
-        DumpWriterEntry[] entries = new DumpWriterEntry[sct.size()];
-        Key[] keys = sct.keys();
-        for(int i=0;i<keys.length;i++){
-        	entries[i]=(DumpWriterEntry) sct.get(keys[i],null);
+        Iterator<Object> it = sct.valueIterator();
+        java.util.List<DumpWriterEntry> entries=new ArrayList<DumpWriterEntry>();
+        while(it.hasNext()){
+        	entries.add((DumpWriterEntry) it.next());
         }
-        config.setDumpWritersEntries(entries);
+        config.setDumpWritersEntries(entries.toArray(new DumpWriterEntry[entries.size()]));
 	}
     
     
 
 
-	private static Map<String,String> toArguments(String attributes) {
+	private static Map<String,String> toArguments(String attributes, boolean decode) {
 		Map<String,String> map=new HashTable();
 		if(attributes==null) return map;
 		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
-		String[] item;
 		int index;
 		for(int i=0;i<arr.length;i++) {
 			index=arr[i].indexOf(':');
 			if(index==-1)map.put(arr[i].trim(), "");
-			else map.put(arr[i].substring(0,index).trim(), arr[i].substring(index+1).trim());
+			else map.put(dec(arr[i].substring(0,index).trim(),decode), dec(arr[i].substring(index+1).trim(),decode));
 		}
 		return map;
+	}
+
+
+	private static String dec(String str, boolean decode) {
+		if(!decode) return str;
+		return URLDecoder.decode(str, false);
 	}
 
 
@@ -743,7 +717,7 @@ public final class ConfigWebFactory {
     private static Resource[] _loadFileAccess(Config config,Element[] fileAccesses) {
     	if(ArrayUtil.isEmpty(fileAccesses))return new Resource[0];
     	
-    	java.util.List reses=new ArrayList();
+    	java.util.List<Resource> reses=new ArrayList<Resource>();
        	String path;
        	Resource res;
        	for(int i=0;i<fileAccesses.length;i++) {
@@ -754,7 +728,7 @@ public final class ConfigWebFactory {
        	    		reses.add(res);	
        	    }
        	}
-		return (Resource[]) reses.toArray(new Resource[reses.size()]);
+		return reses.toArray(new Resource[reses.size()]);
 	}
 
 
@@ -835,7 +809,7 @@ public final class ConfigWebFactory {
     }
 	
 	/**
-	 * creates the Config File, if File not exists
+	 * creates the Config File, if File not exist
 	 * @param xmlName
 	 * @param configFile 
 	 * @throws IOException
@@ -953,25 +927,32 @@ public final class ConfigWebFactory {
 	 * @throws IOException 
 	 * @throws IOException
 	 */
-	public static void createContextFiles(Resource configDir, ServletConfig servletConfig) throws IOException {
+	public static void createContextFiles(Resource configDir, ServletConfig servletConfig, boolean doNew) throws IOException {
 	    // NICE dies muss dynamisch ersstelt werden, da hier der admin hinkommt und dieser sehr viele files haben wird
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 	    
-	    if(SystemUtil.isWindows()) {
+	    if(!SystemUtil.isWindows()) {
 	    	Resource systemDir=SystemUtil.getSystemDirectory();
 	        if(systemDir!=null) {
-	        	Resource jacob=systemDir.getRealResource("jacob.dll");
+	        	boolean is64=SystemUtil.getJREArch()==SystemUtil.ARCH_64;
+	        	String name;
+	        	if(is64) name="jacob-x64.dll";
+	        	else name="jacob-x86.dll";
+	            
+	        	Resource jacob=systemDir.getRealResource(name);
 	            if(!jacob.exists()) {
-	                createFileFromResourceEL("/resource/bin/jacob.dll",jacob);
-                    
+	            	createFileFromResourceEL("/resource/bin/"+name,jacob);
 	            }
+	            //SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_PATH+":"+jacob.getAbsolutePath());
+	            System.setProperty(LibraryLoader.JACOB_DLL_PATH,jacob.getAbsolutePath());
+	            //SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"set-property -> "+LibraryLoader.JACOB_DLL_NAME+":"+name);
+	            System.setProperty(LibraryLoader.JACOB_DLL_NAME,name);
+	            
+	            //jacob.dll.name.x86 & jacob.dll.name.x64
+	            
 	        }
 	    }
-        
-        boolean doNew=doNew(configDir,true);
-        
-        
         
         // video
         Resource videoDir = configDir.getRealResource("video");
@@ -1035,7 +1016,7 @@ public final class ConfigWebFactory {
 	    }
 	    
 	    
-	    f=contextDir.getRealResource("application.cfm");
+	    f=contextDir.getRealResource(Constants.APP_CFM);
 	    if(!f.exists())createFileFromResourceEL("/resource/context/application.cfm",f);
 	    
 	    f=contextDir.getRealResource("form.cfm");
@@ -1174,7 +1155,29 @@ public final class ConfigWebFactory {
 
             f=gDir.getRealResource("Group.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/gdriver/Group.cfc",f);
-	        	
+
+        // DEBUG
+            Resource debug = adminDir.getRealResource("debug");
+            if(!debug.exists())debug.mkdirs();
+
+            f=debug.getRealResource("Debug.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Debug.cfc",f);
+            
+            f=debug.getRealResource("Field.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Field.cfc",f);
+            
+            f=debug.getRealResource("Group.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Group.cfc",f);
+            
+            f=debug.getRealResource("Classic.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Classic.cfc",f);
+            
+            f=debug.getRealResource("Modern.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Modern.cfc",f);
+            
+            f=debug.getRealResource("Comment.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/debug/Comment.cfc",f);
+            
         // C DRIVER
             Resource cDir = adminDir.getRealResource("cdriver");
             if(!cDir.exists())cDir.mkdirs();
@@ -1193,7 +1196,7 @@ public final class ConfigWebFactory {
 
             f=cDir.getRealResource("Group.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Group.cfc",f);
-	    	       
+        	    	       
 	        	        
         
     // DB DRIVER
@@ -1260,7 +1263,7 @@ public final class ConfigWebFactory {
         f=errorDir.getRealResource("error-public.cfm");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/error/error-public.cfm",f);
         
-        Resource debuggingDir = templatesDir.getRealResource("debugging");
+        /*Resource debuggingDir = templatesDir.getRealResource("debugging");
         if(!debuggingDir.exists())debuggingDir.mkdirs();
         
         f=debuggingDir.getRealResource("debugging.cfm");
@@ -1280,16 +1283,16 @@ public final class ConfigWebFactory {
         
         //f=debuggingDir.getRealResource("debugging-stats.cfm");
         //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/debugging/debugging-stats.cfm",f);
-
+		*/
         Resource displayDir = templatesDir.getRealResource("display");
         if(!displayDir.exists())displayDir.mkdirs();
 
-        f=displayDir.getRealResource("Application.cfm");
+        f=displayDir.getRealResource(Constants.APP_CFM);
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/Application.cfm",f);
         
-        f=displayDir.getRealResource("Application.cfc");
+        f=displayDir.getRealResource(Constants.APP_CFC);
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/Application.cfc",f);
-        
+        /*
         f=displayDir.getRealResource("debugging-console-output-pages.cfm");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output-pages.cfm",f);
         
@@ -1304,7 +1307,7 @@ public final class ConfigWebFactory {
         
         //f=displayDir.getRealResource("debugging-stats.cfm");
         //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/display/debugging-stats.cfm",f);
-
+*/
         
         
         
@@ -1319,10 +1322,7 @@ public final class ConfigWebFactory {
 	}
 	
 
-	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext) throws IOException {
-		boolean doNew=doNew(configDir,true);
-  		
-		
+	public static void createContextFilesPost(Resource configDir, ConfigImpl config, ServletConfig servletConfig,boolean isEventGatewayContext,boolean doNew) {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 
@@ -1368,20 +1368,26 @@ public final class ConfigWebFactory {
 
 	}
 
-	private static boolean doNew(Resource contextDir,boolean readonly) throws IOException {
-		Resource version=contextDir.getRealResource("version");
-		String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
-		if(!version.exists()) {
-            if(!readonly){
-            	version.createNewFile();
-            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            }
-            return true;
-        }
-        else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
-        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
-            return true;
-        }
+	static boolean doNew(Resource contextDir) {
+		
+		final boolean readonly=false;
+		try{
+			Resource version=contextDir.getRealResource("version");
+			String v=Info.getVersionAsString()+"-"+Info.getStateAsString()+"-"+Info.getRealeaseTime();
+			if(!version.exists()) {
+				if(!readonly){
+	            	version.createNewFile();
+	            	IOUtil.write(version,v,SystemUtil.getCharset(),false);
+	            }
+	            return true;
+	        }
+	        else if(!IOUtil.toString(version,SystemUtil.getCharset()).equals(v)) {
+	        	if(!readonly)IOUtil.write(version,v,SystemUtil.getCharset(),false);
+	
+	            return true;
+	        }
+		}
+		catch(Throwable t){}
         return false;
     }
 	
@@ -1389,12 +1395,25 @@ public final class ConfigWebFactory {
 		// create current hash from libs
 		TagLib[] tlds = config.getTLDs();
 		FunctionLib[] flds = config.getFLDs();
+		
+		// charset
 		StringBuffer sb=new StringBuffer(config.getTemplateCharset());
+		sb.append(';');
 
+		// dot notation upper case
+		sb.append(config.getDotNotationUpperCase());
+		sb.append(';');
+		
+		// supress ws before arg
+		sb.append(config.getSupressWSBeforeArg());
+		sb.append(';');
+		
+		// tld
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
 		}
 
+		// fld
 		for(int i=0;i<flds.length;i++){
 			sb.append(flds[i].getHash());
 		}
@@ -1504,7 +1523,7 @@ public final class ConfigWebFactory {
 	           
 	           
 	           // physical!=null && 
-	           if(virtual!=null && (physical!=null || archive!=null)) { 
+	           if((physical!=null || archive!=null)) { 
 	               boolean trusted=toBoolean(el.getAttribute("trusted"),false);
 	               String primary=el.getAttribute("primary");
 	               boolean physicalFirst=primary==null || !primary.equalsIgnoreCase("archive");
@@ -1535,6 +1554,79 @@ public final class ConfigWebFactory {
         //config.setMappings((Mapping[]) mappings.toArray(new Mapping[mappings.size()]));
     }
     
+    private static void loadRest(ConfigServerImpl configServer, ConfigImpl config,Document doc) throws IOException {
+        boolean hasAccess= true;//MUST ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_REST);
+        boolean hasCS=configServer!=null;
+      	Element el= getChildByName(doc.getDocumentElement(),"rest");
+        
+        // Log
+        String strLogger=el.getAttribute("log");
+        int logLevel=LogUtil.toIntType(el.getAttribute("log-level"),Log.LEVEL_ERROR);
+        if(StringUtil.isEmpty(strLogger)){
+        	if(configServer!=null){
+        		LogAndSource log = configServer.getRestLogger();
+        		strLogger=log.getSource();
+        		logLevel=log.getLogLevel();
+        	}
+        	else strLogger="{railo-config}/logs/rest.log";
+        }
+        config.setRestLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
+
+        // allow-changes
+        /*Boolean allowChanges=Caster.toBoolean(el.getAttribute("allow-changes"),null);
+        if(allowChanges!=null){
+            config.setRestAllowChanges(allowChanges.booleanValue());
+        }
+        else if(hasCS){
+        	config.setRestAllowChanges(configServer.getRestAllowChanges());
+        }*/
+
+        // list
+        Boolean list=Caster.toBoolean(el.getAttribute("list"),null);
+        if(list!=null){
+            config.setRestList(list.booleanValue());
+        }
+        else if(hasCS){
+        	config.setRestList(configServer.getRestList());
+        }
+        
+        
+        Element[] _mappings=getChildren(el,"mapping");
+        
+        // first get mapping defined in server admin (read-only)
+        Map<String,railo.runtime.rest.Mapping> mappings=new HashMap<String, railo.runtime.rest.Mapping>();
+        railo.runtime.rest.Mapping tmp;
+        if(configServer!=null && config instanceof ConfigWeb) {
+            railo.runtime.rest.Mapping[] sm=configServer.getRestMappings();
+            for(int i=0;i<sm.length;i++) {
+            
+                if(!sm[i].isHidden()) {
+                    tmp = sm[i].duplicate(config,Boolean.TRUE);
+                    mappings.put(tmp.getVirtual(),tmp);   
+                }
+            }
+        }
+        
+        // get current mappings
+        if(hasAccess) {
+	        for(int i=0;i<_mappings.length;i++) {
+	           el=_mappings[i];
+	           String physical=el.getAttribute("physical");
+	           String virtual=el.getAttribute("virtual");
+	           boolean readonly=toBoolean(el.getAttribute("readonly"),false);
+	           boolean hidden=toBoolean(el.getAttribute("hidden"),false);
+	           boolean _default=toBoolean(el.getAttribute("default"),false);
+	           if(physical!=null) { 
+	               tmp=new railo.runtime.rest.Mapping(config,virtual,physical,hidden,readonly,_default);
+	               mappings.put(tmp.getVirtual(),tmp);
+	           }
+	        }
+        }
+        
+        
+        config.setRestMappings(mappings.values().toArray(new railo.runtime.rest.Mapping[mappings.size()]));
+    }
+    
     
     private static void loadFlex(ConfigServerImpl configServer, ConfigImpl config,Document doc) {
         
@@ -1555,9 +1647,9 @@ public final class ConfigWebFactory {
         // arguments
         String strArgs = el.getAttribute("caster-arguments");
         if(StringUtil.isEmpty(strArgs))strArgs = el.getAttribute("caster-class-arguments");
-        toArguments(strArgs);
+        toArguments(strArgs,false);
         
-        if(!StringUtil.isEmpty(strCaster))config.setAMFCaster(strCaster,toArguments(strArgs));
+        if(!StringUtil.isEmpty(strCaster))config.setAMFCaster(strCaster,toArguments(strArgs,false));
         else if(configServer!=null)config.setAMFCaster(config.getAMFCasterClass(), config.getAMFCasterArguments());
         
         
@@ -1593,7 +1685,9 @@ public final class ConfigWebFactory {
 	            hasChanged= true;
 	        }
 		} 
-		catch (IOException e) {}
+		catch (IOException e) {
+			e.printStackTrace(config.getErrWriter());
+		}
         
         
 		if(hasChanged) {
@@ -1626,13 +1720,16 @@ public final class ConfigWebFactory {
 		        	}
 		        }
 	        }
-	        catch(Exception e){
+	        catch(Throwable e){
+	        	e.printStackTrace();
 	        	clazz=ConsoleExecutionLog.class;
-	        }
+	        } 
+	        if(clazz!=null)SystemOut.printDate(config.getOutWriter(),"loaded ExecutionLog class "+clazz.getName());
+	        
 	     // arguments
 	        String strArgs = el.getAttribute("arguments");
 	        if(StringUtil.isEmpty(strArgs))strArgs = el.getAttribute("class-arguments");
-	        Map<String, String> args = toArguments(strArgs);
+	        Map<String, String> args = toArguments(strArgs,true);
 
 	        config.setExecutionLogFactory(new ExecutionLogFactory(clazz,args));
         }
@@ -1805,7 +1902,7 @@ public final class ConfigWebFactory {
      */
     private static void loadCache(ConfigServerImpl configServer, ConfigImpl config, Document doc)  {
         boolean hasCS=configServer!=null;
-        HashTable caches=new HashTable();
+        Map<String,CacheConnection> caches=new HashMap<String, CacheConnection>();
         
 
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManagerImpl.TYPE_CACHE);
@@ -1834,7 +1931,21 @@ public final class ConfigWebFactory {
         else 
         	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_RESOURCE,"");
     
-     	// default query
+     // default function
+    	String defaultUDF=eCache.getAttribute("default-function");
+        if(hasAccess && !StringUtil.isEmpty(defaultUDF)){
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,defaultUDF);
+        }
+        else if(hasCS){
+        	if(eCache.hasAttribute("default-function"))
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,"");
+        	else
+        		config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,configServer.getCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION));
+        }
+        else 
+        	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_FUNCTION,"");
+        
+     // default query
     	String defaultQuery=eCache.getAttribute("default-query");
         if(hasAccess && !StringUtil.isEmpty(defaultQuery)){
         	config.setCacheDefaultConnectionName(ConfigImpl.CACHE_DEFAULT_QUERY,defaultQuery);
@@ -1967,14 +2078,12 @@ public final class ConfigWebFactory {
 		
 		// Copy Parent caches as readOnly
         if(hasCS) {
-            Map ds = configServer.getCacheConnections();
-            //print.o("PARENT");
-            //print.o(ds);
-            Iterator it = ds.entrySet().iterator();
-            Map.Entry entry;
+            Map<String, CacheConnection> ds = configServer.getCacheConnections();
+            Iterator<Entry<String, CacheConnection>> it = ds.entrySet().iterator();
+            Entry<String, CacheConnection> entry;
             while(it.hasNext()) {
-	                entry=(Entry) it.next();
-	                cc=((CacheConnection)entry.getValue());
+	                entry = it.next();
+	                cc=entry.getValue();
 	                if(!caches.containsKey(entry.getKey()))caches.put(entry.getKey(),new ServerCacheConnection(configServer,cc));
 	        }
 	    }
@@ -2006,7 +2115,6 @@ public final class ConfigWebFactory {
 		
         Map<String, GatewayEntry> mapGateways=new HashMap<String, GatewayEntry>();
         
-        Resource configDir=config.getConfigDir();
         Element eGateWay=getChildByName(doc.getDocumentElement(),"gateways");
         
         String strCFCDirectory = ConfigWebUtil.translateOldPath(eGateWay.getAttribute("cfc-directory"));
@@ -2063,9 +2171,7 @@ public final class ConfigWebFactory {
 			cw.setGatewayEntries(mapGateways);
 		}
 		else {
-			try {
-				cw.getGatewayEngine().clear();
-			} catch (PageException e) {e.printStackTrace();}
+			cw.getGatewayEngine().clear();
 		}
 	}
     
@@ -2116,8 +2222,8 @@ public final class ConfigWebFactory {
             String[] item;
             for(int i=0;i<arr.length;i++) {
                 item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
-                if(item.length==2) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
-                else if(item.length==1) sct.setEL(KeyImpl.getInstance(URLDecoder.decode(item[0],true).trim()),"");
+                if(item.length==2) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
+                else if(item.length==1) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),"");
             }   
         }
         catch(PageException ee) {}
@@ -2134,7 +2240,7 @@ public final class ConfigWebFactory {
         
 		datasources.put(datasourceName.toLowerCase(),
           new DataSourceImpl(datasourceName,className, server, dsn, databasename, port, user, pass,connectionLimit,connectionTimeout,
-        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,TimeZoneUtil.toTimeZone(timezone,null)));
+        		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,StringUtil.isEmpty(timezone,true)?null:TimeZoneUtil.toTimeZone(timezone,null)));
 
     }
     private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
@@ -2268,7 +2374,7 @@ public final class ConfigWebFactory {
         
 	    if(!hasSet) {
 	        MappingImpl m=new MappingImpl(config,"/0/","{railo-web}/customtags/",null,false,true,false,false,true,false,true);
-	        if(m!=null)config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
+	        config.setCustomTagMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
         
     }
@@ -2343,7 +2449,7 @@ public final class ConfigWebFactory {
         
     
     
-    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) throws ExpressionException, TagLibException, FunctionLibException {
+    private static void loadTempDirectory(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload) throws ExpressionException {
         Resource configDir=config.getConfigDir();
         boolean hasCS=configServer!=null;
         
@@ -2378,7 +2484,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */    
-    private static void loadFilesystem(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws ExpressionException, TagLibException, FunctionLibException {
+    private static void loadFilesystem(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean doNew) throws ExpressionException, TagLibException, FunctionLibException {
         
     	if(configServer!=null){
     		Resource src = configServer.getConfigDir().getRealResource("distribution");
@@ -2450,15 +2556,16 @@ public final class ConfigWebFactory {
 	  	  if(tld!=null) config.setTldFile(tld);
 	  	}
 	  	
-	  	// Tag Directory
+//	  	// Tag Directory
+		// MZ: Todo: zomg
 	  	if(strTagDirectory!=null) {
 	  		Resource dir=ConfigWebUtil.getFile(config,configDir,strTagDirectory,FileUtil.TYPE_DIR);
-	  		createTagFiles(config,configDir,dir);
+	  		createTagFiles(config,configDir,dir,doNew);
 	  		if(dir!=null) {
 	  			config.setTagDirectory(dir);
 	  		}
 	  	}
-	  	
+
         // allow realpath
 	  	if(hasCS) {
 	  		config.setAllowRealPath(configServer.allowRealPath());
@@ -2481,12 +2588,13 @@ public final class ConfigWebFactory {
 	  	
 
 	  	// Function Directory
+//		// MZ: Zomg
 	  	if(strFunctionDirectory!=null) {
 	  		Resource dir=ConfigWebUtil.getFile(config,configDir,strFunctionDirectory,FileUtil.TYPE_DIR);
-	  		createFunctionFiles(config,configDir,dir);
+	  		createFunctionFiles(config,configDir,dir,doNew);
 	  	  if(dir!=null) config.setFunctionDirectory(dir);
 	  	}
-	  	
+
 	  	
 	  	/* / Function Dir
 	  	if(strFunctionDirectory!=null) {
@@ -2497,28 +2605,35 @@ public final class ConfigWebFactory {
     }
 
 
-    private static void createTagFiles(Config config,Resource configDir,Resource dir) {
-    	boolean doNew=true;
-    	try {
-			doNew=doNew(configDir,true);
-		} catch (IOException e) {}
-        
+    private static void createTagFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
     	if(config instanceof ConfigServer){
+    		
+    	// Dump
     		Resource f = dir.getRealResource("Dump.cfc");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Dump.cfc",f);
-
+            
+        // MediaPlayer
+            f = dir.getRealResource("MediaPlayer.cfc");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/MediaPlayer.cfc",f);
+            Resource build = dir.getRealResource("build");
+            if(!build.exists())build.mkdirs();
+            String[] names=new String[]{"_background.png","_bigplay.png","_controls.png","_loading.gif","_player.swf","_player.xap",
+            		"background_png.cfm","bigplay_png.cfm","controls_png.cfm","jquery.js.cfm","loading_gif.cfm",
+            		"mediaelement-and-player.min.js.cfm","mediaelementplayer.min.css.cfm","player.swf.cfm","player.xap.cfm"};
+            for(int i=0;i<names.length;i++){
+                f = build.getRealResource(names[i]);
+                if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/build/"+names[i],f);
+            	
+            }
+        
         // AJAX
             AjaxFactory.deployTags(dir, doNew);
            
     	}
 	}
 
-    private static void createFunctionFiles(Config config,Resource configDir,Resource dir) {
-    	boolean doNew=true;
-    	try {
-			doNew=doNew(configDir,true);
-		} catch (IOException e) {}
-        
+    private static void createFunctionFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
+    	
     	if(config instanceof ConfigServer){
     		Resource f = dir.getRealResource("writeDump.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeDump.cfm",f);
@@ -2546,6 +2661,9 @@ public final class ConfigWebFactory {
     		
             f = dir.getRealResource("transactionRollback.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionRollback.cfm",f);
+            
+            f = dir.getRealResource("transactionSetsavepoint.cfm");
+            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/transactionSetsavepoint.cfm",f);
     		
             f = dir.getRealResource("writeLog.cfm");
             if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/function/writeLog.cfm",f);
@@ -2786,7 +2904,7 @@ public final class ConfigWebFactory {
 	        	}
 	        	list.add(new RemoteClientImpl(label,type,url,sUser,sPass,aPass,pd,aCode,usage));
 	        }
-	        if(list.size()>0)config.setRemoteClients((RemoteClient[])list.toArray(new RemoteClient[list.size()]));
+	        if(list.size()>0)config.setRemoteClients(list.toArray(new RemoteClient[list.size()]));
 	        else config.setRemoteClients(new RemoteClient[0]);
         
         // init spooler engine
@@ -2916,6 +3034,22 @@ public final class ConfigWebFactory {
 		
     }
     
+
+    private static void loadThreadQueue(ConfigServer configServer, ConfigImpl config, Document doc) {
+    	Element queue=getChildByName(doc.getDocumentElement(),"queue");
+      	
+    	// Server
+    	if(config instanceof ConfigServerImpl) {
+    		int max = Caster.toIntValue(queue.getAttribute("max"),100);
+    		int timeout = Caster.toIntValue(queue.getAttribute("timeout"),0);
+    		((ConfigServerImpl)config).setThreadQueue(new ThreadQueueImpl(max,timeout));
+    		
+    	}
+    	// Web
+    	else {
+    	}
+    }
+    
     /**
      * @param configServer 
      * @param config
@@ -3009,7 +3143,7 @@ public final class ConfigWebFactory {
     // config
         if(orm==null) orm = doc.createElement("orm"); // this is just a dummy 
         ORMConfiguration def=hasCS?((ConfigServerImpl)configServer).getORMConfig():null;
-        ORMConfiguration ormConfig=ORMConfiguration.load(config,orm,config.getRootDirectory(),def);
+        ORMConfiguration ormConfig=ORMConfigurationImpl.load(config,null,orm,config.getRootDirectory(),def);
         config.setORMConfig(ormConfig);
         
     }
@@ -3335,7 +3469,7 @@ public final class ConfigWebFactory {
     }
     
 
-    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException {
+    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
         if(configServer!=null) return;
         
         configServer=(ConfigServerImpl) config;
@@ -3345,7 +3479,6 @@ public final class ConfigWebFactory {
         boolean enabled=Caster.toBooleanValue(parent.getAttribute("enabled"),false);
         configServer.setMonitoringEnabled(enabled);
         
-        int index=0;
         Element[] children = getChildren(parent,"monitor");
         java.util.List<IntervallMonitor> intervalls=new ArrayList<IntervallMonitor>();
         java.util.List<RequestMonitor> requests=new ArrayList<RequestMonitor>();
@@ -3388,7 +3521,7 @@ public final class ConfigWebFactory {
       	}
       	configServer.setRequestMonitors(requests.toArray(new RequestMonitor[requests.size()]));
       	configServer.setIntervallMonitors(intervalls.toArray(new IntervallMonitor[intervalls.size()]));
-        configServer.getCFMLEngineImpl().touchMonitor(configServer);
+        ((CFMLEngineImpl)configServer.getCFMLEngine()).touchMonitor(configServer);
     }
 
     /**
@@ -3420,8 +3553,7 @@ public final class ConfigWebFactory {
             
             // Init
             se.init(config,
-                    ConfigWebUtil.getFile(configDir,(search==null)?
-                    null:
+                    ConfigWebUtil.getFile(configDir,
                     ConfigWebUtil.translateOldPath(search.getAttribute("directory")), "search",configDir,FileUtil.TYPE_DIR,config),
                     log
             );
@@ -3453,8 +3585,7 @@ public final class ConfigWebFactory {
         LogAndSource log=ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel);
         
         // set scheduler
-        Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),(scheduler==null)?
-                null:
+        Resource file = ConfigWebUtil.getFile(config.getRootDirectory(),
                 scheduler.getAttribute("directory"), "scheduler",configDir,FileUtil.TYPE_DIR,config);
         config.setScheduler(configServer.getCFMLEngine(),file,log);
     }
@@ -3466,10 +3597,41 @@ public final class ConfigWebFactory {
      */
     private static void loadDebug(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
         boolean hasCS=configServer!=null;
-        
-      	Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
+        Element debugging=getChildByName(doc.getDocumentElement(),"debugging");
       	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
-        
+
+        // Entries
+        Element[] entries = getChildren(debugging,"debug-entry");
+        Map<String,DebugEntry> list=new HashMap<String,DebugEntry>();
+        if(hasCS) {
+        	 DebugEntry[] _entries = ((ConfigImpl)configServer).getDebugEntries();
+        	 for(int i=0;i<_entries.length;i++) {
+        		list.put(_entries[i].getId(),_entries[i].duplicate(true)); 
+        	 }
+        }
+        Element e;
+        String id;
+        for(int i=0;i<entries.length;i++) {
+        	e=entries[i];
+        	id=e.getAttribute("id");
+        	try {
+				list.put(id,new DebugEntry(
+						id,
+						e.getAttribute("type"),
+						e.getAttribute("iprange"),
+						e.getAttribute("label"),
+						e.getAttribute("path"),
+						e.getAttribute("fullname"),
+						toStruct(e.getAttribute("custom"))
+						));
+			} 
+        	catch (IOException ioe) {}
+        }
+        config.setDebugEntries(list.values().toArray(new DebugEntry[list.size()]));
+      	
+      	
+
+      	
       	// debug
       	String strDebug=debugging.getAttribute("debug");
       	if(hasAccess && !StringUtil.isEmpty(strDebug)) {
@@ -3477,20 +3639,18 @@ public final class ConfigWebFactory {
       	}
       	else if(hasCS)config.setDebug(configServer.debug()?ConfigImpl.SERVER_BOOLEAN_TRUE:ConfigImpl.SERVER_BOOLEAN_FALSE);
       	
-      	// debug template
-      	String template=debugging.getAttribute("template");
-      	if(hasAccess && !StringUtil.isEmpty(template)) {
-      	    config.setDebugTemplate(template);
-      	}
-      	else if(hasCS) {
-      	    config.setDebugTemplate(configServer.getDebugTemplate());
-      	}
-      	else {
-      	    config.setDebugTemplate("/railo-context/templates/debugging/debugging.cfm");
-        }	
       	
-      	// show-usage
+     // max records logged
+      	String strMax=debugging.getAttribute("max-records-logged");
+      	if(hasAccess && !StringUtil.isEmpty(strMax)) {
+      	    config.setDebugMaxRecordsLogged(toInt(strMax,10));
+      	}
+      	else if(hasCS)config.setDebugMaxRecordsLogged(configServer.getDebugMaxRecordsLogged());
+      	
+      	
+     // show-usage
       	Boolean showUsage = Caster.toBoolean(debugging.getAttribute("show-query-usage"),null);
+      	showUsage=Boolean.TRUE;
       	if(showUsage!=null && hasAccess) {
       	    config.setDebugShowQueryUsage(showUsage.booleanValue());
       	}
@@ -3534,7 +3694,6 @@ public final class ConfigWebFactory {
         	boolean oldStyle=cfxTagsParent.getNodeName().equals("cfx-tags");
         	
         	
-	      	if(cfxTagsParent!=null) {
 	      	    Element[] cfxTags = oldStyle?getChildren(cfxTagsParent,"cfx-tag"):getChildren(cfxTagsParent,"ext-tag");  
 	      	    for(int i=0;i<cfxTags.length; i++) {
 	      	        String type=cfxTags[i].getAttribute("type");
@@ -3560,7 +3719,7 @@ public final class ConfigWebFactory {
 		      	        }
 	      	        }
 	      	    }
-	      	}
+
         }
       	config.setCFXTagPool(map);
     }
@@ -3575,7 +3734,6 @@ public final class ConfigWebFactory {
       		config.setExtensionEnabled(Caster.toBooleanValue(strEnabled,false));
       	}
       	
-      	if(xmlExtParent!=null) {
    // providers
       		Element[] xmlProviders = getChildren(xmlExtParent,"provider");
       		String provider;
@@ -3630,7 +3788,7 @@ public final class ConfigWebFactory {
       	        	);
       	    }
       	    config.setExtensions(extensions);
-      	}
+      	
         
     }
     
@@ -3666,7 +3824,14 @@ public final class ConfigWebFactory {
       	    }
       	    config.setBaseComponentTemplate(strBase);
       	    
-      	    
+      	    // deep search
+            String strDeepSearch=component.getAttribute("deep-search");
+            if(!StringUtil.isEmpty(strDeepSearch)) {
+            	config.setDoComponentDeepSearch(Caster.toBooleanValue(strDeepSearch.trim(),false));
+            }
+            else if(hasCS) {
+                config.setDoComponentDeepSearch(((ConfigServerImpl)configServer).doComponentDeepSearch());
+            }
       	    
       	    
       	    // Dump-Template
@@ -3793,7 +3958,7 @@ public final class ConfigWebFactory {
       	
 	    if(!hasSet) {
 	        MappingImpl m=new MappingImpl(config,"/0","{railo-web}/components/",null,false,true,false,false,true,false,true);
-	        if(m!=null)config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
+	        config.setComponentMappings(new Mapping[]{m.cloneReadOnly(config)});
 	    }
       	
     }
@@ -3814,25 +3979,14 @@ public final class ConfigWebFactory {
         
         // proxy server
         String server=proxy.getAttribute("server");
-        if(hasAccess && !StringUtil.isEmpty(server)) config.setProxyServer(server);
-        else if(hasCS) config.setProxyServer(configServer.getProxyServer());
-
-        // proxy username
         String username=proxy.getAttribute("username");
-        if(hasAccess && !StringUtil.isEmpty(username)) config.setProxyUsername(username);
-        else if(hasCS) config.setProxyUsername(configServer.getProxyUsername());
-
-        // proxy password
         String password=proxy.getAttribute("password");
-        if(hasAccess && !StringUtil.isEmpty(password)) config.setProxyPassword(password);
-        else if(hasCS) config.setProxyPassword(configServer.getProxyPassword());
-
-        // proxy port
         int port=toInt(proxy.getAttribute("port"),-1);
-        if(hasAccess && port!=-1) config.setProxyPort(port);
-        else if(hasCS) config.setProxyPort(configServer.getProxyPort());
-
         
+        if(hasAccess && !StringUtil.isEmpty(server)) {
+        	config.setProxyData(ProxyDataImpl.getInstance(server, port, username, password));
+        }
+        else if(hasCS) config.setProxyData(configServer.getProxyData());
     }
     
     
@@ -3880,7 +4034,31 @@ public final class ConfigWebFactory {
       	
       	
     }
-    
+
+    private static void loadCompiler(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+        boolean hasCS=configServer!=null;
+        
+    	
+        Element compiler=getChildByName(doc.getDocumentElement(),"compiler");
+
+        
+        String supress=compiler.getAttribute("supress-ws-before-arg");
+        if(!StringUtil.isEmpty(supress,true)){
+        	config.setSupressWSBeforeArg(Caster.toBooleanValue(supress,true));
+        }
+        else if(hasCS){
+        	config.setSupressWSBeforeArg(configServer.getSupressWSBeforeArg());
+        }
+
+        String _case=compiler.getAttribute("dot-notation-upper-case");
+        if(!StringUtil.isEmpty(_case,true)){
+        	config.setDotNotationUpperCase(Caster.toBooleanValue(_case,true));
+        }
+        else if(hasCS){
+        	config.setDotNotationUpperCase(configServer.getDotNotationUpperCase());
+        }
+    }
+
 
     /**
      * @param configServer 

@@ -129,7 +129,7 @@ public class TimeZoneUtil {
 	public static TimeZone toTimeZone(String strTimezone,TimeZone defaultValue){
 		if(strTimezone==null) return defaultValue;
 		strTimezone=StringUtil.replace(strTimezone.trim().toLowerCase(), " ", "", false);
-		TimeZone tz = (TimeZone) IDS.get(strTimezone);
+		TimeZone tz = IDS.get(strTimezone);
 		if(tz!=null) return tz;
 		
 		//parse GMT followd by a number
@@ -143,7 +143,7 @@ public class TimeZoneUtil {
 		
 		if(!Float.isNaN(gmtOffset)) {
 			strTimezone="etc/gmt"+(gmtOffset>=0?"+":"")+Caster.toString(gmtOffset);
-			tz = (TimeZone) IDS.get(strTimezone);
+			tz =  IDS.get(strTimezone);
 			if(tz!=null) return tz;
 			
 		}

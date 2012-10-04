@@ -1,5 +1,5 @@
 /** DIFF 23
- * Implements the Cold Fusion Function lsnumberformat
+ * Implements the CFML Function lsnumberformat
  */
 package railo.runtime.functions.international;
 

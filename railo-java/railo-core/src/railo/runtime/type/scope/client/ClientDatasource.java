@@ -6,10 +6,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.scope.ClientPlus;
+import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.storage.StorageScopeDatasource;
 
-public class ClientDatasource extends StorageScopeDatasource implements ClientPlus {
+public class ClientDatasource extends StorageScopeDatasource implements Client {
 	
 	private ClientDatasource(PageContext pc,String datasourceName, Struct sct) { 
 		super(pc,datasourceName,"client",SCOPE_CLIENT, sct);
@@ -32,7 +32,7 @@ public class ClientDatasource extends StorageScopeDatasource implements ClientPl
 	 * @return client datasource scope
 	 * @throws PageException
 	 */
-	public static ClientPlus getInstance(String datasourceName, PageContext pc, Log log) throws PageException {
+	public static Client getInstance(String datasourceName, PageContext pc, Log log) throws PageException {
 			
 			Struct _sct = _loadData(pc, datasourceName,"client",SCOPE_CLIENT,log, false);
 			if(_sct==null) _sct=new StructImpl();
@@ -40,7 +40,7 @@ public class ClientDatasource extends StorageScopeDatasource implements ClientPl
 		return new ClientDatasource(pc,datasourceName,_sct);
 	}
 	
-	public static ClientPlus getInstance(String datasourceName, PageContext pc,Log log, ClientPlus defaultValue) {
+	public static Client getInstance(String datasourceName, PageContext pc,Log log, Client defaultValue) {
 		try {
 			return getInstance(datasourceName, pc,log);
 		}

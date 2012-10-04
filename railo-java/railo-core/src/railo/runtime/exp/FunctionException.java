@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.function.FunctionLibFunctionArg;
@@ -34,7 +35,11 @@ public final class FunctionException extends ExpressionException {
      * @param message additional Exception message
      */
 	public FunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message) {
-        this(pc,functionName,toStringBadArgumentPosition(badArgumentPosition),badArgumentName,message);
+        this(pc,functionName,toStringBadArgumentPosition(badArgumentPosition),badArgumentName,message,null);
+    }
+	
+	public FunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message, String detail) {
+        this(pc,functionName,toStringBadArgumentPosition(badArgumentPosition),badArgumentName,message,detail);
     }
 	
 	private static String toStringBadArgumentPosition(int pos) {
@@ -56,9 +61,9 @@ public final class FunctionException extends ExpressionException {
 		return pos+"th";
 	}
 
-	public FunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message) {
-        super("invalid call of the function "+functionName+", "+(badArgumentPosition)+" Argument ("+badArgumentName+") is invalid, "+message);
-        setAdditional("pattern",getFunctionInfo(pc,functionName));
+	public FunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message, String detail) {
+        super("invalid call of the function "+functionName+", "+(badArgumentPosition)+" Argument ("+badArgumentName+") is invalid, "+message,detail);
+        setAdditional(KeyConstants._pattern,getFunctionInfo(pc,functionName));
     }
     
 	private static String getFunctionInfo(PageContext pc,String functionName) {

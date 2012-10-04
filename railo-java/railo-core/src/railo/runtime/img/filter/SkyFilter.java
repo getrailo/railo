@@ -23,12 +23,10 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
-import railo.runtime.img.math.FBM;
-import railo.runtime.img.math.Function2D;
 import railo.runtime.img.math.Noise;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 public class SkyFilter extends PointFilter  implements DynFiltering {
 
@@ -42,12 +40,12 @@ public class SkyFilter extends PointFilter  implements DynFiltering {
 	private float gain = 1.0f;
 	private float bias = 0.6f;
 	private int operation;
-	private float min;
-	private float max;
-	private boolean ridged;
-	private FBM fBm;
+	//private float min;
+	//private float max;
+	//private boolean ridged;
+	//private FBM fBm;
 	protected Random random = new Random();
-	private Function2D basis;
+	//private Function2D basis;
 
 	private float cloudCover = 0.5f;
 	private float cloudSharpness = 0.5f;
@@ -56,7 +54,7 @@ public class SkyFilter extends PointFilter  implements DynFiltering {
 	private float glowFalloff = 0.5f;
 	private float haziness = 0.96f;
 	private float t = 0.0f;
-	private float sunRadius = 10f;
+	//private float sunRadius = 10f;
 	private int sunColor = 0xffffffff;
 	private float sunR, sunG, sunB;
 	private float sunAzimuth = 0.5f;
@@ -70,7 +68,7 @@ public class SkyFilter extends PointFilter  implements DynFiltering {
 	private float[] exponents;
 	private float[] tan;
 	private BufferedImage skyColors;
-	private int[] skyPixels;
+	//private int[] skyPixels;
 	
 	private final static float r255 = 1.0f/255.0f;
 
@@ -290,8 +288,8 @@ mx = -10000;
 			frequency *= lacunarity;
 		}
 
-		min = -1;
-		max = 1;
+		//min = -1;
+		//max = 1;
 
 //min = -1.2f;
 //max = 1.2f;
@@ -311,7 +309,7 @@ mx = -10000;
 		Graphics2D g = dst.createGraphics();
 		g.drawImage( skyColors, 0, 0, dst.getWidth(), dst.getHeight(), t, 0, t+1, 64, null );
 		g.dispose();
-		BufferedImage clouds = super.filter( dst, dst );
+		super.filter( dst, dst );
 //		g.drawRenderedImage( clouds, null );
 //		g.dispose();
 long finish = System.currentTimeMillis();
@@ -368,14 +366,14 @@ ny += t*windSpeed;// Wind towards the camera
 		nx /= scale;
 		ny /= scale * stretch;
 		float f = evaluate(nx, ny);
-float fg = f;//FIXME-bump map
+//float fg = f;//FIXME-bump map
 		// Normalize to 0..1
 //		f = (f-min)/(max-min);
 
 		f = (f+1.23f)/2.46f;
 
 //		f *= amount;
-		int a = rgb & 0xff000000;
+		//int a = rgb & 0xff000000;
 		int v;
 
 		// Work out cloud cover
@@ -491,7 +489,7 @@ if (y == 100)System.out.println(fg+" "+gf+gradient);
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Stretch, Angle, Operation, Octaves, H, Lacunarity, Gain, Bias, T, FOV, CloudCover, CloudSharpness, Glow, GlowFalloff, Haziness, SunElevation, SunAzimuth, SunColor, CameraElevation, CameraAzimuth, WindSpeed, Time, Scale, Dimensions]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Stretch, Angle, Operation, Octaves, H, Lacunarity, Gain, Bias, T, FOV, CloudCover, CloudSharpness, Glow, GlowFalloff, Haziness, SunElevation, SunAzimuth, SunColor, CameraElevation, CameraAzimuth, WindSpeed, Time, Scale, Dimensions]");
 		}
 
 		return filter(src, dst);

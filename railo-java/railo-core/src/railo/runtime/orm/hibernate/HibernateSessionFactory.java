@@ -1,41 +1,24 @@
 package railo.runtime.orm.hibernate;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.w3c.dom.Document;
-
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
-import railo.runtime.Component;
-import railo.runtime.ComponentPro;
-import railo.runtime.Mapping;
-import railo.runtime.MappingImpl;
-import railo.runtime.PageContext;
-import railo.runtime.PageSource;
+import railo.runtime.*;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.PageException;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMException;
@@ -43,6 +26,13 @@ import railo.runtime.orm.ORMUtil;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class HibernateSessionFactory {
 	
@@ -70,10 +60,25 @@ public class HibernateSessionFactory {
 		
 		// dialect
 		DataSource ds = dc.getDatasource();
-		String dialect=Dialect.getDialect(ormConf.getDialect());
-		if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
+		String dialect=null;
+		try
+		{
+			if (Class.forName(ormConf.getDialect()) != null)
+			{
+				dialect = ormConf.getDialect();
+			}
+		}
+		catch (Exception e)
+		{
+			// MZ: The dialect value could not be bound to a classname or instantiation causes an exception - ignore and use the default dialect entries
+		}
+		if (dialect == null)
+		{
+			dialect = Dialect.getDialect(ormConf.getDialect());
+			if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
+		}
 		if(StringUtil.isEmpty(dialect))
-			throw new ORMException(engine,"A valid dialect definition inside the application.cfc/cfapplication is missing. The dialect cannot be determinated automatically");
+			throw new ORMException(engine,"A valid dialect definition inside the "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME+" is missing. The dialect cannot be determinated automatically");
 		
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
@@ -271,16 +276,16 @@ public class HibernateSessionFactory {
 		done.add(key);
 	}
 
-	public static List<ComponentPro> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
+	public static List<Component> loadComponents(PageContext pc,HibernateORMEngine engine, ORMConfiguration ormConf) throws PageException {
 		ExtensionResourceFilter filter = new ExtensionResourceFilter(pc.getConfig().getCFCExtension(),true);
-		List<ComponentPro> components=new ArrayList<ComponentPro>();
+		List<Component> components=new ArrayList<Component>();
 		loadComponents(pc,engine,components,ormConf.getCfcLocations(),filter,ormConf);
 		return components;
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<ComponentPro> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,List<Component> components,Resource[] reses,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		Mapping[] mappings = createMappings(pc, reses);
-		ApplicationContextPro ac=(ApplicationContextPro) pc.getApplicationContext();
+		ApplicationContext ac=pc.getApplicationContext();
 		Mapping[] existing = ac.getComponentMappings();
 		if(existing==null) existing=new Mapping[0];
 		try{
@@ -302,7 +307,7 @@ public class HibernateSessionFactory {
 		}
 	}
 	
-	private static void loadComponents(PageContext pc, HibernateORMEngine engine,Mapping cfclocation,List<ComponentPro> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
+	private static void loadComponents(PageContext pc, HibernateORMEngine engine,Mapping cfclocation,List<Component> components,Resource res,ExtensionResourceFilter filter,ORMConfiguration ormConf) throws PageException {
 		if(res==null) return;
 
 		if(res.isDirectory()){
@@ -319,7 +324,7 @@ public class HibernateSessionFactory {
 			}
 		}
 		else if(res.isFile()){
-			if(!res.getName().equalsIgnoreCase("Application.cfc"))	{
+			if(!res.getName().equalsIgnoreCase(Constants.APP_CFC))	{
 				try {
 					
 					// MUST still a bad solution
@@ -335,13 +340,15 @@ public class HibernateSessionFactory {
 					}
 					
 					
-					
 					//Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					ComponentAccess cfc = ComponentLoader.loadComponent(pc, null, ps, name, true,true);
-					if(cfc.isPersistent()){
-						components.add(cfc);
+					Page p = ComponentLoader.loadPage(pc, ps);
+					if(!(p instanceof InterfacePage)){
+						ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);
+						if(cfc.isPersistent()){
+							components.add(cfc);
+						}
 					}
 				} 
 				catch (PageException e) {
@@ -353,7 +360,7 @@ public class HibernateSessionFactory {
 	}
 
 	
-	public static Mapping[] createMappings(PageContext pc,Resource[] resources) throws PageException {
+	public static Mapping[] createMappings(PageContext pc,Resource[] resources) {
 			
 			MappingImpl[] mappings=new MappingImpl[resources.length];
 			ConfigImpl config=(ConfigImpl) pc.getConfig();

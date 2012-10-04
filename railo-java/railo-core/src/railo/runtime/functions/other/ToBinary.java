@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function tobinary
+ * Implements the CFML Function tobinary
  */
 package railo.runtime.functions.other;
 

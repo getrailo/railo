@@ -4,25 +4,22 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+
+import org.apache.sanselan.ImageReadException;
+import org.apache.sanselan.Sanselan;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.ClassException;
-import railo.commons.lang.ClassUtil;
 import railo.commons.lang.ExceptionUtil;
 
 class SanselanCoder extends Coder {
 	
 	private String[] writerFormatNames=new String[]{"PNG","GIF","TIFF","JPEG","BMP","PNM","PGM","PBM","PPM","XMP"};
 	private String[] readerFormatNames=new String[]{"PNG","GIF","TIFF","JPEG","BMP","PNM","PGM","PBM","PPM","XMP" ,"ICO","PSD"};
-	private Class sanselan;
-	private Method getBufferedImageIS;
 	
-	protected SanselanCoder() throws ClassException{
+	protected SanselanCoder(){
 		super();
-		sanselan=ClassUtil.loadClass("org.apache.sanselan.Sanselan");
+		Sanselan.hasImageFileExtension("railo.gif");// to make sure Sanselan exist when load this class
 	}
 	
 	/**
@@ -34,10 +31,10 @@ class SanselanCoder extends Coder {
 	public final BufferedImage toBufferedImage(Resource res,String format) throws IOException {
 		InputStream is=null;
 		try {
-			return getBufferedImage(is=res.getInputStream());
+			return Sanselan.getBufferedImage(is=res.getInputStream());
 		} 
-		catch (Throwable t) {
-			throw ExceptionUtil.toIOException(t);
+		catch (ImageReadException e) {
+			throw ExceptionUtil.toIOException(e);
 		}
 		finally {
 			IOUtil.closeEL(is);
@@ -52,23 +49,12 @@ class SanselanCoder extends Coder {
 	 */
 	public final BufferedImage toBufferedImage(byte[] bytes,String format) throws IOException {
 		try {
-			return getBufferedImage(new ByteArrayInputStream(bytes));
+			return Sanselan.getBufferedImage(new ByteArrayInputStream(bytes));
 		} 
-		catch (Throwable t) {
-			throw ExceptionUtil.toIOException(t);
+		catch (ImageReadException e) {
+			throw ExceptionUtil.toIOException(e);
 		}
 	}
-	
-
-
-	private BufferedImage getBufferedImage(InputStream is) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, ClassException {
-		// getBufferedImage(java.io.InputStream is)
-		if(getBufferedImageIS==null) {
-			getBufferedImageIS=sanselan.getMethod("getBufferedImage", new Class[]{InputStream.class});
-		}
-		return (BufferedImage) getBufferedImageIS.invoke(sanselan, new Object[]{is});
-	}
-	
 
 	@Override
 	public String[] getWriterFormatNames() {
@@ -79,5 +65,4 @@ class SanselanCoder extends Coder {
 	public String[] getReaderFormatNames() {
 		return readerFormatNames;
 	}
-	
 }

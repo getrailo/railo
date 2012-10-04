@@ -11,7 +11,6 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.lang.ArchiveClassLoader;
 import railo.commons.lang.PCLCollection;
-import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -21,31 +20,26 @@ import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
-import railo.runtime.engine.Controler;
-import railo.runtime.exp.DeprecatedException;
-import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ArrayUtil;
 
 /**  
  * Mapping class
  */
 public final class MappingImpl implements Mapping {
 
-    
-
-
-
-	private static final Object NULL = new Object();
+	private static final long serialVersionUID = 6431380676262041196L;
+	
+	//private static final Object NULL = new Object();
 	private String virtual;
     private String lcVirtual;
     private boolean topLevel;
     private boolean trusted;
     private final boolean physicalFirst;
     private ArchiveClassLoader archiveClassLoader;
-    private PhysicalClassLoader physicalClassLoader;
+    //private PhysicalClassLoader physicalClassLoader;
     private PCLCollection pclCollection;
     private Resource archive;
     
@@ -146,17 +140,12 @@ public final class MappingImpl implements Mapping {
         return archiveClassLoader;
     }
     
-    // FUTURE set to deprecated
-    public synchronized ClassLoader getClassLoaderForPhysical(boolean reload) throws IOException {
-    	throw new PageRuntimeException(new DeprecatedException("this method is no longer supported"));
-    }
-    
     public synchronized PCLCollection touchPCLCollection() throws IOException {
     	
     	if(pclCollection==null){
     		pclCollection=new PCLCollection(this,getClassRootDirectory(),getClass().getClassLoader(),classLoaderMaxElements);
 		}
-    	Controler.checkPermGenSpace(((ConfigWebImpl)getConfig()).getConfigServerImpl(),true);
+    	getConfig().checkPermGenSpace(true);
     	return pclCollection;
     }
 	public synchronized PCLCollection getPCLCollection() {
@@ -249,7 +238,7 @@ public final class MappingImpl implements Mapping {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
         
-		DumpTable htmlBox = new DumpTablePro("mapping","#ff6600","#ffcc99","#000000");
+		DumpTable htmlBox = new DumpTable("mapping","#ff6600","#ffcc99","#000000");
 		htmlBox.setTitle("Mapping");
 		htmlBox.appendRow(1,new SimpleDumpData("virtual"),new SimpleDumpData(virtual));
 		htmlBox.appendRow(1,new SimpleDumpData("physical"),DumpUtil.toDumpData(strPhysical,pageContext,maxlevel,dp));
@@ -456,9 +445,16 @@ public final class MappingImpl implements Mapping {
 	}
 
 	public static boolean isOK(PageSource ps) {
-		//return ps!=null;
 		return (ps.getMapping().isTrusted() && ((PageSourceImpl)ps).isLoad()) || ps.exists();
-	} 
+	}
+
+	public static PageSource isOK(PageSource[] arr) {
+		if(ArrayUtil.isEmpty(arr)) return null;
+		for(int i=0;i<arr.length;i++) {
+			if(isOK(arr[i])) return arr[i];
+		}
+		return null;
+	}
 	
 	private static String _getRecursive(Resource res, String path, String filename) {
     	if(res.isDirectory()) {

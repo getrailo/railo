@@ -3,7 +3,7 @@
  <!---   <while len(str) LT 2>
     	<cfset str="0"&str>
     </while>--->
-    <cfreturn str>
+    <cfreturn arguments.str>
 </cffunction>
 <cftry>
 	<cfset stVeritfyMessages = StructNew()>
@@ -81,7 +81,7 @@ Error Output --->
 #driver.getDescription()#
 <table class="tbl" width="650">
 
-<cfform action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create#iif(isDefined('url.name'),de('&name=##url.name##'),de(''))#" method="post">
 <cfinput type="hidden" name="class" value="#connection.class#">
 <cfinput type="hidden" name="name" value="#connection.name#" >
 <cfinput type="hidden" name="_name" value="#connection.name#" >
@@ -250,7 +250,7 @@ Error Output --->
             	<td><b>#stText.Settings.cache.default#</b><br />
                 <select name="default">
                 	<option value="">------</option>
-                    <cfloop index="type" list="object,template,query,resource">
+                    <cfloop index="type" list="object,template,query,resource,function">
                 	<option <cfif connection.default EQ type>selected="selected"</cfif> value="#type#">#stText.Settings.cache['defaultType'& type]#</option>
                     </cfloop>
                 	</select><br />

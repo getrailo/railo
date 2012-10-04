@@ -27,7 +27,7 @@ function doFocus() {<cfoutput>
 <cfif isDefined('url.action')><cfset self=request.self&"?action="&url.action><cfelse><cfset self=request.self></cfif>
 <cfparam name="languages" default="#{en:'English',de:'Deutsch'}#">
 <table class="tbl">
-<cfform name="login" action="#self#" method="post">
+<cfform onerror="customError" name="login" action="#self#" method="post">
 
 <tr>
 	<td class="tblHead" width="120" align="right">#stText.Login.Password#</td>

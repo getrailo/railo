@@ -159,10 +159,14 @@ public final class SourceFileImpl implements SourceFile {
 		return path.substring(0,path.lastIndexOf('/'));
 	}
 	
+	public Resource getFile() {
+		return getResource();
+	}
+	
 	/**
 	 * @see railo.runtime.SourceFile#getFile()
 	 */
-	public Resource getFile() {
+	public Resource getResource() {
 		if(file==null) {
 			if(isOutSide) {
 				try {

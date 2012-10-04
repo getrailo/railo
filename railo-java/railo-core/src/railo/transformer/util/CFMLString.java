@@ -8,6 +8,7 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.SourceFile;
+import railo.transformer.bytecode.Position;
 
 /**
  * this class is a Parser String optimized for the transfomer (CFML Parser)
@@ -51,7 +52,7 @@ public final class CFMLString {
 
 	private String source;
 	
-	private static final String NL=System.getProperty("line.separator");
+	//private static final String NL=System.getProperty("line.separator");
 
 	
 	
@@ -128,7 +129,7 @@ public final class CFMLString {
 		}
 		pos=0;
 		arr.add(new Integer(text.length));
-		lines=(Integer[])arr.toArray(new Integer[arr.size()]);
+		lines=arr.toArray(new Integer[arr.size()]);
 	}
 
 	/**
@@ -750,6 +751,31 @@ public final class CFMLString {
 	public int getLine() {
 		return getLine(pos);
 	}
+	
+
+	public Position getPosition() {
+		int line=0;
+		int posAtStart=0;
+		for(int i=0;i<lines.length;i++) {
+			if(pos<=lines[i].intValue()) {
+				line=i+1;
+				if(i>0)posAtStart=lines[i-1].intValue();
+				break;
+			}
+		}
+		if(line==0)
+			throw new RuntimeException("syntax error");
+		
+		
+		
+		int column=pos-posAtStart;
+		
+		return new Position(line,column,pos);
+	}
+	
+	
+	
+	
 	
 	/**
 	 * Gibt zurück in welcher Zeile die angegebene Position ist.

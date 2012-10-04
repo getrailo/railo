@@ -33,7 +33,7 @@
         
 
 		<cfif len(cgi.http_referer)>
-        <cfform action="#cgi.http_referer#" method="post">
+        <cfform onerror="customError" action="#cgi.http_referer#" method="post">
             <cfoutput><input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#"></cfoutput>
         </cfform>
         </cfif>
@@ -50,7 +50,7 @@
         
         
         <cfoutput>
-        <cfform action="#request.self#?action=#url.action#&action2=install2&uid=#url.uid#" method="post">
+        <cfform onerror="customError" action="#request.self#?action=#url.action#&action2=install2&uid=#url.uid#" method="post">
         
         
         <h2>#stText.ext.LicenseAgreement#</h2>

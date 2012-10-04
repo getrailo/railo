@@ -16,10 +16,11 @@ import railo.commons.io.res.type.s3.S3Resource;
 import railo.commons.io.res.util.ModeObjectWrap;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
-import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.functions.list.ListFirst;
 import railo.runtime.functions.list.ListLast;
 import railo.runtime.functions.s3.StoreSetACL;
@@ -28,17 +29,16 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateImpl;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.scope.FormImpl;
-import railo.runtime.type.scope.FormImpl.Item;
-import railo.runtime.type.scope.FormUpload;
+import railo.runtime.type.scope.Form;
+import railo.runtime.type.scope.FormItem;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
@@ -47,19 +47,32 @@ import railo.runtime.type.util.ArrayUtil;
 *
 *
 **/
-public final class FileTag extends TagImpl {
+public final class FileTag extends BodyTagImpl {
 
 	public static final int NAMECONFLICT_UNDEFINED=0;
 	public static final int NAMECONFLICT_ERROR=1;
 	public static final int NAMECONFLICT_SKIP=2;
 	public static final int NAMECONFLICT_OVERWRITE=3;
 	public static final int NAMECONFLICT_MAKEUNIQUE=4;
-	private static final Key SET_ACL = KeyImpl.intern("setACL");
+
+	private static final int ACTION_UNDEFINED = 0;
+	private static final int ACTION_MOVE = 1;
+	private static final int ACTION_WRITE = 2;
+	private static final int ACTION_APPEND = 3;
+	private static final int ACTION_READ = 4;
+	private static final int ACTION_UPLOAD = 5;
+	private static final int ACTION_UPLOAD_ALL = 6;
+	private static final int ACTION_COPY = 7;
+	private static final int ACTION_INFO = 8;
+	private static final int ACTION_TOUCH = 9;
+	private static final int ACTION_DELETE = 10;
+	private static final int ACTION_READ_BINARY = 11;
+	//private static final Key SET_ACL = KeyImpl.intern("setACL");
     
     //private static final String DEFAULT_ENCODING=Charset.getDefault();
 
 	/** Type of file manipulation that the tag performs. */
-	private String action;
+	private int action;
 
 	/** Absolute pathname of directory or file on web server. */
 	private String strDestination;
@@ -100,6 +113,8 @@ public final class FileTag extends TagImpl {
 	** accept = "image/jpg, application/msword"
 	** The browser uses file extension to determine file type. */
 	private String accept;
+	
+	private boolean strict=true;
     
     private String result=null;
 	
@@ -114,7 +129,7 @@ public final class FileTag extends TagImpl {
 	public void release()	{
 		super.release();
 		acl=null;
-		action=null;
+		action=ACTION_UNDEFINED;
 		strDestination=null;
 		output=null;
 		file=null;
@@ -128,6 +143,7 @@ public final class FileTag extends TagImpl {
 		source=null;
 		nameconflict=NAMECONFLICT_UNDEFINED;
 		accept=null;
+		strict=true;
 		securityManager=null;
         result=null;
         serverPassword=null;
@@ -137,8 +153,21 @@ public final class FileTag extends TagImpl {
 	*  Type of file manipulation that the tag performs.
 	* @param action value to set
 	**/	
-	public void setAction(String action)	{
-		this.action=action.toLowerCase();
+	public void setAction(String strAction) throws ApplicationException	{
+		strAction=strAction.toLowerCase();
+		if(strAction.equals("move") || strAction.equals("rename")) action=ACTION_MOVE;
+		else if(strAction.equals("copy")) action=ACTION_COPY;
+		else if(strAction.equals("delete")) action=ACTION_DELETE;
+		else if(strAction.equals("read")) action=ACTION_READ;
+		else if(strAction.equals("readbinary")) action=ACTION_READ_BINARY;
+		else if(strAction.equals("write")) action=ACTION_WRITE;
+		else if(strAction.equals("append")) action=ACTION_APPEND;
+		else if(strAction.equals("upload")) action=ACTION_UPLOAD;
+		else if(strAction.equals("uploadall")) action=ACTION_UPLOAD_ALL;
+        else if(strAction.equals("info")) action=ACTION_INFO;
+        else if(strAction.equals("touch")) action=ACTION_TOUCH;
+        else 
+			throw new ApplicationException("invalid value ["+strAction+"] for attribute action","values for attribute action are:info,move,rename,copy,delete,read,readbinary,write,append,upload,uploadall,touch");
 	}
 
 	/** set the value destination
@@ -221,10 +250,10 @@ public final class FileTag extends TagImpl {
 	public void setAcl(String acl) throws ApplicationException	{
 		this.acl=acl;
 	}
-	public void setAcl(Object acl) throws ApplicationException	{
+	public void setAcl(Object acl)	{
 		this.acl=acl;
 	}
-	public void setStoreacl(Object acl) throws ApplicationException	{
+	public void setStoreacl(Object acl)	{
 		this.acl=acl;
 	}
 	
@@ -292,6 +321,10 @@ public final class FileTag extends TagImpl {
 	public void setAccept(String accept)	{
 		this.accept=accept;
 	}
+
+	public void setStrict(boolean strict)	{
+		this.strict=strict;
+	}
     
     /**
      * @param result The result to set.
@@ -307,38 +340,76 @@ public final class FileTag extends TagImpl {
 	public int doStartTag() throws PageException	{
 		
 		if(StringUtil.isEmpty(charset)) charset=pageContext.getConfig().getResourceCharset();
+		securityManager = pageContext.getConfig().getSecurityManager();
 		
-	    securityManager = pageContext.getConfig().getSecurityManager();
-		if(action.equals("move")) actionMove();
-		else if(action.equals("rename")) actionMove();
-		else if(action.equals("copy")) actionCopy();
-		else if(action.equals("delete")) actionDelete();
-		else if(action.equals("read")) actionRead();
-		else if(action.equals("readbinary")) actionReadBinary();
-		else if(action.equals("write")) actionWrite();
-		else if(action.equals("append")) actionAppend();
-		else if(action.equals("upload")) actionUpload();
-		else if(action.equals("uploadall")) actionUploadAll();
-        else if(action.equals("info")) actionInfo();
-        else if(action.equals("touch")) actionTouch();
-        else 
-			throw new ApplicationException("invalid value ["+action+"] for attribute action","values for attribute action are:info,move,rename,copy,delete,read,readbinary,write,append,upload,uploadall");
-				
+		switch(action){
+		case ACTION_MOVE: actionMove(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
+		break;
+		case ACTION_COPY: actionCopy(pageContext, securityManager,source, strDestination, nameconflict,serverPassword,acl, mode, attributes);
+		break;
+		case ACTION_DELETE: actionDelete();
+		break;
+		case ACTION_READ: actionRead();
+		break;
+		case ACTION_READ_BINARY: actionReadBinary();
+		break;
+		case ACTION_UPLOAD: actionUpload();
+		break;
+		case ACTION_UPLOAD_ALL: actionUploadAll();
+		break;
+		case ACTION_INFO: actionInfo();
+		break;
+		case ACTION_TOUCH: actionTouch();
+		break;
+		case ACTION_UNDEFINED: throw new ApplicationException("missing attribute action"); // should never happens
+		
+		// write and append
+		default:
+			return EVAL_BODY_BUFFERED;
+		}
+		return SKIP_BODY;
+	}
+	
+	/**
+	 * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
+	*/
+	public int doAfterBody() throws ApplicationException	{
+		if(action==ACTION_APPEND || action==ACTION_WRITE) {
+			String body = bodyContent.getString();
+			if(!StringUtil.isEmpty(body)){
+				if(!StringUtil.isEmpty(output))
+					throw new ApplicationException("if a body is defined for the tag, the attribute [output] is not allowed");
+				output=body;
+			}
+		}
 		return SKIP_BODY;
 	}
 
 	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
+	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	*/
-	public int doEndTag()	{
+	public int doEndTag() throws PageException	{
+		switch(action){
+		case ACTION_APPEND: actionAppend();
+		break;
+		case ACTION_WRITE: actionWrite();
+		break;
+		}
+		
 		return EVAL_PAGE;
+	}
+	
+	public void hasBody(boolean hasBody) {
+		if(output==null && hasBody) output="";
 	}
 
 	/**
 	 * move source file to destination path or file
 	 * @throws PageException
 	 */
-	private void actionMove() throws PageException {
+	public static void actionMove(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -398,7 +469,9 @@ public final class FileTag extends TagImpl {
 	 * copy source file to destination file or path
 	 * @throws PageException
 	 */
-	private void actionCopy() throws PageException {
+	public static void actionCopy(PageContext pageContext, railo.runtime.security.SecurityManager securityManager,
+			Resource source, String strDestination, int nameconflict,String serverPassword,
+			Object acl, int mode, String attributes) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_OVERWRITE;
 		
 		if(source==null)
@@ -432,8 +505,6 @@ public final class FileTag extends TagImpl {
 			// ERROR
 			else throw new ApplicationException("destiniation file ["+destination.toString()+"] already exist");
 		}
-        
-		
 		
         try {
             IOUtil.copy(source,destination);			
@@ -624,7 +695,7 @@ public final class FileTag extends TagImpl {
             if(!file.exists()) file.createNewFile();
             String content=Caster.toString(output);
             if(fixnewline)content=doFixNewLine(content);
-    		if(addnewline) content+="\n";
+    		if(addnewline) content+=SystemUtil.getOSSpecificLineSeparator();
             IOUtil.write(file,content,charset,true);
         	
         } 
@@ -663,15 +734,15 @@ public final class FileTag extends TagImpl {
 		sct.setEL(KeyImpl.TYPE,file.isDirectory()?"Dir":"File");
 		sct.setEL("dateLastModified",new DateTimeImpl(pageContext,file.lastModified(),false));
 		sct.setEL("attributes",getFileAttribute(file));
-		if(SystemUtil.isUnix())sct.setEL("mode",new ModeObjectWrap(file));
+		if(SystemUtil.isUnix())sct.setEL(KeyConstants._mode,new ModeObjectWrap(file));
         
 		try { 		
 			BufferedImage bi = ImageUtil.toBufferedImage(file, null);
             if(bi!=null) {
 	            Struct img =new StructImpl();
-	            img.setEL("width",new Double(bi.getWidth()));
-	            img.setEL("height",new Double(bi.getHeight()));
-	            sct.setEL("img",img);
+	            img.setEL(KeyConstants._width,new Double(bi.getWidth()));
+	            img.setEL(KeyConstants._height,new Double(bi.getHeight()));
+	            sct.setEL(KeyConstants._img,img);
             }
         } 
 		catch (Throwable t) {}
@@ -687,10 +758,10 @@ public final class FileTag extends TagImpl {
 	 */
 
 	public void actionUpload() throws PageException {
-		FormImpl.Item item=getFormItem(pageContext,filefield);
-		Struct cffile = _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+		FormItem item=getFormItem(pageContext,filefield);
+		Struct cffile = _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 		if(StringUtil.isEmpty(result)) {
-            pageContext.undefinedScope().set("file",cffile);
+            pageContext.undefinedScope().set(KeyConstants._file,cffile);
 		    pageContext.undefinedScope().set("cffile",cffile);
         }
         else {
@@ -700,19 +771,19 @@ public final class FileTag extends TagImpl {
 	
 	
 	public static Struct actionUpload(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,String filefield,
-			String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
-		FormImpl.Item item=getFormItem(pageContext,filefield);
-		return _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+			String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
+		FormItem item=getFormItem(pageContext,filefield);
+		return _actionUpload(pageContext,securityManager,item,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 	}
 	
 	public void actionUploadAll() throws PageException {
-		Array arr=actionUploadAll(pageContext,securityManager,strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+		Array arr=actionUploadAll(pageContext,securityManager,strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 		if(StringUtil.isEmpty(result)) {
 			Struct sct;
 			if(arr!=null && arr.size()>0) sct=(Struct) arr.getE(1);
 			else sct=new StructImpl();
 			
-            pageContext.undefinedScope().set("file",sct);
+            pageContext.undefinedScope().set(KeyConstants._file,sct);
 		    pageContext.undefinedScope().set("cffile",sct);
         }
         else {
@@ -722,19 +793,19 @@ public final class FileTag extends TagImpl {
 	
 
 	public static Array actionUploadAll(PageContext pageContext,railo.runtime.security.SecurityManager securityManager,
-			String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
-		Item[] items=getFormItems(pageContext);
+			String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
+		FormItem[] items=getFormItems(pageContext);
 		Struct sct=null;
 		Array arr=new ArrayImpl();
 		for(int i=0;i<items.length;i++){
-			sct = _actionUpload(pageContext,securityManager,items[i],strDestination,nameconflict,accept,mode,attributes,acl,serverPassword);
+			sct = _actionUpload(pageContext,securityManager,items[i],strDestination,nameconflict,accept,strict,mode,attributes,acl,serverPassword);
 			arr.appendEL(sct);
 		}
 		return arr;
 	}
 	
 	private static synchronized Struct _actionUpload(PageContext pageContext, railo.runtime.security.SecurityManager securityManager, 
-			Item formItem,String strDestination,int nameconflict,String accept,int mode,String attributes,Object acl,String serverPassword) throws PageException {
+			FormItem formItem,String strDestination,int nameconflict,String accept,boolean strict,int mode,String attributes,Object acl,String serverPassword) throws PageException {
 		if(nameconflict==NAMECONFLICT_UNDEFINED) nameconflict=NAMECONFLICT_ERROR;
 
 		boolean fileWasRenamed=false;
@@ -745,8 +816,6 @@ public final class FileTag extends TagImpl {
 		
 		String contentType=formItem.getContentType();
 		
-		// check file type
-		checkContentType(pageContext,contentType,accept);
 		
 		// set cffile struct
 		Struct cffile=new StructImpl();
@@ -766,6 +835,10 @@ public final class FileTag extends TagImpl {
 			strClientFile=strClientFile.replace('\\','/');
 		Resource clientFile=pageContext.getConfig().getResource(strClientFile);
 		String clientFileName=clientFile.getName();
+		
+		// check file type
+		checkContentType(contentType,accept,getFileExtension(clientFile),strict);
+		
 			
 			//String dir=clientFile.getParent();
 			//dir=correctDirectory(dir);
@@ -775,7 +848,7 @@ public final class FileTag extends TagImpl {
 			cffile.set("clientfileext",getFileExtension(clientFile));
 			cffile.set("clientfilename",getFileName(clientFile));
 		
-	    // check desination
+	    // check destination
 	    if(StringUtil.isEmpty(strDestination))
 	    	throw new ApplicationException("attribute destination is not defined in tag file");
 
@@ -791,13 +864,13 @@ public final class FileTag extends TagImpl {
 	    else if(!clientFileName.equalsIgnoreCase(destination.getName()))
 	    	fileWasRenamed=true;
 	    
-	    // check parent desination -> directory of the desinatrion
+	    // check parent destination -> directory of the desinatrion
 	    Resource parentDestination=destination.getParentResource();
 	    
 	    if(!parentDestination.exists())
-	    	throw new ApplicationException("attribute destination has a invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
+	    	throw new ApplicationException("attribute destination has an invalid value ["+destination+"], directory ["+parentDestination+"] doesn't exist");
 	    else if(!parentDestination.canWrite())
-	    	throw new ApplicationException("can't write to desination directory ["+parentDestination+"], no access to write");
+	    	throw new ApplicationException("can't write to destination directory ["+parentDestination+"], no access to write");
 	    
 	    // set server variables
 		cffile.set("serverdirectory",getParent(destination));
@@ -811,7 +884,7 @@ public final class FileTag extends TagImpl {
 	    if(destination.exists()) {
 	    	fileExisted=true;
 	    	if(nameconflict==NAMECONFLICT_ERROR) {
-	    		throw new ApplicationException("desination file ["+destination+"] already exist");
+	    		throw new ApplicationException("destination file ["+destination+"] already exist");
 	    	}
 	    	else if(nameconflict==NAMECONFLICT_SKIP) {
 				cffile.set("fileexisted",Caster.toBoolean(fileExisted));
@@ -838,7 +911,7 @@ public final class FileTag extends TagImpl {
 	    		fileWasOverwritten=true;
 	    		if(!destination.delete())
 	    			if(destination.exists()) // hier hatte ich concurrent problem das damit ausgeraeumt ist
-	    				throw new ApplicationException("can't delete desination file ["+destination+"]");
+	    				throw new ApplicationException("can't delete destination file ["+destination+"]");
 	    	}
 	    	// for "overwrite" no action is neded
 	    	
@@ -872,20 +945,37 @@ public final class FileTag extends TagImpl {
 	 * @param contentType 
 	 * @throws PageException
 	 */
-	private static void checkContentType(PageContext pageContext,String contentType,String accept) throws PageException {
-		String type=ListFirst.call(pageContext,contentType,"/").trim().toLowerCase();
-		String subType=ListLast.call(pageContext,contentType,"/").trim().toLowerCase();
+	private static void checkContentType(String contentType,String accept,String ext,boolean strict) throws PageException {
 		
-		if(accept==null || accept.trim().length()==0) return;
+		if(!StringUtil.isEmpty(ext,true)){
+			ext=ext.trim().toLowerCase();
+			if(ext.startsWith("*."))ext=ext.substring(2);
+			if(ext.startsWith("."))ext=ext.substring(1);
+		}
+		else ext=null;
+		
+		if(StringUtil.isEmpty(accept,true)) return;
+		
+		
+		MimeType mt = MimeType.getInstance(contentType),sub;
 		
 		Array whishedTypes=List.listToArrayRemoveEmpty(accept,',');
 		int len=whishedTypes.size();
 		for(int i=1;i<=len;i++) {
-			String whishedType=Caster.toString(whishedTypes.getE(i)).trim();
-			String wType=ListFirst.call(pageContext,whishedType,"/").trim().toLowerCase();
-			String wSubType=ListLast.call(pageContext,whishedType,"/").trim().toLowerCase();
-			if((wType.equals("*") || wType.equals(type)) && (wSubType.equals("*") || wSubType.equals(subType)))return;
+			String whishedType=Caster.toString(whishedTypes.getE(i)).trim().toLowerCase();
+			if(whishedType.equals("*")) return;
+			// check mimetype
+			if(List.len(whishedType, "/", true)==2){
+				sub=MimeType.getInstance(whishedType);
+				if(mt.match(sub)) return;
+			}
 			
+			// check extension
+			if(ext!=null && !strict){
+				if(whishedType.startsWith("*."))whishedType=whishedType.substring(2);
+				if(whishedType.startsWith("."))whishedType=whishedType.substring(1);
+				if(ext.equals(whishedType)) return;
+			}
 		}
 		throw new ApplicationException("The MIME type of the uploaded file ["+contentType+"] was not accepted by the server.","only this ["+accept+"] mime type are accepted");
 	}
@@ -895,10 +985,10 @@ public final class FileTag extends TagImpl {
 	 * @return FileItem
 	 * @throws ApplicationException
 	 */
-	private static Item getFormItem(PageContext pageContext, String filefield) throws PageException {
+	private static FormItem getFormItem(PageContext pageContext, String filefield) throws PageException {
 		// check filefield
 		if(StringUtil.isEmpty(filefield)){
-			Item[] items = getFormItems(pageContext);
+			FormItem[] items = getFormItems(pageContext);
 			if(ArrayUtil.isEmpty(items))
 				throw new ApplicationException("no file send with this form");
 			return items[0];
@@ -906,10 +996,10 @@ public final class FileTag extends TagImpl {
 			
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
-		FormUpload upload = (FormUpload)pageContext.formScope();
-		FormImpl.Item fileItem = upload.getUploadResource(filefield);
+		railo.runtime.type.scope.Form upload = pageContext.formScope();
+		FormItem fileItem = upload.getUploadResource(filefield);
 		if(fileItem==null) {
-			Item[] items = upload.getFileItems();
+			FormItem[] items = upload.getFileItems();
 			StringBuilder sb=new StringBuilder();
 			for(int i=0;i<items.length;i++){
 				if(i!=0) sb.append(", ");
@@ -927,11 +1017,11 @@ public final class FileTag extends TagImpl {
 		return fileItem;
 	}
 	
-	private static Item[] getFormItems(PageContext pageContext) throws PageException {
+	private static FormItem[] getFormItems(PageContext pageContext) throws PageException {
 		PageException pe = pageContext.formScope().getInitException();
 		if(pe!=null) throw pe;
 		
-		FormUpload scope = (FormUpload) pageContext.formScope();
+		Form scope = pageContext.formScope();
 		return scope.getFileItems();
 	}
 	
@@ -994,7 +1084,7 @@ public final class FileTag extends TagImpl {
 			if(create) {
 				Resource parent=file.getParentResource();
 				if(parent!=null && !parent.exists())
-					throw new ApplicationException("parent directory for ["+file+"] doesn't exists");
+					throw new ApplicationException("parent directory for ["+file+"] doesn't exist");
 				try {
 					file.createFile(false);
 				} catch (IOException e) {

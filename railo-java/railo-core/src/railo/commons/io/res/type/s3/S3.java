@@ -19,16 +19,17 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.collections.map.ReferenceMap;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.xml.sax.SAXException;
 
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
+import railo.commons.net.http.Entity;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
+import railo.commons.net.http.Header;
 import railo.loader.util.Util;
+import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -81,7 +82,7 @@ public final class S3 implements S3Constants {
 	 */
 	String getSecretAccessKeyValidate() throws S3Exception {
 		if(StringUtil.isEmpty(secretAccessKey))
-			throw new S3Exception("secretAccessKey is not defined, define in application.cfc (s3.awsSecretKey) or as part of the path.");
+			throw new S3Exception("secretAccessKey is not defined, define in "+Constants.APP_CFC+" (s3.awsSecretKey) or as part of the path.");
 		return secretAccessKey;
 	}
 	
@@ -91,7 +92,7 @@ public final class S3 implements S3Constants {
 	 */
 	String getAccessKeyIdValidate() throws S3Exception {
 		if(StringUtil.isEmpty(accessKeyId))
-			throw new S3Exception("accessKeyId is not defined, define in application.cfc (this.s3.accessKeyId) or as part of the path.");
+			throw new S3Exception("accessKeyId is not defined, define in "+Constants.APP_CFC+" (this.s3.accessKeyId) or as part of the path.");
 		return accessKeyId;
 	}
 	
@@ -139,18 +140,18 @@ public final class S3 implements S3Constants {
 		String dateTimeString = Util.toHTTPTimeString();
 		String signature = createSignature("GET\n\n\n"+dateTimeString+"\n/", getSecretAccessKeyValidate(), "iso-8859-1");
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL("http://"+host), null, null, -1, null, "Railo", null, -1, null, null,
+		HTTPResponse rsp = HTTPEngine.get(new URL("http://"+host), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,
 				new Header[]{
-					new Header("Date",dateTimeString),
-					new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
+					HTTPEngine.header("Date",dateTimeString),
+					HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
 				}
 		);
-		return method.getResponseBodyAsStream();
+		return rsp.getContentAsStream();
 		
 	}
 	
 
-	public HttpMethod head(String bucketName, String objectName) throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
+	public HTTPResponse head(String bucketName, String objectName) throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
 		bucketName=checkBucket(bucketName);
 		boolean hasObj=!StringUtil.isEmpty(objectName);
 		if(hasObj)objectName=checkObjectName(objectName);
@@ -160,16 +161,16 @@ public final class S3 implements S3Constants {
 		
 		
 		List<Header> headers=new ArrayList<Header>();
-		headers.add(new Header("Date",dateTimeString));
-		headers.add(new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
-		headers.add(new Header("Host",bucketName+"."+host));
+		headers.add(HTTPEngine.header("Date",dateTimeString));
+		headers.add(HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
+		headers.add(HTTPEngine.header("Host",bucketName+"."+host));
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
 		//if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
 		if(hasObj) {
 			strUrl+=objectName;
 		}
-		HttpMethod method = railo.commons.net.HTTPUtil.head(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
+		HTTPResponse method = HTTPEngine.head(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
 		return method;
 		
 	}
@@ -187,9 +188,9 @@ public final class S3 implements S3Constants {
 		
 		
 		List<Header> headers=new ArrayList<Header>();
-		headers.add(new Header("Date",dateTimeString));
-		headers.add(new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
-		headers.add(new Header("Host",bucketName+"."+host));
+		headers.add(HTTPEngine.header("Date",dateTimeString));
+		headers.add(HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
+		headers.add(HTTPEngine.header("Host",bucketName+"."+host));
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
 		//if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
@@ -198,8 +199,8 @@ public final class S3 implements S3Constants {
 		}
 		strUrl+="?acl";
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
-		return method.getResponseBodyAsStream();
+		HTTPResponse method = HTTPEngine.get(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
+		return method.getContentAsStream();
 		
 	}
 	
@@ -219,19 +220,19 @@ public final class S3 implements S3Constants {
 		if(hasObj)objectName=checkObjectName(objectName);
 		
 
-		ByteArrayRequestEntity re = new ByteArrayRequestEntity(acp.toXMLString().getBytes("iso-8859-1"),"text/html");
+		Entity re = HTTPEngine.getByteArrayEntity(acp.toXMLString().getBytes("iso-8859-1"),"text/html");
 		
 		
 		String dateTimeString = Util.toHTTPTimeString();
 		
 		
-		String cs = "PUT\n\n"+re.getContentType()+"\n"+dateTimeString+"\n/"+bucketName+"/"+(hasObj?objectName:"")+"?acl";
+		String cs = "PUT\n\n"+re.contentType()+"\n"+dateTimeString+"\n/"+bucketName+"/"+(hasObj?objectName:"")+"?acl";
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		Header[] headers = new Header[]{
-				new Header("Content-Type",re.getContentType()),
-				new Header("Content-Length",Long.toString(re.getContentLength())),
-				new Header("Date",dateTimeString),
-				new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
+				HTTPEngine.header("Content-Type",re.contentType()),
+				HTTPEngine.header("Content-Length",Long.toString(re.contentLength())),
+				HTTPEngine.header("Date",dateTimeString),
+				HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
@@ -242,19 +243,14 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.put(new URL(strUrl), null, null, -1, null, 
-				"Railo", null, -1, null, null,headers,re);
+		HTTPResponse method = HTTPEngine.put(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, 
+				"Railo", null,headers,re);
 		if(method.getStatusCode()!=200){
-			new ErrorFactory(method.getResponseBodyAsStream());
+			new ErrorFactory(method.getContentAsStream());
 		}
 		
 		
 	}
-	
-	
-	
-	
-	
 	
 	public InputStream listContentsRaw(String bucketName,String prefix,String marker,int maxKeys) throws MalformedURLException, IOException, InvalidKeyException, NoSuchAlgorithmException {
 		bucketName=checkBucket(bucketName);
@@ -263,13 +259,13 @@ public final class S3 implements S3Constants {
 		
 		
 		List<Header> headers=new ArrayList<Header>();
-		headers.add(new Header("Date",dateTimeString));
-		headers.add(new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
-		headers.add(new Header("Host",bucketName+"."+host));
+		headers.add(HTTPEngine.header("Date",dateTimeString));
+		headers.add(HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
+		headers.add(HTTPEngine.header("Host",bucketName+"."+host));
 		
-		///if(!StringUtil.isEmpty(prefix)) headers.add(new Header("prefix",prefix));
-		//if(!StringUtil.isEmpty(marker)) headers.add(new Header("marker",marker));
-		//if(maxKeys>=0) headers.add(new Header("max-keys",Caster.toString(maxKeys)));
+		///if(!StringUtil.isEmpty(prefix)) headers.add(HTTPEngine.header("prefix",prefix));
+		//if(!StringUtil.isEmpty(marker)) headers.add(HTTPEngine.header("marker",marker));
+		//if(maxKeys>=0) headers.add(HTTPEngine.header("max-keys",Caster.toString(maxKeys)));
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
 		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
@@ -289,8 +285,8 @@ public final class S3 implements S3Constants {
 			amp='&';
 		}
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.invoke(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,(Header[])headers.toArray(new Header[headers.size()]));
-		return method.getResponseBodyAsStream();
+		HTTPResponse method = HTTPEngine.get(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
+		return method.getContentAsStream();
 	}
 	
 
@@ -313,7 +309,7 @@ public final class S3 implements S3Constants {
 			else break;
 		}
 		
-		if(list.size()==1) return (Content[]) list.get(0);
+		if(list.size()==1) return list.get(0);
 		if(list.size()==0) return new Content[0];
 		
 		Content[] rtn=new Content[size];
@@ -350,11 +346,11 @@ public final class S3 implements S3Constants {
 		}
 		
 		byte[] barr = strXML.getBytes("iso-8859-1");
-		put(bucketName, null, acl,new ByteArrayRequestEntity(barr,"text/html"));	
+		put(bucketName, null, acl,HTTPEngine.getByteArrayEntity(barr,"text/html"));	
 	}
 	
 	/*public void putObject(String bucketName,String objectName,int acl,Resource res) throws IOException, InvalidKeyException, NoSuchAlgorithmException, PageException, SAXException, EncoderException {
-		String contentType = IOUtil.getMymeType(res, "application");
+		String contentType = IOUtil.getMimeType(res, "application");
 		InputStream is = null;
 		try {
 			is = res.getInputStream();
@@ -369,20 +365,20 @@ public final class S3 implements S3Constants {
 		put(bucketName, objectName, acl, HTTPUtil.toRequestEntity(is),length, contentType);
 	}*/
 		
-	public void put(String bucketName,String objectName,int acl, RequestEntity re) throws IOException, InvalidKeyException, NoSuchAlgorithmException, SAXException {
+	public void put(String bucketName,String objectName,int acl, Entity re) throws IOException, InvalidKeyException, NoSuchAlgorithmException, SAXException {
 		bucketName=checkBucket(bucketName);
 		objectName=checkObjectName(objectName);
 		
 		String dateTimeString = Util.toHTTPTimeString();
 		// Create a canonical string to send based on operation requested 
-		String cs = "PUT\n\n"+re.getContentType()+"\n"+dateTimeString+"\nx-amz-acl:"+toStringACL(acl)+"\n/"+bucketName+"/"+objectName;
+		String cs = "PUT\n\n"+re.contentType()+"\n"+dateTimeString+"\nx-amz-acl:"+toStringACL(acl)+"\n/"+bucketName+"/"+objectName;
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		Header[] headers = new Header[]{
-				new Header("Content-Type",re.getContentType()),
-				new Header("Content-Length",Long.toString(re.getContentLength())),
-				new Header("Date",dateTimeString),
-				new Header("x-amz-acl",toStringACL(acl)),
-				new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
+				HTTPEngine.header("Content-Type",re.contentType()),
+				HTTPEngine.header("Content-Length",Long.toString(re.contentLength())),
+				HTTPEngine.header("Date",dateTimeString),
+				HTTPEngine.header("x-amz-acl",toStringACL(acl)),
+				HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
@@ -390,10 +386,10 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.put(new URL(strUrl), null, null, -1, null, 
-				"Railo", null, -1, null, null,headers,re);
+		HTTPResponse method = HTTPEngine.put(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, 
+				"Railo", null,headers,re);
 		if(method.getStatusCode()!=200){
-			new ErrorFactory(method.getResponseBodyAsStream());
+			new ErrorFactory(method.getContentAsStream());
 		}
 		
 		
@@ -445,12 +441,12 @@ public final class S3 implements S3Constants {
 	}
 
 	public InputStream getInputStream(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
-		return getData(bucketName, objectName).getResponseBodyAsStream();
+		return getData(bucketName, objectName).getContentAsStream();
 	}
 	
 	public Map<String, String> getMetadata(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
-		HttpMethod method = getData(bucketName, objectName);
-		Header[] headers = method.getResponseHeaders();
+		HTTPResponse method = getData(bucketName, objectName);
+		Header[] headers = method.getAllHeaders();
 		Map<String,String> rtn=new HashMap<String, String>();
 		String name;
 		if(headers!=null)for(int i=0;i<headers.length;i++){
@@ -461,7 +457,7 @@ public final class S3 implements S3Constants {
 		return rtn;
 	}
 	
-	private HttpMethod getData(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
+	private HTTPResponse getData(String bucketName,String objectName) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SAXException  {
 		bucketName=checkBucket(bucketName);
 		objectName=checkObjectName(objectName);
 		
@@ -477,15 +473,15 @@ public final class S3 implements S3Constants {
 		URL url = new URL(strUrl);
 		
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.invoke(url, null, null, -1, null, "Railo", null, -1, null, null,
+		HTTPResponse method = HTTPEngine.get(url, null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,
 				new Header[]{
-					new Header("Date",dateTimeString),
-					new Header("Host",bucketName+"."+host),
-					new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
+					HTTPEngine.header("Date",dateTimeString),
+					HTTPEngine.header("Host",bucketName+"."+host),
+					HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
 				}
 		);
 		if(method.getStatusCode()!=200)
-			new ErrorFactory(method.getResponseBodyAsStream());
+			new ErrorFactory(method.getContentAsStream());
 		return method;
 	}
 	
@@ -502,9 +498,9 @@ public final class S3 implements S3Constants {
 		//print.out(cs);
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
-		Header[] headers = new Header[]{
-				new Header("Date",dateTimeString),
-				new Header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
+		Header[] headers =new Header[]{
+				HTTPEngine.header("Date",dateTimeString),
+				HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
@@ -512,10 +508,10 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HttpMethod method = railo.commons.net.HTTPUtil.delete(new URL(strUrl), null, null, -1, null, "Railo", null, -1, null, null,headers);
+		HTTPResponse rsp = HTTPEngine.delete(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo",  null,headers);
 		
-		if(method.getStatusCode()!=200)
-			new ErrorFactory(method.getResponseBodyAsStream());
+		if(rsp.getStatusCode()!=200)
+			new ErrorFactory(rsp.getContentAsStream());
 	}
 
 	
@@ -649,7 +645,7 @@ public final class S3 implements S3Constants {
 	}
 
 	public S3Info getInfo(String path) {
-		return (S3Info) infos.get(toKey(path));
+		return infos.get(toKey(path));
 	}
 
 	public void setInfo(String path,S3Info info) {

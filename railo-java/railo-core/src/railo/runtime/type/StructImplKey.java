@@ -6,12 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import railo.commons.collections.HashTable;
-import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -19,10 +17,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
- * cold fusion data type struct
+ * CFML data type struct
  */
 public final class StructImplKey extends StructSupport implements Struct {
 
@@ -31,7 +31,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	public static final int TYPE_SYNC=2;
 	public static final int TYPE_REGULAR=3;
 	
-	private Map _map;
+	private Map<Collection.Key,Object> _map;
 	//private static  int scount=0;
 	//private static int kcount=0;
 	
@@ -39,7 +39,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	 * default constructor
 	 */
 	public StructImplKey() {
-		_map=new HashMap();
+		_map=new HashMap<Collection.Key,Object>();
 	}
 	
     /**
@@ -50,10 +50,10 @@ public final class StructImplKey extends StructSupport implements Struct {
      * @param doubleLinked
      */
     public StructImplKey(int type) {
-    	if(type==TYPE_LINKED)		_map=new LinkedHashMap();
-    	else if(type==TYPE_WEAKED)	_map=new java.util.WeakHashMap();
+    	if(type==TYPE_LINKED)		_map=new LinkedHashMap<Collection.Key,Object>();
+    	else if(type==TYPE_WEAKED)	_map=new java.util.WeakHashMap<Collection.Key,Object>();
         else if(type==TYPE_SYNC)	_map=new HashTable();
-        else 						_map=new HashMap();
+        else 						_map=new HashMap<Collection.Key,Object>();
     }
     
 	/**
@@ -99,35 +99,13 @@ public final class StructImplKey extends StructSupport implements Struct {
 	}
 
 	public Collection.Key[] keys() {//print.out("keys");
-		Iterator it = keyIterator();
+		Iterator<Key> it = keyIterator();
 		Collection.Key[] keys = new Collection.Key[size()];
 		int count=0;
 		while(it.hasNext()) {
-			keys[count++]=KeyImpl.toKey(it.next(), null);
+			keys[count++]=it.next();
 		}
 		return keys;
-	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		Iterator it = keyIterator();
-		String[] keys = new String[size()];
-		int count=0;
-		while(it.hasNext()) {
-			keys[count++]=StringUtil.toString(it.next(), null);
-		}
-		return keys;
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
-		Object obj= _map.remove(StringUtil.toLowerCase(key));
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
-		return obj;
 	}
 
 	/**
@@ -135,7 +113,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	 */
 	public Object remove(Collection.Key key) throws PageException {
 		Object obj= _map.remove(key);
-		if(obj==null) throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exists");
+		if(obj==null) throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exist");
 		return obj;
 	}
 	
@@ -161,7 +139,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    Iterator it=_map.keySet().iterator();
 		
-		DumpTable table = new DumpTablePro("struct","#9999ff","#ccccff","#000000");
+		DumpTable table = new DumpTable("struct","#9999ff","#ccccff","#000000");
 		table.setTitle("Struct");
 		maxlevel--;
 		int maxkeys=dp.getMaxKeys();
@@ -179,7 +157,7 @@ public final class StructImplKey extends StructSupport implements Struct {
 	/**
 	 * throw exception for invalid key
 	 * @param key Invalid key
-	 * @return returns a invalid key Exception
+	 * @return returns an invalid key Exception
 	 */
 	protected ExpressionException invalidKey(String key) {
 		return new ExpressionException("key ["+key+"] doesn't exist in struct");
@@ -198,25 +176,32 @@ public final class StructImplKey extends StructSupport implements Struct {
 	public static void copy(Struct src,Struct trg,boolean deepCopy) {
 		ThreadLocalDuplication.set(src, trg);
 		try {
-			Collection.Key[] keys=src.keys();
-			Collection.Key key;
-			for(int i=0;i<keys.length;i++) {
-				key=keys[i];
-				if(!deepCopy) trg.setEL(key,src.get(key,null));
-				else trg.setEL(key,Duplicator.duplicate(src.get(key,null),deepCopy));
+			Iterator<Entry<Key, Object>> it = src.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()) {
+				e = it.next();
+				if(!deepCopy) trg.setEL(e.getKey(),e.getValue());
+				else trg.setEL(e.getKey(),Duplicator.duplicate(e.getValue(),deepCopy));
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(src);
+			//ThreadLocalDuplication.remove(src); removed "remove" to catch sisters and brothers
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
-		//return new ArrayIterator(map.keySet().toArray());
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return _map.keySet().iterator();
+	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 	
 	/**
@@ -238,7 +223,7 @@ public final class StructImplKey extends StructSupport implements Struct {
      */
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
-          "Use Build-In-Function \"serialize(Struct):String\" to create a String from Struct");
+          "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
 
 	/**

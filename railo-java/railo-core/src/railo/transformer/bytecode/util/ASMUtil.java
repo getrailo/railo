@@ -1,14 +1,12 @@
 package railo.transformer.bytecode.util;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -17,16 +15,18 @@ import org.objectweb.asm.commons.Method;
 import railo.aprint;
 import railo.commons.digest.MD5;
 import railo.commons.lang.StringUtil;
-import railo.commons.lang.SystemOut;
 import railo.runtime.component.Property;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
+import railo.runtime.type.dt.TimeSpanImpl;
+import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.Body;
+import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
@@ -35,12 +35,18 @@ import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.expression.var.Argument;
+import railo.transformer.bytecode.expression.var.BIF;
+import railo.transformer.bytecode.expression.var.Member;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
+import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControl;
+import railo.transformer.bytecode.statement.FlowControlBreak;
+import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -51,8 +57,8 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 
 public final class ASMUtil {
 
-	private static final int VERSION_2=1;
-	private static final int VERSION_3=2;
+	//private static final int VERSION_2=1;
+	//private static final int VERSION_3=2;
 
 	public static final short TYPE_ALL=0;
 	public static final short TYPE_BOOLEAN=1;
@@ -62,10 +68,14 @@ public final class ASMUtil {
 	
 	
 	
-	private static int version=0;
+	//private static int version=0;
 	
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
-	private static final String VERSION_MESSAGE = "you use a invalid version of the ASM Jar, please update your jar files";
+	private static final Method _SRC_NAME = new Method("_srcName",
+        			Types.STRING,
+        			new Type[]{}
+            		);;
+	//private static final String VERSION_MESSAGE = "you use an invalid version of the ASM Jar, please update your jar files";
 	private static long id=0;
 		
 	/**
@@ -105,21 +115,21 @@ public final class ASMUtil {
 		
 	}
 	
-	/**
-	 * has ancestor LoopStatement 
-	 * @param stat
-	 * @return
-	 */
-	public static boolean hasAncestorLoopStatement(Statement stat) {
-		return getAncestorFlowControlStatement(stat)!=null;
+	public static boolean hasAncestorBreakFCStatement(Statement stat) {
+		return getAncestorBreakFCStatement(stat)!=null;
 	}
 	
-	/**
+	public static boolean hasAncestorContinueFCStatement(Statement stat) {
+		return getAncestorContinueFCStatement(stat)!=null;
+	}
+	
+	
+	/* *
 	 * get ancestor LoopStatement 
 	 * @param stat
 	 * @param ingoreScript 
 	 * @return
-	 */
+	 * /
 	public static FlowControl getAncestorFlowControlStatement(Statement stat) {
 		Statement parent = stat;
 		while(true)	{
@@ -131,9 +141,39 @@ public final class ASMUtil {
 					if(scriptBodyParent!=null) return scriptBodyParent;
 					return (FlowControl)parent;
 				}
-				
-				
 				return (FlowControl) parent;
+			}
+		}
+	}*/
+	
+	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat) {
+		Statement parent = stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			if(parent instanceof FlowControlBreak)	{
+				if(parent instanceof ScriptBody){
+					FlowControlBreak scriptBodyParent = getAncestorBreakFCStatement(parent);
+					if(scriptBodyParent!=null) return scriptBodyParent;
+					return (FlowControlBreak)parent;
+				}
+				return (FlowControlBreak) parent;
+			}
+		}
+	}
+	
+	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat) {
+		Statement parent = stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			if(parent instanceof FlowControlContinue)	{
+				if(parent instanceof ScriptBody){
+					FlowControlContinue scriptBodyParent = getAncestorContinueFCStatement(parent);
+					if(scriptBodyParent!=null) return scriptBodyParent;
+					return (FlowControlContinue)parent;
+				}
+				return (FlowControlContinue) parent;
 			}
 		}
 	}
@@ -355,14 +395,25 @@ public final class ASMUtil {
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statment",stat.getLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof Page)	return (Page) parent;
 		}
 	}
 	
-	public static void listAncestor(Statement stat) throws BytecodeException {
+	public static Page getAncestorPage(Statement stat, Page defaultValue) {
+		Statement parent=stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null) {
+				return defaultValue;
+			}
+			if(parent instanceof Page)	return (Page) parent;
+		}
+	}
+	
+	public static void listAncestor(Statement stat) {
 		Statement parent=stat;
 		aprint.o(stat);
 		while(true)	{
@@ -381,7 +432,7 @@ public final class ASMUtil {
 			parent=parent.getParent();
 			//print.ln(" - "+parent);
 			if(parent==null) {
-				throw new BytecodeException("missing parent Statement of Statment",stat.getLine());
+				throw new BytecodeException("missing parent Statement of Statement",stat.getStart());
 				//return null;
 			}
 			if(parent instanceof TagComponent)
@@ -455,15 +506,10 @@ public final class ASMUtil {
         
         // complexType src
         if(!StringUtil.isEmpty(srcName)) {
-	        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "_srcName", "()Ljava/lang/String;", null, null);
-	        mv.visitCode();
-	        Label l0 = new Label();
-	        mv.visitLabel(l0);
-	        mv.visitLineNumber(4, l0);
-	        mv.visitLdcInsn(srcName);
-	        mv.visitInsn(Opcodes.ARETURN);
-	        mv.visitMaxs(1, 0);
-	        mv.visitEnd();
+        	GeneratorAdapter _adapter = new GeneratorAdapter(Opcodes.ACC_PUBLIC+Opcodes.ACC_FINAL+ Opcodes.ACC_STATIC , _SRC_NAME, null, null, cw);
+        	_adapter.push(srcName);
+        	_adapter.returnValue();
+        	_adapter.endMethod();
         }
         
         cw.visitEnd();
@@ -478,7 +524,7 @@ public final class ASMUtil {
 		cw.visitField(Opcodes.ACC_PRIVATE, name, type.toString(), null, null).visitEnd();
 		
 		int load=loadFor(type);
-		int sizeOf=sizeOf(type);
+		//int sizeOf=sizeOf(type);
 		
     	// get<PropertyName>():<type>
     		Type[] types=new Type[0];
@@ -491,14 +537,13 @@ public final class ASMUtil {
             adapter.visitVarInsn(Opcodes.ALOAD, 0);
 			adapter.visitFieldInsn(Opcodes.GETFIELD, classType, name, type.toString());
 			adapter.returnValue();
+			
 			Label end = new Label();
 			adapter.visitLabel(end);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
-			adapter.visitMaxs(sizeOf, 1);
-			
 			adapter.visitEnd();
 			
-			
+			adapter.endMethod();
 			
 			
 			
@@ -520,10 +565,10 @@ public final class ASMUtil {
 			adapter.visitLabel(end);
 			adapter.visitLocalVariable("this", "L"+classType+";", null, start, end, 0);
 			adapter.visitLocalVariable(name, type.toString(), null, start, end, 1);
-			adapter.visitMaxs(sizeOf+1, sizeOf+1);
+			//adapter.visitMaxs(0, 0);//.visitMaxs(sizeOf+1, sizeOf+1);// hansx
 			adapter.visitEnd();
         
-			
+			adapter.endMethod();
 			
 			
 			
@@ -651,11 +696,15 @@ public final class ASMUtil {
 
 
 	public static ClassWriter getClassWriter() {
+		return new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
+		/*if(true) return new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		
+		
 		if(version==VERSION_2)
-			return new ClassWriter(true);
+			return new ClassWriter(ClassWriter.COMPUTE_MAXS+ClassWriter.COMPUTE_FRAMES);
 		
 		try{
-			ClassWriter cw = new ClassWriter(true);
+			ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			version=VERSION_2;
 			return cw;
 		}
@@ -668,14 +717,14 @@ public final class ASMUtil {
 			SystemOut.printDate(ew, VERSION_MESSAGE);
 			
 			try {
-				return  ClassWriter.class.getConstructor(new Class[]{int.class}).newInstance(new Object[]{new Integer(1)});
+				return  ClassWriter.class.getConstructor(new Class[]{boolean.class}).newInstance(new Object[]{Boolean.TRUE});
 				
 			} 
 			catch (Exception e) {
 				throw new RuntimeException(Caster.toPageException(e));
 				
 			}
-		}
+		}*/
 	}
 
 	/*
@@ -717,7 +766,6 @@ public final class ASMUtil {
 		return "_call"+ASMUtil.getId();
 	}
 	
-	// FUTURE add to loader, same method is also in FD Extension railo.intergral.fusiondebug.server.util.FDUtil
 	public static boolean isOverfowMethod(String name) {
 		return name.startsWith("_call") && name.length()>=11;
 	}
@@ -748,15 +796,15 @@ public final class ASMUtil {
 	}
 
 
-	public static Boolean toBoolean(Attribute attr, int line) throws BytecodeException {
+	public static Boolean toBoolean(Attribute attr, Position start) throws BytecodeException {
 		if(attr==null)
-			throw new BytecodeException("attribute does not exist",line);
+			throw new BytecodeException("attribute does not exist",start);
 		
 		if(attr.getValue() instanceof Literal){
 			Boolean b=((Literal)attr.getValue()).getBoolean(null);
 			if(b!=null) return b; 
 		}
-		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",line);
+		throw new BytecodeException("attribute ["+attr.getName()+"] must be a constant boolean value",start);
 		
 		
 	}
@@ -868,6 +916,15 @@ public final class ASMUtil {
 		
 		return defaultValue;
 	}
+
+
+	public static ASMProperty[] toASMProperties(Property[] properties) {
+		ASMProperty[] asmp=new ASMProperty[properties.length];
+		for(int i=0;i<asmp.length;i++){
+			asmp[i]=(ASMProperty) properties[i];
+		}
+		return asmp;
+	}
 	
 
 	public static boolean containsComponent(Body body) {
@@ -878,6 +935,93 @@ public final class ASMUtil {
 			if(it.next() instanceof TagComponent)return true;
 		}
 		return false;
+	}
+
+
+	public static void dummy1(BytecodeContext bc) {
+		bc.getAdapter().visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J");
+		bc.getAdapter().visitInsn(Opcodes.POP2);
+	}
+	public static void dummy2(BytecodeContext bc) {
+		bc.getAdapter().visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "nanoTime", "()J");
+		bc.getAdapter().visitInsn(Opcodes.POP2);
+	}
+
+
+	/**
+	 * convert a clas array to a type array
+	 * @param classes
+	 * @return
+	 */
+	public static Type[] toTypes(Class<?>[] classes) {
+		if(classes==null || classes.length==0) 
+			return new Type[0];
+		
+		Type[] types=new Type[classes.length];
+		for(int i=0;i<classes.length;i++)	{
+			types[i]=Type.getType(classes[i]);
+		}
+		return types;
+	}
+
+
+	public static String display(ExprString name) {
+		if(name instanceof Literal) {
+			if(name instanceof Identifier) 
+				return ((Identifier)name).getRaw();
+			return ((Literal)name).getString();
+			
+		}
+		return name.toString();
+	}
+
+
+	public static long timeSpanToLong(Expression val) throws EvaluatorException {
+		if(val instanceof Literal) {
+			Double d = ((Literal)val).getDouble(null);
+			if(d==null) throw cacheWithinException();
+			return TimeSpanImpl.fromDays(d.doubleValue()).getMillis();
+		}
+		// createTimespan
+		else if(val instanceof Variable) {
+			Variable var=(Variable)val;
+			if(var.getMembers().size()==1) {
+				Member first = var.getFirstMember();
+				if(first instanceof BIF) {
+					BIF bif=(BIF) first;
+					if("createTimeSpan".equalsIgnoreCase(bif.getFlf().getName())) {
+						Argument[] args = bif.getArguments();
+						int len=ArrayUtil.size(args);
+						if(len>=4 && len<=5) {
+							double days=toDouble(args[0].getValue());
+							double hours=toDouble(args[1].getValue());
+							double minutes=toDouble(args[2].getValue());
+							double seconds=toDouble(args[3].getValue());
+							double millis=len==5?toDouble(args[4].getValue()):0;
+							return new TimeSpanImpl((int)days,(int)hours,(int)minutes,(int)seconds,(int)millis).getMillis();
+						}
+					}
+				}
+			}
+		}
+		throw cacheWithinException();
+	}
+
+
+
+	private static EvaluatorException cacheWithinException() {
+		return new EvaluatorException("value of cachedWithin must be a literal timespan, like 0.1 or createTimespan(1,2,3,4)");
+	}
+
+
+	private static double toDouble(Expression e) throws EvaluatorException {
+		if(!(e instanceof Literal)) 
+			throw new EvaluatorException("Paremeters of the function createTimeSpan have to be literal numeric values in this context");
+		Double d = ((Literal)e).getDouble(null);
+		if(d==null)
+			throw new EvaluatorException("Paremeters of the function createTimeSpan have to be literal numeric values in this context");
+		
+		return d.doubleValue();
 	}
 	
 }

@@ -1,5 +1,6 @@
 package railo.runtime.functions.displayFormatting;
 
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -12,11 +13,12 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.dt.DateTime;
 
 /**
- * Implements the Cold Fusion Function dateformat
+ * Implements the CFML Function dateformat
  */
 public final class DateTimeFormat implements Function {
 
 	private static final long serialVersionUID = 134840879454373440L;
+	public static final String DEFAULT_MASK = "dd-MMM-yyyy HH:mm:ss";
 
 	/**
 	 * @param pc
@@ -25,7 +27,7 @@ public final class DateTimeFormat implements Function {
 	 * @throws ExpressionException
 	 */
 	public static String call(PageContext pc , Object object) throws ExpressionException {
-		return _call(pc,object,"dd-mmm-yy hh:nn tt",ThreadLocalPageContext.getTimeZone(pc));
+		return invoke(pc,object, DEFAULT_MASK,Locale.US,ThreadLocalPageContext.getTimeZone(pc));
 	}
 	
 	/**
@@ -36,23 +38,24 @@ public final class DateTimeFormat implements Function {
 	 * @throws ExpressionException
 	 */
 	public static String call(PageContext pc , Object object, String mask) throws ExpressionException {
-		return _call(pc,object,mask,ThreadLocalPageContext.getTimeZone(pc));
+		return invoke(pc,object,mask,Locale.US,ThreadLocalPageContext.getTimeZone(pc));
 	}
 
 	public static String call(PageContext pc , Object object, String mask,String strTimezone) throws ExpressionException {
-		return _call(pc,object,mask, strTimezone==null?ThreadLocalPageContext.getTimeZone(pc):TimeZoneUtil.toTimeZone(strTimezone));
+		return invoke(pc,object,mask, Locale.US,strTimezone==null?ThreadLocalPageContext.getTimeZone(pc):TimeZoneUtil.toTimeZone(strTimezone));
 	}
 	
-	private static String _call(PageContext pc , Object object, String mask,TimeZone tz) throws ExpressionException {
-		Locale locale=Locale.US;//:pc.getConfig().getLocale();
+	public static String invoke(PageContext pc , Object object, String mask,Locale locale,TimeZone tz) throws ExpressionException {
+		if(mask==null) mask=DEFAULT_MASK;
+		if(locale==null) locale=Locale.US;
 		DateTime datetime = Caster.toDate(object,true,tz,null);
 		if(datetime==null) {
 		    if(object.toString().trim().length()==0) return "";
 		    throw new ExpressionException("can't convert value "+object+" to a datetime value");
 		}
 		
-		
-		return new railo.runtime.format.DateTimeFormat(locale).format(datetime,mask,tz);
-		//return new railo.runtime.text.TimeFormat(locale).format(datetime,mask);
+		SimpleDateFormat format = new SimpleDateFormat(mask, locale);
+		format.setTimeZone(tz);
+        return format.format(datetime);
 	}
 }

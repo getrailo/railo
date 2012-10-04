@@ -16,6 +16,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * Decodes Binary Data that are encoded as String
@@ -42,7 +43,7 @@ public final class DeserializeJSON implements Function {
 	private static Object toQuery(Object obj) throws PageException {
 		if(obj instanceof Struct) {
 			Struct sct=(Struct) obj;
-			Key[] keys = sct.keys();
+			Key[] keys = CollectionUtil.keys(sct);
 			
 			// Columns
 			Key[] columns = null;
@@ -82,7 +83,7 @@ public final class DeserializeJSON implements Function {
 		}*/	
 		else if(obj instanceof Collection) {
 			Collection coll=(Collection) obj;
-			return toQuery(coll, coll.keys());
+			return toQuery(coll, CollectionUtil.keys(coll));
 		}
 		
 		return obj;
@@ -126,7 +127,7 @@ public final class DeserializeJSON implements Function {
 			for(int i=0;i<columns.length;i++) {
 				col=Caster.toArray(sct.get(columns[i],null),null);
 				if(col==null || colLen!=-1 && colLen!=col.size()) return null;
-				datas[i]=(Array) toQuery(col,col.keys());
+				datas[i]=(Array) toQuery(col,CollectionUtil.keys(col));
 				colLen=col.size();
 			}
 			return datas;
@@ -145,7 +146,7 @@ public final class DeserializeJSON implements Function {
 			}
 			
 			Array data;
-			Iterator it = arr.iterator();
+			Iterator<Object> it = arr.valueIterator();
 			while(it.hasNext()) {
 				data=Caster.toArray(it.next(),null);
 				if(data==null || data.size()!=datas.length) return null;
@@ -165,7 +166,7 @@ public final class DeserializeJSON implements Function {
 			Key[] columns=new Key[arr.size()];
 			String column;
 			int index=0;
-			Iterator it = arr.iterator();
+			Iterator<Object> it = arr.valueIterator();
 			while(it.hasNext()) {
 				column=Caster.toString(it.next(),null);
 				if(StringUtil.isEmpty(column)) return null;

@@ -6,6 +6,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
@@ -18,8 +19,8 @@ public final class LitLong extends ExpressionBase implements Literal {
     
     private long l;
 
-	public static Expression toExpr(long l, int line) {
-		return new LitLong(l,line);
+	public static Expression toExpr(long l, Position start,Position end) {
+		return new LitLong(l,start,end);
 	}
     
     /**
@@ -27,8 +28,8 @@ public final class LitLong extends ExpressionBase implements Literal {
      * @param d
      * @param line 
      */
-	public LitLong(long l, int line) {
-        super(line);        
+	public LitLong(long l, Position start,Position end) {
+        super(start,end);        
         this.l=l;
     }
 

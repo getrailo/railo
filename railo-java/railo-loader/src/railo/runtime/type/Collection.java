@@ -10,7 +10,7 @@ import railo.runtime.op.Castable;
 /**
  * interface collection, used for all collection types of railo (array, struct, query)
  */
-public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializable, Castable  {
+public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializable, Castable,ForEachIteratorable  {
     
     
     
@@ -21,23 +21,9 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 
 	/**
 	 * @return returns a string array of all keys in the collection
+	 * @deprecated use instead <code>keyIterator()</code>
 	 */
 	public Collection.Key[] keys();
-	
-	/**
-	 * @return returns a string array of all keys in the collection
-	 * @deprecated use instead <code>{@link #keys()}</code>
-	*/
-	public String[] keysAsString();
-	
-	/* *
-	 * removes value from collection and return it when it exists, otherwise returns null
-     * @param key key of the collection
-	 * @return removed Object
-	 * @throws PageException
-     * @deprecated use instead <code>{@link #remove(railo.runtime.type.Collection.Key)()}</code>
-	 */
-   //public object remove(String key) throws PageException;
 	
 	/**
 	 * removes value from collection and return it when it exists, otherwise throws a exception
@@ -46,16 +32,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	 * @throws PageException
      */
     public Object remove(Collection.Key key) throws PageException;
-	
-
-	/* *
-	 * removes value from collection and return it when it exists, otherwise returns null
-     * @param key key of the collection
-	 * @return removed Object
-     * @deprecated use instead <code>{@link #removeEL(railo.runtime.type.Collection.Key)()}</code>
-	 */
-    // public int removeEL(String key);
-	
 
 	/**
 	 * removes value from collection and return it when it exists, otherwise returns null
@@ -146,7 +122,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
 	public Object clone();
 	
 	public Collection duplicate(boolean deepCopy);
-	// FUTURE public Collection duplicate(boolean deepCopy, Map<Object,Object> done);
 	
     /**
      * contains this key
@@ -154,7 +129,6 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
      * @return returns if collection has a key with given name
      * @deprecated use instead <code>{@link #containsKey(railo.runtime.type.Collection.Key)}</code>
 	 */
-    //public String contains(String key);
     public boolean containsKey(String key);
 	
     /**
@@ -163,6 +137,8 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
      * @return returns if collection has a key with given name
      */
     public boolean containsKey(Collection.Key key);
+    
+
     
     interface Key extends Serializable {
 
@@ -214,5 +190,13 @@ public interface Collection extends Dumpable, Iteratorable, Cloneable, Serializa
     	 * @return return id for this key, this key is unique for the system but ignore case of input
     	 */
     	public int getId();
+    	
+    	/**
+    	 * Returns the length of this string.
+    	 * @return length of the string
+    	 */
+    	public int length();
+
+        
     }
 }

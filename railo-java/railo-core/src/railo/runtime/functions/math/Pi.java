@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function pi
+ * Implements the CFML Function pi
  */
 package railo.runtime.functions.math;
 

@@ -109,10 +109,11 @@ public interface Excepton {
      * @param errorcode 
      * @param customType 
      * @return CustomTypeException
+     * @deprecated use instead <code>createCustomTypeException(String message, String detail, String errorcode, String customType, String extendedInfo);</code>
      */
-    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType); // FUTURE set to deprecated
+    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType);
     
- // FUTURE  public PageException createCustomTypeException(String message, String detail, String errorcode, String customType, String extendedInfo);
+    public PageException createCustomTypeException(String message, String detail, String errorcode, String customType, String extendedInfo);
     
     /**
      * create exception "DatabaseException"
@@ -160,8 +161,20 @@ public interface Excepton {
      * @param badArgumentName 
      * @param message 
      * @return FunctionException
+     * @deprecated use instead <code>createFunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message, String detail))</code>
      */
     public PageException createFunctionException(PageContext pc,String functionName, String badArgumentPosition, String badArgumentName, String message);
+    
+    /**
+     * create exception "FunctionException"
+     * @param pc 
+     * @param functionName 
+     * @param badArgumentPosition 
+     * @param badArgumentName 
+     * @param message 
+     * @return FunctionException
+     */
+    public PageException createFunctionException(PageContext pc,String functionName, int badArgumentPosition, String badArgumentName, String message, String detail);
     
     /**
      * create exception "LockException"

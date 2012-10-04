@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import railo.commons.io.SystemUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
@@ -546,14 +547,11 @@ class Meta {
         }
 
         public static Architecture getVMArchitecture() {
-            String archString = System.getProperty("sun.arch.data.model");
-            if (archString != null) {
-                if (archString.equals("32")) {
-                    return ARCH_32_BITS;
-                } else if (archString.equals("64")) {
-                    return ARCH_64_BITS;
-                }
-            }
+            if (SystemUtil.getJREArch()==SystemUtil.ARCH_32) 
+            	return ARCH_32_BITS;
+            else if (SystemUtil.getJREArch()==SystemUtil.ARCH_64) 
+            	return ARCH_64_BITS;
+            
             return ARCH_UNKNOWN;
         }
     }

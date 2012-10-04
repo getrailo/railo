@@ -12,19 +12,18 @@ import org.apache.commons.collections.map.ReferenceMap;
 import railo.commons.collections.HashTable;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
-import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.StructSupport;
 
 /**
- * cold fusion data type struct
+ * CFML data type struct
  */
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;
 
-	public static final int TYPE_SOFT=4;//FUTURE move to Struct interface
+	
 	
 	private Map<Collection.Key,Object> map;
 	
@@ -103,14 +102,7 @@ public class StructImpl extends StructSupport {
 	
 	public Collection.Key[] keys() {
 		try	{
-			//Collection.Key[] keys = new Collection.Key[size()];
 			return map.keySet().toArray(new Key[map.size()]);
-			/*Iterator<Key> it = map.keySet().iterator();
-			int count=0;
-			while(it.hasNext() && keys.length>count) {
-				keys[count++]=KeyImpl.toKey(it.next(), null);
-			}
-			return keys;*/
 		}
 		catch(Throwable t) {
 			Map<Key, Object> old = map;
@@ -133,53 +125,21 @@ public class StructImpl extends StructSupport {
 		}
 	}
 
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		try	{
-			//if(true)throw new RuntimeException("");
-			String[] keys = new String[size()];
-			Iterator<Key> it = map.keySet().iterator();
-			int count=0;
-			while(it.hasNext() && keys.length>count) {
-				keys[count++]=Caster.toString(it.next(), "");
-			}
-			return keys;
-		}
-		catch(Throwable t) {
-			Map<Key, Object> old = map;
-			try{	
-				map=Collections.synchronizedMap(map);
-				Object[] arr = map.keySet().toArray();
-				String[] keys = new String[arr.length];
-				for(int i=0;i<arr.length;i++){
-					keys[i]=Caster.toString(arr[i], "");
-				}	
-				return keys;
-			}
-			finally {
-				map=old;
-			}
-		}
-	}
-
-	/**
+	/* *
 	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
-		Object obj= map.remove(KeyImpl.init(key));
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
+	 * /
+	public Object remove (String key) throws PageException {
+		Object obj= map.remove (KeyImpl.init(key));
+		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
-	}
+	}*/
 
 	/**
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Collection.Key key) throws PageException {
 		Object obj= map.remove(key);
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exists");
+		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 		return obj;
 	}
 	
@@ -211,16 +171,16 @@ public class StructImpl extends StructSupport {
 	public static void copy(Struct src,Struct trg,boolean deepCopy) {
 		ThreadLocalDuplication.set(src,trg);
 		try{
-			Key[] keys = src.keys();
-			Key key;
-			for(int i=0;i<keys.length;i++) {
-				key=keys[i];
-				if(!deepCopy) trg.setEL(key,src.get(key,null));
-				else trg.setEL(key,Duplicator.duplicate(src.get(key,null),deepCopy));
+			Iterator<Entry<Key, Object>> it = src.entryIterator();
+			Entry<Key, Object> e;
+			while(it.hasNext()) {
+				e = it.next();
+				if(!deepCopy) trg.setEL(e.getKey(),e.getValue());
+				else trg.setEL(e.getKey(),Duplicator.duplicate(e.getValue(),deepCopy));
 			}
 		}
 		finally {
-			ThreadLocalDuplication.remove(src);
+			//ThreadLocalDuplication.remove(src);
 		}	
 	}
 	
@@ -229,14 +189,24 @@ public class StructImpl extends StructSupport {
 	/**
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
-	public Iterator keyIterator() {
-		return new KeyIterator(keys());
+	public Iterator<Collection.Key> keyIterator() {
+		return map.keySet().iterator();
+	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+		return new StringIterator(keys());
+	}
+	
+
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return this.map.entrySet().iterator();
 	}
 	
 	/**
 	 * @see railo.runtime.type.Iteratorable#iterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return values().iterator();
 	}
 
@@ -257,7 +227,7 @@ public class StructImpl extends StructSupport {
 	/**
 	 * @see java.util.Map#values()
 	 */
-	public java.util.Collection values() {
+	public java.util.Collection<Object> values() {
 		return map.values();
 	}
 

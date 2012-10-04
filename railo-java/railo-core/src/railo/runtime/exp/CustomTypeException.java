@@ -7,7 +7,7 @@ import railo.runtime.type.Struct;
 
 
 /**
- * Exception throwed by Cold Fusion Code
+ * Exception throwed by CFML Code
  */
 public final class CustomTypeException extends PageExceptionImpl {
 	
@@ -25,6 +25,10 @@ public final class CustomTypeException extends PageExceptionImpl {
 		if(extendedinfo!=null)setExtendedInfo(extendedinfo);
 	}
 
+	/**
+	 *
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
+	 */
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock cb=super.getCatchBlock(config);
 		cb.setEL("code",cb.get("errorcode",null));

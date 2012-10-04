@@ -1,5 +1,8 @@
 package railo.runtime.gateway;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import org.opencfml.eventgateway.Gateway;
 import org.opencfml.eventgateway.GatewayEngine;
 import org.opencfml.eventgateway.GatewayException;
@@ -11,6 +14,7 @@ import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
@@ -100,7 +104,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 	 * @see railo.runtime.gateway.GatewayEntry#getCustom()
 	 */
 	public Struct getCustom() {
-		return (Struct) custom.duplicate(true);
+		return (Struct) Duplicator.duplicate(custom,true);
 	}
 
 	/**
@@ -172,11 +176,14 @@ public class GatewayEntryImpl implements GatewayEntry {
 		Struct otherCustom = other.getCustom();
 		if(otherCustom.size()!=custom.size()) return false;
 		
-		Key[] keys = otherCustom.keys();
+		//Key[] keys = otherCustom.keys();
+		Iterator<Entry<Key, Object>> it = otherCustom.entryIterator();
+		Entry<Key, Object> e;
 		Object ot,oc;
-		for(int i=0;i<keys.length;i++){
-			ot=custom.get(keys[i],null);
-			oc=otherCustom.get(keys[i],null);
+		while(it.hasNext()){
+			e = it.next();
+			ot=custom.get(e.getKey(),null);
+			oc=e.getValue();
 			if(ot==null) return false;
 			if(!ot.equals(oc)) return false;
 		}

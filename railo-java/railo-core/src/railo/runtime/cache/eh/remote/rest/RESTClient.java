@@ -34,12 +34,11 @@ public class RESTClient {
 		
 	}
 	
-	public Object getMetaRaw(String cacheName) throws IOException, SAXException {
+	public Object getMetaRaw(String cacheName) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) toURL(cacheName).openConnection();
 	    connection.setRequestMethod("GET");
 	    connection.setRequestProperty("id", "getKeysWithExpiryCheck");
 	    connection.connect();
-	    InputStream is=null;
 	    try	{
 	    	return getContent(connection);
 		} 
@@ -64,8 +63,7 @@ public class RESTClient {
     	}
 	}	
 	
-	public CacheEntry getMeta2(String cacheName) throws IOException, ClassNotFoundException {
-		Object obj=null;
+	public CacheEntry getMeta2(String cacheName) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) toURL(cacheName).openConnection();
 	    connection.setRequestMethod("HEAD");
 	    connection.connect();
@@ -83,7 +81,7 @@ public class RESTClient {
     	return null;
 	}	
 
-	private Object listCachesRaw() throws IOException {
+	/*private Object listCachesRaw() throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		Object obj;
         conn.setRequestMethod("GET");
@@ -94,9 +92,9 @@ public class RESTClient {
         	disconnectEL(conn);
         }
         return obj;
-	}
+	}*/
 	
-	private Object featuresRaw() throws IOException {
+	/*private Object featuresRaw() throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		Object obj;
         conn.setRequestMethod("OPTIONS");
@@ -107,15 +105,15 @@ public class RESTClient {
         	disconnectEL(conn);
         }
         return obj;
-	}
+	}*/
 	
-	private void createCache(String cacheName) throws IOException {
+	/*private void createCache(String cacheName) throws IOException {
 		HttpURLConnection urlConnection = (HttpURLConnection) toURL(cacheName).openConnection();
         urlConnection.setRequestMethod("PUT");
 
-        int status = urlConnection.getResponseCode();
+        urlConnection.getResponseCode();
         urlConnection.disconnect();
-	}
+	}*/
 	
 	private void createEntry(String cacheName,String key, String value) throws IOException {
 
@@ -132,10 +130,10 @@ public class RESTClient {
 	      oos.writeObject(value);
 	      oos.flush();
 	      
-	    if (connection != null) connection.disconnect();
+	    connection.disconnect();
 	}
 
-	private void removeEntry(String cacheName,String key) throws IOException {
+	/*private void removeEntry(String cacheName,String key) throws IOException {
 		
 	    HttpURLConnection connection = (HttpURLConnection) toURL(cacheName,key).openConnection();
 	    connection.setRequestProperty("Content-Type", "application/x-java-serialized-object");
@@ -145,7 +143,7 @@ public class RESTClient {
 	    
 	    disconnectEL(connection);
 	    
-	}
+	}*/
 
 	
 
@@ -177,15 +175,15 @@ public class RESTClient {
 	
 
 
-	public CacheEntry getEntry(String cacheName,String key) throws IOException, ClassNotFoundException {
+	public CacheEntry getEntry(String cacheName,String key) throws IOException {
 		Object obj=null;
 		HttpURLConnection connection = (HttpURLConnection) toURL(cacheName, key).openConnection();
 	    connection.setRequestMethod("GET");
 	    connection.connect();
 	    try	{
-	    	int length = connection.getContentLength();
-	    	String expires = connection.getHeaderField("Expires");
-	    	String lastModified = connection.getHeaderField("Last-Modified");
+	    	connection.getContentLength();
+	    	connection.getHeaderField("Expires");
+	    	connection.getHeaderField("Last-Modified");
 	    	
 	    	obj=getContent(connection);
 	    	

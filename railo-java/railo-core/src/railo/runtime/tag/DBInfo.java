@@ -12,24 +12,23 @@ import java.util.regex.Pattern;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Constants;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.SVArray;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -283,7 +282,7 @@ public final class DBInfo extends TagImpl {
 		checkTable(metaData);
 		
         ResultSet columns = metaData.getColumns(dbname, schema, table, pattern);
-        QueryPro qry = new QueryImpl(columns,"query");
+        Query qry = new QueryImpl(columns,"query");
         
 		int len=qry.getRecordcount();
 		
@@ -294,7 +293,7 @@ public final class DBInfo extends TagImpl {
 		if(col==null){
 			Array arr=new ArrayImpl();
 			for(int i=1;i<=len;i++) {
-				arr.append(Constants.DOUBLE_ZERO);
+				arr.append(railo.runtime.op.Constants.DOUBLE_ZERO);
 			}
 			qry.addColumn(DECIMAL_DIGITS, arr);
 		}
@@ -310,7 +309,7 @@ public final class DBInfo extends TagImpl {
 			
 			// decimal digits
 			o=qry.getAt(DECIMAL_DIGITS, i,null);
-			if(o==null)qry.setAtEL(DECIMAL_DIGITS, i,Constants.DOUBLE_ZERO);
+			if(o==null)qry.setAtEL(DECIMAL_DIGITS, i,railo.runtime.op.Constants.DOUBLE_ZERO);
 			
 			set=(Set) primaries.get(tblName=(String) qry.getAt(TABLE_NAME, i));
 			if(set==null) {
@@ -368,7 +367,7 @@ public final class DBInfo extends TagImpl {
 			inner=map.get(col);
 			if(inner!=null) {
 				for(int i=0;i<additional.length;i++) {
-					item=(SVArray) inner.get(additional[i]);
+					item=inner.get(additional[i]);
 					item.add(result.getString(additional[i]));
 					item.setPosition(item.size());
 				}
@@ -641,7 +640,7 @@ public final class DBInfo extends TagImpl {
         
 		checkTable(metaData);
 		ResultSet result = metaData.getSchemas();
-		QueryPro qry = new QueryImpl(result,"query");
+		Query qry = new QueryImpl(result,"query");
 		
 		
 		qry.rename(TABLE_SCHEM,USER);
@@ -672,12 +671,12 @@ public final class DBInfo extends TagImpl {
 
 	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
 		if(StringUtil.isEmpty(datasource)){
-			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+			datasource=(pageContext.getApplicationContext()).getDefaultDataSource();
 
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 		}
 		return datasource;
 	}

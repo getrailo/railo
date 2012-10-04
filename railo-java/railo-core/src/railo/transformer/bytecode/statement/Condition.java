@@ -3,11 +3,10 @@ package railo.transformer.bytecode.statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.objectweb.asm.commons.GeneratorAdapter;
-
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
@@ -17,7 +16,7 @@ import railo.transformer.bytecode.visitor.ConditionVisitor;
 
 public final class Condition extends StatementBase implements HasBodies {
     
-    private ArrayList ifs=new ArrayList();
+    private ArrayList<Pair> ifs=new ArrayList<Pair>();
     private Pair _else;
 
     /**
@@ -26,8 +25,8 @@ public final class Condition extends StatementBase implements HasBodies {
      * @param body
      * @param line
      */
-    public Condition(int line) {
-        super(line);
+    public Condition(Position start,Position end) {
+        super(start,end);
     }
     
     /**
@@ -36,64 +35,70 @@ public final class Condition extends StatementBase implements HasBodies {
      * @param body
      * @param line
      */
-    public Condition(ExprBoolean condition, Statement body, int line) {
-        super(line);
-        addElseIf(condition,body,line);
+    public Condition(ExprBoolean condition, Statement body, Position start,Position end) {
+        super(start,end);
+        addElseIf(condition,body,start,end);
+        
         body.setParent(this);
     }
     
-    public Condition(boolean b, Statement body, int line) {
-		this(LitBoolean.toExprBoolean(b, -1),body,line);
+    public Condition(boolean b, Statement body, Position start,Position end) {
+		this(LitBoolean.toExprBoolean(b),body,start,end);
 	}
 
 	/**
-     * adds a else statment
+     * adds a else statement
      * @param condition
      * @param body
      */
-    public void addElseIf(ExprBoolean condition, Statement body, int line) {
-        ifs.add(new Pair(condition,body,line));
+    public Pair addElseIf(ExprBoolean condition, Statement body, Position start,Position end) {
+    	Pair pair;
+    	ifs.add(pair=new Pair(condition,body,start,end));
         body.setParent(this);
+        return pair;
     }
     
     /**
      * sets the else Block of the condition
      * @param body
      */
-    public void setElse(Statement body, int line) {
-    	_else=new Pair(null,body,line);
+    public Pair setElse(Statement body, Position start,Position end) {
+    	_else=new Pair(null,body,start,end);
     	body.setParent(this);
+    	return _else;
     }
     
     public final class Pair {
         private ExprBoolean condition;
         private Statement body;
-        private int line;
+        private Position start;
+        public Position end;
 
-        public Pair(ExprBoolean condition, Statement body, int line) {
+        public Pair(ExprBoolean condition, Statement body, Position start,Position end) {
             this.condition=condition;
             this.body=body;
-            this.line=line;
+            this.start=start;
+            this.end=end;
         }
     }
     
     
 
     public void _writeOut(BytecodeContext bc) throws BytecodeException {
-    	GeneratorAdapter adapter = bc.getAdapter();
-        Iterator it = ifs.iterator();
+    	Iterator it = ifs.iterator();
         Pair pair;
         ConditionVisitor cv=new ConditionVisitor();
         cv.visitBefore();
         	// ifs
         	while(it.hasNext()) {
         		pair=(Pair) it.next();
-        		ExpressionUtil.visitLine(bc, pair.line);
+        		ExpressionUtil.visitLine(bc, pair.start);
         		cv.visitWhenBeforeExpr();
         			pair. condition.writeOut(bc,Expression.MODE_VALUE);
         		cv.visitWhenAfterExprBeforeBody(bc);
         			pair.body.writeOut(bc);
         		cv.visitWhenAfterBody(bc);
+        		if(pair.end!=null)ExpressionUtil.visitLine(bc, pair.end);
         	}
         	// else
         	if(_else!=null && _else.body!=null) {

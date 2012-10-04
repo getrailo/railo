@@ -30,7 +30,7 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 	/**
 	 * @see railo.commons.io.res.ResourceProvider#init(java.lang.String, java.util.Map)
 	 */
-	public ResourceProvider init(String scheme, Map arguments) {// FUTURE Map<String,String> arguments
+	public ResourceProvider init(String scheme, Map arguments) {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		if(arguments!=null) {
 			this.arguments=arguments;

@@ -20,7 +20,6 @@ import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
@@ -28,11 +27,13 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.writer.CFMLWriter;
 
 /**
@@ -183,11 +184,11 @@ public abstract class PageExceptionImpl extends PageException {
 		return getCatchBlock(ThreadLocalPageContext.getConfig(pc));
 	}
 	
-	/*
-	 * FUTURE add to interface
+	/**
+	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.Config)
 	 */
 	public CatchBlock getCatchBlock(Config config) {
-		return new CatchBlock(this);
+		return new CatchBlockImpl(this);
 	}
 	
 	public Array getTagContext(Config config) {
@@ -267,8 +268,8 @@ public abstract class PageExceptionImpl extends PageException {
 			item=new StructImpl();
 			line=trace.getLineNumber();
 			item.setEL(KeyImpl.TEMPLATE,template);
-			item.setEL(KeyImpl.LINE,new Double(line));
-			item.setEL(KeyImpl.ID,"??");
+			item.setEL(KeyConstants._line,new Double(line));
+			item.setEL(KeyConstants._id,"??");
 			item.setEL(RAW_TRACE,trace.toString());
 			item.setEL(KeyImpl.TYPE,"cfml");
 			item.setEL(KeyImpl.COLUMN,new Double(0));
@@ -379,12 +380,12 @@ public abstract class PageExceptionImpl extends PageException {
         //print.out(pr.getDisplayPath());
 		try {
 			String[] content=pr.getSource();
-			struct.set("template",pr.getDisplayPath());
-			struct.set("line",new Double(line));
-			struct.set("id","??");
+			struct.set(KeyConstants._template,pr.getDisplayPath());
+			struct.set(KeyConstants._line,new Double(line));
+			struct.set(KeyConstants._id,"??");
 			struct.set("Raw_Trace",(element!=null)?element.toString():"");
-			struct.set("Type","cfml");
-			struct.set("column",new Double(column));
+			struct.set(KeyConstants._Type,"cfml");
+			struct.set(KeyConstants._column,new Double(column));
 			if(content!=null){
 				struct.set("codePrintHTML",getCodePrint(content,line,true));
 				struct.set("codePrintPlain",getCodePrint(content,line,false));
@@ -416,7 +417,7 @@ public abstract class PageExceptionImpl extends PageException {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		
 		//FFFFCF
-    	DumpTable htmlBox = new DumpTablePro("exception","#ff9900","#FFCC00","#000000");
+    	DumpTable htmlBox = new DumpTable("exception","#ff9900","#FFCC00","#000000");
 		htmlBox.setTitle("Railo ["+Info.getVersionAsString()+"] - Error ("+StringUtil.ucFirst(getTypeAsString())+")");
 		
 		
@@ -429,16 +430,19 @@ public abstract class PageExceptionImpl extends PageException {
 			htmlBox.appendRow(1,new SimpleDumpData("Detail"),new SimpleDumpData(detail));
 		
 		// additional
-		Iterator it=additional.keyIterator();
+		Iterator<Key> it = additional.keyIterator();
+		Collection.Key k;
 		while(it.hasNext()) {
-			String key=it.next().toString();
-			htmlBox.appendRow(1,new SimpleDumpData(key),new SimpleDumpData(additional.get(key,"").toString()));
+			k=it.next();
+			htmlBox.appendRow(1,new SimpleDumpData(k.getString()),new SimpleDumpData(additional.get(k,"").toString()));
 		}
 		
 		Array tagContext = getTagContext(pageContext.getConfig());
 		// Context MUSTMUST
 		if(tagContext.size()>0) {
-			Collection.Key[] keys=tagContext.keys();
+			//Collection.Key[] keys=tagContext.keys();
+			Iterator<Object> vit = tagContext.valueIterator();
+			//Entry<Key, Object> te;
 			DumpTable context=new DumpTable("#ff9900","#FFCC00","#000000");
 			//context.setTitle("The Error Occurred in");
 			//context.appendRow(0,new SimpleDumpData("The Error Occurred in"));
@@ -447,14 +451,14 @@ public abstract class PageExceptionImpl extends PageException {
 					new SimpleDumpData("template"),
 					new SimpleDumpData("line"));
 			try {
-				for(int i=0;i<keys.length;i++) {
-					Struct struct=(Struct)tagContext.get(keys[i],null);
+				boolean first=true;
+				while(vit.hasNext()) {
+					Struct struct=(Struct)vit.next();
 					context.appendRow(1,
-							new SimpleDumpData(i>0?"called from ":"occurred in"),
-							new SimpleDumpData(struct.get("template","")+""),
-							new SimpleDumpData(Caster.toString(struct.get("line",null))));
-					
-					
+							new SimpleDumpData(first?"called from ":"occurred in"),
+							new SimpleDumpData(struct.get(KeyConstants._template,"")+""),
+							new SimpleDumpData(Caster.toString(struct.get(KeyConstants._line,null))));
+					first=false;
 				}
 				htmlBox.appendRow(1,new SimpleDumpData("Context"),context);
 				
@@ -583,8 +587,8 @@ public abstract class PageExceptionImpl extends PageException {
 	 * @param key
 	 * @param value
 	 */
-	public void setAdditional(String key, Object value) {
-		additional.setEL(KeyImpl.getInstance(key),StringUtil.toStringEmptyIfNull(value));
+	public void setAdditional(Collection.Key key, Object value) {
+		additional.setEL(key,StringUtil.toStringEmptyIfNull(value));
 	}
 	
 	

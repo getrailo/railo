@@ -6,12 +6,6 @@ import railo.runtime.PageSource;
  */
 public final class ErrorPageImpl implements ErrorPage {
 	
-	// FUTURE move this to interface
-	public static final short TYPE_EXCEPTION=1;
-	public static final short TYPE_REQUEST=2;
-	public static final short TYPE_VALIDATION=4;
-	
-
 	/** Type of exception. Required if type = "exception" or "monitor". */
 	private String exception="any";
 
@@ -74,11 +68,16 @@ public final class ErrorPageImpl implements ErrorPage {
 		return exception;
 	}
 
-	// FUTURE add to interface
+	/**
+	 * @see railo.runtime.err.ErrorPage#setType(short)
+	 */
 	public void setType(short type) {
 		this.type=type;
 	}
-	// FUTURE add to interface
+
+	/**
+	 * @see railo.runtime.err.ErrorPage#getType()
+	 */
 	public short getType() {
 		return type;
 	}	

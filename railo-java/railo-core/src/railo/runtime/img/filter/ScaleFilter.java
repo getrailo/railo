@@ -74,7 +74,8 @@ public class ScaleFilter extends AbstractBufferedImageOp  implements DynFilterin
 			dst = new BufferedImage(dstCM, dstCM.createCompatibleWritableRaster(w, h), dstCM.isAlphaPremultiplied(), null);
 		}
 
-		Image scaleImage = src.getScaledInstance( w, h, Image.SCALE_AREA_AVERAGING );
+		//Image scaleImage = 
+		src.getScaledInstance( w, h, Image.SCALE_AREA_AVERAGING );
 		Graphics2D g = dst.createGraphics();
 		g.drawImage( src, 0, 0, width, height, null );
 		g.dispose();

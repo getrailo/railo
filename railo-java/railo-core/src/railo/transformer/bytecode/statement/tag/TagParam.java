@@ -7,6 +7,8 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
+import railo.transformer.bytecode.cast.CastInt;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.cfml.evaluator.impl.Argument;
@@ -29,16 +31,14 @@ public final class TagParam extends TagBase {
 			Types.VOID,
 			new Type[]{Types.STRING,Types.STRING,Types.OBJECT,Types.DOUBLE_VALUE,Types.DOUBLE_VALUE}
 	);
-
-	/**
-	 * Constructor of the class
-	 * @param line
-	 */
-	public TagParam(int line) {
-		super(line);
-	}
-	public TagParam(int sl,int el) {
-		super(sl,el);
+	private static final Method PARAM_TYPE_NAME_DEFAULTVALUE_MAXLENGTH = new Method(
+			"param",
+			Types.VOID,
+			new Type[]{Types.STRING,Types.STRING,Types.OBJECT,Types.INT_VALUE}
+	);
+	
+	public TagParam(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**
@@ -75,6 +75,7 @@ public final class TagParam extends TagBase {
 		Attribute attrMin = getAttribute("min");
 		Attribute attrMax = getAttribute("max");
 		Attribute attrPattern = getAttribute("pattern");
+		Attribute maxLength = getAttribute("maxLength");
 
 		if(attrMin!=null && attrMax!=null) {
 			attrMin.getValue().writeOut(bc, Expression.MODE_VALUE);
@@ -84,6 +85,10 @@ public final class TagParam extends TagBase {
 		else if(attrPattern!=null) {
 			attrPattern.getValue().writeOut(bc, Expression.MODE_REF);
 			adapter.invokeVirtual(Types.PAGE_CONTEXT, PARAM_TYPE_NAME_DEFAULTVALUE_REGEX);
+		}
+		else if(maxLength!=null) {
+			CastInt.toExprInt(maxLength.getValue()).writeOut(bc, Expression.MODE_VALUE);
+			adapter.invokeVirtual(Types.PAGE_CONTEXT, PARAM_TYPE_NAME_DEFAULTVALUE_MAXLENGTH);
 		}
 		else adapter.invokeVirtual(Types.PAGE_CONTEXT, PARAM_TYPE_NAME_DEFAULTVALUE);
 

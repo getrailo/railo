@@ -33,7 +33,7 @@ public class FDQuery extends FDValueNotMutability {
 		
 		// rows
 		int rowcount=qry.getRowCount();
-		List lstRows=new ArrayList(),values;
+		List lstRows=new ArrayList();//,values;
 		fill(frame,qry,lstRows,1,rowcount-1,strColumns);
 		children.add(new FDSimpleVariable(frame,"Rows",Caster.toString(rowcount),lstRows));
 	}

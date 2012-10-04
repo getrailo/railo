@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td align="center">
-        <cfform action="#request.self#?action=#url.action#" method="post">
+        <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
         <input type="submit" class="submit" name="mainAction" value="#stText.Buttons.ok#">
         </cfform>
     </td>

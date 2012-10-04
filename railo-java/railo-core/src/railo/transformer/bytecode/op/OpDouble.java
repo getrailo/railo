@@ -10,6 +10,7 @@ import railo.runtime.op.Operator;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
@@ -47,7 +48,7 @@ public final class OpDouble extends ExpressionBase implements ExprDouble {
     // TODO weitere operatoren
     
     private OpDouble(Expression left, Expression right, int operation)  {
-        super(left.getLine());
+        super(left.getStart(),right.getEnd());
         this.left=	left;
         this.right=	right;   
         this.operation=operation;
@@ -70,17 +71,17 @@ public final class OpDouble extends ExpressionBase implements ExprDouble {
         	
             if(l!=null && r !=null) {
                 switch(operation) {
-                case PLUS: return toLitDouble(		l.doubleValue()+r.doubleValue(),left.getLine());
-                case MINUS: return toLitDouble(		l.doubleValue()-r.doubleValue(),left.getLine());
-                case MODULUS: return toLitDouble(	l.doubleValue()%r.doubleValue(),left.getLine());
+                case PLUS: return toLitDouble(		l.doubleValue()+r.doubleValue(),left.getStart(),right.getEnd());
+                case MINUS: return toLitDouble(		l.doubleValue()-r.doubleValue(),left.getStart(),right.getEnd());
+                case MODULUS: return toLitDouble(	l.doubleValue()%r.doubleValue(),left.getStart(),right.getEnd());
                 case DIVIDE: {
                 	if(r.doubleValue()!=0d)
-                		return toLitDouble(	l.doubleValue()/r.doubleValue(),left.getLine());
+                		return toLitDouble(	l.doubleValue()/r.doubleValue(),left.getStart(),right.getEnd());
                 	break;
                 }
-                case MULTIPLY: return toLitDouble(	l.doubleValue()*r.doubleValue(),left.getLine());
-                case EXP: return new LitDouble(Operator.exponent(l.doubleValue(),r.doubleValue()),left.getLine());
-                case INTDIV: return new LitDouble(l.intValue()/r.intValue(),left.getLine());
+                case MULTIPLY: return toLitDouble(	l.doubleValue()*r.doubleValue(),left.getStart(),right.getEnd());
+                case EXP: return LitDouble.toExprDouble(Operator.exponent(l.doubleValue(),r.doubleValue()),left.getStart(),right.getEnd());
+                case INTDIV: return LitDouble.toExprDouble(l.intValue()/r.intValue(),left.getStart(),right.getEnd());
                 
                 }
             }
@@ -89,8 +90,8 @@ public final class OpDouble extends ExpressionBase implements ExprDouble {
     }
     
     
-    private static ExprDouble toLitDouble(double d, int line) {
-    	return new LitDouble(Caster.toDoubleValue(Caster.toString(d),0),line);
+    private static ExprDouble toLitDouble(double d, Position start, Position end) {
+    	return LitDouble.toExprDouble(Caster.toDoubleValue(Caster.toString(d),0),start,end);
 	}
 
 	/**

@@ -1,11 +1,13 @@
 /**
- * Implements the Cold Fusion Function arrayappend
+ * Implements the CFML Function arrayappend
  */
 package railo.runtime.functions.arrays;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
+import railo.runtime.op.Caster;
+import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 
 /**
@@ -15,6 +17,11 @@ public final class ArrayAppend implements Function {
 	
 	private static final long serialVersionUID = 5989673419120862625L;
 
+
+	public static boolean call(PageContext pc , Array array, Object object) throws PageException {
+		return call(pc, array, object, false);
+	}
+	
 	/**
 	 * @param pc
 	 * @param array
@@ -22,8 +29,15 @@ public final class ArrayAppend implements Function {
 	 * @return has appended
 	 * @throws PageException
 	 */
-	public static boolean call(PageContext pc , Array array, Object object) throws PageException {
-		array.append(object);
+	public static boolean call(PageContext pc , Array array, Object object, boolean merge) throws PageException {
+		if(merge && Decision.isCastableToArray(object)) {
+			Object[] appends = Caster.toNativeArray(object);
+			for(int i=0;i<appends.length;i++){
+				array.append(appends[i]);
+			}
+		}
+		else
+			array.append(object);
 		return true;
 	}
 }

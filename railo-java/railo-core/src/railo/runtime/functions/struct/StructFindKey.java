@@ -1,7 +1,10 @@
 /**
- * Implements the Cold Fusion Function structfindkey
+ * Implements the CFML Function structfindkey
  */
 package railo.runtime.functions.struct;
+
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
@@ -10,6 +13,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -42,14 +46,17 @@ public final class StructFindKey implements Function {
      * @throws PageException
      */
     private static boolean getValues(Array array,Collection coll, String value, boolean all, String path) throws PageException {
-        Collection.Key[] keys=coll.keys();
+        //Collection.Key[] keys=coll.keys();
+    	Iterator<Entry<Key, Object>> it = coll.entryIterator();
+    	Entry<Key, Object> e;
         boolean abort=false;
         Collection.Key key;
         
-        for(int i=0;i<keys.length;i++) {
+        while(it.hasNext()) {
+        	e = it.next();
             if(abort)break;
-            key=keys[i];
-            Object o=coll.get(key);
+            key=e.getKey();
+            Object o=e.getValue();
 
             // matching value  (this function search first for base)
             if(key.getString().equalsIgnoreCase(value)) {

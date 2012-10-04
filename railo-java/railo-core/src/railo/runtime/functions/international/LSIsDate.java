@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lsisdate
+ * Implements the CFML Function lsisdate
  */
 package railo.runtime.functions.international;
 
@@ -39,7 +39,7 @@ public final class LSIsDate implements Function {
 		    String str=object.toString();
 		    if(str.length()<2) return false;
 		    //print.out(Caster.toDateTime(locale,str,pc.getTimeZone(),null));
-			return Decision.isDate(str,locale,tz,false);
+			return Decision.isDate(str,locale,tz,locale.equals(Locale.US));
 			//return Caster.toDateTime(locale,str,pc.getTimeZone(),null)!=null;
 		}
 		return false;

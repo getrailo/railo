@@ -2,7 +2,7 @@ package railo.runtime.tag;
 
 import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 
 /**
 * Used to: Abort the processing of the currently executing CFML custom tag, exit the template 

@@ -2,12 +2,11 @@ package railo.runtime.functions.file;
 
 import railo.commons.io.res.ResourceProvider;
 import railo.runtime.PageContext;
-import railo.runtime.exp.PageException;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
 public class GetVFSMetaData {
-	public static Struct call(PageContext pc, String scheme) throws PageException  {
+	public static Struct call(PageContext pc, String scheme)  {
 		ResourceProvider[] providers = pc.getConfig().getResourceProviders();
 		ResourceProvider provider;
 		scheme=scheme.trim();
