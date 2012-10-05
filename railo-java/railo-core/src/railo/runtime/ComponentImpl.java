@@ -1,46 +1,16 @@
 package railo.runtime;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.lang.ref.SoftReference;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
 import railo.commons.io.DevNullOutputStream;
-import railo.commons.lang.CFTypes;
-import railo.commons.lang.ExceptionUtil;
-import railo.commons.lang.Pair;
-import railo.commons.lang.SizeOf;
-import railo.commons.lang.StringUtil;
+import railo.commons.lang.*;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
-import railo.runtime.component.ComponentLoader;
-import railo.runtime.component.DataMember;
-import railo.runtime.component.InterfaceCollection;
-import railo.runtime.component.Member;
-import railo.runtime.component.Property;
+import railo.runtime.component.*;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntryTemplate;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.dump.*;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -53,19 +23,9 @@ import railo.runtime.op.Operator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.thread.ThreadUtil;
-import railo.runtime.type.ArrayImpl;
+import railo.runtime.type.*;
 import railo.runtime.type.Collection;
-import railo.runtime.type.FunctionArgument;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Sizeable;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
-import railo.runtime.type.UDF;
-import railo.runtime.type.UDFGSProperty;
-import railo.runtime.type.UDFImpl;
-import railo.runtime.type.UDFProperties;
-import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.cfc.ComponentAccessEntryIterator;
 import railo.runtime.type.cfc.ComponentAccessValueIterator;
@@ -76,12 +36,18 @@ import railo.runtime.type.scope.Argument;
 import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.Variables;
-import railo.runtime.type.util.ArrayUtil;
-import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.type.util.KeyConstants;
-import railo.runtime.type.util.PropertyFactory;
-import railo.runtime.type.util.StructSupport;
-import railo.runtime.type.util.StructUtil;
+import railo.runtime.type.util.*;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.lang.ref.SoftReference;
+import java.net.URL;
+import java.util.*;
+import java.util.Iterator;
 
 /**
  * %**%
@@ -1898,10 +1864,50 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 
 	
 
+//	private void initProperties() throws PageException
+//	{
+//		top.properties.properties = new LinkedHashMap<String,Property>();
+//
+//		if (!isPersistent()) { return; }
+//
+//		ComponentImpl offsetComponent = top.base;
+//		while (offsetComponent != null)
+//		{
+//			// MZ: Original version: Stop traversing the inheritance tree when embedded persistency is detected
+//			// MZ: Removed - seems to restrict inherited components, though marked as mappedSuperClass
+//			//if (offsetComponent.isPersistent()) { return; }
+//
+//			// MappedSuperClass
+//			if (offsetComponent.properties.properties != null && offsetComponent.properties.meta != null)
+//			{
+//				if (Caster.toBooleanValue(offsetComponent.properties.meta.get(KeyConstants._mappedSuperClass, Boolean.FALSE), false))
+//				{
+//					Property p;
+//					Iterator<Entry<String, Property>> it = offsetComponent.properties.properties.entrySet().iterator();
+//					while(it.hasNext())
+//					{
+//						p = it.next().getValue();
+//						if(p.isPeristent())
+//						{
+//							// MZ: Top to bottom scan, should ignore nested
+//							if (!top.properties.properties.containsKey(StringUtil.toLowerCase(p.getName())))
+//							{
+//								setProperty(p);
+//							}
+//						}
+//					}
+//				}
+//			}
+//			// MZ: RAILO-1939: Walk down the inheritance tree
+//			offsetComponent = offsetComponent.base;
+//		}
+//	}
+
+
 	private void initProperties() throws PageException {
 		top.properties.properties=new LinkedHashMap<String,Property>();
-		
-		// MappedSuperClass  
+
+		// MappedSuperClass
 		if(isPersistent() && !isBasePeristent() && top.base!=null && top.base.properties.properties!=null && top.base.properties.meta!=null) {
 			boolean msc = Caster.toBooleanValue(top.base.properties.meta.get(KeyConstants._mappedSuperClass,Boolean.FALSE),false);
 			if(msc){
@@ -1910,7 +1916,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 				while(it.hasNext())	{
 					p = it.next().getValue();
 					if(p.isPeristent()) {
-						
+
 						setProperty(p);
 					}
 				}
@@ -1927,6 +1933,48 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		_getProperties(top,props,onlyPeristent, includeBaseProperties);
 		return props.values().toArray(new Property[props.size()]);
 	}
+
+	public HashMap<String,Property> getAllPersistentProperties()
+	{
+		HashMap<String,Property> result = new HashMap<String,Property>();
+
+		if (!isPersistent()) { return result; }
+
+		ComponentImpl offsetComponent = top;
+		while (offsetComponent != null)
+		{
+			// MappedSuperClass
+			Boolean isMappedSuperClass = (offsetComponent.properties.meta != null) && Caster.toBooleanValue(offsetComponent.properties.meta.get(KeyConstants._mappedSuperClass, Boolean.FALSE), false);
+			Boolean isBaseComponent = (offsetComponent == top);
+			Boolean includeProperties = (isBaseComponent || isMappedSuperClass);
+			if (offsetComponent.properties.properties != null)
+			{
+				if (includeProperties)
+				{
+					Property p;
+					Iterator<Entry<String, Property>> it = offsetComponent.properties.properties.entrySet().iterator();
+					while(it.hasNext())
+					{
+						p = it.next().getValue();
+						if(p.isPeristent())
+						{
+							// MZ: Top to bottom scan, should ignore nested
+							if (!result.containsKey(StringUtil.toLowerCase(p.getName())))
+							{
+								result.put(p.getName().toLowerCase(), p);
+							}
+						}
+					}
+				}
+			}
+			// MZ: RAILO-1939: Walk down the inheritance tree
+			offsetComponent = offsetComponent.base;
+		}
+
+		return result;
+
+	}
+
 	
 	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent, boolean includeBaseProperties) {
 		//if(c.properties.properties==null) return new Property[0];

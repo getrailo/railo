@@ -1180,7 +1180,8 @@ public abstract class ConfigImpl implements Config {
     	this.tagDirectory=tagDirectory;
     	
     	this.tagMapping= new MappingImpl(this,"/mapping-tag/",tagDirectory.getAbsolutePath(),null,true,true,true,true,true,false,true);
-    	
+
+		// MZ: Todo: zomg
     	TagLib tl=getCoreTagLib();
     	
         // now overwrite with new data
@@ -1188,7 +1189,7 @@ public abstract class ConfigImpl implements Config {
         	String[] files=tagDirectory.list(new ExtensionResourceFilter(new String[]{"cfm","cfc"}));
             for(int i=0;i<files.length;i++) {
             	if(tl!=null)createTag(tl, files[i]);
-                    
+
             }
         }
         

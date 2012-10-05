@@ -1,4 +1,4 @@
-﻿<cfscript>
+﻿﻿<cfscript>
 component {
 
 	ColorCaster=createObject('java','railo.commons.color.ColorCaster');
@@ -51,7 +51,7 @@ component {
 	================================================================================================== */
 	boolean function onStartTag(required struct attributes, required struct caller) {
 		// inital settings
-
+		
 		var attrib = arguments.attributes;
 
 		//eval
@@ -87,7 +87,7 @@ component {
 			var meta = dumpStruct(structKeyExists(attrib,'var') ? attrib.var : nullValue(), attrib.top, attrib.show, attrib.hide, attrib.keys, attrib.metaInfo, attrib.showUDFs);
 		}
 		var dumpID = createId();
-
+		
 		// create output
 		var hasReference = structKeyExists(meta,'hasReference') && meta.hasReference;
 		var result = this[attrib.format](meta, context, attrib.expand, attrib.output, hasReference, 0, dumpID);
@@ -96,7 +96,7 @@ component {
 		if(attrib.output EQ "browser") {
 			echo(variables.NEWLINE & '<!-- ==start== dump #now()# format: #attrib.format# -->' & variables.NEWLINE);
 			echo('<div id="#dumpID#">#result#</div>' & variables.NEWLINE);
-			echo('<!-- ==stop== dump -->' & variables.NEWLINE);
+			echo('<!--  ==stop== dump -->' & variables.NEWLINE);
 		}
 		else if(attrib.output EQ "console") {
 			systemOutput(result);
@@ -126,12 +126,14 @@ component {
 		var id = createId();
 		var rtn = "";
 		var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
-		var title = !arguments.level ? ' title="#arguments.context#"' : '';
+		var title = !arguments.level ? 'title="#arguments.context#" ' : '';
 		var width = structKeyExists(arguments.meta,'width') ? ' width="' & arguments.meta.width & '"' : '';
 		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
 		var indent = repeatString(variables.TAB, arguments.level);
 
-			rtn&=('<table#width##height##title#>' );
+			
+
+			rtn&=('<table cellspacing="1"#width##height#>' );
 
 			// title
 			if(structKeyExists(arguments.meta, 'title')){
@@ -139,7 +141,7 @@ component {
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
 				rtn&=('<tr>');
-				rtn&=('<td class="#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
+				rtn&=('<td class="#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)#" title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
 				rtn&=('<span>#arguments.meta.title##metaID#</span>');
 				rtn&=(comment & '</td>');
 				rtn&=('</tr>');
@@ -149,7 +151,7 @@ component {
 			}
 
 			// data
-
+			
 			if(columnCount) {
 				loop query="arguments.meta.data" {
 					var c = 1;
@@ -164,12 +166,12 @@ component {
 						if(isStruct(node)) {
 							var value = this.html(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1,arguments.dumpID,arguments.cssColors);
 
-							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#">');
+							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#" #title#>');
 							rtn&=(value);
 							rtn&=('</td>');
 						}
 						else {
-							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#">' & HTMLEditFormat(node) & '</td>' );
+							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#" #title#>' & HTMLEditFormat(node) & '</td>' );
 						}
 						c *= 2;
 					}
@@ -177,37 +179,39 @@ component {
 				}
 			}
 			rtn&=('</table>');
-
+			
 			// Header
 			if(arguments.level EQ 0){
 				// javascript
 				var head=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
 				head&=("function dumpOC(name){");
-				head&=("var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);");
-				head&=("var s=null;");
-				head&=("name=name;");
-				head&=("for(var i=0;i<tds.length;i++) {");
-				head&=("if(document.all && tds[i].name!=name)continue;");
-				head&=("s=tds[i].style;");
-				head&=("if(s.display=='none') s.display='';");
-				head&=("else s.display='none';");
-				head&=("}");
-				head&=("}"& NEWLINE);
+				head&=( "var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);" );
+				head&=("var s=null;" );
+				head&=( "name=name;" );
+				head&=( "for(var i=0;i<tds.length;i++) {" );
+				head&=("if(document.all && tds[i].name!=name)continue;" );
+				head&=( "s=tds[i].style;" );
+				head&=( "if(s.display=='none') s.display='';" );
+				head&=( "else s.display='none';" );
+				head&=( "}" );
+				head&=("}"& NEWLINE );
 				head&=("</script>" & NEWLINE);
 
 				// styles
 				head&=('<style type="text/css">' & NEWLINE);
-				head&=('div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#; border-spacing: 1px}' & NEWLINE);
+				head&=( 'div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#;}' & NEWLINE);
 				head&=('div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
 				head&=('div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
 				loop collection="#arguments.cssColors#" item="local.key" {
 					head&="td.#key# {background-color:#arguments.cssColors[key]#;}"& NEWLINE;
 				}
 				head&=('</style>' & NEWLINE);
-
+				
 				rtn=head&rtn;
 			}
-
+			
+			
+		
 		return rtn;
 	}
 
@@ -226,7 +230,7 @@ component {
 		var id =  createId();
 		var rtn = "";
 		var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
-		var title = !arguments.level ? ' title="#arguments.context#"' : '';
+		var title = !arguments.level ? 'title="#arguments.context#" ' : '';
 		var width = structKeyExists(arguments.meta,'width') ? ' width="' & arguments.meta.width & '"' : '';
 		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
 		var indent = repeatString(TAB, arguments.level);
@@ -243,7 +247,7 @@ component {
 		}
 		catch(e) {}
 
-
+		
 			if(arguments.level EQ 0){
 				// javascript
 				rtn&=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
@@ -268,7 +272,7 @@ component {
 				rtn&=('</style>' & NEWLINE);
 			}
 
-			rtn&=('<table cellspacing="0"#width##height##title# style="color:#arguments.meta.fontColor#; border-color:#borderColor#;">');
+			rtn&=('<table cellspacing="0"#width##height# style="color:#arguments.meta.fontColor#; border-color:#borderColor#;">');
 
 			// title
 			if(structKeyExists(arguments.meta, 'title')){
@@ -276,7 +280,7 @@ component {
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
 				rtn&=('<tr>');
-				rtn&=('<td onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="background:#h1Color#; border-color:#borderColor#; color:white;">');
+				rtn&=('<td title="#arguments.context#" onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="background:#h1Color#; border-color:#borderColor#; color:white;">');
 				rtn&=('<span>#arguments.meta.title##metaID#</span>');
 				rtn&=(comment & '</td>');
 				rtn&=('</tr>');
@@ -300,12 +304,12 @@ component {
 						if(isStruct(node)) {
 							var value = this.classic(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1);
 
-							rtn&=('<td style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">');
+							rtn&=('<td #title#style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">');
 							rtn&=(value);
 							rtn&=( '</td>');
 						}
 						else {
-							rtn&=('<td style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">' & HTMLEditFormat(node) & '</td>');
+							rtn&=('<td #title#style="background:#bgColor(arguments.meta,c,h2Color)#; border-color:#borderColor#;">' & HTMLEditFormat(node) & '</td>');
 						}
 						c *= 2;
 					}
@@ -313,7 +317,7 @@ component {
 				}
 			}
 			rtn&=('</table>');
-
+		
 		return rtn;
 	}
 
@@ -334,8 +338,8 @@ component {
 		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
 		var indent = repeatString(TAB, arguments.level);
 
-
-			rtn&=( '<table cellpadding="1" cellspacing="0" border="1" title="#arguments.context#"#width##height#>');
+		
+			rtn&=( '<table cellpadding="1" cellspacing="0" border="1"#width##height#>');
 
 			// title
 			if(structKeyExists(arguments.meta, 'title')){
@@ -343,7 +347,7 @@ component {
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
 				rtn&=('<tr>');
-				rtn&=('<td colspan="#columnCount#" bgcolor="#arguments.meta.highLightColor#">');
+				rtn&=('<td title="#arguments.context#" colspan="#columnCount#" bgcolor="#arguments.meta.highLightColor#">');
 				rtn&=('<b>#arguments.meta.title##metaID#</b>');
 				rtn&=(comment & '</td>');
 				rtn&=('</tr>');
@@ -363,12 +367,12 @@ component {
 						if(isStruct(node)) {
 							var value = this.simple(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1);
 
-							rtn&=('<td bgcolor="#bgColor(arguments.meta,c)#">' );
+							rtn&=('<td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#">' );
 							rtn&=(value);
 							rtn&=('</td>');
 						}
 						else {
-							rtn&=('<td bgcolor="#bgColor(arguments.meta,c)#">' & HTMLEditFormat(node) & '</td>');
+							rtn&=('<td title="#arguments.context#" bgcolor="#bgColor(arguments.meta,c)#">' & HTMLEditFormat(node) & '</td>');
 						}
 						c *= 2;
 					}
@@ -376,7 +380,7 @@ component {
 				}
 			}
 			rtn&=('</table>');
-
+		
 		return rtn;
 	}
 
@@ -450,7 +454,7 @@ component {
 	}
 
 	/* ==================================================================================================
-	   helper functions                                                                                 =
+	   helper functions                                                                                          =
 	================================================================================================== */
 	string function bgColor( required struct meta,
 							 required numeric c,
@@ -466,22 +470,22 @@ component {
 			return bitand(arguments.meta.data.highlight, arguments.c) ? arguments.highLightColor : arguments.meta.normalColor;
 		}
 	}
-
+	
 	string function createId(){
 		return  "x"&(server.railo.version GTE "3.3.0.010"?createUniqueId():hash(createUUID()));
 	}
-
+	
 
 	function doCSSColors(struct data,string color){
 		var key=replace(arguments.color,"##","r");
 		if(isNumeric(left(key,1)))key="r"&key;
-
-
+		
+		
 		if(!structKeyExists(arguments.data,key))
 			arguments.data[key]=arguments.color;
 		return key;
 	}
 
-
+	
 }
 </cfscript>

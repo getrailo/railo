@@ -1,8 +1,5 @@
 package railo.runtime;
 
-import java.io.InputStream;
-import java.util.Map;
-
 import railo.commons.date.TimeZoneConstants;
 import railo.commons.io.IOUtil;
 import railo.commons.io.ini.IniFile;
@@ -12,6 +9,9 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.List;
 import railo.runtime.type.dt.DateTime;
+
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Info to this Version
@@ -52,7 +52,7 @@ public final class Info {
     private static final int fullVersion;
     
     static {
-    	InputStream is = Info.class.getClassLoader().getResourceAsStream("railo/runtime/Info.ini");
+    	InputStream is = Info.class.getClassLoader().getResourceAsStream("railo/debug/Info.ini");
     	try{
     		IniFile ini=new IniFile(is);
     		Map verIni=ini.getSection("version");

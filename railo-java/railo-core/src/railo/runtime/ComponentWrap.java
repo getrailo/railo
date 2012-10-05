@@ -1,5 +1,6 @@
 package railo.runtime;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -462,7 +463,13 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 	public Property[] getProperties(boolean onlyPeristent) {
 		return component.getProperties(onlyPeristent);
 	}
-	
+
+	@Override
+	public HashMap<String, Property> getAllPersistentProperties()
+	{
+		return component.getAllPersistentProperties();
+	}
+
 	@Override
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
 		return ((ComponentPro)component).getProperties(onlyPeristent,includeBaseProperties);

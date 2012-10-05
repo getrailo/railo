@@ -410,10 +410,7 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 					tmpLen=rootLen-tmp.length();
 					if(strRoot.lastIndexOf(tmp)==tmpLen && tmpLen>=0) {
 						StringBuffer rtn=new StringBuffer();
-						while(i<count-i) {
-							count--;
-							rtn.append("../");
-						}
+						for(int y=0;i<count-i;y++) rtn.append("../");
 						isOutSide.setValue(rtn.length()!=0);
 						return (rtn.length()==0?"/":rtn.toString())+list(arr,i,arr.length);
 					}

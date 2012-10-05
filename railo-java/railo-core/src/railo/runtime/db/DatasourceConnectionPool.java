@@ -95,7 +95,7 @@ public class DatasourceConnectionPool {
 	}
 
 	public void clear() {
-		//int size=0;
+		int size=0;
 		
 		// remove all timed out conns
 		try{
@@ -104,7 +104,7 @@ public class DatasourceConnectionPool {
 			for(int i=0;i<arr.length;i++) {
 				DCStack conns=(DCStack) ((Map.Entry) arr[i]).getValue();
 				if(conns!=null)conns.clear();
-				//size+=conns.size();
+				size+=conns.size();
 			}
 		}
 		catch(Throwable t){}

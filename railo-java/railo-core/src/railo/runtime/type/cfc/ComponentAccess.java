@@ -1,8 +1,5 @@
 package railo.runtime.type.cfc;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
@@ -11,6 +8,9 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
+
+import java.util.Iterator;
+import java.util.Set;
 
 public interface ComponentAccess extends ComponentPro {
 	

@@ -204,9 +204,44 @@ public class ListAsArray implements Array,List,Sizeable {
 		return value;
 	}
 
-	@Override
 	public void sort(String sortType, String sortOrder) throws PageException {
-		sort(ArrayUtil.toComparator(null, sortType, sortOrder, false));
+		if(getDimension()>1)
+			throw new ExpressionException("only 1 dimensional arrays can be sorted");
+		
+		// check sortorder
+		boolean isAsc=true;
+		PageException ee=null;
+		if(sortOrder.equalsIgnoreCase("asc"))isAsc=true;
+		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
+		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
+		
+		// text
+		if(sortType.equalsIgnoreCase("text")) {
+			TextComparator comp=new TextComparator(isAsc,false);
+			Collections.sort(list,comp);
+			//Arrays.sort(arr,offset,offset+size,comp);
+			ee=comp.getPageException();
+		}
+		// text no case
+		else if(sortType.equalsIgnoreCase("textnocase")) {
+			TextComparator comp=new TextComparator(isAsc,true);
+			Collections.sort(list,comp);
+			//Arrays.sort(arr,offset,offset+size,comp);
+			ee=comp.getPageException();
+		}
+		// numeric
+		else if(sortType.equalsIgnoreCase("numeric")) {
+			NumberComparator comp=new NumberComparator(isAsc);
+			Collections.sort(list,comp);
+			//Arrays.sort(arr,offset,offset+size,comp);
+			ee=comp.getPageException();
+		}
+		else {
+			throw new ExpressionException("invalid sort type ["+sortType+"], sort types are [text, textNoCase, numeric]");
+		}
+		if(ee!=null) {
+			throw new ExpressionException("can only sort arrays with simple values",ee.getMessage());
+		}
 	}
 
 	@Override

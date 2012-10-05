@@ -130,19 +130,17 @@ public final class TagLibFactory extends DefaultHandler {
 			xmlReader.setErrorHandler(this);
 			xmlReader.setEntityResolver(new TagLibEntityResolver());
 			xmlReader.parse(is);
-		} 
-		catch (IOException e) {
+		} catch (IOException e) {
 			
-			//String fileName=is.getSystemId();
-			//String message="IOException: ";
-			//if(fileName!=null) message+="In File ["+fileName+"], ";
+			String fileName=is.getSystemId();
+			String message="IOException: ";
+			if(fileName!=null) message+="In File ["+fileName+"], ";
 			throw new TagLibException(e);
-		} 
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			e.printStackTrace();
-			//String fileName=is.getSystemId();
-			//String message="SAXException: ";
-			//if(fileName!=null) message+="In File ["+fileName+"], ";
+			String fileName=is.getSystemId();
+			String message="SAXException: ";
+			if(fileName!=null) message+="In File ["+fileName+"], ";
 			throw new TagLibException(e);
 		} 
 		

@@ -1,17 +1,16 @@
 package main;
 
-import java.io.File;
-import java.util.List;
-
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
 import org.mortbay.http.handler.ResourceHandler;
-import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 import org.mortbay.util.MultiException;
+
+import java.io.File;
+import java.util.List;
 
 
 /**
@@ -33,7 +32,6 @@ public class RunAsJavaApplication {
         context.setContextPath(strContext);
         context.addWelcomeFile("index.cfm");
         context.addVirtualHost(host);
-        //context.setClassPath(lib);
         server.addContext(context);
         
         // Create a servlet container
@@ -44,10 +42,10 @@ public class RunAsJavaApplication {
         // Map a servlet onto the container
         ServletHolder servlet = servlets.addServlet(
         		"CFMLServlet",
-        		"*.cfc/*,*.cfm/*,*.cfml/*,*.cfc,*.cfm,*.cfml",
+        		"/index.cfm/*,*.cfc/*,*.cfm/*,*.cfml/*,*.cfc,*.cfm,*.cfml",
         		//"*.cfc*,*.cfm,*.cfml*",
         		"railo.debug.loader.servlet.CFMLServlet");
-        
+
         servlet.setInitOrder(0);
         
         //servlet = servlets.addServlet("FileServlet","/","servlet.FileServlet");
@@ -57,13 +55,13 @@ public class RunAsJavaApplication {
         servlet.setInitParameter("railo-web-directory",webContextDir);
                 
         //servlet = servlets.addServlet("openamf","/flashservices/gateway/*,/openamf/gateway/*","servlet.AMFServlet");
-        servlet = servlets.addServlet("openamf","/openamf/gateway/*","railo.loader.servlet.AMFServlet");
+        //servlet = servlets.addServlet("openamf","/openamf/gateway/*","railo.loader.servlet.AMFServlet");
         
-        servlets.addServlet("AxisServlet","*.jws","org.apache.axis.transport.http.AxisServlet");
+        //servlets.addServlet("AxisServlet","*.jws","org.apache.axis.transport.http.AxisServlet");
         //servlets.addServlet("AxisServlet","*.jws","AxisServlet");
 
-        servlet = servlets.addServlet("MessageBrokerServlet","/flashservices/gateway/*,/messagebroker/*,/flex2gateway/*","flex.messaging.MessageBrokerServlet");
-        servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
+        //servlet = servlets.addServlet("MessageBrokerServlet","/flashservices/gateway/*,/messagebroker/*,/flex2gateway/*","flex.messaging.MessageBrokerServlet");
+        //servlet.setInitParameter("services.configuration.file", "/WEB-INF/flex/services-config.xml");
         
         appDir+=path;
            context.setResourceBase(appDir);
@@ -138,11 +136,14 @@ public static void _main (String[] args)
     server.addListener(listener);
     
     // Create a context
-    File webxml = new File(appDir + "/WEB-INF/web.xml"); 
+    File webxml = new File(appDir + "/WEB-INF/web.xml");
+   	//addContext(server,"/","orm.marius.local","/",appDir,webContextDir,serverContextDir);
+   	addContext(server,"/","thvg.marius.local","/",appDir,webContextDir,serverContextDir);
+
     if(webxml.exists()) {
-    	addWebXmlContext(server,"/","localhost","/",appDir,webContextDir,serverContextDir);    	
+//    	addWebXmlContext(server,"/","localhost","/",appDir,webContextDir,serverContextDir);
     } else {
-    	addContext(server,"/","localhost","/",appDir,webContextDir,serverContextDir);    	    	
+//    	addContext(server,"/","localhost","/",appDir,webContextDir,serverContextDir);
     }
 
     //addContext(server,"/susi/","localhost","/jm/",null,null);
@@ -153,7 +154,8 @@ public static void _main (String[] args)
     //addContext(server,"/","context.example.local","/",null);
     //addContext(server,"/","7of9","/",null);
 
-    //for(int i=1;i<10;i++) 
+
+    //for(int i=1;i<10;i++)
     //    addContext(server,"/","context"+i+".example.local","/context"+i+"/",null,null);
 
     server.start ();

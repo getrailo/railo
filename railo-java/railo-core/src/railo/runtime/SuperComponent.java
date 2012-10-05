@@ -3,6 +3,7 @@
  */
 package railo.runtime;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -607,7 +608,13 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
 	}
-	
+
+	@Override
+	public HashMap<String, Property> getAllPersistentProperties()
+	{
+		return comp.getAllPersistentProperties();
+	}
+
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
 		return comp.getProperties(onlyPeristent,includeBaseProperties);
 	}

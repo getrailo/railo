@@ -40,10 +40,6 @@ public  class MapAsStruct extends StructSupport implements Struct {
     }
     
 
-    public static Struct toStruct(Map map) {
-    	return toStruct(map,false);
-	}
-
     public static Struct toStruct(Map map, boolean caseSensitive) {
     	if(map instanceof Struct) return ((Struct)map);
 		return new MapAsStruct(map,caseSensitive);

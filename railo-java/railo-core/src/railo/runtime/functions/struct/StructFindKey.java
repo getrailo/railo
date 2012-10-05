@@ -4,8 +4,6 @@
 package railo.runtime.functions.struct;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
@@ -20,8 +18,6 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Argument;
-import railo.runtime.type.wrap.ListAsArray;
-import railo.runtime.type.wrap.MapAsStruct;
 
 public final class StructFindKey implements Function {
 	
@@ -74,16 +70,8 @@ public final class StructFindKey implements Function {
             }
             
             // Collection
-            if(!abort) {
-	            if(o instanceof Collection) {
-	                abort=getValues(array,((Collection)o), value, all, createKey(coll,path,key));
-	            }
-	            else if(o instanceof List){
-	            	abort=getValues(array,ListAsArray.toArray((List)o), value, all, createKey(coll,path,key));
-	            }
-	            else if(o instanceof Map){
-	            	abort=getValues(array,MapAsStruct.toStruct((Map)o), value, all, createKey(coll,path,key));
-	            }
+            if(!abort && o instanceof Collection) {
+                abort=getValues(array,((Collection)o), value, all, createKey(coll,path,key));
             }
         }
         

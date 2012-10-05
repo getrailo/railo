@@ -1,14 +1,16 @@
 package railo.runtime;//.orm.hibernate.tuplizer.proxy;
 
 
-import java.io.Serializable;
-
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
-
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCLazyInitializer;
+import railo.runtime.component.Property;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.cfc.ComponentAccessProxy;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Proxy for "dynamic-map" entity representations.
@@ -41,11 +43,19 @@ public class CFCProxy extends ComponentAccessProxy implements HibernateProxy, Se
 	public long sizeOf() {
 		return li.getCFC().sizeOf();
 	}
-	
+
+
 	@Override
-	public java.util.Iterator<String> getIterator() {
-    	return keysAsStringIterator();
-    }
-	
+	public Iterator<?> getIterator()
+	{
+		return li.getCFC().getIterator();
+	}
+
+	@Override
+	public HashMap<String, Property> getAllPersistentProperties()
+	{
+		return li.getCFC().getAllPersistentProperties();
+	}
+
 
 }

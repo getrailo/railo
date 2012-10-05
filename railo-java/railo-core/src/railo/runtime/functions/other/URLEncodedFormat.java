@@ -25,12 +25,8 @@ public final class URLEncodedFormat implements Function {
 	public static String call(PageContext pc , String str, String encoding) throws PageException {
 		return call(pc,str, encoding,true);
 	}
-
-	public static String call(PageContext pc , String str, String encoding,boolean force) throws PageException {
-		return invoke(str, encoding, force);
-	}
 	
-	public static String invoke(String str, String encoding,boolean force) throws PageException {
+	public static String call(PageContext pc , String str, String encoding,boolean force) throws PageException {
 		if(!force && !ReqRspUtil.needEncoding(str,false))
 			return str;
 		
