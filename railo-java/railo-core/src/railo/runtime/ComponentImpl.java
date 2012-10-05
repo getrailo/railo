@@ -1922,16 +1922,30 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		return getProperties(onlyPeristent, false);
 	}
 
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
+		Map<String,Property> props=new HashMap<String,Property>();
+		_getProperties(top,props,onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+		return props.values().toArray(new Property[props.size()]);
+	}
+
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
 		Map<String,Property> props=new HashMap<String,Property>();
 		_getProperties(top,props,onlyPeristent, includeBaseProperties);
 		return props.values().toArray(new Property[props.size()]);
 	}
-	
+
 	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent, boolean includeBaseProperties) {
+		_getProperties(c, props, onlyPeristent, includeBaseProperties, true, false);
+	}
+
+	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
 		//if(c.properties.properties==null) return new Property[0];
 		
-		if(includeBaseProperties && c.base!=null) _getProperties(c.base, props, onlyPeristent, includeBaseProperties);
+		if(includeBaseProperties && c.base!=null) {
+			if (!inheritedMappedSuperClassOnly || (c.base.properties.meta != null) && Caster.toBooleanValue(c.base.properties.meta.get(KeyConstants._mappedSuperClass, Boolean.FALSE), false)) {
+				_getProperties(c.base, props, onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+			}
+		}
 		
 		// collect with filter
 		if(c.properties.properties!=null){
@@ -1940,7 +1954,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			while(it.hasNext())	{
 				p = it.next().getValue();
 				if(!onlyPeristent || p.isPeristent()) {
-					props.put(p.getName().toLowerCase(),p);
+					if (overrideProperties || !props.containsKey(p.getName().toLowerCase())) {
+						props.put(p.getName().toLowerCase(),p);
+					}
 				}
 			}
 		}
