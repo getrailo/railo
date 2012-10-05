@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
@@ -190,8 +191,8 @@ public class HBMCreator {
 	
 	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass) throws ORMException, PageException {
 		Property[] _props;
-		if (recursivePersistentMappedSuperclass) {
-			_props = cfci.getProperties(true, true, false, true);
+		if (recursivePersistentMappedSuperclass && (cfci instanceof ComponentPro)) {
+			_props = ((ComponentPro)cfci).getProperties(true, true, true, true);
 		}
 		else {
 			_props = cfci.getProperties(true);
@@ -203,17 +204,6 @@ public class HBMCreator {
         }
 		return _props;
 	}
-
-
-
-
-
-
-
-
-
-
-
 
 	private static void addId(Component cfc,Document doc, Element clazz, PageContext pc, Struct meta, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws PageException {
 		Property[] _ids = getIds(engine,cfc,propColl);

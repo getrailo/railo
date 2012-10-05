@@ -132,9 +132,6 @@ public interface Component extends Struct,Objects,CFObject {
 	 * @return
 	 */
 	public Property[] getProperties(boolean onlyPeristent);// FUTURE deprecated
-	// FUTURE public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties);
-
-	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly);
 
 	public void setProperty(Property property) throws PageException;
 	
