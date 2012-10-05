@@ -1935,7 +1935,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent, boolean includeBaseProperties) {
-		_getProperties(c, props, onlyPeristent, includeBaseProperties, true, false);
+		_getProperties(c, props, onlyPeristent, includeBaseProperties, false, false);
 	}
 
 	private static void _getProperties(ComponentImpl c,Map<String,Property> props,boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
@@ -1948,7 +1948,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			while(it.hasNext())	{
 				p = it.next().getValue();
 				if(!onlyPeristent || p.isPeristent()) {
-					if (preferBaseProperties || !props.containsKey(p.getName().toLowerCase())) {
+					if (!preferBaseProperties || !props.containsKey(p.getName().toLowerCase())) {
 						props.put(p.getName().toLowerCase(),p);
 					}
 				}
