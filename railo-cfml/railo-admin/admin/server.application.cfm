@@ -320,7 +320,7 @@ Error Output --->
 								<cfloop index="key" list="none,classic,modern,mixed">
 									<li>
 										<label>
-											<input type="radio" name="type" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
+											<input type="radio" class="radio" name="type" value="#key#" <cfif listener.type EQ key>checked="checked"</cfif>>
 											<b>#stText.application['listenerType_' & key]#</b>
 										</label>
 										<div class="comment">#stText.application['listenerTypeDescription_' & key]#</div>
@@ -348,7 +348,7 @@ Error Output --->
 								<cfloop index="key" list="curr,root,curr2root">
 									<li>
 										<label>
-											<input type="radio" name="mode" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>
+											<input type="radio" class="radio" name="mode" value="#key#" <cfif listener.mode EQ key>checked="checked"</cfif>>
 											<b>#stText.application['listenerMode_' & key]#</b>
 										</label>
 										<div class="comment">#stText.application['listenerModeDescription_' & key]#</div>

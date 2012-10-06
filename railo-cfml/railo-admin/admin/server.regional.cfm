@@ -181,7 +181,7 @@ Create Datasource --->
 					<td>
 						<cfif hasAccess>
 							<input type="text" name="timeserver" value="#regional.timeserver#" class="large">
-							<br /><input type="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
+							<br /><input type="checkbox" class="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
 						<cfelse>
 							<b>#regional.timeserver#</b>
 							<input type="hidden" name="usetimeserver" value="#regional.usetimeserver#" />

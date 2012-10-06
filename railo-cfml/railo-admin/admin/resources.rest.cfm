@@ -219,7 +219,7 @@ list all mappings and display necessary edit fields --->
 								<cfif rest.readOnly>
 									#yesNoFormat(rest.default)#
 								<cfelse>
-									<input type="radio" name="default" value="#rest.currentrow#" onchange="changeDefault(this)" <cfif rest.default>checked="checked"</cfif>/>
+									<input type="radio" class="radio" name="default" value="#rest.currentrow#" onchange="changeDefault(this)" <cfif rest.default>checked="checked"</cfif>/>
 								</cfif>
 							</td>
 							<!--- edit
@@ -268,7 +268,7 @@ list all mappings and display necessary edit fields --->
 					<tr>
 						<th scope="row">#stText.rest.DefaultHead#</th>
 						<td>
-							<input type="radio" name="default" value="#rest.recordcount+1#" onchange="changeDefault(this)"/>
+							<input type="radio" class="radio" name="default" value="#rest.recordcount+1#" onchange="changeDefault(this)"/>
 						</td>
 					</tr>
 				</tbody>

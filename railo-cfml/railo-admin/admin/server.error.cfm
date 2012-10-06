@@ -161,7 +161,7 @@ Error Output --->
 					<th scope="row">#stText.err.errorStatusCode#</th>
 					<td>
 						<cfif hasAccess>
-						<input class="checkbox" type="checkbox" class="checkbox" name="doStatusCode" value="yes" <cfif err.doStatusCode>checked</cfif>>
+						<input class="checkbox" type="checkbox" name="doStatusCode" value="yes" <cfif err.doStatusCode>checked</cfif>>
 						<cfelse>
 						<b>#YesNoFormat(err.doStatusCode)#</b><br />
 						</cfif>

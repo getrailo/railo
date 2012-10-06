@@ -113,7 +113,7 @@ Error Output --->
 					<tr>
 						<th scope="row">#stText.Login.useCaptcha#</th>
 						<td>
-							<cfinput type="checkbox" name="captcha" checked="#settings.captcha#" value="true">
+							<cfinput type="checkbox" class="checkbox" name="captcha" checked="#settings.captcha#" value="true">
 							<div class="comment">#stText.Login.useCaptchaDesc#</div>
 						</td>
 					</tr>

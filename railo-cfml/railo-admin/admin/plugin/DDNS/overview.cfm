@@ -20,7 +20,7 @@
 	<th scope="row">#lang.onOff#</th>
 	<td>
 		<div class="comment">#lang.commentOnOff#</div><br>
-		<input type="checkbox" name="enabled" value="yes" <cfif req.ddns.enabled>checked="checked"</cfif>  />
+		<input type="checkbox" class="checkbox" name="enabled" value="yes" <cfif req.ddns.enabled>checked="checked"</cfif>  />
 		
 	</td>
 </tr>

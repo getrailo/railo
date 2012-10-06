@@ -185,8 +185,8 @@ Error Output--->
 						</ul>
 						<div class="comment">#stText.remote.usage.desc#</div>
 						<!---
-						<input type="checkbox" name="usage" value="synchronisation"<cfif FindNoCase('synchronisation',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.sync#
-						<cfif request.admintype EQ "server"><br /><input type="checkbox" name="usage" value="cluster"<cfif FindNoCase('cluster',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.cluster#</cfif>--->
+						<input type="checkbox" class="checkbox" name="usage" value="synchronisation"<cfif FindNoCase('synchronisation',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.sync#
+						<cfif request.admintype EQ "server"><br /><input type="checkbox" class="checkbox" name="usage" value="cluster"<cfif FindNoCase('cluster',rc.usage)>  checked="checked"</cfif>> #stText.remote.usage.cluster#</cfif>--->
 					</td>
 				</tr>
 			</tbody>

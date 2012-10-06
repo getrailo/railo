@@ -210,7 +210,7 @@ Redirtect to entry --->
 								<cfloop array="#modes#" index="mode">
 									<li>
 										<label>
-											<input type="radio" class="checkbox" name="extensions" value="#mode.ext#"<cfif mode.ext EQ lstSetExt> checked="checked"<cfset has=true></cfif>>
+											<input type="radio" class="radio" name="extensions" value="#mode.ext#"<cfif mode.ext EQ lstSetExt> checked="checked"<cfset has=true></cfif>>
 											<b>#mode.ext#</b>
 										</label>
 										<div class="comment inline">#stText.CustomTags.mode[mode.mode]#</div>
@@ -218,7 +218,7 @@ Redirtect to entry --->
 								</cfloop>
 								<li>
 									<label>
-										<input type="radio" class="checkbox" name="extensions" value="custom"<cfif not has> checked="checked"</cfif>>
+										<input type="radio" class="radio" name="extensions" value="custom"<cfif not has> checked="checked"</cfif>>
 									</label>
 									<cfinput type="text" onclick="checkTheRadio(this)" name="extensions_custom" value="#ArrayToList(setting.extensions)#" required="no" class="small" />
 									<div class="comment inline">#stText.CustomTags.mode.custom#</div>

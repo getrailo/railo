@@ -254,8 +254,8 @@ Error Output --->
 						</tr>
 						<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
 							<tr>
-								<td class="tblHead" width="150">Architecture</td>
-								<td class="tblContent">
+								<th scope="row">Architecture</th>
+								<td>
 									<cfif server.os.archModel NEQ server.os.archModel>OS #server.os.archModel#bit/JRE #server.java.archModel#bit<cfelse>#server.os.archModel#bit</cfif>
 								</td> 
 							</tr>

@@ -225,9 +225,11 @@ Redirtect to entry  --->
 			<cfif hasAccess>
 				<tfoot>
 					<tr>
-						<td colspan="2"><input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+						<td colspan="2">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
 							<input type="reset" class="button reset" name="cancel" value="#stText.Buttons.Cancel#">
-							<input class="button submit" type="submit" name="mainAction" value="#resetLabel#"></td>
+							<input class="button submit" type="submit" name="mainAction" value="#resetLabel#">
+						</td>
 					</tr>
 				</tfoot>
 			</cfif>

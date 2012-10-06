@@ -448,6 +448,7 @@ input {
 	border:1px solid;
 	border-color: #aaa #ddd #ddd #aaa;
 }
+
 select {
 	font-size:11px;
 	color:#3c3e40;
@@ -470,7 +471,7 @@ select {
 	background: #f2f2f2;
 	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
 	background: -moz-linear-gradient(top,  #fff,  #ddd);
-	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#ddd');
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dddddd');
 }
 input.reset {
 	display:none;
@@ -521,7 +522,7 @@ a.edit, .btn-search {
 	background-image: url(../img/search_icon.png.cfm),	-moz-linear-gradient(top, #fff,#ddd); /* FF3.6+ */
 	background-image: url(../img/search_icon.png.cfm),	 -ms-linear-gradient(top, #fff,#ddd); /* IE10 */
 	background-image: url(../img/search_icon.png.cfm),	  -o-linear-gradient(top, #fff,#ddd); /* Opera 11.10+ */
-	background-image: url(../img/search_icon.png.cfm),         linear-gradient(top, #fff,#ddd); /* W3C */
+	background-image: url(../img/search_icon.png.cfm),    linear-gradient(top, #fff,#ddd); /* W3C */
 	vertical-align:bottom;
 }
 .btn-mini span {
@@ -532,7 +533,11 @@ label:hover {
 	cursor:pointer;
 	border-bottom:1px dotted #666;
 }
-.checkbox, .radio {border:0px;}
+.checkbox, .radio {
+	border:0px;
+	background-image: none;
+	background-color: transparent;
+}
 .radiolist {
 	list-style:none;
 	padding:0;
