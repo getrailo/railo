@@ -1,16 +1,8 @@
 <cfcomponent output="no">
 
-
-	<cfset variables._dataFilePath = "internaldata.cfm" />
-	<cfset variables._datastore = "" />
+	<cfset variables._dataCache = {} />
 	
 	
-	<cffunction name="init" returntype="any" output="no">
-		<cfset loadData() />
-		<cfreturn this />
-	</cffunction>
-	
-
 	<cffunction name="getfavorites" returntype="struct" output="no">
 		<cfreturn getdata('favorites', {}) />
 	</cffunction>
@@ -41,8 +33,9 @@
 	<cffunction name="getdata" returntype="any" output="no">
 		<cfargument name="key" type="string" required="yes" />
 		<cfargument name="defaultvalue" type="any" required="no" default="" />
-		<cfif structKeyExists(variables._datastore, arguments.key)>
-			<cfreturn variables._datastore[arguments.key] />
+		<cfset var data = loadData() />
+		<cfif structKeyExists(data, arguments.key)>
+			<cfreturn data[arguments.key] />
 		</cfif>
 		<cfreturn arguments.defaultvalue />
 	</cffunction>
@@ -52,20 +45,35 @@
 		<cfargument name="key" type="string" required="yes" />
 		<cfargument name="value" type="any" required="yes" />
 		<cflock name="setdata_admin" timeout="1" throwontimeout="no">
-			<cfset variables._datastore[arguments.key] = arguments.value />
-			<cfset fileWrite(variables._dataFilePath, serialize(variables._datastore)) />
+			<cfset var data = loadData() />
+			<cfset data[arguments.key] = arguments.value />
+			<cfset writeData() />
 		</cflock>
 	</cffunction>
-	
-	
-	<cffunction name="loaddata" returntype="void" output="no">
-		<cftry>
-			<cfset variables._datastore = evaluate(fileRead(variables._dataFilePath)) />
-			<cfcatch>
-				<cfset variables._datastore = {} />
-			</cfcatch>
-		</cftry>
+
+	<cffunction name="loadData" access="private" output="no" returntype="any">
+		<cfset var dataKey = getDataStoreName() />
+		<cfif not structKeyExists(variables._dataCache, dataKey)>
+			<cfset var data = {} />
+			<cfset var dataFile = getDataFilePath() />
+			<cfif fileExists(dataFile)>
+				<cfset data = evaluate(fileRead(dataFile)) />
+			</cfif>
+			<cfset variables._dataCache[dataKey] = data />
+		</cfif>
+		<cfreturn variables._dataCache[dataKey] />
 	</cffunction>
-	
-	
+
+	<cffunction name="writeData" access="private" output="no" returntype="void">
+		<cfset fileWrite(getDataFilePath(), serialize(loadData())) />
+	</cffunction>
+
+	<cffunction name="getDataStoreName" access="private" output="no" returntype="string">
+		<cfreturn "#request.admintype#-#getrailoid()[request.admintype].id#" />
+	</cffunction>
+
+	<cffunction name="getDataFilePath" access="private" output="no" returntype="string">
+		<cfreturn "userdata/#getDataStoreName()#.cfm" />
+	</cffunction>
+
 </cfcomponent>
