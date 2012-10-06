@@ -195,8 +195,8 @@ body.full #resizewin {
 	background-image:url(../img/minl.png.cfm);
 }
 #navsearch {
-	margin: 10px 0 0 10px;
-	width:90px;
+	margin: 10px 0 0 0px;
+	width: 90px;
 }
 #content {
 	padding:30px 20px 10px 20px;
