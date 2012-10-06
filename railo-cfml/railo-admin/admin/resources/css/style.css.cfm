@@ -372,7 +372,11 @@ td.fieldPadded {
 	font-size:11px;
 	color:#787a7d;
 	text-decoration:none;
-	padding:2px 0 5px 0;
+	font-style: italic;
+	padding: 1px 0px;
+	/* PK: when using mouseover helptexts, this padding might be better:
+	 * padding:2px 0 5px 0;
+	*/
 }
 .important {
 	color:red !important;

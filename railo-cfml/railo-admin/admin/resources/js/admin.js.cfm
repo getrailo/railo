@@ -60,7 +60,7 @@ function scrollToEl(selector)
 function initMenu() {
 	// $('#menu ul').show();
 	$('#menu > li > a').click(
-		function() {
+		function(e) {
 			var $this = $(this);
 			var ul = $this.next();
 			if (ul.length)
@@ -71,6 +71,8 @@ function initMenu() {
 				var id = li.prop('id');
 				var collapsed = li.hasClass('collapsed');
 				$.get('?action=internal.savedata&action2=setdata&key=collapsed_'+id+'&data='+collapsed);
+				e=e||event;
+				e.preventDefault();
 			}
 		}
 	);
@@ -288,7 +290,7 @@ function initTooltips()
 		}
 	});
 	
-	$('table.maintbl div.comment:not(.inline)').each(function(){
+	/*$('table.maintbl div.comment:not(.inline)').each(function(){
 		var $this = $(this).addClass('helptextimage').removeClass('comment');
 		var parent = $this.parent('td');
 		if (parent.length && parent.prev('th').length)
@@ -298,7 +300,7 @@ function initTooltips()
 		var html = $this.html();
 		$this.html('<div class="inner">' + html + "</div>");
 		createTooltip($this, html, 0, 0, 'mouseover');
-	});
+	});*/
 	$('body').live('click', function(){
 		$('div.tooltip.stayput').removeClass('stayput').each(function(){ $(this).data('parent').triggerHandler('mouseout') });
 	});
