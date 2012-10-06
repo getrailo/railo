@@ -5,7 +5,7 @@
 	</cfif>
 	
 	<!--- the string to be used as an Etag - in the response header --->
-	<cfset etag = "FCCB34E15CA9DF9FBD6DAF508F094126" />
+	<cfset etag = "67817F3F382442DEEE7F22A85CF05582" />
 	<cfset mimetype = "image/png" />
 	
 	<!--- check if the content was cached on the browser, and set the ETag header. --->
