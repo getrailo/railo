@@ -263,7 +263,7 @@ body.full #resizewin {
 	padding: 0px;
 	text-align: left;
 	border-radius: 0px 0px 5px 5px;
-	opacity: .96;
+	overflow: hidden;
 }
 #favorites li {
 	list-style: none;
@@ -278,11 +278,9 @@ body.full #resizewin {
 	padding: 5px;
 }
 #favorites li.favorite a {
-	background:url(../img/star_icon_small.png.cfm) no-repeat 3px;
-	padding-left: 19px;
+	background:url(../img/star_icon_small.png.cfm) no-repeat 6px;
+	padding: 10px 5px 10px 22px;
 	display: block;
-	height: 29px;
-	line-height: 29px;
 }
 #favorites li.favorite a:hover {
 	background-color: #ccc;
