@@ -26,7 +26,8 @@
 </cfsilent><!---
 
 --->html, body {
-	min-height: 100%;
+	min-height: 450px;
+	height: 100%;
 }
 body {
 	min-width:600px;
@@ -97,6 +98,7 @@ pre {
 /* site main layout */
 #layout {
 	height: 100%;
+	max-width: 100%;
 	width: 1000px;
 	margin:0px auto;
 }
@@ -122,8 +124,14 @@ td.lotd {
 	margin:34px 0 0 0;
 	padding:5px 0px;
 }
+td#logotd {
+	height: 113px;
+}
 body.full #logo {
 	margin: 0 0 0 5px;
+}
+body.full td#logotd {
+	height: 34px;
 }
 #logo a {
 	display:block;
@@ -210,7 +218,6 @@ body.full #resizewin {
 }
 
 #copyright {
-	height: 40px;
 	padding: 5px 0px 0px 20px;
 	text-align:left;
 	font-size : 8pt;
@@ -219,7 +226,9 @@ body.full #resizewin {
 #copyright a {
 	color:#666;
 }
-
+#copyrighttd {
+	height: 40px;
+}
 
 /* page title */	
 #maintitle {
@@ -227,7 +236,6 @@ body.full #resizewin {
 	border:1px solid #cdcdcd;
 	border-radius:5px;
 	background:#f0f0f0 url(../img/box-bg.png.cfm) repeat-x 0px -1px;
-	overflow:hidden;
 	padding-left:10px;
 }
 #maintitle span.box {
@@ -464,12 +472,15 @@ select {
 	text-align: center;
 	text-decoration: none;
 	padding:3px 10px;
+	width: auto;
+	overflow: visible;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	border-color: #777;
 	color:#3c3e40;
 	font-weight:bold;
+	font-size: 11px;
 
 	background: #f2f2f2;
 	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));

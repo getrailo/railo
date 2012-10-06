@@ -193,7 +193,7 @@ function createTooltip(element, text, x, y, mouseAction )
 		// remove title from element, so we won't see the default tooltip as well
 		element.data('title', element.prop('title')).prop('title', '');
 		// detect max x position
-		containerRight = $('#mainholder').offset().left + $('#mainholder').width() - 20;
+		containerRight = $('#layout').offset().left + $('#layout').width() - 20;
 		// if you remove() an element it is deleted from the DOM, but the element.tooltip var stays where it is. 
 		// When an tooltip has been shown before, just re-add the tooltip DOM element. 
 		// If the tooltip is never created before, create it and add it to the DOM

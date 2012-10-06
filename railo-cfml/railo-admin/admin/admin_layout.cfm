@@ -58,7 +58,7 @@
 		<table id="layouttbl">
 			<tbody>
 				<tr>
-					<td colspan="2" class="lotd">
+					<td colspan="2" id="logotd" class="lotd">
 						<div id="logo">
 							<a href="#request.self#"><h2>Railo</h2></a>
 						</div>
@@ -87,7 +87,6 @@
 					<td id="contenttd" class="lotd">
 						<div id="content">
 							<div id="maintitle">
-								<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
 								<cfif hasNavigation>
 									<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">#variables.stText.help.logout#</a>
 
@@ -111,6 +110,7 @@
 										</ul>
 									</div>
 								</cfif>
+								<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
 							</div>
 							<div id="innercontent">
 								#thistag.generatedContent#
@@ -121,7 +121,7 @@
 				</tr>
 				<tr>
 					<td class="lotd">&nbsp;</td>
-					<td class="lotd">
+					<td class="lotd" id="copyrighttd">
 						<div id="copyright" class="copy">
 							&copy; #year(Now())#
 							<a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>.
