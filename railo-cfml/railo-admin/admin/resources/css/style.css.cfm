@@ -26,7 +26,7 @@
 </cfsilent><!---
 
 --->html, body {
-	height:100%;
+	min-height: 100%;
 }
 body {
 	min-width:600px;
@@ -97,23 +97,33 @@ pre {
 /* site main layout */
 #layout {
 	height: 100%;
-	width: 1030px;
+	width: 1000px;
 	margin:0px auto;
-	position:relative;
 }
 body.full #layout {
 	width:100%;
 }
 
+#layouttbl {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border-collapse: collapse;
+	border: 0;
+}
+td.lotd {
+	vertical-align: top;
+	padding: 0;
+	margin: 0;
+}
+
 #logo {
-	position:absolute;
-	top:34px;
-	left:0px;
+	margin:34px 0 0 0;
 	padding:5px 0px;
 }
 body.full #logo {
-	top: 0px;
-	left:5px;
+	margin: 0 0 0 5px;
 }
 #logo a {
 	display:block;
@@ -136,50 +146,33 @@ body.server.full #logo a {
 	background-image:url(../img/server-railo-small.png.cfm);
 }
 
-#admintypetabs {
-	position:absolute;
-	top:76px;
-	right:11px;
+#layouttbl td#tabstd {
+	vertical-align: bottom;
+	text-align: right;
 }
-body.full #admintypetabs {
-	top:7px;
-}
-#mainholder {
-	height:100%;
-	width:100%;
-	display:table;
-}
-#mainholder > div {
-	display:table-row;
-}
-#toprow {
-	height:113px;
-}
-body.full #toprow {
-	height:44px;
-}
-#bottomrow {
-	height:40px;
-}
-#mainrow > div {
-	display:table-cell;
-	vertical-align:top;
-	margin-top:113px;
+#tabstd a, #tabstd img {
+	margin: 0;
+	padding: 0;
+	vertical-align: bottom;
 }
 
 #leftshadow, #rightshadow {
 	width:11px;
 	background:transparent url(../img/shadow-left.gif.cfm) no-repeat 0px 77px;
 }
-div#rightshadow {
+#rightshadow {
 	background-image:url(../img/shadow-right.gif.cfm);
 }
-#nav {
-	width:160px;
-	padding:10px 10px 50px 10px;
+
+td#navtd {
+	width:170px;
+	height: auto;
 	background-color:#e6e6e6;
 	border-top-left-radius: 10px;
 	border-right:1px solid #d2d2d2;
+}
+#nav {
+	padding:10px 10px 40px 10px;
 }
 #resizewin {
 	display:block;
@@ -194,21 +187,31 @@ div#rightshadow {
 body.full #resizewin {
 	background-image:url(../img/minl.png.cfm);
 }
+#nav form {
+	white-space: nowrap;
+}
 #navsearch {
 	margin: 10px 0 0 0px;
 	width: 90px;
 }
+#nav input.submit {
+	padding-left:0;
+	padding-right:0;
+}
+
+#contenttd {
+	background-color: #fff;
+}
 #content {
 	padding:30px 20px 10px 20px;
-	background-color:#fff;
 }
 #innercontent {
-	margin:30px 18px 30px 10px;
+	margin:30px 18px 10px 10px;
 }
 
 #copyright {
-	padding-left: 221px;
-	margin-top:-35px;
+	height: 40px;
+	padding: 5px 0px 0px 20px;
 	text-align:left;
 	font-size : 8pt;
 	color:#666;

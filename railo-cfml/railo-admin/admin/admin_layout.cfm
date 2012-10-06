@@ -55,82 +55,93 @@
 <cfoutput>
 <body id="body" class="#request.adminType#<cfif application.adminfunctions.getdata('fullscreen') eq 1> full</cfif>" <cfif structKeyExists(attributes,"onload")>onload="#attributes.onload#"</cfif>>
 	<div id="layout">
-		<div id="logo">
-			<a href="#request.self#"><h2>Railo</h2></a>
-		</div>
-		<div id="admintypetabs">
-			<a <cfif ad EQ "web">href="#otherURL#"<cfelse>href="server.cfm"</cfif>><img src="resources/img/left-tab-#ad#.png.cfm" alt="Server Administrator tab" title="Go to the Server Administrator" /></a><!---
-			---><a <cfif ad EQ "server">href="#otherURL#"<cfelse>href="web.cfm"</cfif>><img src="resources/img/right-tab-#ad#.png.cfm" alt="Web Administrator tab" title="Go to the Web Administrator" /></a>
-		</div>
-		
-		<div id="mainholder">
-			<div id="toprow"></div>
-			<div id="mainrow">
-				<div id="leftshadow"></div>
-				<div id="nav">
-					<a href="##" id="resizewin" title="resize window"><span>Resize window</span></a>
-					<cfif hasNavigation>
-						<form method="get" action="#cgi.SCRIPT_NAME#">
-							<input type="hidden" name="action" value="admin.search" />
-							<input type="text" name="q" size="15" id="navsearch" />
-							<input type="submit" class="button submit" value="Search" style="padding-left:0; padding-right:0;" />
-						</form>
-						#attributes.navigation#
-					</cfif>
-				</div>
-				<div id="content">
-					<div id="maintitle">
-						<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
-						<cfif hasNavigation>
-							<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">#variables.stText.help.logout#</a>
+		<table id="layouttbl">
+			<tbody>
+				<tr>
+					<td colspan="2" class="lotd">
+						<div id="logo">
+							<a href="#request.self#"><h2>Railo</h2></a>
+						</div>
+					</td>
+					<td id="tabstd" class="lotd">
+						<a <cfif ad EQ "web">href="#otherURL#"<cfelse>href="server.cfm"</cfif>><img src="resources/img/left-tab-#ad#.png.cfm" alt="Server Administrator tab" title="Go to the Server Administrator" /></a><!---
+						---><a <cfif ad EQ "server">href="#otherURL#"<cfelse>href="web.cfm"</cfif>><img src="resources/img/right-tab-#ad#.png.cfm" alt="Web Administrator tab" title="Go to the Web Administrator" /></a>
+					</td>
+					<td class="lotd"></td>
+				</tr>
+				<tr>
+					<td id="leftshadow" rowspan="2" class="lotd"></td>
+					<td id="navtd" class="lotd">
+						<div id="nav">
+							<a href="##" id="resizewin" title="resize window"><span>Resize window</span></a>
+							<cfif hasNavigation>
+								<form method="get" action="#cgi.SCRIPT_NAME#">
+									<input type="hidden" name="action" value="admin.search" />
+									<input type="text" name="q" size="15" id="navsearch" />
+									<input type="submit" class="button submit" value="Search" />
+								</form>
+								#attributes.navigation#
+							</cfif>
+						</div>
+					</td>
+					<td id="contenttd" class="lotd">
+						<div id="content">
+							<div id="maintitle">
+								<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
+								<cfif hasNavigation>
+									<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">#variables.stText.help.logout#</a>
 
-							<!--- Favorites --->
-							<cfparam name="url.action" default="" />
-							<cfset pageIsFavorite = application.adminfunctions.isFavorite(url.action) />
-							<div id="favorites">
-								<cfif url.action eq "">
-									<a href="##" class="favorite tooltipMe" title="Go to your favorite pages">Favorites</a>
-								<cfelseif pageIsFavorite>
-									<a href="#request.self#?action=internal.savedata&action2=removefavorite&favorite=#url.action#" class="favorite tooltipMe" title="Remove this page from your favorites">Favorites</a>
-								<cfelse>
-									<a href="#request.self#?action=internal.savedata&action2=addfavorite&favorite=#url.action#" class="tooltipMe favorite_inactive" title="Add this page to your favorites">Favorites</a>
+									<!--- Favorites --->
+									<cfparam name="url.action" default="" />
+									<cfset pageIsFavorite = application.adminfunctions.isFavorite(url.action) />
+									<div id="favorites">
+										<cfif url.action eq "">
+											<a href="##" class="favorite tooltipMe" title="Go to your favorite pages">Favorites</a>
+										<cfelseif pageIsFavorite>
+											<a href="#request.self#?action=internal.savedata&action2=removefavorite&favorite=#url.action#" class="favorite tooltipMe" title="Remove this page from your favorites">Favorites</a>
+										<cfelse>
+											<a href="#request.self#?action=internal.savedata&action2=addfavorite&favorite=#url.action#" class="tooltipMe favorite_inactive" title="Add this page to your favorites">Favorites</a>
+										</cfif>
+										<ul>
+											<cfif attributes.favorites neq "">
+												#attributes.favorites#
+											<cfelse>
+												<li class="favtext"><i>No items yet.<br />Go to a page you use often, and click on "Favorites" to add it here.</i></li>
+											</cfif>
+										</ul>
+									</div>
 								</cfif>
-								<ul>
-									<cfif attributes.favorites neq "">
-										#attributes.favorites#
-									<cfelse>
-										<li class="favtext"><i>No items yet.<br />Go to a page you use often, and click on "Favorites" to add it here.</i></li>
-									</cfif>
-								</ul>
 							</div>
-						</cfif>
-					</div>
-					<div id="innercontent">
-						#thistag.generatedContent#
-					</div>
-				</div>
-				<div id="rightshadow"></div>
-			</div>
-			<div id="bottomrow"></div>
-		</div>
-		<div id="copyright" class="copy">
-			&copy; #year(Now())#
-			<a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>.
-			All Rights Reserved. |
-			Designed by <a href="http://www.blueriver.com/from/railo/" target="_blank">Blue River Interactive Group, Inc.</a>
-			<br><br>
-		</div>
+							<div id="innercontent">
+								#thistag.generatedContent#
+							</div>
+						</div>
+					</td>
+					<td id="rightshadow" rowspan="2" class="lotd"></td>
+				</tr>
+				<tr>
+					<td class="lotd">&nbsp;</td>
+					<td class="lotd">
+						<div id="copyright" class="copy">
+							&copy; #year(Now())#
+							<a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>.
+							All Rights Reserved. |
+							Designed by <a href="http://www.blueriver.com/from/railo/" target="_blank">Blue River Interactive Group, Inc.</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
-
-	<cfif false and StructKeyExists(application,'notTranslated')>
+<!---	<cfif false and StructKeyExists(application,'notTranslated')>
 		<cfset keys=structKeyArray(application.notTranslated)>
 		<cfset ArraySort(keys,'textnocase')>
-	<!--
-The following text is not translated the the current language
-<cfloop  array="#keys#" index="key"><data key="#key#">#trim(application.notTranslated[key])#</data>
+	<!-- The following text is not translated the the current language
+<cfloop array="#keys#" index="key"><data key="#key#">#trim(application.notTranslated[key])#</data>
 </cfloop>
 	-->
 	</cfif>
+--->
 </body>
 </html>
 </cfoutput>
