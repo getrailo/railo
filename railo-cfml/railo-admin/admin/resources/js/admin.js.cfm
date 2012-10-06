@@ -26,6 +26,8 @@
 
 /* init functions */
 $(function(){
+	$('#resizewin').click(resizelayout);
+
 	initTooltips();
 
 	$('table.checkboxtbl').each(function(){
@@ -306,3 +308,12 @@ function initTooltips()
 	});
 }
 
+function resizelayout(e)
+{
+	var isfull = $('body').hasClass('full') == 0;
+	$('body').toggleClass('full');
+	e.preventDefault();
+
+	$.get('?action=internal.savedata&action2=setdata&key=fullscreen&data='+isfull);
+	return false;
+}

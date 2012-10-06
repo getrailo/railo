@@ -25,32 +25,6 @@
 	<script src="resources/js/jquery-1.7.2.min.js.cfm" type="text/javascript"></script>
 	<script src="resources/js/jquery.blockUI.js.cfm" type="text/javascript"></script>
 	<script src="resources/js/admin.js.cfm" type="text/javascript"></script>
-	<script type="text/javascript">
-<!---		function resizemid()
-		{
-			return;
-			var mh = $('#mainholder');
-			mh.css('height', $(document).height() - parseInt(mh.css('padding-top'), 10) - $('#copyright').height() - 15);
-		}
-		$(function(){
-			$('#resizewin').click(resizelayout);
-			resizemid();
-		});
---->
-		$(function(){
-			$('#resizewin').click(resizelayout);
-		});
-		function resizelayout(e)
-		{
-			var isfull = $('body').hasClass('full') == 0;
-			$('body').toggleClass('full');
-			<!---setTimeout(resizemid, 100);--->
-			e.preventDefault();
-
-			$.get('?action=internal.savedata&action2=setdata&key=fullscreen&data='+isfull);
-			return false;
-		};
-	</script>
 </head>
 <cfoutput>
 <body id="body" class="#request.adminType#<cfif application.adminfunctions.getdata('fullscreen') eq 1> full</cfif>" <cfif structKeyExists(attributes,"onload")>onload="#attributes.onload#"</cfif>>
