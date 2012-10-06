@@ -42,15 +42,18 @@
 		});
 		function resizelayout(e)
 		{
+			var isfull = $('body').hasClass('full') == 0;
 			$('body').toggleClass('full');
 			<!---setTimeout(resizemid, 100);--->
 			e.preventDefault();
+
+			$.get('?action=internal.savedata&action2=setdata&key=fullscreen&data='+isfull);
 			return false;
 		};
 	</script>
 </head>
 <cfoutput>
-<body id="body" class="#request.adminType#" <cfif structKeyExists(attributes,"onload")>onload="#attributes.onload#"</cfif>>
+<body id="body" class="#request.adminType#<cfif application.adminfunctions.getdata('fullscreen') eq 1> full</cfif>" <cfif structKeyExists(attributes,"onload")>onload="#attributes.onload#"</cfif>>
 	<div id="layout">
 		<div id="logo">
 			<a href="#request.self#"><h2>Railo</h2></a>
@@ -80,15 +83,26 @@
 						<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
 						<cfif hasNavigation>
 							<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">#variables.stText.help.logout#</a>
-							<!--- make favorite --->
+
+							<!--- Favorites --->
 							<cfparam name="url.action" default="" />
-							<cfif url.action neq "">
-								<cfif application.adminfunctions.isFavorite(url.action)>
-									<a href="#request.self#?action=internal.savedata&action2=removefavorite&favorite=#url.action#" class="favorite tooltipMe" title="Remove this page from your favorites"><span>remove favorite</span></a>
+							<cfset pageIsFavorite = application.adminfunctions.isFavorite(url.action) />
+							<div id="favorites">
+								<cfif url.action eq "">
+									<a href="##" class="favorite tooltipMe" title="Go to your favorite pages">Favorites</a>
+								<cfelseif pageIsFavorite>
+									<a href="#request.self#?action=internal.savedata&action2=removefavorite&favorite=#url.action#" class="favorite tooltipMe" title="Remove this page from your favorites">Favorites</a>
 								<cfelse>
-									<a href="#request.self#?action=internal.savedata&action2=addfavorite&favorite=#url.action#" class="favorite tooltipMe favorite_inactive" title="Add this page to your favorites"><span>add favorite</span></a>
+									<a href="#request.self#?action=internal.savedata&action2=addfavorite&favorite=#url.action#" class="tooltipMe favorite_inactive" title="Add this page to your favorites">Favorites</a>
 								</cfif>
-							</cfif>
+								<ul>
+									<cfif attributes.favorites neq "">
+										#attributes.favorites#
+									<cfelse>
+										<li class="favtext"><i>No items yet.<br />Go to a page you use often, and click on "Favorites" to add it here.</i></li>
+									</cfif>
+								</ul>
+							</div>
 						</cfif>
 					</div>
 					<div id="innercontent">

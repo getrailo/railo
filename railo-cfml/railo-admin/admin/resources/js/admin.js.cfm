@@ -58,10 +58,20 @@ function scrollToEl(selector)
 
 /* older functions */
 function initMenu() {
-	$('#menu ul').show();
-	$('#menu li a').click(
+	// $('#menu ul').show();
+	$('#menu > li > a').click(
 		function() {
-			$(this).next().slideToggle('normal');
+			var $this = $(this);
+			var ul = $this.next();
+			if (ul.length)
+			{
+				ul.slideToggle('normal');
+				var li = $this.parent();
+				li.toggleClass('collapsed');
+				var id = li.prop('id');
+				var collapsed = li.hasClass('collapsed');
+				$.get('?action=internal.savedata&action2=setdata&key=collapsed_'+id+'&data='+collapsed);
+			}
 		}
 	);
 }
