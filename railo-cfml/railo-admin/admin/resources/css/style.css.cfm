@@ -218,7 +218,7 @@ body.full #resizewin {
 }
 
 #copyright {
-	padding: 5px 0px 0px 20px;
+	padding: 10px 0px 0px 30px;
 	text-align:left;
 	font-size : 8pt;
 	color:#666;
