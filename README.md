@@ -3,7 +3,7 @@ Railo CFML Engine
 
 Welcome to the Railo CFML Engine source code repository.
 
-Railo is a high performance, open source, CFML engine.
+Railo is a high performance, open source, CFML engine.  For more information visit the project's homepage at http://www.getrailo.org/
 
 
 Building from source
