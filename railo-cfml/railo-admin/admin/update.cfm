@@ -1,5 +1,7 @@
 <cfsetting showdebugoutput="no" enablecfoutputonly="yes">
 
+<cfparam name="session.alwaysNew" default="false" type="boolean">
+
 <cffunction name="getAviableVersion" output="false">
 	<cfargument name="update">
 	<cfset var http="">
@@ -23,7 +25,8 @@
 	<cfset session[id]={}>
 </cfif>
 <cftry>
-	<cfif not structKeyExists(session[id],"content") or not structKeyExists(session[id],"last") or DateDiff("m",session[id].last,now()) GT 5> 
+	<cfif not structKeyExists(session[id],"content") or not structKeyExists(session[id],"last") or DateDiff("m",session[id].last,now()) GT 5
+	or session.alwaysNew>
 		<cfinclude template="web_functions.cfm">
 		
 		<cfset self = adminType & ".cfm">
@@ -58,7 +61,7 @@
 			<cfset data=getData(providers,err)>
 
 			<cfsavecontent variable="ext" trim="true">
-				<cfloop query="#extensions#">
+				<cfloop query="extensions">
 					<cfif !updateAvailable(extensions)>
 						<cfcontinue>
 					</cfif>
@@ -75,33 +78,32 @@
 
 		<cfsavecontent variable="content" trim="true">
 			<cfoutput>
-				<cfif adminType eq "server" or extensions.recordcount NEQ 0>
-					<cfif adminType eq "server">
-						<h3>
-							<a href="server.cfm?action=services.update" style="text-decoration:none;">Core</a>
-						</h3>
-						<div class="comment">
-							<cfif hasUpdate>
-								#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#<br />
-							<cfelse>
-								Your core is up to date!
-							</cfif>
-						</div>
-					</cfif>
-					<cfif extensions.recordcount NEQ 0>
-						<h3>
-							<a href="#self#?action=extension.applications" style="text-decoration:none;">Extensions</a>
-						</h3>
-						<div class="comment">
-							<cfif len(ext)>
-							   There are some updates available for your installed Extensions.<br />
-							   #ext#
-							<cfelse>
-								All your Extensions are up to date!
-							</cfif>
-						</div>
-					</cfif>
+				<cfif adminType eq "server">
+					<h3>
+						<a href="server.cfm?action=services.update" style="text-decoration:none;">Core</a>
+					</h3>
+					<div class="comment">
+						<cfif hasUpdate>
+							#replace(replace(replace(stText.services.update.update,'{available}','<b>(#avi#)</b>'),'{current}','<b>(#curr#)</b>'),'{avaiable}','<b>(#avi#)</b>')#<br />
+						<cfelse>
+							Your core is up to date!
+						</cfif>
+					</div>
 				</cfif>
+
+				<h3>
+					<a href="#self#?action=extension.applications" style="text-decoration:none;">Extensions</a>
+				</h3>
+				<div class="comment">
+					<cfif not extensions.recordcount>
+						You have no extensions installed yet.
+					<cfelseif len(ext)>
+					   There are some updates available for your installed Extensions.<br />
+					   #ext#
+					<cfelse>
+						All your Extensions are up to date!
+					</cfif>
+				</div>
 			</cfoutput>
 		</cfsavecontent>
 		<cfset session[id].content=content>
