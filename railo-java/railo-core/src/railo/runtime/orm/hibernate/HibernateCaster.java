@@ -477,7 +477,7 @@ public class HibernateCaster {
 
 
 	private static Query populateQuery(PageContext pc,HibernateORMSession session,Component cfc,Query qry) throws PageException {
-		Property[] properties = ComponentUtil.getProperties(cfc,true,true);
+		Property[] properties = ComponentUtil.getProperties(cfc,true,true,false,false);
 		ComponentScope scope = cfc.getComponentScope();
 		HibernateORMEngine engine=(HibernateORMEngine) session.getEngine();
 		

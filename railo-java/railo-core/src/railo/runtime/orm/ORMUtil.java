@@ -143,7 +143,7 @@ public class ORMUtil {
 
 	private static Property[] getProperties(Component cfc) {
 		if(cfc instanceof ComponentPro)
-			return ((ComponentPro)cfc).getProperties(true,true);
+			return ((ComponentPro)cfc).getProperties(true,true,false,false);
 		return cfc.getProperties(true);
 	}
 }

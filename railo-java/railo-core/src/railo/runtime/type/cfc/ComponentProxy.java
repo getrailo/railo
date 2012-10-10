@@ -460,11 +460,6 @@ public abstract class ComponentProxy implements ComponentPro {
 	public Property[] getProperties(boolean onlyPeristent) {
 		return getComponent().getProperties(onlyPeristent);
 	}
-	
-	@Override
-	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
-		return ((ComponentPro)getComponent()).getProperties(onlyPeristent,includeBaseProperties);
-	}
 
 	/**
 	 * @see railo.runtime.Component#setProperty(railo.runtime.component.Property)
