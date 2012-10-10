@@ -106,8 +106,8 @@ Redirtect to entry --->
 				</tr>
 				<!--- Supress Whitespace in front of cfargument --->
 				<tr>
-					<td class="tblHead" width="150">#stText.setting.supressWSBeforeArg#</td>
-					<td class="tblContent">
+					<th scope="row">#stText.setting.supressWSBeforeArg#</th>
+					<td>
 						<cfif hasAccess>
         					<input type="checkbox" name="supressWSBeforeArg" value="true" <cfif setting.supressWSBeforeArg>checked="checked"</cfif> />
 						<cfelse>
