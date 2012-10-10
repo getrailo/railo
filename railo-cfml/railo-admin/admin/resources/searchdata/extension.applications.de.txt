@@ -1,0 +1,9 @@
+ filter installieren deinstallieren aktualisieren
+ OK
+ Installierte Version Verfügbare Version Kategorie Autor Code Name Erscheinungsdatum Provider Dokumentation Support Forum Mailinglist Updates verfügbar Installierte Version Verfügbare Version aktualisieren deinstallieren abbrechen deinstallieren abbrechen installieren abbrechen
+ abbrechen Lizenzvereinbahrung Bitte lesen Sie die folgende Lizenzvereinbahrung sorgfältig durch. einverstanden
+ nächste restart restart nächste
+
+ Installiert Diese Applikation ist bereits installiert. Nicht installiert Diese Applikationen sind noch nicht installiert. Nicht installiert Diese Applikationen sind noch nicht installiert. Applikation Kategorie Provider installieren
+ Provider Installierte Version Verfügbare Version Kategorie Provider Updates verfügbar Installierte Version Verfügbare Version aktualisieren deinstallieren abbrechen deinstallieren abbrechen installieren abbrechen
+
