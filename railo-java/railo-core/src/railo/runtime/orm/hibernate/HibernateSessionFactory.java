@@ -72,8 +72,19 @@ public class HibernateSessionFactory {
 		
 		// dialect
 		DataSource ds = dc.getDatasource();
-		String dialect=Dialect.getDialect(ormConf.getDialect());
-		if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
+		String dialect=null;
+		try	{
+			if (Class.forName(ormConf.getDialect()) != null) {
+				dialect = ormConf.getDialect();
+			}
+		}
+		catch (Exception e) {
+			// MZ: The dialect value could not be bound to a classname or instantiation causes an exception - ignore and use the default dialect entries
+		}
+		if (dialect == null) {
+			dialect = Dialect.getDialect(ormConf.getDialect());
+			if(StringUtil.isEmpty(dialect)) dialect=Dialect.getDialect(ds);
+		}
 		if(StringUtil.isEmpty(dialect))
 			throw new ORMException(engine,"A valid dialect definition inside the "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME+" is missing. The dialect cannot be determinated automatically");
 		
