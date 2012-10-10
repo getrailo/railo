@@ -16,9 +16,6 @@ public class MainEntryPoint {
         if(libDir.getName().equals(".") || libDir.getName().equals(".."))
         	libDir=libDir.getParentFile();
 		
-        if(libDir.toString().equals("/Users/mic/Projects/Railo/Source2/railo/railo-java/railo-loader"))
-			libDir=new File("/Users/mic/temp/ext");
-        
         File[] children = libDir.listFiles(new ExtFilter());
         if(children.length<2) {
         	libDir=new File(libDir,"lib");
