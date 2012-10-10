@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
+import railo.runtime.ComponentPro;
 import railo.runtime.PageContext;
 import railo.runtime.component.Property;
 import railo.runtime.db.DatasourceConnection;
@@ -53,11 +54,14 @@ public class HBMCreator {
 		
 		String extend = cfc.getExtends();
 		boolean isClass=StringUtil.isEmpty(extend);
+
+		// MZ: Fetches all inherited persistent properties
+		//Property[] _props=getAllPersistentProperties(pc,engine,cfc,dc,ormConf,meta,isClass);
+
+		Property[] _props=getProperties(pc,engine,cfc,dc,ormConf,meta,isClass, true);
+
 		
-		Property[] _props=getProperties(pc,engine,cfc,dc,ormConf,meta,isClass);
-		
-		
-		
+
 		Map<String, PropertyCollection> joins=new HashMap<String, PropertyCollection>();
 		PropertyCollection propColl = splitJoins(engine,cfc,joins, _props);
 		
@@ -88,6 +92,11 @@ public class HBMCreator {
 		}
 		// extended CFC
 		else{
+			// MZ: Fetches one level deep
+			_props=getProperties(pc,engine,cfc,dc,ormConf,meta,isClass, false);
+			// MZ: Reinitiate the property collection
+			propColl = splitJoins(engine,cfc,joins, _props);
+
 			String ext = List.last(extend,'.').trim();
 			try {
 				Component base = engine.getEntityByCFCName(ext, false);
@@ -117,16 +126,27 @@ public class HBMCreator {
 		        
 			}
 			else {
-				clazz = doc.createElement("joined-subclass");
-				hibernateMapping.appendChild(clazz);
-				clazz.setAttribute("extends",ext);
-				Element key = doc.createElement("key");
-			    clazz.appendChild(key);
-		        key.setAttribute("column", formatColumn(engine,toString(engine,cfc,null,meta,"joincolumn",true)));
-			}
+				// MZ: Match on joinColumn for a joined subclass, otherwise use a union subclass
+				String joinColumn = toString(engine,cfc,null,meta,"joincolumn",false);
+				if (!StringUtil.isEmpty(joinColumn,true)) {
+					clazz = doc.createElement("joined-subclass");
+					hibernateMapping.appendChild(	clazz);
+					clazz.setAttribute("extends",ext);
+					Element key = doc.createElement("key");
+					clazz.appendChild(key);
+					key.setAttribute("column", formatColumn(engine,joinColumn));
+				}
+				else {
+					// MZ: When no joinColumn exists, default to an explicit table per class
+					clazz = doc.createElement("union-subclass");
+					clazz.setAttribute("extends",ext);
+					doTable = true;
+					hibernateMapping.appendChild(	clazz);
+				}
 
+			}
 		}
-		
+
 		//createXMLMappingTuplizer(clazz,pc);
 
 		addGeneralClassAttributes(pc,ormConf,engine,cfc,meta,clazz);
@@ -169,25 +189,21 @@ public class HBMCreator {
 		
 	}
 	
-	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass) throws ORMException, PageException {
-		Property[] _props = cfci.getProperties(true);
+	private static Property[] getProperties(PageContext pc, HibernateORMEngine engine, Component cfci, DatasourceConnection dc, ORMConfiguration ormConf, Struct meta, boolean isClass, boolean recursivePersistentMappedSuperclass) throws ORMException, PageException {
+		Property[] _props;
+		if (recursivePersistentMappedSuperclass && (cfci instanceof ComponentPro)) {
+			_props = ((ComponentPro)cfci).getProperties(true, true, true, true);
+		}
+		else {
+			_props = cfci.getProperties(true);
+		}
+
 		if(isClass && _props.length==0 && ormConf.useDBForMapping()){
 			if(meta==null)meta = cfci.getMetaData(pc);
         	_props=HibernateUtil.createPropertiesFromTable(dc,getTableName(engine,pc, meta, cfci));
         }
 		return _props;
 	}
-
-
-
-
-
-
-
-
-
-
-
 
 	private static void addId(Component cfc,Document doc, Element clazz, PageContext pc, Struct meta, PropertyCollection propColl, Struct columnsInfo, String tableName, HibernateORMEngine engine) throws PageException {
 		Property[] _ids = getIds(engine,cfc,propColl);
@@ -1311,7 +1327,8 @@ public class HBMCreator {
 			Component other = loadForeignCFC(pc, engine, cfc, prop, meta);
 			if(other!=null){
 				boolean isClass=StringUtil.isEmpty(other.getExtends());
-				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass);
+				// MZ: Recursive search for persistent mappedSuperclass properties
+				Property[] _props=getProperties(pc,engine,other,dc,ormConf,meta,isClass, true);
 				PropertyCollection _propColl = splitJoins(engine,cfc,new HashMap<String, PropertyCollection>(), _props);
 				_props=_propColl.getProperties();
 				
