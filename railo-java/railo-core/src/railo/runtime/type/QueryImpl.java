@@ -260,6 +260,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
         		DBUtil.closeEL(stat);
         }  
 		exeTime=stopwatch.time();
+
+		if(columncount==0) {
+			if(columnNames==null) columnNames=new Collection.Key[0];
+			if(columns==null) columns=new QueryColumnPro[0];
+		}
 	}
 	
 	private int setUpdateCount(Statement stat)  {
