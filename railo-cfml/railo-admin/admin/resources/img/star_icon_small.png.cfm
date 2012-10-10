@@ -5,7 +5,7 @@
 	</cfif>
 	
 	<!--- the string to be used as an Etag - in the response header --->
-	<cfset etag = "EDE524CEBB19975A8CFB992AE49E7F77" />
+	<cfset etag = "0ADE5B81DCD6827602CBB7E238F8C84F" />
 	<cfset mimetype = "image/png" />
 	
 	<!--- check if the content was cached on the browser, and set the ETag header. --->
@@ -16,4 +16,4 @@
 
 <!--- file was not cached; send the data --->
 <cfcontent reset="yes" type="#mimetype#"
-	variable="#toBinary('iVBORw0KGgoAAAANSUhEUgAAAKoAAAAKCAYAAAAkasVsAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIFJREFUeNrsl70JgDAUBv3DGQQHsBUElxCsBPcQXEJwCRdyizeHX8BK0vsCd3BFUn4cgeRmlkUo5SwX2cn+vQP4hSpyF8K85Mg84IXic97kTaTg+UU95M4k4PlFXYkUvIday5MpwHuo4WffMgV4D3ViBkgh1IEZIIVQG2YA7zwCDABuSQmi3wj8OgAAAABJRU5ErkJggg==')#" />
+	variable="#toBinary('iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAXxJREFUeNo8kc1OFEEUhb/qqmboyTgwkkggKATckeDW+BKsCBujxLDmAdj4LpIYd24NGxckbpREN6AkY0z8CWSGTEM30A5dXZ4elUoqla773XNPnzLhxSxEBhpDnSVYs0Jit7kon+OrL4QYijEwgYj/KzgQT5RsMn1/HZc8w0sEd4P8hU0FvobNMo3OU1ozkHQ2dLdEJWWqEeYwrBK5Bzg7R2PqIe2ZNpmHidk7nBcvCf4DZfilhn0TXi10ub2wSHtS30ETtCspWQ21tT1ZOU8h+74fqbjJIP3GQGq5gAsVC1nKa0j0mZrz/IjSb6ka3tI7fUL3Z/cGvNT1b52ZlL/+OKTfeyzuneNg5H8Pm3+mwxLu39/XQRQF9IpPRPY9/UhpZLVCdJd44h5hHK7ldyjoWuNtS03NeU59m75XGg0F7v0czVvzZGlgcLxDcbVL0lplcnoNM7Y42tZ+dMTKMY5T8rM3DE52CeWOXnRImr4mu9pT7RGtZl77+iPAAKrmjpujSKwVAAAAAElFTkSuQmCC')#" />
