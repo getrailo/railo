@@ -61,8 +61,8 @@ Create Datasource --->
 </tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <tr>
-	<td class="tblHead" width="150">#stText.Overview.SerialNumber#</td>
-	<td class="tblContent">
+	<th scope="row">#stText.Overview.SerialNumber#</th>
+	<td>
 		<!--- <span class="comment">The new Password for the Administrator</span><br> --->
 		<cfinput type="text" name="serialNumber" value="#serial#" 
 		style="width:400px;" required="no">
@@ -71,7 +71,7 @@ Create Datasource --->
 
 <tr>
 	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Change#">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Change#">
 		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>

@@ -86,30 +86,16 @@
 	</cfcatch>
 </cftry>
 
-
-
-
-
-<!--- 
-Error Output--->
-<cfif error.message NEQ "">
-<cfoutput><span class="CheckError">
-#error.message#<br>
-#error.detail#
-</span><br><br></cfoutput>
-</cfif>
-
-
 <cfparam name="url.id" default="0">
 
 <cfadmin 
-    action="getSpoolerTasks"
-    type="#request.adminType#"
-    password="#session["password"&request.adminType]#"
-    startrow="#url.startrow#"
-    maxrow="#url.maxrow#"
-    result="result"
-    returnVariable="tasks">
+	action="getSpoolerTasks"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	startrow="#url.startrow#"
+	maxrow="#url.maxrow#"
+	result="result"
+	returnVariable="tasks">
 
 <cffunction name="addZeros" returntype="string" output="false">
 	<cfargument name="nbr" required="yes" type="numeric">
@@ -166,331 +152,289 @@ Error Output--->
 	<cfelse>
 		<cfreturn FindNoCase(filter,value)>
 	</cfif>
-	
-	
 </cffunction>
 				
-						
 <cfset querySort(tasks,"lastExecution","desc")>
-			
 
 
-<!--- 0 records ---->
-<cfif result.open+result.closed EQ 0>
-<cfoutput><b>#stText.remote.ot.noOt#</b></cfoutput>
-
-<!--- DETAIL ---->
-<cfelseif url.id NEQ 0>
-<cfoutput query="tasks">
-<cfif url.id EQ tasks.id>
-
-<cfset css=iif(not tasks.closed,de('Green'),de('Red'))>
-#replace(replace(stText.remote.ot.detailDesc[css],'<tries>',tasks.tries),'<triesleft>',tasks.triesMax-tasks.tries)#
-<table class="tbl" width="600">
-
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<tr>
-	<td colspan="4"></td>
-</tr>
-<tr>
-	<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-
-	<!--- MUST wieso geht hier der direkte aufruf nicht! ---><cfset detail=tasks.detail>
-	<cfif isDefined("detail.label")>
-	<tr>
-		<td width="100" class="tblHead" nowrap>x#stText.remote.ot.name#</td>
-		<td class="tblContent#css#" nowrap>#detail.label#</td>
-	</tr>
-	</cfif>
-	<cfif isDefined("detail.url")>
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.url#</td>
-		<td class="tblContent#css#" nowrap>#detail.url#</td>
-	</tr>
-	</cfif>
-	<cfif isDefined("detail.action")>
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.action#</td>
-		<td class="tblContent#css#" nowrap>#detail.action#</td>
-	</tr>
-	</cfif>
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.lastExecution#<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span></td>
-		<td class="tblContent#css#" title="" nowrap>#dateFormat(tasks.lastExecution,'mm/dd/yyyy')# #timeFormat(tasks.lastExecution,'HH:mm:ss')#</td>
-	</tr>
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.nextExecution#<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span></td>
-		<td class="tblContent#css#" title="" nowrap><cfif tasks.closed> <center>-</center> <cfelse>
-		#dateFormat(tasks.nextExecution,'mm/dd/yyyy')# #timeFormat(tasks.nextExecution,'HH:mm:ss')#</cfif></td>
-	</tr>
-	
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.tries#<br /></td>
-		<td class="tblContent#css#" title="" nowrap>#tasks.tries#</td>
-	</tr>
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.triesLeft#<br /></td>
-		<cfset tmp=tasks.triesMax-tasks.tries>
-		<cfif tmp LT 0><cfset tmp=0></cfif>
-		<td class="tblContent#css#" title="" nowrap>#tmp#</td>
-	</tr>
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.state#<br /></td>
-		<td class="tblContent#css#" title="" nowrap>#iif(tasks.closed,de("Close"),de("Open"))#</td>
-	</tr>
-	
-	<tr>
-		<td colspan="2"></td>
-	</tr>
-	<cfloop collection="#detail#" item="key">
-		<cfif ListFindNoCase("label,url,action",key)>
-			<cfcontinue>
-		</cfif>
-	<tr>
-		<td width="100" class="tblHead" nowrap>#(tasks.type)# #key#</td>
-		<td class="tblContent#css#">#replace(detail[key],'<','&lt;','all')#</td>
-	</tr>
-	</cfloop>
-	
-	<tr>
-		<td colspan="2"><br /><b>#stText.remote.ot.error#</b></td>
-	</tr>
-
-	<tr>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.exetime#<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span></td>
-		<td class="tblHead" title="" nowrap>#stText.remote.ot.error#</td>
-	</tr>
-	<cfset exp=tasks.exceptions>
-	<cfloop collection="#exp#" item="i">
-	<tr>
-		<td width="100" class="tblContent#css#" nowrap>
-			<cfif isDate(exp[i].time) and year(exp[i].time) NEQ 1970>
-			#dateFormat(exp[i].time,'mm/dd/yyyy')# #timeFormat(exp[i].time,'HH:mm:ss')#<cfelse>-</cfif><br /></td>
-		<td class="tblContent#css#" title="">
-        	<cfif structKeyExists(exp[i],"message")><b>#exp[i].message#</b></cfif>
-			<cfif structKeyExists(exp[i],"stacktrace")><br /><span class="comment"> #replace(exp[i].stacktrace,chr(13),'<br />','all')#</span></cfif>
-        </td>
-	</tr>
-	</cfloop>
-	
-
-<tr>
-	<td colspan="2">
-		<input type="hidden" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#">
-		<input type="hidden" name="id_#tasks.currentrow#" value="#tasks.id#">
-		
-		<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-		
-		</td>
-</tr>
-</cfform>
-</table>
-</cfif>
-</cfoutput>
-
-<!--- List ---->
-<cfelse>
 <cfoutput>
-#stText.remote.ot.overviewDesc#
-</cfoutput>
+	<!--- Error Output--->
+	<cfif error.message NEQ "">
+		<div class="error">
+			#error.message#<br>
+			#error.detail#
+		</div>
+	</cfif>
 
-<cfset types=struct()>
-<cfsilent>
-<cfloop query="tasks">
-	<cfset types[tasks.type]="">
-</cfloop>
-<cfset types=StructKeyArray(types)>
-</cfsilent>
+	<!--- DETAIL ---->
+	<cfif url.id NEQ 0>
+		<cfloop query="tasks">
+			<cfif url.id EQ tasks.id>
+				<cfset css=iif(not tasks.closed,de('Green'),de('Red'))>
+				#replace(replace(stText.remote.ot.detailDesc[css],'<tries>',tasks.tries),'<triesleft>',tasks.triesMax-tasks.tries)#
+				<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+					<table class="maintbl">
+						<tbody>
+							<!--- MUST wieso geht hier der direkte aufruf nicht! --->
+							<cfset detail=tasks.detail>
+							<cfif isDefined("detail.label")>
+								<tr>
+									<th scope="row">x#stText.remote.ot.name#</th>
+									<td class="tblContent#css#">#detail.label#</td>
+								</tr>
+							</cfif>
+							<cfif isDefined("detail.url")>
+								<tr>
+									<th scope="row">#stText.remote.ot.url#</th>
+									<td class="tblContent#css#">#detail.url#</td>
+								</tr>
+							</cfif>
+							<cfif isDefined("detail.action")>
+								<tr>
+									<th scope="row">#stText.remote.ot.action#</th>
+									<td class="tblContent#css#">#detail.action#</td>
+								</tr>
+							</cfif>
+							<tr>
+								<th scope="row">#stText.remote.ot.lastExecution#
+									<div class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</div>
+								</th>
+								<td class="tblContent#css#">#dateFormat(tasks.lastExecution,'mm/dd/yyyy')# #timeFormat(tasks.lastExecution,'HH:mm:ss')#</td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.remote.ot.nextExecution#
+									<div class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</div>
+								</th>
+								<td class="tblContent#css#"><cfif tasks.closed> <center>-</center> <cfelse>
+								#dateFormat(tasks.nextExecution,'mm/dd/yyyy')# #timeFormat(tasks.nextExecution,'HH:mm:ss')#</cfif></td>
+							</tr>
+							
+							<tr>
+								<th scope="row">#stText.remote.ot.tries#</th>
+								<td class="tblContent#css#">#tasks.tries#</td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.remote.ot.triesLeft#</th>
+								<cfset tmp=tasks.triesMax-tasks.tries>
+								<cfif tmp LT 0><cfset tmp=0></cfif>
+								<td class="tblContent#css#">#tmp#</td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.remote.ot.state#</th>
+								<td class="tblContent#css#">#iif(tasks.closed,de("Close"),de("Open"))#</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="2">
+									<input type="hidden" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#">
+									<input type="hidden" name="id_#tasks.currentrow#" value="#tasks.id#">
+									<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button cancel" name="cancel" value="#stText.Buttons.Cancel#">
+									<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Execute#">
+									<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+					
+					<h3>Task details</h3>
+					<table class="maintbl">
+						<tbody>
+							<cfloop collection="#detail#" item="key">
+								<cfif ListFindNoCase("label,url,action",key)>
+									<cfcontinue>
+								</cfif>
+								<tr>
+									<th scope="row">#(tasks.type)# #key#</th>
+									<td class="tblContent#css#">#replace(detail[key],'<','&lt;','all')#</td>
+								</tr>
+							</cfloop>
+						</tbody>
+					</table>
 
-<table class="tbl" width="600">
-<tr>
-	<td colspan="4"></td>
-</tr>
-<tr>
-	<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-	<cfoutput>
-
-	<!---
-	
-	FILTER take out temporary
-	
-	
-	<tr>
-		<td width="200"></td>
-		<td class="tblHead" nowrap>
-		<select name="typeFilter" style="width:120px">
-		<option value="" <cfif not len(session.filter.type)> selected</cfif>>- all -</option>
-		<cfloop array="#types#" index="i">
-			<option <cfif i EQ session.filter.type> selected</cfif>>#i#</option>
+					<h3>#stText.remote.ot.error#</h3>
+					<table class="maintbl">
+						<thead>
+							<tr>
+								<th>#stText.remote.ot.exetime#
+									<div class="comment">(mm/dd/yyyy HH:mm:ss)</div>
+								</th>
+								<th>#stText.remote.ot.error#</th>
+							</tr>
+						</thead>
+						<tbody>
+							<cfset exp=tasks.exceptions>
+							<cfloop collection="#exp#" item="i">
+								<tr>
+									<td class="tblContent#css#">
+										<cfif isDate(exp[i].time) and year(exp[i].time) NEQ 1970>
+											#dateFormat(exp[i].time,'mm/dd/yyyy')# #timeFormat(exp[i].time,'HH:mm:ss')#
+										<cfelse>-</cfif>
+									</td>
+									<td class="tblContent#css#">
+										<cfif structKeyExists(exp[i],"message")><b>#exp[i].message#</b></cfif>
+										<cfif structKeyExists(exp[i],"stacktrace")><pre>#exp[i].stacktrace#</pre></cfif>
+									</td>
+								</tr>
+							</cfloop>
+						</tbody>
+					</table>
+				</cfform>
+			</cfif>
 		</cfloop>
-		</select>
+	<!--- List ---->
+	<cfelse>
+		<cfset types=struct()>
+		<cfsilent>
+			<cfloop query="tasks">
+				<cfset types[tasks.type]="">
+			</cfloop>
+			<cfset types=StructKeyArray(types)>
+		</cfsilent>
+		<div class="pageintro">#stText.remote.ot.overviewDesc#</div>
 		
-		</td>
-		<td width="250" class="tblHead" nowrap><input type="text" name="nameFilter" style="width:250px" value="#session.filter.name#" /></td>
-		<td width="100" class="tblHead" nowrap><input type="text" name="nextFilter" style="width:90px" value="#session.filter.next#" /></td>
-		<td width="100" class="tblHead" nowrap><input type="text" name="triesFilter" style="width:90px" value="#session.filter.tries#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="#stText.Buttons.filter#"></td>
-	</tr>
-	--->
-	<tr>
-		<td width="380" colspan="7" align="right"></td>
-	</tr>
-	<tr>
-		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="checkbox" class="checkbox" name="row" onclick="selectAll(this)"></td>
-			<td></td>
-		</tr>
-		</table>
-		</td>
-		<td class="tblHead" nowrap>#stText.remote.ot.type#</td>
-		<td width="250" class="tblHead" nowrap>#stText.remote.ot.name#</td>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.nextExecution#<!---<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span>---></td>
-		<td width="100" class="tblHead" nowrap>#stText.remote.ot.tries#</td>
-		<td class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
-	</tr>
-
-<cfsavecontent variable="browse">
-<cfset to=url.startrow+url.maxrow-1>
-
-<cfif to GT result.open+result.closed>
-	<cfset to=result.open+result.closed>
-<cfelse>
-	
-</cfif>
-	<tr>
-		<td>&nbsp;</td>
-		<td class="tblHead" colspan="5" align="center" nowrap>
-        	<table border="0" cellpadding="0" cellspacing="0" width="100%">
-            <tr>
-            	<td width="100">
-                <cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#url.startrow-url.maxrow#" class="comment"><cfmodule template="img.cfm" src="arrow-left.gif" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
-                
-                </td>
-            	<td align="center"><span class="comment">#url.startrow# #stText.remote.to# #to# #stText.remote.from# #result.open+result.closed#</span></td>
-            	<td width="100" align="right">
-                <cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#url.startrow+url.maxrow#" class="comment">#stText.remote.next#<cfmodule template="img.cfm" src="arrow-right.gif" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
-                </td>
-            </tr>
-            </table>
-        </td>
-	</tr>
-</cfsavecontent> 
-    
-    #browse#
-
-
-
-<cfloop query="tasks">
-		<cfset css="">
-		<cfset next=inMinutes(tasks.nextExecution,true)>
-		<cfset closed=tasks.closed NEQ "" and tasks.closed>
-		<cfif closed><cfset next='-'></cfif>
-		<!--- filter 
-			doFilter(session.filter.type,tasks.type,false)
-			and
-			doFilter(session.filter.name,tasks.name,false)
-			and
-			doFilter(session.filter.next,next,true)
-			and
-			doFilter(session.filter.tries,tasks.tries,true)--->
-		<cfif true>
-			
-		
-		<cfif tasks.closed NEQ ""><cfset css=iif(not tasks.closed,de('Green'),de('Red'))></cfif>
-		<!--- and now display --->
-	<tr>
-		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#"></td>
-			<td><a href="#request.self#?action=#url.action#&action2=edit&id=#tasks.id#">
-			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
-		</tr>
-		</table>
-		</td>
-		<td class="tblContent#css#" nowrap><input type="hidden" name="id_#tasks.currentrow#" value="#tasks.id#"><b>#tasks.type#</b></td>
-		<td class="tblContent#css#" nowrap><b>#tasks.name#</b></td>
-		<!---
-		<td class="tblContent#css#" nowrap align="center">
-			<cfif isDate(tasks.lastExecution) and year(tasks.lastExecution) NEQ 1970>
-				<!--- #dateFormat(tasks.lastExecution,'mm/dd/yyyy')# #timeFormat(tasks.lastExecution,'HH:mm:ss')#--->
-				#toTime(tasks.lastExecution)#
+		<!--- show verify result --->
+		<cfloop collection="#stVeritfyMessages#" item="id">
+			<cfif stVeritfyMessages[id].label eq "OK">
+				<div class="message">Verified OK</div>
 			<cfelse>
-				-
+				<div class="error">
+					#stVeritfyMessages[id].label#:<br />
+					#stVeritfyMessages[id].message#
+				</div>
 			</cfif>
-		</td>
-		--->
-		<td class="tblContent#css#" title="" nowrap align="center">
-			<cfif closed> 
-				<center>-</center>
-			<cfelse>
-				#lsDateFormat(tasks.nextExecution)# #timeFormat(tasks.nextExecution,'HH:mm:ss')#
-			</cfif>
-		</td>
-		<td class="tblContent#css#" title="" nowrap align="center">
-			#tasks.tries#
-		</td>
-		
-			<td class="tblContent#css#" nowrap valign="middle" align="center">
-				<cfif StructKeyExists(stVeritfyMessages, tasks.id)>
-					<cfif stVeritfyMessages[tasks.id].label eq "OK">
-						<span class="CheckOk">#stVeritfyMessages[tasks.id].label#</span>
-					<cfelse>
-						<span class="CheckError" title="#stVeritfyMessages[tasks.id].message##Chr(13)#">#stVeritfyMessages[tasks.id].label#</span>
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
-							width="9" 
-							height="9" 
-							border="0" 
-							title="#stVeritfyMessages[tasks.id].message##Chr(13)#">
-					</cfif>
-				<cfelse>
-					&nbsp;				
+		</cfloop>
+
+		<!--- 0 records ---->
+		<cfif result.open+result.closed gt 0>
+			<!--- Todo: better styled paging --->
+			<cfsavecontent variable="browse">
+				<cfset to=url.startrow+url.maxrow-1>
+				<cfif to GT result.open+result.closed>
+					<cfset to=result.open+result.closed>
 				</cfif>
-			</td>
-	</tr></cfif>
-    
-</cfloop>
-
- 
-    
-    #browse#
-	<tr>
-		<td colspan="6">
-		 <table border="0" cellpadding="0" cellspacing="0">
-		 <tr>
-			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
-			<td></td>
-		 </tr>
-		 <tr>
-			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
-			<td>&nbsp;
-			<cfoutput>
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.DeleteAll#">
-			</cfoutput>
-			</td>	
-		</tr>
-		 </table>
-		 </td>
-	</tr>
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td width="100">
+							<cfif url.startrow GT 1><a href="#request.self#?action=#url.action#&startrow=#url.startrow-url.maxrow#" class="comment"><img src="resources/img/arrow-left.gif.cfm" border="0" hspace="4">#stText.remote.previous#</a><cfelse>&nbsp;</cfif>
+						</td>
+						<td style="text-align:center"><b>#url.startrow# #stText.remote.to# #to# #stText.remote.from# #result.open+result.closed#</b></td>
+						<td width="100" style="text-align:right">
+							<cfif to LT result.open+result.closed><a href="#request.self#?action=#url.action#&startrow=#url.startrow+url.maxrow#" class="comment">#stText.remote.next#<img src="resources/img/arrow-right.gif.cfm" border="0" hspace="4"></a><cfelse>&nbsp;</cfif>
+						</td>
+					</tr>
+				</table>
+			</cfsavecontent> 
+			#browse#
+		</cfif>
+		
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl checkboxtbl">
+				<thead>
+					<tr>
+						<th width="3%">
+							<input type="checkbox" class="checkbox" name="row" onclick="selectAll(this)">
+						</th>
+						<th width="20%">#stText.remote.ot.type#</th>
+						<th width="39%">#stText.remote.ot.name#</th>
+						<th width="20%">#stText.remote.ot.nextExecution#<!---<br /><span class="comment" style="color:##DFE9F6">(mm/dd/yyyy HH:mm:ss)</span>---></th>
+						<th width="15%">#stText.remote.ot.tries#</th>
+						<th width="3%">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
+					<cfif result.open+result.closed eq 0>
+						<tr><td colspan="6" style="text-align:center">
+							<b>#stText.remote.ot.noOt#</b>
+						</td></tr>
+					</cfif>
+					<!--- FILTER take out temporary
+					<tr>
+						<td width="200"></td>
+						<td class="tblHead">
+						<select name="typeFilter" style="width:120px">
+						<option value="" <cfif not len(session.filter.type)> selected</cfif>>- all -</option>
+						<cfloop array="#types#" index="i">
+							<option <cfif i EQ session.filter.type> selected</cfif>>#i#</option>
+						</cfloop>
+						</select>
+						
+						</td>
+						<td width="250" class="tblHead"><input type="text" name="nameFilter" style="width:250px" value="#session.filter.name#" /></td>
+						<th scope="row"><input type="text" name="nextFilter" style="width:90px" value="#session.filter.next#" /></th>
+						<th scope="row"><input type="text" name="triesFilter" style="width:90px" value="#session.filter.tries#" /></th>
+						<th scope="row"><input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.filter#"></th>
+					</tr>
+					--->
+					<cfloop query="tasks">
+						<cfset css="">
+						<cfset next=inMinutes(tasks.nextExecution,true)>
+						<cfset closed=tasks.closed NEQ "" and tasks.closed>
+						<cfif closed><cfset next='-'></cfif>
+						<!--- filter 
+							doFilter(session.filter.type,tasks.type,false)
+							and
+							doFilter(session.filter.name,tasks.name,false)
+							and
+							doFilter(session.filter.next,next,true)
+							and
+							doFilter(session.filter.tries,tasks.tries,true)--->
+						<cfif true>
+							<cfif tasks.closed NEQ "">
+								<cfset css=iif(not tasks.closed,de('Green'),de('Red'))>
+							</cfif>
+							<!--- and now display --->
+							<tr>
+								<td>
+									<input type="checkbox" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#">
+								</td>
+								<td class="tblContent#css#"><input type="hidden" name="id_#tasks.currentrow#" value="#tasks.id#">
+									#tasks.type#
+								</td>
+								<td class="tblContent#css#">#tasks.name#</td>
+								<!---
+								<td class="tblContent#css#">
+									<cfif isDate(tasks.lastExecution) and year(tasks.lastExecution) NEQ 1970>
+										<!--- #dateFormat(tasks.lastExecution,'mm/dd/yyyy')# #timeFormat(tasks.lastExecution,'HH:mm:ss')#--->
+										#toTime(tasks.lastExecution)#
+									<cfelse>
+										-
+									</cfif>
+								</td>
+								--->
+								<td class="tblContent#css#">
+									<cfif closed> 
+										<center>-</center>
+									<cfelse>
+										#lsDateFormat(tasks.nextExecution)# #timeFormat(tasks.nextExecution,'HH:mm:ss')#
+									</cfif>
+								</td>
+								<td class="tblContent#css#">
+									#tasks.tries#
+								</td>
+								<td>
+									<a href="#request.self#?action=#url.action#&action2=edit&id=#tasks.id#" class="btn-mini edit"><span>edit</span></a>
+								</td>
+							</tr>
+						</cfif>
+					</cfloop>
+				</tbody>
+				<cfif result.open+result.closed gt 0>
+					<tfoot>
+						 <tr>
+							<td colspan="6">
+								<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Execute#">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+								<input type="submit" class="button" name="mainAction" value="#stText.Buttons.DeleteAll#">
+							</td>	
+						</tr>
+					</tfoot>
+				</cfif>
+			</table>
+		</cfform>
+		<cfif result.open+result.closed gt 0>
+			#browse#
+		</cfif>
+	</cfif>
 </cfoutput>
-</cfform>
-</table>
-
-
-
-
-</cfif>
-
-

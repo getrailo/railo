@@ -97,39 +97,42 @@ Error Output --->
 	returnVariable="dbSetting">
 
 <cfoutput>	
-<!--- 
-Create Datasource --->
-
-<table class="tbl" width="540">
-<colgroup>
-    <col width="150">
-    <col width="390">
-</colgroup>
-<tr>
-	<td colspan="2"><h2>#stText.Settings.DatasourceSettings#</h2></td>
-</tr>
-
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.PreserveSingleQuotes#</td>
-	<td class="tblContent">
-	<cfif access NEQ 0><input type="checkbox" class="checkbox" name="psq" value="yes" <cfif dbSetting.psq>checked</cfif>><cfelse><b>#yesNoFormat(dbSetting.psq)#</b></cfif>
-	<span class="comment">#stText.Settings.PreserveSingleQuotesDescription#</span></td>
-	
-</tr>
-<cfif access NEQ 0>
-<cfmodule template="remoteclients.cfm" colspan="2">
-<tr>
-	<td colspan="2">
-		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr></cfif>
-</cfform>
+	<h2>#stText.Settings.DatasourceSettings#</h2>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.Settings.PreserveSingleQuotes#</th>
+					<td>
+						<cfif access NEQ 0>
+							<input type="checkbox" class="checkbox" name="psq" value="yes" <cfif dbSetting.psq>checked</cfif>>
+						<cfelse>
+							<b>#yesNoFormat(dbSetting.psq)#</b>
+						</cfif>
+						<div class="comment">#stText.Settings.PreserveSingleQuotesDescription#</div>
+					</td>
+				</tr>
+				<cfif access NEQ 0>
+					<cfmodule template="remoteclients.cfm" colspan="2">
+				</cfif>
+			</tbody>
+			<cfif access>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<cfif request.adminType EQ "web">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#">
+							</cfif>
+						</td>
+					</tr>
+				</tfoot>
+			</cfif>
+		</table>
+	</cfform>
 </cfoutput>
-</table>
-<br><br>
+
 <cfadmin 
 	action="getDatasources"
 	type="#request.adminType#"
@@ -152,7 +155,6 @@ list all mappings and display necessary edit fields --->
 <cfset querySort(datasources,"name")>
 <cfset srcLocal=queryNew("name,classname,dsn,username,password,readonly,storage")>
 <cfset srcGlobal=queryNew("name,classname,dsn,username,password,readonly,storage")>
-
 		
 <cfloop query="datasources">
 	<cfif not datasources.readOnly>
@@ -176,209 +178,171 @@ list all mappings and display necessary edit fields --->
 	</cfif>
 </cfloop>
 
+
 <cfif request.adminType EQ "web" and srcGlobal.recordcount>
 	<cfoutput>
-	
-	<table class="tbl" border="0">
- 	<colgroup>
-        <col width="20">
-        <col width="35%">
-        <col width="35%">
-        <col width="15%">
-        <col width="15%">
-    </colgroup>
-	<tr>
-		<td colspan="5"><h2>#stText.Settings.ReadOnlyDatasources#</h2>#stText.Settings.ReadOnlyDatasourcesDescription#</td>
-	</tr>
-	<tr>
-		<td colspan="5"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-	</tr>
-	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-		<tr>
-			<td><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)"></td>
-			<td class="tblHead" nowrap>#stText.Settings.Name#</td>
-			<td class="tblHead" nowrap>#stText.Settings.Type#</td>
-			<td class="tblHead" nowrap>#stText.Settings.dbStorage#</td>
-			<td class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
-		</tr>
-		<cfloop query="srcGlobal">
-			<!--- and now display --->
-		<tr>
-			<td>
-			<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-				<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" value="#srcLocal.currentrow#">
-				<input type="hidden" name="username_#srcGlobal.currentrow#" value="#srcGlobal.Username#">
-				<input type="hidden" name="password_#srcGlobal.currentrow#" value="#srcGlobal.Password#">
-				</td>
-			</tr>
+		<h2>#stText.Settings.ReadOnlyDatasources#</h2>
+		<div class="itemintro">#stText.Settings.ReadOnlyDatasourcesDescription#</div>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl checkboxtbl">
+				<thead>
+					<tr>
+						<th width="3%"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)" /></th>
+						<th width="28%">#stText.Settings.Name#</th>
+						<th width="55%">#stText.Settings.Type#</th>
+						<th width="8%">#stText.Settings.dbStorage#</th>
+						<th width="6%">#stText.Settings.DBCheck#</th>
+					</tr>
+				</thead>
+				<tbody>
+					<cfloop query="srcGlobal">
+						<!--- and now display --->
+						<tr>
+							<td>
+								<input type="checkbox" class="checkbox" name="row_#srcGlobal.currentrow#" value="#srcLocal.currentrow#">
+								<input type="hidden" name="username_#srcGlobal.currentrow#" value="#srcGlobal.Username#">
+								<input type="hidden" name="password_#srcGlobal.currentrow#" value="#srcGlobal.Password#">
+							</td>
+							<td>
+								<input type="hidden" name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">
+								#srcGlobal.name#
+							</td>
+							<td>#getTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
+							<td>#yesNoFormat(srcGlobal.storage)#</td>
+							<td>
+								<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
+									<cfif stVeritfyMessages[srcGlobal.name].label eq "OK">
+										<span class="CheckOk">#stVeritfyMessages[srcGlobal.name].label#</span>
+									<cfelse>
+										<span class="CheckError" title="#stVeritfyMessages[srcGlobal.name].message##Chr(13)#">#stVeritfyMessages[srcGlobal.name].label#</span>
+										<!---
+										IMAGE DOESN'T EXIST!
+										&nbsp;<img src="resources/img/red-info.gif.cfm" width="9" height="9" title="#stVeritfyMessages[srcGlobal.name].message##Chr(13)#">
+										--->
+									</cfif>
+								<cfelse>
+									&nbsp;				
+								</cfif>
+							</td>
+						</tr>
+					</cfloop>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="5">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Verify#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+						 </td>
+					</tr>
+				</tfoot>
 			</table>
-			</td>
-			<td class="tblContent" nowrap><input type="hidden" 
-				name="name_#srcGlobal.currentrow#" value="#srcGlobal.name#">#srcGlobal.name#</td>
-			<td class="tblContent" nowrap>#getTypeName(srcGlobal.ClassName,srcGlobal.dsn)#</td>
-			<td class="tblContent" nowrap>#yesNoFormat(srcGlobal.storage)#</td>
-			<td class="tblContent" nowrap valign="middle" align="center">
-				<cfif StructKeyExists(stVeritfyMessages, srcGlobal.name)>
-					#stVeritfyMessages[srcGlobal.name].label#
-					<cfif stVeritfyMessages[srcGlobal.name].label neq "OK">
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
-							width="9" 
-							height="9" 
-							border="0" 
-							alt="#stVeritfyMessages[srcGlobal.name].message##Chr(13)#">
-					</cfif>
-				<cfelse>
-					&nbsp;				
-				</cfif>
-			</td>
-		</tr>
-		</cfloop>
-		<tr>
-			<td colspan="5">
-			 <table border="0" cellpadding="0" cellspacing="0">
-			 <tr>
-				<td><cfmodule template="tp.cfm"  width="6" height="1"></td>		
-				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
-				<td></td>
-			 </tr>
-			 <tr>
-				<td></td>
-				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
-				<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				</td>	
-			</tr>
-			 </table>
-			 </td>
-		</tr>
-	</cfform>
-	</table>
-	<br><br>
+		</cfform>
 	</cfoutput>
 </cfif>
 
 
 <cfif srcLocal.recordcount>
 	<cfoutput>
-	
-	<table class="tbl" width="740">
-	<tr>
-		<td colspan="5"><h2>#stText.Settings.ListDatasources#</h2>#stText.Settings['ListDatasourcesDesc'& request.adminType ]#</td> 
-	</tr>
-	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-		<tr>
-			<td width="60"><input type="checkbox" class="checkbox" name="rowread" onclick="selectAll(this)"></td>
-			<td width="205" class="tblHead" nowrap>#stText.Settings.Name#</td>
-			<td width="355" class="tblHead" nowrap>#stText.Settings.Type#</td>
-			<td width="50" class="tblHead" nowrap>#stText.Settings.dbStorage#</td>
-			<td width="70" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
-		</tr>
-		<cfloop query="srcLocal">
-        	<cfset link="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#">
-			<!--- and now display --->
-		<tr>
-			<td>
-			<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-				<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
-				<input type="hidden" name="username_#srcLocal.currentrow#" value="#srcLocal.Username#">
-				<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
-				</td>
-				<td><a href="#link#"><cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
-			</tr>
+		<h2>#stText.Settings.ListDatasources#</h2>
+		<div class="itemintro">#stText.Settings['ListDatasourcesDesc'& request.adminType ]#</div>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl checkboxtbl">
+				<thead>
+					<tr>
+						<th width="3%"><input type="checkbox" class="checkbox" name="rowread" onclick="selectAll(this)" /></th>
+						<th width="25%">#stText.Settings.Name#</th>
+						<th width="55%">#stText.Settings.Type#</th>
+						<th width="8%">#stText.Settings.dbStorage#</th>
+						<th width="6%">#stText.Settings.DBCheck#</th>
+						<th width="3%">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
+					<cfloop query="srcLocal">
+						<!--- and now display --->
+						<tr>
+							<td>
+								<input type="checkbox" class="checkbox" name="row_#srcLocal.currentrow#" value="#srcLocal.currentrow#">
+								<input type="hidden" name="username_#srcLocal.currentrow#" value="#srcLocal.Username#">
+								<input type="hidden" name="password_#srcLocal.currentrow#" value="#srcLocal.Password#">
+							</td>
+							<td><input type="hidden" name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
+							<td>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#</td>
+							<td>#yesNoFormat(srcLocal.storage)#</td>
+							<td>
+								<cfif StructKeyExists(stVeritfyMessages, srcLocal.name)>
+									<cfif stVeritfyMessages[srcLocal.name].label eq "OK">
+										<span class="CheckOk">#stVeritfyMessages[srcLocal.name].label#</span>
+									<cfelse>
+										<span class="CheckError" title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">#stVeritfyMessages[srcLocal.name].label#</span>
+										<!---
+										IMAGE DOESN'T EXIST!
+										&nbsp;<img src="resources/img/red-info.gif.cfm" width="9" height="9" title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">
+										--->
+									</cfif>
+								<cfelse>
+									&nbsp;				
+								</cfif>
+							</td>
+							<td><a class="btn-mini edit" href="#request.self#?action=#url.action#&action2=create&name=#srcLocal.name#" title="edit"><span>edit</span></a></td>
+						</tr>
+					</cfloop>
+					<cfmodule template="remoteclients.cfm" colspan="6" line="true">
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="6">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Verify#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+						 </td>
+					</tr>
+				</tfoot>
 			</table>
-			</td>
-			<td class="tblContent" nowrap><input type="hidden" 
-				name="name_#srcLocal.currentrow#" value="#srcLocal.name#">#srcLocal.name#</td>
-			<td class="tblContent" nowrap>#getTypeName(srcLocal.ClassName,srcLocal.dsn)#</td>
-			<td class="tblContent" nowrap>#yesNoFormat(srcLocal.storage)#</td>
-			<td class="tblContent" nowrap valign="middle" align="center">
-				<cfif StructKeyExists(stVeritfyMessages, srcLocal.name)>
-					<cfif stVeritfyMessages[srcLocal.name].label eq "OK">
-						<span class="CheckOk">#stVeritfyMessages[srcLocal.name].label#</span>
-					<cfelse>
-						<span class="CheckError" title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">#stVeritfyMessages[srcLocal.name].label#</span>
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
-							width="9" 
-							height="9" 
-							border="0" 
-							title="#stVeritfyMessages[srcLocal.name].message##Chr(13)#">
-					</cfif>
-				<cfelse>
-					&nbsp;				
-				</cfif>
-			</td>
-		</tr>
-		</cfloop>
-		
-		<cfmodule template="remoteclients.cfm" colspan="4" line="true">
-		<tr>
-			<td colspan="5">
-			 <table border="0" cellpadding="0" cellspacing="0">
-			 <tr>
-				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
-				<td></td>
-			 </tr>
-			 <tr>
-				<td></td>
-				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
-				<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-				</td>	
-			</tr>
-			 </table>
-			 </td>
-		</tr>
-	</cfform>
+		</cfform>
 	</cfoutput>
-	</table>
-	<br><br>
 </cfif>
 
 <cfif access EQ -1 or access GT srcLocal.recordcount>
 	<cfoutput>
-	<!--- 
-	Create Datasource --->
-	<h2>#stText.Settings.DatasourceModify#</h2>
-	<table class="tbl" width="350">
-	<tr>
-		<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-	</tr>
-	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-	<tr>
-		<td class="tblHead" width="50">#stText.Settings.Name#</td>
-		<td class="tblContent" width="300"><cfinput type="text" name="name" value="" style="width:300px" required="yes" 
-			message="#stText.Settings.NameMissing#"></td>
-	</tr>
-	<cfset keys=StructKeyArray(drivers)>
-	<cfset ArraySort(keys,"textNoCase")>
-	<tr>
-		<td class="tblHead" width="50">#stText.Settings.Type#</td>
-		<td class="tblContent" width="300"><select name="type">
-					<cfoutput><cfloop collection="#keys#" item="idx">
-					<cfset key=keys[idx]>
-					<cfset driver=drivers[key]>
-					<cfif not findNoCase("(old)",driver.getName())>
-						<option value="#key#">#driver.getName()#</option>
-					</cfif></cfloop></cfoutput>
-				</select></td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<input type="hidden" name="mark" value="create">
-			<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		</td>
-	</tr>
-	</cfform>
-	</table>   
-	<br><br>
+		<!--- Create Datasource --->
+		<h2>#stText.Settings.DatasourceModify#</h2>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
+			<table class="maintbl autowidth">
+				<tbody>
+					<tr>
+						<th scope="row">#stText.Settings.Name#</th>
+						<td><cfinput type="text" name="name" value="" class="large" required="yes" 
+							message="#stText.Settings.NameMissing#">
+						</td>
+					</tr>
+					<cfset keys=StructKeyArray(drivers)>
+					<cfset ArraySort(keys,"textNoCase")>
+					<tr>
+						<th scope="row">#stText.Settings.Type#</th>
+						<td>
+							<select name="type" class="large">
+								<cfloop collection="#keys#" item="idx">
+									<cfset key=keys[idx]>
+									<cfset driver=drivers[key]>
+									<cfif not findNoCase("(old)",driver.getName())>
+										<option value="#key#">#driver.getName()#</option>
+									</cfif>
+								</cfloop>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<input type="hidden" name="mark" value="create">
+							<input type="submit" class="button submit" name="run" value="#stText.Buttons.Create#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+						</td>
+					</tr>
+				</tfoot>
+			</table>   
+		</cfform>
 	</cfoutput>
 </cfif>

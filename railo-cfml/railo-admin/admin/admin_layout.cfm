@@ -1,251 +1,125 @@
 <cfif thistag.executionmode EQ "end" or not thistag.hasendtag>
-<cfparam name="attributes.navigation" default="">
-<cfparam name="attributes.title" default="">
-<cfparam name="attributes.content" default="">
-<cfparam name="attributes.right" default="">
-<cfparam name="attributes.width" default="780">
+	<cfset variables.stText = application.stText[session.railo_admin_lang] />
+	<cfparam name="attributes.navigation" default="">
+	<cfparam name="attributes.title" default="">
+	<cfparam name="attributes.content" default="">
+	<cfparam name="attributes.right" default="">
+	<cfparam name="attributes.width" default="780">
 
-<cfscript>
-ad=request.adminType;
-fgColor=(ad EQ "server")?"##9c0000":"##007bb7";
-
-hasNavigation=len(attributes.navigation) GT 0;
-
-other=iif(request.adminType EQ "web","'server'","'web'");
-otherURL=other&".cfm"
-if(structKeyExists(url,'action'))otherURL&="?action="&url.action;
-
-
-</cfscript>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
-	<head>
-		<cfoutput><title>Railo #ucFirst(request.adminType)# Administrator</title>
-		<script language="javascript">
-		function selectAll(field) {
-			var form=field.form;
-			for(var key in form.elements){
-				if(form.elements[key] && (""+form.elements[key].name).indexOf("row_")==0){
-					form.elements[key].checked=field.checked;
-				}
-			}
-		}
-		function checkTheBox(field) {
-			var apendix=field.name.split('_')[1];
-			var box=field.form['row_'+apendix];
-			box.checked=true;
-		}
-		</script>
-		
-		<style>
-		
-		
-		<cfset yellowColor=iif(request.adminType EQ "web",de('FFFF66'),de('FFFF66	'))>
-		
-	  
-	  
-		body {background-image:url(<cfmodule type="css" template="img.cfm" src="#ad#-back.png" />);background-repeat:repeat-x;background-color:##f7f7f7;margin-top:0px;margin-left:0px;}
-		body, tr, td,div {font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 9pt;color:##3c3e40;}
-		.box {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 14pt;color:#fgColor#;}
-		h1 {font-weight:normal;font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;font-size : 20pt;color:#fgColor#;}
-		h2 {height:6pt;font-size : 12pt;font-weight:normal;color:#fgColor#;}
-		
-		
-		.comment{font-size : 10px;color:##787a7d;text-decoration:none;}
-		.commentHead{font-size : 10px;color:##DFE9F6;}
-		.copy { font-size : 8pt;color:##666666;}
-		
-		div.hr{border-color:red;border-style:solid;border-color:##e0e0e0;border-width:0px 0px 1px 0px;margin:0px 16px 4px 0px;}
-		.tbl{empty-cells:show;}
-		.tblHead{padding-left:5px;padding-right:5px;border:1px solid ##e0e0e0;background-color:##f2f2f2;color:##3c3e40}
-		.tblContent			{padding-left:5px;padding-right:5px;border:1px solid ##e0e0e0;}
-		.tblContentRed		{padding-left:5px;padding-right:5px;border:1px solid ##cc0000;background-color:##f9e0e0;}
-		.tblContentGreen	{padding-left:5px;padding-right:5px;border:1px solid ##009933;background-color:##e0f3e6;}
-		.tblContentYellow	{padding-left:5px;padding-right:5px;border:1px solid ##ccad00;background-color:##fff9da;}
-		
-		td.inactivTab{border-style:solid;border-color:##e0e0e0;padding: 0px 5px 0px 5px;background-color:white;}
-		a.inactivTab{color:##3c3e40;text-decoration:none;}
-		
-		td.activTab{border-style:solid;border-color:##e0e0e0;border-width:1px 1px 0px 1px ;padding: 2px 10px 2px 10px;background-color:##e0e0e0;}
-		a.activTab{font-weight:bold;color:##3c3e40;text-decoration:none;}
-		
-		td.tab {border-color:##e0e0e0;border-width:1px;border-style:solid;border-top:0px;padding:10px;background-color:white;}
-		td.tabtop {border-style:solid;border-color:##e0e0e0;border-width:0px 0px 1px 0px ;padding: 0px 1px 0px 0px;}
-		
-		
-		.CheckOk{font-weight:bold;color:##009933;font-size : 12px;}
-		.CheckError{font-weight:bold;color:##cc0000;font-size : 12px;}
-		
-		input{
-		background: url(<cfmodule type="css" template="img.cfm" src="input-shadow.png" />) repeat-x 0 0;
-background-color:white;
-		
-		padding-left:3px;padding-right:2px;padding-top:3px;padding-bottom:3px;margin:3px 1px 3px 1px;color:##3c3e40;border-style:solid;border-width:1px;border-color:##e0e0e0;}
-		.button,.submit,.reset {
-		background: url(<cfmodule type="css" template="img.cfm" src="input-button.png" />) repeat-x 0 0;
-		background-color:##f2f2f2;color:##3c3e40;font-weight:bold;padding-left:10px;padding-right:10px;margin:0px;}
-		select {font-size : 11px;color:##3c3e40;margin:3px 0px 3px 0px;}
-		.checkbox,.radio {border:0px;}
-		
-		a{color:#fgColor#;}
-		
-		
+	<cfscript>
+		ad=request.adminType;
+		hasNavigation=len(attributes.navigation) GT 0;
+		other=iif(request.adminType EQ "web","'server'","'web'");
+		otherURL=other&".cfm"
+		if(structKeyExists(url,'action'))otherURL&="?action="&url.action;
+	</cfscript>
+	<cfset request.mode="full">
 	
-ul##menu, ul##menu ul {
-  list-style-type:none;
-  margin: 0;
-  padding: 0;
-}
-
-ul##menu a {
-  display: block;
-  text-decoration: none;	
-}
-
-ul##menu li {margin-top: 1px;}
-
-ul##menu li a {margin-top:8px;margin-bottom:3px;color:##333;font-weight:bold;font-size : 9pt;}
-ul##menu li a:hover {color:##000;}
-
-ul##menu li ul li a {
-margin-top:0px;margin-bottom:0px;font-weight:normal;
- text-decoration:none;color:#fgColor#;font-size : 8pt;
-  padding-left: 10px;
-  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow.gif" width="4" height="7" />);background-repeat:no-repeat;
-}
-
-ul##menu li ul li a:hover {
- 
-margin-top:0px;margin-bottom:0px;font-weight:normal;
- text-decoration:none;color:#fgColor#;font-size : 8pt;
-  padding-left: 10px;
-  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow-active.gif" width="4" height="7" />);background-repeat:no-repeat;
-}
-
-ul##menu li ul li a.menu_active {
-margin-top:0px;margin-bottom:0px;font-weight:bold;
- text-decoration:none;color:#fgColor#;font-size : 8pt;
-  padding-left: 10px;
-  background-image:url(<cfmodule type="css" template="img.cfm" src="arrow-active.gif" width="4" height="7" />);background-repeat:no-repeat;
-}
-		.commentError{font-size : 10px;color:##cc0000;text-decoration:none;}
-		
-		
-		.InputError{
-			background: url(<cfmodule type="css" template="img.cfm" src="input-shadow-error.png" />) repeat-x 0 0;background-color:##fae2e2;}
-		
-		<!---/*
-		.darker{background-color:##e0e0e0;}
-		.brigther{background-color:###bgBrightColor#;}
-		
-		*/--->
-		</style></cfoutput>
-	</head>
-	<body id="body" <cfif structKeyExists(attributes,"onload")>onload="<cfoutput>#attributes.onload#</cfoutput>"</cfif>>
-<cfset request.mode="full">
+<cfcontent reset="yes" /><!DOCTYPE HTML>
 <cfoutput>
-<center>
-<table align="center" cellpadding="0" cellspacing="0" border="0"<cfif session.screenMode EQ "full"> width="100%"</cfif>>
-<!---<colgroup>
-    <col width="11">
-    <col width="170">
-	<cfif hasNavigation><col width="1"></cfif>
-	<col width="100%">
-	<col width="1">
-	<col width="9">
-</colgroup>
+<html>
+<head>
+	<title>Railo #ucFirst(request.adminType)# Administrator</title>
+</cfoutput>
+	<link rel="stylesheet" href="resources/css/style.css.cfm" type="text/css" />
+	<script src="resources/js/jquery-1.7.2.min.js.cfm" type="text/javascript"></script>
+	<script src="resources/js/jquery.blockUI.js.cfm" type="text/javascript"></script>
+	<script src="resources/js/admin.js.cfm" type="text/javascript"></script>
+</head>
+<cfoutput>
+<body id="body" class="#request.adminType#<cfif application.adminfunctions.getdata('fullscreen') eq 1> full</cfif>" <cfif structKeyExists(attributes,"onload")>onload="#attributes.onload#"</cfif>>
+	<div id="layout">
+		<table id="layouttbl">
+			<tbody>
+				<tr>
+					<td colspan="2" id="logotd" class="lotd">
+						<div id="logo">
+							<a href="#request.self#"><h2>Railo</h2></a>
+						</div>
+					</td>
+					<td id="tabstd" class="lotd">
+						<a <cfif ad EQ "web">href="#otherURL#"<cfelse>href="server.cfm"</cfif>><img src="resources/img/left-tab-#ad#.png.cfm" alt="Server Administrator tab" title="Go to the Server Administrator" /></a><!---
+						---><a <cfif ad EQ "server">href="#otherURL#"<cfelse>href="web.cfm"</cfif>><img src="resources/img/right-tab-#ad#.png.cfm" alt="Web Administrator tab" title="Go to the Web Administrator" /></a>
+					</td>
+					<td class="lotd"></td>
+				</tr>
+				<tr>
+					<td id="leftshadow" rowspan="2" class="lotd"></td>
+					<td id="navtd" class="lotd">
+						<div id="nav">
+							<a href="##" id="resizewin" title="resize window"><span>Resize window</span></a>
+							<cfif hasNavigation>
+								<form method="get" action="#cgi.SCRIPT_NAME#">
+									<input type="hidden" name="action" value="admin.search" />
+									<input type="text" name="q" size="15" id="navsearch" />
+									<input type="submit" class="button submit" value="Search" />
+								</form>
+								#attributes.navigation#
+							</cfif>
+						</div>
+					</td>
+					<td id="contenttd" class="lotd">
+						<div id="content">
+							<div id="maintitle">
+								<cfif hasNavigation>
+									<a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">#variables.stText.help.logout#</a>
+
+									<!--- Favorites --->
+									<cfparam name="url.action" default="" />
+									<cfset pageIsFavorite = application.adminfunctions.isFavorite(url.action) />
+									<div id="favorites">
+										<cfif url.action eq "">
+											<a href="##" class="favorite tooltipMe" title="Go to your favorite pages">Favorites</a>
+										<cfelseif pageIsFavorite>
+											<a href="#request.self#?action=internal.savedata&action2=removefavorite&favorite=#url.action#" class="favorite tooltipMe" title="Remove this page from your favorites">Favorites</a>
+										<cfelse>
+											<a href="#request.self#?action=internal.savedata&action2=addfavorite&favorite=#url.action#" class="tooltipMe favorite_inactive" title="Add this page to your favorites">Favorites</a>
+										</cfif>
+										<ul>
+											<cfif attributes.favorites neq "">
+												#attributes.favorites#
+											<cfelse>
+												<li class="favtext"><i>No items yet.<br />Go to a page you use often, and click on "Favorites" to add it here.</i></li>
+											</cfif>
+										</ul>
+									</div>
+								</cfif>
+								<span class="box">#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span>
+							</div>
+							<div id="innercontent">
+								#thistag.generatedContent#
+							</div>
+						</div>
+					</td>
+					<td id="rightshadow" rowspan="2" class="lotd"></td>
+				</tr>
+				<tr>
+					<td class="lotd">&nbsp;</td>
+					<td class="lotd" id="copyrighttd">
+						<div id="copyright" class="copy">
+							&copy; #year(Now())#
+							<a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>.
+							All Rights Reserved. |
+							Designed by <a href="http://www.blueriver.com/from/railo/" target="_blank">Blue River Interactive Group, Inc.</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+<!---	<cfif false and StructKeyExists(application,'notTranslated')>
+		<cfset keys=structKeyArray(application.notTranslated)>
+		<cfset ArraySort(keys,'textnocase')>
+	<!-- The following text is not translated the the current language
+<cfloop array="#keys#" index="key"><data key="#key#">#trim(application.notTranslated[key])#</data>
+</cfloop>
+	-->
+	</cfif>
 --->
-
-<colgroup>
-    <col width="11">
-    <col width="170">
-	<cfif hasNavigation><col width="1"></cfif>
-	<cfif session.screenMode EQ "full"><col width="100%"><cfelse><col width="825"></cfif>
-	<col width="11">
-</colgroup>
-<tr>
-	<td width="#hasNavigation?182:181#" colspan="#hasNavigation?3:2#" valign="bottom"><cfif session.screenMode NEQ "full"><cfmodule template="tp.cfm" width="1" height="34" /><br></cfif>
-    <a href="#request.self#"><cfif session.screenMode EQ "full"><cfmodule template="img.cfm" src="#ad#-railo-small.png" hspace="5" vspace="3"/><cfelse><cfmodule template="img.cfm" src="#ad#-railo.png" width="102" height="69" vspace="5"/></cfif></a></td>
-    
-    <td align="right" valign="bottom"><a <cfif ad EQ "web">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="left-tab-#ad#.png" /></a><a <cfif ad EQ "server">href="#otherURL#"</cfif>><cfmodule template="img.cfm" src="right-tab-#ad#.png" /></a></td>
-    <td width="11" rowspan="2"><cfmodule template="tp.cfm" width="11" height="1" /></td>
-</tr>
-<tr>
-	<td width="11"><cfmodule template="tp.cfm" width="11" height="1" /></td>
-	<td width="170" style="background-image:url(<cfmodule type="css" template="img.cfm" src="left.png" />);"><cfmodule template="img.cfm" hspace="6" src="left.png"/></td>
-	<cfif hasNavigation><td width="1" style="background-color:##d2d2d2;"></td></cfif>
-	<td style="background-color:white"></td>
-</tr>
-
-<tr>
-	<td width="11" valign="top"><cfmodule template="img.cfm" vspace="#session.screenMode EQ "full"?140:67#" src="shadow-left.gif" /></td>
-	<td valign="top"  width="170" style="background-color:##e6e6e6;">
-    <script>document.write('<a href="#request.self#?realScreenSize='+$(document).width()+'&screenmode=#session.screenmode=='compact'?'full':'compact'#<cfif isDefined('url.action')>&action=#url.action#</cfif>">');</script>
-	
-	<cfmodule template="img.cfm" hspace="8" src="#session.screenMode EQ "full"?'min':'max'#l.png" width="22" height="22" border="0"/></a><br>
-		<cfif hasNavigation><div style="margin:10px 0px 0px 20px;">
-			<cfoutput>#attributes.navigation#</cfoutput>
-		</div></cfif><br><br>
-	</td>
-	<cfif hasNavigation><td width="1" style="background-color:##d2d2d2;"></td></cfif>
-	<td height="31" valign="top" align="right" style="background-color:white" >
-    	<cfmodule template="img.cfm" hspace="8" src="tp.gif" width="22" height="22"/><br>
-			<cfoutput>
-			<div id="title" style="text-align:left;margin:0px 30px 10px 20px;">
-            <table cellpadding="0" cellspacing="0" border="0" width="100%">
-            
-            <colgroup>
-                <col width="4">
-                <col>
-                <cfif hasNavigation><col>
-                <col></cfif>
-                <col width="4">
-                <col width="20">
-            </colgroup>
-            <tr>
-            	<td><cfmodule template="img.cfm" src="box-left.png" /></td>
-            	<td style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;">
-               		<cfif len(attributes.title) GT 0><span class="box"><cfmodule template="img.cfm" src="tp.gif" width="7" height="1" />#attributes.title#<cfif structKeyExists(request,'subTitle')> - #request.subTitle#</cfif></span></cfif></td>
-            	<cfif hasNavigation>
-                <td width="352" align="right" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;"><cfmodule template="img.cfm" src="box-del.png" /></td>
-            	<td width="65" align="center" style="background-image:url(<cfmodule type="css" template="img.cfm" src="box-bg.png" />);background-repeat:repeat-x;"><a class="navsub" style="font-size:9pt;" href="#request.self#?action=logout">Logout</a></td>
-                </cfif>
-                
-            	<td><cfmodule template="img.cfm" src="box-right.png" /></td>
-                <td><cfmodule template="img.cfm" src="tp.gif" width="20" height="1" /></td>
-            </tr>
-            </table><br><br>
-            </div>
-         <div id="content" style="text-align:left;margin:0px 30px 10px 30px;">         
-           #thistag.generatedContent#</cfoutput>
-		
-		</div>
-	</td>
-    
-	<td width="11" valign="top"><cfmodule template="img.cfm" vspace="#session.screenMode EQ "full"?140:67#" src="shadow-right.gif" /></td>
-</tr>
-<tr>
-			<td colspan="#iif(hasNavigation,de(5),de(4))#" align="center" class="copy"><cfoutput>&copy; #Year(Now())# <a href="http://www.getrailo.com" target="_blank">Railo Technologies GmbH Switzerland</a>. All Rights Reserved. | Designed by <a href="http://www.blueriver.com/from/railo/" target="_blank">Blue River Interactive Group, Inc.</a>
-			</cfoutput><br><br></td>
-		</tr>
-
-</table></center>
 </body>
 </html>
-<cfif false and StructKeyExists(application,'notTranslated')>
-<cfset keys=structKeyArray(application.notTranslated)>
-<cfset ArraySort(keys,'textnocase')>
-<!--
-The following text is not translated the the current language
-<cfloop  array="#keys#" index="key"><data key="#key#">#trim(application.notTranslated[key])#</data>
-</cfloop>
--->
-</cfif>
-
 </cfoutput>
-
-
-<cfset thistag.generatedcontent="">
-
+	<cfset thistag.generatedcontent="">
 </cfif>
-<cfparam name="url.showdebugoutput" default="no"><cfsetting showdebugoutput="#url.showdebugoutput#">
+<cfparam name="url.showdebugoutput" default="no">
+<cfsetting showdebugoutput="#url.showdebugoutput#">
