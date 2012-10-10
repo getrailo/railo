@@ -12,19 +12,12 @@
 </cfif>
 
 <!--- todo: remember screenwidth, so images have the correct width etc. --->
-<cfparam name="session.screenWidth" default="825">
-<cfparam name="session.screenMode" default="compact">
-<cfif structKeyExists(url,'screenmode')>
-	<cfset session.screenmode=url.screenmode>
-    <cfset session.realScreenSize=url.realScreenSize>
-    <cfif session.screenmode EQ "full">
-    	<cfset session.screenwidth=session.realScreenSize-260>
-    <cfelse>
-    	<cfset session.screenwidth=825>
-    </cfif>
-</cfif>
-
-
+<!--- PK: instead of session.screenWidth, we now have:
+	application.adminfunctions.getdata('fullscreen')
+	application.adminfunctions.getdata('contentwidth')
+	If fullscreen==true, then you can use the contentwidth variable.
+	Otherwise, use the regular content width.
+--->
 
 <cfif structKeyExists(url,'enable')>
 	<cfset session.enable=url.enable>

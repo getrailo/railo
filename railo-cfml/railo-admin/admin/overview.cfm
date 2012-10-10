@@ -3,7 +3,7 @@ Defaults --->
 <cfset error.message="">
 <cfset error.detail="">
 <cfparam name="form.mainAction" default="none">
-<cfset fullMode=structKeyExists(session,"screenMode") && session.screenMode EQ "full">
+
 <cftry>
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->

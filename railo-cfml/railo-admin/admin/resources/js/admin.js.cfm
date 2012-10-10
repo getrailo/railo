@@ -313,7 +313,8 @@ function resizelayout(e)
 	var isfull = $('body').hasClass('full') == 0;
 	$('body').toggleClass('full');
 	e.preventDefault();
-
+	var contentwidth = parseInt($('#innercontent').width(), 10);
 	$.get('?action=internal.savedata&action2=setdata&key=fullscreen&data='+isfull);
+	$.get('?action=internal.savedata&action2=setdata&key=contentwidth&data='+contentwidth);
 	return false;
-}
+};
