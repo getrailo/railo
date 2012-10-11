@@ -416,7 +416,7 @@ public class HibernateORMEngine implements ORMEngine {
 				finally{
 					pc.removeLastPageSource(true);
 				}
-				xml=XMLCaster.toString(root.getChildNodes(),true);
+				xml=XMLCaster.toString(root.getChildNodes(),true,true);
 				saveMapping(ormConf,cfc,root);
 			}
 			// load
@@ -442,7 +442,7 @@ public class HibernateORMEngine implements ORMEngine {
 				res=res.getParentResource().getRealResource(res.getName()+".hbm.xml");
 				try{
 				IOUtil.write(res, 
-						XMLCaster.toString(hm,false,
+						XMLCaster.toString(hm,false,true,
 								HibernateSessionFactory.HIBERNATE_3_PUBLIC_ID,
 								HibernateSessionFactory.HIBERNATE_3_SYSTEM_ID,
 								HibernateSessionFactory.HIBERNATE_3_ENCODING), HibernateSessionFactory.HIBERNATE_3_ENCODING, false);
