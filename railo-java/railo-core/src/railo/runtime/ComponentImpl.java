@@ -1923,7 +1923,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean preferBaseProperties, boolean inheritedMappedSuperClassOnly) {
-		Map<String,Property> props=new HashMap<String,Property>();
+		Map<String,Property> props=new LinkedHashMap<String,Property>();
 		_getProperties(top,props,onlyPeristent, includeBaseProperties, preferBaseProperties, inheritedMappedSuperClassOnly);
 		return props.values().toArray(new Property[props.size()]);
 	}
