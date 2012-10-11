@@ -155,7 +155,6 @@ public final class IOUtil {
     	copy(in, out, offset, length,0xffff);
     }
     
-
     public static final void copy(InputStream in, OutputStream out, long offset, long length) throws IOException {
     	int len;
         byte[] buffer;
@@ -163,15 +162,23 @@ public final class IOUtil {
     	
     	// first offset to start
     	if(offset>0) {
-    		while(true) {
-            	if(block>offset)block=(int)offset;
-            	buffer = new byte[block];
-            	len = in.read(buffer);
-            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
-            	//dnos.write(buffer, 0, len);
-            	offset-=len;
-            	if(offset<=0) break;
-            }
+    		long skipped=0;
+    		try{
+    			skipped = in.skip(offset);
+    		}
+    		catch(Throwable t){}
+    		
+			if(skipped==0) {
+	    		while(true) {
+	            	if(block>offset)block=(int)offset;
+	            	buffer = new byte[block];
+	            	len = in.read(buffer);
+	            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
+	            	//dnos.write(buffer, 0, len);
+	            	offset-=len;
+	            	if(offset<=0) break;
+	            }
+    		}
     	}
     	
     	// write part
@@ -199,16 +206,24 @@ public final class IOUtil {
     	
     	// first offset to start
     	if(offset>0) {
-    		block = blockSize;//0xffff;
-        	while(true) {
-            	if(block>offset)block=offset;
-            	buffer = new byte[block];
-            	len = in.read(buffer);
-            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
-            	//dnos.write(buffer, 0, len);
-            	offset-=len;
-            	if(offset<=0) break;
-            }
+    		long skipped=0;
+    		try{
+    			skipped = in.skip(offset);
+    		}
+    		catch(Throwable t){}
+    		
+			if(skipped==0) {
+	    		block = blockSize;//0xffff;
+	        	while(true) {
+	            	if(block>offset)block=offset;
+	            	buffer = new byte[block];
+	            	len = in.read(buffer);
+	            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
+	            	//dnos.write(buffer, 0, len);
+	            	offset-=len;
+	            	if(offset<=0) break;
+	            }
+			}
     	}
     	
     	// write part
@@ -226,7 +241,6 @@ public final class IOUtil {
         	length-=len;
         	if(length<=0) break;
         }
-    	
     }
 
 	/**
