@@ -404,7 +404,8 @@ public final class ComponentUtil {
     	
 		
 		// create file
-		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(component.getProperties(false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
+		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(
+				ComponentUtil.getProperties(component, false, true, false, false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
     	ResourceUtil.touch(classFile);
     	IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
     	cl = (PhysicalClassLoader)config.getRPCClassLoader(true);
