@@ -168,7 +168,7 @@ public final class IOUtil {
     		}
     		catch(Throwable t){}
     		
-			if(skipped==0) {
+			if(skipped<=0) {
 	    		while(true) {
 	            	if(block>offset)block=(int)offset;
 	            	buffer = new byte[block];
@@ -212,7 +212,7 @@ public final class IOUtil {
     		}
     		catch(Throwable t){}
     		
-			if(skipped==0) {
+			if(skipped<=0) {
 	    		block = blockSize;//0xffff;
 	        	while(true) {
 	            	if(block>offset)block=offset;
