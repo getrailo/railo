@@ -1324,7 +1324,15 @@ public final class Caster {
         if(o instanceof Character) return (((Character)o).charValue());
         else if(o instanceof Boolean) return ((((Boolean)o).booleanValue())?1L:0L);
         else if(o instanceof Number) return (((Number)o).longValue());
-        else if(o instanceof String) return (long)toDoubleValue(o.toString());                                                                                                                                                      
+        else if(o instanceof String) {
+        	String str=(String)o;
+        	try{
+        		return Long.parseLong(str);
+        	}
+        	catch(NumberFormatException nfe){
+        		return (long)toDoubleValue(str);
+        	}                                                                                                                                                     
+        }
         else if(o instanceof Castable) return (long)((Castable)o).castToDoubleValue();    
         else if(o instanceof ObjectWrap) return toLongValue(((ObjectWrap)o).getEmbededObject());
 		
@@ -4205,7 +4213,7 @@ public final class Caster {
 		else if(trgClass==byte.class)return Caster.toByte(obj); 
 		else if(trgClass==short.class)return Caster.toShort(obj); 
 		else if(trgClass==int.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
-		else if(trgClass==long.class)return Long.valueOf(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==long.class)return Caster.toLong(obj);
 		else if(trgClass==float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==double.class)return Caster.toDouble(obj); 
 		else if(trgClass==char.class)return Caster.toCharacter(obj); 
@@ -4214,7 +4222,7 @@ public final class Caster {
 		else if(trgClass==Byte.class)return Caster.toByte(obj); 
 		else if(trgClass==Short.class)return Caster.toShort(obj); 
 		else if(trgClass==Integer.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
-		else if(trgClass==Long.class)return Long.valueOf(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==Long.class)return Caster.toLong(obj); 
 		else if(trgClass==Float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==Double.class)return Caster.toDouble(obj); 
 		else if(trgClass==Character.class)return Caster.toCharacter(obj); 
