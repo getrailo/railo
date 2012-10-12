@@ -1574,7 +1574,7 @@ public class HBMCreator {
 			
 			
 		}
-		throw new ORMException(engine, "cannot terminate forgein key column name for component "+cfc.getName());
+		throw new ORMException(engine, "cannot terminate foreign key column name for component "+cfc.getName());
 	}
 	
 	
@@ -1589,7 +1589,7 @@ public class HBMCreator {
 			}
 			else if(prop!=null)str=toString(engine,cfc,prop,prop.getDynamicAttributes(),"fkcolumn",true);
 			else
-				throw new ORMException(engine, "cannot terminate forgein key column name");
+				throw new ORMException(engine,"cannot terminate foreign key column name for component "+cfc.getName());
 			
 			str=HibernateCaster.getEntityName(cfc)+"_"+str;
 		}
