@@ -26,10 +26,19 @@
 </cfoutput>
 
 <cfif structKeyExists(url, 'q') and len(url.q)>
+	<cfset variables.indexFile = 'resources/searchdata/searchindex.cfm' />
+
+	<!--- do initial or new indexing when a new Railo version is detected --->
+	<cfif not fileExists(variables.indexFile)
+	or structKeyExists(url, "reindex")
+	or fileRead('resources/searchdata/indexed-railo-version.cfm') neq server.railo.version>
+		<cfinclude template="admin.search.index.cfm" />
+	</cfif>
+
 	<cfset foundpages = {} />
 	
 	<!--- get the translations2actions data--->
-	<cfset keys2action = evaluate(fileread('resources/searchdata/searchindex.cfm')) />
+	<cfset keys2action = evaluate(fileread(variables.indexFile)) />
 	
 	<!--- loop through translations--->
 	<cfset data = application.stText[session.railo_admin_lang] />
