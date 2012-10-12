@@ -130,6 +130,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterRemote;
+import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuter;
@@ -317,7 +318,7 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
+    public static void load(ConfigServerImpl cs, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
     	ThreadLocalConfig.register(config);
     	// fix
@@ -328,60 +329,53 @@ public final class ConfigWebFactory {
 			} catch (SAXException e) {}
     	}
     	
-    	loadConstants(configServer,config,doc);
-    	loadTempDirectory(configServer, config, doc,isReload);
+    	loadRailoConfig(cs,config,doc);
+    	int mode = config.getMode();
+    	loadConstants(cs,config,doc);
+    	loadTempDirectory(cs, config, doc,isReload);
     	loadId(config);
     	loadVersion(config,doc);
-    	loadSecurity(configServer,config,doc);
-        ConfigServerImpl cs = configServer;
-        /* SNSN
-        if(configServer!=null) {
-            int version = configServer.getSerialNumber().getVersion();
-            boolean hasServerContext = version==SerialNumber.VERSION_ENTERPRISE || version==SerialNumber.VERSION_DEVELOP;
-            if(!hasServerContext)configServer=null;
-        }*/
+    	loadSecurity(cs,config,doc);
         loadLib(cs,config);
         loadSystem(cs, config, doc);
-        loadORM(configServer, config, doc);
+        loadORM(cs, config, doc);
     	loadResourceProvider(cs,config,doc);
-        loadCharset(configServer,config,doc);
-        loadMappings(configServer,config,doc);
-        loadRest(configServer,config,doc);
-        loadExtensions(configServer,config,doc);
-        loadPagePool(configServer,config,doc);
-        loadDataSources(configServer,config,doc);
-        loadCache(configServer,config,doc);
-        loadCustomTagsMappings(configServer,config,doc);
-    	loadPassword(cs,config,doc);
-    	//loadLabel(cs,config,doc);
+        loadCharset(cs,config,doc);
+        loadMappings(cs,config,doc);
+        loadRest(cs,config,doc);
+        loadExtensions(cs,config,doc);
+        loadPagePool(cs,config,doc);
+        loadDataSources(cs,config,doc);
+        loadCache(cs,config,doc);
+        loadCustomTagsMappings(cs,config,doc,mode);
     	loadFilesystem(cs,config,doc, doNew); // load tlds
     	loadTag(cs,config,doc); // load tlds
-        loadRegional(configServer,config,doc);
-        loadCompiler(configServer,config,doc);
-    	loadScope(configServer,config,doc);
-    	loadMail(configServer,config,doc);
-        loadSearch(configServer,config,doc);
-    	loadScheduler(configServer,config,doc);
-    	loadDebug(configServer,config,doc);
-    	loadError(configServer,config,doc);
-        loadCFX(configServer,config,doc);
-    	loadComponent(configServer,config,doc);
-        loadApplication(configServer,config,doc);
+        loadRegional(cs,config,doc);
+        loadCompiler(cs,config,doc,mode);
+    	loadScope(cs,config,doc,mode);
+    	loadMail(cs,config,doc);
+        loadSearch(cs,config,doc);
+    	loadScheduler(cs,config,doc);
+    	loadDebug(cs,config,doc);
+    	loadError(cs,config,doc);
+        loadCFX(cs,config,doc);
+    	loadComponent(cs,config,doc,mode);
+        loadApplication(cs,config,doc,mode);
         loadUpdate(cs,config,doc);
         loadJava(cs,config,doc); // define compile type
         loadSetting(cs,config,doc);
         loadProxy(cs,config,doc);
         loadRemoteClient(cs, config, doc);
         loadVideo(cs, config, doc);
-        loadFlex(configServer,config,doc);
+        loadFlex(cs,config,doc);
         settings(config);
         loadListener(cs,config,doc);
     	loadDumpWriter(cs, config, doc);
-    	loadGatewayEL(configServer,config,doc);
-    	loadExeLog(configServer,config,doc);
-    	loadThreadQueue(configServer, config, doc);
-    	loadMonitors(configServer,config,doc);
-    	loadLogin(configServer, config, doc);
+    	loadGatewayEL(cs,config,doc);
+    	loadExeLog(cs,config,doc);
+    	loadThreadQueue(cs, config, doc);
+    	loadMonitors(cs,config,doc);
+    	loadLogin(cs, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -2297,7 +2291,7 @@ public final class ConfigWebFactory {
      * @param doc
      * @throws IOException
      */
-    private static void loadCustomTagsMappings(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+    private static void loadCustomTagsMappings(ConfigServerImpl configServer, ConfigImpl config, Document doc, int mode) {
 	    
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_CUSTOM_TAG);
         boolean hasCS=configServer!=null;
@@ -2317,36 +2311,50 @@ public final class ConfigWebFactory {
         }
 
         // do custom tag local search
-        String strDoCTLocalSearch=customTag.getAttribute("custom-tag-local-search");
-        if(hasAccess && !StringUtil.isEmpty(strDoCTLocalSearch)) {
-        	config.setDoLocalCustomTag(Caster.toBooleanValue(strDoCTLocalSearch.trim(),true));
+        if(mode==ConfigImpl.MODE_STRICT) {
+        	config.setDoLocalCustomTag(false);
         }
-        else if(hasCS) {
-            config.setDoLocalCustomTag(configServer.doLocalCustomTag());
+        else {
+	        String strDoCTLocalSearch=customTag.getAttribute("custom-tag-local-search");
+	        if(hasAccess && !StringUtil.isEmpty(strDoCTLocalSearch)) {
+	        	config.setDoLocalCustomTag(Caster.toBooleanValue(strDoCTLocalSearch.trim(),true));
+	        }
+	        else if(hasCS) {
+	            config.setDoLocalCustomTag(configServer.doLocalCustomTag());
+	        }
         }
 
         // do custom tag deep search
-        String strDoCTDeepSearch=customTag.getAttribute("custom-tag-deep-search");
-        if(hasAccess && !StringUtil.isEmpty(strDoCTDeepSearch)) {
-        	config.setDoCustomTagDeepSearch(Caster.toBooleanValue(strDoCTDeepSearch.trim(),false));
+        if(mode==ConfigImpl.MODE_STRICT) {
+        	config.setDoCustomTagDeepSearch(false);
         }
-        else if(hasCS) {
-            config.setDoCustomTagDeepSearch(configServer.doCustomTagDeepSearch());
+        else {
+	        String strDoCTDeepSearch=customTag.getAttribute("custom-tag-deep-search");
+	        if(hasAccess && !StringUtil.isEmpty(strDoCTDeepSearch)) {
+	        	config.setDoCustomTagDeepSearch(Caster.toBooleanValue(strDoCTDeepSearch.trim(),false));
+	        }
+	        else if(hasCS) {
+	            config.setDoCustomTagDeepSearch(configServer.doCustomTagDeepSearch());
+	        }
         }
 
         // extensions
-        String strExtensions=customTag.getAttribute("extensions");
-        if(hasAccess && !StringUtil.isEmpty(strExtensions)) {
-        	try {
-				String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(strExtensions, ","));
-				config.setCustomTagExtensions(List.trimItems(arr));
-			} 
-        	catch (PageException e) {}
+        if(mode==ConfigImpl.MODE_STRICT) {
+        	config.setCustomTagExtensions(new String[]{"cfc"});
         }
-        else if(hasCS) {
-            config.setCustomTagExtensions(configServer.getCustomTagExtensions());
+        else {
+	        String strExtensions=customTag.getAttribute("extensions");
+	        if(hasAccess && !StringUtil.isEmpty(strExtensions)) {
+	        	try {
+					String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(strExtensions, ","));
+					config.setCustomTagExtensions(List.trimItems(arr));
+				} 
+	        	catch (PageException e) {}
+	        }
+	        else if(hasCS) {
+	            config.setCustomTagExtensions(configServer.getCustomTagExtensions());
+	        }
         }
-
         
         // Web Mapping
         boolean hasSet=false;
@@ -2428,8 +2436,9 @@ public final class ConfigWebFactory {
      * @param config
      * @param doc
      */
-    private static void loadPassword(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
-		Element railoConfiguration = doc.getDocumentElement();
+    private static void loadRailoConfig(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+		// password
+    	Element railoConfiguration = doc.getDocumentElement();
 		String password=railoConfiguration.getAttribute("password");
 		if(!StringUtil.isEmpty(password)) {
 		    config.setPassword(new BlowfishEasy("tpwisgh").decryptString(password));
@@ -2443,6 +2452,20 @@ public final class ConfigWebFactory {
 		    if(!StringUtil.isEmpty(password))
 		        ((ConfigServerImpl)config).setDefaultPassword(new BlowfishEasy("tpwisgh").decryptString(password));
 		}
+		
+		// mode
+		String mode=railoConfiguration.getAttribute("mode");
+		if(!StringUtil.isEmpty(mode,true)) {
+			mode=mode.trim();
+			if("custom".equalsIgnoreCase(mode)) 
+				config.setMode(ConfigImpl.MODE_CUSTOM);
+			if("strict".equalsIgnoreCase(mode)) 
+				config.setMode(ConfigImpl.MODE_STRICT);
+		}
+		else if (configServer!=null) {
+		    config.setMode(configServer.getMode());
+		}
+		
     }
     
     
@@ -3193,7 +3216,7 @@ public final class ConfigWebFactory {
      * @throws PageException
      * @throws IOException
      */
-    private static void loadScope(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws PageException {
+    private static void loadScope(ConfigServerImpl configServer, ConfigImpl config, Document doc, int mode) throws PageException {
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
       	Element scope=getChildByName(doc.getDocumentElement(),"scope");
@@ -3221,12 +3244,17 @@ public final class ConfigWebFactory {
       	
       	
       	// Local Mode
-        String strLocalMode=scope.getAttribute("local-mode");
-        if(hasAccess && !StringUtil.isEmpty(strLocalMode)) {
-  	        config.setLocalMode(strLocalMode);
-  	    }
-  	    else if(hasCS) config.setLocalMode(configServer.getLocalMode());
-      	
+        if(mode==ConfigImpl.MODE_STRICT) {
+        	config.setLocalMode(Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS);
+        }
+        else {
+	        String strLocalMode=scope.getAttribute("local-mode");
+	        if(hasAccess && !StringUtil.isEmpty(strLocalMode)) {
+	  	        config.setLocalMode(strLocalMode);
+	  	    }
+	  	    else if(hasCS) config.setLocalMode(configServer.getLocalMode());
+        }
+        
       	// Session-Type
             String strSessionType=scope.getAttribute("session-type");
 	  	    if(hasAccess && !StringUtil.isEmpty(strSessionType)) {
@@ -3235,18 +3263,28 @@ public final class ConfigWebFactory {
 	  	    else if(hasCS) config.setSessionType(configServer.getSessionType());
       	
   	    // Cascading
-  	    String strScopeCascadingType=scope.getAttribute("cascading");
-  	    if(hasAccess && !StringUtil.isEmpty(strScopeCascadingType)) {
-  	        config.setScopeCascadingType(strScopeCascadingType);
-  	    }
-  	    else if(hasCS) config.setScopeCascadingType(configServer.getScopeCascadingType());
-      	
-  	    // cascade-to-resultset
-  	    String strAllowImplicidQueryCall=scope.getAttribute("cascade-to-resultset");
-  	    if(hasAccess && !StringUtil.isEmpty(strAllowImplicidQueryCall)) {
-	        config.setAllowImplicidQueryCall(toBoolean(strAllowImplicidQueryCall,true));
+	  	if(mode==ConfigImpl.MODE_STRICT) {
+	  		  config.setScopeCascadingType(Config.SCOPE_STRICT);
 	    }
-	    else if(hasCS) config.setAllowImplicidQueryCall(configServer.allowImplicidQueryCall());
+	    else {
+	  	    String strScopeCascadingType=scope.getAttribute("cascading");
+	  	    if(hasAccess && !StringUtil.isEmpty(strScopeCascadingType)) {
+	  	        config.setScopeCascadingType(strScopeCascadingType);
+	  	    }
+	  	    else if(hasCS) config.setScopeCascadingType(configServer.getScopeCascadingType());
+	    }
+  	    
+  	    // cascade-to-resultset
+	  	if(mode==ConfigImpl.MODE_STRICT) {
+	  		  config.setAllowImplicidQueryCall(false);
+	    }
+	    else {
+	  	    String strAllowImplicidQueryCall=scope.getAttribute("cascade-to-resultset");
+	  	    if(hasAccess && !StringUtil.isEmpty(strAllowImplicidQueryCall)) {
+		        config.setAllowImplicidQueryCall(toBoolean(strAllowImplicidQueryCall,true));
+		    }
+		    else if(hasCS) config.setAllowImplicidQueryCall(configServer.allowImplicidQueryCall());
+	    }
   	    
 	    // Merge url and Form
   	    String strMergeFormAndURL=scope.getAttribute("merge-url-form");
@@ -3834,7 +3872,7 @@ public final class ConfigWebFactory {
      * @param doc
      * @throws IOException 
      */
-    private static void loadComponent(ConfigServer configServer, ConfigImpl config, Document doc) {
+    private static void loadComponent(ConfigServer configServer, ConfigImpl config, Document doc, int mode) {
       	Element component=getChildByName(doc.getDocumentElement(),"component");
       	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         boolean hasSet=false;
@@ -3861,14 +3899,18 @@ public final class ConfigWebFactory {
       	    config.setBaseComponentTemplate(strBase);
       	    
       	    // deep search
-            String strDeepSearch=component.getAttribute("deep-search");
-            if(!StringUtil.isEmpty(strDeepSearch)) {
-            	config.setDoComponentDeepSearch(Caster.toBooleanValue(strDeepSearch.trim(),false));
-            }
-            else if(hasCS) {
-                config.setDoComponentDeepSearch(((ConfigServerImpl)configServer).doComponentDeepSearch());
-            }
-      	    
+      	    if(mode==ConfigImpl.MODE_STRICT) {
+	  			config.setDoComponentDeepSearch(false);
+		    }
+		    else {
+	            String strDeepSearch=component.getAttribute("deep-search");
+	            if(!StringUtil.isEmpty(strDeepSearch)) {
+	            	config.setDoComponentDeepSearch(Caster.toBooleanValue(strDeepSearch.trim(),false));
+	            }
+	            else if(hasCS) {
+	                config.setDoComponentDeepSearch(((ConfigServerImpl)configServer).doComponentDeepSearch());
+	            }
+		    }
       	    
       	    // Dump-Template
       	    String strDumpRemplate=component.getAttribute("dump-template");
@@ -3878,33 +3920,48 @@ public final class ConfigWebFactory {
       	    config.setComponentDumpTemplate(strDumpRemplate);
       	    
       	    // data-member-default-access
-      	    String strDmda=component.getAttribute("data-member-default-access");
-      	    if(strDmda!=null && strDmda.trim().length()>0) {
-      	        strDmda=strDmda.toLowerCase().trim();
-      	        if(strDmda.equals("remote"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_REMOTE);
-      	        else if(strDmda.equals("public"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_PUBLIC);
-      	        else if(strDmda.equals("package"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_PACKAGE);
-      	        else if(strDmda.equals("private"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_PRIVATE);      	      
-      	    }
-      	    else if(configServer!=null) {
-          	    config.setComponentDataMemberDefaultAccess(configServer.getComponentDataMemberDefaultAccess());  
-      	    }
+      	    if(mode==ConfigImpl.MODE_STRICT) {
+      	    	config.setComponentDataMemberDefaultAccess(Component.ACCESS_PRIVATE); 
+		    }
+		    else {
+	      	    String strDmda=component.getAttribute("data-member-default-access");
+	      	    if(strDmda!=null && strDmda.trim().length()>0) {
+	      	        strDmda=strDmda.toLowerCase().trim();
+	      	        if(strDmda.equals("remote"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_REMOTE);
+	      	        else if(strDmda.equals("public"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_PUBLIC);
+	      	        else if(strDmda.equals("package"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_PACKAGE);
+	      	        else if(strDmda.equals("private"))config.setComponentDataMemberDefaultAccess(Component.ACCESS_PRIVATE);      	      
+	      	    }
+	      	    else if(configServer!=null) {
+	          	    config.setComponentDataMemberDefaultAccess(configServer.getComponentDataMemberDefaultAccess());  
+	      	    }
+		    }
       	    
       	    // trigger-properties
-      	    Boolean tp = Caster.toBoolean(component.getAttribute("trigger-data-member"),null);
-	    	if(tp!=null)config.setTriggerComponentDataMember(tp.booleanValue());
-	    	else if(configServer!=null) {
-          	    config.setTriggerComponentDataMember(configServer.getTriggerComponentDataMember());  
-      	    }
+      	    if(mode==ConfigImpl.MODE_STRICT) {
+      	    	config.setTriggerComponentDataMember(true);
+		    }
+		    else {
+	      	    Boolean tp = Caster.toBoolean(component.getAttribute("trigger-data-member"),null);
+		    	if(tp!=null)config.setTriggerComponentDataMember(tp.booleanValue());
+		    	else if(configServer!=null) {
+	          	    config.setTriggerComponentDataMember(configServer.getTriggerComponentDataMember());  
+	      	    }
+		    }
 	    	
 	    	// local search
-	    	Boolean ls = Caster.toBoolean(component.getAttribute("local-search"),null);
-	    	if(ls!=null)config.setComponentLocalSearch(ls.booleanValue());
-	    	else if(configServer!=null) {
-	    		config.setComponentLocalSearch(((ConfigServerImpl)configServer).getComponentLocalSearch()); 
-      	    }
+      	    if(mode==ConfigImpl.MODE_STRICT) {
+    	    	config.setComponentLocalSearch(false);
+		    }
+		    else {
+		    	Boolean ls = Caster.toBoolean(component.getAttribute("local-search"),null);
+		    	if(ls!=null)config.setComponentLocalSearch(ls.booleanValue());
+		    	else if(configServer!=null) {
+		    		config.setComponentLocalSearch(((ConfigServerImpl)configServer).getComponentLocalSearch()); 
+	      	    }
+		    }
 
-	    	// use component shadow
+	    	// use cache path
 	    	Boolean ucp = Caster.toBoolean(component.getAttribute("use-cache-path"),null);
 	    	if(ucp!=null)config.setUseComponentPathCache(ucp.booleanValue());
 	    	else if(configServer!=null) {
@@ -3912,19 +3969,39 @@ public final class ConfigWebFactory {
       	    }
 
 	    	// use component shadow
-	    	Boolean ucs = Caster.toBoolean(component.getAttribute("use-shadow"),null);
-	    	if(ucs!=null)config.setUseComponentShadow(ucs.booleanValue());
-	    	else if(configServer!=null) {
-	    		config.setUseComponentShadow(configServer.useComponentShadow()); 
-      	    }
+	    	if(mode==ConfigImpl.MODE_STRICT) {
+    	    	config.setUseComponentShadow(false);
+		    }
+		    else {
+		    	Boolean ucs = Caster.toBoolean(component.getAttribute("use-shadow"),null);
+		    	if(ucs!=null)config.setUseComponentShadow(ucs.booleanValue());
+		    	else if(configServer!=null) {
+		    		config.setUseComponentShadow(configServer.useComponentShadow()); 
+	      	    }
+		    }
 	    	
 	    	
         }
       	else if(configServer!=null) {
       	    config.setBaseComponentTemplate(configServer.getBaseComponentTemplate());
       	    config.setComponentDumpTemplate(configServer.getComponentDumpTemplate());
-      	    config.setComponentDataMemberDefaultAccess(configServer.getComponentDataMemberDefaultAccess());  
-      	    config.setTriggerComponentDataMember(configServer.getTriggerComponentDataMember());  
+      	    if(mode==ConfigImpl.MODE_STRICT) {
+		    	config.setComponentDataMemberDefaultAccess(Component.ACCESS_PRIVATE);  
+		    	config.setTriggerComponentDataMember(true); 
+		    }
+		    else {
+		    	config.setComponentDataMemberDefaultAccess(configServer.getComponentDataMemberDefaultAccess());  
+		    	config.setTriggerComponentDataMember(configServer.getTriggerComponentDataMember()); 
+		    }
+      	}
+      	
+      	if(mode==ConfigImpl.MODE_STRICT){
+  			config.setDoComponentDeepSearch(false);
+	    	config.setComponentDataMemberDefaultAccess(Component.ACCESS_PRIVATE);  
+	    	config.setTriggerComponentDataMember(true);
+	    	config.setComponentLocalSearch(false);
+	    	config.setUseComponentShadow(false);
+      		
       	}
       	
      // Web Mapping
@@ -4071,27 +4148,38 @@ public final class ConfigWebFactory {
       	
     }
 
-    private static void loadCompiler(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+    private static void loadCompiler(ConfigServerImpl configServer, ConfigImpl config, Document doc, int mode) {
         boolean hasCS=configServer!=null;
         
     	
         Element compiler=getChildByName(doc.getDocumentElement(),"compiler");
 
-        
-        String supress=compiler.getAttribute("supress-ws-before-arg");
-        if(!StringUtil.isEmpty(supress,true)){
-        	config.setSupressWSBeforeArg(Caster.toBooleanValue(supress,true));
+        // supress WS between cffunction and cfargument
+        if(mode==ConfigImpl.MODE_STRICT) {
+        	config.setSupressWSBeforeArg(true);
         }
-        else if(hasCS){
-        	config.setSupressWSBeforeArg(configServer.getSupressWSBeforeArg());
+        else {
+	        String supress=compiler.getAttribute("supress-ws-before-arg");
+	        if(!StringUtil.isEmpty(supress,true)){
+	        	config.setSupressWSBeforeArg(Caster.toBooleanValue(supress,true));
+	        }
+	        else if(hasCS){
+	        	config.setSupressWSBeforeArg(configServer.getSupressWSBeforeArg());
+	        }
         }
 
-        String _case=compiler.getAttribute("dot-notation-upper-case");
-        if(!StringUtil.isEmpty(_case,true)){
-        	config.setDotNotationUpperCase(Caster.toBooleanValue(_case,true));
+        // do dot notation keys upper case
+        if(mode==ConfigImpl.MODE_STRICT) {
+        	config.setDotNotationUpperCase(false);
         }
-        else if(hasCS){
-        	config.setDotNotationUpperCase(configServer.getDotNotationUpperCase());
+        else {
+	        String _case=compiler.getAttribute("dot-notation-upper-case");
+	        if(!StringUtil.isEmpty(_case,true)){
+	        	config.setDotNotationUpperCase(Caster.toBooleanValue(_case,true));
+	        }
+	        else if(hasCS){
+	        	config.setDotNotationUpperCase(configServer.getDotNotationUpperCase());
+	        }
         }
     }
 
@@ -4103,7 +4191,7 @@ public final class ConfigWebFactory {
      * @throws IOException
      * @throws PageException 
      */
-    private static void loadApplication(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException, PageException {
+    private static void loadApplication(ConfigServerImpl configServer, ConfigImpl config, Document doc,int mode) throws IOException, PageException {
         boolean hasCS=configServer!=null;
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
@@ -4145,34 +4233,36 @@ public final class ConfigWebFactory {
         logLevel=LogUtil.toIntType(application.getAttribute("thread-log-level"),Log.LEVEL_ERROR);
         config.setThreadLogger(ConfigWebUtil.getLogAndSource(configServer,config,strLogger,true,logLevel));
         
-        //print.o(strLogger);
-        
-        // Listener
-        //boolean hasCS=configServer!=null;
-        
-        String strListenerType=application.getAttribute("listener-type");
+        // Listener type
         ApplicationListener listener;
-        if(StringUtil.isEmpty(strListenerType) && hasCS) strListenerType=configServer.getApplicationListener().getType();
-
-        // none
-        if("none".equalsIgnoreCase(strListenerType))	{
-        	listener=new NoneAppListener();
-        	listener.setType("none");
-        }
-        // classic
-        else if("classic".equalsIgnoreCase(strListenerType)){
-        	listener=new ClassicAppListener();
-        	listener.setType("classic");
-        }
-        // modern
-        else if("modern".equalsIgnoreCase(strListenerType))	{
+        if(mode==ConfigImpl.MODE_STRICT){
         	listener=new ModernAppListener();
         	listener.setType("modern");
         }
-        // mixed
-        else {
-        	listener=new MixedAppListener();
-        	listener.setType("mixed");
+        else{
+	        String strListenerType=application.getAttribute("listener-type");
+	        if(StringUtil.isEmpty(strListenerType) && hasCS) strListenerType=configServer.getApplicationListener().getType();
+	
+	        // none
+	        if("none".equalsIgnoreCase(strListenerType))	{
+	        	listener=new NoneAppListener();
+	        	listener.setType("none");
+	        }
+	        // classic
+	        else if("classic".equalsIgnoreCase(strListenerType)){
+	        	listener=new ClassicAppListener();
+	        	listener.setType("classic");
+	        }
+	        // modern
+	        else if("modern".equalsIgnoreCase(strListenerType))	{
+	        	listener=new ModernAppListener();
+	        	listener.setType("modern");
+	        }
+	        // mixed
+	        else {
+	        	listener=new MixedAppListener();
+	        	listener.setType("mixed");
+	        }
         }
         
         
@@ -4192,12 +4282,16 @@ public final class ConfigWebFactory {
         config.setApplicationListener(listener);
         
      // Req Timeout URL
-        String allowURLReqTimeout=application.getAttribute("allow-url-requesttimeout");
-        if(hasAccess && !StringUtil.isEmpty(allowURLReqTimeout)) {
-	        config.setAllowURLRequestTimeout(Caster.toBooleanValue(allowURLReqTimeout,false));
-	    }
-	    else if(hasCS) config.setAllowURLRequestTimeout(configServer.isAllowURLRequestTimeout());
-
+        if(mode==ConfigImpl.MODE_STRICT){
+        	config.setAllowURLRequestTimeout(false);
+        }
+        else{
+	        String allowURLReqTimeout=application.getAttribute("allow-url-requesttimeout");
+	        if(hasAccess && !StringUtil.isEmpty(allowURLReqTimeout)) {
+		        config.setAllowURLRequestTimeout(Caster.toBooleanValue(allowURLReqTimeout,false));
+		    }
+		    else if(hasCS) config.setAllowURLRequestTimeout(configServer.isAllowURLRequestTimeout());
+        }
         
         // Req Timeout
         String reqTimeoutApplication=application.getAttribute("requesttimeout");
@@ -4228,13 +4322,17 @@ public final class ConfigWebFactory {
         
         // classic-date-parsing
         if(config instanceof ConfigServer){
-	        String strClassicDateParsing=application.getAttribute("classic-date-parsing");
-	        
-	        if(!StringUtil.isEmpty(strClassicDateParsing)) {
-	        	DateCaster.classicStyle=Caster.toBooleanValue(strClassicDateParsing,false);
-		    }
-        }
-        
+        	if(mode==ConfigImpl.MODE_STRICT){
+        		DateCaster.classicStyle=true;
+        	}
+        	else{
+	            String strClassicDateParsing=application.getAttribute("classic-date-parsing");
+		        
+		        if(!StringUtil.isEmpty(strClassicDateParsing)) {
+		        	DateCaster.classicStyle=Caster.toBooleanValue(strClassicDateParsing,false);
+			    }
+	        }
+    	}
         
 
 	    // Cache

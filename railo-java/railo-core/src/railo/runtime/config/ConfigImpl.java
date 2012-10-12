@@ -134,7 +134,11 @@ public abstract class ConfigImpl implements Config {
 	
 	public static final int AMF_CONFIG_TYPE_XML = 1;
 	public static final int AMF_CONFIG_TYPE_MANUAL = 2;
+
+	public static final int MODE_CUSTOM = 1;
+	public static final int MODE_STRICT = 2;
 	
+	private int mode=MODE_CUSTOM;
 
 	private PhysicalClassLoader rpcClassLoader;
 	private Map datasources=new HashTable();
@@ -3435,6 +3439,14 @@ public abstract class ConfigImpl implements Config {
 	@Override
 	public RestSettings getRestSetting(){
 		return restSetting; 
+	}
+
+	protected void setMode(int mode) {
+		this.mode=mode;
+	}
+
+	public int getMode() {
+		return mode;
 	}
 	
 }
