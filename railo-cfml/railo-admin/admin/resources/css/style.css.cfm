@@ -358,6 +358,8 @@ tr.notOK td {background-color:#f9e0e0;}
 	font-weight:normal;
 	empty-cells:show;
 	border:1px solid #e0e0e0;
+}
+.longwords {
 	word-break:break-all;
 }
 .maintbl th {
