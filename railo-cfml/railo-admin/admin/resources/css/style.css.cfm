@@ -662,6 +662,7 @@ div.percentagebar {
 	font-size: 10px;
 	border:1px solid #999;
 	background-color: #d6eed4;
+	position: relative;
 }
 div.percentagebar div {
 	height:100%;
@@ -670,6 +671,14 @@ div.percentagebar div {
 	background-color:#eee2d4;
 	border-right:1px solid #999;
 	padding-left:2px;
+}
+
+div.percentagebar span {
+	position: absolute;
+ 	top:0px;
+ 	left:3px;
+ 	height:100%;
+ 	font-size: 10px;
 }
 
 
