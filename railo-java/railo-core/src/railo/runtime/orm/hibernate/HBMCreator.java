@@ -1574,7 +1574,7 @@ public class HBMCreator {
 			
 			
 		}
-		throw new ORMException(engine, "cannot terminate forgein key column name");
+		throw new ORMException(engine, "cannot terminate forgein key column name for component "+cfc.getName());
 	}
 	
 	
