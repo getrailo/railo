@@ -52,7 +52,7 @@
 								<form method="get" action="#cgi.SCRIPT_NAME#">
 									<input type="hidden" name="action" value="admin.search" />
 									<input type="text" name="q" size="15" id="navsearch" />
-									<input type="submit" class="button submit" value="Search" />
+									<input type="submit" class="button submit" value="#stText.Buttons.search#" />
 								</form>
 								#attributes.navigation#
 							</cfif>
