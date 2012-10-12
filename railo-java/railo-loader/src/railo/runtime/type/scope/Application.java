@@ -21,11 +21,14 @@ public interface Application extends Scope {
      */
     public abstract boolean isExpired();
 
-	/**
-	 * sets the last access timestamp to now
-	 */
-	public abstract void touch();
+    /**
+     * sets the last access timestamp to now
+     */
+    public abstract void touch();
 
-	public long getCreated();
+    /**
+     * @return Timestamp of when the application scope was created
+     */
+    public long getCreated();
 
 }
