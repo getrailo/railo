@@ -1,11 +1,13 @@
-<cfsilent>
+<cfset c='R0lGODlhBAAHAIABAGZmZgAAACH5BAEAAAEALAAAAAAEAAcAAAIIRA4WaeyrVCgAOw=='><cfif getBaseTemplatePath() EQ getCurrentTemplatePath()><!---
+	
+	---><cfsilent>
 	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
 	<cfif not structKeyExists(application, "oHTTPCaching")>
 		<cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
 	</cfif>
 	
 	<!--- the string to be used as an Etag - in the response header --->
-	<cfset etag = "6104FA61FA1A5988F90186DAA8C2C285" />
+	<cfset etag = "C6FE7786E138760F7662975028B485F0" />
 	<cfset mimetype = "image/gif" />
 	
 	<!--- check if the content was cached on the browser, and set the ETag header. --->
@@ -16,4 +18,6 @@
 
 <!--- file was not cached; send the data --->
 <cfcontent reset="yes" type="#mimetype#"
-	variable="#toBinary('R0lGODlhBAAHAIABAGZmZgAAACH5BAEAAAEALAAAAAAEAAcAAAIIRA4WaeyrVCgAOw==')#" />
+	variable="#toBinary(c)#" />
+<cfelse>data:image/image/gif;base64,<cfoutput>#c#</cfoutput></cfif>
+	

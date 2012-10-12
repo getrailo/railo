@@ -7,7 +7,9 @@
 	<cfif structKeyExists(mimetypes, ext)>
 		<cffile action="readbinary" file="../factory/img/#imgs.name#" variable="data">
 
-<cfsavecontent variable="imgFileCode">{{cfsilent>
+<cfsavecontent variable="imgFileCode">{{cfset c='<cfoutput>#toBase64(data)#</cfoutput>'>{{cfif getBaseTemplatePath() EQ getCurrentTemplatePath()>{{!---
+	
+	--->{{cfsilent>
 	{{cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
 	{{cfif not structKeyExists(application, "oHTTPCaching")>
 		{{cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
@@ -25,7 +27,9 @@
 
 {{!--- file was not cached; send the data --->
 {{cfcontent reset="yes" type="#mimetype#"
-	variable="#toBinary('<cfoutput>#toBase64(data)#</cfoutput>')#" />
+	variable="#toBinary(c)#" />
+{{cfelse>data:image/<cfoutput>#mimetypes[ext]#</cfoutput>;base64,{{cfoutput>#c#{{/cfoutput>{{/cfif>
+	
 </cfsavecontent>
 		<cfset imgFileCode = replace(imgFileCode, '{{', '<', 'all') />
 	
