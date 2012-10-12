@@ -23,54 +23,55 @@ Defaults --->
 <cfparam name="form.mainAction" default="none">
 <cfparam name="form.subAction" default="none">
 
-<cftry>
-	<cfswitch expression="#form.mainAction#">
-	<!--- UPDATE --->
-    
-		<cfcase value="#stText.Buttons.Update#">
-			<cfif form.locale EQ "other">
-				<cfset form.locale=form.locale_other>
-			</cfif>
-			
-			<cfadmin 
-				action="updateRegional"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				
-				timezone="#form.timezone#"
-				locale="#form.locale#"
-				timeserver="#form.timeserver#"
-				usetimeserver="#structKeyExists(form,"usetimeserver") and form.usetimeserver#"
-				remoteClients="#request.getRemoteClients()#"
-				>
+<cfif hasAccess>
+	<cftry>
+		<cfswitch expression="#form.mainAction#">
+		<!--- UPDATE --->
 		
-		</cfcase>
-        <!--- reset to server setting --->
-		<cfcase value="#stText.Buttons.resetServerAdmin#">
-			<cfif form.locale EQ "other">
-				<cfset form.locale=form.locale_other>
-			</cfif>
-			
-			<cfadmin 
-				action="updateRegional"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
+			<cfcase value="#stText.Buttons.Update#">
+				<cfif form.locale EQ "other">
+					<cfset form.locale=form.locale_other>
+				</cfif>
 				
-				timezone=""
-				locale=""
-				timeserver=""
-				usetimeserver=""
-				remoteClients="#request.getRemoteClients()#"
-				>
-		
-		</cfcase>
-	</cfswitch>
-	<cfcatch>
-		<cfset error.message=cfcatch.message>
-		<cfset error.detail=cfcatch.Detail>
-	</cfcatch>
-</cftry>
-
+				<cfadmin 
+					action="updateRegional"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					
+					timezone="#form.timezone#"
+					locale="#form.locale#"
+					timeserver="#form.timeserver#"
+					usetimeserver="#structKeyExists(form,"usetimeserver") and form.usetimeserver#"
+					remoteClients="#request.getRemoteClients()#"
+					>
+			
+			</cfcase>
+			<!--- reset to server setting --->
+			<cfcase value="#stText.Buttons.resetServerAdmin#">
+				<cfif form.locale EQ "other">
+					<cfset form.locale=form.locale_other>
+				</cfif>
+				
+				<cfadmin 
+					action="updateRegional"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					
+					timezone=""
+					locale=""
+					timeserver=""
+					usetimeserver=""
+					remoteClients="#request.getRemoteClients()#"
+					>
+			
+			</cfcase>
+		</cfswitch>
+		<cfcatch>
+			<cfset error.message=cfcatch.message>
+			<cfset error.detail=cfcatch.Detail>
+		</cfcatch>
+	</cftry>
+</cfif>
 
 <cfadmin 
 	action="getLocales"
@@ -87,6 +88,10 @@ Defaults --->
 	password="#session["password"&request.adminType]#"
 	returnVariable="regional">
 
+<cfquery name="timezones" dbtype="query">
+	select * from timezones order by id,display
+</cfquery>
+
 
 <!--- 
 Redirtect to entry --->
@@ -99,135 +104,129 @@ Error Output --->
 <cfset printError(error)>
 <!--- 
 Create Datasource --->
+
 <cfoutput>
-
-
-<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
-
-
-
-
-<table class="tbl" width="100%">
-<colgroup>
-    <col width="150">
-    <col>
-</colgroup>
-<tr>
-	<td colspan="2">
-<cfif request.adminType EQ "server">
-	#stText.Regional.Server#
-</cfif>
-	#stText.Regional.Web#
-	</td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-<!---
-replaced with encoding output
-<tr>
-	<td class="tblHead" width="150">#stText.Regional.DefaultEncoding#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Regional.DefaultEncodingDescription#</span>
-		<cfif hasAccess>
-		<cfinput type="text" name="defaultencoding" value="#regional.defaultEncoding#" 
-			style="width:200px" required="yes" message="#stText.regional.missingEncoding#">
-		
-		<cfelse>
-			<input type="hidden" name="defaultencoding" value="#regional.defaultEncoding#">
-		
-			<b>#regional.defaultEncoding#</b>
-		</cfif>
-	</td>
-</tr>
---->
-
-<tr>
-	<td class="tblHead" width="150">#stText.Regional.Locale#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Regional.LocaleDescription#</span><br>
-		<cfif hasAccess>
-		<cfset hasFound=false>
-		<cfset keys=structSort(locales,'textnocase')>
-		
-        
-        
-        <select name="locale">
-			<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
-			 ---><cfloop collection="#keys#" item="i"><cfset key=keys[i]><option value="#key#" <cfif key EQ regional.locale>selected<cfset hasFound=true></cfif>>#locales[key]#</option><!--- 
-			 ---></cfloop>
-		</select>
-        
-		<!--- <input type="text" name="locale_other" value="<cfif not hasFound>#regional.locale#</cfif>" style="width:200px"> --->
-		<cfelse>
-			<b>#regional.locale#</b>
-		</cfif>
-	</td>
-</tr>
-<cfquery name="timezones" dbtype="query">
-	select * from timezones order by id,display
-</cfquery>
-<tr>
-	<td class="tblHead" width="150">#stText.Regional.TimeZone#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Regional.TimeZoneDescription#</span>
-		<cfif hasAccess>
-		<select name="timezone">
-			<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
-			<cfoutput query="timezones">
-				<option value="#timezones.id#"
-				<cfif timezones.id EQ regional.timezone>selected</cfif>>
-				#timezones.id# - #timezones.display#</option>
-			</cfoutput>
-		</select>
-		<cfelse>
-			<b>#regional.timezone#</b>
-		</cfif>
-		<!--- <cfinput type="text" name="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
-	</td>
-</tr>
-<tr>
-	<td class="tblHead" width="150">#stText.Regional.TimeServer#</td>
-	<td class="tblContent"><span class="comment">#stText.Regional.TimeServerDescription#</span>
-	<cfif hasAccess>
-		<cfinput type="text" name="timeserver" value="#regional.timeserver#" 
-			style="width:200px" required="no" message="#stText.Regional.TimeServerMissing#">
-		<br /><input type="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
-	<cfelse>
-		<b>#regional.timeserver#</b><input type="hidden" name="usetimeserver" value="#regional.usetimeserver#" />
+	<cfif not hasAccess>
+		<cfset noAccess(stText.setting.noAccess)>
 	</cfif>
-	</td>
-</tr>
-<tr>
-	<td colspan="2">
-	<span class="comment">
-		#stText.Overview.ServerTime#
-		#lsdateFormat(date:now(),timezone:"jvm")#
-		#lstimeFormat(time:now(),timezone:"jvm")#<br>
-        
-		#stText.Overview.DateTime#
-		#lsdateFormat(now())#
-		#lstimeFormat(now())#<br>
-        
-        
-        
-	</span>
-	</td>
-</tr>
-<cfif hasAccess>
 
-<cfmodule template="remoteclients.cfm" colspan="2">
+	<div class="pageintro">
+		<cfif request.adminType EQ "server">
+			#stText.Regional.Server#
+		<cfelse>
+			#stText.Regional.Web#
+		</cfif>
+	</div>
+	
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<!---
+		replaced with encoding output
+		<tr>
+			<th scope="row">#stText.Regional.DefaultEncoding#</th>
+			<td>
+				<span class="comment">#stText.Regional.DefaultEncodingDescription#</span>
+				<cfif hasAccess>
+				<cfinput type="text" name="defaultencoding" value="#regional.defaultEncoding#" 
+					style="width:200px" required="yes" message="#stText.regional.missingEncoding#">
+				
+				<cfelse>
+					<input type="hidden" name="defaultencoding" value="#regional.defaultEncoding#">
+				
+					<b>#regional.defaultEncoding#</b>
+				</cfif>
+			</td>
+		</tr>
+		--->
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.Regional.Locale#</th>
+					<td>
+						<cfif hasAccess>
+							<cfset hasFound=false>
+							<cfset keys=structSort(locales,'textnocase')>
+							<select name="locale" class="large">
+								<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
+								 ---><cfloop collection="#keys#" item="i"><cfset key=keys[i]><option value="#key#" <cfif key EQ regional.locale>selected<cfset hasFound=true></cfif>>#locales[key]#</option><!--- 
+								 ---></cfloop>
+							</select>
+							<!--- <input type="text" name="locale_other" value="<cfif not hasFound>#regional.locale#</cfif>" style="width:200px"> --->
+						<cfelse>
+							<b>#regional.locale#</b>
+						</cfif>
+						<div class="comment">#stText.Regional.LocaleDescription#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Regional.TimeZone#</th>
+					<td>
+						<cfif hasAccess>
+							<select name="timezone" class="large">
+								<option selected value=""> --- #stText.Regional.ServerProp[request.adminType]# --- </option>
+								<cfoutput query="timezones">
+									<option value="#timezones.id#"
+									<cfif timezones.id EQ regional.timezone>selected</cfif>>
+									#timezones.id# - #timezones.display#</option>
+								</cfoutput>
+							</select>
+						<cfelse>
+							<b>#regional.timezone#</b>
+						</cfif>
+						<!--- <cfinput type="text" name="timezone" value="#config.timezone.getId()#" style="width:200px" required="yes" message="Missing value for timezone"> --->
+						<div class="comment">#stText.Regional.TimeZoneDescription#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Regional.TimeServer#</th>
+					<td>
+						<cfif hasAccess>
+							<input type="text" name="timeserver" value="#regional.timeserver#" class="large">
+							<br /><input type="checkbox" class="checkbox" name="usetimeserver" <cfif regional.usetimeserver>checked="checked"</cfif> value="true" /> #stText.Regional.useTimeServer#
+						<cfelse>
+							<b>#regional.timeserver#</b>
+							<input type="hidden" name="usetimeserver" value="#regional.usetimeserver#" />
+						</cfif>
+						<div class="comment">#stText.Regional.TimeServerDescription#</div>
+					</td>
+				</tr>
+				<cfif hasAccess>
+					<cfmodule template="remoteclients.cfm" colspan="2">
+				</cfif>
+			</tbody>
+			<cfif hasAccess>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.Update#">
+							<input class="button reset" type="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<cfif request.adminType EQ "web">
+								<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#">
+							</cfif>
+						</td>
+					</tr>
+				</tfoot>
+			</cfif>
+		</table>
 
+		<h3>
+			Current time settings
+		</h3>
+		<table class="tbl">
+			<tbody>
+				<tr>
+					<th scope="row" nowrap="nowrap">#stText.Overview.ServerTime#</th>
+					<td>#lsdateFormat(date:now(),timezone:"jvm")#
+						#lstimeFormat(time:now(),timezone:"jvm")#
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Overview.DateTime#</th>
+					<td>#lsdateFormat(now())#
+						#lstimeFormat(now())#
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</cfform>
 
-<tr>
-	<td colspan="2">
-		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr>
-</cfif>
-</cfform></cfoutput>
-</table>
-<br><br>
+</cfoutput>

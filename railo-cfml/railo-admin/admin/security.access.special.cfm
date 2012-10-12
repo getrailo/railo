@@ -55,112 +55,81 @@ Detail
 Overview
  --->
 <cfelse>
-<cfset count=0>
-<cfloop query="contextes"><cfif contextes.hasOwnSecContext><cfset count++></cfif></cfloop>
-<cfoutput>
-	
-	<table class="tbl" width="650">
-	<tr>
-		<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-	</tr>
-	<tr>
-		<td colspan="3"><h2>#stText.Security.specListTitle#</h2>
-		#stText.Security.specListText#</td> 
-	</tr>
-	<tr>
-		<td colspan="3"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-	</tr>
-	<cfform onerror="customError" action="#go(url.action,"removeSecurityManager")#" method="post">
-		<tr>
-			<td width="20"></td>
-			<td width="205" class="tblHead" nowrap>#stText.Security.specListHost#</td>
-			<td width="365" class="tblHead" nowrap>#stText.Security.specListPath#</td>
-		</tr>
-		<cfset hasNoneIndividual=false>
-		<cfloop query="contextes"><cfif contextes.hasOwnSecContext >
-			<!--- and now display --->
-		<tr>
-			<td>
-			<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td><input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" value="#contextes.id#">
-				</td>
-				<td><a href="#go(url.action,"edit",struct(id:contextes.id))#">
-			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
-			</tr>
+	<cfset count=0>
+	<cfloop query="contextes"><cfif contextes.hasOwnSecContext><cfset count++></cfif></cfloop>
+	<cfoutput>	
+		<h2>#stText.Security.specListTitle#</h2>
+		<div class="itemintro">#stText.Security.specListText#</div>
+		<cfform onerror="customError" action="#go(url.action,"removeSecurityManager")#" method="post">
+			<table class="maintbl">
+				<thead>
+					<tr>
+						<th width="1%"></th>
+						<th width="39%">#stText.Security.specListHost#</th>
+						<th width="59%">#stText.Security.specListPath#</th>
+						<th width="1%"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<cfset hasNoneIndividual=false>
+					<cfloop query="contextes">
+						<cfif contextes.hasOwnSecContext >
+							<!--- and now display --->
+							<tr>
+								<td>
+									<input type="checkbox" class="checkbox" name="ids_#contextes.currentrow#" value="#contextes.id#">
+								</td>
+								<td nowrap>#contextes.label#&nbsp;</td>
+								<td nowrap>#contextes.path#</td>
+								<td>
+									<a href="#go(url.action,"edit",struct(id:contextes.id))#" class="btn-mini edit"><span>edit</span></a>
+								</td>
+							</tr>
+						<cfelse>
+							<cfset hasNoneIndividual=true>
+						</cfif>
+					</cfloop>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="4">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+						</td>	
+					</tr>
+				</tfoot>
 			</table>
-			</td>
-			<td class="tblContent" nowrap>#contextes.label#&nbsp;</td>
-			<td class="tblContent" nowrap>#contextes.path#</td>
-		</tr>
-		<cfelse>
-		<cfset hasNoneIndividual=true>
-		</cfif></cfloop>
-		<tr>
-			<td colspan="4">
-			 <table border="0" cellpadding="0" cellspacing="0">
-			 <tr>
-				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
-				<td></td>
-			 </tr>
-			 <tr>
-				<td></td>
-				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
-				<td>&nbsp;
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-				</td>	
-			</tr>
-			 </table>
-			 </td>
-		</tr>
-	</cfform>
+		</cfform>
 	</cfoutput>
-	</table>
-    
-	<br><br>
-
 
 	<cfif hasNoneIndividual>
 		<cfoutput>
-		<!--- 
-		Create new Indicvidual sec --->
-		<h2>#stText.Security.specListNewTitle#</h2>
-		<table class="tbl" width="350">
-		<tr>
-			<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-		</tr>
-		<cfform onerror="customError" action="#go(url.action,'createSecurityManager')#" method="post">
-			<td class="tblHead"  nowrap>#stText.Security.specListWebContext#</td>
-			<td class="tblContent"><select name="id">
-						<cfoutput><cfloop query="contextes"><cfif not contextes.hasOwnSecContext>
-							<option value="#contextes.id#">#contextes.text#</option>
-						</cfif></cfloop></cfoutput>
-					</select></td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			</td>
-		</tr>
-		</cfform>
-		</table>   
-		<br><br>
+			<!--- Create new Indicvidual sec --->
+			<h2>#stText.Security.specListNewTitle#</h2>
+			<cfform onerror="customError" action="#go(url.action,'createSecurityManager')#" method="post">
+				<table class="maintbl">
+					<tbody>
+						<tr>
+							<th scope="row">#stText.Security.specListWebContext#</th>
+							<td>
+								<select name="id">
+									<cfoutput><cfloop query="contextes"><cfif not contextes.hasOwnSecContext>
+										<option value="#contextes.id#">#contextes.text#</option>
+									</cfif></cfloop></cfoutput>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2">
+								<input type="submit" class="button submit" name="run" value="#stText.Buttons.Create#">
+								<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							</td>
+						</tr>
+					</tfoot>
+				</table>   
+			</cfform>
 		</cfoutput>
 	</cfif>
-	
-	
 </cfif>
-
-
-
-
-
-
-
-
-
-
-

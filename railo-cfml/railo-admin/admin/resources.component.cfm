@@ -252,20 +252,11 @@ Redirtect to entry --->
 </cfif>
 
 
-<!--- 
-list all mappings and display necessary edit fields --->
-<script>
-function checkTheRadio(field) {
-	
-	var radios=field.form['extensions'];
-	radios[radios.length-1].checked=true;
-}
+<!--- list all mappings and display necessary edit fields --->
 
-</script>
 
 <cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
-<!--- 
-Error Output --->
+<!--- Error Output --->
 <cfset printError(error)>
 
 

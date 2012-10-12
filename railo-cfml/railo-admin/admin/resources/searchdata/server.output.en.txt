@@ -1,0 +1,1 @@
+ update Reset to Server Administrator Setting Whitespace management Removes all white spaces in the output that follow a white space Compression Enable compression (Gzip) for the Railo Response stream, if supported by the client (Browser) update cancel Reset to Server Administrator Setting

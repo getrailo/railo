@@ -13,91 +13,91 @@
 
 <cfif request.adminType EQ "web">
 	<cftry>
-	<cfswitch expression="#form.run#">
-	<!--- Index --->
-		<cfcase value="index">
-			<cfsetting requesttimeout="300">
-			<cfadmin 
-				action="index"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-								
-				indexAction="update" 
-				indexType="path" 
-				collection="#url.collection#" 
-				key="#form.path#" 
-				urlpath="#form.url#" 
-				extensions="#form.extensions#"
-				recurse="#structKeyExists(form,"recurse") and form.recurse#"
-				language="#form.language#"
-				remoteClients="#request.getRemoteClients()#">
-		</cfcase>
+		<cfswitch expression="#form.run#">
+			<!--- Index --->
+			<cfcase value="index">
+				<cfsetting requesttimeout="300">
+				<cfadmin 
+					action="index"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+									
+					indexAction="update" 
+					indexType="path" 
+					collection="#url.collection#" 
+					key="#form.path#" 
+					urlpath="#form.url#" 
+					extensions="#form.extensions#"
+					recurse="#structKeyExists(form,"recurse") and form.recurse#"
+					language="#form.language#"
+					remoteClients="#request.getRemoteClients()#">
+			</cfcase>
 	
-	<!--- Create --->
-		<cfcase value="#stText.Buttons.Create#">
-			<cfadmin 
-				action="collection" 
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				
-				collectionAction="create" 
-				collection="#form.collName#" 
-				path="#form.collPath#" 
-				language="#form.collLanguage#"
-				remoteClients="#request.getRemoteClients()#">
-		</cfcase>
+			<!--- Create --->
+			<cfcase value="#stText.Buttons.Create#">
+				<cfadmin 
+					action="collection" 
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					
+					collectionAction="create" 
+					collection="#form.collName#" 
+					path="#form.collPath#" 
+					language="#form.collLanguage#"
+					remoteClients="#request.getRemoteClients()#">
+			</cfcase>
 	
-	<!--- Action --->
-		<cfcase value="action">
-			<cfif StructKeyExists(form,"name")>
-				<cfloop collection="#form.name#" item="key">
-					<cfswitch expression="#form.action#">
-						<cfcase value="#stText.Buttons.Purge#">
-							<cfadmin 
-								action="index" 
-								type="#request.adminType#"
-								password="#session["password"&request.adminType]#"
+			<!--- Action --->
+			<cfcase value="action">
+				<cfif StructKeyExists(form,"name")>
+					<cfloop collection="#form.name#" item="key">
+						<cfswitch expression="#form.action#">
+							<cfcase value="#stText.Buttons.Purge#">
+								<cfadmin 
+									action="index" 
+									type="#request.adminType#"
+									password="#session["password"&request.adminType]#"
+									
+									indexAction="purge" 
+									collection="#form.name[key]#"
+									remoteClients="#request.getRemoteClients()#">
+							</cfcase>
+							<cfcase value="#stText.Buttons.Repair#">
+								<cfadmin 
+									action="collection" 
+									type="#request.adminType#"
+									password="#session["password"&request.adminType]#"
+									
+									collectionAction="repair" 
+									collection="#form.name[key]#"
+									remoteClients="#request.getRemoteClients()#">
+							</cfcase>
+							<cfcase value="#stText.Buttons.Optimize#">
+								<cfadmin 
+									action="collection" 
+									type="#request.adminType#"
+									password="#session["password"&request.adminType]#"
+									
+									collectionAction="optimize" 
+									collection="#form.name[key]#"
+									remoteClients="#request.getRemoteClients()#">
+							</cfcase>	
+							<cfcase value="#stText.Buttons.Delete#">
+								<cfadmin 
+									action="collection" 
+									type="#request.adminType#"
+									password="#session["password"&request.adminType]#"
+									
+									collectionAction="delete" 
+									collection="#form.name[key]#"
+									remoteClients="#request.getRemoteClients()#">
 								
-								indexAction="purge" 
-								collection="#form.name[key]#"
-								remoteClients="#request.getRemoteClients()#">
-						</cfcase>
-						<cfcase value="#stText.Buttons.Repair#">
-							<cfadmin 
-								action="collection" 
-								type="#request.adminType#"
-								password="#session["password"&request.adminType]#"
-								
-								collectionAction="repair" 
-								collection="#form.name[key]#"
-								remoteClients="#request.getRemoteClients()#">
-						</cfcase>
-						<cfcase value="#stText.Buttons.Optimize#">
-							<cfadmin 
-								action="collection" 
-								type="#request.adminType#"
-								password="#session["password"&request.adminType]#"
-								
-								collectionAction="optimize" 
-								collection="#form.name[key]#"
-								remoteClients="#request.getRemoteClients()#">
-						</cfcase>	
-						<cfcase value="#stText.Buttons.Delete#">
-							<cfadmin 
-								action="collection" 
-								type="#request.adminType#"
-								password="#session["password"&request.adminType]#"
-								
-								collectionAction="delete" 
-								collection="#form.name[key]#"
-								remoteClients="#request.getRemoteClients()#">
-							
-						</cfcase>
-					</cfswitch>
-				</cfloop>
-			</cfif>
-		</cfcase>
-	</cfswitch>
+							</cfcase>
+						</cfswitch>
+					</cfloop>
+				</cfif>
+			</cfcase>
+		</cfswitch>
 		<cfcatch>
 			<cfset error.message=cfcatch.message>
 			<cfset error.detail=cfcatch.Detail>
@@ -110,153 +110,121 @@
 			<cflocation url="#request.self#?action=#url.action#" addtoken="no">
 		</cfif>
 	</cfif>	
-	
-	<!--- 
-	Error Output--->
-	<cfif error.message NEQ "">
-		<cfoutput><span class="CheckError">
-		#error.message#<br>
-		#error.detail#
-		</span><br><br></cfoutput>
-	</cfif>
-	<script language="javascript">
-	
-function selectAll(field) {
-	var form=field.form;
-	for(var key in form.elements){
-		if(form.elements[key] && (""+form.elements[key].name).indexOf("name[]")==0){
-			form.elements[key].checked=field.checked;
-		}
-	}
-	
-}
-	</script>
-	<cfoutput><div style="width:740px">#stText.Search.Description#</div><br><br></cfoutput>
-	
+
 	<cfcollection action="list" name="collections">
+	
+	<cfoutput>
+		<!--- 
+		Error Output--->
+		<cfif error.message NEQ "">
+			<div class="error">
+				#error.message#<br>
+				#error.detail#
+			</div>
+		</cfif>
+
+		<div class="pageintro">#stText.Search.Description#</div>
+	</cfoutput>
+	
 	<cfif not StructKeyExists(url,"collection")>
 		<!--- 
 		@to setting for SearchEngine Class
 		 --->
-<cfif collections.recordcount>
-		<!--- 
-		Existing Collection --->
+		<cfif collections.recordcount>
+			<cfoutput>
+				<!--- 
+				Existing Collection --->
+				<h2>#stText.Search.Collections#</h2>
+				<form action="#request.self#?action=#url.action#" method="post" enctype="multipart/form-data">
+					<table class="maintbl checkboxtbl">
+						<thead>
+							<tr>
+								<th width="3%"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></th>
+								<th width="25%">#stText.Search.Name#</th>
+								<th width="10%">#stText.Search.Mapped#</th>
+								<th width="10%">#stText.Search.Online#</th>
+								<th width="10%">#stText.Search.External#</th>
+								<th width="19%">#stText.Search.Language#</th>
+								<th width="20%">#stText.Search.Last_Update#</th>
+								<th width="3%">&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<cfloop query="collections">
+								<tr>
+									<td>
+										<input type="checkbox" class="checkbox" name="name[]" value="#collections.name#">
+									</td>
+									<td><abbr title="#collections.name#">#cut(collections.name,16)#</abbr></td>
+									<td>#collections.mapped#</td>
+									<td>#collections.online#</td>
+									<td>#collections.external#</td>
+									<td>#collections.language#</td>
+									<td>#DateFormat(collections.LastModified,"yyyy-mm-dd")# #TimeFormat(collections.LastModified,"HH:mm")#</td>
+									<!---<td width="400" style=" white-space:;overflow: hidden;text-overflow: ellipsis;"<cfif len(collections.path) GT 40> title="#collections.path#"</cfif>>#collections.path##collections.path#</td>--->
+									<td>
+										<a href="#request.self#?action=#url.action#&collection=#collections.name#" class="btn-mini edit"><span>edit</span></a>
+									</td>
+								</tr>
+							</cfloop>
+							<cfmodule template="remoteclients.cfm" colspan="8" line=true>
+						</tbody>
+						<tfoot>
+							 <tr>
+								<td colspan="8">
+									<input type="hidden" name="run" value="action">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Repair#">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Optimize#">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Purge#">
+									<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+									<input type="submit" class="button submit" name="action" value="#stText.Buttons.Delete#">
+								</td>	
+							</tr>
+						</tfoot>
+					</table>
+				</form>
+			</cfoutput>
+		</cfif>
 		
-		<table class="tbl" width="100%">
-        <colgroup>
-        	<col width="10"/>
-        </colgroup>
-		<tr>
-			<td colspan="7"><h2><cfoutput>#stText.Search.Collections#</cfoutput></h2></td>
-		</tr>
-		<tr>
-			<td colspan="7"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-		</tr>
-		<cfoutput><form action="#request.self#?action=#url.action#" method="post" enctype="multipart/form-data"></cfoutput>
-		<tr>
-			<td><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.Name#</cfoutput></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.Mapped#</cfoutput></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.Online#</cfoutput></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.External#</cfoutput></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.Language#</cfoutput></td>
-			<td class="tblHead" nowrap><cfoutput>#stText.Search.Last_Update#</cfoutput></td>		</tr>
-		<cfoutput query="collections">
-			<tr>
-				<td>
-				<table border="0" cellpadding="0" cellspacing="0">
-				<tr>
-					<td><input type="checkbox" class="checkbox" name="name[]" value="#collections.name#"></td>
-					<td><a href="#request.self#?action=#url.action#&collection=#collections.name#"><cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
-				</tr>
-				</table>
-				
-				</td>
-				<td class="tblContent" title="#collections.name#" nowrap>#cut(collections.name,16)#</td>
-				<td class="tblContent" nowrap>#collections.mapped#</td>
-				<td class="tblContent" nowrap>#collections.online#</td>
-				<td class="tblContent" nowrap>#collections.external#</td>
-				<td class="tblContent" nowrap>#collections.language#</td>
-				<td class="tblContent" nowrap>#DateFormat(collections.LastModified,"yyyy-mm-dd")# #TimeFormat(collections.LastModified,"HH:mm")#</td>
-				<!---<td class="tblContent" width="400" style=" white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;" nowrap<cfif len(collections.path) GT 40> title="#collections.path#"</cfif>>#collections.path##collections.path#</td>--->
-			</tr>
-		</cfoutput>
-<cfmodule template="remoteclients.cfm" colspan="8" line=true>
-			<tr>
-				<td colspan="7">
-				<cfoutput> <table border="0" cellpadding="0" cellspacing="0">
-				 <tr>
-					<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-					<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
-					<td></td>
-				 </tr>
-				 
-				 <tr>
-				 
-					<td></td>
-					<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
-					<td>&nbsp;
-					
-					<input type="hidden" name="run" value="action">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Repair#">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Optimize#">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Purge#">
-					<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-					<input type="submit" class="submit" name="action" value="#stText.Buttons.Delete#">
-					</cfoutput>
-					</td>	
-				</tr>
-				 </table>
-				 </td>
-			</tr>
-		  </form>
-		</table><br><br>
- </cfif>
-        
-        
-        
-		<!--- 
-		Create Collection --->
-		
-		<table class="tbl" width="350">
-		<tr>
-			<td colspan="2"><h2><cfoutput>#stText.Search.CreateCol#</cfoutput></h2></td>
-		</tr>
-		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<cfoutput>
-		<tr>
-			<td class="tblHead" width="50">#stText.Search.Name#</td>
-			<td class="tblContent" width="300"><cfinput type="text" name="collName" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Name#"></td>
-		</tr>
-		<tr>
-			<td class="tblHead" width="50">#stText.Search.Path#</td>
-			<td class="tblContent" width="300"><cfinput type="text" name="collPath" value="" style="width:300px" required="yes" message="#stText.Search.Missing_Path#"></td>
-		</tr>
+			<!--- Create Collection --->
+			<h2>#stText.Search.CreateCol#</h2>
+			<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+				<table class="maintbl autowidth">
+					<tbody>
+						<tr>
+							<th scope="row">#stText.Search.Name#</th>
+							<td><cfinput type="text" name="collName" value="" class="large" required="yes" message="#stText.Search.Missing_Name#"></td>
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.Path#</th>
+							<td><cfinput type="text" name="collPath" value="" class="large" required="yes" message="#stText.Search.Missing_Path#"></td>
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.Language#</th>
+							<td>
+								<select name="collLanguage" class="medium">
+									<cfset aLangs = StructKeyArray(stText.SearchLng)>
+									<cfset ArraySort(aLangs, "text")>
+									<cfloop from="1" to="25" index="iLng"> 
+										<option value="#aLangs[iLng]#" <cfif aLangs[iLng] eq "english">selected</cfif>>#stText.SearchLng[aLangs[iLng]]#</option>
+									</cfloop>
+								</select>
+							</td>
+						</tr>
+						<cfmodule template="remoteclients.cfm" colspan="2">
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2">
+								<input type="submit" class="button submit" name="run" value="#stText.Buttons.Create#">
+								<input type="reset" class="vutton reset" name="cancel" value="#stText.Buttons.Cancel#">
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+			</cfform>
 		</cfoutput>
-		<tr>
-			<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
-			<td class="tblContent" width="300"><select name="collLanguage">
-				<cfset aLangs = StructKeyArray(stText.SearchLng)>
-				<cfset ArraySort(aLangs, "text")>
-				<cfoutput>
-					<cfloop from="1" to="25" index="iLng">
-						<option value="#aLangs[iLng]#" <cfif aLangs[iLng] eq "english">selected</cfif>>#stText.SearchLng[aLangs[iLng]]#</option>
-					</cfloop>
-				</cfoutput>
-			</select></td>
-		</tr>
-		<cfmodule template="remoteclients.cfm" colspan="2">
-		<tr>
-			<cfoutput><td colspan="2">
-				<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			</td></cfoutput>
-		</tr>
-		</cfform>
-		</table>
-		<br>
 	<cfelse>
 		<cfset collection=struct()>
 		<cfoutput query="collections">
@@ -265,109 +233,108 @@ function selectAll(field) {
 					<cfset collection[item]=collections[item]>
 				</cfloop>
 			</cfif>
-		</cfoutput>
-		
-	 	<cfif not StructIsEmpty(collection)>
-			<cfoutput><h2>#stText.Search.Collection# #url.collection#</h2>
-			<table class="tbl" width="100%">
-            <colgroup>
-                <col width="150">
-                <col>
-            </colgroup>
-			<tr>
-				<td class="tblHead"><cfoutput>#stText.Search.Name#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.name#</td>
-			</tr>
-			<tr>
-				<td class="tblHead"><cfoutput>#stText.Search.Mapped#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.mapped#</td>
-			</tr>
-			<tr>
-				<td class="tblHead"><cfoutput>#stText.Search.Online#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.online#</td>
-			</tr>
-			<tr>
-				<td class="tblHead"><cfoutput>#stText.Search.External#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.external#</td>			
-			</tr>
-			<tr>
-				<td class="tblHead"><cfoutput>#stText.Search.Language#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.language#</td>			
-			</tr>
-			<tr>
-				<td class="tblHead"><cfoutput>#stText.Search.Last_Update#</cfoutput></td>
-				<td class="tblContent" nowrap>#DateFormat(collection.LastModified,"yyyy-mm-dd")# #TimeFormat(collection.LastModified,"HH:mm")#</td>
-			</tr>
-			<tr>
-				<td class="tblHead"><cfoutput>#stText.Search.Path#</cfoutput></td>
-				<td class="tblContent" nowrap>#collection.path#</td>
-			</tr>
-			</table><br><br>
-			</cfoutput>
-			<!--- 
-				@todo list index and allow delete
-				@todo add/update file index
-				@todo add/update url index
-			---><!--- 
-			Create Index --->
-			<h2><cfoutput>#stText.Search.PathAction#</cfoutput></h2>
-			<table class="tbl" width="570">
-			<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#" method="post">
-			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.FileExtensions#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="extensions" value=".html, .htm, .cfm, .cfml" style="width:450px" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
-			</tr>
-			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.DirectoryPath#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="path" value="" style="width:450px" required="yes" message="#stText.Search.DirectoryPathMissing#"></td>
-			</tr>
-			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.IndexSubdirs#</cfoutput></td>
-				<td class="tblContent" width="300"><input type="checkbox" class="checkbox" name="recurse" value="yes"></td>
-			</tr>
-			<tr>
-				<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.URL#</cfoutput></td>
-				<td class="tblContent" width="300"><cfinput type="text" name="url" value="" style="width:450px" required="no"></td>
-			</tr>
-			<tr>
-				<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
-				<td class="tblContent" width="300"><select name="language">
-						<cfoutput>
-							<cfloop collection="#stText.SearchLng#" item="key">
-								<option value="#key#" <cfif key eq "english">selected</cfif>>#stText.SearchLng[key]#</option>
-							</cfloop>
-						</cfoutput>
-					</select></td>
-			</tr>
-<cfmodule template="remoteclients.cfm" colspan="2">
-			<tr>
-				<td colspan="2"><cfoutput>
-					<!--- 
-					@todo kein funktioneller javascript
-					 --->
-					<input onClick="window.location='#request.self#?action=#url.action#';" 
-						type="button" class="button" name="canel" value="#stText.Buttons.Cancel#">
-					<input type="hidden" name="run" value="index">
-					<input type="submit" class="submit" name="_run" value="#stText.Buttons.Update#">
-				</cfoutput></td>
-			</tr>
-			</cfform>
-			</table>
-			<br><br>
-			<table class="tbl" width="450">
+			<cfif not StructIsEmpty(collection)>
+				<h2>#stText.Search.Collection# #url.collection#</h2>
+				<table class="maintbl">
+					<tbody>
+						<tr>
+							<th scope="row">#stText.Search.Name#</th>
+							<td>#collection.name#</td>
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.Mapped#</th>
+							<td>#collection.mapped#</td>
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.Online#</th>
+							<td>#collection.online#</td>
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.External#</th>
+							<td>#collection.external#</td>			
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.Language#</th>
+							<td>#collection.language#</td>			
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.Last_Update#</th>
+							<td>#DateFormat(collection.LastModified,"yyyy-mm-dd")# #TimeFormat(collection.LastModified,"HH:mm")#</td>
+						</tr>
+						<tr>
+							<th scope="row">#stText.Search.Path#</th>
+							<td>#collection.path#</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!--- 
+					@todo list index and allow delete
+					@todo add/update file index
+					@todo add/update url index
+				---><!--- 
+				Create Index --->
+				<h2>#stText.Search.PathAction#</h2>
+				<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#" method="post">
+					<table class="maintbl">
+						<tbody>
+							<tr>
+								<th scope="row">#stText.Search.FileExtensions#</th>
+								<td><cfinput type="text" name="extensions" value=".html, .htm, .cfm, .cfml" class="large" required="yes" message="#stText.Search.FileExtensionsMissing#"></td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.Search.DirectoryPath#</th>
+								<td><cfinput type="text" name="path" value="" class="large" required="yes" message="#stText.Search.DirectoryPathMissing#"></td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.Search.IndexSubdirs#</th>
+								<td><input type="checkbox" class="checkbox" name="recurse" value="yes"></td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.Search.URL#</th>
+								<td><cfinput type="text" name="url" value="" class="large" required="no"></td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.Search.Language#</th>
+								<td><select name="language" class="medium">
+									<cfloop collection="#stText.SearchLng#" item="key">
+										<option value="#key#" <cfif key eq "english">selected</cfif>>#stText.SearchLng[key]#</option>
+									</cfloop>
+								</select></td>
+							</tr>
+							<cfmodule template="remoteclients.cfm" colspan="2">
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="2">
+									<!--- 
+									@todo kein funktioneller javascript
+									 --->
+									<input onclick="window.location='#request.self#?action=#url.action#';" 
+										type="button" class="button cancel" name="canel" value="#stText.Buttons.Cancel#">
+									<input type="hidden" name="run" value="index">
+									<input type="submit" class="button submit" name="_run" value="#stText.Buttons.Update#">
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</cfform>
+				
+				<h2>#stText.Search.SearchTheCollection#</h2>
 				<cfform onerror="customError" action="#request.self#?action=#url.action#&collection=#collection.name#&search=1" method="post">
-				<tr>
-					<td colspan="2"><cfoutput><h2>#stText.Search.SearchTheCollection#</h2></cfoutput></td>
-				</tr>
-				<tr>
-					<td class="tblHead" width="150" nowrap><cfoutput>#stText.Search.SearchTerm#</cfoutput></td>
-					<td class="tblContent" width="300">
-					<cfif StructKeyExists(form,"searchterm")><cfset session.searchterm=form.searchterm></cfif>
-					<cfparam name="session.searchterm" default="">
-					<cfinput type="text" 
-					name="searchterm" value="#session.searchterm#" style="width:300px" required="yes" 
-					message="#stText.Search.SearchTermMissing#"></td>
-				</tr>
+					<table class="maintbl">
+						<tbody>
+							<tr>
+								<th scope="row">#stText.Search.SearchTerm#</th>
+								<td>
+									<cfif StructKeyExists(form,"searchterm")>
+										<cfset session.searchterm=form.searchterm>
+									</cfif>
+									<cfparam name="session.searchterm" default="">
+									<cfinput type="text" name="searchterm" value="#session.searchterm#" class="large"
+										required="yes" message="#stText.Search.SearchTermMissing#">
+								</td>
+							</tr>
 				<!--- <tr>
 					<td class="tblHead" width="50"><cfoutput>#stText.Search.Language#</cfoutput></td>
 					<td class="tblContent" width="300"><select name="language">
@@ -378,62 +345,69 @@ function selectAll(field) {
 							</cfoutput>
 						</select></td>
 				</tr> --->
-				<tr><td colspan="2">
-					<cfoutput>
-					<input type="submit" class="submit" name="search" value="#stText.Buttons.Search#">
-					</cfoutput>
-				</td></tr>
-				</cfform>
-			</table>
-			<cfif StructKeyExists(form,'searchterm')>
-				<cfsearch 
-					collection="#url.collection#" 
-					name="result" type="SIMPLE" 
-					criteria="#form.searchterm#">
-				<cfset session.result=variables.result>
-			<cfelseif StructKeyExists(session,'result')>
-				<cfset result=session.result>
-			</cfif>
-			
-			<cfif StructKeyExists(url,'search') and StructKeyExists(variables,'result')>
-				<cfparam name="url.startrow" default="1">
-				<br><br><h2><cfoutput>#stText.Search.ResultOfTheSearch#</cfoutput></h2>
-				<cfif result.recordCount EQ 0>
-				<cfoutput><br><br><span class="CheckError">#stText.Search.noresult#</span></cfoutput>
-				<cfelse>
-					<cfset endrow=iif(result.recordCount GT url.startrow+9,de(url.startrow+9),de(result.recordCount))>
-					
-					<table class="tbl" width="650" border="0">
-					<cfoutput>
-					<cfsavecontent variable="header">
-					<tr>
-						<td class="tblHead" width="30" align="center"><cfif url.startrow GT 10><a class="tblHead" style="text-decoration:none" href="#request.self#?action=#url.action#&collection=#collection.name#&startrow=#url.startrow-10#&search=1">&lt;&lt;</a><cfelse>&nbsp;</cfif></td>
-						<td class="tblHead" width="590" align="center"><cfscript>
-							stResult=replace(stText.Search.result,'{startrow}',url.startrow);
-							stResult=replace(stResult,'{endrow}',endrow);
-							stResult=replace(stResult,'{recordcount}',result.recordCount);
-							stResult=replace(stResult,'{recordssearched}',result.recordssearched);
-						</cfscript>#stResult#</td>
-						<td class="tblHead" width="30" align="center"><cfif url.startrow+10 LTE result.recordcount><a class="tblHead" style="text-decoration:none" href="#request.self#?action=#url.action#&collection=#collection.name#&startrow=#url.startrow+10#&search=1">&gt;&gt;</a><cfelse>&nbsp;</cfif></td>
-					</tr>
-					</cfsavecontent>
-					#header#
-					</cfoutput>
-					<cfoutput query="result" startrow="#url.startrow#" maxrows="10">
-					<tr>
-						<td class="tblContent" colspan="3">
-						<b><cfif len(trim(result.title)) EQ 0>{no title}<cfelse>#result.title#</cfif></b><br>
-						<span class="comment">#result.summary#</span>
-						</td>
-					</tr>
-					</cfoutput>
-					<cfoutput>
-					#header#
-					</cfoutput>
+						</tbody>
+						<tfoot>
+							<tr><td colspan="2">
+								<input type="submit" class="button submit" name="search" value="#stText.Buttons.Search#">
+							</td></tr>
+						</tfoot>
 					</table>
-				</cfif>
-			</cfif>
+				</cfform>
 
-		</cfif>	
+				<cfif StructKeyExists(form,'searchterm')>
+					<cfsearch 
+						collection="#url.collection#" 
+						name="result" type="SIMPLE" 
+						criteria="#form.searchterm#">
+					<cfset session.result=variables.result>
+				<cfelseif StructKeyExists(session,'result')>
+					<cfset result=session.result>
+				</cfif>
+				<cfif StructKeyExists(url,'search') and StructKeyExists(variables,'result')>
+					<cfparam name="url.startrow" default="1">
+					<h2>#stText.Search.ResultOfTheSearch#</h2>
+					<cfif result.recordCount EQ 0>
+						<div class="warning">#stText.Search.noresult#</div>
+					<cfelse>
+						<cfset endrow=iif(result.recordCount GT url.startrow+9,de(url.startrow+9),de(result.recordCount))>
+						<table class="maintbl">
+							<thead>
+								<tr>
+									<th width="30">
+										<cfif url.startrow GT 10>
+											<a style="text-decoration:none" href="#request.self#?action=#url.action#&collection=#collection.name#&startrow=#url.startrow-10#&search=1">&lt;&lt;</a>
+										<cfelse>&nbsp;</cfif>
+									</th>
+									<th>
+										<cfscript>
+											stResult=replace(stText.Search.result,'{startrow}',url.startrow);
+											stResult=replace(stResult,'{endrow}',endrow);
+											stResult=replace(stResult,'{recordcount}',result.recordCount);
+											stResult=replace(stResult,'{recordssearched}',result.recordssearched);
+										</cfscript>
+										#stResult#
+									</th>
+									<th width="30">
+										<cfif url.startrow+10 LTE result.recordcount>
+											<a style="text-decoration:none" href="#request.self#?action=#url.action#&collection=#collection.name#&startrow=#url.startrow+10#&search=1">&gt;&gt;</a>
+										<cfelse>&nbsp;</cfif>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<cfloop query="result" startrow="#url.startrow#" endrow="#url.startrow+9#">
+									<tr>
+										<td colspan="3">
+											<h4><cfif len(trim(result.title)) EQ 0>{no title}<cfelse>#result.title#</cfif></h4>
+											<div class="comment">#result.summary#</div>
+										</td>
+									</tr>
+								</cfloop>
+							</tbody>
+						</table>
+					</cfif>
+				</cfif>
+			</cfif>	
+		</cfoutput>
 	</cfif>
 </cfif>

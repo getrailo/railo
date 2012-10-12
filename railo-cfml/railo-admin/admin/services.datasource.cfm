@@ -26,8 +26,6 @@
 	</cfif>
 </cfoutput>
 
-
-
 <cffunction name="getTypeName">
 	<cfargument name="className" required="true">
 	<cfargument name="dsn" required="true">
