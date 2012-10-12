@@ -55,6 +55,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SECURE_JSON = KeyImpl.intern("secureJson");
 	private static final Collection.Key LOCAL_MODE = KeyImpl.intern("localMode");
 	private static final Collection.Key SESSION_CLUSTER = KeyImpl.intern("sessionCluster");
+	private static final Collection.Key SESSION_CLUSTER_KEY = KeyImpl.intern("sessionClusterKey");
 	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.intern("clientCluster");
 	
 
@@ -86,6 +87,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private String clientStorage;
 	private String sessionStorage;
+	private String sessionClusterKey;
 	private String secureJsonPrefix="//";
 	private boolean secureJson; 
 	private Mapping[] mappings;
@@ -106,6 +108,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSecureJson;
 	private boolean initSessionStorage;
 	private boolean initSessionCluster;
+	private boolean initSessionClusterKey;
 	private boolean initClientCluster;
 	private boolean initLoginStorage;
 	private boolean initSessionType;
@@ -386,7 +389,15 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 		return sessionCluster;
 	}
-
+	@Override
+	public String getSessionClusterKey() {
+		if(!initSessionClusterKey) {
+			Object o = get(component,SESSION_CLUSTER_KEY,null);
+			if(o!=null)sessionClusterKey=Caster.toString(o,sessionClusterKey);
+			initSessionClusterKey=true;
+		}
+		return sessionClusterKey;
+	}
 	/**
 	 * @see railo.runtime.listener.ApplicationContextPro#getClientCluster()
 	 */
@@ -704,6 +715,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		this.sessionCluster=sessionCluster;
 	}
 
+	public void setSessionClusterKey(String sessionClusterKey) {
+		this.sessionClusterKey = sessionClusterKey;
+		this.initSessionClusterKey =true;
+	}
+
+	
 	/**
 	 * @see railo.runtime.listener.ApplicationContextPro#setS3(railo.runtime.net.s3.Properties)
 	 */

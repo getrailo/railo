@@ -56,6 +56,7 @@ public final class Application extends TagImpl {
 	private int localMode=-1;
 	private short sessionType=-1;
 	private boolean sessionCluster;
+	private String sessionClusterKey;
 	private boolean clientCluster;
 
 	private boolean ormenabled;
@@ -91,6 +92,7 @@ public final class Application extends TagImpl {
         localMode=-1;
         sessionType=-1;
         sessionCluster=false;
+        sessionClusterKey=null;
         clientCluster=false;
         
         ormenabled=false;
@@ -183,6 +185,9 @@ public final class Application extends TagImpl {
 	}
 	public void setSessioncluster(boolean sessionCluster) {
 		this.sessionCluster=sessionCluster;
+	}
+	public void setSessionclusterKey(String sessionClusterKey) {
+		this.sessionClusterKey=sessionClusterKey;
 	}
 	
 	public void setClienttimeout(TimeSpan clientTimeout)	{
@@ -335,6 +340,8 @@ public final class Application extends TagImpl {
 		if(sessionType!=-1) 					ac.setSessionType(sessionType);
 		ac.setClientCluster(clientCluster);
 		ac.setSessionCluster(sessionCluster);
+		ac.setSessionClusterKey(sessionClusterKey);
+		
 		if(s3!=null) 							ac.setS3(AppListenerUtil.toS3(s3));
 		
 		// ORM

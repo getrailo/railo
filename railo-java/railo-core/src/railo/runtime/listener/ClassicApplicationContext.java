@@ -25,6 +25,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	
 
 	private String name;
+	private String sessionClusterKey;
     private boolean setClientCookies;
     private boolean setDomainCookies;
     private boolean setSessionManagement;
@@ -434,6 +435,11 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	public void setSessionCluster(boolean sessionCluster) {
 		this.sessionCluster = sessionCluster;
 	}
+	
+	
+	public void setSessionClusterKey(String key) {
+		this.sessionClusterKey = key;
+	}
 
 
 	/**
@@ -471,5 +477,12 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public Resource getSource() {
 		return source;
+	}
+
+	@Override
+	public String getSessionClusterKey() {
+		if(this.sessionClusterKey == null)
+			return this.name;
+		return this.sessionClusterKey;
 	}
 }
