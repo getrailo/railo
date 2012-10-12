@@ -199,12 +199,9 @@ body.full #resizewin {
 	white-space: nowrap;
 }
 #navsearch {
-	margin: 10px 0 0 0px;
-	width: 90px;
-}
-#nav input.submit {
-	padding-left:0;
-	padding-right:0;
+	margin: 10px 0 0 10px;
+	width: 105px;
+	height: 20px;
 }
 
 #contenttd {
@@ -520,7 +517,7 @@ input.reset {
 	border-radius: 3px;
 	background: #f2f2f2;
 }
-a.edit, .btn-search {
+a.edit {
 	background-image: url(../img/edit.png.cfm); /* fallback */
 	background-image: url(../img/edit.png.cfm), -webkit-linear-gradient(top, #fff,#ddd); /* Chrome 10+, Saf5.1+ */
 	background-image: url(../img/edit.png.cfm),	-moz-linear-gradient(top, #fff,#ddd); /* FF3.6+ */
@@ -540,6 +537,10 @@ a.edit, .btn-search {
 	background-image: url(../img/search_icon.png.cfm),	  -o-linear-gradient(top, #fff,#ddd); /* Opera 11.10+ */
 	background-image: url(../img/search_icon.png.cfm),    linear-gradient(top, #fff,#ddd); /* W3C */
 	vertical-align:bottom;
+	background-repeat: no-repeat;
+	background-position: center;
+	height:20px;
+	width:20px;
 }
 .btn-mini span {
 	display:none;
@@ -863,3 +864,10 @@ div.tooltip {
 .syntaxText {color:#CC0000;}
 .syntaxAttr {color:#000099;}
 .syntaxType {color:##000099;}
+
+:-moz-placeholder {
+	color: #ccc !important;
+}
+::-webkit-input-placeholder {
+	color: #ccc !important;
+}
