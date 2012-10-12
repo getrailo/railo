@@ -363,9 +363,7 @@ public final class AppListenerUtil {
 				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_FORM;
 			else if("url".equals(item) && (scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)==0)
 				scriptProtect+=ApplicationContext.SCRIPT_PROTECT_URL;
-			
 		}
-		
 		return scriptProtect;
 	}
 	

@@ -3227,8 +3227,8 @@ Filter to be used to filter the data copied:
 		<class>railo.runtime.functions.system.DirectoryExists</class>
 		<description>Determines whether a directory exists.</description>
 		<argument>
-			<name>absolute_path</name>
-			<alias>path</alias>
+			<name>path</name>
+			<alias>absolute_path,absolutePath</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>An absolute path. Alternatively, you can specify IP address as in the following example: DirectoryExists(\"//12.3.123.123/c_drive/test\");</description>
@@ -3250,8 +3250,8 @@ Filter to be used to filter the data copied:
 		<class>railo.runtime.functions.file.DirectoryList</class>
 		<description>Lists the directory and returns the list of files under it as array or query</description>
 		<argument>
-			<name>absolute_path</name>
-			<alias>path</alias>
+			<name>path</name>
+			<alias>absolute_path,absolutePath</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>The absolute path of the directory for which to list the contents. Alternatively, you can specify IP address as in the following example: DirectoryList(\"//12.3.123.123/c_drive/test\");.</description>
@@ -4316,8 +4316,8 @@ EntitySave(entity, [forceinsert])</description>
 		<class>railo.runtime.functions.system.ContractPath</class>
 		<description>Does the opposite of the function expandPath(), tries to match given absolute path, to the mappings in the enviroment, when no mapping match, railo creates a relatie path from the current position,</description>
 		<argument>
-			<name>absolute_path</name>
-			<alias>path</alias>
+			<name>path</name>
+			<alias>absolute_path,absolutePath</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>a absolute path</description>

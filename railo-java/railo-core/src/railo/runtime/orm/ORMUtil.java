@@ -140,10 +140,39 @@ public class ORMUtil {
 		}
 		return defaultValue;
 	}
+	/* jira2049
+	public static Object getPropertyValue(ORMSession session,Component cfc, String name, Object defaultValue) {
+		Property[] props=getProperties(cfc);
+		Object raw=null;
+		SessionImpl sess=null;
+		if(session!=null){
+			raw=session.getRawSession();
+			if(raw instanceof SessionImpl)
+				sess=(SessionImpl) raw;
+		}
+		Object val;
+		for(int i=0;i<props.length;i++){
+			if(!props[i].getName().equalsIgnoreCase(name)) continue;
+			val = cfc.getComponentScope().get(KeyImpl.getInstance(name),null);
+			if(sess!=null && !(val instanceof PersistentCollection)){
+				if(val instanceof List)
+					return new PersistentList(sess,(List)val);
+				if(val instanceof Map && !(val instanceof Component))
+					return new PersistentMap(sess,(Map)val);
+				if(val instanceof Set)
+					return new PersistentSet(sess,(Set)val);
+				if(val instanceof Array)
+					return new PersistentList(sess,Caster.toList(val,null));
+					
+			}
+			return val;
+		}
+		return defaultValue;
+	}*/
 
 	private static Property[] getProperties(Component cfc) {
 		if(cfc instanceof ComponentPro)
-			return ((ComponentPro)cfc).getProperties(true,true);
+			return ((ComponentPro)cfc).getProperties(true,true,false,false);
 		return cfc.getProperties(true);
 	}
 }

@@ -496,7 +496,7 @@ public final class XMLCaster {
         OutputStream os=null;
 		try {
 			os=IOUtil.toBufferedOutputStream(file.getOutputStream());
-			writeTo(node, new StreamResult(os),false,null,null,null);
+			writeTo(node, new StreamResult(os),false,false,null,null,null);
 		}
 		catch(IOException ioe){
 			throw Caster.toPageException(ioe);
@@ -510,7 +510,7 @@ public final class XMLCaster {
 	public static String toString(Node node) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),false,null,null,null);
+			writeTo(node, new StreamResult(sw),false,false,null,null,null);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
@@ -518,10 +518,10 @@ public final class XMLCaster {
 		return sw.getBuffer().toString();
 	}
 
-	public static String toString(Node node,boolean omitXMLDecl) throws PageException {
+	public static String toString(Node node,boolean omitXMLDecl, boolean indent) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),omitXMLDecl,null,null,null);
+			writeTo(node, new StreamResult(sw),omitXMLDecl,indent,null,null,null);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
@@ -530,10 +530,10 @@ public final class XMLCaster {
 	}
 	
 	
-	public static String toString(Node node,boolean omitXMLDecl,String publicId,String systemId,String encoding) throws PageException {
+	public static String toString(Node node,boolean omitXMLDecl,boolean indent,String publicId,String systemId,String encoding) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),omitXMLDecl,publicId,systemId,encoding);
+			writeTo(node, new StreamResult(sw),omitXMLDecl,indent,publicId,systemId,encoding);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
@@ -541,12 +541,12 @@ public final class XMLCaster {
 		return sw.getBuffer().toString();
 	}
 	
-	public static String toString(NodeList nodes,boolean omitXMLDecl) throws PageException {
+	public static String toString(NodeList nodes,boolean omitXMLDecl, boolean indent) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
 			int len = nodes.getLength();
 			for(int i=0;i<len;i++){
-				writeTo(nodes.item(i), new StreamResult(sw),omitXMLDecl,null,null,null);
+				writeTo(nodes.item(i), new StreamResult(sw),omitXMLDecl,indent,null,null,null);
 			}
 		} 
 		finally {
@@ -558,7 +558,7 @@ public final class XMLCaster {
 	public static String toString(Node node,String defaultValue) {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),false,null,null,null);
+			writeTo(node, new StreamResult(sw),false,false,null,null,null);
 		} 
 		catch(Throwable t){
 			return defaultValue;
@@ -570,10 +570,10 @@ public final class XMLCaster {
 	}
 	
 	
-	public static void writeTo(Node node,Result res,boolean omitXMLDecl, String publicId,String systemId,String encoding) throws PageException {
+	public static void writeTo(Node node,Result res,boolean omitXMLDecl,boolean indent, String publicId,String systemId,String encoding) throws PageException {
 		try {
 			Transformer t = XMLUtil.getTransformerFactory().newTransformer();
-			t.setOutputProperty(OutputKeys.INDENT,"no");
+			t.setOutputProperty(OutputKeys.INDENT,indent?"yes":"no");
 			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,omitXMLDecl?"yes":"no");
 			//t.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2"); 
 			

@@ -218,49 +218,7 @@ public class ImageFilter {
 		
 		return null;
 	}
-	
-	public static void main(String[] args) throws Throwable {
-		ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
-		Resource filter = frp.getResource("/Users/mic/Projects/Railo/Source2/railo/railo-java/railo-core/src/railo/runtime/img/filter/");
-		Resource[] children = filter.listResources();
-		Resource child;
-		String name;
-		for(int i=0;i<children.length;i++){
-			child=children[i];
-			name=child.getName();
-			if(name.endsWith("Filter.java")){
-				//String key=name.substring(0,name.length()-11);
-				//print.o("filters.put(\""+key.toLowerCase()+"\","+key+"Filter.class);");
-				//StringBuilder sb=new StringBuilder();
-				//Class clazz = ClassUtil.loadClass("railo.runtime.img.filter."+key+"Filter");
-				//if(clazz!=GlowFilter.class) continue;
-				
-				// create filter method content
-				//setters(key,clazz,sb);
-				
-				
-				String content = IOUtil.toString(child,null);
-				
-			// set implements
-				//content=StringUtil.replace(content, "{", " implements DynFiltering {", true);
-				//IOUtil.write(child, content, null, false);
-				
-			// add method filter
-				//int index = content.lastIndexOf('}');
-				//content=content.substring(0,index)+sb+content.substring(index);
-				//IOUtil.write(child, content, null, false);
-				
-			// imports
-				content=StringUtil.replace(content, "package railo.runtime.img.filter;import railo.runtime.img.ImageUtil;", "package railo.runtime.img.filter;import railo.runtime.img.ImageUtil;\nimport railo.runtime.type.KeyImpl;\nimport railo.runtime.engine.ThreadLocalPageContext;\nimport railo.runtime.exp.PageException;\nimport railo.runtime.type.Struct;\nimport java.awt.image.BufferedImage;\nimport railo.runtime.type.List;\nimport railo.runtime.exp.FunctionException;\n", true);
-				IOUtil.write(child, content, null, false);
-				
-				
-			}
-		}
-		
-		
-		
-	}
+
 	private static void setters(String key, Class clazz, StringBuilder sb) {
 		
 		//sb.append("Object o;\n");

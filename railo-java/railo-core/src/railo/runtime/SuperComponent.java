@@ -607,12 +607,12 @@ public class SuperComponent extends MemberSupport implements ComponentPro, Membe
 	public Property[] getProperties(boolean onlyPeristent) {
 		return comp.getProperties(onlyPeristent);
 	}
-	
-	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties) {
-		return comp.getProperties(onlyPeristent,includeBaseProperties);
+
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
+		return comp.getProperties(onlyPeristent,includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
-	
-	
+
 
 	/**
 	 * @see railo.runtime.Component#getComponentScope()
