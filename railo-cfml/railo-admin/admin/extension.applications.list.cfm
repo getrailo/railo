@@ -1,288 +1,162 @@
+<cfset hasAccess=true />
 
-<cfset hasAccess=true>
+<cfset existing=struct() />
 
-    
+<!--- if user declined the agreement, show a msg --->
+<cfif structKeyExists(session, "extremoved")>
+	<cfoutput>
+		<div class="warning">
+			#stText.ext.msgafternotagreed#
+		</div>
+	</cfoutput>
+	<cfset structDelete(session, "extremoved", false) />
+</cfif>
 
-
-
-
-
-
+<!--- upload own extension --->
 <cfoutput>
-<cfset existing=struct()>
-<cfif extensions.recordcount>
-<!--- 
-Installed Applications --->
-<table class="tbl" width="100%">
-<tr>
-    <td colspan="5"><h2>#stText.ext.installed#</h2>
-#stText.ext.installeddesc#</td>
-</tr>
-
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-
-<tr>
-		<td class="tblHead" nowrap><input type="text" name="filter" style="width:100%" value="#session.extFilter.filter#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
-	</tr>
-	<tr>
-		<td width="380" colspan="2" align="right"></td>
-	</tr>
-
-</cfform>
-</table>
-
-<cfset row=0>
-<cfset missingRows=5>
-
-<cfloop query="extensions">
-	<cfset uid=createId(extensions.provider,extensions.id)>
-		<cfset existing[uid]=true>
-        
-        <cftry>
-        	<cfset prov=getProviderData(extensions.provider)>
-            <cfset provTitle=prov.info.title>
-            <cfcatch>
-            	<cfset provTitle="">
-            </cfcatch>
-        </cftry>
-        
-        <cfif 
-			doFilter(session.extFilter.filter,extensions.label,false)
-			or
-			doFilter(session.extFilter.filter,extensions.category,false)
-			or
-			doFilter(session.extFilter.filter,provTitle,false)
-			>
-     	
-        
-        <cfset row++>
-			<cfset missingRows=5-(row mod 5)>
-			<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#uid#">
-            <cfset dn=getDumpNail(extensions.image,130,50)>
-			<cfset hasUpdate=updateAvailable(extensions)>
-            
-            <div class="tblContent" style="width:130px;height:80px;margin:2px;float:left" align="center">
-            <cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
-            <a href="#link#" style="text-decoration:none;"><b>#cut(extensions.label,20)#</b><br />
-            #cut(extensions.category,20)#</a><cfif hasUpdate><br /><span class="CheckError">Update Available</span></cfif>
-            </div>
-            
-            
-        </cfif></cfloop>		
-	
-
-<br ><br>
-</cfif>
-
-
-<!---
-<cfsilent>
-<cfset appRecCount=0>
-<cfloop from="1" to="#arrayLen(apps)#" index="i">
-	<cfset app=apps[i]>
-    <cfloop query="app">
-            <cfif StructKeyExists(existing,createId(urls[i],app.id))><cfcontinue></cfif>  
-            <cfif (app.type EQ "all" or app.type EQ request.adminType or ( app.type EQ "" and "web" EQ request.adminType))>
-                <cfset appRecCount++>
-            </cfif>
-    </cfloop>
-</cfloop>
-</cfsilent>--->
-
-<cfif true>
-<!--- 
-Not Installed Applications --->
-<table class="tbl" width="100%">
-<tr>
-    <td colspan="2"><h2>#stText.ext.notInstalled#</h2>
-#stText.ext.notInstalleddesc#</td>
-</tr>
-
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-
-<tr>
-		<td class="tblHead" nowrap><input type="text" name="filter2" style="width:100%" value="#session.extFilter.filter2#" /></td>
-		<td class="tblHead" width="50" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
-	</tr>
-	<tr>
-		<td width="380" colspan="2" align="right"></td>
-	</tr>
-
-</cfform>
-</table>
-
-
-<cfset row=0>
-<cfset missingRows=5>
-<cfif isQuery(data)><cfoutput query="data" group="uid">
-	    <cfset info=data.info>
-        <cfif 
-			!StructKeyExists(existing,data.uid)
-			and
-			
-			(data.type EQ "all" or data.type EQ request.adminType or ( data.type EQ "" and "web" EQ request.adminType)) 
-			and
-			
-			(doFilter(session.extFilter.filter2,data.label,false)
-			or
-			doFilter(session.extFilter.filter2,data.category,false)
-			or
-			doFilter(session.extFilter.filter2,info.title,false))
-			>
-        	<cfset row++>
-			<cfset missingRows=5-(row mod 5)>
-			<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#data.uid#">
-            <cfset dn=getDumpNail(data.image,130,50)>
-			<!----<table class="tbl" width="148">
-            <td>
-            <td height="80" class="tblContent" nowrap align="center"><cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
-            <a href="#link#" style="text-decoration:none;"><b>#cut(data.label,20)#</b><br />
-            #cut(data.category,20)#</a>
-            </td>
-			</tr>
-			</table>--->
-			<div class="tblContent" style="width:130px;height:80px;margin:2px;float:left" align="center">
-            <cfif len(dn)><a href="#link#"><img src="#dn#" border="0"/></a><br /></cfif>
-            <a href="#link#" style="text-decoration:none;"><b>#cut(data.label,20)#</b><br />
-            #cut(data.category,20)#</a>
-            </div>
-			            
-        </cfif></cfoutput></cfif>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!---
-
-<table class="tbl" width="740">
-<tr>
-    <td colspan="5"><h2>#stText.ext.notInstalled#</h2>
-#stText.ext.notInstalleddesc#</td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-
-
-<tr>
-		<td width="20"></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="nameFilter2" style="width:225px" value="#session.extFilter2.name#" /></td>
-		<td width="130" class="tblHead" nowrap><input type="text" name="categoryFilter2" style="width:130px" value="#session.extFilter2.category#" /></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="providerFilter2" style="width:225px" value="#session.extFilter2.provider#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
-	</tr>
-	<tr>
-		<td width="380" colspan="7" align="right"></td>
-	</tr>
-
-<tr>
-    <td width="20">&nbsp;<br />&nbsp;</td>
-    <td width="225" class="tblHead" nowrap>#stText.ext.application#</td>
-    <td width="130" class="tblHead" nowrap>#stText.ext.category#</td>
-    <td width="225" class="tblHead" colspan="2" nowrap>#stText.ext.provider#</td>
-</tr>
-
-    
-    
-
-<cfoutput query="data" group="uid">
-	    <cfset info=data.info>
-        <cfif 
-			!StructKeyExists(existing,data.uid)
-			and
-			
-			(data.type EQ "all" or data.type EQ request.adminType or ( data.type EQ "" and "web" EQ request.adminType)) 
-			and
-			doFilter(session.extFilter2.name,data.label,false)
-			and
-			doFilter(session.extFilter2.category,data.category,false)
-			and
-			doFilter(session.extFilter2.provider,info.title,false)
-			>
-        
-		<tr>
-			<td>
-			<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-				<input type="radio" class="radio" name="row" value="#data.currentrow#">
-                <input type="hidden" name="id_#data.currentrow#" value="#data.id#">
-                <input type="hidden" name="uid_#data.currentrow#" value="#data.uid#">
-                <input type="hidden" name="hashProvider_#data.currentrow#" value="#hash(data.provider)#">
-				</td>
-			</tr>
-			</table>
-			</td>
-            <cfset dn=getDumpNail(data.image)>
-			<td class="tblContent" nowrap>
-            <table border="0" cellpadding="0" cellspacing="0">
-            <tr>
-            	<td width="80" height="40" align="center"><cfif len(dn)><img src="#dn#" border="0"/><cfelse>&nbsp;</cfif></td>
-            	<td >&nbsp;&nbsp;&nbsp;</td>
-            	<td><a href="#request.self#?action=#url.action#&action2=detail&hashProvider=#hash(data.provider)#&id=#data.id#&uid=#data.uid#">#data.label#</a></td>
-            </tr>
-            </table>
-            
-            
-            
-            </td>
-			<td class="tblContent" nowrap>#data.category#</td>
-			<td class="tblContent" colspan="2" nowrap><a href="#request.self#?action=#url.action#&action2=provider&hashProvider=#hash(data.provider)#">#data.info[data.currentrow].title#</a></td>
-		</tr>
-        </cfif>
-</cfoutput>	
-
-
-<tr>
-    <td colspan="4">
-     <table border="0" cellpadding="0" cellspacing="0">
-     <tr>
-        <td><cfmodule template="tp.cfm"  width="7" height="1"></td>		
-        <td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"/></td>
-        <td></td>
-     </tr>
-     <tr>
-        <td></td>
-        <td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1" /></td>
-        <td>&nbsp;
-        <input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">
-        </td>	
-    </tr>
-     </table>
-     </td>
-</tr></cfform>
-</table>
---->
-
-
-
-
-</cfif>
+	<h2>#stText.ext.uploadExtension#</h2>
+	<div class="itemintro">#stText.ext.uploadExtensionDesc#</div>
+	<cfif structKeyExists(url, 'noextfile')>
+		<div class="error">
+			#stText.ext.nofileuploaded#
+		</div>
+	</cfif>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=upload" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="mainAction" value="uploadExt" />
+		<table class="tbl maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.ext.extzipfile#</th>
+					<td><input type="file" class="txt file" name="extfile" id="extfile" /></td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>&nbsp;</td>
+					<td>
+						<input type="submit" class="button submit" value="#stText.ext.upload#" />
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
 </cfoutput>
+
+<cfif extensions.recordcount>
+	<cfoutput>
+		<!--- Installed Applications --->
+		<h2>#stText.ext.installed#</h2>
+		<div class="itemintro">#stText.ext.installeddesc#</div>
+
+		<div class="filterform">
+			<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+				<ul>
+					<li>
+						<label for="filter">#stText.search.searchterm#:</label>
+						<input type="text" name="filter" id="filter" class="txt" value="#session.extFilter.filter#" />
+					</li>
+					<li>
+						<input type="submit" class="button submit" name="mainAction" value="#stText.buttons.filter#" />
+					</li>
+				</ul>
+				<div class="clear"></div>
+			</cfform>
+		</div>
+		
+		<div class="extensionlist">
+			<cfloop query="extensions">
+				<cfset uid=createId(extensions.provider,extensions.id)>
+				<cfset existing[uid]=true>
+				
+				<cfif session.extFilter.filter neq "">
+					<cftry>
+						<cfset prov=getProviderData(extensions.provider)>
+						<cfset provTitle=prov.info.title>
+						<cfcatch>
+							<cfset provTitle="">
+						</cfcatch>
+					</cftry>
+				</cfif>
+				
+				<cfif 
+				session.extFilter.filter eq ""
+				or doFilter(session.extFilter.filter,extensions.label,false)
+				or doFilter(session.extFilter.filter,extensions.category,false)
+				or doFilter(session.extFilter.filter,provTitle,false)
+				>
+					<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#uid#">
+					<cfset dn=getDumpNail(extensions.image,130,50)>
+					<cfset hasUpdate=updateAvailable(extensions)>
+					<div class="extensionthumb">
+						<a href="#link#" title="#stText.ext.viewdetails#">
+							<div class="extimg">
+								<cfif len(dn)>
+									<img src="#dn#" alt="#stText.ext.extThumbnail#" />
+								</cfif>
+							</div>
+							<b title="#extensions.label#">#cut(extensions.label,30)#</b><br />
+							#cut(extensions.category,30)#
+							<cfif hasUpdate>
+								<br /><span class="CheckError">#stText.ext.updateavailable#</span>
+							</cfif>
+						</a>
+					</div>
+				</cfif>
+			</cfloop>
+			<div class="clear"></div>
+		</div>
+	</cfoutput>
+</cfif>
+
+<!---  Not Installed Applications --->
+<cfoutput>
+	<h2>#stText.ext.notInstalled#</h2>
+	<div class="itemintro">#stText.ext.notInstalleddesc#</div>
+
+	<div class="filterform">
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<ul>
+				<li>
+					<label for="filter2">#stText.search.searchterm#:</label>
+					<input type="text" name="filter2" id="filter2" class="txt" value="#session.extFilter.filter2#" />
+				</li>
+				<li>
+					<input type="submit" class="button submit" name="mainAction" value="#stText.buttons.filter#" />
+				</li>
+			</ul>
+			<div class="clear"></div>
+		</cfform>
+	</div>
+</cfoutput>
+
+<cfif isQuery(data)>
+	<div class="extensionlist">
+		<cfoutput query="data" group="uid">
+			<cfset info=data.info>
+			<cfif !StructKeyExists(existing,data.uid)
+			and (data.type EQ "all" or data.type EQ request.adminType or (data.type EQ "" and "web" EQ request.adminType)) 
+			and (
+				session.extFilter.filter2 eq ""
+				or doFilter(session.extFilter.filter2,data.label,false)
+				or doFilter(session.extFilter.filter2,data.category,false)
+				or doFilter(session.extFilter.filter2,info.title,false)
+			)
+			>
+				<cfset link="#request.self#?action=#url.action#&action2=detail&uid=#data.uid#">
+				<cfset dn=getDumpNail(data.image,130,50)>
+				<div class="extensionthumb">
+					<a href="#link#" title="#stText.ext.viewdetails#">
+						<div class="extimg">
+							<cfif len(dn)>
+								<img src="#dn#" alt="#stText.ext.extThumbnail#" />
+							</cfif>
+						</div>
+						<b title="#data.label#">#cut(data.label,30)#</b><br />
+						#cut(data.category,30)#
+					</a>
+				</div>
+			</cfif>
+		</cfoutput>
+		<div class="clear"></div>
+	</div>
+</cfif>

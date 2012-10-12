@@ -29,3 +29,5 @@ va specific
 *.DS_Store
 *.swp
 *.out
+/.idea/
+/*.iml

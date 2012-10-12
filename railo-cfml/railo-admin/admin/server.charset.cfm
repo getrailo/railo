@@ -22,44 +22,44 @@ Defaults --->
 <cfparam name="form.mainAction" default="none">
 <cfparam name="form.subAction" default="none">
 
-<cftry>
-	<cfswitch expression="#form.mainAction#">
-	<!--- UPDATE --->
-		<cfcase value="#stText.Buttons.Update#">
-			
-			<cfadmin 
-				action="updateCharset"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
+<cfif hasAccess>
+	<cftry>
+		<cfswitch expression="#form.mainAction#">
+		<!--- UPDATE --->
+			<cfcase value="#stText.Buttons.Update#">
 				
-				templateCharset="#form.templateCharset#"
-				webCharset="#form.webCharset#"
-				resourceCharset="#form.resourceCharset#"
-				remoteClients="#request.getRemoteClients()#">
-		
-		</cfcase>
-	<!--- reset to server setting --->
-		<cfcase value="#stText.Buttons.resetServerAdmin#">
+				<cfadmin 
+					action="updateCharset"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					
+					templateCharset="#form.templateCharset#"
+					webCharset="#form.webCharset#"
+					resourceCharset="#form.resourceCharset#"
+					remoteClients="#request.getRemoteClients()#">
 			
-			<cfadmin 
-				action="updateCharset"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
+			</cfcase>
+			<!--- reset to server setting --->
+			<cfcase value="#stText.Buttons.resetServerAdmin#">
 				
-				templateCharset=""
-				webCharset=""
-				resourceCharset=""
-				remoteClients="#request.getRemoteClients()#">
-		
-		</cfcase>
-	</cfswitch>
-	<cfcatch>
-	
-		<cfset error.message=cfcatch.message>
-		<cfset error.detail=cfcatch.Detail>
-	</cfcatch>
-</cftry>
-
+				<cfadmin 
+					action="updateCharset"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					
+					templateCharset=""
+					webCharset=""
+					resourceCharset=""
+					remoteClients="#request.getRemoteClients()#">
+			
+			</cfcase>
+		</cfswitch>
+		<cfcatch>
+			<cfset error.message=cfcatch.message>
+			<cfset error.detail=cfcatch.Detail>
+		</cfcatch>
+	</cftry>
+</cfif>
 
 <!--- 
 Redirtect to entry --->
@@ -70,90 +70,71 @@ Redirtect to entry --->
 <!--- 
 Error Output --->
 <cfset printError(error)>
-<!--- 
-Create Datasource --->
+
 <cfoutput>
-
-
-<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
-
-
-
-<table class="tbl" width="100%">
-<colgroup>
-    <col width="150">
-    <col>
-</colgroup>
-<tr>
-	<td colspan="2">#stText.charset[request.adminType]#</td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-
-<!--- Template --->
-<tr>
-	<td class="tblHead" width="150">#stText.charset.templateCharset#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.charset.templateCharsetDescription#</span><br />
-		<cfif hasAccess>
-		<cfinput type="text" name="templateCharset" value="#charset.templateCharset#" 
-			style="width:200px" required="no" message="#stText.charset.missingTemplateCharset#">
-		
-		<cfelse>
-			<input type="hidden" name="templateCharset" value="#charset.templateCharset#">
-		
-			<b>#charset.templateCharset#</b>
-		</cfif>
-	</td>
-</tr>
-
-<!--- Web --->
-<tr>
-	<td class="tblHead" width="150">#stText.charset.webCharset#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.charset.webCharsetDescription#</span><br />
-		<cfif hasAccess>
-		<cfinput type="text" name="webCharset" value="#charset.webCharset#" 
-			style="width:200px" required="no" message="#stText.charset.missingWebCharset#">
-		
-		<cfelse>
-			<input type="hidden" name="webCharset" value="#charset.webCharset#">
-		
-			<b>#charset.webCharset#</b>
-		</cfif>
-	</td>
-</tr>
-
-<!--- Resource --->
-<tr>
-	<td class="tblHead" width="150">#stText.charset.resourceCharset#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.charset.resourceCharsetDescription#</span><br />
-		<cfif hasAccess>
-		<cfinput type="text" name="resourceCharset" value="#charset.resourceCharset#" 
-			style="width:200px" required="no" message="#stText.charset.missingResourceCharset#">
-		
-		<cfelse>
-			<input type="hidden" name="resourceCharset" value="#charset.resourceCharset#">
-		
-			<b>#charset.resourceCharset#</b>
-		</cfif>
-	</td>
-</tr>
-
-
-<cfif hasAccess>
-<cfmodule template="remoteclients.cfm" colspan="2">
-<tr>
-	<td colspan="2">
-		<input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.Update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<cfif request.adminType EQ "web"><input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
-	</td>
-</tr>
-</cfif>
-</cfform></cfoutput>
-</table>
-<br><br>
+	<cfif not hasAccess>
+		<cfset noAccess(stText.setting.noAccess)>
+	</cfif>
+	
+	<div class="pageintro">#stText.charset[request.adminType]#</div>
+	
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl">
+			<tbody>
+				<!--- Template --->
+				<tr>
+					<th scope="row">#stText.charset.templateCharset#</th>
+					<td>
+						<cfif hasAccess>
+							<input type="text" class="small" name="templateCharset" value="#charset.templateCharset#" />
+						<cfelse>
+							<input type="hidden" name="templateCharset" value="#charset.templateCharset#">
+							<b>#charset.templateCharset#</b>
+						</cfif>
+						<div class="comment">#stText.charset.templateCharsetDescription#</div>
+					</td>
+				</tr>
+				
+				<!--- Web --->
+				<tr>
+					<th scope="row">#stText.charset.webCharset#</th>
+					<td>
+						<cfif hasAccess>
+							<input type="text" class="small" name="webCharset" value="#charset.webCharset#">
+						<cfelse>
+							<input type="hidden" name="webCharset" value="#charset.webCharset#">
+							<b>#charset.webCharset#</b>
+						</cfif>
+						<div class="comment">#stText.charset.webCharsetDescription#</div>
+					</td>
+				</tr>
+				
+				<!--- Resource --->
+				<tr>
+					<th scope="row">#stText.charset.resourceCharset#</th>
+					<td>
+						<cfif hasAccess>
+							<input type="text" class="small" name="resourceCharset" value="#charset.resourceCharset#">
+						<cfelse>
+							<input type="hidden" name="resourceCharset" value="#charset.resourceCharset#">
+							<b>#charset.resourceCharset#</b>
+						</cfif>
+						<div class="comment">#stText.charset.resourceCharsetDescription#</div>
+					</td>
+				</tr>
+			</tbody>
+			<cfif hasAccess>
+				<tfoot>
+					<cfmodule template="remoteclients.cfm" colspan="2">
+					<tr>
+						<td colspan="2">
+							<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.Update#">
+							<input class="button reset" type="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<cfif request.adminType EQ "web"><input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#"></cfif>
+						</td>
+					</tr>
+				</tfoot>
+			</cfif>
+		</table>
+	</cfform>
+</cfoutput>
