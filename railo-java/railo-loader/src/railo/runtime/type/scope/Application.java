@@ -7,12 +7,12 @@ package railo.runtime.type.scope;
 public interface Application extends Scope {
 
     /**
-     * @return returns the last acces to this session scope
+     * @return returns the last access timestamp of this Application scope
      */
     public abstract long getLastAccess();
 
     /**
-     * @return returns the actuell timespan of the application
+     * @return returns the actual timespan of the application
      */
     public abstract long getTimeSpan();
 
