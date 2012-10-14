@@ -755,7 +755,7 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="schedule.proxyusername">Username, um auf einen geschützten Proxy zuzugreifen.</data>
 	<data key="schedule.name">Name</data>
 	<data key="schedule.intervaltype">Intervall Typ</data>
-	<data key="schedule.currentdatetime">Aktuelle Datum/Zeit dieses Railo Kontexts: (mm/dd/yyyy hh:mm tt)</data>
+	<data key="schedule.currentdatetime">Aktuelle Datum/Zeit dieses Railo Kontexts:</data>
 	<data key="schedule.weekly">wöchentlich</data>
 	<data key="schedule.endsat">Endet am</data>
 	<data key="schedule.executiontimedescdaily">Definert die Zeit bei welcher der Task täglich ausgeführt werden soll.</data>
@@ -922,11 +922,14 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="doc.attrtitle">Attribute</data>
 	<data key="doc.argtitle">Argumente</data>
 	<data key="doc.bodytitle">Body</data>
-	<data key="doc.alsoScript">Diese tag kann auch innerhalb von cfscript verwendet werden.</data>
+	<data key="doc.alsoScript">Diese tag kann auch innerhalb von cfscript verwendet werden</data>
 	<data key="doc.depFunction">This Function is deprecated</data>
 	<data key="doc.depTag">This Tag is deprecated</data>
 	<data key="doc.depAttr">This Attribute is deprecated</data>
 	<data key="doc.depArg">This Argument is deprecated</data>
+	<data key="doc.example">Beispiel</data>
+	<data key="doc.chooseTag">Choose a tag</data>
+	<data key="doc.chooseFunction">Choose a function</data>
 	<data key="overview.installedtls">Installierte Tag Bibliotheken</data>
 	<data key="overview.bugreport">Fehlerreport</data>
 	<data key="overview.issuetracker">Issue Tracker</data>
