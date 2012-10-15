@@ -33,6 +33,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.QueryUtil;
 
 public class HibernateCaster {
@@ -446,7 +447,7 @@ public class HibernateCaster {
 			Array arr=Caster.toArray(obj);
 			int len=arr.size();
 			if(len>0) {
-				Iterator it = arr.valueIterator();
+				Iterator<Object> it = arr.valueIterator();
 				int row=1;
 				while(it.hasNext()){
 					qry=toQuery(pc,session,HibernateCaster.toComponent(it.next()),name,qry,len,row++);
@@ -490,7 +491,19 @@ public class HibernateCaster {
 			String name;
 			//ColumnInfo ci;
 			int t;
+			Object obj;
+			Struct sct;
+			String fieldType;
 			for(int i=0;i<properties.length;i++){
+				obj = properties[i].getMetaData();
+				if(obj instanceof Struct) {
+					sct=(Struct) obj;
+					fieldType = Caster.toString(sct.get(KeyConstants._fieldtype,null),null);
+					if("one-to-many".equalsIgnoreCase(fieldType) || "many-to-many".equalsIgnoreCase(fieldType) || "many-to-one".equalsIgnoreCase(fieldType) || "one-to-one".equalsIgnoreCase(fieldType)) 
+						continue;
+					
+				}
+				
 				name=HibernateUtil.validateColumnName(md, properties[i].getName(),null);
 				//if(columnsInfo!=null)ci=(ColumnInfo) columnsInfo.get(name,null);
 				//else ci=null;
@@ -519,7 +532,6 @@ public class HibernateCaster {
 		// populate
 		Key[] names=QueryUtil.getColumnNames(qry);
 		
-		
 		int row=qry.addRow();
 		for(int i=0;i<names.length;i++){
 			qry.setAtEL(names[i], row, scope.get(names[i],null));
@@ -544,7 +556,7 @@ public class HibernateCaster {
 			}
 			else if(Decision.isArray(value)){
 				arr = Caster.toArray(value);
-				Iterator it = arr.valueIterator();
+				Iterator<Object> it = arr.valueIterator();
 				while(it.hasNext()){
 					value=it.next();
 					if(value instanceof Component){
