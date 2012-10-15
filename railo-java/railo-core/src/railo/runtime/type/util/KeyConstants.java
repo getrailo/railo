@@ -751,6 +751,8 @@ public class KeyConstants {
 	public static final Key _chaining = KeyImpl._const("chaining");
 	public static final Key _protocol = KeyImpl._const("protocol");
 	public static final Key _enabled = KeyImpl._const("enabled");
+	public static final Key _fieldtype = KeyImpl._const("fieldtype");
+	public static final Key _cfc = KeyImpl._const("cfc");
 	
 	
 	

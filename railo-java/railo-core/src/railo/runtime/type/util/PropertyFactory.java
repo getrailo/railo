@@ -20,7 +20,7 @@ import railo.runtime.type.UDFSetterProperty;
 public class PropertyFactory {
 
 	public static final Collection.Key SINGULAR_NAME = KeyImpl.intern("singularName");
-	public static final Key FIELD_TYPE = KeyImpl.intern("fieldtype");
+	public static final Key FIELD_TYPE = KeyConstants._fieldtype;
 
 	
 	public static void createPropertyUDFs(ComponentImpl comp, Property property) throws PageException {

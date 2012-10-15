@@ -33,14 +33,15 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class HBMCreator {
 	
 	
-	private static final Collection.Key PROPERTY = KeyImpl.intern("property");
-	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldType");
+	private static final Collection.Key PROPERTY = KeyConstants._property;
+	private static final Collection.Key FIELD_TYPE = KeyConstants._fieldtype;
 	private static final Collection.Key LINK_TABLE = KeyImpl.intern("linktable");
-	private static final Collection.Key CFC = KeyImpl.intern("cfc");
+	private static final Collection.Key CFC = KeyConstants._cfc;
 	private static final Collection.Key GENERATOR = KeyImpl.intern("generator");
 	private static final Collection.Key PARAMS = KeyImpl.intern("params");
 	private static final Collection.Key SEQUENCE = KeyImpl.intern("sequence");
