@@ -72,9 +72,9 @@ private void function throwWhenNotNumeric(struct custom, string name){
 		throw "value for ["&name&"] must be numeric";
 }
 
-private function isColumnEmpty(string columnName){
+private function isColumnEmpty(query qry,string columnName){
 	if(!isDefined(columnName)) return true;
-	return !len(replace(valueList(""&columnName),',','','all'));
+	return !len(replace(queryColumnData(qry,columnName),',','','all'));
 }
 
 
@@ -116,13 +116,8 @@ millisecond:"ms"
 }>
 <!--- Plus/minus Image --->
 <cfoutput>
-<cfif structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
-	<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/plus.png.cfm">
-	<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/mnus.png.cfm">
-<cfelse>
-    <cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/plus.png.cfm"></cfsavecontent>
-    <cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/minus.png.cfm"></cfsavecontent>
-</cfif>
+<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/plus.png.cfm">
+<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/minus.png.cfm">
 <cfsavecontent variable="sImgPlus"><img src="#plus#"></cfsavecontent>
 <cfsavecontent variable="sImgMinus"><img src="#minus#"></cfsavecontent>
 </cfoutput>
@@ -402,8 +397,8 @@ function railoDebugModernToggle(id) {
 <!--- Implicit variable Access --->
 <cfif structKeyExists(custom,"implicitAccess") and custom.implicitAccess and implicitAccess.recordcount>
 	<cfset display=structKeyExists(cookie,'railo_debug_modern_acc') and cookie.railo_debug_modern_acc>
-	<cfset hasAction=!isColumnEmpty('traces.action')>
-	<cfset hasCategory=!isColumnEmpty('traces.category')>
+	<cfset hasAction=!isColumnEmpty(traces,'action')>
+	<cfset hasCategory=!isColumnEmpty(traces,'category')>
 	<span class="h2">Implicit variable Access</span>
 		
 <table class="tbl" cellpadding="0" cellspacing="0">
@@ -492,8 +487,8 @@ function railoDebugModernToggle(id) {
 <!--- Traces --->
 <cfif structKeyExists(custom,"tracing") and custom.tracing and traces.recordcount>
 	<cfset display=structKeyExists(cookie,'railo_debug_modern_trace') and cookie.railo_debug_modern_trace>
-	<cfset hasAction=!isColumnEmpty('traces.action')>
-	<cfset hasCategory=!isColumnEmpty('traces.category')>
+	<cfset hasAction=!isColumnEmpty(traces,'action')>
+	<cfset hasCategory=!isColumnEmpty(traces,'category')>
 	<span class="h2">Trace Points</span>
 		
 <table class="tbl" cellpadding="0" cellspacing="0">
