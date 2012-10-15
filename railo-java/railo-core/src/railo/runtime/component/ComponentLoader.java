@@ -85,7 +85,7 @@ public class ComponentLoader {
     	// check import cache
     	if(doCache && isRealPath){
     		ImportDefintion impDef = config.getComponentDefaultImport();
-	    	ImportDefintion[] impDefs=currP.getImportDefintions();
+	    	ImportDefintion[] impDefs=currP==null?new ImportDefintion[0]:currP.getImportDefintions();
 	    	int i=-1;
 	    	do{
 	    		
