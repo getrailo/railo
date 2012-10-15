@@ -393,14 +393,14 @@ public class ComponentLoader {
             long time=System.nanoTime();
             try {
             	debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
-            	exeTime=System.currentTimeMillis();
+            	exeTime=System.nanoTime();
                 if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initComponent(pc,page,callPath,isRealPath);
                 
                 
             }
             finally {
-                int diff= ((int)(System.nanoTime()-exeTime)-(pc.getExecutionTime()-currTime));
+            	int diff= ((int)(System.nanoTime()-exeTime)-(pc.getExecutionTime()-currTime));
                 pc.setExecutionTime(pc.getExecutionTime()+(int)(System.nanoTime()-time));
                 debugEntry.updateExeTime(diff);
                 pc.removeLastPageSource(true);
