@@ -68,6 +68,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.util.MultiPartResponseUtils;
 import railo.runtime.util.URLResolver;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
@@ -658,7 +659,8 @@ public final class Http extends BodyTagImpl {
 	        	mimetype == null ||  
 	        	mimetype == NO_MIMETYPE || isText(mimetype);
 	        	
-	        
+		    // is text 
+	        boolean isMultipart= MultiPartResponseUtils.isMultipart(mimetype);        
 	       
 	        cfhttp.set(TEXT,Caster.toBoolean(isText));
 	        
@@ -706,7 +708,9 @@ public final class Http extends BodyTagImpl {
                 	is = httpMethod.getResponseBodyAsStream();
                     if(is!=null &&isGzipEncoded(contentEncoding))
                     	is = new GZIPInputStream(is);
-                        	
+                    
+                    
+                    
                     try {
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
                     }
@@ -763,8 +767,12 @@ public final class Http extends BodyTagImpl {
 		        		throw Caster.toPageException(t);
 					}
 		        }
-		        	
-		        cfhttp.set(FILE_CONTENT,barr);
+		        //IF Multipart response get file content and parse parts
+			    if(isMultipart) {
+			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
+			    } else {
+			    	cfhttp.set(FILE_CONTENT,barr);
+			    }
 		        
 		        if(file!=null) {
 		        	try {
@@ -775,7 +783,7 @@ public final class Http extends BodyTagImpl {
 		        	}
 		        }   
 		    }
-	        
+		    
 	    // header		
 	        cfhttp.set(HEADER,raw.toString());
 	       
