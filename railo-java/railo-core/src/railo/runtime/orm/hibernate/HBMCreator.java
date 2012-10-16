@@ -47,7 +47,7 @@ public class HBMCreator {
 	private static final Collection.Key SEQUENCE = KeyImpl.intern("sequence");
 	private static final Collection.Key UNIQUE_KEY_NAME = KeyImpl.intern("uniqueKeyName");
 	private static final Collection.Key GENERATED = KeyImpl.intern("generated");
-	
+   
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
 		
 		// MUST Support for embeded objects 
