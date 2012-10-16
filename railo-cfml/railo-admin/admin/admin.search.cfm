@@ -14,6 +14,7 @@
 	<cfreturn ret />
 </cffunction>
 
+<cfset dataDir = "/railo-context/admin/searchdata/" />
 <cfset current.label = "Search the Railo Administrator" />
 
 <cfoutput>
@@ -26,12 +27,12 @@
 </cfoutput>
 
 <cfif structKeyExists(url, 'q') and len(url.q)>
-	<cfset variables.indexFile = 'resources/searchdata/searchindex.cfm' />
+	<cfset variables.indexFile = '#dataDir#searchindex.cfm' />
 
 	<!--- do initial or new indexing when a new Railo version is detected --->
 	<cfif not fileExists(variables.indexFile)
 	or structKeyExists(url, "reindex")
-	or fileRead('resources/searchdata/indexed-railo-version.cfm') neq server.railo.version>
+	or fileRead('#dataDir#indexed-railo-version.cfm') neq server.railo.version>
 		<cfinclude template="admin.search.index.cfm" />
 	</cfif>
 
@@ -83,7 +84,7 @@
 			<cfset pagename = rereplace(replace(action, ".", " - "), '.', '\U\0') />
 		</cfif>
 		<h3><a href="#cgi.SCRIPT_NAME#?action=#action#">#pagename#</a></h3>
-		<cfset tmp = fileRead('resources/searchdata/#action#.#session.railo_admin_lang#.txt', 'utf-8') />
+		<cfset tmp = fileRead('#dataDir##action#.#session.railo_admin_lang#.txt', 'utf-8') />
 		<cfset pos = find(url.q, tmp) />
 		<cfset startpos = max(1, pos-showchars/2) />
 		<cfif startpos gt 1>
