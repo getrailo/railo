@@ -20,16 +20,25 @@
 	<h2>Search for keywords within the Railo administrator</h2>
 	<form method="get" action="#cgi.SCRIPT_NAME#">
 		<input type="hidden" name="action" value="admin.search" />
-		<input type="text" name="q" class="medium" size="50"<cfif structKeyExists(url, 'q')> value="#url.q#"</cfif> />
-		<input type="submit" class="button submit" value="Search" />
+		<input type="text" name="q" class="medium" size="50"<cfif structKeyExists(url, 'q')> value="#url.q#"</cfif> placeholder="#stText.buttons.search#" />
+		<input type="submit" class="button submit" value="#stText.buttons.search#" />
 	</form>
 </cfoutput>
 
 <cfif structKeyExists(url, 'q') and len(url.q)>
+	<cfset variables.indexFile = 'resources/searchdata/searchindex.cfm' />
+
+	<!--- do initial or new indexing when a new Railo version is detected --->
+	<cfif not fileExists(variables.indexFile)
+	or structKeyExists(url, "reindex")
+	or fileRead('resources/searchdata/indexed-railo-version.cfm') neq server.railo.version>
+		<cfinclude template="admin.search.index.cfm" />
+	</cfif>
+
 	<cfset foundpages = {} />
 	
 	<!--- get the translations2actions data--->
-	<cfset keys2action = evaluate(fileread('resources/searchdata/searchindex.cfm')) />
+	<cfset keys2action = evaluate(fileread(variables.indexFile)) />
 	
 	<!--- loop through translations--->
 	<cfset data = application.stText[session.railo_admin_lang] />

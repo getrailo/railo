@@ -199,12 +199,9 @@ body.full #resizewin {
 	white-space: nowrap;
 }
 #navsearch {
-	margin: 10px 0 0 0px;
-	width: 90px;
-}
-#nav input.submit {
-	padding-left:0;
-	padding-right:0;
+	margin: 10px 0 0 10px;
+	width: 105px;
+	height: 20px;
 }
 
 #contenttd {
@@ -358,6 +355,8 @@ tr.notOK td {background-color:#f9e0e0;}
 	font-weight:normal;
 	empty-cells:show;
 	border:1px solid #e0e0e0;
+}
+.longwords {
 	word-break:break-all;
 }
 .maintbl th {
@@ -518,7 +517,7 @@ input.reset {
 	border-radius: 3px;
 	background: #f2f2f2;
 }
-a.edit, .btn-search {
+a.edit {
 	background-image: url(../img/edit.png.cfm); /* fallback */
 	background-image: url(../img/edit.png.cfm), -webkit-linear-gradient(top, #fff,#ddd); /* Chrome 10+, Saf5.1+ */
 	background-image: url(../img/edit.png.cfm),	-moz-linear-gradient(top, #fff,#ddd); /* FF3.6+ */
@@ -538,6 +537,10 @@ a.edit, .btn-search {
 	background-image: url(../img/search_icon.png.cfm),	  -o-linear-gradient(top, #fff,#ddd); /* Opera 11.10+ */
 	background-image: url(../img/search_icon.png.cfm),    linear-gradient(top, #fff,#ddd); /* W3C */
 	vertical-align:bottom;
+	background-repeat: no-repeat;
+	background-position: center;
+	height:20px;
+	width:20px;
 }
 .btn-mini span {
 	display:none;
@@ -671,6 +674,14 @@ div.percentagebar div {
 	background-color:#eee2d4;
 	border-right:1px solid #999;
 	padding-left:2px;
+}
+div.percentagebar span {
+	position: absolute;
+	top:0px;
+	left:3px;
+	height:100%;
+	font-size: 10px;
+}
 }
 
 div.percentagebar span {
@@ -861,3 +872,10 @@ div.tooltip {
 .syntaxText {color:#CC0000;}
 .syntaxAttr {color:#000099;}
 .syntaxType {color:##000099;}
+
+:-moz-placeholder {
+	color: #ccc !important;
+}
+::-webkit-input-placeholder {
+	color: #ccc !important;
+}

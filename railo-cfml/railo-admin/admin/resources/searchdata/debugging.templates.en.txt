@@ -1,3 +1,0 @@
-
- submit Days Hours Minutes Seconds submit
- update Reset to Server Administrator Setting delete Enable debugging Yes No Yes No Enable or disable the debugging output update cancel Reset to Server Administrator Setting delete cancel Type create cancel

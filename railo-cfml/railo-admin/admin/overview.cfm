@@ -95,7 +95,7 @@ Error Output --->
 				<cfset local.pused=int(100/arguments.usage.max*arguments.usage.used)>
        			<cfset local.pfree=100-pused>
         		<div class="percentagebar tooltipMe" title="#pfree#% available (#round((usage.max-usage.used)/1024/1024)#mb), #pused#% in use (#round(usage.used/1024/1024)#mb)"><!---
-				---><div style="width:#pused#%"><span>#pused#%</span></div><!---
+					---><div style="width:#pused#%"><span>#pused#%</span></div><!---
 				---></div>
     		</cfloop>
         	<cfif StructKeyExists(pool,usage.type& "_desc")>

@@ -200,18 +200,28 @@
 						</td>
 
 						<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
-						<td class="tblContent#css#" title="#mappings.strphysical#
-#mappings.physical#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strphysical,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-							name="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"  
-							style="width:270px" 
-							message="#stText.Components.PhysicalMissing##mappings.currentrow#)"></cfif></td>
+						<td class="tblContent#css# longwords">
+							<cfif mappings.ReadOnly>
+								#mappings.strphysical#
+							<cfelse>
+								<cfinput onKeyDown="checkTheBox(this)" type="text"
+								name="physical_#mappings.currentrow#" value="#mappings.strphysical#" required="no"
+								style="width:270px"
+								message="#stText.Components.PhysicalMissing##mappings.currentrow#)">
+							</cfif>
+						</td>
 						
 						<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
-						<td class="tblContent#css#" title="#mappings.strarchive#
-#mappings.archive#" nowrap><cfif mappings.ReadOnly>#cut(mappings.strarchive,40)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-							name="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"  
-							style="width:270px" 
-							message="#stText.Components.ArchiveMissing##mappings.currentrow#)"></cfif></td>
+						<td class="tblContent#css# longwords">
+							<cfif mappings.ReadOnly>
+								#mappings.strarchive#
+							<cfelse>
+								<cfinput onKeyDown="checkTheBox(this)" type="text"
+								name="archive_#mappings.currentrow#" value="#mappings.strarchive#" required="no"
+								style="width:270px"
+								message="#stText.Components.ArchiveMissing##mappings.currentrow#)">
+							</cfif>
+						</td>
 						
 						<td nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 							<option value="physical" <cfif mappings.physicalFirst>selected</cfif>>#stText.Components.physical#</option>
@@ -244,7 +254,7 @@
 			<tfoot>
 				<cfif hasAccess>
 					<tr>
-						<td colspan="8">
+						<td colspan="6">
 							<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
 							<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Update#">
 							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">

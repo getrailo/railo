@@ -282,11 +282,13 @@
 
 
 		subNav="";
+		hasActiveItem = false;
 		if(hasChildren) {
 			for(iCld=1; iCld lte ArrayLen(stNavi.children); iCld=iCld+1) {
 				stCld = stNavi.children[iCld];
 				isActive=current.action eq stNavi.action & '.' & stCld.action or (current.action eq 'plugin' and stCld.action EQ url.plugin);
 				if(isActive) {
+					hasActiveItem = true;
 					current.label = stNavi.label & ' - ' & stCld.label;
 				}
 
@@ -319,7 +321,7 @@
 		}
 		else {
 			idName = toIDField(stNavi.label);
-			isCollapsed = application.adminfunctions.getdata('collapsed_' & idName) eq 1;
+			isCollapsed = not hasActiveItem and application.adminfunctions.getdata('collapsed_' & idName) eq 1;
 			strNav = strNav & '<li id="#idName#"#isCollapsed ? ' class="collapsed"':''#><a href="##">' & stNavi.label & '</a><ul#isCollapsed ? ' style="display:none"':''#>'&subNav& "</ul></li>";
 			//strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";
 		}

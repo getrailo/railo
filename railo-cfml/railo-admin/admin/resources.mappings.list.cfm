@@ -42,7 +42,7 @@
 							
 							<!--- physical --->
 							<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
-							<td class="tblContent#css#">
+							<td class="tblContent#css# longwords">
 								<cfif FALSE and len(mappings.strPhysical) gt 39>
 									<abbr title="#mappings.strPhysical#">#left(mappings.strPhysical, 20)#...#right(mappings.strPhysical, 16)#</abbr>
 								<cfelse>
@@ -51,7 +51,7 @@
 							</td>
 							<!--- archive --->
 							<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
-							<td class="tblContent#css#">
+							<td class="tblContent#css# longwords">
 								<cfif FALSE and len(mappings.strArchive) gt 39>
 									<abbr title="#mappings.strArchive#">#left(mappings.strArchive, 20)#...#right(mappings.strArchive, 16)#</abbr>
 								<cfelse>
