@@ -82,7 +82,7 @@ public class FDDump {
 		}
 	}
 	
-	public static void main(String[] args) throws PageException {
+	/*public static void main(String[] args) throws PageException {
 		Array arr = new ArrayImpl();
 		arr.setEL(1, "aaa");
 		arr.setEL(2, Boolean.TRUE);
@@ -112,5 +112,5 @@ public class FDDump {
 		//dump(new FDVariable(null,"susi",FDCaster.toFDValue(null,"susi",arr)));
 		
 		//dump(FDCaster.toFDVariable("susi",arr));
-	}
+	}*/
 }
