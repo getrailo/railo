@@ -68,6 +68,10 @@ public class BodyBase extends StatementBase implements Body {
 	public List getStatements() {
 		return statements;
 	}
+	
+	public boolean hasStatements() {
+		return !statements.isEmpty();
+	}
 
 	/**
 	 *
