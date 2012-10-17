@@ -228,10 +228,6 @@ public final class CFTypes {
 	                if("long".equals(type))								return TYPE_NUMERIC;
 	            break;
 	        	
-	            case 'm':
-	                if("memory".equals(type))								return TYPE_STRING;
-	            break;
-	        	
 	        	case 'n':
 	        	    if(type.equals("numeric")) return TYPE_NUMERIC;
 	        	    else if(type.equals("number")) return TYPE_NUMERIC;
