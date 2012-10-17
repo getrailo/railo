@@ -753,6 +753,10 @@ public class KeyConstants {
 	public static final Key _enabled = KeyImpl._const("enabled");
 	public static final Key _fieldtype = KeyImpl._const("fieldtype");
 	public static final Key _cfc = KeyImpl._const("cfc");
+	public static final Key _memory = KeyImpl._const("memory");
+	public static final Key _scopes = KeyImpl._const("scopes");
+	public static final Key _mappings = KeyImpl._const("mappings");
+	public static final Key _web = KeyImpl._const("web");
 	
 	
 	
