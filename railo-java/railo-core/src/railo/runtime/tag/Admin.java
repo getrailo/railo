@@ -245,6 +245,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     public int doStartTag() throws PageException {
     	//adminSync = pageContext.getAdminSync();
     	
+
+        config=(ConfigImpl)pageContext.getConfig();
+        if(type==TYPE_SERVER)
+            config=(ConfigImpl)config.getConfigServer(password);
+    	
     	// Action
         Object objAction=attributes.get(KeyConstants._action);
         if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
@@ -305,11 +310,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         try {
             // Password
             password = getString("password","");
-            // Config
+            /* Config
             config=(ConfigImpl)pageContext.getConfig();
             if(type==TYPE_SERVER)
                 config=(ConfigImpl)config.getConfigServer(password);
-            
+            */
             adminSync = config.getAdminSync();
         	admin = ConfigWebAdmin.newInstance(config,password);
         } 
@@ -1366,7 +1371,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	sct.setEL(ROOT, cw.getRootDirectory().getAbsolutePath());
         }
         
-        sct.setEL(CONFIG, config.getConfigFile().getAbsolutePath());
+        sct.setEL(CONFIG, config
+        		.getConfigFile()
+        		.getAbsolutePath());
         
     }
 
