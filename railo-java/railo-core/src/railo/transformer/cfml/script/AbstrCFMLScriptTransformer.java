@@ -1558,8 +1558,11 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				name=expression(data);
 			}
 			else {
-				data.cfml.setPos(pos);
-				name=expression(data);
+//				data.cfml.setPos(pos);
+//				name=expression(data);
+				
+				type = LitString.toExprString( "any" );		// only one expression in catch clause, e.g. catch( ex ) so default type to "any"				
+				name = LitString.toExprString( id );
 			}
 			comments(data);
 
