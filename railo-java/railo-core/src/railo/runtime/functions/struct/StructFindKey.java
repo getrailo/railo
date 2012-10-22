@@ -16,10 +16,10 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Argument;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.wrap.ListAsArray;
 import railo.runtime.type.wrap.MapAsStruct;
 
@@ -66,9 +66,9 @@ public final class StructFindKey implements Function {
             if(key.getString().equalsIgnoreCase(value)) {
                 Struct sct=new StructImpl();
                 
-	            sct.setEL(KeyImpl.VALUE,o);
-                sct.setEL(KeyImpl.PATH,createKey(coll,path,key));
-                sct.setEL(KeyImpl.OWNER,coll);
+	            sct.setEL(KeyConstants._value,o);
+                sct.setEL(KeyConstants._path,createKey(coll,path,key));
+                sct.setEL(KeyConstants._owner,coll);
                 array.append(sct);
                 if(!all)abort=true;
             }

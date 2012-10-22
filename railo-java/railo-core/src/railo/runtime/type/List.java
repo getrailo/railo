@@ -11,8 +11,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.comparator.NumberComparator;
-import railo.runtime.type.comparator.TextComparator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 

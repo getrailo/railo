@@ -257,9 +257,9 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 		if(checkArguments) {
 		    rtn=local.get(key,null);
-		    if(rtn!=null) sct.setEL(KeyImpl.LOCAL, rtn);
+		    if(rtn!=null) sct.setEL(KeyConstants._local, rtn);
 		    rtn=argument.getFunctionArgument(key,null);
-		    if(rtn!=null) sct.setEL(KeyImpl.ARGUMENTS, rtn);
+		    if(rtn!=null) sct.setEL(KeyConstants._arguments, rtn);
 		}
 				
 		// get data from queries
@@ -271,13 +271,13 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		// variable
 		rtn=variable.get(key,null);
 		if(rtn!=null) {
-			sct.setEL(KeyImpl.VARIABLES, rtn);
+			sct.setEL(KeyConstants._variables, rtn);
 		}
 		
 		// thread scopes
 		if(pc.hasFamily()) {
 			rtn = pc.getThreadScope(key,null);
-			if(rtn!=null) sct.setEL(KeyImpl.THREAD, rtn); 
+			if(rtn!=null) sct.setEL(KeyConstants._thread, rtn); 
 		}
 		
 		// get a scope value

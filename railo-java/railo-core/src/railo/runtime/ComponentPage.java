@@ -537,9 +537,9 @@ public abstract class ComponentPage extends Page  {
     	//Struct url = StructUtil.duplicate(pc.urlFormScope(),true);
     	Struct url=StructUtil.merge(new Struct[]{pc.formScope(),pc.urlScope()});
         // define args
-        url.removeEL(KeyImpl.FIELD_NAMES);
+        url.removeEL(KeyConstants._fieldnames);
         url.removeEL(METHOD);
-        Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
+        Object args=url.get(KeyConstants._argumentCollection,null);
         Object returnFormat=url.get(KeyConstants._returnFormat,null);
         Object queryFormat=url.get(KeyConstants._queryFormat,null);
         

@@ -11,6 +11,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * returns the root of this actuell Page Context
@@ -51,8 +52,8 @@ public final class CallStackGet implements Function {
 			
 			item=new StructImpl();
 			line=trace.getLineNumber();
-			item.setEL(KeyImpl.FUNCTION,functionName);
-			item.setEL(KeyImpl.TEMPLATE,template);
+			item.setEL(KeyConstants._function,functionName);
+			item.setEL(KeyConstants._template,template);
 			item.setEL(lineNumberName,new Double(line));
 			tagContext.appendEL(item);
 		}

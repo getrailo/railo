@@ -13,8 +13,6 @@ import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
@@ -22,6 +20,7 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.scope.storage.db.SQLExecutionFactory;
 import railo.runtime.type.scope.storage.db.SQLExecutor;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * client scope that store it's data in a datasource
@@ -29,8 +28,6 @@ import railo.runtime.type.scope.storage.db.SQLExecutor;
 public abstract class StorageScopeDatasource extends StorageScopeImpl {
 
 	private static final long serialVersionUID = 239179599401918216L;
-
-	public static final Collection.Key EXPIRES = KeyImpl.intern("expires");
 
 	public static final String PREFIX = "cf";
 	
@@ -109,7 +106,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    	ScopeContext.info(log,"create new "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID()+" in datasource ["+datasourceName+"]");
 			return null;
 	    }
-	    String str=Caster.toString(query.get(KeyImpl.DATA));
+	    String str=Caster.toString(query.get(KeyConstants._data));
 	    if(mxStyle) return null;
 	    Struct s = (Struct)pc.evaluate(str);
 	    ScopeContext.info(log,"load existing data from ["+datasourceName+"."+PREFIX+"_"+strType+"_data] to create "+strType+" scope for "+pc.getApplicationContext().getName()+"/"+pc.getCFID());

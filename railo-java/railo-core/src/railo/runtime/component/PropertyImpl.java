@@ -9,8 +9,6 @@ import railo.runtime.converter.ScriptConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
@@ -25,7 +23,6 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 
 	private static final long serialVersionUID = 3206074213415946902L;
 
-	private static final Collection.Key PERSITENT = KeyImpl.intern("persistent");
 	
 	private String type="any";
 	private String name;
@@ -185,9 +182,9 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 			StructUtil.copy(metadata, sct, true);
 		
 		sct.setEL(KeyConstants._name,name);
-		if(!StringUtil.isEmpty(hint,true))sct.setEL(KeyImpl.HINT,hint);
-		if(!StringUtil.isEmpty(displayname,true))sct.setEL("displayname",displayname);
-		if(!StringUtil.isEmpty(type,true))sct.setEL(KeyImpl.TYPE,type);
+		if(!StringUtil.isEmpty(hint,true))sct.setEL(KeyConstants._hint,hint);
+		if(!StringUtil.isEmpty(displayname,true))sct.setEL(KeyConstants._displayname,displayname);
+		if(!StringUtil.isEmpty(type,true))sct.setEL(KeyConstants._type,type);
 		
 		// dyn attributes
 
@@ -212,7 +209,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 	}
 
 	public boolean isPeristent() {
-		return Caster.toBooleanValue(dynAttrs.get(PERSITENT,Boolean.TRUE),true);
+		return Caster.toBooleanValue(dynAttrs.get(KeyConstants._persistent,Boolean.TRUE),true);
 	}
 
 	public void setOwnerName(String ownerName) {

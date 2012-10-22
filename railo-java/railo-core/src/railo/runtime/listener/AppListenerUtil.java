@@ -35,6 +35,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.KeyConstants;
 
 public final class AppListenerUtil {
 	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
@@ -278,7 +279,7 @@ public final class AppListenerUtil {
 	
 	public static Properties toS3(Struct sct) {
 		String host=Caster.toString(sct.get(HOST,null),null);
-		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(KeyImpl.SERVER,null),null);
+		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(KeyConstants._server,null),null);
 		
 		return toS3(
 				Caster.toString(sct.get(ACCESS_KEY_ID,null),null),
@@ -304,7 +305,7 @@ public final class AppListenerUtil {
 		ac.setORMConfiguration(ORMConfigurationImpl.load(config,ac,sct,res,config.getORMConfig()));
 		
 		// datasource
-		Object o = sct.get(KeyImpl.DATA_SOURCE,null);
+		Object o = sct.get(KeyConstants._datasource,null);
 		if(o!=null) ac.setORMDatasource(Caster.toString(o));
 	}
 	

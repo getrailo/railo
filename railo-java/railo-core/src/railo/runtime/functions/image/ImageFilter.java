@@ -14,10 +14,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import railo.commons.io.IOUtil;
-import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
-import railo.commons.io.res.ResourcesImpl;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;

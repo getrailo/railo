@@ -30,6 +30,7 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public final class FeedHandler extends DefaultHandler {
 
@@ -270,7 +271,7 @@ public final class FeedHandler extends DefaultHandler {
 		if(StringUtil.isEmpty(inside)) return;
 			
 			if(data.hasAttribute()) {
-				if(!StringUtil.isEmpty(value))setEl(data,KeyImpl.VALUE,value);
+				if(!StringUtil.isEmpty(value))setEl(data,KeyConstants._value,value);
 			}
 			else {
 				FeedStruct parent=parents.peek();

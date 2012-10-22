@@ -16,9 +16,9 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.functions.list.ListFirst;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import coldfusion.server.DataSourceService;
 import coldfusion.server.ServiceException;
 import coldfusion.sql.DataSource;
@@ -129,7 +129,7 @@ public class DataSourceServiceImpl extends ServiceSupport implements DataSourceS
 	    	for(int i=0;i<children.length;i++) {
 	    		driver=new StructImpl();
 	    		name=ListFirst.call(pc(),children[i].getName(),".");
-	    		driver.setEL(KeyImpl.NAME,name);
+	    		driver.setEL(KeyConstants._name,name);
 	    		driver.setEL("handler",children[i].getName());
 	    		rtn.setEL(name,driver);
 	    	}

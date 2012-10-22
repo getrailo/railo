@@ -14,6 +14,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.PropertyFactory;
 
 public final class UDFRemoveProperty extends UDFGSProperty {
@@ -35,7 +36,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		String t = PropertyFactory.getType(prop);
 		
 		if("struct".equalsIgnoreCase(t)){
-			FunctionArgumentImpl key = new FunctionArgumentImpl(KeyImpl.KEY,"string",CFTypes.TYPE_STRING,true);
+			FunctionArgumentImpl key = new FunctionArgumentImpl(KeyConstants._key,"string",CFTypes.TYPE_STRING,true);
 			return new FunctionArgument[]{key};
 		}
 		FunctionArgumentImpl value = new FunctionArgumentImpl(KeyImpl.init(PropertyFactory.getSingularName(prop)),"any",CFTypes.TYPE_ANY,true);

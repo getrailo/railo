@@ -35,6 +35,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public class GatewayEngineImpl implements GatewayEngine {
 
@@ -376,7 +377,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		
 		pc.setRequestTimeout(999999999999999999L); 
 		pc.setGatewayContext(true);
-		if(arguments!=null)attrs.setEL(KeyImpl.ARGUMENT_COLLECTION, arguments);
+		if(arguments!=null)attrs.setEL(KeyConstants._argumentCollection, arguments);
 		attrs.setEL("client", "railo-gateway-1-0");
 		return pc;
 	}

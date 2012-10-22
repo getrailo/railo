@@ -20,7 +20,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;

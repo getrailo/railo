@@ -20,12 +20,12 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class CFFunction {
 	
 	
 	private static final Variables VAR = new VariablesImpl();
-	private static final Collection.Key CALLER = KeyImpl.intern("caller");
 	//private static Map udfs=new ReferenceMap();
 	
 	public static Object call(PageContext pc , Object[] objArr) throws PageException {
@@ -40,7 +40,7 @@ public class CFFunction {
 		
 		UDF udf=loadUDF(pc, filename, name, isweb);
 		Struct meta = udf.getMetaData(pc);
-		boolean caller=meta==null?false:Caster.toBooleanValue(meta.get(CALLER,Boolean.FALSE),false);
+		boolean caller=meta==null?false:Caster.toBooleanValue(meta.get(KeyConstants._caller,Boolean.FALSE),false);
 		
 		Struct namedArguments=null;
 		Object[] arguments=null;
@@ -48,7 +48,7 @@ public class CFFunction {
 		else if(objArr[3] instanceof FunctionValue){
 			FunctionValue fv;
 			namedArguments=new StructImpl();
-			if(caller)namedArguments.setEL(CALLER, Duplicator.duplicate(pc.undefinedScope(),false));
+			if(caller)namedArguments.setEL(KeyConstants._caller, Duplicator.duplicate(pc.undefinedScope(),false));
 			for(int i=3;i<objArr.length;i++){
 				fv=toFunctionValue(name,objArr[i]);
 				namedArguments.set(fv.getName(), fv.getValue());

@@ -760,7 +760,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	@Override
 	public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
-        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyImpl.SUPER)) {
+        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyConstants._super)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this)._base());
             //return SuperComponent . superMember(base);
         }
@@ -787,7 +787,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      */
     protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
-        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyImpl.SUPER)) {
+        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyConstants._super)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(pc,this)._base());
         }
         if(superAccess) 
@@ -1402,7 +1402,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._accessors,comp.properties.accessors);
         sct.set(KeyConstants._synchronized,comp.properties._synchronized);
         if(comp.properties.output!=null)
-        sct.set(KeyImpl.OUTPUT,comp.properties.output);
+        sct.set(KeyConstants._output,comp.properties.output);
             
         // extends
         Struct ex=null;
@@ -1428,9 +1428,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         // PageSource
         PageSource ps = comp.pageSource;
         sct.set(KeyConstants._fullname,ps.getComponentName());
-        sct.set(KeyImpl.NAME,ps.getComponentName());
-        sct.set(KeyImpl.PATH,ps.getDisplayPath());
-        sct.set(KeyImpl.TYPE,"component");
+        sct.set(KeyConstants._name,ps.getComponentName());
+        sct.set(KeyConstants._path,ps.getDisplayPath());
+        sct.set(KeyConstants._type,"component");
             
         Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
@@ -1451,7 +1451,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		p=pit.next().getValue();
         		parr.add(p.getMetaData());
         	}
-        	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
+        	parr.sort(new ArrayOfStructComparator(KeyConstants._name));
         	sct.set(KeyConstants._properties,parr);
         }
         page.metaData=new SoftReference<Struct>(sct);

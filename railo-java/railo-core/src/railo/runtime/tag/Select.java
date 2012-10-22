@@ -14,7 +14,6 @@ import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -107,7 +106,7 @@ public final class Select extends BodyTagImpl {
      * @param size The size to set.
      */
     public void setSize(double size) {
-        attributes.setEL(KeyImpl.SIZE,Caster.toString(size));
+        attributes.setEL(KeyConstants._size,Caster.toString(size));
     }
     /**
      * @param tabindex The tabindex to set.
@@ -119,7 +118,7 @@ public final class Select extends BodyTagImpl {
      * @param title The title to set.
      */
     public void setTitle(String title) {
-        attributes.setEL(KeyImpl.TITLE,title);
+        attributes.setEL(KeyConstants._title,title);
     }
     /**
      * @param title The title to set.

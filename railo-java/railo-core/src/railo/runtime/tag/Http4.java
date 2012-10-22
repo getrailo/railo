@@ -131,18 +131,16 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static final short GET_AS_BINARY_YES=1;
 	private static final short GET_AS_BINARY_AUTO=2;
 
+	private static final Key STATUSCODE = KeyConstants._statuscode;
+	private static final Key CHARSET = KeyConstants._charset;
+	
 	private static final Key ERROR_DETAIL = KeyImpl.intern("errordetail");
-	private static final Key STATUSCODE = KeyImpl.intern("statuscode");
 	private static final Key STATUS_CODE = KeyImpl.intern("status_code");
 	private static final Key STATUS_TEXT = KeyImpl.intern("status_text");
 	private static final Key HTTP_VERSION = KeyImpl.intern("http_version");
 	
 
-	private static final Key MIME_TYPE = KeyImpl.intern("mimetype");
-	private static final Key CHARSET = KeyConstants._charset;
 	private static final Key FILE_CONTENT = KeyImpl.intern("filecontent");
-	private static final Key HEADER = KeyConstants._header;
-	private static final Key TEXT = KeyConstants._text;
 	private static final Key EXPLANATION = KeyImpl.intern("explanation");
 	private static final Key RESPONSEHEADER = KeyImpl.intern("responseheader");
 	private static final Key SET_COOKIE = KeyImpl.intern("set-cookie");
@@ -694,20 +692,20 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	
 	        
 	       
-	        cfhttp.set(TEXT,Caster.toBoolean(isText));
+	        cfhttp.set(KeyConstants._text,Caster.toBoolean(isText));
 	        
 	    // mimetype charset
 	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
 		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype);
-		        	if(types[0]!=null)cfhttp.set(MIME_TYPE,types[0]);
+		        	if(types[0]!=null)cfhttp.set(KeyConstants._mimetype,types[0]);
 		        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
 	                
 		        }
-		        else cfhttp.set(MIME_TYPE,mimetype);
+		        else cfhttp.set(KeyConstants._mimetype,mimetype);
 	        }
-	        else cfhttp.set(MIME_TYPE,NO_MIMETYPE);
+	        else cfhttp.set(KeyConstants._mimetype,NO_MIMETYPE);
 
 	    // File
 	        Resource file=null;
@@ -810,7 +808,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		    }
 	        
 	    // header		
-	        cfhttp.set(HEADER,raw.toString());
+	        cfhttp.set(KeyConstants._header,raw.toString());
 	        if(!isStatusOK(rsp.getStatusCode())){
 	        	String msg=rsp.getStatusCode()+" "+rsp.getStatusText();
 	            cfhttp.setEL(ERROR_DETAIL,msg);
@@ -841,24 +839,24 @@ public final class Http4 extends BodyTagImpl implements Http {
 		cfhttp.setEL(CHARSET,"");
 		cfhttp.setEL(ERROR_DETAIL,"Unknown host: "+t.getMessage());
 		cfhttp.setEL(FILE_CONTENT,"Connection Failure");
-		cfhttp.setEL(HEADER,"");
-		cfhttp.setEL(MIME_TYPE,"Unable to determine MIME type of file.");
+		cfhttp.setEL(KeyConstants._header,"");
+		cfhttp.setEL(KeyConstants._mimetype,"Unable to determine MIME type of file.");
 		cfhttp.setEL(RESPONSEHEADER,new StructImpl());
 		cfhttp.setEL(STATUSCODE,"Connection Failure. Status code unavailable.");
-		cfhttp.setEL(TEXT,Boolean.TRUE);
+		cfhttp.setEL(KeyConstants._text,Boolean.TRUE);
 	}
 
 	private void setRequestTimeout(Struct cfhttp) {
 		cfhttp.setEL(CHARSET,"");
 		cfhttp.setEL(ERROR_DETAIL,"");
 		cfhttp.setEL(FILE_CONTENT,"Connection Timeout");
-		cfhttp.setEL(HEADER,"");
-		cfhttp.setEL(MIME_TYPE,"Unable to determine MIME type of file.");
+		cfhttp.setEL(KeyConstants._header,"");
+		cfhttp.setEL(KeyConstants._mimetype,"Unable to determine MIME type of file.");
 		cfhttp.setEL(RESPONSEHEADER,new StructImpl());
 		cfhttp.setEL(STATUSCODE,"408 Request Time-out");
 		cfhttp.setEL(STATUS_CODE,new Double(408));
 		cfhttp.setEL(STATUS_TEXT,"Request Time-out");
-		cfhttp.setEL(TEXT,Boolean.TRUE);
+		cfhttp.setEL(KeyConstants._text,Boolean.TRUE);
 	}
 
 	/*private static HttpMethod execute(Http http, HttpClient client, HttpMethod httpMethod, boolean redirect) throws PageException {

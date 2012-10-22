@@ -19,7 +19,6 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -134,7 +133,7 @@ public class Ansi92 extends SQLExecutorSupport {
 		String cfid,name;
 		for(int row=1;row<=recordcount;row++){
 			cfid=Caster.toString(query.getAt(KeyConstants._cfid, row, null),null);
-			name=Caster.toString(query.getAt(KeyImpl.NAME, row, null),null);
+			name=Caster.toString(query.getAt(KeyConstants._name, row, null),null);
 			
 			if(listener!=null)listener.doEnd(engine, cleaner,name, cfid);
 			

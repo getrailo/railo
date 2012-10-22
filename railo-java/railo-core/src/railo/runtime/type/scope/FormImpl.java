@@ -33,9 +33,9 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ServletInputStreamDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 
 /**
@@ -121,7 +121,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
     void setFieldNames() {
     	if(size()>0) {
-    		setEL(KeyImpl.FIELD_NAMES,List.arrayToList(keys(), ","));
+    		setEL(KeyConstants._fieldnames,List.arrayToList(keys(), ","));
         }
     }
 

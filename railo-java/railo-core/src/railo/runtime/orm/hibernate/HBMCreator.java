@@ -747,7 +747,7 @@ public class HBMCreator {
 							id.getDynamicAttributes();
 							Struct meta = id.getDynamicAttributes();
 							if(meta!=null){
-								String type=Caster.toString(meta.get(KeyImpl.TYPE,null));
+								String type=Caster.toString(meta.get(KeyConstants._type,null));
 								
 								if(!StringUtil.isEmpty(type) && (!type.equalsIgnoreCase("any") && !type.equalsIgnoreCase("object"))){
 									return type;
@@ -883,7 +883,7 @@ public class HBMCreator {
 			}
 			else if("select".equals(className)){
 				//print.e("select:"+toString(meta, "selectKey",true));
-				if(!sct.containsKey(KeyImpl.KEY)) sct.setEL(KeyImpl.KEY, toString(engine,cfc,prop,meta, "selectKey",true));
+				if(!sct.containsKey(KeyConstants._key)) sct.setEL(KeyConstants._key, toString(engine,cfc,prop,meta, "selectKey",true));
 			}
 			else if("sequence".equals(className)){
 				if(!sct.containsKey(SEQUENCE)) sct.setEL(SEQUENCE, toString(engine,cfc,prop,meta, "sequence",true));

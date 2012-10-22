@@ -42,6 +42,7 @@ import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.udf.UDFCacheEntry;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
 import railo.runtime.writer.BodyContentUtil;
 
@@ -189,7 +190,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	}
 
 	public static void argumentCollection(Struct values, FunctionArgument[] funcArgs) {
-		Object value=values.removeEL(KeyImpl.ARGUMENT_COLLECTION);
+		Object value=values.removeEL(KeyConstants._argumentCollection);
 		if(value !=null) {
 			value=Caster.unwrap(value,value);
 			
@@ -252,7 +253,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 	            }
 		    }
 		    else {
-		        values.setEL(KeyImpl.ARGUMENT_COLLECTION,value);
+		        values.setEL(KeyConstants._argumentCollection,value);
 		    }
 		} 
 	}
@@ -555,7 +556,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
             StructImpl param=new StructImpl();
             param.set(KeyImpl.NAME,args[y].getName().getString());
             param.set(KeyImpl.REQUIRED,Caster.toBoolean(args[y].isRequired()));
-            param.set(KeyImpl.TYPE,args[y].getTypeAsString());
+            param.set(KeyConstants._type,args[y].getTypeAsString());
             displayname=args[y].getDisplayName();
             if(!StringUtil.isEmpty(displayname)) param.set(KeyImpl.DISPLAY_NAME,displayname);
             

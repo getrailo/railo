@@ -29,7 +29,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -729,9 +728,9 @@ public final class FileTag extends BodyTagImpl {
 		pageContext.setVariable(variable,sct);
 		
 		// fill data to query
-		sct.setEL(KeyImpl.NAME,file.getName());
-		sct.setEL(KeyImpl.SIZE,Long.valueOf(file.length()));
-		sct.setEL(KeyImpl.TYPE,file.isDirectory()?"Dir":"File");
+		sct.setEL(KeyConstants._name,file.getName());
+		sct.setEL(KeyConstants._size,Long.valueOf(file.length()));
+		sct.setEL(KeyConstants._type,file.isDirectory()?"Dir":"File");
 		sct.setEL("dateLastModified",new DateTimeImpl(pageContext,file.lastModified(),false));
 		sct.setEL("attributes",getFileAttribute(file));
 		if(SystemUtil.isUnix())sct.setEL(KeyConstants._mode,new ModeObjectWrap(file));

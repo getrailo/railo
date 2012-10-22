@@ -18,14 +18,12 @@ import railo.runtime.functions.decision.IsValid;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public abstract class UDFGSProperty extends UDFImpl {
 
 	private static final Collection.Key MIN_LENGTH = KeyImpl.intern("minLength");
 	private static final Collection.Key MAX_LENGTH = KeyImpl.intern("maxLength");
-	private static final Collection.Key MIN = KeyImpl.intern("min");
-	private static final Collection.Key MAX = KeyImpl.intern("max");
-	private static final Collection.Key PATTERN = KeyImpl.intern("pattern");
 	
 	protected final FunctionArgument[] arguments;
 	protected final String name;
@@ -226,8 +224,8 @@ public abstract class UDFGSProperty extends UDFImpl {
 		if(validateParams==null) return;
 
 		if(validate.equals("integer") || validate.equals("numeric") || validate.equals("number")){
-			double min=Caster.toDoubleValue(validateParams.get(MIN,null),Double.NaN);
-			double max=Caster.toDoubleValue(validateParams.get(MAX,null),Double.NaN);
+			double min=Caster.toDoubleValue(validateParams.get(KeyConstants._min,null),Double.NaN);
+			double max=Caster.toDoubleValue(validateParams.get(KeyConstants._max,null),Double.NaN);
 			double d=Caster.toDoubleValue(obj);
 			if(!Double.isNaN(min) && d<min)
 				throw new ExpressionException(validate+" ["+Caster.toString(d)+"] is out of range, value must be more than or equal to ["+min+"]");
@@ -245,7 +243,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 				throw new ExpressionException("string ["+str+"] is to long ["+l+"], the string can have a maximal length of ["+max+"] characters");
 		}
 		else if(validate.equals("regex")){
-			String pattern=Caster.toString(validateParams.get(PATTERN,null),null);
+			String pattern=Caster.toString(validateParams.get(KeyConstants._pattern,null),null);
 			String value=Caster.toString(obj);
 			if(!StringUtil.isEmpty(pattern,true) && !IsValid.regex(value, pattern))
 				throw new ExpressionException("the string ["+value+"] does not match the regular expression pattern ["+pattern+"]");

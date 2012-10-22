@@ -453,7 +453,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	if(!runtime){
     		// hint
-    		String hint=Caster.toString(meta.get(KeyImpl.HINT,null),null);
+    		String hint=Caster.toString(meta.get(KeyConstants._hint,null),null);
     		if(!StringUtil.isEmpty(hint))tag.setDescription(hint);
     		
     		// parseBody
@@ -479,15 +479,15 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     			
     			sct=Caster.toStruct(entry.getValue(),null,false);
     			if(sct!=null){
-    				attr.setRequired(Caster.toBooleanValue(sct.get(KeyImpl.REQUIRED,Boolean.FALSE),false));
-    				attr.setType(Caster.toString(sct.get(KeyImpl.TYPE,"any"),"any"));
+    				attr.setRequired(Caster.toBooleanValue(sct.get(KeyConstants._required,Boolean.FALSE),false));
+    				attr.setType(Caster.toString(sct.get(KeyConstants._type,"any"),"any"));
     				
-    				defaultValue= sct.get(KeyImpl.DEFAULT,null);
+    				defaultValue= sct.get(KeyConstants._default,null);
     				if(defaultValue!=null)attr.setDefaultValue(defaultValue);
     				
     				
     				if(!runtime){
-    					attr.setDescription(Caster.toString(sct.get(KeyImpl.HINT,null),null));
+    					attr.setDescription(Caster.toString(sct.get(KeyConstants._hint,null),null));
     					attr.setRtexpr(Caster.toBooleanValue(sct.get(RT_EXPR_VALUE,Boolean.TRUE),true));
     				}
     			}

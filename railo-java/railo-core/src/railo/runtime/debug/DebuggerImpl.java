@@ -407,9 +407,9 @@ public final class DebuggerImpl implements Debugger {
 	        	while(it.hasNext()) {
 	        		timer=it.next();
 	        		row++;
-	        		qryTimers.setAt(KeyImpl.LABEL,row,timer.getLabel()); 
-	        		qryTimers.setAt(KeyImpl.TEMPLATE,row,timer.getTemplate()); 
-	        		qryTimers.setAt(KeyImpl.TIME,row,Caster.toDouble(timer.getTime()));    
+	        		qryTimers.setAt(KeyConstants._label,row,timer.getLabel()); 
+	        		qryTimers.setAt(KeyConstants._template,row,timer.getTemplate()); 
+	        		qryTimers.setAt(KeyConstants._time,row,Caster.toDouble(timer.getTime()));    
 	        	}
 			}
 			catch(PageException dbe) {}
@@ -437,15 +437,15 @@ public final class DebuggerImpl implements Debugger {
 	        	while(it.hasNext()) {
 	        		trace= it.next();
 	        		row++;
-	        		qryTraces.setAt(KeyImpl.TYPE,row,LogUtil.toStringType(trace.getType(), "INFO"));  
+	        		qryTraces.setAt(KeyConstants._type,row,LogUtil.toStringType(trace.getType(), "INFO"));  
 	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt(KeyConstants._category,row,trace.getCategory()); 
 	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt(KeyConstants._text,row,trace.getText()); 
-	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyImpl.TEMPLATE,row,trace.getTemplate()); 
+	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyConstants._template,row,trace.getTemplate()); 
 	        		if(trace.getLine()>0)qryTraces.setAt(KeyConstants._line,row,new Double(trace.getLine())); 
 	        		if(!StringUtil.isEmpty(trace.getAction()))qryTraces.setAt(KeyConstants._action,row,trace.getAction()); 
 	        		if(!StringUtil.isEmpty(trace.getVarName()))qryTraces.setAt(KeyImpl.init("varname"),row,trace.getVarName()); 
 	        		if(!StringUtil.isEmpty(trace.getVarValue()))qryTraces.setAt(KeyImpl.init("varvalue"),row,trace.getVarValue()); 
-	        		qryTraces.setAt(KeyImpl.TIME,row,new Double(trace.getTime())); 
+	        		qryTraces.setAt(KeyConstants._time,row,new Double(trace.getTime())); 
 	        	}
 			}
 			catch(PageException dbe) {}

@@ -267,12 +267,12 @@ public abstract class PageExceptionImpl extends PageException {
 			
 			item=new StructImpl();
 			line=trace.getLineNumber();
-			item.setEL(KeyImpl.TEMPLATE,template);
+			item.setEL(KeyConstants._template,template);
 			item.setEL(KeyConstants._line,new Double(line));
 			item.setEL(KeyConstants._id,"??");
 			item.setEL(RAW_TRACE,trace.toString());
-			item.setEL(KeyImpl.TYPE,"cfml");
-			item.setEL(KeyImpl.COLUMN,new Double(0));
+			item.setEL(KeyConstants._type,"cfml");
+			item.setEL(KeyConstants._column,new Double(0));
 			if(content!=null) {
 				item.setEL(CODE_PRINT_HTML,getCodePrint(content,line,true));
 				item.setEL(CODE_PRINT_PLAIN,getCodePrint(content,line,false));

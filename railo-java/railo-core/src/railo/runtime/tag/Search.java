@@ -22,6 +22,7 @@ import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public final class Search extends TagImpl {
 
@@ -322,7 +323,7 @@ public final class Search extends TagImpl {
 	    	pageContext.setVariable(status, sct);
 	    	sct.set(FOUND, new Double(qry.getRecordcount()));
 	    	sct.set(SEARCHED, recSearched);
-	    	sct.set(KeyImpl.TIME, new Double(time));
+	    	sct.set(KeyConstants._time, new Double(time));
 	    	
 	    	// TODO impl this values
 	    	

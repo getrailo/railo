@@ -51,6 +51,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * class to serialize and desirilize WDDX Packes
@@ -218,7 +219,7 @@ public final class WDDXConverter extends ConverterSupport {
     		}
         	
         	member = scope.get(key,null);
-        	if(member instanceof UDF || key.equals(KeyImpl.THIS)) continue;
+        	if(member instanceof UDF || key.equals(KeyConstants._this)) continue;
             sb.append(goIn()+"<var scope=\"variables\" name="+_+key.toString()+_+">");
             sb.append(_serialize(member,done));
             sb.append(goIn()+"</var>");
