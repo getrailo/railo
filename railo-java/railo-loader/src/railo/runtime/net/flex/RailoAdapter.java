@@ -11,6 +11,8 @@ import flex.messaging.config.ConfigMap;
 import flex.messaging.messages.Message;
 import flex.messaging.services.ServiceAdapter;
 
+// FUTURE make this class independent from flex.messaging... so that the loader no longer need the flex jar
+
 /**
  * Railo implementation of the ServiceAdapter, forward all BlazeDS Request to the CFMLEngine. 
  */
