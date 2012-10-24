@@ -797,7 +797,7 @@ public class KeyConstants {
 	public static final Key _STATE = KeyImpl._const("STATE");
 	public static final Key _START = KeyImpl._const("START");
 	public static final Key _STOP = KeyImpl._const("STOP");
-	public static final Key _LAST = KeyImpl._const("_LAST");
+	public static final Key _LAST = KeyImpl._const("LAST");
 	public static final Key _CONFIG = KeyImpl._const("CONFIG");
 	public static final Key _DIFF = KeyImpl._const("DIFF");
 	public static final Key _COLL = KeyImpl._const("COLL");
