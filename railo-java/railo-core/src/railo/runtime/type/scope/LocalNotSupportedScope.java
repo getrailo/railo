@@ -104,23 +104,18 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	 * @see railo.runtime.type.Collection#keyIterator()
 	 */
 	public Iterator<Collection.Key> keyIterator() {
-		return null;
+		throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope","Local Scope can only invoked inside a Function"));
 	}
-    
-    @Override
-	public Iterator<String> keysAsStringIterator() {
-    	return null;
-    }
 	
 	@Override
 	public Iterator<Entry<Key, Object>> entryIterator() {
-		return null;
+		throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope","Local Scope can only invoked inside a Function"));
 	}
 
 	
 	@Override
 	public Iterator<Object> valueIterator() {
-		return null;
+		throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope","Local Scope can only invoked inside a Function"));
 	}
 
 	/**
