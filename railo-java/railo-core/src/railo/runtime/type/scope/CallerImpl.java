@@ -107,7 +107,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 				} 
 				catch (PageException e) {}
 			}
-			else if(KeyConstants._arguments.equalsIgnoreCase(key))		return pc.argumentsScope();
+			else if(checkArgs && KeyConstants._arguments.equalsIgnoreCase(key))		return pc.argumentsScope();
 		}
 		else if('c'==c) {
 			if(KeyConstants._cgi.equalsIgnoreCase(key))					return pc.cgiScope();
@@ -132,7 +132,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(KeyConstants._request.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
-			if(KeyConstants._local.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
+			if(checkArgs && KeyConstants._local.equalsIgnoreCase(key))	return pc.localScope();
 		}
 		else if('s'==c) {
 			if(KeyConstants._session.equalsIgnoreCase(key)){
