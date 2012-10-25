@@ -37,7 +37,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
     	char c=key.lowerCharAt(0);
 		if('a'==c) {
 			if(KeyConstants._application.equalsIgnoreCase(key)) 		return pc.applicationScope();
-			else if(KeyConstants._arguments.equalsIgnoreCase(key))		return argumentsScope;//pc.argumentsScope();
+			else if(checkArgs && KeyConstants._arguments.equalsIgnoreCase(key))		return argumentsScope;//pc.argumentsScope();
 		}
 		else if('c'==c) {
 			if(KeyConstants._cgi.equalsIgnoreCase(key))					return pc.cgiScope();
@@ -108,7 +108,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 				} 
 				catch (PageException e) {}
 			}
-			else if(KeyConstants._arguments.equalsIgnoreCase(key))		return argumentsScope;//pc.argumentsScope();
+			else if(checkArgs && KeyConstants._arguments.equalsIgnoreCase(key))		return argumentsScope;//pc.argumentsScope();
 		}
 		else if('c'==c) {
 			if(KeyConstants._cgi.equalsIgnoreCase(key))					return pc.cgiScope();
