@@ -263,10 +263,10 @@ Error Output --->
 						<tr>
 							<th scope="row">Classpath</th>
 							<td>
-								<div class="classpaths">
+								<div class="classpaths longwords">
 									<cfset arr=getClasspath()>
 									<cfloop from="1" to="#arrayLen(arr)#" index="line">
-										<div>#arr[line]#</div>
+										<div<cfif line mod 2> class="odd"</cfif>>#arr[line]#</div>
 									</cfloop>
 								</div>
 							</td> 

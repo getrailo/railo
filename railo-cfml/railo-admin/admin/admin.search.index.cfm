@@ -1,5 +1,8 @@
 <cfsilent>
-	<cfset dataDir = "resources/searchdata/" />
+	<cfset dataDir = "/railo-context/admin/searchdata/" />
+	<cfif not directoryExists(dataDir)>
+		<cfdirectory action="create" directory="#dataDir#" mode="777" recurse="true" />
+	</cfif>
 	<cfdirectory action="list" name="qlangs" directory="resources/language/" filter="*.xml" />
 	<cfset translations = {} />
 	<cfset pageContents = {} />
