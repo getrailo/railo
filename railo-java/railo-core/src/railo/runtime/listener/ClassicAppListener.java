@@ -12,7 +12,6 @@ import railo.runtime.op.Caster;
 public final class ClassicAppListener extends AppListenerSupport {
 
 	private int mode=MODE_CURRENT2ROOT;
-	private String type;
 
 	@Override
 	public void onRequest(PageContext pc,PageSource requestedPage, RequestListener rl) throws PageException {
@@ -91,11 +90,6 @@ public final class ClassicAppListener extends AppListenerSupport {
 
 	@Override
 	public String getType() {
-		return type;
-	}
-
-	@Override
-	public void setType(String type) {
-		this.type = type;
+		return "classic";
 	}
 }

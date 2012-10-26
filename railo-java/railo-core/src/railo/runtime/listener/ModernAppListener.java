@@ -68,11 +68,7 @@ public class ModernAppListener extends AppListenerSupport {
 	//private ComponentImpl app;
 	private Map<String,ComponentAccess> apps=new HashMap<String,ComponentAccess>();
 	protected int mode=MODE_CURRENT2ROOT;
-	private String type;
 	
-	//private ApplicationContextImpl appContext;
-	//private long cfcCompileTime;
-
 	@Override
 	public void onRequest(PageContext pc, PageSource requestedPage, RequestListener rl) throws PageException {
 		// on requestStart
@@ -398,12 +394,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public String getType() {
-		return type;
-	}
-
-	@Override
-	public void setType(String type) {
-		this.type = type;
+		return "modern";
 	}
 	
 	@Override

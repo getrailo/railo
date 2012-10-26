@@ -39,4 +39,8 @@ public abstract class AppListenerSupport implements ApplicationListener {
 	@Override
 	public void onTimeout(PageContext pc) {
 	}
+	
+	public final void setType(String type) {
+		// no longer used
+	}
 }
