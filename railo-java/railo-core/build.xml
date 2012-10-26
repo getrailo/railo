@@ -10,6 +10,17 @@
 		<fileset dir="${lib.dir}"/>
 	</path>
 	
+	<!-- service starting -->
+    <macrodef name="service">
+        <attribute name="service"/>
+        <attribute name="action"/>
+        <sequential>
+            <exec executable="cmd.exe">
+                <arg line="/c net @{action} '@{service}'"/>
+            </exec>
+         </sequential>
+    </macrodef>
+	
 	<!-- ================================= 
           target: getInfo
 		  This target extracts the version name for the rc file from the INI file                        
@@ -19,7 +30,7 @@
     	<loadfile property="core.version" srcFile="src/railo/runtime/Info.ini">
 			<filterchain>
 				<linecontainsregexp>
-					<regexp pattern="number=[0-3]+.[0-9]+.[0-9]+.[0-9]+"/>
+					<regexp pattern="number=[0-4]+.[0-9]+.[0-9]+.[0-9]+"/>
 				</linecontainsregexp>
 				<replacetokens begintoken="n" endtoken="=">
 					<token key="umber" value=""/>
@@ -66,10 +77,11 @@
     	
     	<property name="railo.admin_source_abs" location="${railo.admin_source}"/>
     	
-    	<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>
+    	<!--<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>
+    	-->
 		<echo>Compiling Railo Administrator</echo>
     	<!-- please note, that you have to set the railo.admin_source location in the properties file -->
-		<get src="${railo.url}?password=${railo.password}&amp;admin_source=${railo.admin_source_abs}" verbose="on" dest="generate.html"/>
+		<get src="${railo.url}?password=sysadmin&amp;admin_source=${railo.admin_source_abs}" verbose="on" dest="generate.html"/>
     	<loadfile property="railo.compile_message" srcFile="generate.html" />
 		<echo>Message from Railo: ${railo.compile_message}</echo>
     	<echo>Admin compiled to: ${railo.admin_source_abs}/railo-context.ra</echo>
@@ -123,4 +135,11 @@
     	</copy>
     </target>
 
+    <target name="deploy" depends="install" description="Deploys the .rc file and restarts MasterControl">
+        <echo>Deploy ${core.version}.rc and restart MasterControlEMS</echo>
+    	<copy todir="C:\files\sites\11\server\railo\railo-server\patches" file="${dist.dir}/${core.version}.rc"/>
+    	<service action="stop" service="MasterControlEMS"/>
+    	<service action="start" service="MasterControlEMS"/>
+    </target>
+	
 </project>
