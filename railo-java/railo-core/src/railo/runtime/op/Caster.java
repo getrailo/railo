@@ -306,6 +306,7 @@ public final class Caster {
     }
     
     public static Boolean toBoolean(String str, Boolean defaultValue) {
+    	if(str==null) return defaultValue;
     	int i=stringToBooleanValueEL(str);
     	if(i!=-1) return (i==1)?Boolean.TRUE:Boolean.FALSE;
     	

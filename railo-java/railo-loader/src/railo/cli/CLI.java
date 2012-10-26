@@ -11,6 +11,8 @@ import javax.servlet.jsp.JspException;
 import railo.loader.util.Util;
 
 public class CLI {
+	
+	private static boolean useRMI=false;
 /**
  * Config
  * 
@@ -30,6 +32,8 @@ public class CLI {
 	public static void main(String[] args) throws ServletException, IOException, JspException {
 		Map<String,String> config=toMap(args);
 		
+		System.setProperty("railo.cli.call", "true");
+		
 		// webroot
 		String strWebroot=config.get("webroot");
 		if(Util.isEmpty(strWebroot,true)) throw new IOException("missing webroot configuration");
@@ -39,10 +43,15 @@ public class CLI {
 		// servletNane
 		String servletName=config.get("servlet-name");
 		if(Util.isEmpty(servletName,true))servletName="CFMLServlet";
-		CLIFactory factory = new CLIFactory(root,servletName,config);
-		factory.setDaemon(false);
-		factory.start();
-		
+		if(useRMI){
+			CLIFactory factory = new CLIFactory(root,servletName,config);
+			factory.setDaemon(false);
+			factory.start();
+		}
+		else {
+			CLIInvokerImpl invoker=new CLIInvokerImpl(root, servletName);
+			invoker.invoke(config);
+		}
 		//Map<String,Object> attributes=new HashMap<String, Object>();
 		//Map<String, String> initParameters=new HashMap<String, String>();
 		//initParameters.put("railo-server-directory", new File(root,"server").getAbsolutePath());

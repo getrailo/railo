@@ -175,6 +175,9 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
     public SecurityManager getSecurityManager(String id) {
         Object o=managers.get(id);
         if(o!=null) return (SecurityManager) o;
+        if(defaultSecurityManager==null) {
+        	defaultSecurityManager = SecurityManagerImpl.getOpenSecurityManager();
+        }
         return defaultSecurityManager.cloneSecurityManager();
     }
     

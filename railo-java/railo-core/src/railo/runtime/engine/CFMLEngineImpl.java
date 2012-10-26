@@ -102,12 +102,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
     	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
         ConfigServerImpl cs = getConfigServerImpl();
     	
-        SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"Start CFML Controller");
+        SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"Start CFML Controller");
         Controler controler = new Controler(cs,initContextes,5*1000,controlerState);
         controler.setDaemon(true);
         controler.setPriority(Thread.MIN_PRIORITY);
-        controler.start();  
-        
+        controler.start();
 
         touchMonitor(cs);  
         
@@ -626,8 +625,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		
 		
 		
-		HttpServletRequest req=new HttpServletRequestDummy(
+		HttpServletRequestDummy req=new HttpServletRequestDummy(
 				root,serverName,uri.getPath(),uri.getQuery(),cookies,headers,parameters,attributes,null);
+		req.setProtocol("CLI/1.0");
 		HttpServletResponse rsp=new HttpServletResponseDummy(os);
 		
 		serviceCFML(servlet, req, rsp);

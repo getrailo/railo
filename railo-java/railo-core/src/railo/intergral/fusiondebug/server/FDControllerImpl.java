@@ -95,7 +95,7 @@ public class FDControllerImpl implements IFDController {
 	 */
 	public void output(String message) {
 		Config config = ThreadLocalPageContext.getConfig();
-		PrintWriter out=config==null?SystemUtil.PRINTWRITER_OUT:((ConfigWebImpl)config).getOutWriter();
+		PrintWriter out=config==null?SystemUtil.getPrintWriter(SystemUtil.OUT):((ConfigWebImpl)config).getOutWriter();
 		SystemOut.print(out, message);
 	}
 
