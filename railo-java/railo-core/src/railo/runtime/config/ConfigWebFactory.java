@@ -315,23 +315,23 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
+    public static void load(ConfigServerImpl cs, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
+    	
     	ThreadLocalConfig.register(config);
     	// fix
-    	if(ConfigWebAdmin.fixS3(doc) | ConfigWebAdmin.fixPSQ(doc)) {
+    	if(ConfigWebAdmin.fixS3(doc) || ConfigWebAdmin.fixPSQ(doc)) {
     		XMLCaster.writeTo(doc,config.getConfigFile());
     		try {
 				doc=ConfigWebFactory.loadDocument(config.getConfigFile());
 			} catch (SAXException e) {}
     	}
     	
-    	loadConstants(configServer,config,doc);
-    	loadTempDirectory(configServer, config, doc,isReload);
+    	loadConstants(cs,config,doc);
+    	loadTempDirectory(cs, config, doc,isReload);
     	loadId(config);
     	loadVersion(config,doc);
-    	loadSecurity(configServer,config,doc);
-        ConfigServerImpl cs = configServer;
+    	loadSecurity(cs,config,doc);
         /* SNSN
         if(configServer!=null) {
             int version = configServer.getSerialNumber().getVersion();
@@ -340,46 +340,46 @@ public final class ConfigWebFactory {
         }*/
         loadLib(cs,config);
         loadSystem(cs, config, doc);
-        loadORM(configServer, config, doc);
+        loadORM(cs, config, doc);
     	loadResourceProvider(cs,config,doc);
-        loadCharset(configServer,config,doc);
-        loadMappings(configServer,config,doc);
-        loadRest(configServer,config,doc);
-        loadExtensions(configServer,config,doc);
-        loadPagePool(configServer,config,doc);
-        loadDataSources(configServer,config,doc);
-        loadCache(configServer,config,doc);
-        loadCustomTagsMappings(configServer,config,doc);
+        loadCharset(cs,config,doc);
+        loadMappings(cs,config,doc);
+        loadRest(cs,config,doc);
+        loadExtensions(cs,config,doc);
+        loadPagePool(cs,config,doc);
+        loadDataSources(cs,config,doc);
+        loadCache(cs,config,doc);
+        loadCustomTagsMappings(cs,config,doc);
     	loadPassword(cs,config,doc);
     	//loadLabel(cs,config,doc);
     	loadFilesystem(cs,config,doc, doNew); // load tlds
     	loadTag(cs,config,doc); // load tlds
-        loadRegional(configServer,config,doc);
-        loadCompiler(configServer,config,doc);
-    	loadScope(configServer,config,doc);
-    	loadMail(configServer,config,doc);
-        loadSearch(configServer,config,doc);
-    	loadScheduler(configServer,config,doc);
-    	loadDebug(configServer,config,doc);
-    	loadError(configServer,config,doc);
-        loadCFX(configServer,config,doc);
-    	loadComponent(configServer,config,doc);
-        loadApplication(configServer,config,doc);
+        loadRegional(cs,config,doc);
+        loadCompiler(cs,config,doc);
+    	loadScope(cs,config,doc);
+    	loadMail(cs,config,doc);
+        loadSearch(cs,config,doc);
+    	loadScheduler(cs,config,doc);
+    	loadDebug(cs,config,doc);
+    	loadError(cs,config,doc);
+        loadCFX(cs,config,doc);
+    	loadComponent(cs,config,doc);
+        loadApplication(cs,config,doc);
         loadUpdate(cs,config,doc);
         loadJava(cs,config,doc); // define compile type
         loadSetting(cs,config,doc);
         loadProxy(cs,config,doc);
         loadRemoteClient(cs, config, doc);
         loadVideo(cs, config, doc);
-        loadFlex(configServer,config,doc);
+        loadFlex(cs,config,doc);
         settings(config);
         loadListener(cs,config,doc);
     	loadDumpWriter(cs, config, doc);
-    	loadGatewayEL(configServer,config,doc);
-    	loadExeLog(configServer,config,doc);
-    	loadThreadQueue(configServer, config, doc);
-    	loadMonitors(configServer,config,doc);
-    	loadLogin(configServer, config, doc);
+    	loadGatewayEL(cs,config,doc);
+    	loadExeLog(cs,config,doc);
+    	loadThreadQueue(cs, config, doc);
+    	loadMonitors(cs,config,doc);
+    	loadLogin(cs, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -580,8 +580,6 @@ public final class ConfigWebFactory {
 
 
     private static void loadVersion(ConfigImpl config, Document doc) {
-    	//boolean hasCS=configServer!=null;
-    	
     	Element railoConfiguration = doc.getDocumentElement();
     	String strVersion=railoConfiguration.getAttribute("version");    
         config.setVersion(Caster.toDoubleValue(strVersion,1.0d));
@@ -2496,20 +2494,20 @@ public final class ConfigWebFactory {
 	  	String strTempDirectory=null;
 	  	if(fileSystem!=null) strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
 	  	
+	  	Resource cst=null;
         // Temp Dir
-	  	if(!StringUtil.isEmpty(strTempDirectory)) {
-		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
-		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
-	  	}
-	  	else if(hasCS) {
-	  		config.setTempDirectory(configServer.getTempDirectory(),!isReload);
-	  	}
-	  	if(config.getTempDirectory()==null) {
-	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
-		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
-	  	}
+	  	if(!StringUtil.isEmpty(strTempDirectory)) 
+	  		cst=ConfigWebUtil.getFile(configDir,strTempDirectory, null, configDir,FileUtil.TYPE_DIR,config);
+	  	
+	  	if(cst==null && hasCS) 
+	  		cst = configServer.getTempDirectory();
+	  	
+	  	if(cst==null) 
+	  		cst=ConfigWebUtil.getFile(configDir,"temp", null, configDir,FileUtil.TYPE_DIR,config);
+	  	
+	  	
+	  	config.setTempDirectory(cst,!isReload);
+	  	
     }
 
     /**
