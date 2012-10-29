@@ -112,6 +112,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	private boolean useShadow;
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
+	private boolean loaded;
 
 
 
@@ -806,18 +807,15 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     		if(access<=ACCESS_PUBLIC) return true;
     		else if(access==ACCESS_PRIVATE && isPrivate(pc)) return true;
     		else if(access==ACCESS_PACKAGE && isPackage(pc)) return true;
-    		/*switch(member.getAccess()) {
-                case ACCESS_REMOTE: return true;
-                case ACCESS_PUBLIC: return true;
-                case ACCESS_PRIVATE:
-                    if(isPrivate(pc)) return true;
-                break;
-                case ACCESS_PACKAGE:
-                    if(isPackage(pc)) return true;
-                break;
-            }*/
         }
         return false;
+	}
+    
+    private boolean isAccessible(PageContext pc, int access) {
+    	if(access<=ACCESS_PUBLIC) return true;
+		else if(access==ACCESS_PRIVATE && isPrivate(pc)) return true;
+		else if(access==ACCESS_PACKAGE && isPackage(pc)) return true;
+    	return false;
 	}
 
     /**
@@ -827,7 +825,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     private boolean isPrivate(PageContext pc) {
     	if(pc==null) return true;
     	Component ac = pc.getActiveComponent();
-        return (ac!=null && (ac==this || 
+    	return (ac!=null && (ac==this || 
                 ((ComponentImpl)ac).top.pageSource.equals(top.pageSource))) ;
     }
     /**
@@ -1508,8 +1506,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @param key
      * @param value
      * @return value set
+     * @throws ExpressionException 
      */
-    private synchronized Object _set(Collection.Key key, Object value) {
+    private synchronized Object _set(PageContext pc,Collection.Key key, Object value) throws ExpressionException {
     	//print.out("set:"+key);
         if(value instanceof UDFImpl) {
         	UDFImpl udf = (UDFImpl)((UDF)value).duplicate();
@@ -1522,6 +1521,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	
         }
         else {
+        	if(loaded && !isAccessible(ThreadLocalPageContext.get(pc), dataMemberDefaultAccess))
+        		throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
+            
         	_data.put(key,new DataMember(dataMemberDefaultAccess,value));
         }
         return value;
@@ -1590,7 +1592,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		return callSetter(pc, key, value);
         	}
         }
-    	return _set(key,value);
+    	return _set(pc,key,value);
     }
 
 	/**
@@ -1677,7 +1679,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
                 return _call(pc,udf,null,new Object[]{value});
             }    
         }
-        return _set(key,value);
+        return _set(pc,key,value);
 	}
     
 
@@ -2074,5 +2076,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			return false;
 		}
 		return pc.getApplicationContext().getTriggerComponentDataMember();
+	}
+
+	public void setLoaded(boolean loaded) {
+		this.loaded=loaded;
 	}
 }
