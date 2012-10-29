@@ -130,7 +130,6 @@ public final class CFMLEngineImpl implements CFMLEngine {
     public static synchronized CFMLEngine getInstance(CFMLEngineFactory factory) {
     	if(engine==null) {
     		engine=new CFMLEngineImpl(factory);
-    		
         }
         return engine;
     }
