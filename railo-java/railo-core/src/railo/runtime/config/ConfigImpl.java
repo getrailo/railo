@@ -672,6 +672,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getTempDirectory()
      */
     public Resource getTempDirectory() {
+    	if(tempDirectory==null) return SystemUtil.getTempDirectory();
         return tempDirectory;
     }
     
