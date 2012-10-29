@@ -244,7 +244,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     public int doStartTag() throws PageException {
     	//adminSync = pageContext.getAdminSync();
     	
-
+    	// Type
+        type=toType(getString("admin",action,"type"),true);
+    	
         config=(ConfigImpl)pageContext.getConfig();
         if(type==TYPE_SERVER)
             config=(ConfigImpl)config.getConfigServer(password);
@@ -278,9 +280,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	doGetLoginSettings();
             return SKIP_BODY;
         }
-        
-        // Type
-        type=toType(getString("admin",action,"type"),true);
         
         // has Password
         if(action.equals("haspassword")) {
