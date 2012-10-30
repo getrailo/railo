@@ -247,6 +247,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	// Type
         type=toType(getString("admin",action,"type"),true);
     	
+        try {
+            // Password
+            password = getString("password","");
+        } 
+        catch (Exception e) {
+            throw Caster.toPageException(e);
+        }
+        
         config=(ConfigImpl)pageContext.getConfig();
         if(type==TYPE_SERVER)
             config=(ConfigImpl)config.getConfigServer(password);
@@ -308,11 +316,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         try {
             // Password
             password = getString("password","");
-            /* Config
-            config=(ConfigImpl)pageContext.getConfig();
-            if(type==TYPE_SERVER)
-                config=(ConfigImpl)config.getConfigServer(password);
-            */
             adminSync = config.getAdminSync();
         	admin = ConfigWebAdmin.newInstance(config,password);
         } 
