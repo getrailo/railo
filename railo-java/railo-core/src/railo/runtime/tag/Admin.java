@@ -245,7 +245,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	//adminSync = pageContext.getAdminSync();
     	
     	// Type
-        type=toType(getString("admin",action,"type"),true);
+        type=toType(getString("type","web"),true);
     	
         config=(ConfigImpl)pageContext.getConfig();
         if(type==TYPE_SERVER)
