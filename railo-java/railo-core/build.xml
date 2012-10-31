@@ -80,6 +80,7 @@
     	<!--<input message="Please enter Railo-Admin password:" addproperty="railo.password" defaultvalue="your admin password"/>
     	-->
     	<service action="start" service="Railo4Compiler"/>
+    	<sleep seconds="7" />
 		<echo>Compiling Railo Administrator</echo>
     	<!-- please note, that you have to set the railo.admin_source location in the properties file -->
 		<get src="${railo.url}?password=sysadmin&amp;admin_source=${railo.admin_source_abs}" verbose="on" dest="generate.html"/>
