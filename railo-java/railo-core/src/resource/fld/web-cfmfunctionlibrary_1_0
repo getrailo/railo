@@ -13830,7 +13830,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 			<required>Yes</required>
 		<description>Number to round </description>
-    </argument>
+    	</argument>
+    	<argument>
+			<name>precision</name>
+			<type>number</type>
+			<required>No</required>
+		<description>Number of decimal points to round to</description>
+    	</argument>
+    
+    
 		<return>
 			<type>number</type>
 		</return>
