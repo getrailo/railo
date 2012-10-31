@@ -392,8 +392,13 @@ public abstract class ComponentPage extends Page  {
 			if("matrix".equalsIgnoreCase(restArgSource))
 				setValue(fa[i],args,name, result.getMatrix().get(name,null));
 			
-			if("body".equalsIgnoreCase(restArgSource) || StringUtil.isEmpty(restArgSource,true))
-				setValue(fa[i],args,name, ReqRspUtil.getRequestBody(pc,true,null));
+			if("body".equalsIgnoreCase(restArgSource) || StringUtil.isEmpty(restArgSource,true)){
+				boolean isSimple=CFTypes.isSimpleType(fa[i].getType());
+				Object body = ReqRspUtil.getRequestBody(pc,true,null);
+				if(isSimple && !Decision.isSimpleValue(body))
+					body= ReqRspUtil.getRequestBody(pc,false,null);
+				setValue(fa[i],args,name, body);
+			}
 			
 		}
 		Object rtn=null;
