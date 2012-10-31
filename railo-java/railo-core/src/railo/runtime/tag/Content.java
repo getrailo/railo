@@ -198,16 +198,17 @@ public final class Content extends BodyTagImpl {
             			off=ranges[i].from;
             			if(ranges[i].to==-1) {
             				len=-1;
-            				to=totalLength;
+            				to=totalLength-1;
             			}
             			else {
-            				len=ranges[i].to-ranges[i].from+1;
             				to=ranges[i].to;
+            				if(to>=totalLength)to=totalLength-1;
+            				len=to-ranges[i].from+1;
             			}
             			rsp.addHeader("Content-Range", "bytes "+off+"-"+to+"/"+Caster.toString(totalLength));
             			rsp.setStatus(206);
             			//print.e("Content-Range: bytes "+off+"-"+to+"/"+Caster.toString(totalLength));
-            			contentLength+=to-off+1;
+            			contentLength+=to-off+1L;
                         // ReqRspUtil.setContentLength(rsp,len);
             			IOUtil.copy(is, os,off,len);
             		}

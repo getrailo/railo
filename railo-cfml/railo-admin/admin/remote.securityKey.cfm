@@ -26,23 +26,23 @@
     <cfset printError(error)>
 </cfif>
 
-
-
-
-
 <cfoutput>
-# sttext.remote.securityKeyTitleDesc#
-
-<br /><br /><br /><br />
-<center><div style="width:400px;padding:10px;background-color:white;border-color:##595F73;border-style:solid;border-width:1px;" align="center">
-	<h2 style="display:inline">#getRailoId()[request.adminType].securityKey#</h2>
-</div>
-<br /><br /><br />
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.reset#">
-</cfform>
-
-</center>
+	<div class="pageintro">
+		#sttext.remote.securityKeyTitleDesc#
+	</div>
+	<div class="center">
+		<input type="text" id="remotekey" value="#getRailoId()[request.adminType].securityKey#" size="50" readonly="readonly" />
+		<script type="text/javascript">
+			$(function(){
+				$('##remotekey').bind('focus keydown', function(){ $(this).select() });
+			});
+		</script>
+	</div>
+	
+	<h2>Reset the security key</h2>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.reset#">
+	</cfform>
 </cfoutput>
 
 

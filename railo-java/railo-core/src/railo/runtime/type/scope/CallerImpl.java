@@ -9,8 +9,8 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 
@@ -37,7 +37,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
     	char c=key.lowerCharAt(0);
 		if('a'==c) {
 			if(KeyConstants._application.equalsIgnoreCase(key)) 		return pc.applicationScope();
-			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
+			else if(checkArgs && KeyConstants._arguments.equalsIgnoreCase(key))		return argumentsScope;//pc.argumentsScope();
 		}
 		else if('c'==c) {
 			if(KeyConstants._cgi.equalsIgnoreCase(key))					return pc.cgiScope();
@@ -52,17 +52,17 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(KeyConstants._request.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
-			if(KeyImpl.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
+			if(KeyConstants._local.equalsIgnoreCase(key) && checkArgs)	return localScope;//pc.localScope();
 		}
 		else if('s'==c) {
 			if(KeyConstants._session.equalsIgnoreCase(key))				return pc.sessionScope();
-			if(KeyImpl.SERVER.equalsIgnoreCase(key))				return pc.serverScope();
+			if(KeyConstants._server.equalsIgnoreCase(key))				return pc.serverScope();
 		}
 		else if('u'==c) {
 			if(KeyConstants._url.equalsIgnoreCase(key))					return pc.urlScope();
 		}
 		else if('v'==c) {
-			if(KeyImpl.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
+			if(KeyConstants._variables.equalsIgnoreCase(key))			return variablesScope;
 		}
     	
     	// upper variable scope
@@ -108,7 +108,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 				} 
 				catch (PageException e) {}
 			}
-			else if(KeyImpl.ARGUMENTS.equalsIgnoreCase(key))		return pc.argumentsScope();
+			else if(checkArgs && KeyConstants._arguments.equalsIgnoreCase(key))		return argumentsScope;//pc.argumentsScope();
 		}
 		else if('c'==c) {
 			if(KeyConstants._cgi.equalsIgnoreCase(key))					return pc.cgiScope();
@@ -133,7 +133,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(KeyConstants._request.equalsIgnoreCase(key))				return pc.requestScope();
 		}
 		else if('l'==c) {
-			if(KeyImpl.LOCAL.equalsIgnoreCase(key) && checkArgs)	return pc.localScope();
+			if(checkArgs && KeyConstants._local.equalsIgnoreCase(key))	return localScope;//pc.localScope();
 		}
 		else if('s'==c) {
 			if(KeyConstants._session.equalsIgnoreCase(key)){
@@ -142,7 +142,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 				} 
 				catch (PageException e) {}
 			}
-			if(KeyImpl.SERVER.equalsIgnoreCase(key)){
+			if(KeyConstants._server.equalsIgnoreCase(key)){
 				try {
 					return pc.serverScope();
 				} 
@@ -153,7 +153,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
 			if(KeyConstants._url.equalsIgnoreCase(key))					return pc.urlScope();
 		}
 		else if('v'==c) {
-			if(KeyImpl.VARIABLES.equalsIgnoreCase(key))			return variablesScope;
+			if(KeyConstants._variables.equalsIgnoreCase(key))			return variablesScope;
 		}
     	
     	
@@ -187,7 +187,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
      * @see railo.runtime.type.scope.Caller#setScope(railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope, boolean)
      */
     public void setScope(Variables variablesScope, Local localScope, Argument argumentsScope, boolean checkArgs) {
-        this.variablesScope = variablesScope;
+    	this.variablesScope = variablesScope;
         this.localScope = localScope;
         this.argumentsScope = argumentsScope;
         this.checkArgs = checkArgs;
@@ -221,7 +221,7 @@ public final class CallerImpl extends StructSupport implements Caller  {
      * @see railo.runtime.type.Collection#keys()
      */
     public Collection.Key[] keys() {
-        return variablesScope.keys();
+    	return CollectionUtil.keys(this);
     }
 
 	/**

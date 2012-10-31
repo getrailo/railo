@@ -85,7 +85,7 @@ public class ComponentLoader {
     	// check import cache
     	if(doCache && isRealPath){
     		ImportDefintion impDef = config.getComponentDefaultImport();
-	    	ImportDefintion[] impDefs=currP.getImportDefintions();
+	    	ImportDefintion[] impDefs=currP==null?new ImportDefintion[0]:currP.getImportDefintions();
 	    	int i=-1;
 	    	do{
 	    		
@@ -393,14 +393,15 @@ public class ComponentLoader {
             long time=System.nanoTime();
             try {
             	debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
-            	exeTime=System.currentTimeMillis();
+            	exeTime=System.nanoTime();
                 if(page==null)page=((PageSourceImpl)ps).loadPage(pc);
             	rtn=initComponent(pc,page,callPath,isRealPath);
                 
                 
             }
             finally {
-                int diff= ((int)(System.nanoTime()-exeTime)-(pc.getExecutionTime()-currTime));
+            	rtn.setLoaded(true);
+            	int diff= ((int)(System.nanoTime()-exeTime)-(pc.getExecutionTime()-currTime));
                 pc.setExecutionTime(pc.getExecutionTime()+(int)(System.nanoTime()-time));
                 debugEntry.updateExeTime(diff);
                 pc.removeLastPageSource(true);
@@ -414,6 +415,7 @@ public class ComponentLoader {
             	rtn=initComponent(pc,page,callPath,isRealPath);
             }
             finally {
+            	rtn.setLoaded(true);
                 pc.removeLastPageSource(true);
             } 
         }

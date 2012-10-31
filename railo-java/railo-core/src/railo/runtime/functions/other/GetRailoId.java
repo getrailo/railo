@@ -38,7 +38,7 @@ public final class GetRailoId implements Function {
     		ConfigWebImpl cwi = (ConfigWebImpl)config;
     		server.set(SECURITY_KEY, cwi.getServerSecurityKey());
     		server.set(KeyConstants._id, cwi.getServerId());
-    		sct.set(KeyImpl.SERVER, server);
+    		sct.set(KeyConstants._server, server);
     	}
     	
     	sct.set(REQUEST, Caster.toString(pc.getId()));

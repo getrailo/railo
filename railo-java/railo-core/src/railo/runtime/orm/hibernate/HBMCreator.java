@@ -33,20 +33,21 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class HBMCreator {
 	
 	
-	private static final Collection.Key PROPERTY = KeyImpl.intern("property");
-	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldType");
+	private static final Collection.Key PROPERTY = KeyConstants._property;
+	private static final Collection.Key FIELD_TYPE = KeyConstants._fieldtype;
 	private static final Collection.Key LINK_TABLE = KeyImpl.intern("linktable");
-	private static final Collection.Key CFC = KeyImpl.intern("cfc");
+	private static final Collection.Key CFC = KeyConstants._cfc;
 	private static final Collection.Key GENERATOR = KeyImpl.intern("generator");
 	private static final Collection.Key PARAMS = KeyImpl.intern("params");
 	private static final Collection.Key SEQUENCE = KeyImpl.intern("sequence");
 	private static final Collection.Key UNIQUE_KEY_NAME = KeyImpl.intern("uniqueKeyName");
 	private static final Collection.Key GENERATED = KeyImpl.intern("generated");
-	
+   
 	public static void createXMLMapping(PageContext pc,DatasourceConnection dc, Component cfc,ORMConfiguration ormConf,Element hibernateMapping,HibernateORMEngine engine) throws PageException {
 		
 		// MUST Support for embeded objects 
@@ -746,7 +747,7 @@ public class HBMCreator {
 							id.getDynamicAttributes();
 							Struct meta = id.getDynamicAttributes();
 							if(meta!=null){
-								String type=Caster.toString(meta.get(KeyImpl.TYPE,null));
+								String type=Caster.toString(meta.get(KeyConstants._type,null));
 								
 								if(!StringUtil.isEmpty(type) && (!type.equalsIgnoreCase("any") && !type.equalsIgnoreCase("object"))){
 									return type;
@@ -882,7 +883,7 @@ public class HBMCreator {
 			}
 			else if("select".equals(className)){
 				//print.e("select:"+toString(meta, "selectKey",true));
-				if(!sct.containsKey(KeyImpl.KEY)) sct.setEL(KeyImpl.KEY, toString(engine,cfc,prop,meta, "selectKey",true));
+				if(!sct.containsKey(KeyConstants._key)) sct.setEL(KeyConstants._key, toString(engine,cfc,prop,meta, "selectKey",true));
 			}
 			else if("sequence".equals(className)){
 				if(!sct.containsKey(SEQUENCE)) sct.setEL(SEQUENCE, toString(engine,cfc,prop,meta, "sequence",true));
@@ -1574,7 +1575,7 @@ public class HBMCreator {
 			
 			
 		}
-		throw new ORMException(engine, "cannot terminate forgein key column name for component "+cfc.getName());
+		throw new ORMException(engine, "cannot terminate foreign key column name for component "+cfc.getName());
 	}
 	
 	
@@ -1589,7 +1590,7 @@ public class HBMCreator {
 			}
 			else if(prop!=null)str=toString(engine,cfc,prop,prop.getDynamicAttributes(),"fkcolumn",true);
 			else
-				throw new ORMException(engine, "cannot terminate forgein key column name");
+				throw new ORMException(engine,"cannot terminate foreign key column name for component "+cfc.getName());
 			
 			str=HibernateCaster.getEntityName(cfc)+"_"+str;
 		}

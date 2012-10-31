@@ -16,11 +16,10 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.KeyConstants;
 
 import com.intergral.fusiondebug.server.FDLanguageException;
 import com.intergral.fusiondebug.server.IFDStackFrame;
@@ -30,8 +29,6 @@ import com.intergral.fusiondebug.server.IFDVariable;
 public class FDStackFrameImpl implements IFDStackFrame {
 
 
-	private static final Collection.Key CALLER = KeyImpl.intern("caller");
-	
 	private static final int[] SCOPES_AS_INT = new int[]{
 		Scope.SCOPE_VARIABLES,Scope.SCOPE_CGI,Scope.SCOPE_URL,Scope.SCOPE_FORM,
 		Scope.SCOPE_COOKIE,Scope.SCOPE_CLIENT,Scope.SCOPE_APPLICATION,Scope.SCOPE_CALLER,
@@ -146,7 +143,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 			return pc.getApplicationContext().isSetSessionManagement();
 		}
 		if(Scope.SCOPE_CALLER==scope){
-			return pc.undefinedScope().get(CALLER,null) instanceof Struct;
+			return pc.undefinedScope().get(KeyConstants._caller,null) instanceof Struct;
 		}
 		if(Scope.SCOPE_CLUSTER==scope){
 			try {

@@ -21,7 +21,7 @@ public final class DebugFTPClient extends FTPClient {
      * @see org.apache.commons.net.SocketClient#disconnect()
      */
     public void disconnect() throws IOException {
-        SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"MyFTPClient.disconnect("+(--count)+")");
+        SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"MyFTPClient.disconnect("+(--count)+")");
         super.disconnect();
     }
     /**
@@ -29,7 +29,7 @@ public final class DebugFTPClient extends FTPClient {
      */
     public void connect(InetAddress arg0, int arg1) throws SocketException,
             IOException {
-        SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"MyFTPClient.connect("+(++count)+")");
+        SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"MyFTPClient.connect("+(++count)+")");
         super.connect(arg0, arg1);
     }
 }

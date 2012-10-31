@@ -112,6 +112,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	private boolean useShadow;
 	boolean afterConstructor;
 	private Map<Key,UDF> constructorUDFs;
+	private boolean loaded;
 
 
 
@@ -760,7 +761,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	@Override
 	public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess) {
     	// check super
-        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyImpl.SUPER)) {
+        if(dataMember && access==ACCESS_PRIVATE && key.equalsIgnoreCase(KeyConstants._super)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),this)._base());
             //return SuperComponent . superMember(base);
         }
@@ -787,7 +788,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      */
     protected Member getMember(PageContext pc, Collection.Key key, boolean dataMember,boolean superAccess) {
         // check super
-        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyImpl.SUPER)) {
+        if(dataMember && isPrivate(pc) && key.equalsIgnoreCase(KeyConstants._super)) {
         	return SuperComponent.superMember((ComponentImpl)ComponentUtil.getActiveComponent(pc,this)._base());
         }
         if(superAccess) 
@@ -806,18 +807,15 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     		if(access<=ACCESS_PUBLIC) return true;
     		else if(access==ACCESS_PRIVATE && isPrivate(pc)) return true;
     		else if(access==ACCESS_PACKAGE && isPackage(pc)) return true;
-    		/*switch(member.getAccess()) {
-                case ACCESS_REMOTE: return true;
-                case ACCESS_PUBLIC: return true;
-                case ACCESS_PRIVATE:
-                    if(isPrivate(pc)) return true;
-                break;
-                case ACCESS_PACKAGE:
-                    if(isPackage(pc)) return true;
-                break;
-            }*/
         }
         return false;
+	}
+    
+    private boolean isAccessible(PageContext pc, int access) {
+    	if(access<=ACCESS_PUBLIC) return true;
+		else if(access==ACCESS_PRIVATE && isPrivate(pc)) return true;
+		else if(access==ACCESS_PACKAGE && isPackage(pc)) return true;
+    	return false;
 	}
 
     /**
@@ -827,7 +825,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     private boolean isPrivate(PageContext pc) {
     	if(pc==null) return true;
     	Component ac = pc.getActiveComponent();
-        return (ac!=null && (ac==this || 
+    	return (ac!=null && (ac==this || 
                 ((ComponentImpl)ac).top.pageSource.equals(top.pageSource))) ;
     }
     /**
@@ -1402,7 +1400,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         sct.set(KeyConstants._accessors,comp.properties.accessors);
         sct.set(KeyConstants._synchronized,comp.properties._synchronized);
         if(comp.properties.output!=null)
-        sct.set(KeyImpl.OUTPUT,comp.properties.output);
+        sct.set(KeyConstants._output,comp.properties.output);
             
         // extends
         Struct ex=null;
@@ -1428,9 +1426,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         // PageSource
         PageSource ps = comp.pageSource;
         sct.set(KeyConstants._fullname,ps.getComponentName());
-        sct.set(KeyImpl.NAME,ps.getComponentName());
-        sct.set(KeyImpl.PATH,ps.getDisplayPath());
-        sct.set(KeyImpl.TYPE,"component");
+        sct.set(KeyConstants._name,ps.getComponentName());
+        sct.set(KeyConstants._path,ps.getDisplayPath());
+        sct.set(KeyConstants._type,"component");
             
         Class skeleton = comp.getJavaAccessClass(new RefBooleanImpl(false),((ConfigImpl)pc.getConfig()).getExecutionLogEnabled(),false,false,((ConfigImpl)pc.getConfig()).getSupressWSBeforeArg());
         if(skeleton !=null)sct.set(KeyConstants._skeleton, skeleton);
@@ -1451,7 +1449,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		p=pit.next().getValue();
         		parr.add(p.getMetaData());
         	}
-        	parr.sort(new ArrayOfStructComparator(KeyImpl.NAME));
+        	parr.sort(new ArrayOfStructComparator(KeyConstants._name));
         	sct.set(KeyConstants._properties,parr);
         }
         page.metaData=new SoftReference<Struct>(sct);
@@ -1508,8 +1506,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
      * @param key
      * @param value
      * @return value set
+     * @throws ExpressionException 
      */
-    private synchronized Object _set(Collection.Key key, Object value) {
+    private synchronized Object _set(PageContext pc,Collection.Key key, Object value) throws ExpressionException {
     	//print.out("set:"+key);
         if(value instanceof UDFImpl) {
         	UDFImpl udf = (UDFImpl)((UDF)value).duplicate();
@@ -1522,6 +1521,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         	
         }
         else {
+        	if(loaded && !isAccessible(ThreadLocalPageContext.get(pc), dataMemberDefaultAccess))
+        		throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]","enable [trigger data member] in admininistrator to also invoke getters and setters");
+            
         	_data.put(key,new DataMember(dataMemberDefaultAccess,value));
         }
         return value;
@@ -1590,7 +1592,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         		return callSetter(pc, key, value);
         	}
         }
-    	return _set(key,value);
+    	return _set(pc,key,value);
     }
 
 	/**
@@ -1677,7 +1679,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
                 return _call(pc,udf,null,new Object[]{value});
             }    
         }
-        return _set(key,value);
+        return _set(pc,key,value);
 	}
     
 
@@ -2074,5 +2076,9 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 			return false;
 		}
 		return pc.getApplicationContext().getTriggerComponentDataMember();
+	}
+
+	public void setLoaded(boolean loaded) {
+		this.loaded=loaded;
 	}
 }

@@ -251,6 +251,26 @@
 	<data key="ext.documentation">Documentation</data>
 	<data key="ext.installeddesc">These applications are already installed on the system.</data>
 	<data key="ext.licenseagreement">License agreement</data>
+	<data key="ext.uploadextension">Upload new extension</data>
+	<data key="ext.uploadextensiondesc">If you downloaded an extension, you can add the extension here.</data>
+	<data key="ext.upload">upload</data>
+	<data key="ext.nofileuploaded">You have not uploaded a file!&lt;br&gt;Please first choose a file.</data>
+	<data key="ext.extThumbnail">Extension thumbnail</data>
+	<data key="ext.msgAfterNotAgreed">Because you did not agree with the license, the extension was not installed.&lt;br&gt;In case you installed the extension before, you will need to uninstall it, if you do not wish to agree with it's license anymore.</data>
+	<data key="ext.extzipfile">Extension zip file</data>
+	<data key="ext.viewdetails">View details</data>
+	<data key="ext.theError">The error</data>
+	<data key="ext.errorFileUpload">The file could not be uploaded.</data>
+	<data key="ext.noConfigXMLInExtension">There is no config.xml file available in the extension!</data>
+	<data key="ext.configNotParsed">The Config xml file within the extension could not be parsed</data>
+	<data key="ext.configHasNoInfoTag">The Config xml file within the extension does not contain the necessary [info] section within the [config] tag.</data>
+	<data key="ext.reviewdocumentation">Please review the documentation for creating Railo Extensions.</data>
+	<data key="ext.requiredKeyMissing">The required field [config.info.$key$] does not exist within the Config xml file of the extension.</data>
+	<data key="ext.requiredKeyEmpty">The required field [config.info.$key$] does not contain a value within the Config xml file of the extension.</data>
+	<data key="ext.typeFieldInvalid">The field [config.info.type] within the Config xml file contains an invalid value. Only [web, server, all] are supported.</data>
+	<data key="ext.adminNotEqualsInstallType">You are trying to install a $type$ Extension into the $admintype$ Administrator...&lt;br /&gt;Do you want to go to the &lt;a href='$type$.cfm?action=$url.action$'&gt;$type$ Administrator&lt;/a&gt;?</data>
+	<data key="ext.thereisanerror">There is an error with the extension you uploaded</data>
+	<data key="ext.backtoprevpage">Go back to the previous page</data>
 	<data key="remote.url">URL</data>
 	<data key="remote.urlpathmissing">the path to the Admin.cfc is missing</data>
 	<data key="remote.downloadarchive">When calling &quot;&lt;Buttons.downloadArchive&gt;&quot;, the archive on the remote client will be created but the download ignored, In this case you shouln&apos;t include remote synchronization.</data>
@@ -417,6 +437,7 @@
 	<data key="search.last_update">Last update</data>
 	<data key="search.online">Online</data>
 	<data key="search.name">Name</data>
+	<data key="search.searchterm">Search term</data>
 	<data key="components.triggerdatamember">Implicit notation</data>
 	<data key="components.componentlocalsearchdesc">Search relative to the caller directory for the component</data>
 	<data key="components.componentdumptemplate">Component &quot;dump&quot; template</data>
@@ -436,7 +457,7 @@
 	<data key="components.archivemissing">Please enter a value for the archive name (row </data>
 	<data key="components.datamemberaccesstypedescription">Define the accessor for the data-members of a component. This defines how variables of the &quot;this&quot; scope of a component can be accessed from outside of the component.</data>
 	<data key="components.autoimportdescription">the following package defintion is imported into every template.</data>
-	<data key="components.componentmappingsdesc">Addional Resources that Railo checks for Components.</data>
+	<data key="components.componentmappingsdesc">Additional Resources that Railo checks for Components.</data>
 	<data key="components.componentmappingsearch">Search mappings</data>
 	<data key="components.useshadowdescription">Defines whether a component has an independent variables scope parallel to the &amp;quot;this&amp;quot; scope (CFML standard) or not.</data>
 	<data key="components.server">Define the component settings that will be used as a default for all web contexts. </data>
@@ -445,15 +466,16 @@
 	<data key="components.triggerdatamemberdescription">If there is no accessible data member (property, element of the this scope) inside a component, Railo searches for available matching &amp;quot;getters&amp;quot; or &amp;quot;setters&amp;quot; for the requested property. The following example should clarify this behaviour. &amp;quot;somevar = myComponent.properyName&amp;quot;. If &amp;quot;myComponent&amp;quot; has no accessible data member named &amp;quot;propertyName&amp;quot;, Railo searches for a function member (method) named &amp;quot;getPropertyName&amp;quot;.</data>
 	<data key="components.physical">Resource</data>
 	<data key="components.trusted">Trusted</data>
-	<data key="components.componentDeepSearch">Search sub directories</data>
+	<data key="components.componentDeepSearch">Search subdirectories</data>
 	<data key="components.componentDeepSearchDesc">
-	Search for CFC in the sub directories of the defined "Addional Resources" below. this is not working for Archives!</data>
+	Search for CFCs in the subdirectories of the "Additional Resources" below (this does not work for Archives!)</data>
 	<data key="components.componentdumptemplatedescription">If you call a component directly this template will be invoked to dump the component. (Example: http://www.railo.ch/ch/railo/common/Example.cfc)</data>
 	<data key="components.basecomponentmissing">Please enter a value for the base/root component</data>
 	<data key="components.component">Component</data>
 	<data key="components.componentmappingsearchdesc">Search the component in the mappings defined, this include the implicit mapping &quot;/&quot;, that points on the webroot</data>
 	<data key="components.archive">Archive</data>
-	<data key="components.componentmappings">Addional Resources</data>
+	<data key="components.componentmappings">Additional Resources</data>
+	<data key="components.createnewcompmapping">Create new Additional Resource</data>
 	<data key="components.dmatpackage">package</data>
 	<data key="components.basecomponentdescription">Every component that does not explicitly extend another component (attribute &quot;extends&quot;) will by default extend this component. This means that every component extends this base component in some way.</data>
 	<data key="login.passwordmissing">Please enter a value for the field password</data>
@@ -496,6 +518,7 @@
 	<data key="login.d">one Day</data>
 	<data key="login.changepassworddescription">Change the password for this administrator</data>
 	<data key="login.ww">one Week</data>
+	<data key="login.chooseWebContext"> - choose web context</data>
 	<data key="searchlng.arabic">Arabic</data>
 	<data key="searchlng.simplified_chinese">Chinese (simplified)</data>
 	<data key="searchlng.traditional_chinese">Chinese (traditional)</data>
@@ -658,6 +681,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="buttons.create">create</data>
 	<data key="buttons.filter">filter</data>
 	<data key="buttons.agree">agree</data>
+	<data key="buttons.dontagree">I do not agree</data>
 	<data key="buttons.submit">submit</data>
 	<data key="buttons.stop">stop</data>
 	<data key="buttons.purge">purge</data>
@@ -742,7 +766,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="schedule.proxyusername">Username to access a proxy if it is  protected by authentication</data>
 	<data key="schedule.name">Name</data>
 	<data key="schedule.intervaltype">Interval type</data>
-	<data key="schedule.currentdatetime">Current date/time of this Railo context is: (mm/dd/yyyy hh:mm tt)</data>
+	<data key="schedule.currentdatetime">The current date/time of this Railo context is:</data>
 	<data key="schedule.weekly">weekly</data>
 	<data key="schedule.endsat">End date</data>
 	<data key="schedule.executiontimedescdaily">Defines the time when the Task is executed daily</data>
@@ -969,11 +993,14 @@ If the timezone of your Railo instance and your database is different, this can 
 	<data key="doc.attrtitle">Attributes</data>
 	<data key="doc.argtitle">Arguments</data>
 	<data key="doc.bodytitle">Body</data>
-	<data key="doc.alsoScript">This tag is also supported within cfscript.</data>
+	<data key="doc.alsoScript">This tag is also supported within cfscript</data>
 	<data key="doc.depFunction">This Function is deprecated</data>
 	<data key="doc.depTag">This Tag is deprecated</data>
 	<data key="doc.depAttr">This Attribute is deprecated</data>
 	<data key="doc.depArg">This Argument is deprecated</data>
+	<data key="doc.example">Example</data>
+	<data key="doc.chooseTag">Choose a tag</data>
+	<data key="doc.chooseFunction">Choose a function</data>
 	<data key="help.logotitle">Railo help</data>
 	<data key="help.closewindow">Close window</data>
 	<data key="help.videohelp">Railo - online video help</data>

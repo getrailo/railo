@@ -175,12 +175,12 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	private final void statement(Data data,Body parent) throws TemplateException {
 		statement(data, parent, data.context);
 	}
-	private void statement(Data data,Body parent,short context) throws TemplateException {
+	private boolean statement(Data data,Body parent,short context) throws TemplateException {
 		short prior=data.context;
 		data.context=context;
 		comments(data);
 		Statement child=null;
-		if(data.cfml.forwardIfCurrent(';')){}
+		if(data.cfml.forwardIfCurrent(';')){return true;}
 		else if((child=ifStatement(data))!=null) 				parent.addStatement(child);
 		else if((child=propertyStatement(data,parent))!=null)	parent.addStatement(child);
 		else if((child=paramStatement(data,parent))!=null)	parent.addStatement(child);
@@ -196,6 +196,8 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		else parent.addStatement(expressionStatement(data,parent));
 		data.docComment=null;
 		data.context=prior;
+		
+		return false;
 	}
 	
 	/**
@@ -932,10 +934,15 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		// body
 		if(tlt.getHasBody()){
 			Body body=new BodyBase();
-			statement(data,body,script.getContext());
-			tag.setBody(body);
+			boolean wasSemiColon=statement(data,body,script.getContext());
+			if(!wasSemiColon || !tlt.isBodyFree() || body.hasStatements())
+				tag.setBody(body);
+			
+			
+			
 		}
 		else checkSemiColonLineFeed(data,true);
+		
 		tag.setEnd(data.cfml.getPosition());
 		eval(tlt,data,tag);
 		return tag;

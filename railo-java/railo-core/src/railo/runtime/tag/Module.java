@@ -11,7 +11,6 @@ import railo.runtime.customtag.CustomTagUtil;
 import railo.runtime.customtag.InitFile;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.MissingIncludeException;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.util.KeyConstants;
 
 /**
@@ -28,11 +27,11 @@ public final class Module extends CFTag {
         // MUSTMUST cache like ct
 		//String[] filenames=getFileNames(config,getAppendix());// = appendix+'.'+config.getCFMLExtension();
         
-	    Object objTemplate =attributesScope.get(KeyImpl.TEMPLATE,null);
+	    Object objTemplate =attributesScope.get(KeyConstants._template,null);
 	    Object objName =attributesScope.get(KeyConstants._name,null);
 	    source=null;
 	    if(objTemplate!=null) {
-			attributesScope.removeEL(KeyImpl.TEMPLATE);
+			attributesScope.removeEL(KeyConstants._template);
 		    String template=objTemplate.toString();
 
             if(StringUtil.startsWith(template,'/'))  {

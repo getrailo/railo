@@ -1,29 +1,23 @@
-<cfsilent> 
+<cfsilent>
 <cfparam name="request.disableFrame" default="false" type="boolean">
 <cfparam name="request.setCFApplication" default="true" type="boolean">
 
 
 <cfif request.setCFApplication>
-<cfapplication name="webadmin" 
-	sessionmanagement="yes" 
-	clientmanagement="no" 
-	setclientcookies="yes" 
-	setdomaincookies="no">
+	<cfapplication name="webadmin" 
+		sessionmanagement="yes" 
+		clientmanagement="no" 
+		setclientcookies="yes" 
+		setdomaincookies="no">
 </cfif>
 
-<cfparam name="session.screenWidth" default="825">
-<cfparam name="session.screenMode" default="compact">
-<cfif structKeyExists(url,'screenmode')>
-	<cfset session.screenmode=url.screenmode>
-    <cfset session.realScreenSize=url.realScreenSize>
-    <cfif session.screenmode EQ "full">
-    	<cfset session.screenwidth=session.realScreenSize-260>
-    <cfelse>
-    	<cfset session.screenwidth=825>
-    </cfif>
-</cfif>
-
-
+<!--- todo: remember screenwidth, so images have the correct width etc. --->
+<!--- PK: instead of session.screenWidth, we now have:
+	application.adminfunctions.getdata('fullscreen')
+	application.adminfunctions.getdata('contentwidth')
+	If fullscreen==true, then you can use the contentwidth variable.
+	Otherwise, use the regular content width.
+--->
 
 <cfif structKeyExists(url,'enable')>
 	<cfset session.enable=url.enable>
@@ -82,7 +76,7 @@
 <!--- new pw Form --->
 <cfif StructKeyExists(form,"new_password") and StructKeyExists(form,"new_password_re")>
 	<cfif len(form.new_password) LT 6>
-		<cfset login_error="password is to short, it must have at least 6 chars">
+		<cfset login_error="password is too short, it must have at least 6 chars">
 	<cfelseif form.new_password NEQ form.new_password_re>
 		<cfset login_error="password and password retype are not equal">
 	<cfelse>
@@ -129,7 +123,9 @@
 <cfset request.self = request.adminType & ".cfm">
 <!--- includes several functions --->
 <cfinclude template="web_functions.cfm">
-
+<cfif not structKeyExists(application, "adminfunctions") or (structKeyExists(session,"alwaysNew") and session.alwaysNew)>
+	<cfset application.adminfunctions = new adminfunctions() />
+</cfif>
 
 <!--- Load Plugins --->
 <cffunction name="loadPluginLanguage" output="false">
@@ -260,197 +256,100 @@
     </cftry>
 
 </cfif>
-<cfsavecontent variable="arrow"><cfmodule template="img.cfm" src="arrow.gif" width="4" height="7" /></cfsavecontent>
+<cfsavecontent variable="arrow"><img src="resources/img/arrow.gif.cfm" width="4" height="7" /></cfsavecontent>
 <cfif structKeyExists(url,"action") and url.action EQ "plugin" && not structKeyExists(url,"plugin")>
 	<cflocation url="#request.self#" addtoken="no">
 </cfif>
 <cfscript>
+	isRestrictedLevel=server.ColdFusion.ProductLevel EQ "community" or server.ColdFusion.ProductLevel EQ "professional";
+	isRestricted=isRestrictedLevel and request.adminType EQ "server";
 
-isRestrictedLevel=server.ColdFusion.ProductLevel EQ "community" or server.ColdFusion.ProductLevel EQ "professional";
-isRestricted=isRestrictedLevel and request.adminType EQ "server";
+	// Navigation
+	// As a Set of Array and Structures, so that it is sorted
+
+	favoriteLis = "";
+
+	context='';
+	// write Naviagtion
+	current.label="Overview";
+	if(isDefined("url.action"))current.action=url.action;
+	else current.action="overview";
+
+	strNav ="";
+	for(i=1;i lte arrayLen(navigation);i=i+1) {
+		stNavi = navigation[i];
+		hasChildren=StructKeyExists(stNavi,"children");
 
 
-// Navigation
-// As a Set of Array and Structures, so that it is sorted
-
-
-context=''; 
-// write Naviagtion
-current.label="Overview";
-if(isDefined("url.action"))current.action=url.action;
-else current.action="overview";
-
-strNav ="";
-for(i=1;i lte arrayLen(navigation);i=i+1) {
-	stNavi = navigation[i];
-	hasChildren=StructKeyExists(stNavi,"children");
-	
-	
-	subNav="";
-	if(hasChildren) {
-		for(iCld=1; iCld lte ArrayLen(stNavi.children); iCld=iCld+1) {
-			stCld = stNavi.children[iCld];
-			isActive=current.action eq stNavi.action & '.' & stCld.action or (current.action eq 'plugin' and stCld.action EQ url.plugin);
-			if(isActive) {
-				current.label = stNavi.label & ' - ' & stCld.label;
-			}
-			
-			if(not toBool(stCld,"hidden") and (not isRestricted or toBool(stCld,"display"))) {
-				/*if (isActive) {
-					sClass = "navsub_active";
+		subNav="";
+		hasActiveItem = false;
+		if(hasChildren) {
+			for(iCld=1; iCld lte ArrayLen(stNavi.children); iCld=iCld+1) {
+				stCld = stNavi.children[iCld];
+				isActive=current.action eq stNavi.action & '.' & stCld.action or (current.action eq 'plugin' and stCld.action EQ url.plugin);
+				if(isActive) {
+					hasActiveItem = true;
+					current.label = stNavi.label & ' - ' & stCld.label;
 				}
-				else {
-					sClass = "navsub";
-				}*/
-				if(structKeyExists(stCld,'_action'))_action=stCld._action;
-				else _action=stNavi.action & '.' & stCld.action;
-				
-				subNav = subNav & '<li><a '&(isActive?'class="menu_active"':'class="menu_inactive"')&' href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></li>';
-				//subNav = subNav & '<div class="navsub">'&arrow&'<a class="#sClass#" href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></div>';
+
+				if(not toBool(stCld,"hidden") and (not isRestricted or toBool(stCld,"display"))) {
+					/*if (isActive) {
+						sClass = "navsub_active";
+					}
+					else {
+						sClass = "navsub";
+					}*/
+					if(structKeyExists(stCld,'_action'))_action=stCld._action;
+					else _action=stNavi.action & '.' & stCld.action;
+
+					isfavorite = application.adminfunctions.isfavorite(_action);
+					li = '<li' & (isfavorite ? ' class="favorite"':'') & '><a '&(isActive?'class="menu_active"':'class="menu_inactive"')&' href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></li>';
+					if (isfavorite)
+					{
+						favoriteLis &= '<li class="favorite"><a href="#request.self#?action=#_action#">#stNavi.label# - #stCld.label#</a></li>';
+					}
+					subNav = subNav & li;
+					//subNav = subNav & '<div class="navsub">'&arrow&'<a class="#sClass#" href="' & request.self & '?action=' & _action & '"> ' & stCld.label & '</a></div>';
+				}
 			}
 		}
+		strNav = strNav &'';
+		hasChildren=hasChildren and len(subNav) GT 0;
+		if(not hasChildren) {
+			if(toBool(stNavi,"display"))strNav = strNav & '<li><a href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></li>';
+			//if(toBool(stNavi,"display"))strNav = strNav & '<div class="navtop"><a class="navtop" href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></div>';
+		}
+		else {
+			idName = toIDField(stNavi.label);
+			isCollapsed = not hasActiveItem and application.adminfunctions.getdata('collapsed_' & idName) eq 1;
+			strNav = strNav & '<li id="#idName#"#isCollapsed ? ' class="collapsed"':''#><a href="##">' & stNavi.label & '</a><ul#isCollapsed ? ' style="display:none"':''#>'&subNav& "</ul></li>";
+			//strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";
+		}
+		//strNav = strNav ;
 	}
-	strNav = strNav &'';
-	hasChildren=hasChildren and len(subNav) GT 0;
-	if(not hasChildren) {
-		if(toBool(stNavi,"display"))strNav = strNav & '<li><a href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></li>';
-		//if(toBool(stNavi,"display"))strNav = strNav & '<div class="navtop"><a class="navtop" href="' & request.self & '?action=' & stNavi.action & '">' & stNavi.label & '</a></div>';
-	}
-	else {
-		strNav = strNav & '<li><a href="##">' & stNavi.label & '</a><ul>'&subNav& "</ul></li>";
-		//strNav = strNav & '<div class="navtop">' & stNavi.label & '</div>'&subNav& "";
-	}
-	//strNav = strNav ;
-}
-strNav ='<ul id="menu">'& strNav&'</ul>' ;
+	strNav ='<ul id="menu">'& strNav&'</ul>' ;
 
-function toBool(sct,key) {
-	if(not StructKeyExists(arguments.sct,arguments.key)) return false;
-	return arguments.sct[arguments.key];
-}
-function getRemoteClients() {
-	if(not isDefined("form._securtyKeys")) return array();
-	return form._securtyKeys;
+/* moved to title in content area
+   if (favoriteLis neq "")
+   {
+	   strNav = '<li id="favorites"><a href="##">Favorites</a><ul>' & favoriteLis & "</ul></li>" & strNav;
+   }
+   */
 
-}
-request.getRemoteClients=getRemoteClients;
+	function toBool(sct,key) {
+		if(not StructKeyExists(arguments.sct,arguments.key)) return false;
+		return arguments.sct[arguments.key];
+	}
+	function getRemoteClients() {
+		if(not isDefined("form._securtyKeys")) return array();
+		return form._securtyKeys;
+	}
+	function toIDField(value)
+	{
+		return "nav_" & rereplace(arguments.value, "[^0-9a-zA-Z]", "_", "all");
+	}
+	request.getRemoteClients=getRemoteClients;
 </cfscript>
-
-
-
-<script src="../jquery.js.cfm"></script>
-<script src="../jquery.blockUI.js.cfm"></script>
-<cfsavecontent variable="strNav">
-<script>
-function initMenu() {
-	$('#menu ul').show();
-	$('#menu li a').click(
-  		function() {
-    		$(this).next().slideToggle('normal');
-  		}
-	);
-}
-
-function initMenu2() {
-  $('#menu ul').hide();
-  $('#menu ul:first').show();
-  $('#menu li a').click(
-    function() {
-      var checkElement = $(this).next();
-      if((checkElement.is('ul')) && (checkElement.is(':visible'))) {
-        return false;
-        }
-      if((checkElement.is('ul')) && (!checkElement.is(':visible'))) {
-        $('#menu ul:visible').slideUp('normal');
-        checkElement.slideDown('normal');
-        return false;
-        }
-      }
-    );
-  }
-
-var disableBlockUI=false;
-
-// {form:_form,name:_input.name,value:v,error:err.error};
-function customError(errors){ 
-	if(!errors || errors.length==0) return;
-	var err;
-	var form=errors[0].form;
-	var el;
-	var clazz;
-	var input;
-
-	// remove error from last round
-	try{
-  		for(var i=0;i<form.elements.length;i++){
-    		input=form.elements[i];
-    		el=$(input);
-    		clazz=el.attr("class");
-    		if(clazz && clazz=="InputError") {
-      			el.removeClass();
-      			el=$("#msg_"+input.name);
-      			el.remove();
-    		}
-  		}
-  	}
-  	catch(err){
-		alert(err)
-	}
-
-	// create new error
-  	for(var i=0;i<errors.length;i++){
-    	err=errors[i];
-    	var input=form[err.name];
-    	var _input=$(input);
-    	if(i==0) _input.focus();
-    	_input.addClass("InputError");
-    	_input.after('<span id="msg_'+err.name+'" class="commentError"><br/>'+err.error+'</span>');
-  	}
-  	disableBlockUI=true;
-}
-
-function createWaitBlockUI(){
-  var _blockUI=function() { 
-      if(!disableBlockUI)
-      $.blockUI(
-        { 
-          message:<cfoutput>"#JSStringFormat(stText.general.wait)#"</cfoutput>,
-          css: { 
-              border: 'none', 
-              padding: '15px', 
-              backgroundColor: '#000', 
-              '-webkit-border-radius': '10px', 
-              '-moz-border-radius': '10px', 
-              opacity: .5, 
-              color: '#fff' ,
-              fontSize : "18pt"
-            },
-          fadeIn: 1000 
-        }
-      ); 
-    }
-  return _blockUI;
-}
-
-$(document).ready(function() { 
-  initMenu();
-    
-    __blockUI=function() {
-      setTimeout(createWaitBlockUI(),1000);
-    
-    }
-
-  $('.submit,.menu_inactive,.menu_active').click(__blockUI);
-    }); 
-
-
-</script>
-<cfoutput>#strNav#</cfoutput>
-</cfsavecontent>
-
-
-
-
 
 <cfif not StructKeyExists(session,"password"&request.adminType)>
 		<cfadmin 
@@ -470,16 +369,34 @@ $(document).ready(function() {
 	</cfif>
 <cfelse>
 	<cfsavecontent variable="content">
-				<cfif not FindOneOf("\/",current.action)><cfinclude template="#current.action#.cfm"><cfelse><cfset current.label="Error">invalid action definition</cfif>
+		<cfif not FindOneOf("\/",current.action)>
+			<cfinclude template="#current.action#.cfm">
+		<cfelse>
+			<cfset current.label="Error">
+			invalid action definition
+		</cfif>
 	</cfsavecontent>
+	
 	<cfif request.disableFrame>
     	<cfoutput>#content#</cfoutput>
     <cfelse>
-    	<cfmodule template="admin_layout.cfm" width="960" navigation="#strNav#" right="#context#" title="#current.label#">
+		<cfsavecontent variable="strNav">
+			<script type="text/javascript">
+				$(function() { 
+					initMenu();
+					__blockUI=function() {
+						setTimeout(createWaitBlockUI(<cfoutput>"#JSStringFormat(stText.general.wait)#"</cfoutput>),1000);
+					}
+					$('.submit,.menu_inactive,.menu_active').click(__blockUI);
+				}); 
+			</script>
+			<cfoutput>#strNav#</cfoutput>
+		</cfsavecontent>
+		
+    	<cfmodule template="admin_layout.cfm" width="960" navigation="#strNav#" right="#context#" title="#current.label#" favorites="#favoriteLis#">
 			<cfoutput>#content#</cfoutput>
         </cfmodule>
     </cfif>
-    
 </cfif>
 <cfif current.action neq "overview">
 	<cfcookie name="railo_admin_lastpage" value="#current.action#" expires="NEVER">

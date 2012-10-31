@@ -17,17 +17,14 @@ import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * Decodes Binary Data that are encoded as String
  */
 public final class DeserializeJSON implements Function {
 
-	private static final Key COLUMNS = KeyImpl.intern("COLUMNS");
-	private static final Key COLUMNLIST = KeyImpl.intern("COLUMNLIST");
-	private static final Key DATA = KeyImpl.intern("DATA");
 	private static final Key ROWCOUNT = KeyImpl.intern("ROWCOUNT");
-	private static final Key RECORDCOUNT = KeyImpl.intern("RECORDCOUNT");
 
 	public static Object call(PageContext pc, String JSONVar) throws PageException {
 	    return call(pc,JSONVar,true);
@@ -47,30 +44,30 @@ public final class DeserializeJSON implements Function {
 			
 			// Columns
 			Key[] columns = null;
-			if(contains(keys,COLUMNS)) 
-				columns = toColumns(sct.get(COLUMNS,null));
-			else if(contains(keys,COLUMNLIST)) 
-				columns = toColumnlist(sct.get(COLUMNLIST,null));
+			if(contains(keys,KeyConstants._COLUMNS)) 
+				columns = toColumns(sct.get(KeyConstants._COLUMNS,null));
+			else if(contains(keys,KeyConstants._COLUMNLIST)) 
+				columns = toColumnlist(sct.get(KeyConstants._COLUMNLIST,null));
 			
 			// rowcount
 			int rowcount = -1;
 			if(contains(keys,ROWCOUNT))
 				rowcount = toRowCount(sct.get(ROWCOUNT,null));
-			else if(contains(keys,RECORDCOUNT))
-				rowcount = toRowCount(sct.get(RECORDCOUNT,null));
+			else if(contains(keys,KeyConstants._RECORDCOUNT))
+				rowcount = toRowCount(sct.get(KeyConstants._RECORDCOUNT,null));
 				
 			
 			if(columns!=null) {
-				if(keys.length==2 && contains(keys,DATA)) {
+				if(keys.length==2 && contains(keys,KeyConstants._DATA)) {
 					
-					Array[] data = toData(sct.get(DATA,null),columns);
+					Array[] data = toData(sct.get(KeyConstants._DATA,null),columns);
 					if(data!=null) {
 						return new QueryImpl(columns,data,"query");
 					}
 				}
 				
-				else if(keys.length==3 && rowcount!=-1 && contains(keys,DATA)) {
-					Array[] data = toData(sct.get(DATA,null),columns,rowcount);
+				else if(keys.length==3 && rowcount!=-1 && contains(keys,KeyConstants._DATA)) {
+					Array[] data = toData(sct.get(KeyConstants._DATA,null),columns,rowcount);
 					if(data!=null) {
 						return new QueryImpl(columns,data,"query");
 					}

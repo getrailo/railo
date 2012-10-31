@@ -22,7 +22,7 @@ ACTIONS --->
 	<cfcase value="#stText.Buttons.Update#">
 	<!--- update --->
 		<cfif form.subAction EQ "#stText.Buttons.Update#">
-			<CFSET ERROR.message="#stText.Buttons.Update#">
+			<cfset ERROR.message="#stText.Buttons.Update#">
 			<cfset data.hosts=toArrayFromForm("hostname")>
 			<cfset data.usernames=toArrayFromForm("username")>
 			<cfset data.passwords=toArrayFromForm("password")>
@@ -98,25 +98,25 @@ Mail Settings
 		<table class="tbl" width="550">
 		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.LogFile#</td>
-			<td class="tblContent" width="450"><cfinput type="text" name="logFile" value="#config.mailLogger.file#" required="yes"  style="width:450px" message="#stText.Mail.LogFileMissing#"></td>
+			<th scope="row">#stText.Mail.LogFile#</th>
+			<td width="450"><cfinput type="text" name="logFile" value="#config.mailLogger.file#" required="yes"  style="width:450px" message="#stText.Mail.LogFileMissing#"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.SpoolEnabled#</td>
-			<td class="tblContent" width="450"><input <cfif config.isMailSpoolEnable()>checked</cfif> type="checkbox" class="checkbox" name="spoolEnable" value="yes"></td>
+			<th scope="row">#stText.Mail.SpoolEnabled#</th>
+			<td width="450"><input <cfif config.isMailSpoolEnable()>checked</cfif> type="checkbox" class="checkbox" name="spoolEnable" value="yes"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.SpoolInterval#</td>
-			<td class="tblContent" width="450"><cfinput type="text" name="spoolInterval" value="#config.mailSpoolInterval#" validate="integer" style="width:50px" required="yes"></td>
+			<th scope="row">#stText.Mail.SpoolInterval#</th>
+			<td width="450"><cfinput type="text" name="spoolInterval" value="#config.mailSpoolInterval#" validate="integer" style="width:50px" required="yes"></td>
 		</tr>
 		<tr>
-			<td class="tblHead" width="100" nowrap>#stText.Mail.Timeout#</td>
-			<td class="tblContent" width="450"><cfinput type="text" name="timeout" value="#config.mailTimeout#" validate="integer" style="width:50px" required="yes"></td>
+			<th scope="row">#stText.Mail.Timeout#</th>
+			<td width="450"><cfinput type="text" name="timeout" value="#config.mailTimeout#" validate="integer" style="width:50px" required="yes"></td>
 		</tr>
 		<tr>
 			<td colspan="2"><cfoutput>
 				<input type="hidden" name="mainAction" value="setting">
-				<input type="submit" class="submit" name="_mainAction" value="#stText.Buttons.Update#">
+				<input type="submit" class="button submit" name="_mainAction" value="#stText.Buttons.Update#">
 				<input type="reset" class="reset" name="canel" value="#stText.Buttons.Cancel#">
 			</cfoutput></td>
 		</tr>
@@ -130,10 +130,10 @@ Existing Collection --->
 <table class="tbl">
 	<tr>
 		<td></td>
-		<td class="tblHead" nowrap>#stText.Mail.Server#</td>
-		<td class="tblHead" nowrap>#stText.Mail.Username#</td>
-		<td class="tblHead" nowrap>#stText.Mail.Password#</td>
-		<td class="tblHead" nowrap>#stText.Mail.Port#</td>
+		<th scope="row">#stText.Mail.Server#</th>
+		<th scope="row">#stText.Mail.Username#</th>
+		<th scope="row">#stText.Mail.Password#</th>
+		<th scope="row">#stText.Mail.Port#</th>
 	</tr>
 <cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 <cfoutput>
@@ -149,10 +149,10 @@ Existing Collection --->
 		</table>
 		
 		</td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="hostName_#idx#" value="#ms.hostName#" required="yes"  style="width:250px" message="#stText.Mail.ServerMissing##idx#)"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_#idx#" value="#ms.username#" required="no"  style="width:150px" message="#stText.Mail.UserNameMissing##idx#)"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="password_#idx#" value="#ms.password#" required="no"  style="width:150px" message="#stText.Mail.PasswordMissing##idx#)"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="port_#idx#" value="#ms.port#" required="no"  style="width:40px" validate="integer" message="#stText.Mail.PortErrorFirst##idx##stText.Mail.PortErrorLast#"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="hostName_#idx#" value="#ms.hostName#" required="yes"  style="width:250px" message="#stText.Mail.ServerMissing##idx#)"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_#idx#" value="#ms.username#" required="no"  style="width:150px" message="#stText.Mail.UserNameMissing##idx#)"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="password_#idx#" value="#ms.password#" required="no"  style="width:150px" message="#stText.Mail.PasswordMissing##idx#)"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="port_#idx#" value="#ms.port#" required="no"  style="width:40px" validate="integer" message="#stText.Mail.PortErrorFirst##idx##stText.Mail.PortErrorLast#"></td>
 	</tr>
 </cfloop>
 	<tr>
@@ -164,27 +164,27 @@ Existing Collection --->
 		</table>
 		
 		</td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)"  type="text" name="hostName_new" value="" required="no"  style="width:250px"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_new" value="" required="no"  style="width:150px"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="password_new" value="" required="no"  style="width:150px"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="port_new" value="" required="no" validate="integer" message="Value for Port (Row #len+1#) must be of type number" style="width:40px"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)"  type="text" name="hostName_new" value="" required="no"  style="width:250px"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="username_new" value="" required="no"  style="width:150px"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="password_new" value="" required="no"  style="width:150px"></td>
+		<td nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" name="port_new" value="" required="no" validate="integer" message="Value for Port (Row #len+1#) must be of type number" style="width:40px"></td>
 	</tr>
 	<tr>
 		<td colspan="8">
 		 <table border="0" cellpadding="0" cellspacing="0">
 		 <tr>
 			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
+			<td><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="20"></td>
 			<td></td>
 		 </tr>
 		 <tr>
 			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
+			<td valign="top"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="1" height="14"><img src="resources/img/#ad#-bgcolor.gif.cfm" width="36" height="1"></td>
 			<td>&nbsp;
 			<input type="hidden" name="mainAction" value="#stText.Buttons.Update#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Update#">
 			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
+			<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Delete#">
 			</td>	
 		</tr>
 		 </table>

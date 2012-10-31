@@ -41,6 +41,7 @@ import railo.runtime.type.scope.ArgumentIntKey;
 import railo.runtime.type.scope.LocalNotSupportedScope;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * implements a JSP Factory, this class produce JSP Compatible PageContext Object
@@ -353,11 +354,11 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 
                 data.setEL("startTime", new DateTimeImpl(pc.getStartTime(),false));
                 data.setEL("endTime", new DateTimeImpl(pc.getStartTime()+pc.getRequestTimeout(),false));
-                data.setEL("timeout",new Double(pc.getRequestTimeout()));
+                data.setEL(KeyConstants._timeout,new Double(pc.getRequestTimeout()));
 
                 
                 // thread
-                sctThread.setEL(KeyImpl.NAME,thread.getName());
+                sctThread.setEL(KeyConstants._name,thread.getName());
                 sctThread.setEL("priority",Caster.toDouble(thread.getPriority()));
                 data.setEL("TagContext",PageExceptionImpl.getTagContext(pc.getConfig(),thread.getStackTrace() ));
 
@@ -372,28 +373,28 @@ public final class CFMLFactoryImpl extends CFMLFactory {
                 data.setEL("requestid", pc.getId());
 
                 // Scopes
-                scopes.setEL(KeyImpl.NAME, pc.getApplicationContext().getName());
+                scopes.setEL(KeyConstants._name, pc.getApplicationContext().getName());
                 try {
-					scopes.setEL("application", pc.applicationScope());
+					scopes.setEL(KeyConstants._application, pc.applicationScope());
 				} catch (PageException e) {}
 
                 try {
-					scopes.setEL("session", pc.sessionScope());
+					scopes.setEL(KeyConstants._session, pc.sessionScope());
 				} catch (PageException e) {}
                 
                 try {
-					scopes.setEL("client", pc.clientScope());
+					scopes.setEL(KeyConstants._client, pc.clientScope());
 				} catch (PageException e) {}
-                scopes.setEL("cookie", pc.cookieScope());
-                scopes.setEL("variables", pc.variablesScope());
+                scopes.setEL(KeyConstants._cookie, pc.cookieScope());
+                scopes.setEL(KeyConstants._variables, pc.variablesScope());
                 if(!(pc.localScope() instanceof LocalNotSupportedScope)){
-                	scopes.setEL("local", pc.localScope());
-                	scopes.setEL("arguments", pc.argumentsScope());
+                	scopes.setEL(KeyConstants._local, pc.localScope());
+                	scopes.setEL(KeyConstants._arguments, pc.argumentsScope());
                 }
-                scopes.setEL("cgi", pc.cgiScope());
-                scopes.setEL("form", pc.formScope());
-                scopes.setEL("url", pc.urlScope());
-                scopes.setEL("request", pc.requestScope());
+                scopes.setEL(KeyConstants._cgi, pc.cgiScope());
+                scopes.setEL(KeyConstants._form, pc.formScope());
+                scopes.setEL(KeyConstants._url, pc.urlScope());
+                scopes.setEL(KeyConstants._request, pc.requestScope());
                 
                 info.appendEL(data);
             }

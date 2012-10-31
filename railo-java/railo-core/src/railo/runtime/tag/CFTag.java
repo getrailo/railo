@@ -2,7 +2,6 @@ package railo.runtime.tag;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.jsp.JspWriter;
@@ -12,10 +11,12 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSource;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.Member;
 import railo.runtime.customtag.CustomTagUtil;
 import railo.runtime.customtag.InitFile;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.ExpressionException;
@@ -27,8 +28,8 @@ import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -312,7 +313,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         }
             
         try {
-            pageContext.doInclude(source.getPageSource());
+            pageContext.doInclude(new PageSource[]{source.getPageSource()},false);
         }
         catch (Throwable t) {
             throw Caster.toPageException(t);
@@ -358,8 +359,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	        	args.set(KeyConstants._ATTRIBUTES, attributesScope);
 	        	setCaller(pageContext,args);
 	        	
-	        	
-	        	
 	        	rtn=cfc.callWithNamedValues(pageContext, ON_START_TAG, args);	
 		    }
 	        exeBody=Caster.toBooleanValue(rtn,true);
@@ -370,8 +369,20 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         return exeBody?EVAL_BODY_BUFFERED:SKIP_BODY;
     }
     
-    private static void setCaller(PageContext pageContext, Struct args) throws PageException {
-    	args.set(KeyConstants._CALLER, Duplicator.duplicate(pageContext.undefinedScope(),false));
+    private void setCaller(PageContext pageContext, Struct args) throws PageException {
+    	callerScope.initialize(pageContext);
+    	boolean checkAgs=pageContext.undefinedScope().getCheckArguments();
+    	if(checkAgs)
+        	callerScope.setScope(pageContext.variablesScope(),pageContext.localScope(),pageContext.argumentsScope(),true);
+        else 
+        	callerScope.setScope(pageContext.variablesScope(),null,null,false);
+        
+    	
+    	args.set(KeyConstants._CALLER, callerScope);
+    	
+    	
+    	
+    	//args.set(KeyConstants._CALLER, Duplicator.duplicate(pageContext.undefinedScope(),false));
 	}
 
 	private static void validateAttributes(Component cfc,StructImpl attributesScope,String tagName) throws ApplicationException, ExpressionException {
@@ -453,7 +464,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	
     	if(!runtime){
     		// hint
-    		String hint=Caster.toString(meta.get(KeyImpl.HINT,null),null);
+    		String hint=Caster.toString(meta.get(KeyConstants._hint,null),null);
     		if(!StringUtil.isEmpty(hint))tag.setDescription(hint);
     		
     		// parseBody
@@ -464,14 +475,15 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     // ATTRIBUTES
     	Struct attributes=Caster.toStruct(meta.get(KeyConstants._ATTRIBUTES,null),null,false);
     	if(attributes!=null) {
-    		Iterator it = attributes.entrySet().iterator();
-    		Map.Entry entry;
+    		Iterator<Entry<Key, Object>> it = attributes.entryIterator();
+    		//Iterator it = attributes.entrySet().iterator();
+    		Entry<Key, Object> entry;
     		TagLibTagAttr attr;
     		Struct sct;
     		String name;
     		Object defaultValue;
     		while(it.hasNext()){
-    			entry=(Entry) it.next();
+    			entry=it.next();
     			name=Caster.toString(entry.getKey(),null);
     			if(StringUtil.isEmpty(name)) continue;
     			attr=new TagLibTagAttr(tag);
@@ -479,15 +491,15 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     			
     			sct=Caster.toStruct(entry.getValue(),null,false);
     			if(sct!=null){
-    				attr.setRequired(Caster.toBooleanValue(sct.get(KeyImpl.REQUIRED,Boolean.FALSE),false));
-    				attr.setType(Caster.toString(sct.get(KeyImpl.TYPE,"any"),"any"));
+    				attr.setRequired(Caster.toBooleanValue(sct.get(KeyConstants._required,Boolean.FALSE),false));
+    				attr.setType(Caster.toString(sct.get(KeyConstants._type,"any"),"any"));
     				
-    				defaultValue= sct.get(KeyImpl.DEFAULT,null);
+    				defaultValue= sct.get(KeyConstants._default,null);
     				if(defaultValue!=null)attr.setDefaultValue(defaultValue);
     				
     				
     				if(!runtime){
-    					attr.setDescription(Caster.toString(sct.get(KeyImpl.HINT,null),null));
+    					attr.setDescription(Caster.toString(sct.get(KeyConstants._hint,null),null));
     					attr.setRtexpr(Caster.toBooleanValue(sct.get(RT_EXPR_VALUE,Boolean.TRUE),true));
     				}
     			}
@@ -568,7 +580,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 	        	//Object rtn=cfc.call(pageContext, ON_ERROR, new Object[]{pe.getCatchBlock(pageContext),source});
 	    		
 	        	Struct args=new StructImpl(StructImpl.TYPE_LINKED);
-	        	args.set(CFCATCH, pe.getCatchBlock(pageContext));
+	        	args.set(CFCATCH, pe.getCatchBlock(ThreadLocalPageContext.getConfig(pageContext)));
 	        	args.set(SOURCE, source);
 	        	Object rtn=cfc.callWithNamedValues(pageContext, ON_ERROR, args);	
 		    

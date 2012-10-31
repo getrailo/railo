@@ -19,7 +19,6 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -127,14 +126,21 @@ public class Ansi92 extends SQLExecutorSupport {
 						,new SQLItem[]{
 			 		new SQLItemImpl(System.currentTimeMillis(),Types.VARCHAR)
 				});
+	    QueryImpl query;
+	    try{
+			query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
+		}
+		catch(Throwable t){
+			// possible that the table not exist, if not there is nothing to clean
+			return;
+		}
 		
-		QueryImpl query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
 		int recordcount=query.getRecordcount();
 		
 		String cfid,name;
 		for(int row=1;row<=recordcount;row++){
 			cfid=Caster.toString(query.getAt(KeyConstants._cfid, row, null),null);
-			name=Caster.toString(query.getAt(KeyImpl.NAME, row, null),null);
+			name=Caster.toString(query.getAt(KeyConstants._name, row, null),null);
 			
 			if(listener!=null)listener.doEnd(engine, cleaner,name, cfid);
 			

@@ -68,11 +68,7 @@ public class ModernAppListener extends AppListenerSupport {
 	//private ComponentImpl app;
 	private Map<String,ComponentAccess> apps=new HashMap<String,ComponentAccess>();
 	protected int mode=MODE_CURRENT2ROOT;
-	private String type;
 	
-	//private ApplicationContextImpl appContext;
-	//private long cfcCompileTime;
-
 	@Override
 	public void onRequest(PageContext pc, PageSource requestedPage, RequestListener rl) throws PageException {
 		// on requestStart
@@ -120,9 +116,9 @@ public class ModernAppListener extends AppListenerSupport {
 				
 				Struct url = (Struct)Duplicator.duplicate(pc.urlFormScope(),true);
 		        
-		        url.removeEL(KeyImpl.FIELD_NAMES);
+		        url.removeEL(KeyConstants._fieldnames);
 		        url.removeEL(ComponentPage.METHOD);
-		        Object args=url.get(KeyImpl.ARGUMENT_COLLECTION,null);
+		        Object args=url.get(KeyConstants._argumentCollection,null);
 		        Object returnFormat=url.removeEL(KeyConstants._returnFormat);
 		        Object queryFormat=url.removeEL(KeyConstants._queryFormat);
 		        
@@ -398,12 +394,7 @@ public class ModernAppListener extends AppListenerSupport {
 
 	@Override
 	public String getType() {
-		return type;
-	}
-
-	@Override
-	public void setType(String type) {
-		this.type = type;
+		return "modern";
 	}
 	
 	@Override

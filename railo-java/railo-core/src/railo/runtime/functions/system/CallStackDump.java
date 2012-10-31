@@ -11,8 +11,8 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 public class CallStackDump {
 
@@ -27,11 +27,11 @@ public class CallStackDump {
 		
 		// create stack
 		StringBuilder sb=new StringBuilder();
-		Iterator it = arr.valueIterator();
+		Iterator<Object> it = arr.valueIterator();
 		while(it.hasNext()){
 			sct=(Struct) it.next();
-			func=(String) sct.get(KeyImpl.FUNCTION);
-			sb.append(sct.get(KeyImpl.TEMPLATE));
+			func=(String) sct.get(KeyConstants._function);
+			sb.append(sct.get(KeyConstants._template));
 			if(func.length()>0) {
 				sb.append(':');
 				sb.append(func);

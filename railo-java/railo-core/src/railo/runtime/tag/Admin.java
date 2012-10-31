@@ -9,7 +9,6 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -245,6 +244,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     public int doStartTag() throws PageException {
     	//adminSync = pageContext.getAdminSync();
     	
+    	// Type
+        type=toType(getString("type","web"),true);
+    	
+        config=(ConfigImpl)pageContext.getConfig();
+        if(type==TYPE_SERVER)
+            config=(ConfigImpl)config.getConfigServer(password);
+    	
     	// Action
         Object objAction=attributes.get(KeyConstants._action);
         if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
@@ -275,9 +281,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             return SKIP_BODY;
         }
         
-        // Type
-        type=toType(getString("admin",action,"type"),true);
-        
         // has Password
         if(action.equals("haspassword")) {
            //long start=System.currentTimeMillis();
@@ -305,11 +308,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         try {
             // Password
             password = getString("password","");
-            // Config
+            /* Config
             config=(ConfigImpl)pageContext.getConfig();
             if(type==TYPE_SERVER)
                 config=(ConfigImpl)config.getConfigServer(password);
-            
+            */
             adminSync = config.getAdminSync();
         	admin = ConfigWebAdmin.newInstance(config,password);
         } 
@@ -1366,7 +1369,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	sct.setEL(ROOT, cw.getRootDirectory().getAbsolutePath());
         }
         
-        sct.setEL(CONFIG, config.getConfigFile().getAbsolutePath());
+        sct.setEL(CONFIG, config
+        		.getConfigFile()
+        		.getAbsolutePath());
         
     }
 
@@ -1604,7 +1609,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	
     	String rtn = getString("admin",action,"returnVariable");
     	railo.runtime.type.Query qry=
-        	new QueryImpl(new Collection.Key[]{KeyConstants._id,LABEL,IP_RANGE,READONLY,KeyImpl.TYPE,CUSTOM},entries.length,rtn);
+        	new QueryImpl(new Collection.Key[]{KeyConstants._id,LABEL,IP_RANGE,READONLY,KeyConstants._type,CUSTOM},entries.length,rtn);
         pageContext.setVariable(rtn,qry);
         DebugEntry de;
         for(int i=0;i<entries.length;i++) {
@@ -1613,7 +1618,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAtEL(KeyConstants._id,row,de.getId());
             qry.setAtEL(LABEL,row,de.getLabel());
             qry.setAtEL(IP_RANGE,row,de.getIpRangeAsString());
-            qry.setAtEL(KeyImpl.TYPE,row,de.getType());
+            qry.setAtEL(KeyConstants._type,row,de.getType());
             qry.setAtEL(READONLY,row,Caster.toBoolean(de.isReadOnly()));
             qry.setAtEL(CUSTOM,row,de.getCustom());
         }
@@ -2958,13 +2963,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     			String returnVariable=getString("admin",action,"returnVariable");
     			pageContext.setVariable(returnVariable,sct);
 
-    			sct.setEL(KeyImpl.NAME, qry.getAt(KeyImpl.NAME, row, ""));
-    			sct.setEL("level", qry.getAt("level", row, ""));
+    			sct.setEL(KeyConstants._name, qry.getAt(KeyConstants._name, row, ""));
+    			sct.setEL(KeyConstants._level, qry.getAt(KeyConstants._level, row, ""));
     			sct.setEL("virtualpath", qry.getAt("virtualpath", row, ""));
-    			sct.setEL("class", qry.getAt("class", row, ""));
+    			sct.setEL(KeyConstants._class, qry.getAt(KeyConstants._class, row, ""));
     			sct.setEL("maxFile", qry.getAt("maxFile", row, ""));
     			sct.setEL("maxFileSize", qry.getAt("maxFileSize", row, ""));
-    			sct.setEL(KeyImpl.PATH, qry.getAt(KeyImpl.PATH, row, ""));
+    			sct.setEL(KeyConstants._path, qry.getAt(KeyConstants._path, row, ""));
     			
     			return;
     		}
@@ -3128,7 +3133,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		RequestMonitor[] requests = cs.getRequestMonitors();
 		
 		railo.runtime.type.Query qry=
-			new QueryImpl(new Collection.Key[]{KeyImpl.NAME,KeyImpl.TYPE,LOG_ENABLED,CLASS}, 0, "monitors");
+			new QueryImpl(new Collection.Key[]{KeyConstants._name,KeyConstants._type,LOG_ENABLED,CLASS}, 0, "monitors");
 		doGetMonitors(qry,intervalls);
 		doGetMonitors(qry,requests);
 		
@@ -3149,8 +3154,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			m=cs.getIntervallMonitor(name);
 		
 		Struct sct=new StructImpl();
-		sct.setEL(KeyImpl.NAME, m.getName());
-		sct.setEL(KeyImpl.TYPE, m.getType()==Monitor.TYPE_INTERVALL?"intervall":"request");
+		sct.setEL(KeyConstants._name, m.getName());
+		sct.setEL(KeyConstants._type, m.getType()==Monitor.TYPE_INTERVALL?"intervall":"request");
 		sct.setEL(LOG_ENABLED, m.isLogEnabled());
 		sct.setEL(CLASS, m.getClazz().getName());
 		
@@ -3180,8 +3185,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 		for(int i=0;i<monitors.length;i++){
 			m=monitors[i];
 			row=qry.addRow();
-        	qry.setAtEL(KeyImpl.NAME, row, m.getName());
-        	qry.setAtEL(KeyImpl.TYPE, row, m.getType()==Monitor.TYPE_INTERVALL?"intervall":"request");
+        	qry.setAtEL(KeyConstants._name, row, m.getName());
+        	qry.setAtEL(KeyConstants._type, row, m.getType()==Monitor.TYPE_INTERVALL?"intervall":"request");
         	qry.setAtEL(LOG_ENABLED, row, m.isLogEnabled());
         	qry.setAtEL(CLASS, row, m.getClazz().getName());
 		}
@@ -3287,7 +3292,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(cc!=null){
         	Struct sct=new StructImpl();
             
-            sct.setEL(KeyImpl.NAME,cc.getName());
+            sct.setEL(KeyConstants._name,cc.getName());
             sct.setEL("class",cc.getClazz().getName());
             sct.setEL("custom",cc.getCustom());
             sct.setEL("default",Caster.toBoolean(true));
@@ -3323,10 +3328,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 else if(cc==dQry)d="query";
                 else if(cc==dRes)d="resource";
                 else if(cc==dUDF)d="function";
-                sct.setEL(KeyImpl.NAME,cc.getName());
-                sct.setEL("class",cc.getClazz().getName());
-                sct.setEL("custom",cc.getCustom());
-                sct.setEL("default",d);
+                sct.setEL(KeyConstants._name,cc.getName());
+                sct.setEL(KeyConstants._class,cc.getClazz().getName());
+                sct.setEL(KeyConstants._custom,cc.getCustom());
+                sct.setEL(KeyConstants._default,d);
                 sct.setEL("readOnly",Caster.toBoolean(cc.isReadOnly()));
                 sct.setEL("storage",Caster.toBoolean(cc.isStorage()));
                 
@@ -3385,8 +3390,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 DataSourceImpl d=(DataSourceImpl) ds.get(key);
                 Struct sct=new StructImpl();
                 
-                sct.setEL(KeyImpl.NAME,key);
-                sct.setEL("host",d.getHost());
+                sct.setEL(KeyConstants._name,key);
+                sct.setEL(KeyConstants._host,d.getHost());
                 sct.setEL("classname",d.getClazz().getName());
                 sct.setEL("dsn",d.getDsnOriginal());
                 sct.setEL("database",d.getDatabase());
@@ -3583,9 +3588,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			entry=Caster.toStruct(it.next());
 			cluster.setEntry(
 				new ClusterEntryImpl(
-						KeyImpl.getInstance(Caster.toString(entry.get(KeyImpl.KEY))),
-						Caster.toSerializable(entry.get(KeyImpl.VALUE,null),null),
-						Caster.toLongValue(entry.get(KeyImpl.TIME))
+						KeyImpl.getInstance(Caster.toString(entry.get(KeyConstants._key))),
+						Caster.toSerializable(entry.get(KeyConstants._value,null),null),
+						Caster.toLongValue(entry.get(KeyConstants._time))
 				)
 			);
 		}

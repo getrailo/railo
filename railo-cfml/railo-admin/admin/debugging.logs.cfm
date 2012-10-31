@@ -79,16 +79,16 @@
 	secType="debugging">
     
 <cfif isWeb>
-<cfadmin 
-	action="getLoggedDebugData"
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
-	returnVariable="logs">
-<cfadmin 
-	action="getDebugEntry"
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
-	returnVariable="entries">
+	<cfadmin 
+		action="getLoggedDebugData"
+		type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+		returnVariable="logs">
+	<cfadmin 
+		action="getDebugEntry"
+		type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+		returnVariable="entries">
 </cfif>    
 <cfadmin 
 	action="getDebugSetting"

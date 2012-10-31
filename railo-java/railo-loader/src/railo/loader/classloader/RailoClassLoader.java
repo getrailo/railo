@@ -38,7 +38,6 @@ public final class RailoClassLoader extends ClassLoader {
    */
     public RailoClassLoader(File jarFile, ClassLoader parent) throws IOException {  
     	this(new FileInputStream(jarFile),parent,isSecure(jarFile));
-    	System.out.println(jarFile);
     }
     private static boolean isSecure(File jarFile) {
 		if(jarFile.getName().toLowerCase().endsWith(".rc")) return false;

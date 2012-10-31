@@ -1,154 +1,164 @@
 
 
-<!--- 
-list all mappings and display necessary edit fields --->
-<script>
-function checkTheBox(field) {
-	var apendix=field.name.split('_')[1];
-	var box=field.form['row_'+apendix];
-	box.checked=true;
-}
-</script>
+<!--- list all mappings and display necessary edit fields --->
 <cfoutput>
+	<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
 
-<cfif not hasAccess><cfset noAccess(stText.setting.noAccess)></cfif>
-
-#stText.Mappings.IntroText#
-<table class="tbl" width="100%" border="0">
- 	<colgroup>
-        <col width="10">
-        <col width="10">
-    </colgroup>
-<tr>
-	<td colspan="7"><cfmodule template="tp.cfm" width="1" height="1"></td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
-	<tr>
-		<td><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif><cfmodule template="tp.cfm"  width="10" height="1"></td>
-		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<td class="tblHead" nowrap>#stText.Mappings.VirtualHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.PhysicalHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.ArchiveHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.PrimaryHead#</td>
-		<td class="tblHead" nowrap>#stText.Mappings.TrustedHead#</td>
-	</tr>
-	<cfloop query="mappings">
-		<cfif not mappings.hidden>
-		<!--- and now display --->
-		<input type="hidden" name="stopOnError_#mappings.currentrow#" value="yes">
-	<tr>
-		<!--- checkbox ---->
-		<td><table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><cfif not mappings.readOnly><input type="checkbox" class="checkbox" name="row_#mappings.currentrow#" value="#mappings.currentrow#"></cfif></td>
-		</tr>
-		</table></td>
-		
-		<!--- edit --->
-		<td><cfif not mappings.readOnly><a href="#request.self#?action=#url.action#&action2=create&virtual=#mappings.virtual#">
-		<cfmodule template="img.cfm" src="edit.png" border="0"></a></cfif></td>
-		
-		
-		
-		
-		
-		<!--- virtual --->
-		<td height="30" class="tblContent" title="#mappings.virtual#" nowrap><input type="hidden" 
-			name="virtual_#mappings.currentrow#" value="#mappings.virtual#">#cut(mappings.virtual,14)#</td>
-		
-		<!--- physical --->
-		<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
-		<td class="tblContent#css#" nowrap <cfif len(mappings.strPhysical)>title="#mappings.Physical#"</cfif>><cfif mappings.readOnly>#cut(mappings.strPhysical,36)#<cfelse><cfinput  onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.currentrow#" value="#mappings.strPhysical#" required="no"  
-			style="width:100%" message="#stText.Mappings.PhysicalMissing##mappings.currentrow#)"></cfif></td>
-		
-		
-		<!--- archive --->
-		<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
-		<td class="tblContent#css#" nowrap <cfif len(mappings.strArchive)>title="#mappings.Archive#"</cfif>><cfif mappings.readOnly>#cut(mappings.strArchive,36)#<cfelse><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.currentrow#" value="#mappings.strArchive#" required="no"  
-			style="width:100%" message="#stText.Mappings.ArchiveMissing##mappings.currentrow#)"></cfif></td>
-		
-		<!--- primary --->
-		<td class="tblContent" nowrap><cfif mappings.readOnly><cfif mappings.PhysicalFirst>#stText.Mappings.Physical#<cfelse>#stText.Mappings.Archive#</cfif><cfelse><select name="primary_#mappings.currentrow#" onChange="checkTheBox(this)">
-			<option value="physical" <cfif mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Physical#</option>
-			<option value="archive" <cfif not mappings.PhysicalFirst>selected</cfif>>#stText.Mappings.Archive#</option>
-		</select></cfif></td>
-		
-		<!--- trusted --->
-		<td class="tblContent" nowrap>
-			<cfif mappings.readOnly>
-            	#mappings.Trusted?stText.setting.inspecttemplateneverShort:stText.setting.inspecttemplatealwaysShort#
-			<cfelse>
-            <select name="trusted_#mappings.currentrow#" onChange="checkTheBox(this)">
-                <option value="true" <cfif mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplateneverShort#</option>
-                <option value="false" <cfif not mappings.Trusted>selected</cfif>>#stText.setting.inspecttemplatealwaysShort#</option>
-            </select>
-            
-            <!---<input 
-		type="checkbox" class="checkbox" name="trusted_#mappings.currentrow#" onClick="checkTheBox(this)" 
-		value="yes" <cfif mappings.Trusted>checked</cfif>>---></cfif>
-		<input type="hidden" name="toplevel_#mappings.currentrow#" value="#mappings.toplevel#">
-		</td>
-	</tr>
+	<div class="pageintro">#stText.Mappings.IntroText#</div>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+		<table class="maintbl checkboxtbl">
+			<thead>
+				<tr>
+					<th width="3%"><cfif hasAccess><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></cfif></th>
+					<th>#stText.Mappings.VirtualHead#</th>
+					<th>#stText.Mappings.PhysicalHead#</th>
+					<th>#stText.Mappings.ArchiveHead#</th>
+					<th>#stText.Mappings.PrimaryHead#</th>
+					<th>#stText.Mappings.TrustedHead#</th>
+					<th width="3%"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<cfloop query="mappings">
+					<cfif not mappings.hidden>
+						<!--- and now display --->
+						<tr>
+							<!--- checkbox ---->
+							<td>
+								<input type="hidden" name="stopOnError_#mappings.currentrow#" value="yes">
+								<cfif not mappings.readOnly>
+									<input type="checkbox" class="checkbox" name="row_#mappings.currentrow#" value="#mappings.currentrow#">
+								</cfif>
+							</td>
+							<!--- virtual --->
+							<td nowrap="nowrap">
+								<input type="hidden" name="virtual_#mappings.currentrow#" value="#mappings.virtual#">
+								<cfif len(mappings.virtual) gt 19>
+									<abbr title="#mappings.virtual#">#cut(mappings.virtual, 16)#...</abbr>
+								<cfelse>
+									#mappings.virtual#
+								</cfif>
+							</td>
+							
+							<!--- physical --->
+							<cfset css=iif(len(mappings.physical) EQ 0 and len(mappings.strPhysical) NEQ 0,de('Red'),de(''))>
+							<td class="tblContent#css# longwords">
+								<cfif FALSE and len(mappings.strPhysical) gt 39>
+									<abbr title="#mappings.strPhysical#">#left(mappings.strPhysical, 20)#...#right(mappings.strPhysical, 16)#</abbr>
+								<cfelse>
+									#mappings.strPhysical#
+								</cfif>
+							</td>
+							<!--- archive --->
+							<cfset css=iif(len(mappings.archive) EQ 0 and len(mappings.strArchive) NEQ 0,de('Red'),de(''))>
+							<td class="tblContent#css# longwords">
+								<cfif FALSE and len(mappings.strArchive) gt 39>
+									<abbr title="#mappings.strArchive#">#left(mappings.strArchive, 20)#...#right(mappings.strArchive, 16)#</abbr>
+								<cfelse>
+									#mappings.strArchive#
+								</cfif>
+							</td>
+							<!--- primary --->
+							<td>
+								<cfif mappings.PhysicalFirst>
+									physical
+								<cfelse>
+									archive
+								</cfif>
+							</td>
+							<!--- trusted --->
+							<td>
+								<cfif mappings.Trusted>
+									#stText.setting.inspecttemplateneverShort#
+								<cfelse>
+									#stText.setting.inspecttemplatealwaysShort#
+								</cfif>
+								<input type="hidden" name="toplevel_#mappings.currentrow#" value="#mappings.toplevel#">
+							</td>
+							<!--- edit --->
+							<td>
+								<cfif not mappings.readOnly>
+									<a href="#request.self#?action=#url.action#&action2=create&virtual=#mappings.virtual#" class="btn-mini edit"><span>edit</span></a>
+								</cfif>
+							</td>
+						</tr>
+					</cfif>
+				</cfloop>
+				<cfif hasAccess>
+					<cfmodule template="remoteclients.cfm" colspan="7" line=true>
+				</cfif>
+			</tbody>
+			<cfif hasAccess>
+				<tfoot>
+					<tr>
+						<td colspan="7">
+							<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
+							<!---<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.save#">
+							--->
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Delete#">
+							<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.compileAll#">
+						</td>
+					</tr>
+				</tfoot>
+			</cfif>
+		</table>
+	</cfform>
+	
+	<cfif hasAccess>
+		<h2>Create new mapping</h2>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<input type="hidden" name="row_1" value="1">
+			<table class="maintbl">
+				<tbody>
+					<tr>
+						<th scope="row">#stText.Mappings.VirtualHead#</th>
+						<td><cfinput onKeyDown="checkTheBox(this)" type="text" 
+							name="virtual_1" value="" required="no" class="medium">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.Mappings.PhysicalHead#</th>
+						<td><cfinput onKeyDown="checkTheBox(this)" type="text" 
+							name="physical_1" value="" required="no" class="large">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.Mappings.ArchiveHead#</th>
+						<td><cfinput onKeyDown="checkTheBox(this)" type="text" 
+							name="archive_1" value="" required="no" class="large">
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.Mappings.PrimaryHead#</th>
+						<td>
+							<select name="primary_1" onchange="checkTheBox(this)" class="small">
+								<option value="physical" selected>#stText.Mappings.Physical#</option>
+								<option value="archive">#stText.Mappings.Archive#</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">#stText.Mappings.TrustedHead#</th>
+						<td>
+						 	<select name="trusted_1" onchange="checkTheBox(this)" class="small">
+								<option value="true">#stText.setting.inspecttemplateneverShort#</option>
+								<option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
+							</select>
+							<input type="hidden" name="toplevel_1" value="yes">
+						</td>
+					</tr>
+					<cfmodule template="remoteclients.cfm" colspan="2" line=true>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2">
+							<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
+							<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.save#">
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</cfform>
 	</cfif>
-</cfloop>
-<cfif hasAccess>
-	<tr>
-		<td><table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#mappings.recordcount+1#" value="#mappings.recordcount+1#"></td>
-		</tr>
-		</table></td>
-		
-		<td><cfmodule template="tp.cfm"  width="17" height="1"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="virtual_#mappings.recordcount+1#" value="" required="no" style="width:100%"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="physical_#mappings.recordcount+1#" value="" required="no"  style="width:100%"></td>
-		<td class="tblContent" nowrap><cfinput onKeyDown="checkTheBox(this)" type="text" 
-			name="archive_#mappings.recordcount+1#" value="" required="no"  style="width:100%" ></td>
-		<td class="tblContent" nowrap><select name="primary_#mappings.recordcount+1#" onChange="checkTheBox(this)">
-			<option value="physical" selected>#stText.Mappings.Physical#</option>
-			<option value="archive">#stText.Mappings.Archive#</option>
-		</select></td>
-		<td class="tblContent" nowrap>
-        
-         <select name="trusted_#mappings.recordcount+1#" onChange="checkTheBox(this)">
-                <option value="true">#stText.setting.inspecttemplateneverShort#</option>
-                <option value="false" selected>#stText.setting.inspecttemplatealwaysShort#</option>
-            </select>
-        
-        
-		<input type="hidden" name="toplevel_#mappings.recordcount+1#" value="yes">
-		</td>
-	</tr>
-</cfif>
-<cfif hasAccess>
-<cfmodule template="remoteclients.cfm" colspan="8" line=true>
-	<tr>
-		<td colspan="8">
-		 <table border="0" cellpadding="0" cellspacing="0">
-		 <tr>
-			<td><cfmodule template="tp.cfm"  width="8" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
-			<td></td>
-		 </tr>
-		 <tr>
-			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="54" height="1"></td>
-			<td>&nbsp;
-			<input type="hidden" name="mainAction" value="#stText.Buttons.save#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.save#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="subAction" value="#stText.Buttons.compileAll#">
-			</td>	
-		</tr>
-		 </table>
-		 </td>
-	</tr>
-</cfif>
-</cfform>
 </cfoutput>
-</table>

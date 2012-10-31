@@ -133,7 +133,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 		super.setEL (RAILO,railo);
 		
 		ReadOnlyStruct separator=new ReadOnlyStruct();
-			separator.setEL(KeyImpl.PATH,System.getProperty("path.separator"));
+			separator.setEL(KeyConstants._path,System.getProperty("path.separator"));
 			separator.setEL(FILE,System.getProperty("file.separator"));
 			separator.setEL(KeyConstants._line,System.getProperty("line.separator"));
 			separator.setReadOnly(true);

@@ -31,3 +31,5 @@ va specific
 *.out
 pom.xml
 sample.mov
+/.idea/
+/*.iml

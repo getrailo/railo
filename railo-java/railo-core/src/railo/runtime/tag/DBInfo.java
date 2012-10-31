@@ -32,6 +32,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.SVArray;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
@@ -286,10 +287,10 @@ public final class DBInfo extends TagImpl {
         Query qry = new QueryImpl(columns,"query");
         
 		int len=qry.getRecordcount();
-		
-		if(qry.get(COLUMN_DEF,null) != null)
+
+		if(qry.getColumn(COLUMN_DEF,null) != null)
 			qry.rename(COLUMN_DEF,COLUMN_DEFAULT_VALUE);
-		else if(qry.get(COLUMN_DEFAULT,null) != null)
+		else if(qry.getColumn(COLUMN_DEFAULT,null) != null)
 			qry.rename(COLUMN_DEFAULT,COLUMN_DEFAULT_VALUE);
 		
 		// make sure decimal digits exists
@@ -422,7 +423,7 @@ public final class DBInfo extends TagImpl {
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
 			qry.setAt(DATABASE_NAME, row, value);
-			qry.setAt(KeyImpl.TYPE, row, "CATALOG");
+			qry.setAt(KeyConstants._type, row, "CATALOG");
 			row++;
 		}
 		// scheme
@@ -432,7 +433,7 @@ public final class DBInfo extends TagImpl {
 			if(!matchPattern(value,p)) continue;
 			qry.addRow();
 			qry.setAt(DATABASE_NAME, row, value);
-			qry.setAt(KeyImpl.TYPE, row, "SCHEMA");
+			qry.setAt(KeyConstants._type, row, "SCHEMA");
 			row++;
 		}
 		
@@ -513,7 +514,7 @@ public final class DBInfo extends TagImpl {
         for(int row=1;row<=rows;row++){
         	
         	// type
-        	switch(type=Caster.toIntValue(qry.getAt(KeyImpl.TYPE,row))){
+        	switch(type=Caster.toIntValue(qry.getAt(KeyConstants._type,row))){
         	case 0:
         		strType="Table Statistic";
         	break;
@@ -529,7 +530,7 @@ public final class DBInfo extends TagImpl {
 	    	default:
 	    		strType=Caster.toString(type);
 	    	}
-        	qry.setAt(KeyImpl.TYPE, row, strType);
+        	qry.setAt(KeyConstants._type, row, strType);
         	
         	// CARDINALITY
         	card=Caster.toIntValue(qry.getAt(CARDINALITY,row),0);

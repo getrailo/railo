@@ -29,7 +29,7 @@ public interface ApplicationListener {
 
 	/**
 	 * @param type the type to set
-	 */
+	 *///FUTURE remove method
 	public void setType(String type);
 	
 	/**

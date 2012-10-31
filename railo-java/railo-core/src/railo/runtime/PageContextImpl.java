@@ -1148,7 +1148,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return undefinedScope().get(KeyImpl.LOCAL);
+    	return undefinedScope().get(KeyConstants._local);
     }
 
     public Object localTouch() throws PageException { 
@@ -1160,7 +1160,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return touch(undefinedScope(), KeyImpl.LOCAL);
+    	return touch(undefinedScope(), KeyConstants._local);
     	//return undefinedScope().get(LOCAL);
     }
     

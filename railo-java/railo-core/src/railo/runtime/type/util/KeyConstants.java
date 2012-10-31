@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 
 public class KeyConstants {
@@ -32,6 +33,7 @@ public class KeyConstants {
 	public static final Key _CACHENAME=KeyImpl._const("CACHENAME");
 	public static final Key _CALL=KeyImpl._const("CALL");
 	public static final Key _CALLER=KeyImpl._const("CALLER");
+	public static final Key _caller=KeyImpl._const("caller");
 	public static final Key _CALLSUPER=KeyImpl._const("CALLSUPER");
 	public static final Key _CCC=KeyImpl._const("CCC");
 	public static final Key _CFCATCH=KeyImpl._const("CFCATCH");
@@ -751,8 +753,64 @@ public class KeyConstants {
 	public static final Key _chaining = KeyImpl._const("chaining");
 	public static final Key _protocol = KeyImpl._const("protocol");
 	public static final Key _enabled = KeyImpl._const("enabled");
-	
-	
+	public static final Key _fieldtype = KeyImpl._const("fieldtype");
+	public static final Key _cfc = KeyImpl._const("cfc");
+	public static final Key _memory = KeyImpl._const("memory");
+	public static final Key _scopes = KeyImpl._const("scopes");
+	public static final Key _mappings = KeyImpl._const("mappings");
+	public static final Key _web = KeyImpl._const("web");
+	public static final Key _mimetype = KeyImpl._const("mimetype");
+	public static final Key _0 = KeyImpl._const("0");
+	public static final Key _1 = KeyImpl._const("1");
+	public static final Key _2 = KeyImpl._const("2");
+	public static final Key _3 = KeyImpl._const("3");
+	public static final Key _4 = KeyImpl._const("4");
+	public static final Key _5 = KeyImpl._const("5");
+	public static final Key _6 = KeyImpl._const("6");
+	public static final Key _7 = KeyImpl._const("7");
+	public static final Key _8 = KeyImpl._const("8");
+	public static final Key _9 = KeyImpl._const("9");
+	public static final Key _PRODUCTNAME = KeyImpl._const("PRODUCTNAME");
+	public static final Key _BODY = KeyImpl._const("BODY");
+	public static final Key _XMLVALUE = KeyImpl._const("XMLVALUE");
+	public static final Key _EL = KeyImpl._const("EL");
+	public static final Key _M = KeyImpl._const("M");
+	public static final Key _N = KeyImpl._const("N");
+	public static final Key _TEST1 = KeyImpl._const("TEST1");
+	public static final Key _TEST3 = KeyImpl._const("TEST3");
+	public static final Key _XMLDATA = KeyImpl._const("XMLDATA");
+	public static final Key _XMLDOC = KeyImpl._const("XMLDOC");
+	public static final Key _XMLROOT = KeyImpl._const("XMLROOT");
+	public static final Key _XMLATTRIBUTES = KeyImpl._const("XMLATTRIBUTES");
+	public static final Key _XMLCHILDREN = KeyImpl._const("XMLCHILDREN");
+	public static final Key _XMLCOMMENT = KeyImpl._const("XMLCOMMENT");
+	public static final Key _CHILDREN = KeyImpl._const("CHILDREN");
+	public static final Key _ELEMENT = KeyImpl._const("ELEMENT");
+	public static final Key _WARNINGS = KeyImpl._const("WARNINGS");
+	public static final Key _VALIDATE = KeyImpl._const("VALIDATE");
+	public static final Key _ERRORS = KeyImpl._const("ERRORS");
+	public static final Key _STATUS = KeyImpl._const("STATUS");
+	public static final Key _FATALERRORS = KeyImpl._const("FATALERRORS");
+	public static final Key _timeout = KeyImpl._const("timeout");
+	public static final Key _host = KeyImpl._const("host");
+	public static final Key _urlpath = KeyImpl._const("urlpath");
+	public static final Key _extensions = KeyImpl._const("extensions");
+	public static final Key _STATE = KeyImpl._const("STATE");
+	public static final Key _START = KeyImpl._const("START");
+	public static final Key _STOP = KeyImpl._const("STOP");
+	public static final Key _LAST = KeyImpl._const("LAST");
+	public static final Key _CONFIG = KeyImpl._const("CONFIG");
+	public static final Key _DIFF = KeyImpl._const("DIFF");
+	public static final Key _COLL = KeyImpl._const("COLL");
+	public static final Key _FILTER = KeyImpl._const("FILTER");
+	public static final Key _recurse = KeyImpl._const("recurse");
+	public static final Key _rest = KeyImpl._const("rest");
+	public static final Key _httpmethod = KeyImpl._const("httpmethod");
+	public static final Key _restPath = KeyImpl._const("restPath");
+	public static final Key _restArgName = KeyImpl._const("restArgName");
+	public static final Key _restArgSource = KeyImpl._const("restArgSource");
+	public static final Key _consumes = KeyImpl._const("consumes");
+	public static final Key _produces = KeyImpl._const("produces");
 	
 	private static HashSet<String> _____keys;
 	
@@ -766,6 +824,7 @@ public class KeyConstants {
 			}
 		}
 		key="_"+key;
+		//if(!_____keys.contains(key))print.e(key);
 		return _____keys.contains(key)?key:null;
 	}
 	

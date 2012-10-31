@@ -280,7 +280,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 	private void addQueryRow(railo.runtime.type.Query qry, SpoolerTask task) {
     	int row = qry.addRow();
 		try{
-			qry.setAt(KeyImpl.TYPE, row, task.getType());
+			qry.setAt(KeyConstants._type, row, task.getType());
 			qry.setAt(KeyConstants._name, row, task.subject());
 			qry.setAt(KeyConstants._detail, row, task.detail());
 			qry.setAt(KeyConstants._id, row, task.getId());
@@ -291,7 +291,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 			qry.setAt(CLOSED, row,Caster.toBoolean(task.closed()));
 			qry.setAt(TRIES, row,Caster.toDouble(task.tries()));
 			qry.setAt(TRIES_MAX, row,Caster.toDouble(task.tries()));
-			qry.setAt(KeyImpl.EXCEPTIONS, row,translateTime(task.getExceptions()));
+			qry.setAt(KeyConstants._exceptions, row,translateTime(task.getExceptions()));
 			
 			int triesMax=0;
 			ExecutionPlan[] plans = task.getPlans();
@@ -309,7 +309,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		Struct sct;
 		while(it.hasNext()) {
 			sct=(Struct) it.next();
-			sct.setEL(KeyImpl.TIME,new DateTimeImpl(Caster.toLongValue(sct.get(KeyImpl.TIME,null),0),true));
+			sct.setEL(KeyConstants._time,new DateTimeImpl(Caster.toLongValue(sct.get(KeyConstants._time,null),0),true));
 		}
 		return exp;
 	}

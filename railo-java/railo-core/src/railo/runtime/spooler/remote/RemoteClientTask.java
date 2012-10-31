@@ -23,7 +23,7 @@ public class RemoteClientTask extends SpoolerTaskWS {
 		this.type=type;
 		action=(String) attrColl.get(KeyConstants._action,null);
 		args = new StructImpl();
-		args.setEL(KeyImpl.TYPE, client.getType());
+		args.setEL(KeyConstants._type, client.getType());
 		args.setEL(PASSWORD, client.getAdminPasswordEncrypted());
 		args.setEL(ATTRIBUTE_COLLECTION, attrColl);
 		args.setEL(CALLER_ID, callerId);

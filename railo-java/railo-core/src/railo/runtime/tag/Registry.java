@@ -10,6 +10,7 @@ import railo.runtime.registry.RegistryQuery;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Reads, writes, and deletes keys and values in the system registry. The cfregistry tag is supported 
@@ -234,9 +235,9 @@ public final class Registry extends TagImpl {
                 for(int i=0;i<entries.length;i++) {
                     RegistryEntry e = entries[i];
                     int row=i+1;
-                    qry.setAt(KeyImpl.ENTRY,row,e.getKey());
-                    qry.setAt(KeyImpl.TYPE,row,RegistryEntry.toCFStringType(e.getType()));
-                    qry.setAt(KeyImpl.VALUE,row,e.getValue());
+                    qry.setAt(KeyConstants._entry,row,e.getKey());
+                    qry.setAt(KeyConstants._type,row,RegistryEntry.toCFStringType(e.getType()));
+                    qry.setAt(KeyConstants._value,row,e.getValue());
                 }
                 
 

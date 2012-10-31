@@ -1,5 +1,7 @@
 package railo.commons.lang;
 
+import railo.runtime.op.Decision;
+
 
 
 public final class CFTypes {
@@ -228,10 +230,6 @@ public final class CFTypes {
 	                if("long".equals(type))								return TYPE_NUMERIC;
 	            break;
 	        	
-	            case 'm':
-	                if("memory".equals(type))								return TYPE_STRING;
-	            break;
-	        	
 	        	case 'n':
 	        	    if(type.equals("numeric")) return TYPE_NUMERIC;
 	        	    else if(type.equals("number")) return TYPE_NUMERIC;
@@ -277,5 +275,9 @@ public final class CFTypes {
 		   }
 		}
 		return defaultValue;
+	}
+
+	public static boolean isSimpleType(short type) {
+		return 	type==TYPE_BOOLEAN || type==TYPE_DATETIME || type==TYPE_NUMERIC || type==TYPE_STRING;
 	}
 }

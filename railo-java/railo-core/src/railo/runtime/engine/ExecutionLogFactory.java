@@ -28,7 +28,7 @@ public class ExecutionLogFactory {
 			} catch (Exception e) {
 				el= new ConsoleExecutionLog();
 			}
-			el.init(pc, arguments);
+			el.init(null, arguments);
 		}
 		return el;
 	}

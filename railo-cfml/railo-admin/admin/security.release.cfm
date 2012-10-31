@@ -147,7 +147,7 @@ Error Output --->
 	<option value="yes" <cfif access.web_access>selected</cfif>>Alle Webs dürfen Railo verwenden</option>
 	<option value="no" <cfif not access.web_access>selected</cfif>>Nur folgende Webs dürfen Railo verwenden</option>
 </select>
-<input type="submit" class="submit" name="subAction" value="#stText.Buttons.Update#">
+<input type="submit" class="button submit" name="subAction" value="#stText.Buttons.Update#">
 	</td>
 </tr>
 </form>
@@ -169,17 +169,17 @@ Alle Webs können Railo verwenden.
 	</td>
 </tr>
 <tr>
-	<td class="tblHead">Freigegeben</td>
-	<td class="tblHead">Web</td>
+	<th scope="row">Freigegeben</th>
+	<th scope="row">Web</th>
 </tr>
 <tr>
-	<td class="tblHead" align="center"><input type="Checkbox" class="checkbox" name="selection" value="#qry.id#" onclick="doOthers(this)"></td>
-	<td class="tblHead">&nbsp;</td>
+	<th scope="row"><input type="Checkbox" class="checkbox" name="selection" value="#qry.id#" onclick="doOthers(this)"></th>
+	<th scope="row">&nbsp;</th>
 </tr>
 <cfoutput><cfloop collection="#contextes#" item="key">
 <tr>
-	<td class="tblContent" align="center"><input type="Checkbox" class="checkbox" name="access" value="#qry.id#" <cfif qry.access>checked</cfif>></td>
-	<td class="tblContent">#contextes[key].text#</td>
+	<td align="center"><input type="Checkbox" class="checkbox" name="access" value="#qry.id#" <cfif qry.access>checked</cfif>></td>
+	<td>#contextes[key].text#</td>
 </tr>
 </cfloop></cfoutput>
 </table></form>

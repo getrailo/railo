@@ -54,7 +54,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 		setEL(EXTENDED_INFO, new SpecialItem(pe, EXTENDED_INFO));
 		setEL(ADDITIONAL, new SpecialItem(pe, ADDITIONAL));
 		setEL(TAG_CONTEXT, new SpecialItem(pe, TAG_CONTEXT));
-		setEL(KeyImpl.TYPE, new SpecialItem(pe, KeyImpl.TYPE));
+		setEL(KeyConstants._type, new SpecialItem(pe, KeyConstants._type));
 		setEL(STACK_TRACE, new SpecialItem(pe, STACK_TRACE));
 		
 		
@@ -92,7 +92,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 			if(key==ERROR_CODE) return StringUtil.emptyIfNull(pe.getErrorCode());
 			if(key==EXTENDEDINFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
 			if(key==EXTENDED_INFO) return StringUtil.emptyIfNull(pe.getExtendedInfo());
-			if(key==KeyImpl.TYPE) return StringUtil.emptyIfNull(pe.getTypeAsString());
+			if(key==KeyConstants._type) return StringUtil.emptyIfNull(pe.getTypeAsString());
 			if(key==STACK_TRACE) return StringUtil.emptyIfNull(pe.getStackTraceAsString());
 			if(key==ADDITIONAL) return pe.getAddional();
 			if(key==TAG_CONTEXT) return pe.getTagContext(ThreadLocalPageContext.getConfig());

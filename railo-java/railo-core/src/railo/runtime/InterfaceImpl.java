@@ -239,7 +239,7 @@ public class InterfaceImpl implements Interface {
         }
         
         
-        if(!StringUtil.isEmpty(icfc.hint,true))sct.set(KeyImpl.HINT,icfc.hint);
+        if(!StringUtil.isEmpty(icfc.hint,true))sct.set(KeyConstants._hint,icfc.hint);
         if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(KeyConstants._displayname,icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
@@ -258,8 +258,8 @@ public class InterfaceImpl implements Interface {
         sct.set(KeyConstants._name,ps.getComponentName());
         sct.set(KeyConstants._fullname,ps.getComponentName());
        
-        sct.set(KeyImpl.PATH,ps.getDisplayPath());
-        sct.set(KeyImpl.TYPE,"interface");
+        sct.set(KeyConstants._path,ps.getDisplayPath());
+        sct.set(KeyConstants._type,"interface");
         return sct;
 	}
 

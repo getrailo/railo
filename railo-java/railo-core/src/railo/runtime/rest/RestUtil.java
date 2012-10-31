@@ -10,15 +10,9 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 public class RestUtil {
-
-	public static final Collection.Key HTTP_METHOD = KeyImpl.getInstance("httpmethod");
-	public static final Collection.Key REST = KeyImpl.getInstance("rest");
-	public static final Collection.Key REST_PATH = KeyImpl.getInstance("restPath");
-	public static final Collection.Key REST_ARG_SOURCE = KeyImpl.getInstance("restArgSource"); 
-	public static final Collection.Key CONSUMES = KeyImpl.getInstance("consumes");  
-	public static final Collection.Key PRODUCES = KeyImpl.getInstance("produces"); 
 	
 	public static String[] splitPath(String path) {
 		return List.listToStringArray(path, '/');

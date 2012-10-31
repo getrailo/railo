@@ -64,7 +64,7 @@ public final class ComponentUtil {
 	private final static Method CONSTRUCTOR_OBJECT = Method.getMethod("void <init> ()");
 	private static final Type COMPONENT_CONTROLLER = Type.getType(ComponentController.class); 
 	private static final Method INVOKE = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
-	private static final Collection.Key FIELD_TYPE = KeyImpl.intern("fieldtype");
+	private static final Collection.Key FIELD_TYPE = KeyConstants._fieldtype;
 	
 	//private static final Method INVOKE_PROPERTY = new Method("invoke",Types.OBJECT,new Type[]{Types.STRING,Types.OBJECT_ARRAY});
 	
@@ -680,19 +680,19 @@ public final class ComponentUtil {
         Struct meta = udf.meta;
         if(meta!=null) StructUtil.copy(meta, func, true);
         
-        func.setEL(KeyImpl.CLOSURE, Boolean.FALSE);
+        func.setEL(KeyConstants._closure, Boolean.FALSE);
 		
-		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
+		func.set(KeyConstants._access,ComponentUtil.toStringAccess(udf.getAccess()));
         String hint=udf.hint;
-        if(!StringUtil.isEmpty(hint))func.set(KeyImpl.HINT,hint);
+        if(!StringUtil.isEmpty(hint))func.set(KeyConstants._hint,hint);
         String displayname=udf.displayName;
-        if(!StringUtil.isEmpty(displayname))func.set(KeyImpl.DISPLAY_NAME,displayname);
-        func.set(KeyImpl.NAME,udf.functionName);
-        func.set(KeyImpl.OUTPUT,Caster.toBoolean(udf.output));
-        func.set(KeyImpl.RETURN_TYPE, udf.strReturnType);
-        func.set(KeyImpl.DESCRIPTION, udf.description);
+        if(!StringUtil.isEmpty(displayname))func.set(KeyConstants._displayname,displayname);
+        func.set(KeyConstants._name,udf.functionName);
+        func.set(KeyConstants._output,Caster.toBoolean(udf.output));
+        func.set(KeyConstants._returntype, udf.strReturnType);
+        func.set(KeyConstants._description, udf.description);
         
-        func.set(KeyImpl.OWNER, udf.pageSource.getDisplayPath());
+        func.set(KeyConstants._owner, udf.pageSource.getDisplayPath());
         
 	    	   
 	    int format = udf.returnFormat;
@@ -709,22 +709,22 @@ public final class ComponentUtil {
         //Object defaultValue;
         for(int y=0;y<args.length;y++) {
             StructImpl param=new StructImpl();
-            param.set(KeyImpl.NAME,args[y].getName().getString());
-            param.set(KeyImpl.REQUIRED,Caster.toBoolean(args[y].isRequired()));
-            param.set(KeyImpl.TYPE,args[y].getTypeAsString());
+            param.set(KeyConstants._name,args[y].getName().getString());
+            param.set(KeyConstants._required,Caster.toBoolean(args[y].isRequired()));
+            param.set(KeyConstants._type,args[y].getTypeAsString());
             displayname=args[y].getDisplayName();
-            if(!StringUtil.isEmpty(displayname)) param.set(KeyImpl.DISPLAY_NAME,displayname);
+            if(!StringUtil.isEmpty(displayname)) param.set(KeyConstants._displayname,displayname);
             
             int defType = args[y].getDefaultType();
             if(defType==FunctionArgument.DEFAULT_TYPE_RUNTIME_EXPRESSION){
-            	param.set(KeyImpl.DEFAULT, "[runtime expression]");
+            	param.set(KeyConstants._default, "[runtime expression]");
             }
             else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
-            	param.set(KeyImpl.DEFAULT, ComponentUtil.getPage(pc,udf.pageSource).udfDefaultValue(pc,udf.index,y));
+            	param.set(KeyConstants._default, ComponentUtil.getPage(pc,udf.pageSource).udfDefaultValue(pc,udf.index,y));
             }
             
             hint=args[y].getHint();
-            if(!StringUtil.isEmpty(hint))param.set(KeyImpl.HINT,hint);
+            if(!StringUtil.isEmpty(hint))param.set(KeyConstants._hint,hint);
             // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche attr, die dann hier ausgebenen werden blﾚdsinn
             
             // meta data
@@ -733,7 +733,7 @@ public final class ComponentUtil {
                 
             params.append(param);
         }
-        func.set(KeyImpl.PARAMETERS,params);
+        func.set(KeyConstants._parameters,params);
 		return func;
 	}
 

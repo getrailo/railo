@@ -19,7 +19,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
@@ -415,7 +414,7 @@ public final class Form extends BodyTagImpl {
         if(name==null) {
             name="CFForm_"+count;
         }
-        attributes.setEL(KeyImpl.NAME,name);
+        attributes.setEL(KeyConstants._name,name);
         
         if(action==null) 	action=ReqRspUtil.self(pageContext. getHttpServletRequest());
         attributes.setEL(KeyConstants._action,action);

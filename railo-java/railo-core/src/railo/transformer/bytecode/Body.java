@@ -19,6 +19,8 @@ public interface Body extends Statement {
 	 * returns all statements
 	 * @return the statements
 	 */
+	public abstract boolean hasStatements();
+	
 	public abstract List<Statement> getStatements();
 
 	/**

@@ -12,6 +12,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class Closure extends UDFImpl {
 	
@@ -92,7 +93,7 @@ public class Closure extends UDFImpl {
 	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
 		Struct meta = ComponentUtil.getMetaData(pc, properties);
-		meta.setEL(KeyImpl.CLOSURE, Boolean.TRUE);// MUST move this to class UDFProperties
+		meta.setEL(KeyConstants._closure, Boolean.TRUE);// MUST move this to class UDFProperties
 		meta.setEL("ANONYMOUSCLOSURE", Boolean.TRUE);// MUST move this to class UDFProperties
 		
 		return meta;

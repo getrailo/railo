@@ -1,12 +1,10 @@
 <cfparam name="error" default="#struct(message:"",detail:"")#">
 
-
-<!--- 
-ACTIONS --->
+<!--- ACTIONS --->
 <cftry>
 	<cfif StructKeyExists(form,"_run") and form._run EQ stText.Settings.flushCache>
-    	<cfset DatasourceFlushMetaCache(form.name)>
-       
+		<cfset DatasourceFlushMetaCache(form.name)>
+		
 	<cfelseif StructKeyExists(form,"run") and form.run EQ "create2">
 		<cfset driver=createObject("component","dbdriver."&form.type)>
 		<cfset driver.onBeforeUpdate()>
@@ -27,8 +25,8 @@ ACTIONS --->
 			<cfset form.password=existing.password>
 		</cfif>
 		<cfset verify=getForm('verify',false)>
-        <cfparam name="form.metaCacheTimeout" default="60000">
-        
+		<cfparam name="form.metaCacheTimeout" default="60000">
+		
 		<cfadmin 
 			action="updateDatasource"
 			type="#request.adminType#"
@@ -39,7 +37,7 @@ ACTIONS --->
 						
 			name="#form.name#"
 			newName="#form.newName#"
-            
+			
 			host="#form.host#"
 			database="#form.database#"
 			port="#form.port#"
@@ -68,11 +66,11 @@ ACTIONS --->
 			verify="#verify#"
 			custom="#custom#"
 			remoteClients="#request.getRemoteClients()#">
-            <cfset form.mark="update">
-        <cfset v="">
-        <cfif verify>
-        	<cfset v="&verified="&form.name>
-        </cfif>
+			<cfset form.mark="update">
+		<cfset v="">
+		<cfif verify>
+			<cfset v="&verified="&form.name>
+		</cfif>
 		<cflocation url="#request.self#?action=#url.action##v#" addtoken="no">
 	</cfif>
 	<cfcatch>
@@ -82,471 +80,391 @@ ACTIONS --->
 	</cfcatch>
 </cftry>
 
-
-<!--- 
-Error Output--->
+<!--- Error Output--->
 <cfset printError(error)>
 
 <cfsilent>
-<cfset isInsert=structKeyExists(form,'mark') and form.mark EQ "create">
-
-<cfif isInsert>
-	<cfset actionType="create">
-	<cfset datasource=struct()>
-	<cfset datasource.type=form.type>
-	<cfset datasource.name=form.name>
-	<cfset datasource.storage=false>
-	<cfset datasource.validate=false>
+	<cfset isInsert=structKeyExists(form,'mark') and form.mark EQ "create">
 	
-<cfelse>
-	<cfset actionType="update">
-    
-	<cfadmin 
-	action="getDatasource"
-	type="#request.adminType#"
-	password="#session["password"&request.adminType]#"
-	name="#structKeyExists(url,'name')?url.name:form.name#"
-	returnVariable="datasource">
-    
-	<cfset datasource._password=datasource.password>
-	<cfset datasource.password="****************">
-	<cfset datasource.type=getType(datasource.classname,datasource.dsn)>
-</cfif>
-
-
-<cfset driver=createObject("component","dbdriver."&datasource.type)>
-
-<cfset isDriverSelector = isInstanceOf( driver, "types.IDriverSelector" )>
-
-<cfif !isDriverSelector>
-
-<cfif isInsert>
-	<cfset datasource.host=driver.getValue('host')>
-	<cfset datasource.database=driver.getValue('database')>
-	<cfset datasource.port=driver.getValue('port')>
-	<cfset datasource.timezone="">
-	<cfset datasource.username=driver.getValue('username')>
-	<cfset datasource.password=driver.getValue('password')>
-	<cfset datasource.ConnectionLimit=driver.getValue('ConnectionLimit')>
-	<cfset datasource.ConnectionTimeout=driver.getValue('ConnectionTimeout')>
-	<cfset datasource.blob=driver.getValue('blob')>
-	<cfset datasource.clob=driver.getValue('clob')>
-	
-	<cfset datasource.select=driver.getValue('allowed_select')>
-	<cfset datasource.insert=driver.getValue('allowed_insert')>
-	<cfset datasource.update=driver.getValue('allowed_update')>
-	<cfset datasource.delete=driver.getValue('allowed_delete')>
-	<cfset datasource.create=driver.getValue('allowed_create')>
-	<cfset datasource.drop=driver.getValue('allowed_drop')>
-	<cfset datasource.revoke=driver.getValue('allowed_revoke')>
-	<cfset datasource.alter=driver.getValue('allowed_alter')>
-	<cfset datasource.grant=driver.getValue('allowed_grant')>
-    <cfset datasource.metaCacheTimeout=60000>
-</cfif>
-
-<cfif not structKeyExists(datasource,'metaCacheTimeout')><cfset datasource.metaCacheTimeout=60000></cfif>
-
-<!--- overwrite values, with values from form scope --->
-<cfloop collection="#form#" item="key">
-	<cfif structKeyExists(datasource,key)>
-		<cfset datasource[key]=form[key]>
-	</cfif>
-</cfloop>
-<cfset driver.init(datasource)>
-<cfset fields=driver.getFields()>
-
-
-<cfadmin 
-	action="getTimeZones"
-	locale="#stText.locale#"
-	returnVariable="timezones">
-
-</cfif>	<!--- !isDriverSelector !--->
-</cfsilent>
-<cfoutput>
-
-
-
-<cfif isDriverSelector>
-
-	<cfset arrSelectOptions = driver.getOptions()>
-
-	<h2>Choose a Database Driver</h2>	<!--- #stText.Settings.dbdriverselectorchoose# not found? !--->
-
-	<p>#driver.getDescription()#
-
-	<form method="POST">
-
-		<cfloop from="1" to="#arrayLen( arrSelectOptions )#" index="ii">
-
-			<cfset optDriverType = arrSelectOptions[ ii ]>
-			<cfset optDriver = variables.drivers[ optDriverType ]>
-
-			<div style="margin-bottom:1.5em;">
-				<label><input type="radio" name="type" value="#optDriverType#" <cfif ii EQ 1>checked="checked"</cfif>> #optDriver.getName()#</label>
-				<p style="padding-left:1.5em;">#optDriver.getDescription()#</p>
-			</div>
-		</cfloop>
-
-		<cfloop collection="#Form#" item="key">
-
-			<cfif key NEQ "type">
-
-				<input type="hidden" name="#key#" value="#Form[ key ]#">
-			</cfif>
-		</cfloop>
-
-		<input type="submit" class="submit" value="Continue">
-	</form>
-<cfelse>	<!--- isDriverSelector !--->
-
-
-<cfif actionType EQ "update">
-<i><b>Class:</b> #datasource.classname#</i><br />
-<i><b>Connection String:</b> <cfif len(datasource._password)>#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#<cfelse>#datasource.dsnTranslated#</cfif></i>
-</cfif>
-<h2>
-	<cfif actionType EQ "update">
-	#stText.Settings.DatasourceDescriptionUpdate#
+	<cfif isInsert>
+		<cfset actionType="create">
+		<cfset datasource=struct()>
+		<cfset datasource.type=form.type>
+		<cfset datasource.name=form.name>
+		<cfset datasource.storage=false>
+		<cfset datasource.validate=false>
+		
 	<cfelse>
-	#stText.Settings.DatasourceDescriptionCreate#
-	</cfif> #driver.getName()#</h2>
-
-<table class="tbl" width="100%">
-<colgroup>
-    <col width="150">
-    <col>
-</colgroup>
-<tr>
-	<td colspan="2">#driver.getDescription()#</td>
-</tr>
-<tr>
-	<td colspan="2"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
-<input type="hidden" name="name" value="#datasource.name#">
-<input type="hidden" name="type" value="#datasource.type#">
-
-<cfsilent>
-	<cfset TYPE_HIDDEN=0>
-	<cfset TYPE_FREE=1>
-	<cfset TYPE_REQUIRED=2>
+		<cfset actionType="update">
+		
+		<cfadmin 
+		action="getDatasource"
+		type="#request.adminType#"
+		password="#session["password"&request.adminType]#"
+		name="#structKeyExists(url,'name')?url.name:form.name#"
+		returnVariable="datasource">
+		
+		<cfset datasource._password=datasource.password>
+		<cfset datasource.password="****************">
+		<cfset datasource.type=getType(datasource.classname,datasource.dsn)>
+	</cfif>
 	
-	<cfset typeHost=driver.getType('host')>
-	<cfset typeDatabase=driver.getType('database')>
-	<cfset typePort=driver.getType('port')>
-	<cfset typeUsername=driver.getType('username')>
-	<cfset typePassword=driver.getType('password')>
+	<cfset driver=createObject("component","dbdriver."&datasource.type)>
+
+	<cfif isInsert>
+		<cfset datasource.host=driver.getValue('host')>
+		<cfset datasource.database=driver.getValue('database')>
+		<cfset datasource.port=driver.getValue('port')>
+		<cfset datasource.timezone="">
+		<cfset datasource.username=driver.getValue('username')>
+		<cfset datasource.password=driver.getValue('password')>
+		<cfset datasource.ConnectionLimit=driver.getValue('ConnectionLimit')>
+		<cfset datasource.ConnectionTimeout=driver.getValue('ConnectionTimeout')>
+		<cfset datasource.blob=driver.getValue('blob')>
+		<cfset datasource.clob=driver.getValue('clob')>
+		
+		<cfset datasource.select=driver.getValue('allowed_select')>
+		<cfset datasource.insert=driver.getValue('allowed_insert')>
+		<cfset datasource.update=driver.getValue('allowed_update')>
+		<cfset datasource.delete=driver.getValue('allowed_delete')>
+		<cfset datasource.create=driver.getValue('allowed_create')>
+		<cfset datasource.drop=driver.getValue('allowed_drop')>
+		<cfset datasource.revoke=driver.getValue('allowed_revoke')>
+		<cfset datasource.alter=driver.getValue('allowed_alter')>
+		<cfset datasource.grant=driver.getValue('allowed_grant')>
+		<cfset datasource.metaCacheTimeout=60000>
+	</cfif>
+	
+	<cfif not structKeyExists(datasource,'metaCacheTimeout')>
+		<cfset datasource.metaCacheTimeout=60000>
+	</cfif>
+
+	<!--- overwrite values, with values from form scope --->
+	<cfloop collection="#form#" item="key">
+		<cfif structKeyExists(datasource,key)>
+			<cfset datasource[key]=form[key]>
+		</cfif>
+	</cfloop>
+	<cfset driver.init(datasource)>
+	<cfset fields=driver.getFields()>
+
+	<cfadmin 
+		action="getTimeZones"
+		locale="#stText.locale#"
+		returnVariable="timezones">
 </cfsilent>
-<cfif typeHost EQ TYPE_HIDDEN><input type="hidden" name="host" value="#datasource.host#"></cfif>
-<cfif typeDatabase EQ TYPE_HIDDEN><input type="hidden" name="database" value="#datasource.database#"></cfif>
-<cfif typePort EQ TYPE_HIDDEN><input type="hidden" name="port" value="#datasource.port#"></cfif>
-<cfif typeUsername EQ TYPE_HIDDEN><input type="hidden" name="username" value="#datasource.username#"></cfif>
-<cfif typePassword EQ TYPE_HIDDEN><input type="hidden" name="password" value="#datasource.password#"></cfif>
 
-<tr>
-	<td class="tblHead" width="150">Name</td>
-	<td class="tblContent" width="300"><cfinput type="text" name="newName" 
-		value="#datasource.name#" style="width:300px" ></td>
-</tr>
-<!--- 
-
-Host --->
-<cfif typeHost NEQ TYPE_HIDDEN>
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbHost#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbHostDesc#</span><br>
-		<cfinput type="text" name="host" 
-		value="#datasource.host#" style="width:300px" required="#typeHost EQ TYPE_REQUIRED#"></td>
-</tr>
-</cfif>
-<!--- 
-
-DataBase --->
-<cfif typeDataBase NEQ TYPE_HIDDEN>
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbDatabase#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbDatabaseDesc#</span><br>
-		<cfinput type="text" name="database" 
-		value="#datasource.database#" style="width:300px" required="#typeDataBase EQ TYPE_REQUIRED#"></td>
-</tr>
-</cfif>
-<!--- 
-
-Port --->
-<cfif typePort NEQ TYPE_HIDDEN>
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbPort#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbPortDesc#</span><br>
-		<cfinput type="text" name="port" validate="integer" 
-		value="#datasource.port#" style="width:60px" required="#typePort EQ TYPE_REQUIRED#"></td>
-</tr>
-</cfif>
-<!--- 
-
-Timezone --->
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbtimezone#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbtimezoneDesc#</span><br>
-       <select name="timezone">
-        	<option value=""> ---- #stText.Settings.dbtimezoneSame# ---- </option>
-			<cfoutput query="timezones">
-				<option value="#timezones.id#"
-				<cfif timezones.id EQ datasource.timezone>selected</cfif>>
-				#timezones.id# - #timezones.display#</option>
-			</cfoutput>
-		</select>
-        
-        <br /><span class="CheckError">
-This feature is currently in Beta State.
-If you have any problems while using this Implementation, please post the bugs and errors in our <a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank" class="CheckError">bugtracking system</a>. 
-</span>
-        
-        </td>
-</tr>
-
-
-
-<!--- 
-
-Username --->
-<cfif typeUsername NEQ TYPE_HIDDEN>
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbUser#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbUserDesc#</span><br>
-		<cfinput type="text" name="username" 
-		value="#datasource.username#" style="width:300px" required="#typeUsername EQ TYPE_REQUIRED#"></td>
-</tr>
-</cfif>
-
-
-<!--- 
-
-Password --->
-<cfif typePassword NEQ TYPE_HIDDEN>
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbPass#</td>
-	<td class="tblContent" width="300">
-		<span class="comment">#stText.Settings.dbPassDesc#</span><br>
-		<cfinput type="password" name="Password"  passthrough='autocomplete="off"'
-		value="#datasource.password#" style="width:300px" onClick="this.value='';" required="#typePassword EQ TYPE_REQUIRED#"></td>
-</tr>
-</cfif>
-<tr>
-	<td width="150" colspan="2">&nbsp;</td>
-</tr>
-<!--- 
-
-Connection Limit --->
-<tr>
-	<td class="tblHead" >#stText.Settings.dbConnLimit#</td>
-	<td class="tblContent">
-		<select name="ConnectionLimit" class="select">
-			<option value="-1" <cfif datasource.ConnectionLimit EQ -1>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
-			<cfloop index="idx" from="1" to="10"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
-			<cfloop index="idx" from="20" to="100" step="10"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
-			<cfloop index="idx" from="200" to="1000" step="100"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
-		</select>
-		<span class="comment">#stText.Settings.dbConnLimitDesc#</span>
-	</td>
-</tr>
-<!--- 
-
-Connection Timeout --->
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbConnTimeout#</td>
-	<td class="tblContent" width="300">
-		<select name="ConnectionTimeout" class="select">
-			<cfloop index="idx" from="0" to="20"><option  <cfif datasource.ConnectionTimeout EQ idx>selected</cfif>>#idx#</option></cfloop>
-		</select>
-		<!--- <cfinput type="text" name="ConnectionTimeout" 
-		validate="integer" value="#datasource.ConnectionTimeout#" style="width:60px"> --->
-		<span class="comment">#stText.Settings.dbConnTimeoutDesc#</span>
-	</td>
-</tr>
-
-
-<!--- 
-
-validate --->
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbValidate#</td>
-	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
-		<span class="comment">#stText.Settings.dbValidateDesc#</span>
-	</td>
-</tr>
-
-
-
-<!--- 
-
-Meta Cache--->
-<cfif datasource.type EQ "oracle">
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbMetaCacheTimeout#</td>
-	<td class="tblContent" width="300">
-    	<cfset selected=false>
-		<select name="metaCacheTimeout" class="select">
-			<option value="-1" <cfif datasource.metaCacheTimeout EQ -1><cfset selected=true>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
-            
-			<optgroup label="#stText.Settings.minutes#">
-            <cfloop index="idx" from="1" to="10"><option value="#idx*60000#"  <cfif datasource.metaCacheTimeout EQ idx*60000><cfset selected=true>selected</cfif>>#idx# #stText.Settings.minutes#</option></cfloop>
-			<cfloop index="idx" from="20" to="50" step="10"><option value="#idx*60000#"  <cfif datasource.metaCacheTimeout EQ idx*60000><cfset selected=true>selected</cfif>>#idx# #stText.Settings.minutes#</option></cfloop>
-            </optgroup>
-            <optgroup label="#stText.Settings.hours#">
-			<cfloop index="idx" from="1" to="23"><option value="#idx*60000*60#"  <cfif datasource.metaCacheTimeout EQ idx*60000*60><cfset selected=true>selected</cfif>>#idx# #stText.Settings.hours#</option></cfloop>
-            </optgroup>
-            <optgroup label="#stText.Settings.days#">
-            <cfloop index="idx" from="1" to="30"><option value="#idx*60000*60*24#"  <cfif datasource.metaCacheTimeout EQ idx*60000*60*24><cfset selected=true>selected</cfif>>#idx# #stText.Settings.days#</option></cfloop></optgroup>
-		</select>
-		<br /><span class="comment">#stText.Settings.dbMetaCacheTimeoutDesc#</span>
-        
-	<cfif actionType EQ "update"><br /><br /><input type="submit" class="submit" name="_run" value="#stText.Settings.flushCache#"></cfif>
-	</td>
-</tr>
-</cfif>
-<!--- 
-
-Blob --->
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbBlob#</td>
-	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="blob" value="yes" checked="#datasource.blob#">
-		<span class="comment">#stText.Settings.dbBlobDesc#</span>
-	</td>
-</tr>
-<!--- 
-
-Clob --->
-<tr>
-	<td class="tblHead" width="150">#stText.Settings.dbClob#</td>
-	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="clob" value="yes" checked="#datasource.clob#">
-		<span class="comment">#stText.Settings.dbClobDesc#</span>
-	</td>
-</tr>
-<!--- 
-
-Allow --->
-<tr>
-	<td class="tblHead">#stText.Settings.dbAllowed#</td>
-	<td class="tblContent">
-		<table width="100%">
+<cfoutput>
+	<h2>
+		<cfif actionType EQ "update">
+			#stText.Settings.DatasourceDescriptionUpdate#
+		<cfelse>
+			#stText.Settings.DatasourceDescriptionCreate#
+		</cfif>
+		#driver.getName()#
+	</h2>
+	<div class="pageintro">#driver.getDescription()#</div>
+	
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
+		<input type="hidden" name="name" value="#datasource.name#">
+		<input type="hidden" name="type" value="#datasource.type#">
 		
-        <tr>
-			<td class="darker" >Select:<cfinput type="checkbox" class="checkbox" name="allowed_select" value="yes" 
-			checked="#datasource.select#"></td>
-			<td class="darker" >Insert:<cfinput type="checkbox" class="checkbox" name="allowed_insert" value="yes" 
-			checked="#datasource.insert#"></td>
-			<td class="darker" >Update:<cfinput type="checkbox" class="checkbox" name="allowed_update" value="yes" 
-			checked="#datasource.update#"></td>
-			<td class="darker" >Delete:<cfinput type="checkbox" class="checkbox" name="allowed_delete" value="yes" 
-			checked="#datasource.delete#"></td>
-			<td class="darker" >Create:<cfinput type="checkbox" class="checkbox" name="allowed_create" value="yes" 
-			checked="#datasource.create#"></td>
-			<td class="darker" >Drop:<cfinput type="checkbox" class="checkbox" name="allowed_drop" value="yes" 
-			checked="#datasource.drop#"></td>
-			<td class="darker" >Revoke:<cfinput type="checkbox" class="checkbox" name="allowed_revoke" value="yes" 
-			checked="#datasource.revoke#"></td>
-			<td class="darker" >Alter:<cfinput type="checkbox" class="checkbox" name="allowed_alter" value="yes" 
-			checked="#datasource.alter#"></td>
-			<td class="darker" >Grant:<cfinput type="checkbox" class="checkbox" name="allowed_grant" value="yes" 
-			checked="#datasource.grant#"></td>
-		</tr>
-		<tr>
-		</tr>
+		<cfif actionType EQ "update">
+			<h3>Datasource details</h3>
+			<table class="maintbl">
+				<tbody>
+					<tr>
+						<th scope="row">Class</th>
+						<td>#datasource.classname#</td>
+					</tr>
+					<tr>
+						<th scope="row">DNS</th>
+						<td>
+							<cfif len(datasource._password)>
+								#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#
+							<cfelse>
+								#datasource.dsnTranslated#
+							</cfif>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</cfif>
+
+		<cfsilent>
+			<cfset TYPE_HIDDEN=0>
+			<cfset TYPE_FREE=1>
+			<cfset TYPE_REQUIRED=2>
+			
+			<cfset typeHost=driver.getType('host')>
+			<cfset typeDatabase=driver.getType('database')>
+			<cfset typePort=driver.getType('port')>
+			<cfset typeUsername=driver.getType('username')>
+			<cfset typePassword=driver.getType('password')>
+		</cfsilent>
+		<cfif typeHost EQ TYPE_HIDDEN><input type="hidden" name="host" value="#datasource.host#"></cfif>
+		<cfif typeDatabase EQ TYPE_HIDDEN><input type="hidden" name="database" value="#datasource.database#"></cfif>
+		<cfif typePort EQ TYPE_HIDDEN><input type="hidden" name="port" value="#datasource.port#"></cfif>
+		<cfif typeUsername EQ TYPE_HIDDEN><input type="hidden" name="username" value="#datasource.username#"></cfif>
+		<cfif typePassword EQ TYPE_HIDDEN><input type="hidden" name="password" value="#datasource.password#"></cfif>
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">Name</th>
+					<td>
+						<cfinput type="text" name="newName" value="#datasource.name#" class="large">
+					</td>
+				</tr>
+				<!--- Host --->
+				<cfif typeHost NEQ TYPE_HIDDEN>
+					<tr>
+						<th scope="row">#stText.Settings.dbHost#</th>
+						<td>
+							<cfinput type="text" name="host" 
+							value="#datasource.host#" class="large" required="#typeHost EQ TYPE_REQUIRED#">
+							<div class="comment">#stText.Settings.dbHostDesc#</div>
+						</td>
+					</tr>
+				</cfif>
+				<!--- DataBase --->
+				<cfif typeDataBase NEQ TYPE_HIDDEN>
+					<tr>
+						<th scope="row">#stText.Settings.dbDatabase#</th>
+						<td>
+							<cfinput type="text" name="database" 
+							value="#datasource.database#" class="large" required="#typeDataBase EQ TYPE_REQUIRED#">
+							<div class="comment">#stText.Settings.dbDatabaseDesc#</div>
+						</td>
+					</tr>
+				</cfif>
+				<!--- Port --->
+				<cfif typePort NEQ TYPE_HIDDEN>
+					<tr>
+						<th scope="row">#stText.Settings.dbPort#</th>
+						<td>
+							<cfinput type="text" name="port" validate="integer" 
+							value="#datasource.port#" class="small" required="#typePort EQ TYPE_REQUIRED#">
+							<div class="comment">#stText.Settings.dbPortDesc#</div>
+						</td>
+					</tr>
+				</cfif>
+				<!--- Timezone --->
+				<tr>
+					<th scope="row">#stText.Settings.dbtimezone#</th>
+					<td>
+						<select name="timezone" class="large">
+							<option value=""> ---- #stText.Settings.dbtimezoneSame# ---- </option>
+							<cfoutput query="timezones">
+								<option value="#timezones.id#"
+								<cfif timezones.id EQ datasource.timezone>selected</cfif>>
+								#timezones.id# - #timezones.display#</option>
+							</cfoutput>
+						</select>
+						<div class="comment">#stText.Settings.dbtimezoneDesc#</div>
+						<div class="warning nofocus">
+							This feature is currently in Beta State.
+							If you have any problems while using this Implementation,
+							please post the bugs and errors in our
+							<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">bugtracking system</a>. 
+						</div>
+					</td>
+				</tr>
+				<!--- Username --->
+				<cfif typeUsername NEQ TYPE_HIDDEN>
+					<tr>
+						<th scope="row">#stText.Settings.dbUser#</th>
+						<td>
+							<cfinput type="text" name="username" 
+							value="#datasource.username#" class="medium" required="#typeUsername EQ TYPE_REQUIRED#">
+							<div class="comment">#stText.Settings.dbUserDesc#</div>
+						</td>
+					</tr>
+				</cfif>
+				<!--- Password --->
+				<cfif typePassword NEQ TYPE_HIDDEN>
+					<tr>
+						<th scope="row">#stText.Settings.dbPass#</th>
+						<td>
+							<cfinput type="password" name="Password"  passthrough='autocomplete="off"'
+							value="#datasource.password#" class="medium" onClick="this.value='';" required="#typePassword EQ TYPE_REQUIRED#">
+							<div class="comment">#stText.Settings.dbPassDesc#</div>
+						</td>
+					</tr>
+				</cfif>
+			</tbody>
 		</table>
-		
-	</td>
-</tr>
-<!--- 
+		<br />
+		<table class="maintbl">
+			<tbody>
+				<!--- Connection Limit --->
+				<tr>
+					<th scope="row">#stText.Settings.dbConnLimit#</th>
+					<td>
+						<select name="ConnectionLimit" class="select small">
+							<option value="-1" <cfif datasource.ConnectionLimit EQ -1>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
+							<cfloop index="idx" from="1" to="10"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
+							<cfloop index="idx" from="20" to="100" step="10"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
+							<cfloop index="idx" from="200" to="1000" step="100"><option  <cfif datasource.ConnectionLimit EQ idx>selected</cfif>>#idx#</option></cfloop>
+						</select>
+						<div class="comment">#stText.Settings.dbConnLimitDesc#</div>
+					</td>
+				</tr>
+				<!--- Connection Timeout --->
+				<tr>
+					<th scope="row">#stText.Settings.dbConnTimeout#</th>
+					<td>
+						<select name="ConnectionTimeout" class="select small">
+							<cfloop index="idx" from="0" to="20"><option  <cfif datasource.ConnectionTimeout EQ idx>selected</cfif>>#idx#</option></cfloop>
+						</select>
+						<!--- <cfinput type="text" name="ConnectionTimeout" 
+						validate="integer" value="#datasource.ConnectionTimeout#" style="width:60px"> --->
+						<div class="comment">#stText.Settings.dbConnTimeoutDesc#</div>
+					</td>
+				</tr>
+				<!--- validate --->
+				<tr>
+					<th scope="row">#stText.Settings.dbValidate#</th>
+					<td>
+						<cfinput type="checkbox" class="checkbox" name="validate" value="yes" checked="#isDefined('datasource.validate') and datasource.validate#">
+						<div class="comment">#stText.Settings.dbValidateDesc#</div>
+					</td>
+				</tr>
 
-storage --->
-<tr>
-	<td class="tblHead" width="150"><b>#stText.Settings.dbStorage#</b></td>
-	<td class="tblContent" width="300">
-		<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
-		<span class="comment">#stText.Settings.dbStorageDesc#</span>
-	</td>
-</tr>
+				<!--- Meta Cache--->
+				<cfif datasource.type EQ "oracle">
+					<tr>
+						<th scope="row">#stText.Settings.dbMetaCacheTimeout#</th>
+						<td>
+							<cfset selected=false>
+							<select name="metaCacheTimeout" class="select small">
+								<option value="-1" <cfif datasource.metaCacheTimeout EQ -1><cfset selected=true>selected</cfif>>#stText.Settings.dbConnLimitInf#</option>
+								
+								<optgroup label="#stText.Settings.minutes#">
+									<cfloop index="idx" from="1" to="10"><option value="#idx*60000#"  <cfif datasource.metaCacheTimeout EQ idx*60000><cfset selected=true>selected</cfif>>#idx# #stText.Settings.minutes#</option></cfloop>
+									<cfloop index="idx" from="20" to="50" step="10"><option value="#idx*60000#"  <cfif datasource.metaCacheTimeout EQ idx*60000><cfset selected=true>selected</cfif>>#idx# #stText.Settings.minutes#</option></cfloop>
+								</optgroup>
+								<optgroup label="#stText.Settings.hours#">
+									<cfloop index="idx" from="1" to="23"><option value="#idx*60000*60#"  <cfif datasource.metaCacheTimeout EQ idx*60000*60><cfset selected=true>selected</cfif>>#idx# #stText.Settings.hours#</option></cfloop>
+								</optgroup>
+								<optgroup label="#stText.Settings.days#">
+									<cfloop index="idx" from="1" to="30"><option value="#idx*60000*60*24#"  <cfif datasource.metaCacheTimeout EQ idx*60000*60*24><cfset selected=true>selected</cfif>>#idx# #stText.Settings.days#</option></cfloop>
+								</optgroup>
+							</select>
+							<div class="comment">#stText.Settings.dbMetaCacheTimeoutDesc#</div>
+						</td>
+					</tr>
+					<cfif actionType EQ "update">
+						<tr>
+							<th scope="row">#stText.Settings.flushCache#</th>
+							<td>
+								<input type="submit" class="button submit" name="_run" value="#stText.Settings.flushCache#">
+							</td>
+						</tr>
+					</cfif>
+				</cfif>
+				<!--- Blob --->
+				<tr>
+					<th scope="row">#stText.Settings.dbBlob#</th>
+					<td>
+						<cfinput type="checkbox" class="checkbox" name="blob" value="yes" checked="#datasource.blob#">
+						<div class="comment">#stText.Settings.dbBlobDesc#</div>
+					</td>
+				</tr>
+				<!--- Clob --->
+				<tr>
+					<th scope="row">#stText.Settings.dbClob#</th>
+					<td>
+						<cfinput type="checkbox" class="checkbox" name="clob" value="yes" checked="#datasource.clob#">
+						<div class="comment">#stText.Settings.dbClobDesc#</div>
+					</td>
+				</tr>
+				<!--- Allow --->
+				<tr>
+					<th scope="row">#stText.Settings.dbAllowed#</th>
+					<td>
+						<ul class="radiolist float">
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_select" value="yes" checked="#datasource.select#"> <b>Select</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_insert" value="yes" checked="#datasource.insert#"> <b>Insert</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_update" value="yes" checked="#datasource.update#"> <b>Update</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_delete" value="yes" checked="#datasource.delete#"> <b>Delete</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_create" value="yes" checked="#datasource.create#"> <b>Create</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_drop" value="yes" checked="#datasource.drop#"> <b>Drop</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_revoke" value="yes" checked="#datasource.revoke#"> <b>Revoke</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_alter" value="yes" checked="#datasource.alter#"> <b>Alter</b></label></li>
+							<li class="small"><label><cfinput type="checkbox" class="checkbox" name="allowed_grant" value="yes" checked="#datasource.grant#"> <b>Grant</b></label></li>
+						</ul>
+					</td>
+				</tr>
+				<!--- storage --->
+				<tr>
+					<th scope="row">#stText.Settings.dbStorage#</th>
+					<td>
+						<cfinput type="checkbox" class="checkbox" name="storage" value="yes" checked="#isDefined('datasource.storage') and datasource.storage#">
+						<div class="comment">#stText.Settings.dbStorageDesc#</div>
+					</td>
+				</tr>
 
-
-<cfif arrayLen(fields)>
-<tr>
-	<td width="150" colspan="2">&nbsp;</td>
-</tr>
-</cfif>
-<cfloop collection="#fields#" item="idx">
-<cfset field=fields[idx]>
-<cfif StructKeyExists(datasource,"custom") and StructKeyExists(datasource.custom,field.getName())>
-	<cfset default=datasource.custom[field.getName()]>
-<cfelse>
-	<cfset default=field.getDefaultValue()>
-</cfif>
-<cfset type=field.getType()>
-<tr>
-	<td class="tblHead" width="150">#field.getDisplayName()#</td>
-	<td class="tblContent" width="300"><cfif len(trim(field.getDescription()))><span class="comment">#field.getDescription()#</span><br /></cfif>
-	<cfif type EQ "text" or type EQ "password">
-	<cfinput type="#type#" 
-		name="custom_#field.getName()#" 
-		value="#default#" style="width:300px" required="#field.getRequired()#" 
-		message="Missing value for field #field.getDisplayName()#">
-	<cfelseif type EQ "select">
-		<cfoutput><br />
-		<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
-        <select name="custom_#field.getName()#">
-			<cfif not field.getRequired()><option value=""> ---------- </option></cfif>
-			<cfif len(trim(default))>
-			<cfloop index="item" list="#field.getDefaultValue()#">
-			<option <cfif item EQ default>selected="selected"</cfif> >#item#</option>
-			</cfloop>
-			</cfif>
-		</select>
-		</cfoutput>
-	<!--- @todo type checkbox --->
-	<cfelseif type EQ "radio">
-		<cfoutput><br />
-		<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
-		<cfloop index="item" list="#field.getDefaultValue()#">
-			<cfinput type="radio" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
-			#item#
-		</cfloop>
-		
-		</cfoutput>
-	<!--- @todo type checkbox,radio --->
-	</cfif></td>
-</tr>
-</cfloop>
-<cfmodule template="remoteclients.cfm" colspan="2">
-<tr>
-	<td class="tblHead" colspan="2">
-    	 <table class="tbl" width="100%">
-         <tr>
-         	<td class="tblContent" bgcolor="white"><input type="checkbox" checked="checked" name="verify" value="true" /> &nbsp;# stText.Settings.verifyConnection#</td>
-         </tr>
-         </table>
-         
-    </td>
-</tr>
-<tr>
-	<td colspan="2">
-    <input type="hidden" name="mark" value="#structKeyExists(form,'mark')?form.mark:"update"#">
-	<input type="hidden" name="run" value="create2">
-	<input type="submit" class="submit" name="_run" value="#stText.Buttons[actionType]#">
-	<input onClick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#"></td>
-</tr>
-</cfform>
-</table>
-
-
-</cfif>	<!--- isDriverSelector !--->
-
-
+				<cfif arrayLen(fields)>
+						</tbody>
+					</table>
+					<br />
+					<table class="maintbl">
+						<tbody>
+				</cfif>
+				<cfloop collection="#fields#" item="idx">
+					<cfset field=fields[idx]>
+					<cfif StructKeyExists(datasource,"custom") and StructKeyExists(datasource.custom,field.getName())>
+						<cfset default=datasource.custom[field.getName()]>
+					<cfelse>
+						<cfset default=field.getDefaultValue()>
+					</cfif>
+					<cfset type=field.getType()>
+					<tr>
+						<th scope="row">#field.getDisplayName()#</th>
+						<td>
+							<cfif type EQ "text" or type EQ "password">
+								<cfinput type="#type#" 
+									name="custom_#field.getName()#" 
+									value="#default#" class="large" required="#field.getRequired()#" 
+									message="Missing value for field #field.getDisplayName()#">
+							<cfelseif type EQ "select">
+								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
+								<select name="custom_#field.getName()#" class="large">
+									<cfif not field.getRequired()><option value=""> ---------- </option></cfif>
+									<cfif len(trim(default))>
+										<cfloop index="item" list="#field.getDefaultValue()#">
+											<option <cfif item EQ default>selected="selected"</cfif> >#item#</option>
+										</cfloop>
+									</cfif>
+								</select>
+							<!--- @todo type checkbox --->
+							<cfelseif type EQ "radio">
+								<cfif default EQ field.getDefaultValue() and field.getRequired()><cfset default=listFirst(default)></cfif>
+								<cfloop index="item" list="#field.getDefaultValue()#">
+									<cfinput type="radio" class="radio" name="custom_#field.getName()#" value="#item#" checked="#item EQ default#">
+									#item#
+								</cfloop>
+							<!--- @todo type checkbox,radio --->
+							</cfif>
+						</td>
+					</tr>
+				</cfloop>
+				<tr>
+					<th scope="row">#stText.Settings.verifyConnection#</th>
+					<td><input type="checkbox" class="checkbox" checked="checked" name="verify" value="true" /></td>
+				</tr>
+				<cfmodule template="remoteclients.cfm" colspan="2">
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+						<input type="hidden" name="mark" value="#structKeyExists(form,'mark')?form.mark:'update'#">
+						<input type="hidden" name="run" value="create2">
+						<input type="submit" class="button submit" name="_run" value="#stText.Buttons[actionType]#">
+						<input onclick="window.location='#request.self#?action=#url.action#';" type="button" class="button" name="cancel" value="#stText.Buttons.Cancel#">
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
 </cfoutput>

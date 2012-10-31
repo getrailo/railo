@@ -25,6 +25,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class Mapping {
 
@@ -121,8 +122,8 @@ public class Mapping {
 				ps = pc.toPageSource(children[i],null);
 				cfc = ComponentLoader.loadComponent(pc, null, ps, children[i].getName(), true,true);
 				meta = cfc.getMetaData(pc);
-				if(Caster.toBooleanValue(meta.get(RestUtil.REST,null),false)){
-					path = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
+				if(Caster.toBooleanValue(meta.get(KeyConstants._rest,null),false)){
+					path = Caster.toString(meta.get(KeyConstants._restPath,null),null);
 					sources.add(new Source(mapping, cfc.getPageSource(), path));
 				}
 			}

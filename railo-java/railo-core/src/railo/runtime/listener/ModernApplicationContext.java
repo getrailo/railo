@@ -54,7 +54,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.intern("setClientCookies");
 	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.intern("setDomainCookies");
 	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.intern("scriptProtect");
-	private static final Collection.Key MAPPINGS = KeyImpl.intern("mappings");
+	private static final Collection.Key MAPPINGS = KeyConstants._mappings;
 	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.intern("customtagpaths");
 	private static final Collection.Key COMPONENT_PATHS = KeyImpl.intern("componentpaths");
 	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.intern("secureJsonPrefix");
@@ -183,7 +183,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public void reinitORM(PageContext pc) throws PageException {
 
 		// datasource
-		Object o = get(component,KeyImpl.DATA_SOURCE,null);
+		Object o = get(component,KeyConstants._datasource,null);
 		if(o!=null) {
 			String ds;
 			if(Decision.isStruct(o)) {
@@ -600,7 +600,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 */
 	public Properties getS3() {
 		if(!initS3) {
-			Object o = get(component,KeyImpl.S3,null);
+			Object o = get(component,KeyConstants._s3,null);
 			if(o!=null && Decision.isStruct(o))s3=AppListenerUtil.toS3(Caster.toStruct(o,null));
 			initS3=true; 
 		}

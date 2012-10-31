@@ -22,6 +22,7 @@ import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
 
@@ -126,10 +127,10 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		if(key.equalsIgnoreCase(KeyImpl.SUPER)) {
+		if(key.equalsIgnoreCase(KeyConstants._super)) {
 			return SuperComponent.superInstance((ComponentImpl)ComponentUtil.getActiveComponent(ThreadLocalPageContext.get(),component)._base());
 		}
-		if(key.equalsIgnoreCase(KeyImpl.THIS)) return component;
+		if(key.equalsIgnoreCase(KeyConstants._this)) return component;
 		
 		Object o=shadow.get(key);
 		if(o!=null) return o;
@@ -166,7 +167,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		while(it.hasNext()) {
 			keys[index++]=it.next();
 		}
-		keys[index]=KeyImpl.THIS_UC;
+		keys[index]=KeyConstants._THIS;
 		return keys;
 	}
 
@@ -174,7 +175,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Collection.Key key) throws PageException {
-		if(key.equalsIgnoreCase(KeyImpl.THIS) || key.equalsIgnoreCase(KeyImpl.SUPER))
+		if(key.equalsIgnoreCase(KeyConstants._this) || key.equalsIgnoreCase(KeyConstants._super))
 			throw new ExpressionException("key ["+key.getString()+"] is part of the component and can't be removed");
 		
 		Object o=shadow.remove(key);
@@ -185,7 +186,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 
 
 	public Object removeEL(Key key) {
-		if(key.equalsIgnoreCase(KeyImpl.THIS) || key.equalsIgnoreCase(KeyImpl.SUPER))return null;
+		if(key.equalsIgnoreCase(KeyConstants._this) || key.equalsIgnoreCase(KeyConstants._super))return null;
 		return shadow.remove(key);
 	}
 
@@ -193,7 +194,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Collection.Key key, Object value) {
-		if(key.equalsIgnoreCase(KeyImpl.THIS) || key.equalsIgnoreCase(KeyImpl.SUPER)) return value;
+		if(key.equalsIgnoreCase(KeyConstants._this) || key.equalsIgnoreCase(KeyConstants._super)) return value;
 		
 		if(!component.afterConstructor && value instanceof UDF) {
 			component.addConstructorUDF(key,(UDF)value);

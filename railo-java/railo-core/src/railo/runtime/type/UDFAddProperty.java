@@ -12,6 +12,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.PropertyFactory;
 
 public final class UDFAddProperty extends UDFGSProperty {
@@ -33,7 +34,7 @@ public final class UDFAddProperty extends UDFGSProperty {
 		String t = PropertyFactory.getType(prop);
 		FunctionArgument value = new FunctionArgumentImpl(KeyImpl.init(PropertyFactory.getSingularName(prop)),"any",CFTypes.TYPE_ANY,true);
 		if("struct".equalsIgnoreCase(t)){
-			FunctionArgument key = new FunctionArgumentImpl(KeyImpl.KEY,"string",CFTypes.TYPE_STRING,true);
+			FunctionArgument key = new FunctionArgumentImpl(KeyConstants._key,"string",CFTypes.TYPE_STRING,true);
 			return new FunctionArgument[]{key,value};
 		}
 		return new FunctionArgument[]{value};

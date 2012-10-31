@@ -35,7 +35,6 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.UDF;
@@ -448,10 +447,10 @@ public final class Directory extends TagImpl  {
             if(filter==null || filter.accept(list[i])) {
                 query.addRow(1);
                 count++;
-                query.setAt(KeyImpl.NAME,count,list[i].getName());
+                query.setAt(KeyConstants._name,count,list[i].getName());
                 isDir=list[i].isDirectory();
-                query.setAt(KeyImpl.SIZE,count,new Double(isDir?0:list[i].length()));
-                query.setAt(KeyImpl.TYPE,count,isDir?"Dir":"File");
+                query.setAt(KeyConstants._size,count,new Double(isDir?0:list[i].length()));
+                query.setAt(KeyConstants._type,count,isDir?"Dir":"File");
                 if(directory.getResourceProvider().isModeSupported()){
                         	
                 	query.setAt(MODE,count,new ModeObjectWrap(list[i]));
@@ -478,7 +477,7 @@ public final class Directory extends TagImpl  {
             if(filter==null || filter.accept(directory,list[i])) {
                 query.addRow(1);
                 count++;
-                query.setAt(KeyImpl.NAME,count,list[i]);  
+                query.setAt(KeyConstants._name,count,list[i]);  
             }     
         }
         return count;
@@ -491,7 +490,7 @@ public final class Directory extends TagImpl  {
             if(filter==null || filter.accept(list[i])) {
                 query.addRow(1);
                 count++;
-                query.setAt(KeyImpl.NAME,count,parent.concat(list[i].getName()));
+                query.setAt(KeyConstants._name,count,parent.concat(list[i].getName()));
                 
             } 
             if(recurse && list[i].isDirectory())
