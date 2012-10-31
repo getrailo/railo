@@ -256,7 +256,7 @@ public abstract class ComponentPage extends Page  {
 		Object value;
 		UDF udf;
 		Struct meta;
-		int status=404;
+		int status=405;
 		MimeType bestP,bestC;
 		while(it.hasNext()){
 			e = it.next();
