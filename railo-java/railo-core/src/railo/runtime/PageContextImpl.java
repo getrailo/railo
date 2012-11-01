@@ -2113,6 +2113,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		accept.add(MimeType.APPLICATION_CFML);
     		hasFormatExtension=true;
     	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".serialize")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-10);
+    		format = UDF.RETURN_FORMAT_SERIALIZE;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_CFML);
+    		hasFormatExtension=true;
+    	}
     	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".xml")) {
     		pathInfo=pathInfo.substring(0,pathInfo.length()-4);
     		format = UDF.RETURN_FORMAT_XML;
