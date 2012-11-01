@@ -6,13 +6,25 @@
 		,field("Minimal Execution Time","minimal","0",true,{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
 		,field("Highlight","highlight","250000",true,{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
 		,group("Custom Debugging Output","Define what is outputted",3)
-		,field("Database Activity","database",true,false,"Select this option to show the database activity for the SQL Query events and Stored Procedure events in the debugging output.","checkbox")
-		,field("Exceptions","exception",true,false,"Select this option to output all exceptions raised for the request. ","checkbox")
-		,field("Tracing","tracing",true,false,"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.","checkbox")
-		,field("Timer","timer",true,false,"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. ","checkbox")
-		,field("Implicit variable Access","implicitAccess",true,false,"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). ","checkbox")
-		,field("Scope Variables","scopes","",true,"Enable Scope reporting","checkbox","Application,CGI,Client,Cookie,Form,Request,Server,Session,URL")
-		,field("General Debug Information ","general",true,false,"Select this option to show general information about this request. General items are Railo Version, Template, Time Stamp, User Locale, User Agent, User IP, and Host Name. ","checkbox")
+		,field("Database Activity","database",true,false,
+			"Select this option to show the database activity for the SQL Query events and Stored Procedure events in the debugging output."
+			,"checkbox","Enabled")
+		,field("Exceptions","exception",true,false,
+			"Select this option to output all exceptions raised for the request. "
+			,"checkbox","Enabled")
+		,field("Tracing","tracing",true,false,
+			"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag."
+			,"checkbox","Enabled")
+		,field("Timer","timer",true,false,
+			"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. "
+			,"checkbox","Enabled")
+		,field("Implicit variable Access","implicitAccess",true,false,
+			"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). "
+			,"checkbox","Enabled")
+		,field("Scope Variables","scopes","",true,"Enable Scope reporting","checkbox","Enabled")
+		,field("General Debug Information ","general",true,false,
+		"Select this option to show general information about this request. General items are Railo Version, Template, Time Stamp, User Locale, User Agent, User IP, and Host Name. ",
+		"checkbox","Enabled")
 		);
 		
 		string function getLabel(){
@@ -186,7 +198,7 @@
 			<cfset local.display=structKeyExists(cookie,'railo_debug_modern_info') and cookie.railo_debug_modern_info />
 			
 		
-			<cfif structKeyExists(arguments.custom,"general") and arguments.custom.general>
+			<cfif isEnabled(arguments.custom,'general')>
 				<span class="h2">Debugging Information</span>
 				<table class="tbl" cellpadding="0" cellspacing="0">
 					<tr>
@@ -365,7 +377,7 @@
 				</tr>
 			</table>
 			<!--- Exceptions --->
-			<cfif structKeyExists(arguments.custom,"exception") and arguments.custom.exception and structKeyExists(arguments.debugging,"exceptions")  and arrayLen(arguments.debugging.exceptions)>
+			<cfif isEnabled(arguments.custom,"exception") and structKeyExists(arguments.debugging,"exceptions")  and arrayLen(arguments.debugging.exceptions)>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_exp') and cookie.railo_debug_modern_exp />
 				<cfset exceptions=debugging.exceptions />
 				<span class="h2">Caught Exceptions</span>
@@ -412,7 +424,7 @@
 				</table>
 			</cfif>
 			<!--- Implicit variable Access --->
-			<cfif structKeyExists(arguments.custom,"implicitAccess") and arguments.custom.implicitAccess and implicitAccess.recordcount>
+			<cfif isEnabled(arguments.custom,"implicitAccess") and implicitAccess.recordcount>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_acc') and cookie.railo_debug_modern_acc />
 				<cfset hasAction=!isColumnEmpty(traces,'action') />
 				<cfset hasCategory=!isColumnEmpty(traces,'category') />
@@ -463,7 +475,7 @@
 				</table>
 			</cfif>
 			<!--- Timers --->
-			<cfif structKeyExists(arguments.custom,"timer") and arguments.custom.timer and  timers.recordcount>
+			<cfif isEnabled(arguments.custom,"timer") and timers.recordcount>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_time') and cookie.railo_debug_modern_time />
 				<span class="h2">CFTimer Times</span>
 				<table class="tbl" cellpadding="0" cellspacing="0">
@@ -505,7 +517,7 @@
 				</table>
 			</cfif>
 			<!--- Traces --->
-			<cfif structKeyExists(arguments.custom,"tracing") and arguments.custom.tracing and traces.recordcount>
+			<cfif isEnabled(arguments.custom,"tracing") and traces.recordcount>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_trace') and cookie.railo_debug_modern_trace />
 				<cfset hasAction=!isColumnEmpty(traces,'action') />
 				<cfset hasCategory=!isColumnEmpty(traces,'category') />
@@ -581,7 +593,7 @@
 				</table>
 			</cfif>
 			<!--- Queries --->
-			<cfif structKeyExists(arguments.custom,"database") and arguments.custom.database and queries.recordcount>
+			<cfif isEnabled(arguments.custom,"database") and queries.recordcount>
 				<cfset local.total=0 />
 				<cfset local.records=0 />
 				<cfloop query="queries"><cfset total+=queries.time />
@@ -659,8 +671,8 @@
 			
 			
 			
-			<!--- Queries --->
-			<cfif structKeyExists(arguments.custom,"scopes")>
+			<!--- Scopes --->
+			<cfif isEnabled(arguments.custom,"scopes")>
 				
 				<cfset local.scopes = "application,CGI,cookie,form,request,server,URL">
 			
@@ -691,7 +703,13 @@
 								</tr>
 								<tr>
 									<td></td>
-									<td><div id="scope_#k#_body" style="display:#display?"":"none"#;"><cftry><cfdump var="#v#" keys="1000" label="#sc GT 1000?"First 1000 Records":""#"><cfcatch>not available</cfcatch></cftry></div></td>
+									<td><div id="scope_#k#_body" style="display:#display?"":"none"#;">
+										<cfif local.display>
+										<cftry><cfdump var="#v#" keys="1000" label="#sc GT 1000?"First 1000 Records":""#"><cfcatch>not available</cfcatch></cftry>
+										<cfelse>
+											Scope displayed with the next Request
+										</cfif>
+									</div></td>
 								</tr>
 							</cfloop>
 							
@@ -764,6 +782,10 @@
 				return uCase(mid(str,1,1))&mid(str,2,size);
 			}
 		}
+		private function isEnabled(custom,key){
+			return structKeyExists(arguments.custom,key) and (arguments.custom[arguments.key] EQ "Enabled" or arguments.custom[arguments.key] EQ "true");
+		}
+		
 	</cfscript>
  
 	<cffunction name="formatUnit" output="no" returntype="string">
@@ -795,11 +817,11 @@
         <cfset var gb=mb/1024>
         <cfset var tb=gb/1024>
         
-        <cfif tb GTE 1><cfreturn numberFormat(tb,'0.000')&"tb"></cfif>
-        <cfif gb GTE 1><cfreturn numberFormat(gb,'0.000')&"gb"></cfif>
-        <cfif mb GTE 1><cfreturn numberFormat(mb,'0.000')&"mb"></cfif>
-        <cfif kb GTE 1><cfreturn numberFormat(kb,'0.000')&"kb"></cfif>
-        <cfreturn b&"b">
+        <cfif tb GTE 1><cfreturn numberFormat(tb,'0.0')&"tb"></cfif>
+        <cfif gb GTE 1><cfreturn numberFormat(gb,'0.0')&"gb"></cfif>
+        <cfif mb GTE 1><cfreturn numberFormat(mb,'0.0')&"mb"></cfif>
+        <cfif  b GT 100><cfreturn numberFormat(kb,'0.0')&"kb"></cfif>
+		<cfreturn b&"b">
     </cffunction>
 
 </cfcomponent>
