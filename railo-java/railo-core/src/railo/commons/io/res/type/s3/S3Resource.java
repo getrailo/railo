@@ -17,7 +17,6 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.httpclient3.HTTPEngine3Impl;
 import railo.loader.util.Util;
 import railo.runtime.exp.PageRuntimeException;

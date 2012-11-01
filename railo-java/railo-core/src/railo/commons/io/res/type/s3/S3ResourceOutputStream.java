@@ -7,8 +7,6 @@ import java.net.SocketException;
 import railo.commons.io.TemporaryStream;
 import railo.commons.lang.ExceptionUtil;
 import railo.commons.lang.StringUtil;
-import railo.commons.net.http.Entity;
-import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.httpclient3.HTTPEngine3Impl;
 
 public final class S3ResourceOutputStream extends OutputStream {

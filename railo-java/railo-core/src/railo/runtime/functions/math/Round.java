@@ -5,7 +5,6 @@ package railo.runtime.functions.math;
 
 import java.math.BigDecimal;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 
