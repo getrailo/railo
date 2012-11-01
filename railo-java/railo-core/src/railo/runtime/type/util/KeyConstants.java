@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 
 public class KeyConstants {
