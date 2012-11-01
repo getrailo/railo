@@ -662,20 +662,14 @@
 			<!--- Queries --->
 			<cfif structKeyExists(arguments.custom,"scopes")>
 				
-				<cfset local.scopes = {	application:application,
-											cgi:cgi,
-											cookie:cookie,
-											form:form,
-											request:request,
-											server:server,
-											url:url}>
+				<cfset local.scopes = "application,CGI,cookie,form,request,server,URL">
 			
 			
 				<span class="h2">Scope Information</span>
 				<table class="tbl" cellpadding="0" cellspacing="0">
 					
-							<cfloop list="#listSort(structKeyList(local.scopes),'textnocase')#" index="local.k">
-								<cfset local.v=local.scopes[k]>
+							<cfloop list="#local.scopes#" index="local.k">
+								<cfset local.v=evaluate(k)>
 								<cfset local.display=structKeyExists(cookie,'railo_debug_modern_scope_#k#') and cookie['railo_debug_modern_scope_#k#'] />
 								
 									<td valign="top" nowrap="true">
@@ -683,31 +677,22 @@
 										&nbsp;&nbsp;
 									</td>
 									<td><b>#UCFirst(k)# Scope</b><br>
-									<cfset sizeOf=sizeOf(v,true)>
 									<table class="tbl"  cellpadding="2" cellspacing="0">
-										<!--<tr>
+										<!---<tr>
 											<td align="right">Element Count</td>
 											<td>&nbsp;#sizeOf.count#</td>
 										</tr>--->
+										<cfset local.sc=StructCount(v)>
 										<tr>
 											<td align="right">Estimate Size</td>
-											<td>&nbsp;#byteFormat(sizeOf.size)#</td>
+											<td>&nbsp;<cftry>#byteFormat(sc==0?0:sizeOf(v))#<cfcatch>not available</cfcatch></cftry></td>
 										</tr>
 									</table></td>
 								</tr>
 								<tr>
 									<td></td>
-									<td><div id="scope_#k#_body" style="display:#display?"":"none"#;"><cfdump var="#v#"></div></td>
+									<td><div id="scope_#k#_body" style="display:#display?"":"none"#;"><cftry><cfdump var="#v#" keys="1000" label="#sc GT 1000?"First 1000 Records":""#"><cfcatch>not available</cfcatch></cftry></div></td>
 								</tr>
-								
-								
-								
-								
-								
-								
-								
-							
-							
 							</cfloop>
 							
 				</table>
@@ -802,7 +787,7 @@
 	
 	<cffunction name="byteFormat" output="no">
         <cfargument name="raw" type="numeric">
-        <cfif raw EQ 0><cfreturn 0></cfif>
+        <cfif raw EQ 0><cfreturn "0b"></cfif>
         <cfset var b=raw>
         <cfset var rtn="">
         <cfset var kb=b/1024>
@@ -814,7 +799,7 @@
         <cfif gb GTE 1><cfreturn numberFormat(gb,'0.000')&"gb"></cfif>
         <cfif mb GTE 1><cfreturn numberFormat(mb,'0.000')&"mb"></cfif>
         <cfif kb GTE 1><cfreturn numberFormat(kb,'0.000')&"kb"></cfif>
-        <cfreturn b&"b ">
+        <cfreturn b&"b">
     </cffunction>
 
 </cfcomponent>
