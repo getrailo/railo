@@ -1567,6 +1567,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 			else {
 				data.cfml.setPos(pos);
 				name=expression(data);
+				type = LitString.toExprString( "any" );
 			}
 			comments(data);
 
