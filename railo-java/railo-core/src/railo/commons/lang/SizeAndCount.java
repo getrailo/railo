@@ -19,7 +19,7 @@ import railo.runtime.util.Creation;
 public class SizeAndCount {
 
 	private static final int OBJECT_GRANULARITY_IN_BYTES = 8;
-	private static final int WORD_SIZE = Architecture.getVMArchitecture().getWordSize();
+	private static final int WORD_SIZE = Arch.getVMArchitecture().getWordSize();
 	private static final int HEADER_SIZE = 2 * WORD_SIZE;
 
     private static final int DOUBLE_SIZE = 8;
@@ -171,16 +171,16 @@ public class SizeAndCount {
 }
 
 
-class Architecture {
+class Arch {
 
-	private static final Architecture ARCH_32_BITS=new Architecture(32, 4);
-	private static final Architecture ARCH_64_BITS=new Architecture(64, 8);
-	private static final Architecture ARCH_UNKNOWN=new Architecture(32, 4);
+	private static final Arch ARCH_32_BITS=new Arch(32, 4);
+	private static final Arch ARCH_64_BITS=new Arch(64, 8);
+	private static final Arch ARCH_UNKNOWN=new Arch(32, 4);
     
     private int bits;
     private int wordSize;
 
-    private Architecture(int bits, int wordSize) {
+    private Arch(int bits, int wordSize) {
         this.bits = bits;
         this.wordSize = wordSize;
     }
@@ -193,7 +193,7 @@ class Architecture {
         return wordSize;
     }
 
-    public static Architecture getVMArchitecture() {
+    public static Arch getVMArchitecture() {
         String archString = System.getProperty("sun.arch.data.model");
         if (archString != null) {
             if (archString.equals("32")) {
