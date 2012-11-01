@@ -14119,10 +14119,16 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>obj</name>
 			<type>object</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+			<description>object to get size for</description>
+	    </argument>
+	    <argument>
+			<name>complex</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to false, the size is returned, if set to true a struct containing the element count and the size is returned</description>
+	    </argument>
 		<return>
-			<type>number</type>
+			<type>any</type>
 		</return>
 	</function>
 	<!-- soundex -->
