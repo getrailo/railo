@@ -6,23 +6,23 @@
 		,field("Minimal Execution Time","minimal","0",true,{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
 		,field("Highlight","highlight","250000",true,{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
 		,group("Custom Debugging Output","Define what is outputted",3)
-		,field("Database Activity","database",true,false,
+		,field("Database Activity","database","Enabled",false,
 			"Select this option to show the database activity for the SQL Query events and Stored Procedure events in the debugging output."
 			,"checkbox","Enabled")
-		,field("Exceptions","exception",true,false,
+		,field("Exceptions","exception","Enabled",false,
 			"Select this option to output all exceptions raised for the request. "
 			,"checkbox","Enabled")
-		,field("Tracing","tracing",true,false,
+		,field("Tracing","tracing","Enabled",false,
 			"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag."
 			,"checkbox","Enabled")
-		,field("Timer","timer",true,false,
+		,field("Timer","timer","Enabled",false,
 			"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. "
 			,"checkbox","Enabled")
-		,field("Implicit variable Access","implicitAccess",true,false,
+		,field("Implicit variable Access","implicitAccess","Enabled",false,
 			"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). "
 			,"checkbox","Enabled")
-		,field("Scope Variables","scopes","",true,"Enable Scope reporting","checkbox","Enabled")
-		,field("General Debug Information ","general",true,false,
+		,field("Scope Variables","scopes","Enabled",false,"Enable Scope reporting","checkbox","Enabled")
+		,field("General Debug Information ","general","Enabled",false,
 		"Select this option to show general information about this request. General items are Railo Version, Template, Time Stamp, User Locale, User Agent, User IP, and Host Name. ",
 		"checkbox","Enabled")
 		);
@@ -56,7 +56,7 @@
 		
 		private function isColumnEmpty(query qry,string columnName){
 		if(!isDefined(columnName)) return true;
-		return !len(replace(queryColumnData(qry,columnName),',','','all'));
+		return !len(arrayToList(queryColumnData(qry,columnName),""));
 		}
 	</cfscript>
  
@@ -707,7 +707,7 @@
 										<cfif local.display>
 										<cftry><cfdump var="#v#" keys="1000" label="#sc GT 1000?"First 1000 Records":""#"><cfcatch>not available</cfcatch></cftry>
 										<cfelse>
-											Scope displayed with the next Request
+											the Scope will be displayed with the next request
 										</cfif>
 									</div></td>
 								</tr>
