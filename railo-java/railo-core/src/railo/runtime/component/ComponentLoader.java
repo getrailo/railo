@@ -400,7 +400,7 @@ public class ComponentLoader {
                 
             }
             finally {
-            	rtn.setLoaded(true);
+            	if(rtn!=null)rtn.setLoaded(true);
             	int diff= ((int)(System.nanoTime()-exeTime)-(pc.getExecutionTime()-currTime));
                 pc.setExecutionTime(pc.getExecutionTime()+(int)(System.nanoTime()-time));
                 debugEntry.updateExeTime(diff);
@@ -415,7 +415,7 @@ public class ComponentLoader {
             	rtn=initComponent(pc,page,callPath,isRealPath);
             }
             finally {
-            	rtn.setLoaded(true);
+            	if(rtn!=null)rtn.setLoaded(true);
                 pc.removeLastPageSource(true);
             } 
         }
