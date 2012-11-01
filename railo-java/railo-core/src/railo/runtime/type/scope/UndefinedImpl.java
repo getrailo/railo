@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -19,8 +20,11 @@ import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.util.QueryStack;
 import railo.runtime.util.QueryStackImpl;
@@ -765,6 +769,24 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	 */
 	public boolean getCheckArguments() {
 		return checkArguments;
+	}
+
+    @Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).call(pc,args,false);
+		}
+		throw new ExpressionException("No matching function ["+methodName+"] found");
+	}
+
+    @Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		}
+		throw new ExpressionException("No matching function ["+methodName+"] found");
 	}
 
 
