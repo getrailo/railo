@@ -766,8 +766,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public boolean getCheckArguments() {
 		return checkArguments;
 	}
-
-    @Override
+	
+	@Override
 	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
 		Object obj = get(methodName,null);
 		if(obj instanceof UDF) {
@@ -784,6 +784,4 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		}
 		throw new ExpressionException("No matching function ["+methodName+"] found");
 	}
-
-
 }
