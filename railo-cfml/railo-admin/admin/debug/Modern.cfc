@@ -184,7 +184,87 @@
 			<td class="tblContent" style="padding:10px">
 			<!--- General --->
 			<cfset local.display=structKeyExists(cookie,'railo_debug_modern_info') and cookie.railo_debug_modern_info />
-			<!--- Execution Time --->
+			
+		
+			<cfif structKeyExists(arguments.custom,"general") and arguments.custom.general>
+				<span class="h2">Debugging Information</span>
+				<table class="tbl" cellpadding="0" cellspacing="0">
+					<tr>
+						<td valign="top">
+							<a href="javascript:railoDebugModernToggle('info')"><img vspace="4" src="#display?minus:plus#" id="info_img"></a>
+						</td>
+						<td>
+							<table class="tbl" cellpadding="2" cellspacing="0">
+								<tr>
+									<td class="cfdebug" nowrap>Template</td>
+									<td class="cfdebug">#_cgi.SCRIPT_NAME# (#expandPath(_cgi.SCRIPT_NAME)#)</td>
+								</tr>
+								<tr>
+									<td class="cfdebug" nowrap>User Agent</td>
+									<td class="cfdebug">#_cgi.http_user_agent#</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td valign="top">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+						<td>
+							<div id="info_body" style="display:#display?"":"none"#;"> 
+							<table class="tbl" cellpadding="2" cellspacing="0">
+								<tr>
+									<td class="cfdebug" colspan="2" nowrap>
+										#server.coldfusion.productname# 
+										<cfif StructKeyExists(server.railo,'versionName')>
+											(
+											<a href="#server.railo.versionNameExplanation#" target="_blank">#server.railo.versionName#</a>
+											)
+										</cfif>
+										#ucFirst(server.coldfusion.productlevel)# #uCase(server.railo.state)# #server.railo.version# (CFML Version #server.ColdFusion.ProductVersion#) 
+									</td>
+								</tr>
+								<tr>
+									<td class="cfdebug" nowrap>Time Stamp</td>
+									<td class="cfdebug">#LSDateFormat(now())# #LSTimeFormat(now())#</td>
+								</tr>
+								<tr>
+									<td class="cfdebug" nowrap>Time Zone</td>
+									<td class="cfdebug">#getTimeZone()#</td>
+								</tr>
+								<tr>
+									<td class="cfdebug" nowrap>Locale</td>
+									<td class="cfdebug">#ucFirst(GetLocale())#</td>
+								</tr>
+								<tr>
+									<td class="cfdebug" nowrap>Remote IP</td>
+									<td class="cfdebug">#_cgi.remote_addr#</td>
+								</tr>
+								<tr>
+									<td class="cfdebug" nowrap>Host Name</td>
+									<td class="cfdebug">#_cgi.server_name#</td>
+								</tr>
+								<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+									<tr>
+										<td class="cfdebug" nowrap>Architecture</td>
+										<td class="cfdebug">
+											<cfif server.os.archModel NEQ server.os.archModel>
+												OS #server.os.archModel#bit/JRE #server.java.archModel#bit
+											<cfelse>
+												#server.os.archModel#bit
+											</cfif>
+										</td>
+									</tr>
+								</cfif>
+							</table>
+							<br>
+							</div> 
+						</td>
+					</tr>
+				</table>
+			</cfif>
+			
+			
+			
+		<!--- Execution Time --->
 			<cfset display=structKeyExists(cookie,'railo_debug_modern_exe') and cookie.railo_debug_modern_exe />
 			<span class="h2"><a name="cfdebug_execution">
 					Execution Time
@@ -576,114 +656,63 @@
 					</tr>
 				</table>
 			</cfif>
+			
+			
+			
+			<!--- Queries --->
 			<cfif structKeyExists(arguments.custom,"scopes")>
-				<span class="h2">Scope Information</span>
-				<cfset local.stScopes = {	application:application,
+				
+				<cfset local.scopes = {	application:application,
 											cgi:cgi,
 											cookie:cookie,
 											form:form,
 											request:request,
 											server:server,
 											url:url}>
-				<cftry>
-					<cfset stScopes.application = application>
-					<cfcatch></cfcatch>
-				</cftry>
-				<cftry>
-					<cfset stScopes.client = client>
-					<cfcatch></cfcatch>
-				</cftry>
-				<cftry>
-					<cfset stScopes.session = session>
-					<cfcatch></cfcatch>
-				</cftry>
-				<cfloop list="#arguments.custom.scopes#" index="local.lstScope">
-					<cfif structKeyExists(stScopes, lstScope)>
-						<cftry>
-							<cfdump var="#stScopes[lstScope]#" label="#lstScope#">
-							<cfcatch></cfcatch>
-						</cftry>
-					<cfelse>
-						The #lstScope# scope is not available<br>
-					</cfif>
-				</cfloop>
-			</cfif>
 			
-			<cfif structKeyExists(arguments.custom,"general") and arguments.custom.general>
-				<span class="h2">Debugging Information</span>
+			
+				<span class="h2">Scope Information</span>
 				<table class="tbl" cellpadding="0" cellspacing="0">
-					<tr>
-						<td valign="top">
-							<a href="javascript:railoDebugModernToggle('info')"><img vspace="4" src="#display?minus:plus#" id="info_img"></a>
-						</td>
-						<td>
-							<table class="tbl" cellpadding="2" cellspacing="0">
-								<tr>
-									<td class="cfdebug" nowrap>Template</td>
-									<td class="cfdebug">#_cgi.SCRIPT_NAME# (#expandPath(_cgi.SCRIPT_NAME)#)</td>
-								</tr>
-								<tr>
-									<td class="cfdebug" nowrap>User Agent</td>
-									<td class="cfdebug">#_cgi.http_user_agent#</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td valign="top">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-						<td>
-							<div id="info_body" style="display:#display?"":"none"#;"> 
-							<table class="tbl" cellpadding="2" cellspacing="0">
-								<tr>
-									<td class="cfdebug" colspan="2" nowrap>
-										#server.coldfusion.productname# 
-										<cfif StructKeyExists(server.railo,'versionName')>
-											(
-											<a href="#server.railo.versionNameExplanation#" target="_blank">#server.railo.versionName#</a>
-											)
-										</cfif>
-										#ucFirst(server.coldfusion.productlevel)# #uCase(server.railo.state)# #server.railo.version# (CFML Version #server.ColdFusion.ProductVersion#) 
+					
+							<cfloop list="#listSort(structKeyList(local.scopes),'textnocase')#" index="local.k">
+								<cfset local.v=local.scopes[k]>
+								<cfset local.display=structKeyExists(cookie,'railo_debug_modern_scope_#k#') and cookie['railo_debug_modern_scope_#k#'] />
+								
+									<td valign="top" nowrap="true">
+										<a href="javascript:railoDebugModernToggle('scope_#k#')"><img vspace="4" src="#display?minus:plus#" id="scope_#k#_img"></a> 
+										&nbsp;&nbsp;
 									</td>
+									<td><b>#UCFirst(k)# Scope</b><br>
+									<cfset sizeOf=sizeOf(v,true)>
+									<table class="tbl"  cellpadding="2" cellspacing="0">
+										<!--<tr>
+											<td align="right">Element Count</td>
+											<td>&nbsp;#sizeOf.count#</td>
+										</tr>--->
+										<tr>
+											<td align="right">Estimate Size</td>
+											<td>&nbsp;#byteFormat(sizeOf.size)#</td>
+										</tr>
+									</table></td>
 								</tr>
 								<tr>
-									<td class="cfdebug" nowrap>Time Stamp</td>
-									<td class="cfdebug">#LSDateFormat(now())# #LSTimeFormat(now())#</td>
+									<td></td>
+									<td><div id="scope_#k#_body" style="display:#display?"":"none"#;"><cfdump var="#v#"></div></td>
 								</tr>
-								<tr>
-									<td class="cfdebug" nowrap>Time Zone</td>
-									<td class="cfdebug">#getTimeZone()#</td>
-								</tr>
-								<tr>
-									<td class="cfdebug" nowrap>Locale</td>
-									<td class="cfdebug">#ucFirst(GetLocale())#</td>
-								</tr>
-								<tr>
-									<td class="cfdebug" nowrap>Remote IP</td>
-									<td class="cfdebug">#_cgi.remote_addr#</td>
-								</tr>
-								<tr>
-									<td class="cfdebug" nowrap>Host Name</td>
-									<td class="cfdebug">#_cgi.server_name#</td>
-								</tr>
-								<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
-									<tr>
-										<td class="cfdebug" nowrap>Architecture</td>
-										<td class="cfdebug">
-											<cfif server.os.archModel NEQ server.os.archModel>
-												OS #server.os.archModel#bit/JRE #server.java.archModel#bit
-											<cfelse>
-												#server.os.archModel#bit
-											</cfif>
-										</td>
-									</tr>
-								</cfif>
-							</table>
-							<br>
-							</div> 
-						</td>
-					</tr>
+								
+								
+								
+								
+								
+								
+								
+							
+							
+							</cfloop>
+							
 				</table>
 			</cfif>
+			
 			</td>
 			</tr>
 			</table>
@@ -770,5 +799,22 @@
 		</cfif>
 		<cfreturn (arguments.time/1000000)&" ms" />
 	</cffunction>
+	
+	<cffunction name="byteFormat" output="no">
+        <cfargument name="raw" type="numeric">
+        <cfif raw EQ 0><cfreturn 0></cfif>
+        <cfset var b=raw>
+        <cfset var rtn="">
+        <cfset var kb=b/1024>
+        <cfset var mb=kb/1024>
+        <cfset var gb=mb/1024>
+        <cfset var tb=gb/1024>
+        
+        <cfif tb GTE 1><cfreturn numberFormat(tb,'0.000')&"tb"></cfif>
+        <cfif gb GTE 1><cfreturn numberFormat(gb,'0.000')&"gb"></cfif>
+        <cfif mb GTE 1><cfreturn numberFormat(mb,'0.000')&"mb"></cfif>
+        <cfif kb GTE 1><cfreturn numberFormat(kb,'0.000')&"kb"></cfif>
+        <cfreturn b&"b ">
+    </cffunction>
 
 </cfcomponent>
