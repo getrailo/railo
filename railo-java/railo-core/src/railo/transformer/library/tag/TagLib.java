@@ -55,6 +55,7 @@ public class TagLib implements Cloneable {
 
 	private String description;
 	private TagLibTag[] scriptTags;
+	private boolean ignoreUnknowTags;
 
 	
 	/**
@@ -245,6 +246,17 @@ public class TagLib implements Cloneable {
         this.shortName = shortName;
         if(nameSpace==null)nameSpace=shortName.toLowerCase();
     }
+    
+
+	public void setIgnoreUnknowTags(boolean ignoreUnknowTags) {print.e(getDisplayName()+":"+hashCode()+":"+ignoreUnknowTags);
+		this.ignoreUnknowTags=ignoreUnknowTags;
+	}
+	public boolean getIgnoreUnknowTags() {
+		print.e(getDisplayName()+":"+hashCode()+":"+ignoreUnknowTags);
+		return ignoreUnknowTags;
+	}
+    
+    
     /**
      * @return Returns the type.
      */
@@ -316,6 +328,7 @@ public class TagLib implements Cloneable {
 		tl.tags=duplicate(this.tags,deepCopy);
 		tl.type=this.type;
 		tl.source=this.source;
+		tl.ignoreUnknowTags=this.ignoreUnknowTags;
 		
 		return tl;
 	}

@@ -10,6 +10,7 @@
 	<description></description>
 	<name-space>cf</name-space>
 	<name-space-separator/>
+	<ignore-unknow-tags>false</ignore-unknow-tags>
 	<el>
 		<el-class>railo.transformer.cfml.expression.CFMLExprTransformer</el-class>
 	</el>

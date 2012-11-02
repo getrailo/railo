@@ -287,12 +287,21 @@ public final class CFMLTransformer {
 				
 				if(data.cfml.isAfterLast()) break;
 				if(data.cfml.forwardIfCurrent("</")){
+					int pos = data.cfml.getPos();
 					TagLib tagLib=nameSpace(data);
 					if(tagLib==null){
 						page.addPrintOut("</", null,null);
 					}
 					else {
-						throw new TemplateException(cfml,"no matching start tag for end tag ["+tagLib.getNameSpaceAndSeparator()+identifier(data.cfml,true)+"]");
+						String name = identifier(data.cfml,true);
+						if(tagLib.getIgnoreUnknowTags()) {
+							TagLibTag tlt = tagLib.getTag(name);
+							if(tlt==null) {
+								data.cfml.setPos(pos);
+								page.addPrintOut("</", null,null);
+							}
+						}
+						else throw new TemplateException(cfml,"no matching start tag for end tag ["+tagLib.getNameSpaceAndSeparator()+name+"]");
 			
 					}
 				}
@@ -514,8 +523,13 @@ public final class CFMLTransformer {
 		// get taglib
 		if(tagLibTag==null)	{
 			tagLibTag=tagLib.getAppendixTag(strName);
-			 if(tagLibTag==null)
+			 if(tagLibTag==null) {
+				 if(tagLib.getIgnoreUnknowTags()){
+					 data.cfml.setPos(start);
+					 return false;
+				 } 
 				 throw new TemplateException(data.cfml,"undefined tag ["+tagLib.getNameSpaceAndSeparator()+strName+"]");
+			 }
 			appendix=StringUtil.removeStartingIgnoreCase(strNameNormal,tagLibTag.getName());
 		 }
 		

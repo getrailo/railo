@@ -316,6 +316,8 @@ public final class TagLibFactory extends DefaultHandler {
             // display-name
             else if(inside.equals("display-name")) lib.setDisplayName(value);
             else if(inside.equals("displayname")) lib.setDisplayName(value);
+    	    // ignore-unknow-tags
+            else if(inside.equals("ignore-unknow-tags")) lib.setIgnoreUnknowTags(Caster.toBooleanValue(value,false));
             
     	    
             else if(inside.equals("uri")) { 
