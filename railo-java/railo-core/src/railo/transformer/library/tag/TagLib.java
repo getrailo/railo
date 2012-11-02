@@ -248,11 +248,10 @@ public class TagLib implements Cloneable {
     }
     
 
-	public void setIgnoreUnknowTags(boolean ignoreUnknowTags) {print.e(getDisplayName()+":"+hashCode()+":"+ignoreUnknowTags);
+	public void setIgnoreUnknowTags(boolean ignoreUnknowTags) {
 		this.ignoreUnknowTags=ignoreUnknowTags;
 	}
 	public boolean getIgnoreUnknowTags() {
-		print.e(getDisplayName()+":"+hashCode()+":"+ignoreUnknowTags);
 		return ignoreUnknowTags;
 	}
     
