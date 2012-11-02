@@ -674,6 +674,7 @@ public final class CFMLTransformer {
 						throw createTemplateException(data.cfml,"Missing end tag for ["+tagLibTag.getFullName()+"]",tagLibTag);
 					
 					// get TagLib of end Tag
+					int _start = data.cfml.getPos();
 					TagLib tagLibEnd=nameSpace(data);
 					
 					// same NameSpace
@@ -703,14 +704,18 @@ public final class CFMLTransformer {
 										"End Tag ["+
 										tagLibEnd.getNameSpaceAndSeparator()+strNameEnd+"] is not allowed, for this tag only a Start Tag is allowed");
 							data.cfml.setPos(start);
-							
-							throw new TemplateException(data.cfml,
+							if(tagLibEnd.getIgnoreUnknowTags() && (tagLibEnd.getTag(strNameEnd))==null){
+								data.cfml.setPos(_start);
+							}
+							else throw new TemplateException(data.cfml,
 									"Start and End Tag has not the same Name ["+
 									tagLib.getNameSpaceAndSeparator()+strName+"-"+tagLibEnd.getNameSpaceAndSeparator()+strNameEnd+"]");
 						}
-						body.moveStatmentsTo(parent);
-						data.cfml.setPos(posBeforeEndTag);
-						return executeEvaluator(data,tagLibTag, tag);
+					    else {
+							body.moveStatmentsTo(parent);
+							data.cfml.setPos(posBeforeEndTag);
+							return executeEvaluator(data,tagLibTag, tag);
+					    }
 					    /// new part	
 					}
 					body.addPrintOut("</",null,null);
