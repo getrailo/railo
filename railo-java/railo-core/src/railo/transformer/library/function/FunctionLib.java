@@ -14,8 +14,8 @@ import railo.runtime.exp.PageRuntimeException;
 
 
 /**
- * Eine FunctionLib repräsentiert eine FLD, 
- * sie stellt Methoden zur Verfügung um auf alle Informationen 
+ * Eine FunctionLib repraesentiert eine FLD, 
+ * sie stellt Methoden zur Verfuegung um auf alle Informationen 
  * die eine FLD bietet zuzugreifen.
  */
 public final class FunctionLib {
@@ -31,13 +31,13 @@ public final class FunctionLib {
 	private String source;
 	
 	/**
-	 * Geschützer Konstruktor ohne Argumente.
+	 * Geschuetzer Konstruktor ohne Argumente.
 	 */
 	protected FunctionLib() {}
 	
 	/**
-	 * Gibt eine einzelne Funktion der FLD zurück mit dem passenden Namen. 
-	 * Gibt null zurück falls die Funktion nicht existiert.
+	 * Gibt eine einzelne Funktion der FLD zurueck mit dem passenden Namen. 
+	 * Gibt null zurueck falls die Funktion nicht existiert.
 	 * @param name Name der Funktion.
 	 * @return FunctionLibFunction 
 	 */
@@ -46,7 +46,7 @@ public final class FunctionLib {
 	}
 
 	/**
-	 * Gibt die Beschreibung der FLD zurück.
+	 * Gibt die Beschreibung der FLD zurueck.
 	 * @return Beschreibung der FLD.
 	 */
 	public String getDescription() {
@@ -54,7 +54,7 @@ public final class FunctionLib {
 	}
 
 	/**
-	 * Gibt den Namen zur Ausgabe (Präsentation) der FLD zurück.
+	 * Gibt den Namen zur Ausgabe (Praesentation) der FLD zurueck.
 	 * @return Ausgabename.
 	 */
 	public String getDisplayName() {
@@ -62,7 +62,7 @@ public final class FunctionLib {
 	}
 
 	/**
-	 * Gibt den Kurzname der FLD zurück.
+	 * Gibt den Kurzname der FLD zurueck.
 	 * @return Kurzname.
 	 */
 	public String getShortName() {
@@ -70,7 +70,7 @@ public final class FunctionLib {
 	}
 
 	/**
-	 * Gibt die eindeutige URI der FLD zurück.
+	 * Gibt die eindeutige URI der FLD zurueck.
 	 * @return URI.
 	 */
 	public URI getUri() {
@@ -78,7 +78,7 @@ public final class FunctionLib {
 	}
 
 	/**
-	 * Gibt die Version der FLD zurück.
+	 * Gibt die Version der FLD zurueck.
 	 * @return String
 	 */
 	public String getVersion() {
@@ -86,7 +86,7 @@ public final class FunctionLib {
 	}
 
 	/**
-	 * Fügt der FunctionLib eine Funktion (FunctionLibFunction) zu.
+	 * Fuegt der FunctionLib eine Funktion (FunctionLibFunction) zu.
 	 * @param function
 	 */
 	public void setFunction(FunctionLibFunction function) {

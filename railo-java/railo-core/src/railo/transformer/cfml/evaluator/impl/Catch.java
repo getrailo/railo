@@ -3,7 +3,7 @@ package railo.transformer.cfml.evaluator.impl;
 import railo.transformer.cfml.evaluator.ChildEvaluator;
 
 /**
- * Prüft den Kontext des Tag <code>catch</code>.
+ * Prueft den Kontext des Tag <code>catch</code>.
  * Das Tag darf sich nur direkt innerhalb des Tag <code>try</code> befinden.
  */
 public final class Catch extends ChildEvaluator {

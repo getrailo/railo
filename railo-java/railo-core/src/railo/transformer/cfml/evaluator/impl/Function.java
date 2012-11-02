@@ -29,7 +29,7 @@ import railo.transformer.library.function.FunctionLibFunction;
 import railo.transformer.library.tag.TagLibTag;
 
 /**
- * Prüft den Kontext des Tag function.
+ * Prueft den Kontext des Tag function.
  * Das Attribute <code>argument</code> darf nur direkt innerhalb des Tag <code>function</code> liegen.
  * Dem Tag <code>argument</code> muss als erstes im tag function vorkommen
  */

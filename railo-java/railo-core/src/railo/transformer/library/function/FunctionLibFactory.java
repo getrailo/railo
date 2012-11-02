@@ -28,8 +28,8 @@ import railo.transformer.library.tag.TagLibFactory;
 
 /**
  *
- * Die FunctionLibFactory ist der Produzent für eine oder mehrere FunctionLib, 
- * d.H. über statische Methoden (get, getDir) können FunctionLibs geladen werden. 
+ * Die FunctionLibFactory ist der Produzent fuer eine oder mehrere FunctionLib, 
+ * d.H. ueber statische Methoden (get, getDir) koennen FunctionLibs geladen werden. 
  * Die FunctionLibFactory erbt sich vom DefaultHandler. 
  */
 public final class FunctionLibFactory extends DefaultHandler {
@@ -56,7 +56,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 
 	
 	/**
-	 * Privater Konstruktor, der als Eingabe die FLD als InputStream erhält.
+	 * Privater Konstruktor, der als Eingabe die FLD als InputStream erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param is InputStream auf die TLD.
 	 * @throws FunctionLibException
@@ -67,7 +67,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	}*/
 	
 	/**
-	 * Privater Konstruktor, der als Eingabe die FLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die FLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws FunctionLibException
@@ -287,15 +287,15 @@ public final class FunctionLibFactory extends DefaultHandler {
     }
 
 	/**
-	 * Gibt die interne FunctionLib zurück.
-	 * @return Interne Repräsentation der zu erstellenden FunctionLib.
+	 * Gibt die interne FunctionLib zurueck.
+	 * @return Interne Repraesentation der zu erstellenden FunctionLib.
 	 */
 	private FunctionLib getLib() {
 		return lib;
 	}
 	
 	/**
-	 * Lädt mehrere FunctionLib's die innerhalb eines Verzeichnisses liegen.
+	 * Laedt mehrere FunctionLib's die innerhalb eines Verzeichnisses liegen.
 	 * @param dir Verzeichnis im dem die FunctionLib's liegen.
 	 * @return FunctionLib's als Array
 	 * @throws FunctionLibException
@@ -305,7 +305,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt mehrere FunctionLib's die innerhalb eines Verzeichnisses liegen.
+	 * Laedt mehrere FunctionLib's die innerhalb eines Verzeichnisses liegen.
 	 * @param dir Verzeichnis im dem die FunctionLib's liegen.
 	 * @param saxParser Definition des Sax Parser mit dem die FunctionLib's eingelesen werden sollen.
 	 * @return FunctionLib's als Array
@@ -324,7 +324,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 		return (FunctionLib[]) arr.toArray(new FunctionLib[arr.size()]);
 	}
 	/**
-	 * Lädt eine einzelne FunctionLib.
+	 * Laedt eine einzelne FunctionLib.
 	 * @param file FLD die geladen werden soll.
 	 * @return FunctonLib
 	 * @throws FunctionLibException
@@ -334,7 +334,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt eine einzelne FunctionLib.
+	 * Laedt eine einzelne FunctionLib.
 	 * @param res FLD die geladen werden soll.
 	 * @param saxParser Definition des Sax Parser mit dem die FunctionLib eingelsesen werden soll.
 	 * @return FunctionLib
@@ -353,7 +353,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt die Systeminterne FLD.
+	 * Laedt die Systeminterne FLD.
 	 * @return FunctionLib
 	 * @throws FunctionLibException
 	 */
@@ -362,7 +362,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt die Systeminterne FLD.
+	 * Laedt die Systeminterne FLD.
 	 * @param saxParser Definition des Sax Parser mit dem die FunctionLib eingelsesen werden soll.
 	 * @return FunctionLib
 	 * @throws FunctionLibException

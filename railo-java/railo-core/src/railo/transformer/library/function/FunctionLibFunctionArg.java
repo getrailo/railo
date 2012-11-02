@@ -9,7 +9,7 @@ import railo.transformer.library.tag.TagLib;
 
 
 /**
- * Eine FunctionLibFunctionArg repräsentiert ein einzelnes Argument einer Funktion.
+ * Eine FunctionLibFunctionArg repraesentiert ein einzelnes Argument einer Funktion.
  */
 public final class FunctionLibFunctionArg {
 	
@@ -36,7 +36,7 @@ public final class FunctionLibFunctionArg {
 
 	
 	/**
-	 * Geschützer Konstruktor ohne Argumente.
+	 * Geschuetzer Konstruktor ohne Argumente.
 	 */
 	public FunctionLibFunctionArg() {}
 	public FunctionLibFunctionArg(FunctionLibFunction function) {
@@ -44,7 +44,7 @@ public final class FunctionLibFunctionArg {
 	}
 
 	/**
-	 * Gibt den Typ des Argument als String zurück (query, struct, string usw.)
+	 * Gibt den Typ des Argument als String zurueck (query, struct, string usw.)
 	 * @return Typ des Argument
 	 */
 	public String getTypeAsString() {
@@ -52,7 +52,7 @@ public final class FunctionLibFunctionArg {
 	}
 
 	/**
-	 * Gibt den Typ des Argument zurück (query, struct, string usw.)
+	 * Gibt den Typ des Argument zurueck (query, struct, string usw.)
 	 * @return Typ des Argument
 	 */
 	public short getType() {
@@ -78,7 +78,7 @@ public final class FunctionLibFunctionArg {
 	}
 
 	/**
-	 * Gibt zurück, ob das Argument Pflicht ist oder nicht, alias für isRequired.
+	 * Gibt zurueck, ob das Argument Pflicht ist oder nicht, alias fuer isRequired.
 	 * @return Ist das Argument Pflicht.
 	 */
 	public boolean isRequired() {
@@ -86,7 +86,7 @@ public final class FunctionLibFunctionArg {
 	}
 
 	/**
-	 * Gibt zurück, ob das Argument Pflicht ist oder nicht.
+	 * Gibt zurueck, ob das Argument Pflicht ist oder nicht.
 	 * @return Ist das Argument Pflicht.
 	 */
 	public boolean getRequired() {
@@ -94,16 +94,16 @@ public final class FunctionLibFunctionArg {
 	}
 
 	/**
-	 * Gibt die Funktion zurück zu der das Argument gehört.
-	 * @return Zugehörige Funktion.
+	 * Gibt die Funktion zurueck zu der das Argument gehoert.
+	 * @return Zugehoerige Funktion.
 	 */
 	public FunctionLibFunction getFunction() {
 		return function;
 	}
 
 	/**
-	 * Setzt die Funktion zu der das Argument gehört.
-	 * @param function Zugehörige Funktion.
+	 * Setzt die Funktion zu der das Argument gehoert.
+	 * @param function Zugehoerige Funktion.
 	 */
 	protected void setFunction(FunctionLibFunction function) {
 		this.function = function;

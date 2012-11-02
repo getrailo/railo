@@ -26,8 +26,8 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
- * Die Klasse TagLibFactory liest die XML Repräsentation einer TLD ein 
- * und lädt diese in eine Objektstruktur. 
+ * Die Klasse TagLibFactory liest die XML Repraesentation einer TLD ein 
+ * und laedt diese in eine Objektstruktur. 
  * Sie tut dieses mithilfe eines Sax Parser.
  * Die Klasse kann sowohl einzelne Files oder gar ganze Verzeichnisse von TLD laden.
  */
@@ -69,7 +69,7 @@ public final class TagLibFactory extends DefaultHandler {
 		
 
 	/**
-	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws TagLibException
@@ -90,7 +90,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws TagLibException
@@ -380,8 +380,8 @@ public final class TagLibFactory extends DefaultHandler {
     }
 
 	/**
-	 * Gibt die interne TagLib zurück.
-	 * @return Interne Repräsentation der zu erstellenden TagLib.
+	 * Gibt die interne TagLib zurueck.
+	 * @return Interne Repraesentation der zu erstellenden TagLib.
 	 */
 	private TagLib getLib() {
 		return lib;
@@ -390,8 +390,8 @@ public final class TagLibFactory extends DefaultHandler {
 	/**
 	 * TagLib werden innerhalb der Factory in einer HashMap gecacht,
 	 * so das diese einmalig von der Factory geladen werden. 
-	 * Diese Methode gibt eine gecachte TagLib anhand dessen key zurück, 
-	 * falls diese noch nicht im Cache existiert, gibt die Methode null zurück.
+	 * Diese Methode gibt eine gecachte TagLib anhand dessen key zurueck, 
+	 * falls diese noch nicht im Cache existiert, gibt die Methode null zurueck.
 	 * 
 	 * @param key Absoluter Filepfad zur TLD.
 	 * @return TagLib
@@ -401,7 +401,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
+	 * Laedt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
 	 * @param dir Verzeichnis im dem die TagLib's liegen.
 	 * @return TagLib's als Array
 	 * @throws TagLibException
@@ -411,7 +411,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
+	 * Laedt mehrere TagLib's die innerhalb eines Verzeichnisses liegen.
 	 * @param dir Verzeichnis im dem die TagLib's liegen.
 	 * @param saxParser Definition des Sax Parser mit dem die TagLib's eingelesen werden sollen.
 	 * @return TagLib's als Array
@@ -431,7 +431,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Lädt eine einzelne TagLib.
+	 * Laedt eine einzelne TagLib.
 	 * @param file TLD die geladen werden soll.
 	 * @return TagLib
 	 * @throws TagLibException
@@ -441,7 +441,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Lädt eine einzelne TagLib.
+	 * Laedt eine einzelne TagLib.
 	 * @param file TLD die geladen werden soll.
 	 * @return TagLib
 	 * @throws TagLibException
@@ -451,7 +451,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 
 	/**
-	 * Lädt eine einzelne TagLib.
+	 * Laedt eine einzelne TagLib.
 	 * @param file TLD die geladen werden soll.
 	 * @param saxParser Definition des Sax Parser mit dem die TagLib eingelsesen werden soll.
 	 * @return TagLib
@@ -480,7 +480,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt die Systeminterne TLD.
+	 * Laedt die Systeminterne TLD.
 	 * @return FunctionLib
 	 * @throws TagLibException
 	 */
@@ -489,7 +489,7 @@ public final class TagLibFactory extends DefaultHandler {
 	}
 	
 	/**
-	 * Lädt die Systeminterne TLD.
+	 * Laedt die Systeminterne TLD.
 	 * @param saxParser Definition des Sax Parser mit dem die FunctionLib eingelsesen werden soll.
 	 * @return FunctionLib
 	 * @throws TagLibException

@@ -11,7 +11,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 /**
  *
- * Prüft den Kontext des Tag else.
+ * Prueft den Kontext des Tag else.
  * Das Tag <code>else</code> darf nur direkt innerhalb des Tag <code>if</code> liegen.
  * Dem Tag <code>else</code> darf, innerhalb des Tag <code>if</code>, kein Tag <code>if</code> nachgestellt sein.
  * Das Tag darf auch nur einmal vorkommen innerhalb des Tag if. 

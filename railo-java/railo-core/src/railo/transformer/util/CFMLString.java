@@ -355,10 +355,10 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
+	 * @return Gibt zurueck ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
 	 */
 	public boolean isCurrent(String first,char second) {
 		int start=pos;
@@ -370,10 +370,10 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
 	 * @param first Erstes Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweites Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
+	 * @return Gibt zurueck ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
 	 */
 	public boolean isCurrent(char first,char second) {
 		int start=pos;
@@ -385,12 +385,12 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, 
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Länge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(String first,char second) {
 		int start=pos;
@@ -402,11 +402,11 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt zurück ob ein Wert folgt und vor und hinterher Leerzeichen folgen.
+	 * Gibt zurueck ob ein Wert folgt und vor und hinterher Leerzeichen folgen.
 	 * @param before Definition der Leerzeichen vorher.
 	 * @param val Gefolgter Wert der erartet wird.
 	 * @param after Definition der Leerzeichen nach dem Wert.
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(short before, String val,short after) {
 		int start=pos;
@@ -434,12 +434,12 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, 
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Länge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(char first,char second) {
 		int start=pos;
@@ -451,10 +451,10 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
+	 * @return Gibt zurueck ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
 	 */
 	public boolean isCurrent(String first,String second) {
 		int start=pos;
@@ -466,12 +466,12 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, 
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Länge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(String first,String second) {
 		int start=pos;
@@ -595,8 +595,8 @@ public final class CFMLString {
 	
 	
 	/**
-	 * Gibt zurück ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
-	 * @return Gibt zurück ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
+	 * Gibt zurueck ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
+	 * @return Gibt zurueck ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
 	 */
 	public boolean hasSpaceBefore() {
 		return pos > 0 && lcText[pos - 1] == ' ';
@@ -615,7 +615,7 @@ public final class CFMLString {
 	/**
 	 * Stellt den Zeiger nach vorne, wenn er sich innerhalb von Leerzeichen befindet, 
 	 * bis die Leerzeichen fertig sind. 
-	 * @return Gibt zurück ob der Zeiger innerhalb von Leerzeichen war oder nicht.
+	 * @return Gibt zurueck ob der Zeiger innerhalb von Leerzeichen war oder nicht.
 	 */
 	public boolean removeSpace() {
 		int start=pos;
@@ -633,8 +633,8 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Stellt den internen Zeiger an den Anfang der nächsten Zeile, 
-	 * gibt zurück ob eine weitere Zeile existiert oder ob es bereits die letzte Zeile war.
+	 * Stellt den internen Zeiger an den Anfang der naechsten Zeile, 
+	 * gibt zurueck ob eine weitere Zeile existiert oder ob es bereits die letzte Zeile war.
 	 * @return Existiert eine weitere Zeile.
 	 */
 	public boolean nextLine() {
@@ -658,7 +658,7 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurück, 
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurueck, 
 	 * ausgehend von start bis zum Ende des CFMLString.
 	 * @param start Von wo aus die Untermege ausgegeben werden soll.
 	 * @return Untermenge als Zeichenkette
@@ -668,10 +668,10 @@ public final class CFMLString {
 	}
 
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurück, 
-	 * ausgehend von start mit einer maximalen Länge count.
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurueck, 
+	 * ausgehend von start mit einer maximalen Laenge count.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
-	 * @param count Wie lange die zurückgegebene Zeichenkette maximal sein darf.
+	 * @param count Wie lange die zurueckgegebene Zeichenkette maximal sein darf.
 	 * @return Untermenge als Zeichenkette.
 	 */
 	public String substring(int start, int count) {
@@ -679,7 +679,7 @@ public final class CFMLString {
 	}
 
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurück, 
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurueck, 
 	 * ausgehend von start bis zum Ende des CFMLString.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
 	 * @return  Untermenge als Zeichenkette in Kleinbuchstaben.
@@ -689,10 +689,10 @@ public final class CFMLString {
 	}
 
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurück, 
-	 * ausgehend von start mit einer maximalen Länge count.
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurueck, 
+	 * ausgehend von start mit einer maximalen Laenge count.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
-	 * @param count Wie lange die zurückgegebene Zeichenkette maximal sein darf.
+	 * @param count Wie lange die zurueckgegebene Zeichenkette maximal sein darf.
 	 * @return  Untermenge als Zeichenkette in Kleinbuchstaben.
 	 */
 	public String substringLower(int start, int count) {
@@ -700,7 +700,7 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt eine Untermenge des CFMLString als CFMLString zurück, 
+	 * Gibt eine Untermenge des CFMLString als CFMLString zurueck, 
 	 * ausgehend von start bis zum Ende des CFMLString.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
 	 * @return Untermenge als CFMLString
@@ -710,10 +710,10 @@ public final class CFMLString {
 	}
 	
 	/**
-	* Gibt eine Untermenge des CFMLString als CFMLString zurück, 
-	* ausgehend von start mit einer maximalen Länge count.
+	* Gibt eine Untermenge des CFMLString als CFMLString zurueck, 
+	* ausgehend von start mit einer maximalen Laenge count.
 	* @param start Von wo aus die Untermenge ausgegeben werden soll.
-	* @param count Wie lange die zurückgegebene Zeichenkette maximal sein darf.
+	* @param count Wie lange die zurueckgegebene Zeichenkette maximal sein darf.
 	* @return Untermenge als CFMLString
 	*/
    public CFMLString subCFMLString(int start, int count) {
@@ -721,7 +721,7 @@ public final class CFMLString {
    		
    }
 	
-	/** Gibt den CFMLString als String zurück.
+	/** Gibt den CFMLString als String zurueck.
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -729,7 +729,7 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt die aktuelle Position des Zeigers innerhalb des CFMLString zurück.
+	 * Gibt die aktuelle Position des Zeigers innerhalb des CFMLString zurueck.
 	 * @return Position des Zeigers
 	 */
 	public int getPos() {
@@ -737,7 +737,7 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Setzt die Position des Zeigers innerhalb des CFMLString, ein ungültiger index wird ignoriert.
+	 * Setzt die Position des Zeigers innerhalb des CFMLString, ein ungueltiger index wird ignoriert.
 	  * @param pos Position an die der Zeiger gestellt werde soll.
 	 */
 	public void setPos(int pos) {
@@ -745,7 +745,7 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt die aktuelle Zeile zurück in der der Zeiger des CFMLString steht.
+	 * Gibt die aktuelle Zeile zurueck in der der Zeiger des CFMLString steht.
 	 * @return Zeilennummer
 	 */
 	public int getLine() {
@@ -778,7 +778,7 @@ public final class CFMLString {
 	
 	
 	/**
-	 * Gibt zurück in welcher Zeile die angegebene Position ist.
+	 * Gibt zurueck in welcher Zeile die angegebene Position ist.
 	 * @param pos Position von welcher die Zeile erfragt wird
 	 * @return Zeilennummer
 	 */
@@ -791,7 +791,7 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt die Stelle in der aktuelle Zeile zurück, in welcher der Zeiger steht.
+	 * Gibt die Stelle in der aktuelle Zeile zurueck, in welcher der Zeiger steht.
 	 * @return Position innerhalb der Zeile.
 	 */
 	public int getColumn() {
@@ -799,7 +799,7 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt die Stelle in der Zeile auf die pos zeigt zurück.
+	 * Gibt die Stelle in der Zeile auf die pos zeigt zurueck.
 	 * @param pos Position von welcher die Zeile erfragt wird
 	 * @return Position innerhalb der Zeile.
 	 */
@@ -810,15 +810,15 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt die Zeile auf welcher der Zeiger steht als String zurück.
+	 * Gibt die Zeile auf welcher der Zeiger steht als String zurueck.
 	 * @return Zeile als Zeichenkette
 	 */
 	public String getLineAsString() {
 		return getLineAsString(getLine(pos));
 	}
 	/**
-	 * Gibt die angegebene Zeile als String zurück.
-	 * @param line Zeile die zurück gegeben werden soll
+	 * Gibt die angegebene Zeile als String zurueck.
+	 * @param line Zeile die zurueck gegeben werden soll
 	 * @return Zeile als Zeichenkette
 	 */
 	public String getLineAsString(int line) {
@@ -835,32 +835,32 @@ public final class CFMLString {
 	}
 
 	/**
-	 * Gibt zurück ob der Zeiger auf dem letzten Zeichen steht.
-	 * @return Gibt zurück ob der Zeiger auf dem letzten Zeichen steht.
+	 * Gibt zurueck ob der Zeiger auf dem letzten Zeichen steht.
+	 * @return Gibt zurueck ob der Zeiger auf dem letzten Zeichen steht.
 	 */
 	public boolean isLast() {
 		return pos==lcText.length-1;
 	}
 	
 	/**
-	 * Gibt zurück ob der Zeiger nach dem letzten Zeichen steht.
-	 * @return Gibt zurück ob der Zeiger nach dem letzten Zeichen steht.
+	 * Gibt zurueck ob der Zeiger nach dem letzten Zeichen steht.
+	 * @return Gibt zurueck ob der Zeiger nach dem letzten Zeichen steht.
 	 */
 	public boolean isAfterLast() {
 		return pos>=lcText.length;
 	}
 	/**
-	 * Gibt zurück ob der Zeiger einen korrekten Index hat.
-	 * @return Gibt zurück ob der Zeiger einen korrekten Index hat.
+	 * Gibt zurueck ob der Zeiger einen korrekten Index hat.
+	 * @return Gibt zurueck ob der Zeiger einen korrekten Index hat.
 	 */
 	public boolean isValidIndex() {
 		return pos<lcText.length && pos>-1;
 	}
 	
 	/**
-	 * Gibt zurück, ausgehend von der aktuellen Position, 
-	 * wann das nächste Zeichen folgt das gleich ist wie die Eingabe, 
-	 * falls keines folgt wird –1 zurück gegeben. 
+	 * Gibt zurueck, ausgehend von der aktuellen Position, 
+	 * wann das naechste Zeichen folgt das gleich ist wie die Eingabe, 
+	 * falls keines folgt wird –1 zurueck gegeben. 
 	 * Gross- und Kleinschreibung der Zeichen werden igoriert.
 	 * @param c gesuchtes Zeichen
 	 * @return Zeichen das gesucht werden soll.
@@ -873,8 +873,8 @@ public final class CFMLString {
 	}
 	
 	/**
-	 * Gibt das letzte Wort das sich vor dem aktuellen Zeigerstand befindet zurück, 
-	 * falls keines existiert wird null zurück gegeben.
+	 * Gibt das letzte Wort das sich vor dem aktuellen Zeigerstand befindet zurueck, 
+	 * falls keines existiert wird null zurueck gegeben.
 	 * @return Word vor dem aktuellen Zeigerstand.
 	 */
 	public String lastWord() {
@@ -891,16 +891,16 @@ public final class CFMLString {
 	}
 
 	/**
-	 * Gibt die Länge des CFMLString zurück.
-	 * @return Länge des CFMLString.
+	 * Gibt die Laenge des CFMLString zurueck.
+	 * @return Laenge des CFMLString.
 	 */
 	public int length() {
 		return lcText.length;
 	}
 
 	/**
-	 * Gibt die Quelle aus dem der CFML Code stammt als File Objekt zurück, 
-	 * falls dies nicht aud einem File stammt wird null zurück gegeben.
+	 * Gibt die Quelle aus dem der CFML Code stammt als File Objekt zurueck, 
+	 * falls dies nicht aud einem File stammt wird null zurueck gegeben.
 	 * @return source Quelle des CFML Code.
 	 */
 	public SourceFile getSourceFile() {
@@ -908,9 +908,9 @@ public final class CFMLString {
 	}
 
 	/**
-	 * Prüft ob das übergebene Objekt diesem Objekt entspricht.
+	 * Prueft ob das uebergebene Objekt diesem Objekt entspricht.
 	 * @param o Object zum vergleichen.
-	 * @return Ist das übergebene Objekt das selbe wie dieses.
+	 * @return Ist das uebergebene Objekt das selbe wie dieses.
 	 */
 	public boolean equals(Object o) {
 		if(!(o instanceof CFMLString))return false;

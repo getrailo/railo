@@ -9,7 +9,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag continue.
+ * Prueft den Kontext des Tag continue.
  * Das Tag <code>break</code> darf nur innerhalb des Tag <code>loop, while, foreach</code> liegen.
  */
 public final class Continue extends EvaluatorSupport {

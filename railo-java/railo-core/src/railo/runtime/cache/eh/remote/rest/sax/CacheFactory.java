@@ -35,7 +35,7 @@ public class CacheFactory extends DefaultHandler {
 
 
 	/**
-	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws IOException 

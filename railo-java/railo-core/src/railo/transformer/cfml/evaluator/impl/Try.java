@@ -13,7 +13,7 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.evaluator.EvaluatorSupport;
 
 /**
- * Prüft den Kontext des Tag <code>try</code>.
+ * Prueft den Kontext des Tag <code>try</code>.
  * Innerhalb des Tag try muss sich am Schluss 1 bis n Tags vom Typ catch befinden.
  */
 public final class Try extends EvaluatorSupport {

@@ -9,7 +9,7 @@ import java.io.IOException;
 public final class FunctionLibException extends IOException {
 
 	/**
-	 * Standart Konstruktor für die Klasse FunctionLibException.
+	 * Standart Konstruktor fuer die Klasse FunctionLibException.
 	 * @param message Fehlermeldungstext.
 	 */
 	public FunctionLibException(String message) {

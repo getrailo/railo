@@ -78,7 +78,7 @@ public final class ASMUtil {
 	private static long id=0;
 		
 	/**
-	 * Gibt zurück ob das direkt übergeordnete Tag mit dem übergebenen Full-Name (Namespace und Name) existiert.
+	 * Gibt zurueck ob das direkt uebergeordnete Tag mit dem uebergebenen Full-Name (Namespace und Name) existiert.
 	 * @param el Startelement, von wo aus gesucht werden soll.
 	 * @param fullName Name des gesuchten Tags.
 	 * @return Existiert ein solches Tag oder nicht.
@@ -89,9 +89,9 @@ public final class ASMUtil {
 	
 
 	/**
-	 * Gibt das übergeordnete CFXD Tag Element zurück, falls dies nicht existiert wird null zurückgegeben.
-	 * @param el Element von dem das parent Element zurückgegeben werden soll.
-	 * @return übergeordnete CFXD Tag Element
+	 * Gibt das uebergeordnete CFXD Tag Element zurueck, falls dies nicht existiert wird null zurueckgegeben.
+	 * @param el Element von dem das parent Element zurueckgegeben werden soll.
+	 * @return uebergeordnete CFXD Tag Element
 	 */
 	public static Tag getParentTag(Tag tag)	{
 		Statement p=tag.getParent();
@@ -200,8 +200,8 @@ public final class ASMUtil {
 
 	
 	/**
-	 * Gibt ein übergeordnetes Tag mit dem übergebenen Full-Name (Namespace und Name) zurück, 
-	 * falls ein solches existiert, andernfalls wird null zurückgegeben.
+	 * Gibt ein uebergeordnetes Tag mit dem uebergebenen Full-Name (Namespace und Name) zurueck, 
+	 * falls ein solches existiert, andernfalls wird null zurueckgegeben.
 	 * @param el Startelement, von wo aus gesucht werden soll.
 	 * @param fullName Name des gesuchten Tags.
 	 * @return  Übergeornetes Element oder null.
@@ -302,7 +302,7 @@ public final class ASMUtil {
 	
 
 	/**
-	 * Prüft ob das das angegebene Tag in der gleichen Ebene nach dem angegebenen Tag vorkommt.
+	 * Prueft ob das das angegebene Tag in der gleichen Ebene nach dem angegebenen Tag vorkommt.
 	 * @param tag Ausgangspunkt, nach diesem tag darf das angegebene nicht vorkommen.
 	 * @param nameToFind Tag Name der nicht vorkommen darf
 	 * @return kommt das Tag vor.
@@ -333,7 +333,7 @@ public final class ASMUtil {
 	
 	
 	/**
-	 * Prüft ob das angegebene Tag innerhalb seiner Ebene einmalig ist oder nicht.
+	 * Prueft ob das angegebene Tag innerhalb seiner Ebene einmalig ist oder nicht.
 	 * @param tag Ausgangspunkt, nach diesem tag darf das angegebene nicht vorkommen.
 	 * @return kommt das Tag vor.
 	 */

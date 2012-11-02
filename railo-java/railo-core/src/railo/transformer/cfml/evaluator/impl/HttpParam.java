@@ -9,7 +9,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag case.
+ * Prueft den Kontext des Tag case.
  * Das Tag <code>httpparam</code> darf nur innerhalb des Tag <code>http</code> liegen.
  */
 public final class HttpParam extends EvaluatorSupport {

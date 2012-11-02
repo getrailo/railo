@@ -10,8 +10,8 @@ import railo.commons.lang.StringUtil;
 
 
 /**
- * Die Klasse TagLibTagAttr repräsentiert ein einzelnes Attribute eines Tag 
- * und hält sämtliche Informationen zu diesem Attribut.
+ * Die Klasse TagLibTagAttr repraesentiert ein einzelnes Attribute eines Tag 
+ * und haelt saemtliche Informationen zu diesem Attribut.
  */
 public final class TagLibTagAttr {
 
@@ -65,14 +65,14 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Geschützer Konstruktor ohne Argumente.
+	 * Geschuetzer Konstruktor ohne Argumente.
 	 */
 	public TagLibTagAttr(TagLibTag tag) {
 	    this.tag=tag;
 	}
 
 	/**
-	 * Gibt den Namen des Attribut zurück.
+	 * Gibt den Namen des Attribut zurueck.
 	 * @return Name des Attribut.
 	 */
 	public String getName() {
@@ -80,7 +80,7 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Gibt zurück, ob das Attribut Pflicht ist oder nicht.
+	 * Gibt zurueck, ob das Attribut Pflicht ist oder nicht.
 	 * @return Ist das Attribut Pflicht.
 	 */
 	public boolean isRequired() {
@@ -125,8 +125,8 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Gibt zurück ob das Attribute eines Tag, mithilfe des ExprTransformer, übersetzt werden soll oder nicht.
-	 * @return Soll das Attribut übbersetzt werden
+	 * Gibt zurueck ob das Attribute eines Tag, mithilfe des ExprTransformer, uebersetzt werden soll oder nicht.
+	 * @return Soll das Attribut uebbersetzt werden
 	 */
 	public boolean getRtexpr() {
 		return rtexpr;
@@ -149,8 +149,8 @@ public final class TagLibTagAttr {
 	}
 
 	/**
-	 * Setzt, ob das Attribute eines Tag, mithilfe des ExprTransformer, übersetzt werden soll oder nicht.
-	 * @param rtexpr Soll das Attribut übbersetzt werden
+	 * Setzt, ob das Attribute eines Tag, mithilfe des ExprTransformer, uebersetzt werden soll oder nicht.
+	 * @param rtexpr Soll das Attribut uebbersetzt werden
 	 */
 	public void setRtexpr(boolean rtexpr) {
 		this.rtexpr = rtexpr;

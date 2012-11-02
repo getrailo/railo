@@ -125,7 +125,7 @@ public final class COMObject implements Objects, Iteratorable {
      * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
      */
     public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
-//      TODO gibt es hier eine bessere möglichkeit?
+//      TODO gibt es hier eine bessere moeglichkeit?
         Iterator<Object> it = args.valueIterator();
     	List<Object> values=new ArrayList<Object>();
         while(it.hasNext()) {

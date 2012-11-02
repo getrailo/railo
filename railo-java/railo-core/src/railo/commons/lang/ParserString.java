@@ -3,9 +3,9 @@ package railo.commons.lang;
 
 
 /**
- 	Der CFMLString ist eine Hilfe für die Transformer, 
- 	er repräsentiert den CFML Code und bietet Methoden an, 
- 	um alle nötigen Informationen auszulesen und Manipulationen durchzuführen. 
+ 	Der CFMLString ist eine Hilfe fuer die Transformer, 
+ 	er repraesentiert den CFML Code und bietet Methoden an, 
+ 	um alle noetigen Informationen auszulesen und Manipulationen durchzufuehren. 
  	Dies um, innerhalb des Transformer, wiederkehrende Zeichenketten-Manipulationen zu abstrahieren.
  *
  */
@@ -36,7 +36,7 @@ public final class ParserString {
 	
 	
 	/**
-	 * Diesen Konstruktor kann er CFML Code als Zeichenkette übergeben werden.
+	 * Diesen Konstruktor kann er CFML Code als Zeichenkette uebergeben werden.
 	 * @param text CFML Code
 	 */
 	public ParserString(String text) {
@@ -44,8 +44,8 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gemeinsame Initialmethode der drei Konstruktoren, diese erhält den CFML Code als 
-	 * char[] und überträgt ihn, in die interen Datenhaltung. 
+	 * Gemeinsame Initialmethode der drei Konstruktoren, diese erhaelt den CFML Code als 
+	 * char[] und uebertraegt ihn, in die interen Datenhaltung. 
 	 * @param str
 	 */
 	protected void init(String str) {
@@ -64,7 +64,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt zurück ob, 
+	 * Gibt zurueck ob, 
 	 * ausgehend von der aktuellen Position des internen Zeigers im Text,
 	 * noch ein Zeichen vorangestellt ist.
 	 * @return boolean Existiert ein weieters Zeichen nach dem Zeiger.
@@ -84,7 +84,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Stellt den internen Zeiger auf die nächste Position. 
+	 * Stellt den internen Zeiger auf die naechste Position. 
 	 * Überlappungen ausserhalb des Index des Textes werden ignoriert.
 	*/
 	public void next(){
@@ -107,7 +107,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt das Zeichen (Character) an der nächsten Position des Zeigers aus.
+	 * Gibt das Zeichen (Character) an der naechsten Position des Zeigers aus.
 	 * @return char Das Zeichen auf dem der Zeiger steht plus 1.
 	 */
 	public char getNext() {
@@ -131,7 +131,7 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt das Zeichen, als Kleinbuchstaben, an der nächsten Position des Zeigers aus.
+	 * Gibt das Zeichen, als Kleinbuchstaben, an der naechsten Position des Zeigers aus.
 	 * @return char Das Zeichen auf dem der Zeiger steht plus 1 als Kleinbuchstaben.
 	 */
 	public char getNextLower() {
@@ -139,7 +139,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt das Zeichen an der angegebenen Position zurück.
+	 * Gibt das Zeichen an der angegebenen Position zurueck.
 	 * @param pos Position des auszugebenen Zeichen.
 	 * @return char Das Zeichen an der angegebenen Position.
 	 */
@@ -148,7 +148,7 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt das Zeichen, als Kleinbuchstaben, an der angegebenen Position zurück.
+	 * Gibt das Zeichen, als Kleinbuchstaben, an der angegebenen Position zurueck.
 	 * @param pos Position des auszugebenen Zeichen.
 	 * @return char Das Zeichen an der angegebenen Position als Kleinbuchstaben.
 	 */
@@ -157,7 +157,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt zurück ob das nächste Zeichen das selbe ist wie das Eingegebene.
+	 * Gibt zurueck ob das naechste Zeichen das selbe ist wie das Eingegebene.
 	 * @param c Zeichen zum Vergleich.
 	 * @return boolean 
 	 */
@@ -172,7 +172,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt zurück ob das nächste Zeichen das selbe ist wie das Eingegebene.
+	 * Gibt zurueck ob das naechste Zeichen das selbe ist wie das Eingegebene.
 	 * @param c Zeichen zum Vergleich.
 	 * @return boolean 
 	 */
@@ -187,7 +187,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt zurück ob das nächste Zeichen das selbe ist wie das Eingegebene.
+	 * Gibt zurueck ob das naechste Zeichen das selbe ist wie das Eingegebene.
 	 * @param c Zeichen zum Vergleich.
 	 * @return boolean 
 	 */
@@ -202,10 +202,10 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob das aktuelle Zeichen zwischen den Angegebenen liegt.
+	 * Gibt zurueck ob das aktuelle Zeichen zwischen den Angegebenen liegt.
 	 * @param left Linker (unterer) Wert.
 	 * @param right Rechter (oberer) Wert.
-	 * @return Gibt zurück ob das aktuelle Zeichen zwischen den Angegebenen liegt.
+	 * @return Gibt zurueck ob das aktuelle Zeichen zwischen den Angegebenen liegt.
 	 */
 	public boolean isCurrentBetween(char left, char right) {
 		if(!isValidIndex()) return false;
@@ -213,8 +213,8 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob das aktuelle Zeichen eine Zahl ist.
-	 * @return Gibt zurück ob das aktuelle Zeichen eine Zahl ist.
+	 * Gibt zurueck ob das aktuelle Zeichen eine Zahl ist.
+	 * @return Gibt zurueck ob das aktuelle Zeichen eine Zahl ist.
 	 */
 	public boolean isCurrentDigit() {
 		if(!isValidIndex()) return false;
@@ -222,8 +222,8 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob das aktuelle Zeichen eine Zahl ist.
-	 * @return Gibt zurück ob das aktuelle Zeichen eine Zahl ist.
+	 * Gibt zurueck ob das aktuelle Zeichen eine Zahl ist.
+	 * @return Gibt zurueck ob das aktuelle Zeichen eine Zahl ist.
 	 */
 	public boolean isCurrentQuoter() {
 		if(!isValidIndex()) return false;
@@ -231,8 +231,8 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
-	 * @return Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
+	 * Gibt zurueck ob das aktuelle Zeichen ein Buchstabe ist.
+	 * @return Gibt zurueck ob das aktuelle Zeichen ein Buchstabe ist.
 	 */
 	public boolean isCurrentLetter() {
 		if(!isValidIndex()) return false;
@@ -279,8 +279,8 @@ public final class ParserString {
 	}
 	
     /**
-     * Gibt zurück ob das aktuelle Zeichen ein Special Buchstabe ist (_,€,$,£).
-     * @return Gibt zurück ob das aktuelle Zeichen ein Buchstabe ist.
+     * Gibt zurueck ob das aktuelle Zeichen ein Special Buchstabe ist (_,€,$,£).
+     * @return Gibt zurueck ob das aktuelle Zeichen ein Buchstabe ist.
      */
     public boolean isCurrentSpecial() {
         if(!isValidIndex()) return false;
@@ -288,7 +288,7 @@ public final class ParserString {
     }
 	
 	/**
-	 * Gibt zurück ob das aktuelle Zeichen das selbe ist wie das Eingegebene.
+	 * Gibt zurueck ob das aktuelle Zeichen das selbe ist wie das Eingegebene.
 	 * @param c char Zeichen zum Vergleich.
 	 * @return boolean
 	 */
@@ -304,7 +304,7 @@ public final class ParserString {
 	
 	/**
 	 * Stellt den Zeiger eins nach vorn, wenn das aktuelle Zeichen das selbe ist wie das Eingegebene, 
-	 * gibt zurück ob es das selbe Zeichen war oder nicht.
+	 * gibt zurueck ob es das selbe Zeichen war oder nicht.
 	 * @param c char Zeichen zum Vergleich.
 	 * @return boolean
 	 */
@@ -317,7 +317,7 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob das aktuelle und die folgenden Zeichen die selben sind,
+	 * Gibt zurueck ob das aktuelle und die folgenden Zeichen die selben sind,
 	 * wie in der angegebenen Zeichenkette.
 	 * @param str String Zeichen zum Vergleich.
 	 * @return boolean
@@ -331,9 +331,9 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob das aktuelle und die folgenden Zeichen die selben sind, 
+	 * Gibt zurueck ob das aktuelle und die folgenden Zeichen die selben sind, 
 	 * wie in der angegebenen Zeichenkette, 
-	 * wenn ja wird der Zeiger um die Länge des String nach vorne gesetzt.
+	 * wenn ja wird der Zeiger um die Laenge des String nach vorne gesetzt.
 	 * @param str String Zeichen zum Vergleich.
 	 * @return boolean
 	 */
@@ -375,8 +375,8 @@ public final class ParserString {
 	
 
 	/**
-	 * Gibt zurück ob das aktuelle und die folgenden Zeichen die selben sind gefolgt nicht von einem word character, 
-	 * wenn ja wird der Zeiger um die Länge des String nach vorne gesetzt.
+	 * Gibt zurueck ob das aktuelle und die folgenden Zeichen die selben sind gefolgt nicht von einem word character, 
+	 * wenn ja wird der Zeiger um die Laenge des String nach vorne gesetzt.
 	 * @param str String Zeichen zum Vergleich.
 	 * @return boolean
 	 */
@@ -398,10 +398,10 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
+	 * @return Gibt zurueck ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
 	 */
 	public boolean isCurrent(String first,char second) {
 		int start=pos;
@@ -413,10 +413,10 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
 	 * @param first Erstes Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweites Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
+	 * @return Gibt zurueck ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
 	 */
 	public boolean isCurrent(char first,char second) {
 		int start=pos;
@@ -428,12 +428,12 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, 
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Länge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(String first,char second) {
 		int start=pos;
@@ -445,11 +445,11 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob ein Wert folgt und vor und hinterher Leerzeichen folgen.
+	 * Gibt zurueck ob ein Wert folgt und vor und hinterher Leerzeichen folgen.
 	 * @param before Definition der Leerzeichen vorher.
 	 * @param val Gefolgter Wert der erartet wird.
 	 * @param after Definition der Leerzeichen nach dem Wert.
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(short before, String val,short after) {
 		int start=pos;
@@ -477,12 +477,12 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, 
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Länge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(char first,char second) {
 		int start=pos;
@@ -494,10 +494,10 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, gefolgt von Leerzeichen und second.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
+	 * @return Gibt zurueck ob die eingegebenen Werte dem Inhalt beim aktuellen Stand des Zeigers entsprechen.
 	 */
 	public boolean isCurrent(String first,String second) {
 		int start=pos;
@@ -509,12 +509,12 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt zurück ob first den folgenden Zeichen entspricht, 
+	 * Gibt zurueck ob first den folgenden Zeichen entspricht, 
 	 * gefolgt von Leerzeichen und second,
-	 * wenn ja wird der Zeiger um die Länge der Übereinstimmung nach vorne gestellt.
+	 * wenn ja wird der Zeiger um die Laenge der Übereinstimmung nach vorne gestellt.
 	 * @param first Erste Zeichen zum Vergleich (Vor den Leerzeichen).
 	 * @param second Zweite Zeichen zum Vergleich (Nach den Leerzeichen).
-	 * @return Gibt zurück ob der Zeiger vorwärts geschoben wurde oder nicht.
+	 * @return Gibt zurueck ob der Zeiger vorwaerts geschoben wurde oder nicht.
 	 */
 	public boolean forwardIfCurrent(String first,String second) {
 		int start=pos;
@@ -593,8 +593,8 @@ public final class ParserString {
 	
 	
 	/**
-	 * Gibt zurück ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
-	 * @return Gibt zurück ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
+	 * Gibt zurueck ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
+	 * @return Gibt zurueck ob sich vor dem aktuellen Zeichen Leerzeichen befinden.
 	 */
 	public boolean hasSpaceBefore() {
 		return pos > 0 && lcText[pos - 1] == ' ';
@@ -603,7 +603,7 @@ public final class ParserString {
 	/**
 	 * Stellt den Zeiger nach vorne, wenn er sich innerhalb von Leerzeichen befindet, 
 	 * bis die Leerzeichen fertig sind. 
-	 * @return Gibt zurück ob der Zeiger innerhalb von Leerzeichen war oder nicht.
+	 * @return Gibt zurueck ob der Zeiger innerhalb von Leerzeichen war oder nicht.
 	 */
 	public boolean removeSpace() {
 		int start=pos;
@@ -614,8 +614,8 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Stellt den internen Zeiger an den Anfang der nächsten Zeile, 
-	 * gibt zurück ob eine weitere Zeile existiert oder ob es bereits die letzte Zeile war.
+	 * Stellt den internen Zeiger an den Anfang der naechsten Zeile, 
+	 * gibt zurueck ob eine weitere Zeile existiert oder ob es bereits die letzte Zeile war.
 	 * @return Existiert eine weitere Zeile.
 	 */
 	public boolean nextLine() {
@@ -630,7 +630,7 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurück, 
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurueck, 
 	 * ausgehend von start bis zum Ende des CFMLString.
 	 * @param start Von wo aus die Untermege ausgegeben werden soll.
 	 * @return Untermenge als Zeichenkette
@@ -640,10 +640,10 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurück, 
-	 * ausgehend von start mit einer maximalen Länge count.
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette zurueck, 
+	 * ausgehend von start mit einer maximalen Laenge count.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
-	 * @param count Wie lange die zurückgegebene Zeichenkette maximal sein darf.
+	 * @param count Wie lange die zurueckgegebene Zeichenkette maximal sein darf.
 	 * @return Untermenge als Zeichenkette.
 	 */
 	public String substring(int start, int count) {
@@ -651,7 +651,7 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurück, 
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurueck, 
 	 * ausgehend von start bis zum Ende des CFMLString.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
 	 * @return  Untermenge als Zeichenkette in Kleinbuchstaben.
@@ -661,10 +661,10 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurück, 
-	 * ausgehend von start mit einer maximalen Länge count.
+	 * Gibt eine Untermenge des CFMLString als Zeichenkette in Kleinbuchstaben zurueck, 
+	 * ausgehend von start mit einer maximalen Laenge count.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
-	 * @param count Wie lange die zurückgegebene Zeichenkette maximal sein darf.
+	 * @param count Wie lange die zurueckgegebene Zeichenkette maximal sein darf.
 	 * @return  Untermenge als Zeichenkette in Kleinbuchstaben.
 	 */
 	public String substringLower(int start, int count) {
@@ -672,7 +672,7 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt eine Untermenge des CFMLString als CFMLString zurück, 
+	 * Gibt eine Untermenge des CFMLString als CFMLString zurueck, 
 	 * ausgehend von start bis zum Ende des CFMLString.
 	 * @param start Von wo aus die Untermenge ausgegeben werden soll.
 	 * @return Untermenge als CFMLString
@@ -682,10 +682,10 @@ public final class ParserString {
 	}
 	
 	/**
-	* Gibt eine Untermenge des CFMLString als CFMLString zurück, 
-	* ausgehend von start mit einer maximalen Länge count.
+	* Gibt eine Untermenge des CFMLString als CFMLString zurueck, 
+	* ausgehend von start mit einer maximalen Laenge count.
 	* @param start Von wo aus die Untermenge ausgegeben werden soll.
-	* @param count Wie lange die zurückgegebene Zeichenkette maximal sein darf.
+	* @param count Wie lange die zurueckgegebene Zeichenkette maximal sein darf.
 	* @return Untermenge als CFMLString
 	*/
    public ParserString subCFMLString(int start, int count) {
@@ -708,7 +708,7 @@ public final class ParserString {
 		*/
    }
 	
-	/** Gibt den CFMLString als String zurück.
+	/** Gibt den CFMLString als String zurueck.
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -716,7 +716,7 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt die aktuelle Position des Zeigers innerhalb des CFMLString zurück.
+	 * Gibt die aktuelle Position des Zeigers innerhalb des CFMLString zurueck.
 	 * @return Position des Zeigers
 	 */
 	public int getPos() {
@@ -724,7 +724,7 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Setzt die Position des Zeigers innerhalb des CFMLString, ein ungültiger index wird ignoriert.
+	 * Setzt die Position des Zeigers innerhalb des CFMLString, ein ungueltiger index wird ignoriert.
 	  * @param pos Position an die der Zeiger gestellt werde soll.
 	 */
 	public void setPos(int pos) {
@@ -732,32 +732,32 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt zurück ob der Zeiger auf dem letzten Zeichen steht.
-	 * @return Gibt zurück ob der Zeiger auf dem letzten Zeichen steht.
+	 * Gibt zurueck ob der Zeiger auf dem letzten Zeichen steht.
+	 * @return Gibt zurueck ob der Zeiger auf dem letzten Zeichen steht.
 	 */
 	public boolean isLast() {
 		return pos==text.length-1;
 	}
 	
 	/**
-	 * Gibt zurück ob der Zeiger nach dem letzten Zeichen steht.
-	 * @return Gibt zurück ob der Zeiger nach dem letzten Zeichen steht.
+	 * Gibt zurueck ob der Zeiger nach dem letzten Zeichen steht.
+	 * @return Gibt zurueck ob der Zeiger nach dem letzten Zeichen steht.
 	 */
 	public boolean isAfterLast() {
 		return pos>=text.length;
 	}
 	/**
-	 * Gibt zurück ob der Zeiger einen korrekten Index hat.
-	 * @return Gibt zurück ob der Zeiger einen korrekten Index hat.
+	 * Gibt zurueck ob der Zeiger einen korrekten Index hat.
+	 * @return Gibt zurueck ob der Zeiger einen korrekten Index hat.
 	 */
 	public boolean isValidIndex() {
 		return pos<text.length;
 	}
 	
 	/**
-	 * Gibt zurück, ausgehend von der aktuellen Position, 
-	 * wann das nächste Zeichen folgt das gleich ist wie die Eingabe, 
-	 * falls keines folgt wird –1 zurück gegeben. 
+	 * Gibt zurueck, ausgehend von der aktuellen Position, 
+	 * wann das naechste Zeichen folgt das gleich ist wie die Eingabe, 
+	 * falls keines folgt wird –1 zurueck gegeben. 
 	 * Gross- und Kleinschreibung der Zeichen werden igoriert.
 	 * @param c gesuchtes Zeichen
 	 * @return Zeichen das gesucht werden soll.
@@ -770,8 +770,8 @@ public final class ParserString {
 	}
 	
 	/**
-	 * Gibt das letzte Wort das sich vor dem aktuellen Zeigerstand befindet zurück, 
-	 * falls keines existiert wird null zurück gegeben.
+	 * Gibt das letzte Wort das sich vor dem aktuellen Zeigerstand befindet zurueck, 
+	 * falls keines existiert wird null zurueck gegeben.
 	 * @return Word vor dem aktuellen Zeigerstand.
 	 */
 	public String lastWord() {
@@ -788,17 +788,17 @@ public final class ParserString {
 	}
 
 	/**
-	 * Gibt die Länge des CFMLString zurück.
-	 * @return Länge des CFMLString.
+	 * Gibt die Laenge des CFMLString zurueck.
+	 * @return Laenge des CFMLString.
 	 */
 	public int length() {
 		return text.length;
 	}
 
 	/**
-	 * Prüft ob das übergebene Objekt diesem Objekt entspricht.
+	 * Prueft ob das uebergebene Objekt diesem Objekt entspricht.
 	 * @param o Object zum vergleichen.
-	 * @return Ist das übergebene Objekt das selbe wie dieses.
+	 * @return Ist das uebergebene Objekt das selbe wie dieses.
 	 */
 	public boolean equals(Object o) {
 		if(!(o instanceof ParserString))return false;

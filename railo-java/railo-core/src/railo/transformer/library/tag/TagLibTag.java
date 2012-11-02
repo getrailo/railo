@@ -27,7 +27,7 @@ import railo.transformer.cfml.evaluator.EvaluatorException;
 import railo.transformer.cfml.tag.TagDependentBodyTransformer;
 
 /**
- * Die Klasse TagLibTag repäsentiert ein einzelne Tag Definition einer TagLib, 
+ * Die Klasse TagLibTag repaesentiert ein einzelne Tag Definition einer TagLib, 
  * beschreibt also alle Informationen die man zum validieren eines Tags braucht. 
  */
 public final class TagLibTag {
@@ -157,7 +157,7 @@ public final class TagLibTag {
 	
 	
 	/**
-	 * Geschützer Konstruktor ohne Argumente.
+	 * Geschuetzer Konstruktor ohne Argumente.
 	 * @param tagLib
 	 */
 	public TagLibTag(TagLib tagLib) {
@@ -165,7 +165,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt alle Attribute (TagLibTagAttr) eines Tag als HashMap zurück.
+	 * Gibt alle Attribute (TagLibTagAttr) eines Tag als HashMap zurueck.
 	 * @return HashMap Attribute als HashMap.
 	 */
 	public Map<String,TagLibTagAttr> getAttributes() {
@@ -173,9 +173,9 @@ public final class TagLibTag {
 	}
 	
 	/**
-	 * Gibt ein bestimmtes Attribut anhand seines Namens zurück, 
-	 * falls dieses Attribut nicht existiert wird null zurückgegeben.
-	 * @param name Name des Attribut das zurückgegeben werden soll.
+	 * Gibt ein bestimmtes Attribut anhand seines Namens zurueck, 
+	 * falls dieses Attribut nicht existiert wird null zurueckgegeben.
+	 * @param name Name des Attribut das zurueckgegeben werden soll.
 	 * @return Attribute das angfragt wurde oder null.
 	 */
 	public TagLibTagAttr getAttribute(String name) {
@@ -186,7 +186,7 @@ public final class TagLibTag {
 
 	
 	/**
-	 * Gibt das erste Attribut, welches innerhalb des Tag definiert wurde, zurück.
+	 * Gibt das erste Attribut, welches innerhalb des Tag definiert wurde, zurueck.
 	 * @return  Attribut das angfragt wurde oder null.
 	 */
 	public TagLibTagAttr getFirstAttribute() {
@@ -194,7 +194,7 @@ public final class TagLibTag {
 	}
 	
 	/**
-	  * Gibt das letzte Attribut, welches innerhalb des Tag definiert wurde, zurück.
+	  * Gibt das letzte Attribut, welches innerhalb des Tag definiert wurde, zurueck.
 	 * @return Attribut das angfragt wurde oder null.
 	 */
 	public TagLibTagAttr getLastAttribute() {
@@ -202,7 +202,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt den Namen des Tag zurück.
+	 * Gibt den Namen des Tag zurueck.
 	 * @return String Name des Tag.
 	 */
 	public String getName() {
@@ -210,7 +210,7 @@ public final class TagLibTag {
 	}
 	
 	/**
-	 * Gibt den kompletten Namen des Tag zurück, inkl. Name-Space und Trenner.
+	 * Gibt den kompletten Namen des Tag zurueck, inkl. Name-Space und Trenner.
 	 * @return String Kompletter Name des Tag.
 	 */
 	public String getFullName() {
@@ -225,7 +225,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt die Klassendefinition, welche diesen Tag implementiert, als Zeichenkette zurück.
+	 * Gibt die Klassendefinition, welche diesen Tag implementiert, als Zeichenkette zurueck.
 	 * Achtung: Die implementierende Klasse ist keine Java Klasse.
 	 * @return String Zeichenkette der Klassendefinition.
 	 */
@@ -265,8 +265,8 @@ public final class TagLibTag {
 	
 	/**
 	 * Gibt die Klassendefinition, der Klasse die den Evaluator (Translation Time Evaluator) implementiert, 
-	 * als Zeichenkette zurück.
-	 * Falls kein Evaluator definiert ist wird null zurückgegeben.
+	 * als Zeichenkette zurueck.
+	 * Falls kein Evaluator definiert ist wird null zurueckgegeben.
 	 * @return String Zeichenkette der Klassendefinition.
 	 */
 	public String getTteClassName() {
@@ -278,8 +278,8 @@ public final class TagLibTag {
 	}
 	
 	/**
-	 * Gibt den Evaluator (Translation Time Evaluator) dieser Klasse zurück.
-	 * Falls kein Evaluator definiert ist, wird null zurückgegeben.
+	 * Gibt den Evaluator (Translation Time Evaluator) dieser Klasse zurueck.
+	 * Falls kein Evaluator definiert ist, wird null zurueckgegeben.
 	 * @return Implementation des Evaluator zu dieser Klasse.
 	 * @throws EvaluatorException Falls die Evaluator-Klasse nicht geladen werden kann.
 	 */
@@ -296,8 +296,8 @@ public final class TagLibTag {
 	}
 	
 	/**
-	 * Gibt den TagDependentBodyTransformer dieser Klasse zurück.
-	 * Falls kein TagDependentBodyTransformer definiert ist, wird null zurückgegeben.
+	 * Gibt den TagDependentBodyTransformer dieser Klasse zurueck.
+	 * Falls kein TagDependentBodyTransformer definiert ist, wird null zurueckgegeben.
 	 * @return Implementation des TagDependentBodyTransformer zu dieser Klasse.
 	 * @throws TagLibException Falls die TagDependentBodyTransformer-Klasse nicht geladen werden kann.
 	 */
@@ -313,7 +313,7 @@ public final class TagLibTag {
 	}
 	
 	/**
-	 * Gibt zurück ob Exception durch die implementierte Klasse abgehandelt werden oder nicht
+	 * Gibt zurueck ob Exception durch die implementierte Klasse abgehandelt werden oder nicht
 	 * @return Wird eine Exception abgehandelt?
 	 */
 	public boolean handleException() {
@@ -321,7 +321,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt zurück, ob eine Klassendefinition
+	 * Gibt zurueck, ob eine Klassendefinition
 	 * der Klasse die den Evaluator (Translation Time Evaluator) implementiert existiert.
 	 * @return Ob eine Evaluator definiert ist.
 	 */
@@ -330,7 +330,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt zurück, ob eine Klassendefinition
+	 * Gibt zurueck, ob eine Klassendefinition
 	 * der Klasse die den TagDependentBodyTransformer implementiert existiert.
 	 * @return Ob eine Evaluator definiert ist.
 	 */
@@ -339,7 +339,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt den Attributetyp der Klasse zurück.
+	 * Gibt den Attributetyp der Klasse zurueck.
 	 * ( ATTRIBUTE_TYPE_FIX, ATTRIBUTE_TYPE_DYNAMIC, ATTRIBUTE_TYPE_NONAME)
 	 * @return int
 	 */
@@ -348,7 +348,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt zurück, ob das Tag einen Body haben kann oder nicht.
+	 * Gibt zurueck, ob das Tag einen Body haben kann oder nicht.
 	 * @return Kann das Tag einen Body haben.
 	 */
 	public boolean getHasBody() {
@@ -356,31 +356,31 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Gibt die maximale Anzahl Attribute zurück, die das Tag haben kann.
-	 * @return Maximale mögliche Anzahl Attribute.
+	 * Gibt die maximale Anzahl Attribute zurueck, die das Tag haben kann.
+	 * @return Maximale moegliche Anzahl Attribute.
 	 */
 	public int getMax() {
 		return max;
 	}
 
 	/**
-	 * Gibt die minimale Anzahl Attribute zurück, die das Tag haben muss.
-	 * @return Minimal mögliche Anzahl Attribute.
+	 * Gibt die minimale Anzahl Attribute zurueck, die das Tag haben muss.
+	 * @return Minimal moegliche Anzahl Attribute.
 	 */
 	public int getMin() {
 		return min;
 	}
 
 	/**
-	 * Gibt die TagLib zurück zu der das Tag gehört.
-	 * @return TagLib Zugehörige TagLib.
+	 * Gibt die TagLib zurueck zu der das Tag gehoert.
+	 * @return TagLib Zugehoerige TagLib.
 	 */
 	public TagLib getTagLib() {
 		return tagLib;
 	}
 	
 	/**
-	 * Gibt zurück ob das Tag seinen Body parsen soll oder nicht.
+	 * Gibt zurueck ob das Tag seinen Body parsen soll oder nicht.
 	 * @return Soll der Body geparst werden.
 	 */
 	public boolean getParseBody() {
@@ -388,7 +388,7 @@ public final class TagLibTag {
 	}
 	
 	/**
-	 * Gibt zurück, ob das Tag einen Appendix besitzen kann oder nicht.
+	 * Gibt zurueck, ob das Tag einen Appendix besitzen kann oder nicht.
 	 * @return Kann das Tag einen Appendix besitzen.
 	 */
 	public boolean hasAppendix() {
@@ -445,7 +445,7 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * Setzt die Information, was für ein BodyContent das Tag haben kann.
+	 * Setzt die Information, was fuer ein BodyContent das Tag haben kann.
 	 * Diese Methode wird durch die Klasse TagLibFactory verwendet.
 	 * @param value BodyContent Information.
 	 */
@@ -577,14 +577,14 @@ public final class TagLibTag {
 	}
 
 	/**
-	 * @return Gibt zurück ob ein Attribut Evaluator definiert ist oder nicht.
+	 * @return Gibt zurueck ob ein Attribut Evaluator definiert ist oder nicht.
 	 */
 	public boolean hasAttributeEvaluator() {
 		return strAttributeEvaluator!=null;
 	}
 
 	/**
-	 * @return Gibt den AttributeEvaluator zum Tag zurück
+	 * @return Gibt den AttributeEvaluator zum Tag zurueck
 	 * @throws AttributeEvaluatorException
 	 */
 	public AttributeEvaluator getAttributeEvaluator() throws AttributeEvaluatorException {

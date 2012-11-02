@@ -12,7 +12,7 @@ import railo.transformer.library.tag.TagLibTag;
 import railo.transformer.util.CFMLString;
 
 /**
- * Prüft den Kontext des Tag <code>catch</code>.
+ * Prueft den Kontext des Tag <code>catch</code>.
  * Das Tag darf sich nur direkt innerhalb des Tag <code>try</code> befinden.
  */ 
 public final class ProcessingDirective extends EvaluatorSupport {

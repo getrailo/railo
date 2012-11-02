@@ -11,19 +11,19 @@ import railo.transformer.util.CFMLString;
 /**
  * Innerhalb einer TLD (Tag Library Descriptor) kann eine Klasse angemeldet werden, 
  * welche das Interface ExprTransfomer implementiert, 
- * um Ausdrücke die innerhalb von Attributen und dem Body von Tags vorkommen zu transformieren. 
- * Die Idee dieses Interface ist es die Möglichkeit zu bieten, 
- * weitere ExprTransfomer zu erstellen zu können, 
- * um für verschiedene TLD, verschiedene Ausdrucksarten zu bieten. 
+ * um Ausdruecke die innerhalb von Attributen und dem Body von Tags vorkommen zu transformieren. 
+ * Die Idee dieses Interface ist es die Moeglichkeit zu bieten, 
+ * weitere ExprTransfomer zu erstellen zu koennen, 
+ * um fuer verschiedene TLD, verschiedene Ausdrucksarten zu bieten. 
  *
  */
 public interface ExprTransformer {
 
 	/**
-	* Wird aufgerufen um aus dem übergebenen CFMLString einen Ausdruck auszulesen 
-	 * und diesen in ein CFXD Element zu übersetzten.
+	* Wird aufgerufen um aus dem uebergebenen CFMLString einen Ausdruck auszulesen 
+	 * und diesen in ein CFXD Element zu uebersetzten.
 	 * <br>
-	 * Beispiel eines übergebenen String:<br>
+	 * Beispiel eines uebergebenen String:<br>
 	 * "session.firstName" oder "trim(left('test'&var1,3))"
 	 * 
 	 * @param fld Array von Function Libraries, 
@@ -38,10 +38,10 @@ public interface ExprTransformer {
 	public Expression transform(Page page,EvaluatorPool ep,FunctionLib[] fld,TagLibTag[] scriptTags,CFMLString cfml, TransfomerSettings settings) throws TemplateException;
 	
 	/**
-	* Wird aufgerufen um aus dem übergebenen CFMLString einen Ausdruck auszulesen 
-	 * und diesen in ein CFXD Element zu übersetzten. Es wird aber davon ausgegangen das es sich um einen String handelt.
+	* Wird aufgerufen um aus dem uebergebenen CFMLString einen Ausdruck auszulesen 
+	 * und diesen in ein CFXD Element zu uebersetzten. Es wird aber davon ausgegangen das es sich um einen String handelt.
 	 * <br>
-	 * Beispiel eines übergebenen String:<br>
+	 * Beispiel eines uebergebenen String:<br>
 	 * "session.firstName" oder "trim(left('test'&var1,3))"
 	 * 
 	 * @param fld Array von Function Libraries, 

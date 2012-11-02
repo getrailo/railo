@@ -62,11 +62,11 @@ import railo.transformer.util.CFMLString;
 /**	
  * Innerhalb des Tag script kann in CFML eine eigene Scriptsprache verwendet werden, 
  * welche sich an Javascript orientiert. 
- * Da der data.cfml Transformer keine Spezialfälle zulässt, 
+ * Da der data.cfml Transformer keine Spezialfaelle zulaesst, 
  * also Tags einfach anhand der eingegeben TLD einliest und transformiert, 
  * aus diesem Grund wird der Inhalt des Tag script einfach als Zeichenkette eingelesen.
- * Erst durch den Evaluator (siehe 3.3), der für das Tag script definiert ist, 
- * wird der Inhalt des Tag script übersetzt.
+ * Erst durch den Evaluator (siehe 3.3), der fuer das Tag script definiert ist, 
+ * wird der Inhalt des Tag script uebersetzt.
  * 
  */
 public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransformer {
@@ -130,7 +130,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 
 	
 	/** 
-	 * Liest sämtliche Statements des CFScriptString ein. 
+	 * Liest saemtliche Statements des CFScriptString ein. 
 	 * <br />
 	 * EBNF:<br />
 	 * <code>{statement spaces};</code>
@@ -145,7 +145,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	}
 	
 	/**
-	 * Liest sämtliche Statements des CFScriptString ein. 
+	 * Liest saemtliche Statements des CFScriptString ein. 
 	 * <br />
 	 * EBNF:<br />
 	 * <code>{statement spaces};</code>
@@ -1489,7 +1489,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	
 	/**
 	 * Ruft die Methode expression der zu vererbenten Klasse auf 
-	 * und prüft ob der Rückgabewert einen boolschen Wert repräsentiert und castet den Wert allenfalls.
+	 * und prueft ob der Rueckgabewert einen boolschen Wert repraesentiert und castet den Wert allenfalls.
 	 * <br />
 	 * EBNF:<br />
 	 * <code>TemplateException::expression;</code>
@@ -1600,7 +1600,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	}
 	
 	/**
-	 * Prüft ob sich der Zeiger am Ende eines Script Blockes befindet
+	 * Prueft ob sich der Zeiger am Ende eines Script Blockes befindet
 	 * @return Ende ScriptBlock?
 	 * @throws TemplateException
 	 */

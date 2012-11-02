@@ -7,7 +7,7 @@ import railo.transformer.cfml.evaluator.EvaluatorSupport;
 
 
 /**
- * Prüft den Kontext des Tag file.
+ * Prueft den Kontext des Tag file.
  * Jenachdem welche action definiert ist sind unterschiedliche Attribute plicht.
  */
 public final class File extends EvaluatorSupport {

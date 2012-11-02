@@ -7,7 +7,7 @@ import railo.transformer.util.CFMLString;
 
 /**
  * Die Klasse TemplateException wird durch den CFMLTransformer geworfen, 
- * wenn dieser auf einen grammatikalischen Fehler in dem zu verarbeitenden CFML Code stösst 
+ * wenn dieser auf einen grammatikalischen Fehler in dem zu verarbeitenden CFML Code stoesst 
  * oder wenn ein Tag oder eine Funktion von der 
  * Definition innerhalb der Tag- bzw. der Funktions- Library abweicht.
  */
@@ -48,8 +48,8 @@ public final class CFMLTransformerException extends Exception {
 	}
 
 	/**
-	 * Gibt eine detaillierte Fehlermeldung zurück.
-	 * Überschreibt toString Methode von java.lang.Objekt, alias für getMessage().
+	 * Gibt eine detaillierte Fehlermeldung zurueck.
+	 * Überschreibt toString Methode von java.lang.Objekt, alias fuer getMessage().
 	 * @return Fehlermeldung als Plain Text Ausgabe
 	 */
 	public String toString()	{
@@ -88,7 +88,7 @@ public final class CFMLTransformerException extends Exception {
 	}
 	
 	/* *
-	 * Gibt eine detaillierte Fehlermeldung als HTML Ausgabe zurück.
+	 * Gibt eine detaillierte Fehlermeldung als HTML Ausgabe zurueck.
 	 * @return Fehlermeldung als HTML Ausgabe.
 	 * /
 	public String getMessageAsHTML()	{
@@ -133,7 +133,7 @@ public final class CFMLTransformerException extends Exception {
 	}*/
 
 	/**
-	 * Gibt die Zeilennummer zurück
+	 * Gibt die Zeilennummer zurueck
 	 * @return Zeilennummer
 	 */
 	public int getLine() {
@@ -141,7 +141,7 @@ public final class CFMLTransformerException extends Exception {
 	}
 	
 	/**
-	 * Gibt die Column der aktuellen Zeile zurück
+	 * Gibt die Column der aktuellen Zeile zurueck
 	 * @return Column der Zeile
 	 */
 	public int getColumn() {

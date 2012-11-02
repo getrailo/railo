@@ -14,8 +14,8 @@ import railo.loader.util.Util;
 import railo.runtime.text.xml.XMLUtil;
 
 /**
- * Die Klasse TagLibFactory liest die XML Repräsentation einer TLD ein 
- * und lädt diese in eine Objektstruktur. 
+ * Die Klasse TagLibFactory liest die XML Repraesentation einer TLD ein 
+ * und laedt diese in eine Objektstruktur. 
  * Sie tut dieses mithilfe eines Sax Parser.
  * Die Klasse kann sowohl einzelne Files oder gar ganze Verzeichnisse von TLD laden.
  */
@@ -34,7 +34,7 @@ public abstract class S3Factory extends DefaultHandler {
 
 
 	/**
-	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhält.
+	 * Privater Konstruktor, der als Eingabe die TLD als File Objekt erhaelt.
 	 * @param saxParser String Klassenpfad zum Sax Parser.
 	 * @param file File Objekt auf die TLD.
 	 * @throws IOException 

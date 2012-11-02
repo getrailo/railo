@@ -8,7 +8,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag case.
+ * Prueft den Kontext des Tag case.
  * Das Tag <code>return</code> darf nur innerhalb des Tag <code>function</code> liegen.
  */
 public final class Return extends EvaluatorSupport {

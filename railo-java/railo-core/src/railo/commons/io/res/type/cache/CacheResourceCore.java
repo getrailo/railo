@@ -44,7 +44,7 @@ public final class CacheResourceCore implements Serializable {
 
 
 	/**
-	 * Gibt den Feldnamen lastModified zurück.
+	 * Gibt den Feldnamen lastModified zurueck.
 	 * @return lastModified
 	 */
 	public long getLastModified() {
@@ -60,7 +60,7 @@ public final class CacheResourceCore implements Serializable {
 	}
 
 	/**
-	 * Gibt den Feldnamen data zurück.
+	 * Gibt den Feldnamen data zurueck.
 	 * @return data
 	 */
 	public byte[] getData() {
@@ -102,7 +102,7 @@ public final class CacheResourceCore implements Serializable {
 	}
 
 	/**
-	 * Gibt den Feldnamen name zurück.
+	 * Gibt den Feldnamen name zurueck.
 	 * @return name
 	 */
 	public String getName() {
@@ -127,7 +127,7 @@ public final class CacheResourceCore implements Serializable {
 	}
 
 	/**
-	 * Gibt den Feldnamen type zurück.
+	 * Gibt den Feldnamen type zurueck.
 	 * @return type
 	 */
 	public int getType() {

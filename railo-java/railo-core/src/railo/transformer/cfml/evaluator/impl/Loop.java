@@ -21,10 +21,10 @@ import railo.transformer.util.CFMLString;
 
 
 /**
- * Prüft den Kontext des Tag loop.
+ * Prueft den Kontext des Tag loop.
  * Die Anforderungen an das Tag unterscheiden sich je nach Definition der Attribute.
  * Falls das Attribute list vorhanden ist, muss auch das Attribute index vorhanden sein.
- * Falls das Attribute list nicht vorhanden ist, aber das Attribute index, müssen auch die Attribute from und to vorhanden sein.
+ * Falls das Attribute list nicht vorhanden ist, aber das Attribute index, muessen auch die Attribute from und to vorhanden sein.
  * Wenn das Attribute condition vorhanden ist, muss dieses mithilfe des ExprTransformer noch transformiert werden. 
  * Falls das Attribute collection verwendet wird, muss auch das Attribute item verwendet werden.
  **/

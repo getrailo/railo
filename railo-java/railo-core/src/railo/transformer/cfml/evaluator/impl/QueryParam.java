@@ -10,7 +10,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 /**
  * TODO remove
- * Prüft den Kontext des Tag queryparam.
+ * Prueft den Kontext des Tag queryparam.
  * Das Tag <code>queryParam</code> darf nur innerhalb des Tag <code>loop, while, foreach</code> liegen.
  */
 public final class QueryParam extends EvaluatorSupport {

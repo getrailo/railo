@@ -17,11 +17,11 @@ import railo.transformer.util.CFMLString;
 /**	
  * Innerhalb des Tag script kann in CFML eine eigene Scriptsprache verwendet werden, 
  * welche sich an Javascript orientiert. 
- * Da der data.cfml Transformer keine Spezialfälle zulässt, 
+ * Da der data.cfml Transformer keine Spezialfaelle zulaesst, 
  * also Tags einfach anhand der eingegeben TLD einliest und transformiert, 
  * aus diesem Grund wird der Inhalt des Tag script einfach als Zeichenkette eingelesen.
- * Erst durch den Evaluator (siehe 3.3), der für das Tag script definiert ist, 
- * wird der Inhalt des Tag script übersetzt.
+ * Erst durch den Evaluator (siehe 3.3), der fuer das Tag script definiert ist, 
+ * wird der Inhalt des Tag script uebersetzt.
  * 
  */
 public final class JavaScriptTransformer extends CFMLExprTransformer implements TagDependentBodyTransformer {

@@ -16,9 +16,9 @@ import railo.commons.io.IOUtil;
 /**
  * Die Klasse PicServlet wird verwendet um Bilder darzustellen, 
  * alle Bilder die innerhalb des Deployer angezeigt werden, 
- * werden über diese Klasse aus der railo.jar Datei geladen, 
+ * werden ueber diese Klasse aus der railo.jar Datei geladen, 
  * das macht die Applikation flexibler 
- * und verlangt nicht das die Bilder für die Applikation an einem bestimmten Ort abgelegt sein müssen. 
+ * und verlangt nicht das die Bilder fuer die Applikation an einem bestimmten Ort abgelegt sein muessen. 
  */
 public final class PicServlet extends HttpServlet {
 	
@@ -28,7 +28,7 @@ public final class PicServlet extends HttpServlet {
 	public final static String PIC_SOURCE=	"/resource/img/";
 	
 	/**
-	 * Interpretiert den Script-Name und lädt das entsprechende Bild aus den internen Resourcen.
+	 * Interpretiert den Script-Name und laedt das entsprechende Bild aus den internen Resourcen.
 	 * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	protected void service(HttpServletRequest req, HttpServletResponse rsp)

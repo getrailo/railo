@@ -14,7 +14,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 
 /**
- * Prüft den Kontext des Tag Mail.
+ * Prueft den Kontext des Tag Mail.
 
  */
 public final class Mail extends EvaluatorSupport {
