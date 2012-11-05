@@ -60,7 +60,8 @@ public final class ComponentController {
 			TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
 			rv=Caster.castTo(p, rt, rv, false);
 			Class clazz = Caster.cfTypeToClass(rt);
-			return AxisCaster.toAxisType(tm,rv,clazz.getComponentType()!=null?clazz:null);
+			String namespace = "cf." + c.getName().toLowerCase();
+			return AxisCaster.toAxisType(tm,rv,clazz.getComponentType()!=null?clazz:null,namespace);
 		} 
 		catch (Throwable t) {
 			throw Caster.toPageException(t);
