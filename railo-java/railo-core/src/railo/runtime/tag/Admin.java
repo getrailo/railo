@@ -245,24 +245,36 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	//adminSync = pageContext.getAdminSync();
     	
     	// Type
-        type=toType(getString("admin",action,"type"),true);
-    	
-        try {
-            // Password
-            password = getString("password","");
-        } 
-        catch (Exception e) {
-            throw Caster.toPageException(e);
-        }
-        
-        config=(ConfigImpl)pageContext.getConfig();
-        if(type==TYPE_SERVER)
-            config=(ConfigImpl)config.getConfigServer(password);
-    	
+    	type=toType(getString("type","web"),true);
+
     	// Action
         Object objAction=attributes.get(KeyConstants._action);
-        if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
+        if(objAction==null)throw new ApplicationException("missing attribute action for tag admin");
         action=StringUtil.toLowerCase(Caster.toString(objAction)).trim();
+        
+        if(action.equals("getloginsettings")) {
+        	doGetLoginSettings();
+        	return SKIP_BODY;
+        }
+        // has Password
+        if(action.equals("haspassword")) {
+           //long start=System.currentTimeMillis();
+            boolean hasPassword=type==TYPE_WEB?
+                    pageContext.getConfig().hasPassword():
+                    pageContext.getConfig().hasServerPassword();
+                    
+            pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toBoolean(hasPassword));
+            return SKIP_BODY;
+        }
+        
+        password = getString("password","");
+
+        
+        config=(ConfigImpl)pageContext.getConfig();
+        if(type==TYPE_SERVER) {
+        	//throw new ApplicationException("password is:" +password);
+            config=(ConfigImpl)config.getConfigServer(password);
+        }
         
         // Generals
         if(action.equals("getlocales")) {
@@ -284,22 +296,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             doGetInfo();
             return SKIP_BODY;
         }
-        if(action.equals("getloginsettings")) {
-        	doGetLoginSettings();
-            return SKIP_BODY;
-        }
         
-        // has Password
-        if(action.equals("haspassword")) {
-           //long start=System.currentTimeMillis();
-            boolean hasPassword=type==TYPE_WEB?
-                    pageContext.getConfig().hasPassword():
-                    pageContext.getConfig().hasServerPassword();
-                    
-            pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toBoolean(hasPassword));
-            return SKIP_BODY;
-        }
-        
+       
         // update Password
         else if(action.equals("updatepassword")) {
             try {
