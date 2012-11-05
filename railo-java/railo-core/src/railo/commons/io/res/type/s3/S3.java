@@ -25,9 +25,9 @@ import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.URLEncoder;
 import railo.commons.net.http.Entity;
-import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
 import railo.commons.net.http.Header;
+import railo.commons.net.http.httpclient3.HTTPEngine3Impl;
 import railo.loader.util.Util;
 import railo.runtime.config.Constants;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -47,6 +47,8 @@ public final class S3 implements S3Constants {
 
 	private static final Map<String,S3Info> infos=new ReferenceMap();
 	private static final Map<String,AccessControlPolicy> acps=new ReferenceMap();
+
+	public static final int MAX_REDIRECT = 15;
 
 	public String toString(){
 		return "secretAccessKey:"+secretAccessKey+";accessKeyId:"+accessKeyId+";host:"+host+";timezone:"+
@@ -140,10 +142,10 @@ public final class S3 implements S3Constants {
 		String dateTimeString = Util.toHTTPTimeString();
 		String signature = createSignature("GET\n\n\n"+dateTimeString+"\n/", getSecretAccessKeyValidate(), "iso-8859-1");
 		
-		HTTPResponse rsp = HTTPEngine.get(new URL("http://"+host), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,
+		HTTPResponse rsp = HTTPEngine3Impl.get(new URL("http://"+host), null, null, -1,MAX_REDIRECT, null, "Railo", null,
 				new Header[]{
-					HTTPEngine.header("Date",dateTimeString),
-					HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
+					header("Date",dateTimeString),
+					header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
 				}
 		);
 		return rsp.getContentAsStream();
@@ -161,16 +163,16 @@ public final class S3 implements S3Constants {
 		
 		
 		List<Header> headers=new ArrayList<Header>();
-		headers.add(HTTPEngine.header("Date",dateTimeString));
-		headers.add(HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
-		headers.add(HTTPEngine.header("Host",bucketName+"."+host));
+		headers.add(header("Date",dateTimeString));
+		headers.add(header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
+		headers.add(header("Host",bucketName+"."+host));
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
 		//if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
 		if(hasObj) {
 			strUrl+=objectName;
 		}
-		HTTPResponse method = HTTPEngine.head(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
+		HTTPResponse method = HTTPEngine3Impl.head(new URL(strUrl), null, null, -1,MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
 		return method;
 		
 	}
@@ -188,9 +190,9 @@ public final class S3 implements S3Constants {
 		
 		
 		List<Header> headers=new ArrayList<Header>();
-		headers.add(HTTPEngine.header("Date",dateTimeString));
-		headers.add(HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
-		headers.add(HTTPEngine.header("Host",bucketName+"."+host));
+		headers.add(header("Date",dateTimeString));
+		headers.add(header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
+		headers.add(header("Host",bucketName+"."+host));
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
 		//if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
@@ -199,7 +201,7 @@ public final class S3 implements S3Constants {
 		}
 		strUrl+="?acl";
 		
-		HTTPResponse method = HTTPEngine.get(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
+		HTTPResponse method = HTTPEngine3Impl.get(new URL(strUrl), null, null, -1,MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
 		return method.getContentAsStream();
 		
 	}
@@ -220,7 +222,7 @@ public final class S3 implements S3Constants {
 		if(hasObj)objectName=checkObjectName(objectName);
 		
 
-		Entity re = HTTPEngine.getByteArrayEntity(acp.toXMLString().getBytes("iso-8859-1"),"text/html");
+		Entity re = HTTPEngine3Impl.getByteArrayEntity(acp.toXMLString().getBytes("iso-8859-1"),"text/html");
 		
 		
 		String dateTimeString = Util.toHTTPTimeString();
@@ -229,10 +231,10 @@ public final class S3 implements S3Constants {
 		String cs = "PUT\n\n"+re.contentType()+"\n"+dateTimeString+"\n/"+bucketName+"/"+(hasObj?objectName:"")+"?acl";
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		Header[] headers = new Header[]{
-				HTTPEngine.header("Content-Type",re.contentType()),
-				HTTPEngine.header("Content-Length",Long.toString(re.contentLength())),
-				HTTPEngine.header("Date",dateTimeString),
-				HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
+				header("Content-Type",re.contentType()),
+				header("Content-Length",Long.toString(re.contentLength())),
+				header("Date",dateTimeString),
+				header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
@@ -243,7 +245,7 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HTTPResponse method = HTTPEngine.put(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, 
+		HTTPResponse method = HTTPEngine3Impl.put(new URL(strUrl), null, null, -1,MAX_REDIRECT, null, 
 				"Railo", null,headers,re);
 		if(method.getStatusCode()!=200){
 			new ErrorFactory(method.getContentAsStream());
@@ -259,13 +261,9 @@ public final class S3 implements S3Constants {
 		
 		
 		List<Header> headers=new ArrayList<Header>();
-		headers.add(HTTPEngine.header("Date",dateTimeString));
-		headers.add(HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
-		headers.add(HTTPEngine.header("Host",bucketName+"."+host));
-		
-		///if(!StringUtil.isEmpty(prefix)) headers.add(HTTPEngine.header("prefix",prefix));
-		//if(!StringUtil.isEmpty(marker)) headers.add(HTTPEngine.header("marker",marker));
-		//if(maxKeys>=0) headers.add(HTTPEngine.header("max-keys",Caster.toString(maxKeys)));
+		headers.add(header("Date",dateTimeString));
+		headers.add(header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature));
+		headers.add(header("Host",bucketName+"."+host));
 		
 		String strUrl="http://"+bucketName+"."+host+"/";
 		if(Util.hasUpperCase(bucketName))strUrl="http://"+host+"/"+bucketName+"/";
@@ -285,7 +283,7 @@ public final class S3 implements S3Constants {
 			amp='&';
 		}
 		
-		HTTPResponse method = HTTPEngine.get(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
+		HTTPResponse method = HTTPEngine3Impl.get(new URL(strUrl), null, null, -1,MAX_REDIRECT, null, "Railo", null,headers.toArray(new Header[headers.size()]));
 		return method.getContentAsStream();
 	}
 	
@@ -346,7 +344,7 @@ public final class S3 implements S3Constants {
 		}
 		
 		byte[] barr = strXML.getBytes("iso-8859-1");
-		put(bucketName, null, acl,HTTPEngine.getByteArrayEntity(barr,"text/html"));	
+		put(bucketName, null, acl,HTTPEngine3Impl.getByteArrayEntity(barr,"text/html"));	
 	}
 	
 	/*public void putObject(String bucketName,String objectName,int acl,Resource res) throws IOException, InvalidKeyException, NoSuchAlgorithmException, PageException, SAXException, EncoderException {
@@ -374,11 +372,11 @@ public final class S3 implements S3Constants {
 		String cs = "PUT\n\n"+re.contentType()+"\n"+dateTimeString+"\nx-amz-acl:"+toStringACL(acl)+"\n/"+bucketName+"/"+objectName;
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		Header[] headers = new Header[]{
-				HTTPEngine.header("Content-Type",re.contentType()),
-				HTTPEngine.header("Content-Length",Long.toString(re.contentLength())),
-				HTTPEngine.header("Date",dateTimeString),
-				HTTPEngine.header("x-amz-acl",toStringACL(acl)),
-				HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
+				header("Content-Type",re.contentType()),
+				header("Content-Length",Long.toString(re.contentLength())),
+				header("Date",dateTimeString),
+				header("x-amz-acl",toStringACL(acl)),
+				header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
@@ -386,7 +384,7 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HTTPResponse method = HTTPEngine.put(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, 
+		HTTPResponse method = HTTPEngine3Impl.put(new URL(strUrl), null, null, -1,MAX_REDIRECT, null, 
 				"Railo", null,headers,re);
 		if(method.getStatusCode()!=200){
 			new ErrorFactory(method.getContentAsStream());
@@ -473,20 +471,17 @@ public final class S3 implements S3Constants {
 		URL url = new URL(strUrl);
 		
 		
-		HTTPResponse method = HTTPEngine.get(url, null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo", null,
+		HTTPResponse method = HTTPEngine3Impl.get(url, null, null, -1,MAX_REDIRECT, null, "Railo", null,
 				new Header[]{
-					HTTPEngine.header("Date",dateTimeString),
-					HTTPEngine.header("Host",bucketName+"."+host),
-					HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
+				header("Date",dateTimeString),
+				header("Host",bucketName+"."+host),
+				header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature)
 				}
 		);
 		if(method.getStatusCode()!=200)
 			new ErrorFactory(method.getContentAsStream());
 		return method;
 	}
-	
-
-	
 
 	public void delete(String bucketName, String objectName) throws IOException, InvalidKeyException, NoSuchAlgorithmException, SAXException {
 		bucketName=checkBucket(bucketName);
@@ -499,8 +494,8 @@ public final class S3 implements S3Constants {
 		String signature = createSignature(cs, getSecretAccessKeyValidate(), "iso-8859-1");
 		
 		Header[] headers =new Header[]{
-				HTTPEngine.header("Date",dateTimeString),
-				HTTPEngine.header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
+				header("Date",dateTimeString),
+				header("Authorization","AWS "+getAccessKeyIdValidate()+":"+signature),
 		};
 		
 		String strUrl="http://"+bucketName+"."+host+"/"+objectName;
@@ -508,7 +503,7 @@ public final class S3 implements S3Constants {
 		
 		
 		
-		HTTPResponse rsp = HTTPEngine.delete(new URL(strUrl), null, null, -1,HTTPEngine.MAX_REDIRECT, null, "Railo",  null,headers);
+		HTTPResponse rsp = HTTPEngine3Impl.delete(new URL(strUrl), null, null, -1,MAX_REDIRECT, null, "Railo",  null,headers);
 		
 		if(rsp.getStatusCode()!=200)
 			new ErrorFactory(rsp.getContentAsStream());
@@ -666,10 +661,12 @@ public final class S3 implements S3Constants {
 		acps.remove(k);
 	}
 
-
-
 	private String toKey(String path) {
 		return toString()+":"+path.toLowerCase();
+	}
+	
+	private Header header(String name, String value) {
+		return HTTPEngine3Impl.header(name,value);
 	}
 
 	public static DateTime toDate(String strDate, TimeZone tz) throws PageException {

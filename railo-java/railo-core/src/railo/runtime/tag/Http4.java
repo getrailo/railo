@@ -126,8 +126,6 @@ public final class Http4 extends BodyTagImpl implements Http {
 	
 	private static final String NO_MIMETYPE="Unable to determine MIME type of file.";
 	
-	private static final int STATUS_OK=200;
-	
 	private static final short GET_AS_BINARY_NO=0;
 	private static final short GET_AS_BINARY_YES=1;
 	private static final short GET_AS_BINARY_AUTO=2;
@@ -1154,7 +1152,8 @@ public final class Http4 extends BodyTagImpl implements Http {
 		
 		
 		// set User Agent
-			req.setHeader("User-Agent",http.useragent);
+			if(!hasHeaderIgnoreCase(req,"User-Agent"))
+				req.setHeader("User-Agent",http.useragent);
 		
 	// set timeout
 		if(http.timeout>0L)HTTPEngine4Impl.setTimeout(params, (int)http.timeout);
@@ -1184,6 +1183,15 @@ public final class Http4 extends BodyTagImpl implements Http {
 		HTTPEngine4Impl.setProxy(client, req, proxy);
 		
 		return req;
+	}
+
+	private static boolean hasHeaderIgnoreCase(HttpRequestBase req,String name) {
+		org.apache.http.Header[] headers = req.getAllHeaders();
+		if(headers==null) return false;
+		for(int i=0;i<headers.length;i++){
+			if(name.equalsIgnoreCase(headers[i].getName())) return true;
+		}
+		return false;
 	}
 
 	private static String headerValue(String value) {

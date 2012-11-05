@@ -126,8 +126,15 @@ public class Ansi92 extends SQLExecutorSupport {
 						,new SQLItem[]{
 			 		new SQLItemImpl(System.currentTimeMillis(),Types.VARCHAR)
 				});
+	    QueryImpl query;
+	    try{
+			query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
+		}
+		catch(Throwable t){
+			// possible that the table not exist, if not there is nothing to clean
+			return;
+		}
 		
-		QueryImpl query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
 		int recordcount=query.getRecordcount();
 		
 		String cfid,name;

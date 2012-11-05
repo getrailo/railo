@@ -237,14 +237,14 @@ public abstract class ComponentPage extends Page  {
 
 		// Consumes
 		MimeType[] cConsumes=null;
-		String strMimeType = Caster.toString(cMeta.get(RestUtil.CONSUMES,null),null);
+		String strMimeType = Caster.toString(cMeta.get(KeyConstants._consumes,null),null);
 		if(!StringUtil.isEmpty(strMimeType,true)){
 			cConsumes = MimeType.getInstances(strMimeType,',');
 		}
 		
 		// Produces
 		MimeType[] cProduces=null;
-		strMimeType = Caster.toString(cMeta.get(RestUtil.PRODUCES,null),null);
+		strMimeType = Caster.toString(cMeta.get(KeyConstants._produces,null),null);
 		if(!StringUtil.isEmpty(strMimeType,true)){
 			cProduces = MimeType.getInstances(strMimeType,',');
 		}
@@ -256,7 +256,7 @@ public abstract class ComponentPage extends Page  {
 		Object value;
 		UDF udf;
 		Struct meta;
-		int status=404;
+		int status=405;
 		MimeType bestP,bestC;
 		while(it.hasNext()){
 			e = it.next();
@@ -267,13 +267,13 @@ public abstract class ComponentPage extends Page  {
 					meta = udf.getMetaData(pc);
 					
 					// check if http method match
-					String httpMethod = Caster.toString(meta.get(RestUtil.HTTP_METHOD,null),null);
+					String httpMethod = Caster.toString(meta.get(KeyConstants._httpmethod,null),null);
 					if(StringUtil.isEmpty(httpMethod) || !httpMethod.equalsIgnoreCase(method)) continue;
 					
 
 					// get consumes mimetype
 					MimeType[] consumes;
-					strMimeType = Caster.toString(meta.get(RestUtil.CONSUMES,null),null);
+					strMimeType = Caster.toString(meta.get(KeyConstants._consumes,null),null);
 					if(!StringUtil.isEmpty(strMimeType,true)){
 						consumes = MimeType.getInstances(strMimeType,',');
 					}
@@ -283,7 +283,7 @@ public abstract class ComponentPage extends Page  {
 					
 					// get produces mimetype
 					MimeType[] produces;
-					strMimeType = Caster.toString(meta.get(RestUtil.PRODUCES,null),null);
+					strMimeType = Caster.toString(meta.get(KeyConstants._produces,null),null);
 					if(!StringUtil.isEmpty(strMimeType,true)){
 						produces = MimeType.getInstances(strMimeType,',');
 					}
@@ -293,7 +293,7 @@ public abstract class ComponentPage extends Page  {
 					
 					
 					
-					String restPath = Caster.toString(meta.get(RestUtil.REST_PATH,null),null);
+					String restPath = Caster.toString(meta.get(KeyConstants._restPath,null),null);
 					
 					// no rest path
 					if(StringUtil.isEmpty(restPath)){
@@ -369,29 +369,37 @@ public abstract class ComponentPage extends Page  {
 		Struct args=new StructImpl(),meta;
 		
 		Key name;
-		String restArgSource;
+		String restArgName,restArgSource,value;
 		for(int i=0;i<fa.length;i++){
 			name = fa[i].getName();
 			meta=fa[i].getMetaData();
-			restArgSource=meta==null?"":Caster.toString(meta.get(RestUtil.REST_ARG_SOURCE,""),"");
+			restArgSource=meta==null?"":Caster.toString(meta.get(KeyConstants._restArgSource,""),"");
+			
 			if("path".equalsIgnoreCase(restArgSource))
-				args.setEL(name, variables.get(name,null));
+				setValue(fa[i],args,name, variables.get(name,null));
 			if("query".equalsIgnoreCase(restArgSource) || "url".equalsIgnoreCase(restArgSource))
-				args.setEL(name, pc.urlScope().get(name,null));
+				setValue(fa[i],args,name, pc.urlScope().get(name,null));
 			if("form".equalsIgnoreCase(restArgSource))
-				args.setEL(name, pc.formScope().get(name,null));
+				setValue(fa[i],args,name, pc.formScope().get(name,null));
 			if("cookie".equalsIgnoreCase(restArgSource))
-				args.setEL(name, pc.cookieScope().get(name,null));
-			if("header".equalsIgnoreCase(restArgSource) || "head".equalsIgnoreCase(restArgSource))
-				args.setEL(name, ReqRspUtil.getHeaderIgnoreCase(pc, name.getString(), null));
+				setValue(fa[i],args,name, pc.cookieScope().get(name,null));
+			if("header".equalsIgnoreCase(restArgSource) || "head".equalsIgnoreCase(restArgSource)) {
+				restArgName=meta==null?"":Caster.toString(meta.get(KeyConstants._restArgName,""),"");
+				if(StringUtil.isEmpty(restArgName))restArgName=name.getString();
+				value=ReqRspUtil.getHeaderIgnoreCase(pc, restArgName, null);
+				setValue(fa[i],args,name,value);
+			}
 			if("matrix".equalsIgnoreCase(restArgSource))
-				args.setEL(name, result.getMatrix().get(name,null));
+				setValue(fa[i],args,name, result.getMatrix().get(name,null));
 			
-			if("body".equalsIgnoreCase(restArgSource) || StringUtil.isEmpty(restArgSource,true))
-				args.setEL(name, ReqRspUtil.getRequestBody(pc,true,null));
+			if("body".equalsIgnoreCase(restArgSource) || StringUtil.isEmpty(restArgSource,true)){
+				boolean isSimple=CFTypes.isSimpleType(fa[i].getType());
+				Object body = ReqRspUtil.getRequestBody(pc,true,null);
+				if(isSimple && !Decision.isSimpleValue(body))
+					body= ReqRspUtil.getRequestBody(pc,false,null);
+				setValue(fa[i],args,name, body);
+			}
 			
-			
-			// TODO  header, else
 		}
 		Object rtn=null;
 		try{
@@ -472,6 +480,14 @@ public abstract class ComponentPage extends Page  {
         	
         }
 		
+	}
+
+	private void setValue(FunctionArgument fa, Struct args, Key name, Object value) {
+		if(value==null){
+			Struct meta = fa.getMetaData();
+			if(meta!=null)value=meta.get(KeyConstants._default,null);
+		}
+		args.setEL(name, value);
 	}
 
 	private void writeOut(PageContext pc, Props props, Object obj, MimeType mt) throws PageException, IOException, ConverterException {

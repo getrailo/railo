@@ -282,8 +282,8 @@ public abstract class ConfigImpl implements Config {
 	private boolean useComponentShadow=true;
 
 	
-	private PrintWriter out=SystemUtil.PRINTWRITER_OUT;
-	private PrintWriter err=SystemUtil.PRINTWRITER_ERR;
+	private PrintWriter out=SystemUtil.getPrintWriter(SystemUtil.OUT);
+	private PrintWriter err=SystemUtil.getPrintWriter(SystemUtil.ERR);
 
 	private DatasourceConnectionPool pool=new DatasourceConnectionPool();
 
@@ -620,6 +620,8 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getClassLoader()
      */
     public ClassLoader getClassLoader() {
+    	if(classLoaderFactory==null)
+    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
     	return classLoaderFactory.getResourceClassLoader();   
     }
 
@@ -627,6 +629,8 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getClassLoader(railo.commons.io.res.Resource[])
      */
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
+    	if(classLoaderFactory==null)
+    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
     	return classLoaderFactory.getResourceClassLoader(reses);   
     }
     
@@ -668,6 +672,7 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getTempDirectory()
      */
     public Resource getTempDirectory() {
+    	if(tempDirectory==null) return SystemUtil.getTempDirectory();
         return tempDirectory;
     }
     

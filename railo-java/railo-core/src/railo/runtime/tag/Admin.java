@@ -244,37 +244,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     public int doStartTag() throws PageException {
     	//adminSync = pageContext.getAdminSync();
     	
-    	// Type
-    	type=toType(getString("type","web"),true);
-
     	// Action
         Object objAction=attributes.get(KeyConstants._action);
-        if(objAction==null)throw new ApplicationException("missing attribute action for tag admin");
+        if(objAction==null)throw new ApplicationException("missing attrbute action for tag admin");
         action=StringUtil.toLowerCase(Caster.toString(objAction)).trim();
-        
-        if(action.equals("getloginsettings")) {
-        	doGetLoginSettings();
-        	return SKIP_BODY;
-        }
-        // has Password
-        if(action.equals("haspassword")) {
-           //long start=System.currentTimeMillis();
-            boolean hasPassword=type==TYPE_WEB?
-                    pageContext.getConfig().hasPassword():
-                    pageContext.getConfig().hasServerPassword();
-                    
-            pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toBoolean(hasPassword));
-            return SKIP_BODY;
-        }
-        
-        password = getString("password","");
-
-        
-        config=(ConfigImpl)pageContext.getConfig();
-        if(type==TYPE_SERVER) {
-        	//throw new ApplicationException("password is:" +password);
-            config=(ConfigImpl)config.getConfigServer(password);
-        }
         
         // Generals
         if(action.equals("getlocales")) {
@@ -292,12 +265,25 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             doGetDebugData();
             return SKIP_BODY;
         }
-        if(action.equals("getinfo")) {
-            doGetInfo();
+        if(action.equals("getloginsettings")) {
+        	doGetLoginSettings();
+            return SKIP_BODY;
+        }
+
+    	// Type
+        type=toType(getString("type","web"),true);
+    	
+        // has Password
+        if(action.equals("haspassword")) {
+           //long start=System.currentTimeMillis();
+            boolean hasPassword=type==TYPE_WEB?
+                    pageContext.getConfig().hasPassword():
+                    pageContext.getConfig().hasServerPassword();
+                    
+            pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toBoolean(hasPassword));
             return SKIP_BODY;
         }
         
-       
         // update Password
         else if(action.equals("updatepassword")) {
             try {
@@ -314,6 +300,11 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         try {
             // Password
             password = getString("password","");
+            // Config
+            config=(ConfigImpl)pageContext.getConfig();
+            if(type==TYPE_SERVER)
+                config=(ConfigImpl)config.getConfigServer(password);
+            
             adminSync = config.getAdminSync();
         	admin = ConfigWebAdmin.newInstance(config,password);
         } 
@@ -513,6 +504,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     		}
     		catch(Throwable t){}
     	}
+    	else if(check("getinfo",           ACCESS_FREE) && check2(ACCESS_READ  )) doGetInfo();
     	else if(check("surveillance",           ACCESS_FREE) && check2(ACCESS_READ  )) doSurveillance();
     	else if(check("getRegional",            ACCESS_FREE) && check2(ACCESS_READ  )) doGetRegional();
     	else if(check("isMonitorEnabled",       ACCESS_NOT_WHEN_WEB) && check2(ACCESS_READ  )) doIsMonitorEnabled();
@@ -4420,10 +4412,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
 	private void doGetLoginSettings() throws ApplicationException, PageException {
 		Struct sct=new StructImpl();
-		config=(ConfigImpl) ThreadLocalPageContext.getConfig(config);
+		ConfigImpl c = (ConfigImpl) ThreadLocalPageContext.getConfig(config);
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("captcha",Caster.toBoolean(config.getLoginCaptcha()));
-        sct.set("delay",Caster.toDouble(config.getLoginDelay()));
+        sct.set("captcha",Caster.toBoolean(c.getLoginCaptcha()));
+        sct.set("delay",Caster.toDouble(c.getLoginDelay()));
         
 	}
 

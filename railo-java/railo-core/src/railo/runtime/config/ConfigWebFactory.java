@@ -49,7 +49,6 @@ import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ByteSizeParser;
 import railo.commons.lang.ClassException;
-import railo.commons.lang.ClassLoaderHelper;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
@@ -160,13 +159,13 @@ public final class ConfigWebFactory {
 
     public static ConfigWebImpl newInstance(CFMLFactoryImpl factory,ConfigServerImpl configServer, Resource configDir, ServletConfig servletConfig) throws SAXException, 
     ClassException, PageException, IOException, TagLibException, FunctionLibException {
+    	
     	try{
     	new LabelBlockImpl("aa");
     	}
     	catch(Throwable t){
     		
     	}
-    	
     	
 		String hash=SystemUtil.hash(servletConfig.getServletContext());
 		Map<String, String> labels = configServer.getLabels();
@@ -176,7 +175,7 @@ public final class ConfigWebFactory {
 		}
 		if(label==null) label=hash;
 		
-    	SystemOut.print(SystemUtil.PRINTWRITER_OUT,
+		SystemOut.print(SystemUtil.getPrintWriter(SystemUtil.OUT),
     			"===================================================================\n"+
     			"WEB CONTEXT ("+label+")\n"+
     			"-------------------------------------------------------------------\n"+
@@ -225,7 +224,7 @@ public final class ConfigWebFactory {
 	        catch(Exception e) {
 	            // rename buggy config files
 	        	if(configFile.exists()) {
-	        		SystemOut.printDate(SystemUtil.PRINTWRITER_OUT, "config file "+configFile+" was not valid and has been replaced");
+	        		SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT), "config file "+configFile+" was not valid and has been replaced");
 	                count=1;
 	                while((bugFile=configDir.getRealResource("railo-web."+(count++)+".buggy")).exists()) {}
 	                IOUtil.copy(configFile,bugFile);
@@ -247,9 +246,8 @@ public final class ConfigWebFactory {
 		createContextFilesPost(configDir,configWeb,servletConfig,false,doNew);
 	    return configWeb;
     }
-    
 
-    public static void createHtAccess(Resource htAccess) {
+	public static void createHtAccess(Resource htAccess) {
     	if(!htAccess.exists()) {
 			htAccess.createNewFile();
 			
@@ -317,23 +315,23 @@ public final class ConfigWebFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    public static void load(ConfigServerImpl configServer, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
+    public static void load(ConfigServerImpl cs, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
+    	
     	ThreadLocalConfig.register(config);
     	// fix
-    	if(ConfigWebAdmin.fixS3(doc) | ConfigWebAdmin.fixPSQ(doc)) {
+    	if(ConfigWebAdmin.fixS3(doc) || ConfigWebAdmin.fixPSQ(doc)) {
     		XMLCaster.writeTo(doc,config.getConfigFile());
     		try {
 				doc=ConfigWebFactory.loadDocument(config.getConfigFile());
 			} catch (SAXException e) {}
     	}
     	
-    	loadConstants(configServer,config,doc);
-    	loadTempDirectory(configServer, config, doc,isReload);
+    	loadConstants(cs,config,doc);
+    	loadTempDirectory(cs, config, doc,isReload);
     	loadId(config);
     	loadVersion(config,doc);
-    	loadSecurity(configServer,config,doc);
-        ConfigServerImpl cs = configServer;
+    	loadSecurity(cs,config,doc);
         /* SNSN
         if(configServer!=null) {
             int version = configServer.getSerialNumber().getVersion();
@@ -342,46 +340,46 @@ public final class ConfigWebFactory {
         }*/
         loadLib(cs,config);
         loadSystem(cs, config, doc);
-        loadORM(configServer, config, doc);
+        loadORM(cs, config, doc);
     	loadResourceProvider(cs,config,doc);
-        loadCharset(configServer,config,doc);
-        loadMappings(configServer,config,doc);
-        loadRest(configServer,config,doc);
-        loadExtensions(configServer,config,doc);
-        loadPagePool(configServer,config,doc);
-        loadDataSources(configServer,config,doc);
-        loadCache(configServer,config,doc);
-        loadCustomTagsMappings(configServer,config,doc);
+        loadCharset(cs,config,doc);
+        loadMappings(cs,config,doc);
+        loadRest(cs,config,doc);
+        loadExtensions(cs,config,doc);
+        loadPagePool(cs,config,doc);
+        loadDataSources(cs,config,doc);
+        loadCache(cs,config,doc);
+        loadCustomTagsMappings(cs,config,doc);
     	loadPassword(cs,config,doc);
     	//loadLabel(cs,config,doc);
     	loadFilesystem(cs,config,doc, doNew); // load tlds
     	loadTag(cs,config,doc); // load tlds
-        loadRegional(configServer,config,doc);
-        loadCompiler(configServer,config,doc);
-    	loadScope(configServer,config,doc);
-    	loadMail(configServer,config,doc);
-        loadSearch(configServer,config,doc);
-    	loadScheduler(configServer,config,doc);
-    	loadDebug(configServer,config,doc);
-    	loadError(configServer,config,doc);
-        loadCFX(configServer,config,doc);
-    	loadComponent(configServer,config,doc);
-        loadApplication(configServer,config,doc);
+        loadRegional(cs,config,doc);
+        loadCompiler(cs,config,doc);
+    	loadScope(cs,config,doc);
+    	loadMail(cs,config,doc);
+        loadSearch(cs,config,doc);
+    	loadScheduler(cs,config,doc);
+    	loadDebug(cs,config,doc);
+    	loadError(cs,config,doc);
+        loadCFX(cs,config,doc);
+    	loadComponent(cs,config,doc);
+        loadApplication(cs,config,doc);
         loadUpdate(cs,config,doc);
         loadJava(cs,config,doc); // define compile type
         loadSetting(cs,config,doc);
         loadProxy(cs,config,doc);
         loadRemoteClient(cs, config, doc);
         loadVideo(cs, config, doc);
-        loadFlex(configServer,config,doc);
+        loadFlex(cs,config,doc);
         settings(config);
         loadListener(cs,config,doc);
     	loadDumpWriter(cs, config, doc);
-    	loadGatewayEL(configServer,config,doc);
-    	loadExeLog(configServer,config,doc);
-    	loadThreadQueue(configServer, config, doc);
-    	loadMonitors(configServer,config,doc);
-    	loadLogin(configServer, config, doc);
+    	loadGatewayEL(cs,config,doc);
+    	loadExeLog(cs,config,doc);
+    	loadThreadQueue(cs, config, doc);
+    	loadMonitors(cs,config,doc);
+    	loadLogin(cs, config, doc);
     	config.setLoadTime(System.currentTimeMillis());
     	
     	// this call is needed to make sure the railo StaticLoggerBinder is loaded
@@ -582,8 +580,6 @@ public final class ConfigWebFactory {
 
 
     private static void loadVersion(ConfigImpl config, Document doc) {
-    	//boolean hasCS=configServer!=null;
-    	
     	Element railoConfiguration = doc.getDocumentElement();
     	String strVersion=railoConfiguration.getAttribute("version");    
         config.setVersion(Caster.toDoubleValue(strVersion,1.0d));
@@ -625,7 +621,7 @@ public final class ConfigWebFactory {
 
     	ResourceClassLoaderFactory classLoaderFactory;
 		if(configServer==null){
-    		classLoaderFactory=new ResourceClassLoaderFactory(new ClassLoaderHelper().getClass().getClassLoader());
+    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
     	}
     	else {
     		classLoaderFactory=new ResourceClassLoaderFactory(configServer.getClassLoader());
@@ -882,7 +878,7 @@ public final class ConfigWebFactory {
      * @throws IOException
      */
     static void createFileFromResource(String resource,Resource file, String password) throws IOException {
-    	SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"write file:"+file);
+    	SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"write file:"+file);
     	file.createNewFile(); 
 	    IOUtil.copy(
 	            new Info().getClass().getResourceAsStream(resource),
@@ -941,9 +937,9 @@ public final class ConfigWebFactory {
     		long srcSize=barr.length;
     		if(srcSize==trgSize)return;
     		
-    		SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"update file:"+file);
-    		SystemOut.printDate(SystemUtil.PRINTWRITER_OUT," - source:"+srcSize);
-    		SystemOut.printDate(SystemUtil.PRINTWRITER_OUT," - target:"+trgSize);
+    		SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"update file:"+file);
+    		SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT)," - source:"+srcSize);
+    		SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT)," - target:"+trgSize);
     		
     	}
     	else file.createNewFile(); 
@@ -2498,20 +2494,20 @@ public final class ConfigWebFactory {
 	  	String strTempDirectory=null;
 	  	if(fileSystem!=null) strTempDirectory=ConfigWebUtil.translateOldPath(fileSystem.getAttribute("temp-directory"));
 	  	
+	  	Resource cst=null;
         // Temp Dir
-	  	if(!StringUtil.isEmpty(strTempDirectory)) {
-		  	config.setTempDirectory(ConfigWebUtil.getFile(configDir,strTempDirectory, 
-		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
-	  	}
-	  	else if(hasCS) {
-	  		config.setTempDirectory(configServer.getTempDirectory(),!isReload);
-	  	}
-	  	if(config.getTempDirectory()==null) {
-	  		config.setTempDirectory(ConfigWebUtil.getFile(configDir,"temp", 
-		  			null, // create no default
-		  			configDir,FileUtil.TYPE_DIR,config),!isReload);
-	  	}
+	  	if(!StringUtil.isEmpty(strTempDirectory)) 
+	  		cst=ConfigWebUtil.getFile(configDir,strTempDirectory, null, configDir,FileUtil.TYPE_DIR,config);
+	  	
+	  	if(cst==null && hasCS) 
+	  		cst = configServer.getTempDirectory();
+	  	
+	  	if(cst==null) 
+	  		cst=ConfigWebUtil.getFile(configDir,"temp", null, configDir,FileUtil.TYPE_DIR,config);
+	  	
+	  	
+	  	config.setTempDirectory(cst,!isReload);
+	  	
     }
 
     /**
@@ -3010,8 +3006,8 @@ public final class ConfigWebFactory {
         	}
     		
     	}
-    	if(iserror)return SystemUtil.PRINTWRITER_ERR;
-    	return SystemUtil.PRINTWRITER_OUT;
+    	if(iserror)return SystemUtil.getPrintWriter(SystemUtil.ERR);
+    	return SystemUtil.getPrintWriter(SystemUtil.OUT);
 	}
 
 
@@ -3707,12 +3703,14 @@ public final class ConfigWebFactory {
         HashTable map=new HashTable();
         if(configServer!=null) {
             try {
-                Map classes = configServer.getCFXTagPool().getClasses();
-                Iterator it = classes.keySet().iterator();
-                while(it.hasNext()) {
-                    Object key=it.next();
-                    map.put(key,((CFXTagClass)classes.get(key)).cloneReadOnly());
-                }
+            	if(configServer.getCFXTagPool()!=null){
+	                Map classes = configServer.getCFXTagPool().getClasses();
+	                Iterator it = classes.keySet().iterator();
+	                while(it.hasNext()) {
+	                    Object key=it.next();
+	                    map.put(key,((CFXTagClass)classes.get(key)).cloneReadOnly());
+	                }
+            	}
             } 
             catch (SecurityException e) {}
         }
@@ -4152,34 +4150,31 @@ public final class ConfigWebFactory {
         
         String strListenerType=application.getAttribute("listener-type");
         ApplicationListener listener;
-        if(StringUtil.isEmpty(strListenerType) && hasCS) strListenerType=configServer.getApplicationListener().getType();
+        if(StringUtil.isEmpty(strListenerType) && hasCS) strListenerType=
+        	configServer.getApplicationListener()==null?"mixed":configServer.getApplicationListener().getType();
 
         // none
         if("none".equalsIgnoreCase(strListenerType))	{
         	listener=new NoneAppListener();
-        	listener.setType("none");
         }
         // classic
         else if("classic".equalsIgnoreCase(strListenerType)){
         	listener=new ClassicAppListener();
-        	listener.setType("classic");
         }
         // modern
         else if("modern".equalsIgnoreCase(strListenerType))	{
         	listener=new ModernAppListener();
-        	listener.setType("modern");
         }
         // mixed
         else {
         	listener=new MixedAppListener();
-        	listener.setType("mixed");
         }
         
         
         String strListenerMode=application.getAttribute("listener-mode");
         int listenerMode=ApplicationListener.MODE_CURRENT2ROOT;
         if(StringUtil.isEmpty(strListenerMode) && hasCS) {
-           listenerMode=configServer.getApplicationListener().getMode();
+           listenerMode=configServer.getApplicationListener()==null?ApplicationListener.MODE_CURRENT2ROOT:configServer.getApplicationListener().getMode();
         }
         else if("current".equalsIgnoreCase(strListenerMode) || "curr".equalsIgnoreCase(strListenerMode))		
         	listenerMode=ApplicationListener.MODE_CURRENT;

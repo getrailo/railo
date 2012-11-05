@@ -766,6 +766,22 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public boolean getCheckArguments() {
 		return checkArguments;
 	}
+	
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).call(pc,args,false);
+		}
+		throw new ExpressionException("No matching function ["+methodName+"] found");
+	}
 
-
+    @Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		}
+		throw new ExpressionException("No matching function ["+methodName+"] found");
+	}
 }

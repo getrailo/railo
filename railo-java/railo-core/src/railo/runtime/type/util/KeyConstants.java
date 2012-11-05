@@ -803,8 +803,13 @@ public class KeyConstants {
 	public static final Key _COLL = KeyImpl._const("COLL");
 	public static final Key _FILTER = KeyImpl._const("FILTER");
 	public static final Key _recurse = KeyImpl._const("recurse");
-	
-	
+	public static final Key _rest = KeyImpl._const("rest");
+	public static final Key _httpmethod = KeyImpl._const("httpmethod");
+	public static final Key _restPath = KeyImpl._const("restPath");
+	public static final Key _restArgName = KeyImpl._const("restArgName");
+	public static final Key _restArgSource = KeyImpl._const("restArgSource");
+	public static final Key _consumes = KeyImpl._const("consumes");
+	public static final Key _produces = KeyImpl._const("produces");
 	
 	private static HashSet<String> _____keys;
 	

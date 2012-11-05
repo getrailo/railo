@@ -63,8 +63,14 @@ public final class SystemUtil {
 	public static final char CHAR_POUND=(char)163;
 	public static final char CHAR_EURO=(char)8364;
 	
-	public static final PrintWriter PRINTWRITER_OUT = new PrintWriter(System.out);
-	public static final PrintWriter PRINTWRITER_ERR = new PrintWriter(System.err);
+
+	public static final int OUT = 0;
+	public static final int ERR = 1;
+	
+	private static final PrintWriter PRINTWRITER_OUT = new PrintWriter(System.out);
+	private static final PrintWriter PRINTWRITER_ERR = new PrintWriter(System.err);
+	
+	private static PrintWriter[] printWriter=new PrintWriter[2];
     
     
 	private static final boolean isWindows=System.getProperty("os.name").toLowerCase().startsWith("windows");
@@ -138,6 +144,7 @@ public final class SystemUtil {
 	
     private static Boolean isFSCaseSensitive;
 	private static JavaSysMon jsm;
+	private static Boolean isCLI;
 
     /**
      * returns if the file system case sensitive or not
@@ -812,6 +819,22 @@ public final class SystemUtil {
 		MemoryStats p = jsm.physical();
 		if(p==null) throw new ApplicationException("Memory information are not available for this OS");
 		return p;
+	}
+	public static void setPrintWriter(int type,PrintWriter pw) {
+		printWriter[type]=pw;
+	}
+	public static PrintWriter getPrintWriter(int type) {
+		if(printWriter[type]==null) {
+			if(type==OUT) printWriter[OUT]=PRINTWRITER_OUT;
+			else printWriter[ERR]=PRINTWRITER_ERR;
+		}
+		return printWriter[type];
+	}
+	public static boolean isCLICall() {
+    	if(isCLI==null){
+    		isCLI=Caster.toBoolean(System.getProperty("railo.cli.call"),Boolean.FALSE);
+    	}
+    	return isCLI.booleanValue();
 	}
 	
 	
