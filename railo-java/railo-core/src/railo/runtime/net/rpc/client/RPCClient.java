@@ -36,6 +36,7 @@ import org.apache.axis.wsdl.symbolTable.ServiceEntry;
 import org.apache.axis.wsdl.symbolTable.SymTabEntry;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
+import org.apache.axis.wsdl.symbolTable.DefinedType;
 import org.apache.axis.wsdl.toJava.Utils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -349,7 +350,7 @@ public final class RPCClient implements Objects, Iteratorable{
         }
 		last=call;
 		
-		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret);
+		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret,true);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
 		Map outputs = call.getOutputParams();
 		
@@ -359,11 +360,9 @@ public final class RPCClient implements Objects, Iteratorable{
             //print.ln(name);
 			Object value = outputs.get(name);
 			if(value == null && pos == 0) {
-				sct.setEL(name, AxisCaster.toRailoType(null,ret));
+				value= ret;
 			}
-			else {
-				sct.setEL(name, AxisCaster.toRailoType(null,value));
-			}
+			sct.setEL(name, AxisCaster.toRailoType(null,value));
 		}
 		return sct;
 	}
@@ -436,13 +435,30 @@ public final class RPCClient implements Objects, Iteratorable{
 		}
 		ASMProperty[] props = properties.toArray(new ASMProperty[properties.size()]);
 		String clientClassName=getClientClassName(type);
-		Pojo pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,props);
+		TypeEntry superEntry = getSuperEntry(type);
+		Class superClass = null;
+		if(superEntry != null) {
+			superClass = mapComplex(config,call,tm,superEntry);
+		}
 		
+		
+		Pojo pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,props,superClass);
 		TypeMappingUtil.registerBeanTypeMapping(tm,
     			pojo.getClass(), 
         		type.getQName());
 		
     	return pojo.getClass();
+	}
+	
+	private TypeEntry getSuperEntry(TypeEntry type) {
+		System.out.println("instanceof:"+(type instanceof DefinedType));
+		if (type instanceof DefinedType) {
+			DefinedType dType = (DefinedType)type;
+			return dType.getComplexTypeExtensionBase(parser.getSymbolTable());
+		} 
+		return null;
+		
+		
 	}
 	
 	private String getClientClassName(TypeEntry type) {
