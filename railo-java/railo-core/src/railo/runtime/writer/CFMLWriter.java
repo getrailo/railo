@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import javax.servlet.jsp.JspWriter;
 
 public abstract class CFMLWriter extends JspWriter {
-
+	
 	protected CFMLWriter(int bufferSize, boolean autoFlush) {
 		super(bufferSize, autoFlush);
 	}

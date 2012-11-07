@@ -423,7 +423,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         this.servlet=servlet;
 
          // Writers
-         bodyContentStack.init(req,rsp,config.isSuppressWhitespace(),config.closeConnection(),config.isShowVersion(),config.contentLength(),config.allowCompression());
+         bodyContentStack.init(config.getCFMLWriter(req,rsp));
 		 writer=bodyContentStack.getWriter();
          forceWriter=writer;
          
@@ -898,8 +898,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	other.undefined=new UndefinedImpl(other,(short)other.undefined.getType());
     	
     	// writers
-    	other.bodyContentStack.init(other.req,other.rsp,other.config.isSuppressWhitespace(),other.config.closeConnection(),
-    			other.config.isShowVersion(),config.contentLength(),config.allowCompression());
+    	other.bodyContentStack.init(config.getCFMLWriter(other.req,other.rsp));
+    	//other.bodyContentStack.init(other.req,other.rsp,other.config.isSuppressWhitespace(),other.config.closeConnection(), other.config.isShowVersion(),config.contentLength(),config.allowCompression());
     	other.writer=other.bodyContentStack.getWriter();
     	other.forceWriter=other.writer;
         

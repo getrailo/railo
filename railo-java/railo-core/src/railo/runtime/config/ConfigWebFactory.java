@@ -2811,11 +2811,10 @@ public final class ConfigWebFactory {
         
         Element setting=hasAccess?getChildByName(doc.getDocumentElement(),"setting"):null;
         boolean hasCS=configServer!=null;
-        
-        
+        String str=null;
 
         // suppress whitespace
-        String str=null;
+        str=null;
         if(setting!=null){
         	str=setting.getAttribute("suppress-content");
         }
@@ -2824,8 +2823,25 @@ public final class ConfigWebFactory {
         }
         else if(hasCS)config.setSuppressContent(configServer.isSuppressContent());
         
+        
+        // CFML Writer
+        if(setting!=null){
+        	str=setting.getAttribute("cfml-writer");
+        }
+        if(!StringUtil.isEmpty(str) && hasAccess) {
+        	if("white-space".equalsIgnoreCase(str))
+        		config.setCFMLWriterType(ConfigImpl.CFML_WRITER_WS);
+        	else if("white-space-pref".equalsIgnoreCase(str))
+        		config.setCFMLWriterType(ConfigImpl.CFML_WRITER_WS_PREF);
+        	else if("regular".equalsIgnoreCase(str))
+        		config.setCFMLWriterType(ConfigImpl.CFML_WRITER_REFULAR);
+        	// FUTURE add support for classes implementing CFMLWriter interface 
+        }
+        else if(hasCS)config.setCFMLWriterType(configServer.getCFMLWriterType());
+        
+        // No longer supported, replaced with code above
         // suppress whitespace
-        str=null;
+        /*str=null;
         if(setting!=null){
         	str=setting.getAttribute("suppress-whitespace");
         	if(StringUtil.isEmpty(str))str=setting.getAttribute("suppresswhitespace");
@@ -2833,8 +2849,9 @@ public final class ConfigWebFactory {
         if(!StringUtil.isEmpty(str) && hasAccess) {
           config.setSuppressWhitespace(toBoolean(str,false));
         }
-        else if(hasCS)config.setSuppressWhitespace(configServer.isSuppressWhitespace());
-
+        else if(hasCS)config.setSuppressWhitespace(configServer.isSuppressWhitespace());*/
+        
+        
         // show version
 	        str=null;
 	        if(setting!=null){

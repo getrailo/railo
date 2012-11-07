@@ -138,6 +138,12 @@ public abstract class ConfigImpl implements Config {
 	public static final int MODE_CUSTOM = 1;
 	public static final int MODE_STRICT = 2;
 	
+
+	public static final int CFML_WRITER_REFULAR=1;
+	public static final int CFML_WRITER_WS=2;
+	public static final int CFML_WRITER_WS_PREF=3;
+	
+	
 	private int mode=MODE_CUSTOM;
 
 	private PhysicalClassLoader rpcClassLoader;
@@ -364,6 +370,8 @@ public abstract class ConfigImpl implements Config {
 	private int amfConfigType=AMF_CONFIG_TYPE_XML;
 	private LogAndSource scopeLogger;
 	private railo.runtime.rest.Mapping[] restMappings;
+	
+	protected int writerType=CFML_WRITER_REFULAR;
 	
 	
 	
@@ -3452,6 +3460,16 @@ public abstract class ConfigImpl implements Config {
 
 	public int getMode() {
 		return mode;
+	}
+
+	// do not move to Config interface, do instead getCFMLWriterClass
+	protected void setCFMLWriterType(int writerType) {
+		this.writerType=writerType;
+	}
+
+	// do not move to Config interface, do instead setCFMLWriterClass
+	public int getCFMLWriterType() {
+		return writerType;
 	}
 	
 }

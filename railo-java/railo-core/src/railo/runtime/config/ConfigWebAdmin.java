@@ -1892,9 +1892,22 @@ public final class ConfigWebAdmin {
         
     }
     
-    
 
-    public void updateSuppressWhitespace(Boolean value) throws SecurityException {
+    public void updateCFMLWriterType(String writerType) throws SecurityException, ApplicationException {
+    	checkWriteAccess();
+    	boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        writerType=writerType.trim();
+        if(!"white-space".equalsIgnoreCase(writerType) && 
+        		!"white-space-pref".equalsIgnoreCase(writerType) && 
+        		!"regular".equalsIgnoreCase(writerType))
+        	throw new ApplicationException("invalid writer type defintion ["+writerType+"], valid types are [white-space, white-space-pref, regular]");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("cfml-writer",writerType.toLowerCase());
+    } 
+
+    /*public void updateSuppressWhitespace(Boolean value) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
         
@@ -1902,7 +1915,8 @@ public final class ConfigWebAdmin {
         
         Element scope=_getRootElement("setting");
         scope.setAttribute("suppress-whitespace",Caster.toString(value,""));
-    }
+    }*/
+    
     public void updateSuppressContent(Boolean value) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);

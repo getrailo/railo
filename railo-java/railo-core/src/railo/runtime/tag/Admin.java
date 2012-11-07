@@ -3706,7 +3706,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     }
 
     private void doUpdateOutputSettings() throws PageException {
-    	admin.updateSuppressWhitespace(getBoolObject("admin",action, "suppressWhitespace"));
+    	admin.updateCFMLWriterType(getString("admin",action, "cfmlWriter"));
     	admin.updateSuppressContent(getBoolObject("admin",action, "suppressContent"));
     	//admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
     	admin.updateAllowCompression(getBoolObject("admin",action, "allowCompression"));
@@ -3868,13 +3868,16 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
-        sct.set("suppressWhitespace",Caster.toBoolean(config.isSuppressWhitespace()));
         sct.set("suppressContent",Caster.toBoolean(config.isSuppressContent()));
         sct.set("contentLength",Caster.toBoolean(config.contentLength()));
         //sct.set("showVersion",Caster.toBoolean(config.isShowVersion()));
         sct.set("allowCompression",Caster.toBoolean(config.allowCompression()));
+        int wt = config.getCFMLWriterType();
+        String cfmlWriter="regular";
+        if(wt==ConfigImpl.CFML_WRITER_WS) cfmlWriter="white-space";
+        else if(wt==ConfigImpl.CFML_WRITER_WS_PREF) cfmlWriter="white-space-pref";
         
-        
+        sct.set("cfmlWriter",cfmlWriter);   
     }
     
     /**

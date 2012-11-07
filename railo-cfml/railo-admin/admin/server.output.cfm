@@ -33,7 +33,7 @@ Defaults --->
 					type="#request.adminType#"
 					password="#session["password"&request.adminType]#"
 					
-					suppressWhiteSpace="#isDefined('form.suppressWhitespace') and form.suppressWhitespace#"
+					cfmlWriter="#form.cfmlWriter#"
 					suppressContent="#isDefined('form.suppressContent') and form.suppressContent#"
 					allowCompression="#isDefined('form.allowCompression') and form.allowCompression#"
 					contentLength=""
@@ -48,7 +48,7 @@ Defaults --->
 					type="#request.adminType#"
 					password="#session["password"&request.adminType]#"
 					
-					suppressWhiteSpace=""
+					cfmlWriter=""
 					suppressContent=""
 					showVersion=""
 					allowCompression=""
@@ -92,13 +92,21 @@ Redirtect to entry --->
 				<tr>
 					<th scope="row">#stText.setting.whitespace#</th>
 					<td>
+						<cfset desc={
+								'regular':stText.setting.cfmlWriterReg,
+								'white-space':stText.setting.cfmlWriterWS,
+								'white-space-pref':stText.setting.cfmlWriterWSPref
+									}>
+						
 						<cfif hasAccess>
-							<input type="checkbox" name="suppressWhitespace" class="checkbox" value="true" <cfif setting.suppressWhitespace>checked="checked"</cfif>>
+							<cfloop list="regular,white-space,white-space-pref" index="k">
+								<input type="radio" class="checkbox" name="cfmlWriter" value="#k#" <cfif setting.cfmlWriter EQ k>checked="checked"</cfif>>
+								<div class="comment">#desc[k]#</div><br> 
+							</cfloop>
 						<cfelse>
-							<b>#yesNoFormat(setting.suppressWhitespace)#</b>
-							<!---<input type="hidden" name="suppressWhitespace" value="#setting.suppressWhitespace#">--->
+							<b>#desc[setting.cfmlWriter]#
+							<input type="hidden" name="cfmlWriter" value="#setting.cfmlWriter#">
 						</cfif>
-						<div class="comment">#stText.setting.whitespaceDescription#</div>
 					</td>
 				</tr>
 				<!--- Allow Compression --->

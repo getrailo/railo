@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.xml.sax.SAXException;
@@ -45,6 +47,10 @@ import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.tag.TagHandlerPool;
 import railo.runtime.type.scope.Cluster;
+import railo.runtime.writer.CFMLWriter;
+import railo.runtime.writer.CFMLWriterImpl;
+import railo.runtime.writer.CFMLWriterWhiteSpace;
+import railo.runtime.writer.CFMLWriterWhiteSpacePref;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLibException;
 
@@ -67,6 +73,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     private LogAndSource gatewayLogger=null;//new LogAndSourceImpl(LogConsole.getInstance(Log.LEVEL_INFO),"");private DebuggerPool debuggerPool;
     private DebuggerPool debuggerPool;
 	
+    
 
     //private File deployDirectory;
 
@@ -440,4 +447,14 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public boolean allowRequestTimeout() {
 			return configServer.allowRequestTimeout();
 		}
+		
+		public CFMLWriter getCFMLWriter(HttpServletRequest req, HttpServletResponse rsp) {
+			// FUTURE  move interface CFMLWriter to Loader and load dynaicly from railo-web.xml
+	        if(writerType==CFML_WRITER_WS)
+	            return new CFMLWriterWhiteSpace		(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	        else if(writerType==CFML_WRITER_REFULAR) 
+	            return new CFMLWriterImpl			(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	        else
+	            return new CFMLWriterWhiteSpacePref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	    }
 }
