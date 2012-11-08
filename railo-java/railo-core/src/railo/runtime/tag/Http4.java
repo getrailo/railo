@@ -72,6 +72,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.URLResolver;
+import railo.runtime.util.MultiPartResponseUtils;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
 
@@ -688,7 +689,8 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	mimetype == null ||  
 	        	mimetype == NO_MIMETYPE || HTTPUtil.isTextMimeType(mimetype);
 	        	
-	        
+		    // is text 
+	        boolean isMultipart= MultiPartResponseUtils.isMultipart(mimetype);        
 	       
 	        cfhttp.set(KeyConstants._text,Caster.toBoolean(isText));
 	        
@@ -792,8 +794,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        		throw Caster.toPageException(t);
 					}
 		        }
-		        	
-		        cfhttp.set(FILE_CONTENT,barr);
+		        //IF Multipart response get file content and parse parts
+			    if(isMultipart) {
+			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
+			    } else {
+			    	cfhttp.set(FILE_CONTENT,barr);
+			    }
 		        
 		        if(file!=null) {
 		        	try {
