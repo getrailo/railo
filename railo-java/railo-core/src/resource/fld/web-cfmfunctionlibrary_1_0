@@ -15786,7 +15786,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>parameters</name>
-			<type>array</type>
+			<type>struct</type>
 			<required>false</required>
 			<status>unimplemeted</status>
 		<description>A structure containing XSL template parameter name-value
