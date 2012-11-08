@@ -57,6 +57,7 @@ import railo.runtime.exp.HTTPException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.net.http.MultiPartResponseUtils;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
@@ -72,7 +73,6 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.URLResolver;
-import railo.runtime.util.MultiPartResponseUtils;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
 
