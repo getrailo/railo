@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -993,14 +994,15 @@ public final class XMLUtil {
      * @throws IOException
      */
     public static String transform(Document doc, InputSource xsl, Map parameters) throws TransformerException {
-		StringWriter sw = new StringWriter();
-		Transformer transformer =
-            XMLUtil.getTransformerFactory().newTransformer(new StreamSource(xsl.getCharacterStream()));
+    	StringWriter sw = new StringWriter();
+    	TransformerFactory factory = XMLUtil.getTransformerFactory();
+    	factory.setErrorListener(SimpleErrorListener.THROW_FATAL);
+		Transformer transformer = factory.newTransformer(new StreamSource(xsl.getCharacterStream()));
 		if (parameters != null) {
 			Iterator it = parameters.entrySet().iterator();
 			while ( it.hasNext() ) {
 				Map.Entry e = (Map.Entry) it.next();
-				transformer.setParameter(e.getKey().toString(), e.getValue());	// throws NPE on malformed xml?
+				transformer.setParameter(e.getKey().toString(), e.getValue());
 			}
 		}
 		transformer.transform(new DOMSource(doc), new StreamResult(sw));
