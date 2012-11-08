@@ -689,7 +689,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	mimetype == null ||  
 	        	mimetype == NO_MIMETYPE || HTTPUtil.isTextMimeType(mimetype);
 	        	
-		    // is text 
+		    // is multipart 
 	        boolean isMultipart= MultiPartResponseUtils.isMultipart(mimetype);        
 	       
 	        cfhttp.set(KeyConstants._text,Caster.toBoolean(isText));
