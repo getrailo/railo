@@ -14,6 +14,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.text.xml.struct.XMLStructFactory;
+import railo.runtime.type.List;
 
 public final class XmlElemNew implements Function {
 	
@@ -38,8 +39,8 @@ public final class XmlElemNew implements Function {
 		
 		// without namespace
 		if(StringUtil.isEmpty(namespace)){
-			if(childname.contains(":")) {
-				String[] parts = childname.split(":");
+			if(childname.indexOf(':')!=-1) {
+				String[] parts = List.listToStringArray(childname, ':');
 				childname = parts[1];
 				String prefix = parts[0];
 				namespace = getNamespaceForPrefix(doc.getDocumentElement(),prefix);
@@ -63,37 +64,25 @@ public final class XmlElemNew implements Function {
 	
 	private static String getNamespaceForPrefix(Node node,String prefix) {
 		if (node==null) return null;
-		System.out.println("XMLElemNew:start" +node);
-		
-		/*while (!(node instanceof Element)) {
-			if(node.getParentNode() == null) break;
-			node = node.getParentNode();
-			
-		}*/
 		NamedNodeMap atts = node.getAttributes();
 
 		if (atts != null) {
-			for (int i = 0; i < atts.getLength(); i++) {
-				Node currentAttribute = atts.item(i);
-				String currentLocalName = currentAttribute.getLocalName();
-				System.out.println("XMLElemNew:currentn:" +  currentAttribute.getLocalName());
-				String currentPrefix = currentAttribute.getPrefix();
-				System.out.println("XMLElemNew:currentp:" +  currentAttribute.getPrefix());
-				System.out.println("XMLElemNew:searchingPrefix:"+prefix);
-				if (prefix.equals(currentLocalName) && "xmlns".equals(currentPrefix)) {
-					return currentAttribute.getNodeValue();
-				} else if (StringUtil.isEmpty(prefix) && "xmlns".equals(currentLocalName)
-						&& StringUtil.isEmpty(currentPrefix)) {
-					return currentAttribute.getNodeValue();
+			String currLocalName,currPrefix;
+			int len=atts.getLength();
+			for (int i = 0; i < len; i++) {
+				Node currAttr = atts.item(i);
+				currLocalName = currAttr.getLocalName();
+				currPrefix = currAttr.getPrefix();
+				if (prefix.equals(currLocalName) && "xmlns".equals(currPrefix)) {
+					return currAttr.getNodeValue();
+				} 
+				else if (StringUtil.isEmpty(prefix) && "xmlns".equals(currLocalName)
+						&& StringUtil.isEmpty(currPrefix)) {
+					return currAttr.getNodeValue();
 				}
 			}
 		}
-		/*Node parent = node.getParentNode();
-		if (parent instanceof Element) {
-			return getNamespaceForPrefix(parent, prefix);
-		}*/
 		return null;
-		
 	}
 	
 	
