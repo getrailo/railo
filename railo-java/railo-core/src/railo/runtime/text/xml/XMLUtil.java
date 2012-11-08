@@ -985,7 +985,7 @@ public final class XMLUtil {
 
 				Map.Entry e = (Map.Entry) it.next();
 
-				transformer.setParameter( e.getKey().toString(), e.getValue() );
+				transformer.setParameter( e.getKey().toString(), e.getValue() );	// throws NPE on malformed xml?
 			}
 		}
 
