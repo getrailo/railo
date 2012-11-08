@@ -8,7 +8,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -950,11 +952,17 @@ public final class XMLUtil {
      * @throws SAXException
      * @throws  
      */
-    public static String transform(InputSource xml, InputSource xsl) throws TransformerException, SAXException, IOException {
+    public static String transform( InputSource xml, InputSource xsl, Map parameters ) throws TransformerException, SAXException, IOException {
     	//toInputSource(pc, xml)
-        return transform(parse(xml,null , false), xsl);
+        return transform( parse( xml, null , false ), xsl, parameters );
     }
 
+    public static String transform( InputSource xml, InputSource xsl ) throws TransformerException, SAXException, IOException {
+    	//toInputSource(pc, xml)
+        return transform( xml, xsl, null );
+    }
+
+    
 	/**
 	 * transform a XML Object to a other format, with help of a XSL Stylesheet
 	 * @param doc XML Document Object
@@ -962,13 +970,36 @@ public final class XMLUtil {
 	 * @return transformed Object
 	 * @throws TransformerException
 	 */
-	public static String transform(Document doc, InputSource xsl) throws TransformerException {
+    public static String transform( Document doc, InputSource xsl, Map parameters ) throws TransformerException {
+
 		StringWriter sw = new StringWriter();
-		Transformer transformer = 
+
+		Transformer transformer =
             XMLUtil.getTransformerFactory().newTransformer(new StreamSource(xsl.getCharacterStream()));
+
+		if ( parameters != null ) {
+
+			Iterator it = parameters.entrySet().iterator();
+
+			while ( it.hasNext() ) {
+
+				Map.Entry e = (Map.Entry) it.next();
+
+				transformer.setParameter( e.getKey().toString(), e.getValue() );	// throws NPE on malformed xml?
+			}
+		}
+
 		transformer.transform(new DOMSource(doc), new StreamResult(sw));
+
 		return sw.toString();
 	}
+
+
+	public static String transform( Document doc, InputSource xsl ) throws TransformerException {
+
+		return transform( doc, xsl, null );
+	}
+	
 
     /**
      * returns the Node Type As String
