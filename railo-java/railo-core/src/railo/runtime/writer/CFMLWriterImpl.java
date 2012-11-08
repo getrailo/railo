@@ -497,7 +497,8 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @see java.io.Writer#write(java.lang.String) 
      */ 
     public void write(String str) throws IOException { 
-        _print(str);
+    	buffer.append(str);
+        _check();
     }
     
     /**
