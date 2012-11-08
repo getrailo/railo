@@ -909,4 +909,16 @@ public final class StringUtil {
 		}
 		return true;
 	}
+
+	/**
+	 * this method works different from the regular substring method, the regular substring method takes startIndex and endIndex as second and third argument,
+	 * this method takes offset and length
+	 * @param string
+	 * @param off
+	 * @param len
+	 * @return
+	 */
+	public static String substring(String str, int off, int len) {
+		return str.substring(off,off+len);
+	}
 }
