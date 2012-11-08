@@ -5,6 +5,7 @@ package railo.runtime.functions.xml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import railo.commons.lang.StringUtil;
@@ -37,7 +38,21 @@ public final class XmlElemNew implements Function {
 		
 		// without namespace
 		if(StringUtil.isEmpty(namespace)){
-			el=doc.createElement(childname);
+			if(childname.contains(":")) {
+				String[] parts = childname.split(":");
+				childname = parts[1];
+				String prefix = parts[0];
+				namespace = getNamespaceForPrefix(doc.getDocumentElement(),prefix);
+				if(StringUtil.isEmpty(namespace)) {
+					el=doc.createElement(childname);
+				} else {
+					el=doc.createElementNS(namespace,childname);
+					el.setPrefix(prefix);
+				}
+				
+			} else {
+				el=doc.createElement(childname);	
+			}
 		}
 		// with namespace
 		else {
@@ -46,6 +61,40 @@ public final class XmlElemNew implements Function {
 		return (Element)XMLStructFactory.newInstance(el,false);
 	}
 	
+	private static String getNamespaceForPrefix(Node node,String prefix) {
+		if (node==null) return null;
+		System.out.println("XMLElemNew:start" +node);
+		
+		/*while (!(node instanceof Element)) {
+			if(node.getParentNode() == null) break;
+			node = node.getParentNode();
+			
+		}*/
+		NamedNodeMap atts = node.getAttributes();
+
+		if (atts != null) {
+			for (int i = 0; i < atts.getLength(); i++) {
+				Node currentAttribute = atts.item(i);
+				String currentLocalName = currentAttribute.getLocalName();
+				System.out.println("XMLElemNew:currentn:" +  currentAttribute.getLocalName());
+				String currentPrefix = currentAttribute.getPrefix();
+				System.out.println("XMLElemNew:currentp:" +  currentAttribute.getPrefix());
+				System.out.println("XMLElemNew:searchingPrefix:"+prefix);
+				if (prefix.equals(currentLocalName) && "xmlns".equals(currentPrefix)) {
+					return currentAttribute.getNodeValue();
+				} else if (StringUtil.isEmpty(prefix) && "xmlns".equals(currentLocalName)
+						&& StringUtil.isEmpty(currentPrefix)) {
+					return currentAttribute.getNodeValue();
+				}
+			}
+		}
+		/*Node parent = node.getParentNode();
+		if (parent instanceof Element) {
+			return getNamespaceForPrefix(parent, prefix);
+		}*/
+		return null;
+		
+	}
 	
 	
 }
