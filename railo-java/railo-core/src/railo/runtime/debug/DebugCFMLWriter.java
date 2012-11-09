@@ -1,20 +1,22 @@
-package railo.runtime.writer;
+package railo.runtime.debug;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
-import railo.print;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.CatchBlockImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.writer.CFMLWriter;
 
-public class CFMLWriterLog extends CFMLWriter {
+public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 
 	private CFMLWriter writer;
+	private List<DebugTextFragment> fragments=new ArrayList<DebugTextFragment>(); 
 
-	public CFMLWriterLog(CFMLWriter writer) {
+	public DebugCFMLWriter(CFMLWriter writer) {
 		super(writer.getBufferSize(), writer.isAutoFlush());
 		this.writer=writer;
 	}
@@ -267,12 +269,14 @@ public class CFMLWriterLog extends CFMLWriter {
 			template = trace.getFileName();
 			line=trace.getLineNumber();
 			if(line<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
-			print.e(template+":"+line);
-			print.e(str);
+			fragments.add(new DebugTextFragment(str, template, line));
 			break;
 		}
-		
-		//print.ds(str);
+	}
+
+	@Override
+	public DebugTextFragment[] getFragments() {
+		return fragments.toArray(new DebugTextFragment[fragments.size()]);
 	}
 
 }

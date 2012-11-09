@@ -3718,16 +3718,19 @@ public final class ConfigWebFactory {
         }
         config.setDebugEntries(list.values().toArray(new DebugEntry[list.size()]));
       	
-      	
-
-      	
       	// debug
       	String strDebug=debugging.getAttribute("debug");
       	if(hasAccess && !StringUtil.isEmpty(strDebug)) {
       	    config.setDebug(toBoolean(strDebug,false)?ConfigImpl.CLIENT_BOOLEAN_TRUE:ConfigImpl.CLIENT_BOOLEAN_FALSE);
       	}
       	else if(hasCS)config.setDebug(configServer.debug()?ConfigImpl.SERVER_BOOLEAN_TRUE:ConfigImpl.SERVER_BOOLEAN_FALSE);
-      	
+
+      	// debug-log-output
+      	String strDLO=debugging.getAttribute("debug-log-output");
+      	if(hasAccess && !StringUtil.isEmpty(strDLO)) {
+      	    config.setDebugLogOutput(toBoolean(strDLO,false)?ConfigImpl.CLIENT_BOOLEAN_TRUE:ConfigImpl.CLIENT_BOOLEAN_FALSE);
+      	}
+      	else if(hasCS)config.setDebugLogOutput(configServer.debugLogOutput()?ConfigImpl.SERVER_BOOLEAN_TRUE:ConfigImpl.SERVER_BOOLEAN_FALSE);
       	
      // max records logged
       	String strMax=debugging.getAttribute("max-records-logged");

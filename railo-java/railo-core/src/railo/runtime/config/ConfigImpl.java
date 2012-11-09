@@ -170,6 +170,7 @@ public abstract class ConfigImpl implements Config {
     private boolean _mergeFormAndURL=false;
 
     private int _debug;
+    private int debugLogOutput;
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
@@ -676,8 +677,17 @@ public abstract class ConfigImpl implements Config {
     public boolean debug() {
     	return _debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE;
     }
+    
+    public boolean debugLogOutput() {
+    	return debug() && debugLogOutput==CLIENT_BOOLEAN_TRUE || debugLogOutput==SERVER_BOOLEAN_TRUE;
+    }
+
     public int intDebug() {
         return _debug;
+    }
+
+    public int intDebugLogOutput() {
+        return debugLogOutput;
     }
     
     /**
@@ -1559,6 +1569,10 @@ public abstract class ConfigImpl implements Config {
      */
     protected void setDebug(int _debug) {
         this._debug=_debug;
+    }  
+    
+    protected void setDebugLogOutput(int debugLogOutput) {
+        this.debugLogOutput=debugLogOutput;
     }   
     
     /**

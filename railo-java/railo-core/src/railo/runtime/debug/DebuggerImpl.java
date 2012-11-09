@@ -53,6 +53,9 @@ public final class DebuggerImpl implements Debugger {
 	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
 	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
 	private static final Collection.Key PAGE_PARTS= KeyImpl.intern("pageParts");
+	//private static final Collection.Key OUTPUT_LOG= KeyImpl.intern("outputLog");
+	
+	
 
 
 	private static final int MAX_PARTS = 100;
@@ -73,6 +76,9 @@ public final class DebuggerImpl implements Debugger {
 
 	private DateTimeImpl starttime;
 
+
+	private DebugOutputLog outputLog;
+
 	@Override
 	public void reset() {
 		entries.clear();
@@ -85,6 +91,7 @@ public final class DebuggerImpl implements Debugger {
 		historyId.clear();
 		historyLevel.clear();
 		output=true;
+		outputLog=null;
 	}
 
 	public DebuggerImpl() {	
@@ -394,6 +401,11 @@ public final class DebuggerImpl implements Debugger {
 			
         }
 
+		// output log
+        //Query qryOutputLog=getOutputText();
+        
+        
+
 		// timers
 		len=timers==null?0:timers.size();
         Query qryTimers=new QueryImpl(
@@ -501,6 +513,10 @@ public final class DebuggerImpl implements Debugger {
 		debugging.setEL(KeyConstants._timers,qryTimers);
 		debugging.setEL(KeyConstants._traces,qryTraces);
 		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
+		//debugging.setEL(OUTPUT_LOG,qryOutputLog);
+		
+		
+		
 		
 		debugging.setEL(KeyImpl.intern("history"),history);
 		debugging.setEL(KeyConstants._exceptions,arrExceptions);
@@ -644,6 +660,36 @@ public final class DebuggerImpl implements Debugger {
 	@Override
 	public ImplicitAccess[] getImplicitAccesses(int scope, String name) {
 		return implicitAccesses.values().toArray(new ImplicitAccessImpl[implicitAccesses.size()]);
+	}
+
+	public void setOutputLog(DebugOutputLog outputLog) { 
+		this.outputLog=outputLog;
+	}
+	
+	public DebugTextFragment[] getOutputTextFragments() { 
+		return this.outputLog.getFragments();
+	}
+	
+	public Query getOutputText() throws DatabaseException { 
+		DebugTextFragment[] fragments = outputLog.getFragments();
+		int len = fragments==null?0:fragments.length;
+		Query qryOutputLog=new QueryImpl(
+                new Collection.Key[]{
+                		KeyConstants._line
+                		,KeyConstants._template,
+                		KeyConstants._text},
+                len,"query");
+		
+		
+        if(len>0) {
+	        	for(int i=0;i<fragments.length;i++) {
+	        		qryOutputLog.setAtEL(KeyConstants._line,i+1,fragments[i].line);
+	        		qryOutputLog.setAtEL(KeyConstants._template,i+1,fragments[i].template);
+	        		qryOutputLog.setAtEL(KeyConstants._text,i+1,fragments[i].text);  
+	        	}
+        }
+        return qryOutputLog;
+        
 	}
 }
 

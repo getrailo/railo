@@ -63,6 +63,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
+import railo.runtime.debug.DebugCFMLWriter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
@@ -407,7 +408,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			 boolean isChild) {
 		requestId=counter++;
 		rsp.setContentType("text/html; charset=UTF-8");
-		
 		this.isChild=isChild;
 		
         //rsp.setHeader("Connection", "close");
@@ -423,9 +423,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         this.servlet=servlet;
 
          // Writers
-         bodyContentStack.init(config.getCFMLWriter(req,rsp));
-		 writer=bodyContentStack.getWriter();
-         forceWriter=writer;
+        if(config.debugLogOutput()) {
+        	DebugCFMLWriter dcw = new DebugCFMLWriter(config.getCFMLWriter(req,rsp));
+        	bodyContentStack.init(dcw);
+        	debugger.setOutputLog(dcw);
+        }
+        else {
+        	bodyContentStack.init(config.getCFMLWriter(req,rsp));
+        }
+        
+		
+        writer=bodyContentStack.getWriter();
+        forceWriter=writer;
          
 		 // Scopes
          server=ScopeContext.getServerScope(this);
@@ -476,6 +485,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see javax.servlet.jsp.PageContext#release()
 	 */
 	public void release() {
+        if(config.getExecutionLogEnabled()){
+        	execLog.release();
+			execLog=null;
+        }
 		
 		if(config.debug()) {
     		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
@@ -629,15 +642,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         activeComponent=null;
         activeUDF=null;
         
-        if(config.getExecutionLogEnabled()){
-        	execLog.release();
-			execLog=null;
-        }
 
     	gatewayContext=false;
     	
     	manager.release();
     	includeOnce.clear();
+    	
+
 	}
 
     /**
