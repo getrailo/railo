@@ -298,7 +298,7 @@ public class CFMLWriterImpl extends CFMLWriter {
 
     private OutputStream getOutputStream() throws IOException {
     	
-    	if(allowCompression){
+    	if ( allowCompression && !response.isCommitted() ){
     		
     		String encodings = ReqRspUtil.getHeader(request,"Accept-Encoding",null);
     	    if(!StringUtil.isEmpty(encodings) && encodings.indexOf("gzip")!=-1) {
