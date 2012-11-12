@@ -168,31 +168,7 @@
 	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 		<input type="hidden" name="name" value="#datasource.name#">
 		<input type="hidden" name="type" value="#datasource.type#">
-		
-		<cfif actionType EQ "update">
-		
-			<h3>JDBC Connection Data</h3>
-			Based on the data below.
-			<table class="maintbl">
-				<tbody>
-					<tr>
-						<th scope="row">Driver Class</th>
-						<td>#datasource.classname#</td>
-					</tr>
-					<tr>
-						<th scope="row">Connection String</th>
-						<td>
-							<cfif len(datasource._password)>
-								#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#
-							<cfelse>
-								#datasource.dsnTranslated#
-							</cfif>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<br>
-		</cfif>
+	
 
 		<cfsilent>
 			<cfset TYPE_HIDDEN=0>
@@ -473,4 +449,16 @@
 			</tfoot>
 		</table>
 	</cfform>
+	
+		
+		<cfif actionType EQ "update">
+		<br>
+			<h3>Application.cfc</h3>
+			Overwrite in application.cfc as follows:
+<pre>
+this.datasource<cfif isValid('variableName',#datasource.name#)>.#datasource.name#<cfelse>['#datasource.name#']</cfif>={
+	class:#datasource.classname#,
+	connStr:#datasource.dsnTranslated#
+};</pre>
+		</cfif>
 </cfoutput>
