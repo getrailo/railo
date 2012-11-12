@@ -1,13 +1,13 @@
 package railo.runtime.concurrency;
 
 import railo.runtime.PageContext;
-import railo.runtime.concurrency.ChildThread;
+import railo.runtime.concurrency.Caller;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 
-public class UDFCaller extends ChildThread {
+public class UDFCaller extends Caller {
 
 	private UDF udf;
 	private boolean doIncludePath;

@@ -14,13 +14,13 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.thread.ThreadUtil;
 
-public abstract class ChildThread implements Callable<String> { 
+public abstract class Caller implements Callable<String> { 
 
 	private PageContext parent;
 	private PageContextImpl pc;
 	private ByteArrayOutputStream baos;
 
-	public ChildThread(PageContext parent) {
+	public Caller(PageContext parent) {
 		this.parent = parent;
 		this.baos = new ByteArrayOutputStream();
 		this.pc=ThreadUtil.clonePageContext(parent, baos, false, false, true);
