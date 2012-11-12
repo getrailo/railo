@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -2989,6 +2990,9 @@ public final class Caster {
         }
         else if(t instanceof ExceptionInInitializerError){
             return toPageException(((ExceptionInInitializerError)t).getCause());
+        }
+        else if(t instanceof ExecutionException){
+            return toPageException(((ExecutionException)t).getCause());
         }
         else {
         	//Throwable cause = t.getCause();

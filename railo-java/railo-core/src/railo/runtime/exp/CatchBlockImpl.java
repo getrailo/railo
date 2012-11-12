@@ -31,6 +31,8 @@ import railo.runtime.type.util.StructUtil;
 
 public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Objects{
 	
+	private static final long serialVersionUID = -3680961614605720352L;
+	
 	public static final Key MESSAGE = KeyConstants._Message;
 	public static final Key DETAIL = KeyConstants._Detail;
 	public static final Key ERROR_CODE = KeyImpl.intern("ErrorCode");
@@ -70,6 +72,7 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 						continue;
 					}
 					key=KeyImpl.init(Reflector.removeGetterPrefix(getter.getName()));
+					if(STACK_TRACE.equalsIgnoreCase(key)) continue;
 					setEL(key,new Pair(throwable,key, getter,false));
 				}
 			}
@@ -246,7 +249,6 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	 */
 	public Object set(Key key, Object value) throws PageException {
 		Object curr = super.get(key,null);
-
 		if(curr instanceof SpecialItem){
 			((SpecialItem)curr).set(value);
 			return value;
