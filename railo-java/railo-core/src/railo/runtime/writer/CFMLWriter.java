@@ -33,4 +33,6 @@ public abstract class CFMLWriter extends JspWriter {
 	 */
 	public abstract void writeRaw(String str) throws IOException;
 
+	public abstract void setAllowCompression(boolean allowCompression);
+
 }

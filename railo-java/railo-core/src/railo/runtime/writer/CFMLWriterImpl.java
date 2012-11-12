@@ -549,4 +549,11 @@ public class CFMLWriterImpl extends CFMLWriter {
 		return toString();
 	}
 
+	@Override
+	public void setAllowCompression(boolean allowCompression) {
+		this.allowCompression=allowCompression;
+	}
+	
+	
+
 } 

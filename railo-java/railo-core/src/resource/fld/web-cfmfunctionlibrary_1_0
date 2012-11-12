@@ -364,6 +364,19 @@ All elements in the array must contain values that can be automatically converte
 			<required>Yes</required>
 			<description>UDF/Closure that call with the values from array</description>
 		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximal numbers of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>
@@ -14604,10 +14617,61 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>Yes</required>
 			<description>UDF/Closure that call with the entries from struct</description>
 		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximal numbers of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
 		<return>
 			<type>void</type>
 		</return>
 	</function>
+	
+	
+	<!-- each -->
+	<function>
+		<name>each</name>
+		<class>railo.runtime.functions.closure.Each</class>
+		<description>call the given UDF/Closure with every entry (key/value) in the given collection.</description>
+		<argument>
+			<name>collection</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>collection to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the entries from struct</description>
+		</argument>
+		<argument>
+			<name>parallel</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>execute closures parallel</description>
+		</argument>
+		<argument>
+			<name>maxThreads</name>
+			<type>number</type>
+			<required>No</required>
+			<default>20</default>
+			<description>maximal numbers of threads executed, ignored when argument "parallel" is set to false</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 		<!-- structFilter -->
 	<function>
 		<name>structFilter</name>
