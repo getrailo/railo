@@ -279,4 +279,9 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 		return fragments.toArray(new DebugTextFragment[fragments.size()]);
 	}
 
+	@Override
+	public void setAllowCompression(boolean allowCompression) {
+		writer.setAllowCompression(allowCompression);
+	}
+
 }
