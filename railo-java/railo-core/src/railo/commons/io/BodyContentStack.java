@@ -7,8 +7,8 @@ import javax.servlet.jsp.tagext.BodyContent;
 import railo.runtime.writer.BodyContentImpl;
 import railo.runtime.writer.CFMLWriter;
 import railo.runtime.writer.CFMLWriterImpl;
-import railo.runtime.writer.CFMLWriterWhiteSpace;
-import railo.runtime.writer.CFMLWriterWhiteSpacePref;
+import railo.runtime.writer.CFMLWriterWS;
+import railo.runtime.writer.CFMLWriterWSPref;
 import railo.runtime.writer.DevNullBodyContent;
 
 /**

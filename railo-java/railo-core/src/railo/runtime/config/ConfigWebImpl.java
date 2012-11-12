@@ -49,8 +49,8 @@ import railo.runtime.tag.TagHandlerPool;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.writer.CFMLWriter;
 import railo.runtime.writer.CFMLWriterImpl;
-import railo.runtime.writer.CFMLWriterWhiteSpace;
-import railo.runtime.writer.CFMLWriterWhiteSpacePref;
+import railo.runtime.writer.CFMLWriterWS;
+import railo.runtime.writer.CFMLWriterWSPref;
 import railo.transformer.library.function.FunctionLibException;
 import railo.transformer.library.tag.TagLibException;
 
@@ -451,10 +451,10 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public CFMLWriter getCFMLWriter(HttpServletRequest req, HttpServletResponse rsp) {
 			// FUTURE  move interface CFMLWriter to Loader and load dynaicly from railo-web.xml
 	        if(writerType==CFML_WRITER_WS)
-	            return new CFMLWriterWhiteSpace		(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWS		(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
 	        else if(writerType==CFML_WRITER_REFULAR) 
 	            return new CFMLWriterImpl			(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
 	        else
-	            return new CFMLWriterWhiteSpacePref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
+	            return new CFMLWriterWSPref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
 	    }
 }
