@@ -22,12 +22,16 @@ public final class StructEach implements Function {
 	private static final long serialVersionUID = 5795152568391831373L;
 
 	public static String call(PageContext pc , Struct sct, UDF udf) throws PageException {
-		return call(pc, sct, udf, false, 20);
+		return _call(pc, sct, udf, false, 20);
 	}
 	public static String call(PageContext pc , Struct sct, UDF udf, boolean parallel) throws PageException {
-		return call(pc, sct, udf, parallel, 20);
+		return _call(pc, sct, udf, parallel, 20);
 	}
-	public static String call(PageContext pc , Struct sct, UDF udf, boolean parallel, int maxThreads) throws PageException {
+
+	public static String call(PageContext pc , Struct sct, UDF udf, boolean parallel, double maxThreads) throws PageException {
+		return _call(pc, sct, udf, parallel, (int)maxThreads);
+	}
+	private static String _call(PageContext pc , Struct sct, UDF udf, boolean parallel, int maxThreads) throws PageException {
 		ExecutorService execute=null;
 		List<Future<String>> futures=null;
 		if(parallel) {

@@ -23,12 +23,16 @@ public final class ArrayEach implements Function {
 
 
 	public static String call(PageContext pc , Array array, UDF udf) throws PageException {
-		return call(pc, array, udf, false, 20);
+		return _call(pc, array, udf, false, 20);
 	}
 	public static String call(PageContext pc , Array array, UDF udf, boolean parallel) throws PageException {
-		return call(pc, array, udf, parallel, 20);
+		return _call(pc, array, udf, parallel, 20);
 	}
-	public static String call(PageContext pc , Array array, UDF udf, boolean parallel, int maxThreads) throws PageException {
+
+	public static String call(PageContext pc , Array array, UDF udf, boolean parallel, double maxThreads) throws PageException {
+		return _call(pc, array, udf, parallel, (int)maxThreads);
+	}
+	private static String _call(PageContext pc , Array array, UDF udf, boolean parallel, int maxThreads) throws PageException {
 		ExecutorService execute=null;
 		List<Future<String>> futures=null;
 		if(parallel) {

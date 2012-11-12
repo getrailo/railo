@@ -30,12 +30,16 @@ public final class Each implements Function {
 	private static final long serialVersionUID = 1955185705863596525L;
 
 	public static String call(PageContext pc , Object obj, UDF udf) throws PageException {
-		return call(pc, obj, udf, false,20);
+		return _call(pc, obj, udf, false,20);
 	}
 	public static String call(PageContext pc , Object obj, UDF udf, boolean parallel) throws PageException {
-		return call(pc, obj, udf, parallel, 20);
+		return _call(pc, obj, udf, parallel, 20);
 	}
-	public static String call(PageContext pc , Object obj, UDF udf, boolean parallel, int maxThreads) throws PageException {
+	public static String call(PageContext pc , Object obj, UDF udf, boolean parallel, double maxThreads) throws PageException {
+		return _call(pc, obj, udf, parallel, (int)maxThreads);
+	}
+	
+	private static String _call(PageContext pc , Object obj, UDF udf, boolean parallel, int maxThreads) throws PageException {
 		ExecutorService execute=null;
 		List<Future<String>> futures=null;
 		if(parallel) {
