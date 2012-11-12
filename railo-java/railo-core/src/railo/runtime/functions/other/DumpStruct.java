@@ -22,6 +22,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
 
 public final class DumpStruct implements Function {
@@ -96,20 +97,20 @@ public final class DumpStruct implements Function {
 	private static Struct toCFML(DumpTable dt, Object object, RefBoolean hasReference) {
 		Struct sct=new StructImpl();
 		StructUtil.setELIgnoreWhenNull(sct,"borderColor", toShortColor(dt.getBorderColor()));
-		StructUtil.setELIgnoreWhenNull(sct,"comment", dt.getComment());
+		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._comment, dt.getComment());
 		StructUtil.setELIgnoreWhenNull(sct,"fontColor", toShortColor(dt.getFontColor()));
-		StructUtil.setELIgnoreWhenNull(sct,"height", dt.getHeight());
-		StructUtil.setELIgnoreWhenNull(sct,"width", dt.getWidth());
+		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._height, dt.getHeight());
+		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._width, dt.getWidth());
 		StructUtil.setELIgnoreWhenNull(sct,"highLightColor", toShortColor(dt.getHighLightColor()));
 		StructUtil.setELIgnoreWhenNull(sct,"normalColor", toShortColor(dt.getNormalColor()));
-		StructUtil.setELIgnoreWhenNull(sct,"title", dt.getTitle());
+		StructUtil.setELIgnoreWhenNull(sct,KeyConstants._title, dt.getTitle());
 		
-		if(!StringUtil.isEmpty(dt.getType()))sct.setEL("type", dt.getType());
-		if(!StringUtil.isEmpty(dt.getId()))sct.setEL("id", dt.getId());
+		if(!StringUtil.isEmpty(dt.getType()))sct.setEL(KeyConstants._type, dt.getType());
+		if(!StringUtil.isEmpty(dt.getId()))sct.setEL(KeyConstants._id, dt.getId());
 			
 		if("ref".equals(dt.getType())){
 			hasReference.setValue(true);
-			sct.setEL("ref", dt.getRef());
+			sct.setEL(KeyConstants._ref, dt.getRef());
 		}
 		
 		
@@ -127,7 +128,7 @@ public final class DumpStruct implements Function {
 			qry.setAtEL("highlight", r+1, new Double(dr.getHighlightType()));
 			
 		}
-		sct.setEL("data", qry);
+		sct.setEL(KeyConstants._data, qry);
 		return sct;
 	}
 

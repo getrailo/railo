@@ -810,6 +810,8 @@ public class KeyConstants {
 	public static final Key _restArgSource = KeyImpl._const("restArgSource");
 	public static final Key _consumes = KeyImpl._const("consumes");
 	public static final Key _produces = KeyImpl._const("produces");
+	public static final Key _ref = KeyImpl._const("ref");
+	public static final Key _script = KeyImpl._const("script");
 	
 	private static HashSet<String> _____keys;
 	

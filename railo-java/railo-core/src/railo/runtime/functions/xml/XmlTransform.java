@@ -17,12 +17,13 @@ import railo.runtime.type.Struct;
 public final class XmlTransform implements Function {
 
 
+	public static String call( PageContext pc , Object oXml, String xsl ) throws PageException {
+		return call( pc, oXml, xsl, null );
+	}
+	
 	public static String call( PageContext pc , Object oXml, String xsl, Struct parameters ) throws PageException {
-
 		try {
-
 			Document doc;
-
 			if(oXml instanceof String) {
 				doc=XMLUtil.parse(XMLUtil.toInputSource(pc, oXml.toString()), null, false);
 			}
@@ -34,11 +35,5 @@ public final class XmlTransform implements Function {
 		catch (Exception e) {
 			throw Caster.toPageException(e);
 		}
-	}
-
-
-	public static String call( PageContext pc , Object oXml, String xsl ) throws PageException {
-
-		return call( pc, oXml, xsl, null );
 	}
 }

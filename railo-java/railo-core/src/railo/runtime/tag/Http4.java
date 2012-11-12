@@ -57,6 +57,7 @@ import railo.runtime.exp.HTTPException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.net.http.MultiPartResponseUtils;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
@@ -688,7 +689,8 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	mimetype == null ||  
 	        	mimetype == NO_MIMETYPE || HTTPUtil.isTextMimeType(mimetype);
 	        	
-	        
+		    // is multipart 
+	        boolean isMultipart= MultiPartResponseUtils.isMultipart(mimetype);        
 	       
 	        cfhttp.set(KeyConstants._text,Caster.toBoolean(isText));
 	        
@@ -792,8 +794,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        		throw Caster.toPageException(t);
 					}
 		        }
-		        	
-		        cfhttp.set(FILE_CONTENT,barr);
+		        //IF Multipart response get file content and parse parts
+			    if(isMultipart) {
+			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
+			    } else {
+			    	cfhttp.set(FILE_CONTENT,barr);
+			    }
 		        
 		        if(file!=null) {
 		        	try {
