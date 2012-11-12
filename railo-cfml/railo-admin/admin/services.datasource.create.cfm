@@ -170,15 +170,17 @@
 		<input type="hidden" name="type" value="#datasource.type#">
 		
 		<cfif actionType EQ "update">
-			<h3>Datasource details</h3>
+		
+			<h3>JDBC Connection Data</h3>
+			Based on the data below.
 			<table class="maintbl">
 				<tbody>
 					<tr>
-						<th scope="row">Class</th>
+						<th scope="row">Driver Class</th>
 						<td>#datasource.classname#</td>
 					</tr>
 					<tr>
-						<th scope="row">DNS</th>
+						<th scope="row">Connection String</th>
 						<td>
 							<cfif len(datasource._password)>
 								#replace(datasource.dsnTranslated,datasource._password,datasource.password,'all')#
@@ -189,6 +191,7 @@
 					</tr>
 				</tbody>
 			</table>
+			<br>
 		</cfif>
 
 		<cfsilent>
@@ -207,6 +210,9 @@
 		<cfif typePort EQ TYPE_HIDDEN><input type="hidden" name="port" value="#datasource.port#"></cfif>
 		<cfif typeUsername EQ TYPE_HIDDEN><input type="hidden" name="username" value="#datasource.username#"></cfif>
 		<cfif typePassword EQ TYPE_HIDDEN><input type="hidden" name="password" value="#datasource.password#"></cfif>
+		
+		
+		<h3>Datasource configuration</h3>
 		<table class="maintbl">
 			<tbody>
 				<tr>
