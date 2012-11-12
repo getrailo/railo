@@ -1970,7 +1970,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             sct.set("physical",m.getPhysical());
             sct.set("strphysical",m.getStrPhysical());
             sct.set("virtual",m.getVirtual());
-            sct.set("hidden",Caster.toBoolean(m.isHidden()));
+            sct.set(KeyConstants._hidden,Caster.toBoolean(m.isHidden()));
             sct.set("physicalFirst",Caster.toBoolean(m.isPhysicalFirst()));
             sct.set("readonly",Caster.toBoolean(m.isReadonly()));
             sct.set("trusted",Caster.toBoolean(m.isTrusted()));
@@ -1992,7 +1992,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         	provider=providers[i];
             int row=i+1;
             //qry.setAt("name",row,provider.getName());
-            qry.setAt("url",row,provider.getUrlAsString());
+            qry.setAt(KeyConstants._url,row,provider.getUrlAsString());
             qry.setAt("isReadOnly",row,Caster.toBoolean(provider.isReadOnly()));
             //qry.setAt("cacheTimeout",row,Caster.toDouble(provider.getCacheTimeout()/1000));
         }
@@ -2002,8 +2002,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doGetExtensionInfo() throws PageException {
     	Resource ed = config.getExtensionDirectory();
     	Struct sct=new StructImpl();
-    	sct.set("directory", ed.getPath());
-    	sct.set("enabled", Caster.toBoolean(config.isExtensionEnabled()));
+    	sct.set(KeyConstants._directory, ed.getPath());
+    	sct.set(KeyConstants._enabled, Caster.toBoolean(config.isExtensionEnabled()));
     	
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
     }
@@ -2034,17 +2034,17 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.addRow();
         	row++;
             qry.setAt("provider",row,extProvider);
-            qry.setAt("id",row,extId);
-            qry.setAt("config",row,extension.getConfig(pageContext));
-            qry.setAt("version",row,extension.getVersion());
+            qry.setAt(KeyConstants._id,row,extId);
+            qry.setAt(KeyConstants._config,row,extension.getConfig(pageContext));
+            qry.setAt(KeyConstants._version,row,extension.getVersion());
             
             qry.setAt("category",row,extension.getCategory());
-            qry.setAt("description",row,extension.getDescription());
+            qry.setAt(KeyConstants._description,row,extension.getDescription());
             qry.setAt("image",row,extension.getImage());
-            qry.setAt("label",row,extension.getLabel());
-            qry.setAt("name",row,extension.getName());
+            qry.setAt(KeyConstants._label,row,extension.getLabel());
+            qry.setAt(KeyConstants._name,row,extension.getName());
 
-            qry.setAt("author",row,extension.getAuthor());
+            qry.setAt(KeyConstants._author,row,extension.getAuthor());
             qry.setAt("codename",row,extension.getCodename());
             qry.setAt("video",row,extension.getVideo());
             qry.setAt("support",row,extension.getSupport());
@@ -2052,8 +2052,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("forum",row,extension.getForum());
             qry.setAt("mailinglist",row,extension.getMailinglist());
             qry.setAt("network",row,extension.getNetwork());
-            qry.setAt("created",row,extension.getCreated());
-            qry.setAt("type",row,extension.getType());
+            qry.setAt(KeyConstants._created,row,extension.getCreated());
+            qry.setAt(KeyConstants._type,row,extension.getType());
             
         }
         pageContext.setVariable(getString("admin",action,"returnVariable"),qry);
