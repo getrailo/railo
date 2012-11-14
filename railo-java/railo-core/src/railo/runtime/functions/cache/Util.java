@@ -120,12 +120,12 @@ public class Util {
 	
 	private static CacheException noCache(Config config, String cacheName) {
 		StringBuilder sb=new StringBuilder("there is no cache defined with name [").append(cacheName).append("], available caches are [");
-		Iterator it = ((ConfigImpl)config).getCacheConnections().keySet().iterator();
+		Iterator<String> it = ((ConfigImpl)config).getCacheConnections().keySet().iterator();
 		if(it.hasNext()){
-			sb.append(Caster.toString(it.next(),""));
+			sb.append(it.next());
 		}
 		while(it.hasNext()){
-			sb.append(", ").append(Caster.toString(it.next(),""));
+			sb.append(", ").append(it.next());
 		}
 		sb.append("]");
 		

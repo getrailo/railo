@@ -1668,8 +1668,8 @@ public final class ConfigWebAdmin {
       	for(int i=0;i<children.length;i++) {
       	    String n=children[i].getAttribute("name"); 
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
-  	    		Map conns = config.getCacheConnections();
-  	    		CacheConnection cc=(CacheConnection) conns.get(n);
+  	    		Map<String, CacheConnection> conns = config.getCacheConnections();
+  	    		CacheConnection cc= conns.get(n.toLowerCase());
   	    		if(cc!=null)Util.removeEL(config instanceof ConfigWeb?(ConfigWeb)config:null,cc);
   	    	  parent.removeChild(children[i]);
   			}
