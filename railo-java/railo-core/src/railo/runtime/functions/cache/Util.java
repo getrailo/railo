@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntryFilter;
+import railo.commons.io.cache.CacheWithTeardown;
 import railo.commons.io.cache.exp.CacheException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
@@ -147,12 +148,23 @@ public class Util {
 
 
 	public static boolean removeEL(ConfigWeb config, CacheConnection cc)  {
+		boolean success = false;
+		
 		try {
 			remove(config,cc);
-			return true;
+			success = true;
 		} catch (Throwable e) {
-			return false;
+			
 		}
+		
+		try {
+			teardownCacheConnection(config, cc);
+			success &= true;
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		
+		return success;
 	}
 	public static void remove(ConfigWeb config, CacheConnection cc) throws Throwable  {
 		Cache c = cc.getInstance(config);
@@ -174,6 +186,15 @@ public class Util {
 		}
 		catch (InvocationTargetException e) {
 			throw e.getTargetException();
+		}
+		
+	}
+	
+	private static void teardownCacheConnection(ConfigWeb config, CacheConnection connection) throws Throwable {
+		Cache cache = connection.getInstance(config);
+		
+		if (cache instanceof CacheWithTeardown) {
+			((CacheWithTeardown) cache).teardown();
 		}
 	}
 
