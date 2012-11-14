@@ -649,8 +649,10 @@ public final class DebuggerImpl implements Debugger {
 
 final class DebugEntryTemplateComparator implements Comparator<DebugEntryTemplate> {
     
-    public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
-        return (int)((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
+	public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
+		long result = ((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
+        // we do this addional step to try to avoid ticket RAILO-2076
+        return result>0L?1:(result<0L?-1:0);
     }
 }
 
@@ -658,17 +660,8 @@ final class DebugEntryTemplatePartComparator implements Comparator<DebugEntryTem
 	
 	@Override
 	public int compare(DebugEntryTemplatePart de1,DebugEntryTemplatePart de2) {
-        return (int) (de2.getExeTime()-de1.getExeTime());
-		
-		
-		/*int diff = de1.getPath().compareTo(de2.getPath());		
-        if(diff!=0) return diff;
-		
-		diff= de1.getStartPosition()-de2.getStartPosition();
-		if(diff!=0) return diff;
-		
-		return de1.getEndPosition()-de2.getEndPosition();
-		*/
-		
+		long result=de2.getExeTime()-de1.getExeTime();
+		// we do this addional step to try to avoid ticket RAILO-2076
+        return result>0L?1:(result<0L?-1:0);
     }
 }
