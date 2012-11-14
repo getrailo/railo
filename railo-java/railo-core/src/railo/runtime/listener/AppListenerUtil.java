@@ -18,6 +18,9 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
+import railo.runtime.db.ApplicationDataSource;
+import railo.runtime.db.DataSource;
+import railo.runtime.db.DataSourceImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
@@ -41,7 +44,7 @@ public final class AppListenerUtil {
 	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
 	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.intern("awsSecretKey");
 	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.intern("defaultLocation");
-	private static final Collection.Key HOST = KeyImpl.intern("host");
+	private static final Collection.Key CONN_STR = KeyImpl.intern("connStr");
 	
 	
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, String filename, int mode) {
@@ -157,6 +160,43 @@ public final class AppListenerUtil {
 		else if(listener instanceof ClassicAppListener)	return "classic";
 		else if(listener instanceof ModernAppListener)	return "modern";
 		return "";
+	}
+	
+	public static DataSource[] toDataSources(ConfigWeb cw,Object o,DataSource[] defaultValue) {
+		try {
+			return toDataSources(cw, o);
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
+	public static DataSource[] toDataSources(ConfigWeb cw,Object o) throws PageException {
+		Struct sct = Caster.toStruct(o);
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
+		java.util.List<DataSource> dataSources=new ArrayList<DataSource>();
+		ConfigWebImpl config=(ConfigWebImpl) cw;
+		String name,user,pass;
+		Struct data;
+		while(it.hasNext()) {
+			e = it.next();
+			name=translateMappingVirtual(e.getKey().getString());
+			data=Caster.toStruct(e.getValue());
+			user=Caster.toString(data.get(KeyConstants._username,null),null);
+			pass=Caster.toString(data.get(KeyConstants._password,""),"");
+			if(StringUtil.isEmpty(user)) {
+				user=null;
+				pass=null;
+			}
+			
+			dataSources.add(new ApplicationDataSource(
+					name, 
+					Caster.toString(data.get(KeyConstants._class)), 
+					Caster.toString(data.get(CONN_STR)), 
+					user, pass));
+			
+		}
+		return dataSources.toArray(new DataSource[dataSources.size()]);
 	}
 	
 
@@ -278,7 +318,7 @@ public final class AppListenerUtil {
 	}
 	
 	public static Properties toS3(Struct sct) {
-		String host=Caster.toString(sct.get(HOST,null),null);
+		String host=Caster.toString(sct.get(KeyConstants._host,null),null);
 		if(StringUtil.isEmpty(host))host=Caster.toString(sct.get(KeyConstants._server,null),null);
 		
 		return toS3(

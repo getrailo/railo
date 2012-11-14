@@ -314,6 +314,7 @@ public class KeyConstants {
 	public static final Key _data_ID=KeyImpl._const("data_ID");
 	public static final Key _data_id=KeyImpl._const("data_id");
 	public static final Key _datasource=KeyImpl._const("datasource");
+	public static final Key _datasources=KeyImpl._const("datasources");
 	public static final Key _date=KeyImpl._const("date");
 	public static final Key _dc_date=KeyImpl._const("dc_date");
 	public static final Key _dc_subject=KeyImpl._const("dc_subject");
@@ -812,6 +813,12 @@ public class KeyConstants {
 	public static final Key _produces = KeyImpl._const("produces");
 	public static final Key _ref = KeyImpl._const("ref");
 	public static final Key _script = KeyImpl._const("script");
+	public static final Key _applicationTimeout = KeyImpl._const("applicationTimeout");
+	public static final Key _clientManagement = KeyImpl._const("clientManagement");
+	public static final Key _username = KeyImpl._const("username");
+	public static final Key _queries = KeyImpl._const("queries");
+	public static final Key _history = KeyImpl._const("history");
+	public static final Key _group = KeyImpl._const("group");
 	
 	private static HashSet<String> _____keys;
 	

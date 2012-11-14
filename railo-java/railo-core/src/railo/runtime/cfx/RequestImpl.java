@@ -9,6 +9,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 
 import com.allaire.cfx.Query;
 import com.allaire.cfx.Request;
@@ -20,8 +21,8 @@ import com.allaire.cfx.Request;
  */
 public final class RequestImpl implements Request {
 	
-	private static final Collection.Key QUERY = KeyImpl.intern("query");
-	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
+	private static final Collection.Key QUERY = KeyConstants._query;
+	private static final Collection.Key DEBUG = KeyConstants._debug;
 	private Struct attributes;
 	private Struct settings;
 	private Query query;

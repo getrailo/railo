@@ -48,9 +48,7 @@ import railo.runtime.type.util.KeyConstants;
  */
 public final class DebuggerImpl implements Debugger {
 	private static final long serialVersionUID = 3957043879267494311L;
-	
-	
-	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
+
 	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
 	private static final Collection.Key PAGE_PARTS= KeyImpl.intern("pageParts");
 	//private static final Collection.Key OUTPUT_LOG= KeyImpl.intern("outputLog");
@@ -509,7 +507,7 @@ public final class DebuggerImpl implements Debugger {
 
 		debugging.setEL(KeyConstants._pages,qryPage);
 		debugging.setEL(PAGE_PARTS,qryPart);
-		debugging.setEL(QUERIES,qryQueries);
+		debugging.setEL(KeyConstants._queries,qryQueries);
 		debugging.setEL(KeyConstants._timers,qryTimers);
 		debugging.setEL(KeyConstants._traces,qryTraces);
 		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
@@ -518,7 +516,7 @@ public final class DebuggerImpl implements Debugger {
 		
 		
 		
-		debugging.setEL(KeyImpl.intern("history"),history);
+		debugging.setEL(KeyConstants._history,history);
 		debugging.setEL(KeyConstants._exceptions,arrExceptions);
 		
 		return debugging;
