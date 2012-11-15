@@ -34,7 +34,7 @@ public class DatasourceStorageScopeCleaner extends StorageScopeCleanerSupport {
 		DataSource[] datasources = config.getDataSources();
 		for(int i=0;i<datasources.length;i++){
 			
-			if(((DataSourceImpl)datasources[i]).isStorage()) {
+			if((datasources[i]).isStorage()) {
 				try {
 					clean(config,datasources[i]);
 				} catch (Throwable t) {
