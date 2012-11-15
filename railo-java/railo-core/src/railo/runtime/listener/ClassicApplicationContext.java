@@ -8,8 +8,11 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.net.s3.PropertiesImpl;
 import railo.runtime.op.Duplicator;
@@ -17,6 +20,7 @@ import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.rest.RestSettings;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.ArrayUtil;
 
 /**
  * 
@@ -43,9 +47,9 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private boolean secureJson;
 	private String secureJsonPrefix="//";
 	private boolean isDefault;
-	private String defaultDataSource;
+	private Object defaultDataSource;
 	private boolean ormEnabled;
-	private String ormdatasource;
+	private Object ormdatasource;
 	private ORMConfiguration config;
 	private Properties s3;
 	
@@ -64,6 +68,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private Resource[] restCFCLocations;
 
 	private JavaSettingsImpl javaSettings;
+
+	private DataSource[] dataSources;
 
     
     /**
@@ -118,6 +124,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.sessionstorage=sessionstorage;
 		dbl.scriptProtect=scriptProtect;
 		dbl.mappings=mappings;
+		dbl.dataSources=dataSources;
 		dbl.ctmappings=ctmappings;
 		dbl.cmappings=cmappings;
 		dbl.secureJson=secureJson;
@@ -355,22 +362,24 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		return secureJsonPrefix;
 	}
 
-	 /**
-	 * @return the defaultDataSource
-	 */
+	@Override
 	public String getDefaultDataSource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+	
+	@Override
+	public Object getDefDataSource() {
 		return defaultDataSource;
 	}
 
-	/**
-	 * @param defaultDataSource the defaultDataSource to set
-	 */
+	@Override
 	public void setDefaultDataSource(String defaultDataSource) {
 		this.defaultDataSource = defaultDataSource;
 	}
-	
-	public void setORMDataSource(String ormdatasource) {
-		this.ormdatasource = ormdatasource;
+
+	@Override
+	public void setDefDataSource(Object defaultDataSource) {
+		this.defaultDataSource = defaultDataSource;
 	}
 
 	public boolean isORMEnabled() {
@@ -378,6 +387,10 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	}
 
 	public String getORMDatasource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+
+	public Object getORMDataSource() {
 		return ormdatasource;
 	}
 
@@ -468,10 +481,13 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		this.s3=s3;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#setORMDatasource(java.lang.String)
-	 */
+	@Override
 	public void setORMDatasource(String ormdatasource) {
+		this.ormdatasource=ormdatasource;
+	}
+
+	@Override
+	public void setORMDataSource(Object ormdatasource) {
 		this.ormdatasource=ormdatasource;
 	}
 
@@ -540,5 +556,15 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	@Override
 	public JavaSettings getJavaSettings() {
 		return javaSettings;
+	}
+
+	@Override
+	public DataSource[] getDataSources() {
+		return dataSources;
+	}
+
+	@Override
+	public void setDataSources(DataSource[] dataSources) {
+		if(!ArrayUtil.isEmpty(dataSources))this.dataSources=dataSources;
 	}
 }

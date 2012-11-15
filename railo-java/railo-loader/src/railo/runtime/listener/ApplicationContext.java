@@ -88,11 +88,12 @@ public interface ApplicationContext extends Serializable {
 
 	public boolean getSecureJson();
 
-
+	// FUTURE deprecated use instead getDefDataSource()
 	public String getDefaultDataSource();
 	
 	public boolean isORMEnabled();
 
+	// FUTURE deprecated use instead getDefaultDataSource()
 	public String getORMDatasource();
 
 	public ORMConfiguration getORMConfiguration();

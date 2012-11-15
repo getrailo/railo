@@ -4,12 +4,15 @@ import java.sql.SQLException;
 
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -86,7 +89,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		Query query;
 		
 		try {
-			if(!((DataSourceImpl)dc.getDatasource()).isStorage()) 
+			if(!dc.getDatasource().isStorage()) 
 				throw new ApplicationException("storage usage for this datasource is disabled, you can enable this in the railo administrator.");
 			query = executor.select(pc.getConfig(),pc.getCFID(),pc.getApplicationContext().getName(), dc, type,log, true);
 		} 
@@ -132,7 +135,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
 		Log log=((ConfigImpl)config).getScopeLogger();
 		try {
-			dc=pool.getDatasourceConnection(null,config.getDataSource(datasourceName),null,null);
+			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
+			DataSource ds;
+			if(pc!=null) ds=((PageContextImpl)pc).getDataSource(datasourceName);
+			else ds=config.getDataSource(datasourceName);
+			dc=pool.getDatasourceConnection(null,ds,null,null);
 			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
 			executor.update(config, cfid,appName, dc, getType(), sct,getTimeSpan(),log);
 		} 
@@ -152,7 +159,11 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 		DatasourceConnectionPool pool = ci.getDatasourceConnectionPool();
 		Log log=((ConfigImpl)config).getScopeLogger();
 		try {
-			dc=pool.getDatasourceConnection(null,config.getDataSource(datasourceName),null,null);
+			PageContext pc = ThreadLocalPageContext.get();// FUTURE change method interface
+			DataSource ds;
+			if(pc!=null) ds=((PageContextImpl)pc).getDataSource(datasourceName);
+			else ds=config.getDataSource(datasourceName);
+			dc=pool.getDatasourceConnection(null,ds,null,null);
 			SQLExecutor executor=SQLExecutionFactory.getInstance(dc);
 			executor.delete(config, cfid,appName, dc, getType(),log);
 		} 

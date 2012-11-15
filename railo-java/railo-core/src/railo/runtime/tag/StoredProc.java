@@ -19,8 +19,10 @@ import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
+import railo.runtime.db.DataSourceSupport;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.ProcMeta;
 import railo.runtime.db.ProcMetaCollection;
@@ -31,6 +33,7 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallySupport;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Array;
@@ -267,7 +270,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				
 				//if(procedureColumnCache==null)procedureColumnCache=new ReferenceMap();
 				//ProcMetaCollection coll=procedureColumnCache.get(procedure);
-				DataSourceImpl d = ((DataSourceImpl)dc.getDatasource());
+				DataSourceSupport d = ((DataSourceSupport)dc.getDatasource());
 				long cacheTimeout = d.getMetaCacheTimeout();
 				Map<String, ProcMetaCollection> procedureColumnCache = d.getProcedureColumnCache();
 				ProcMetaCollection coll=procedureColumnCache.get(procedure);
@@ -402,9 +405,10 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 	public int doEndTag() throws JspException {
 		long startNS=System.nanoTime();
 		
+		Object ds=datasource;
 		if(StringUtil.isEmpty(datasource)){
-			datasource=pageContext.getApplicationContext().getDefaultDataSource();
-			if(StringUtil.isEmpty(datasource))
+			ds=((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
+			if(StringUtil.isEmpty(ds))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
 						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
@@ -414,13 +418,15 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		
 	    Struct res=new StructImpl();
 		DataSourceManager manager = pageContext.getDataSourceManager();
-		DatasourceConnection dc = manager.getConnection(pageContext,datasource,username,password);
+		DatasourceConnection dc = ds instanceof DataSource?
+				manager.getConnection(pageContext,(DataSource)ds,username,password):
+				manager.getConnection(pageContext,Caster.toString(ds),username,password);
 		
 		// create returnValue 
 		returnValue(dc);
 		
 		// create SQL 
-		StringBuffer sql=createSQL();
+		StringBuilder sql=createSQL();
 		
 
 		// add returnValue to params
@@ -459,12 +465,13 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    boolean isFromCache=false;
 		    boolean hasCached=cachedbefore!=null || cachedafter!=null;
 		    Object cacheValue=null;
+		    String dsn = ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);
 			if(clearCache) {
 				hasCached=false;
-				pageContext.getQueryCache().remove(pageContext,_sql,datasource,username,password);
+				pageContext.getQueryCache().remove(pageContext,_sql,dsn,username,password);
 			}
 			else if(hasCached) {
-				cacheValue = pageContext.getQueryCache().get(pageContext,_sql,datasource,username,password,cachedafter);
+				cacheValue = pageContext.getQueryCache().get(pageContext,_sql,dsn,username,password,cachedafter);
 			}
 			int count=0;
 			if(cacheValue==null){
@@ -519,7 +526,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 				}
 			    if(hasCached){
 			    	cache.set(COUNT, Caster.toDouble(count));
-			    	pageContext.getQueryCache().set(pageContext,_sql,datasource,username,password,cache,cachedbefore);
+			    	pageContext.getQueryCache().set(pageContext,_sql,dsn,username,password,cache,cachedbefore);
 			    }
 			    
 			}
@@ -546,7 +553,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    res.set(KeyConstants._cached,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {
-		    	pageContext.getDebugger().addQuery(null,datasource,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
+		    	pageContext.getDebugger().addQuery(null,dsn,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
 			}
 		    
 		    
@@ -572,8 +579,8 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 
 
 
-	private StringBuffer createSQL() {
-		StringBuffer sql=new StringBuffer();
+	private StringBuilder createSQL() {
+		StringBuilder sql=new StringBuilder();
 		if(returnValue!=null)sql.append("{? = call ");
 		else sql.append("{ call ");
 		sql.append(procedure);

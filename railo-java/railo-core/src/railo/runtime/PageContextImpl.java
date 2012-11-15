@@ -88,6 +88,7 @@ import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.AppListenerSupport;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
@@ -152,6 +153,7 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
@@ -566,14 +568,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             }
             else {
             	variables=variablesRoot;
-            	variables.release();
+            	variables.release(this);
             }
-            undefined.release();
-            urlForm.release();
+            undefined.release(this);
+            urlForm.release(this);
         	request.release();
         }
         cgi.release();
-        argument.release();
+        argument.release(this);
         local=localUnsupportedScope;
         
         cookie.release();
@@ -1882,7 +1884,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				String template=getConfig().getErrorTemplate(statusCode);
 				if(!StringUtil.isEmpty(template)) {
 					try {
-						Struct catchBlock=pe.getCatchBlock(this);
+						Struct catchBlock=pe.getCatchBlock(getConfig());
 						variablesScope().setEL(KeyConstants._cfcatch,catchBlock);
 						variablesScope().setEL(KeyConstants._catch,catchBlock);
 						doInclude(template);
@@ -3066,8 +3068,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 */
 	public String[] getThreadScopeNames() {
 		if(threads==null)return new String[0];
-		Set ks = threads.keySet();
-		return (String[]) ks.toArray(new String[ks.size()]);
+		return CollectionUtil.keysAsString(threads);
+		//Set ks = threads.keySet();
+		//return (String[]) ks.toArray(new String[ks.size()]);
 	}
 	
 	/**
@@ -3245,5 +3248,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	// this is just a wrapper method for ACF
 	public Scope SymTab_findBuiltinScope(String name) throws PageException {
 		return scope(name, null);
+	}
+
+
+	// FUTURE add to PageContext
+	public DataSource getDataSource(String datasource) throws PageException {
+		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
+		if(ds==null) ds=getConfig().getDataSource(datasource);
+		return ds;
 	}
 }

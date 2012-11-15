@@ -3871,6 +3871,12 @@ public final class Caster {
     }
     
     
+    public static TimeZone toTimeZone(Object oTimeZone, TimeZone defaultValue) {
+    	if(oTimeZone instanceof TimeZone) return (TimeZone) oTimeZone;
+        return TimeZoneUtil.toTimeZone(Caster.toString(oTimeZone,null),defaultValue);
+    }
+    
+    
     
     
     /**

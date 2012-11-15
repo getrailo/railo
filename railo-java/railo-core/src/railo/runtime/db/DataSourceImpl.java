@@ -7,6 +7,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
+import railo.print;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
@@ -22,29 +23,15 @@ import railo.runtime.type.util.CollectionUtil;
 /**
  * 
  */
-public final class DataSourceImpl implements Cloneable, DataSource {
+public final class DataSourceImpl  extends DataSourceSupport {
 
     private String dsn;
-	private String username;
-	private String password;
-    private boolean readOnly;
-    private Class clazz;
     private String host;
     private String database;
     private int port;
     private String dsnTranslated;
-    private int connectionLimit;
-    private int connectionTimeout;
-    private boolean blob;
-    private boolean clob;
-    private int allow;
     private Struct custom;
-    private String name;
-	private long metaCacheTimeout;
-	private Map<String,ProcMetaCollection> procedureColumnCache;
 	private boolean validate;
-	private boolean storage;
-	private TimeZone timezone;
     
 	/**
 	 * constructor of the class
@@ -72,7 +59,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
     	
 	}
     
-    private static Class toClass(String className) throws ClassException {
+    public static Class toClass(String className) throws ClassException {
     	try {
 			return Class.forName(className);
 		} 
@@ -86,29 +73,17 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 	private DataSourceImpl(String name,Class clazz, String host, String dsn, String database, int port, String username, String password, 
             int connectionLimit, int connectionTimeout,long metaCacheTimeout, boolean blob, boolean clob, int allow, Struct custom, boolean readOnly, 
             boolean validate,boolean storage,TimeZone timezone) {
-        if(allow<0) allow=ALLOW_ALL;
-        this.name=name;
-        this.clazz=clazz;
+		super(name, clazz,username,password,blob,clob,connectionLimit, connectionTimeout, metaCacheTimeout, timezone, allow<0?ALLOW_ALL:allow, storage, readOnly);
+			
         this.host=host;
         this.database=database;
         this.dsn=dsn; 
         this.port=port;
-        this.username=username;
-	    this.password=password;
 
-        this.connectionLimit=connectionLimit;
-        this.connectionTimeout=connectionTimeout;
-        this.blob=blob;
-        this.clob=clob;
-        this.allow=allow;
-        this.readOnly=readOnly;
         this.custom=custom;
         this.validate=validate;
-        this.storage=storage;
         
         this.dsnTranslated=dsn; 
-        this.metaCacheTimeout= metaCacheTimeout;
-        this.timezone=timezone;
         translateDsn();
         
         //	throw new DatabaseException("can't find class ["+classname+"] for jdbc driver, check if driver (jar file) is inside lib folder",e.getMessage(),null,null,null);
@@ -118,8 +93,8 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         dsnTranslated=replace(dsnTranslated,"host",host,false);
         dsnTranslated=replace(dsnTranslated,"database",database,false);
         dsnTranslated=replace(dsnTranslated,"port",Caster.toString(port),false);
-        dsnTranslated=replace(dsnTranslated,"username",username,false);
-        dsnTranslated=replace(dsnTranslated,"password",password,false);
+        dsnTranslated=replace(dsnTranslated,"username",getUsername(),false);
+        dsnTranslated=replace(dsnTranslated,"password",getPassword(),false);
         
         //Collection.Key[] keys = custom==null?new Collection.Key[0]:custom.keys();
         if(custom!=null) {
@@ -137,7 +112,7 @@ public final class DataSourceImpl implements Cloneable, DataSource {
             return StringUtil.replace(dsnTranslated,"{"+name+"}",value,false);
         }
         if(!doQueryString) return src;
-        if(clazz.getName().indexOf("microsoft")!=-1 || clazz.getName().indexOf("jtds")!=-1)
+        if(getClazz().getName().indexOf("microsoft")!=-1 || getClazz().getName().indexOf("jtds")!=-1)
         	return src+=';'+name+'='+value;
         return src+=((src.indexOf('?')!=-1)?'&':'?')+name+'='+value;
     }
@@ -154,40 +129,6 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      */
     public String getDsnTranslated() {
         return dsnTranslated;
-    }
-    
-    /**
-     * @see railo.runtime.db.DataSource#getPassword()
-     */
-    public String getPassword() {
-        return password;
-    }
-    /**
-     * @see railo.runtime.db.DataSource#getUsername()
-     */
-    public String getUsername() {
-        return username;
-    }
-    
-    /**
-     * @see railo.runtime.db.DataSource#isReadOnly()
-     */
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-    
-    /**
-     * @see railo.runtime.db.DataSource#hasAllow(int)
-     */
-    public boolean hasAllow(int allow) {
-        return (this.allow&allow)>0;
-    }
-    
-    /**
-     * @see railo.runtime.db.DataSource#getClazz()
-     */
-    public Class getClazz() {
-        return clazz;
     }
 
     /**
@@ -215,55 +156,15 @@ public final class DataSourceImpl implements Cloneable, DataSource {
      * @see railo.runtime.db.DataSource#clone()
      */
     public Object clone() {
-        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow, custom, readOnly,validate,storage,timezone);
+        return new DataSourceImpl(getName(),getClazz(), host, dsn, database, port, getUsername(), getPassword(), getConnectionLimit(), getConnectionTimeout(),getMetaCacheTimeout(), isBlob(), isClob(), allow, custom, isReadOnly(),validate,isStorage(),getTimeZone());
     }
 
     /**
      * @see railo.runtime.db.DataSource#cloneReadOnly()
      */
     public DataSource cloneReadOnly() {
-        return new DataSourceImpl(name,clazz, host, dsn, database, port, username, password, connectionLimit, connectionTimeout,metaCacheTimeout, blob, clob, allow,custom, true,validate,storage,timezone);
+        return new DataSourceImpl(getName(),getClazz(), host, dsn, database, port, getUsername(), getPassword(), getConnectionLimit(), getConnectionTimeout(),getMetaCacheTimeout(), isBlob(), isClob(), allow,custom, true,validate,isStorage(),getTimeZone());
     }
-
-    /**
-     * @see railo.runtime.db.DataSource#isBlob()
-     */
-    public boolean isBlob() {
-        return blob;
-    }
-
-    /**
-     * @see railo.runtime.db.DataSource#isClob()
-     */
-    public boolean isClob() {
-        return clob;
-    }
-
-    /**
-     * @see railo.runtime.db.DataSource#getConnectionLimit()
-     */
-    public int getConnectionLimit() {
-        return connectionLimit;
-    }
-
-    /**
-     * @see railo.runtime.db.DataSource#getConnectionTimeout()
-     */
-    public int getConnectionTimeout() {
-        return connectionTimeout;
-    }
-
-	/**
-	 * @see railo.runtime.db.DataSource#getMetaCacheTimeout()
-	 */
-	public long getMetaCacheTimeout() {
-		return metaCacheTimeout;
-	} 
-	
-	@Override
-	public TimeZone getTimeZone() {
-		return timezone;
-	} 
 
     /**
      * @see railo.runtime.db.DataSource#getCustomValue(java.lang.String)
@@ -286,27 +187,6 @@ public final class DataSourceImpl implements Cloneable, DataSource {
         return (Struct)custom.clone();
     }
 
-    /**
-     * @see railo.runtime.db.DataSource#hasSQLRestriction()
-     */
-    public boolean hasSQLRestriction() {
-        return this.allow!=DataSource.ALLOW_ALL;
-    }
-
-    /**
-     * @see railo.runtime.db.DataSource#getName()
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @see railo.runtime.db.DataSource#setClazz(java.lang.Class)
-     */
-    public void setClazz(Class clazz) {
-        this.clazz = clazz;
-    }
-
 	/**
 	 *
 	 * @see java.lang.Object#toString()
@@ -319,18 +199,13 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj) {print.ds();
 		if(this==obj)return true;
 		if(!(obj instanceof DataSourceImpl)) return false;
 		DataSourceImpl ds = (DataSourceImpl)obj;
 		return this.getDsnTranslated().equals(ds.getDsnTranslated());
 	} 
 
-	public Map<String,ProcMetaCollection> getProcedureColumnCache() {
-		if(procedureColumnCache==null)
-			procedureColumnCache=new ReferenceMap();
-		return procedureColumnCache;
-	}
 	/* *
 	 *
 	 * @see railo.runtime.db.DataSource#getMaxConnection()
@@ -341,10 +216,6 @@ public final class DataSourceImpl implements Cloneable, DataSource {
 
 	public boolean validate() {
 		return validate;
-	}
-
-	public boolean isStorage() {
-		return storage;
 	}
 
 	/* *

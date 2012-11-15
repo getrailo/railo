@@ -819,6 +819,7 @@ public class KeyConstants {
 	public static final Key _queries = KeyImpl._const("queries");
 	public static final Key _history = KeyImpl._const("history");
 	public static final Key _group = KeyImpl._const("group");
+	public static final Key _orm = KeyImpl._const("orm");
 	
 	private static HashSet<String> _____keys;
 	

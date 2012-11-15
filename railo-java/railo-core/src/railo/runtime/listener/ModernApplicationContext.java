@@ -16,7 +16,11 @@ import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.db.DataSource;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.net.s3.Properties;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -34,14 +38,16 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
 
 public class ModernApplicationContext extends ApplicationContextSupport {
 
 	private static final long serialVersionUID = -8230105685329758613L;
 
-	private static final Collection.Key APPLICATION_TIMEOUT = KeyImpl.intern("applicationTimeout");
-	private static final Collection.Key CLIENT_MANAGEMENT = KeyImpl.intern("clientManagement");
+	private static final Collection.Key APPLICATION_TIMEOUT = KeyConstants._applicationTimeout;
+	private static final Collection.Key CLIENT_MANAGEMENT = KeyConstants._clientManagement;
 	private static final Collection.Key CLIENT_STORAGE = KeyImpl.intern("clientStorage");
 	private static final Collection.Key SESSION_STORAGE = KeyImpl.intern("sessionStorage");
 	private static final Collection.Key LOGIN_STORAGE = KeyImpl.intern("loginStorage");
@@ -54,7 +60,6 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SET_CLIENT_COOKIES = KeyImpl.intern("setClientCookies");
 	private static final Collection.Key SET_DOMAIN_COOKIES = KeyImpl.intern("setDomainCookies");
 	private static final Collection.Key SCRIPT_PROTECT = KeyImpl.intern("scriptProtect");
-	private static final Collection.Key MAPPINGS = KeyConstants._mappings;
 	private static final Collection.Key CUSTOM_TAG_PATHS = KeyImpl.intern("customtagpaths");
 	private static final Collection.Key COMPONENT_PATHS = KeyImpl.intern("componentpaths");
 	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.intern("secureJsonPrefix");
@@ -86,7 +91,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private TimeSpan applicationTimeout;
 	private int loginStorage=Scope.SCOPE_COOKIE;
 	private int scriptProtect;
-	private String defaultDataSource;
+	private Object defaultDataSource;
 	private int localMode;
 	private short sessionType;
 	private boolean sessionCluster;
@@ -100,6 +105,8 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private Mapping[] mappings;
 	private Mapping[] ctmappings;
 	private Mapping[] cmappings;
+	private DataSource[] dataSources;
+	
 	private Properties s3;
 	private boolean triggerComponentDataMember;
 	private Map<Integer,String> defaultCaches;
@@ -123,6 +130,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initSessionType;
 	private boolean initTriggerComponentDataMember;
 	private boolean initMappings;
+	private boolean initDataSources;
 	private boolean initDefaultCaches;
 	private boolean initSameFieldAsArrays;
 	private boolean initCTMappings;
@@ -135,7 +143,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private RestSettings restSetting;
 	private boolean initJavaSettings;
 	private JavaSettings javaSettings;
-	private String ormDatasource;
+	private Object ormDatasource;
 
 	private Resource[] restCFCLocations;
 		
@@ -185,19 +193,13 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		// datasource
 		Object o = get(component,KeyConstants._datasource,null);
 		if(o!=null) {
-			String ds;
-			if(Decision.isStruct(o)) {
-				Struct sct = Caster.toStruct(o);
-				ds=Caster.toString(sct.get(KeyConstants._name));
-			}
-			else ds = Caster.toString(o);
-			this.defaultDataSource = ds;
-			this.ormDatasource = ds;
+			
+			this.ormDatasource=this.defaultDataSource = toDefaultDatasource(o);
 		}
 
 		// default datasource
 		o=get(component,DEFAULT_DATA_SOURCE,null);
-		if(o!=null) this.defaultDataSource =Caster.toString(o);
+		if(o!=null) this.defaultDataSource =toDefaultDatasource(o);
 		
 		// ormenabled
 		o = get(component,ORM_ENABLED,null);
@@ -211,6 +213,33 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 			else	settings=new StructImpl();
 			AppListenerUtil.setORMConfiguration(pc, this, settings);
 		}
+	}
+
+
+
+	public static Object toDefaultDatasource(Object o) throws PageException {
+		if(Decision.isStruct(o)) {
+			Struct sct=(Struct) o;
+			
+			// fix for Jira ticket RAILO-1931
+			if(sct.size()==1) {
+				Key[] keys = CollectionUtil.keys(sct);
+				if(keys.length==1 && keys[0].equalsIgnoreCase(KeyConstants._name)) {
+					return Caster.toString(sct.get(KeyConstants._name));
+				}
+			}
+			
+			try {
+				return AppListenerUtil.toDataSource("__default__",sct);
+			} 
+			catch (PageException pe) { 
+				// again try fix for Jira ticket RAILO-1931
+				String name= Caster.toString(sct.get(KeyConstants._name,null),null);
+				if(!StringUtil.isEmpty(name)) return name;
+				throw pe;
+			}
+		}
+		return Caster.toString(o);
 	}
 
 
@@ -552,7 +581,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	 */
 	public Mapping[] getMappings() {
 		if(!initMappings) {
-			Object o = get(component,MAPPINGS,null);
+			Object o = get(component,KeyConstants._mappings,null);
 			if(o!=null)mappings=AppListenerUtil.toMappings(config,o,mappings);
 			initMappings=true; 
 		}
@@ -607,11 +636,30 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return s3;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getDefaultDataSource()
-	 */
+	@Override
 	public String getDefaultDataSource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+	
+	@Override
+	public Object getDefDataSource() {
 		return defaultDataSource;
+	}
+
+	@Override
+	public DataSource[] getDataSources() {
+		if(!initDataSources) {
+			Object o = get(component,KeyConstants._datasources,null);
+			// if "this.datasources" does not exists, check if "this.datasource" exists and contains a struct
+			if(o==null){
+				o = get(component,KeyConstants._datasource,null);
+				if(!Decision.isStruct(o)) o=null;
+			}
+			
+			if(o!=null)dataSources=AppListenerUtil.toDataSources(o,dataSources);
+			initDataSources=true; 
+		}
+		return dataSources;
 	}
 
 	@Override
@@ -621,6 +669,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public String getORMDatasource() {
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported!"));
+	}
+
+	@Override
+	public Object getORMDataSource() {
 		return ormDatasource;
 	}
 
@@ -712,6 +765,10 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		initMappings=true;
 		this.mappings=mappings;
 	}
+	public void setDataSources(DataSource[] dataSources) {
+		initDataSources=true;
+		this.dataSources=dataSources;
+	}
 
 	@Override
 	public void setLoginStorage(int loginStorage) {
@@ -721,6 +778,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public void setDefaultDataSource(String datasource) {
+		this.defaultDataSource=datasource;
+	}
+
+	@Override
+	public void setDefDataSource(Object datasource) {
 		this.defaultDataSource=datasource;
 	}
 
@@ -808,6 +870,11 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 	@Override
 	public void setORMDatasource(String ormDatasource) {
+		this.ormDatasource=ormDatasource;
+	}
+
+	@Override
+	public void setORMDataSource(Object ormDatasource) {
 		this.ormDatasource=ormDatasource;
 	}
 

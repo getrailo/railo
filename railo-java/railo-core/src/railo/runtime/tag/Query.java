@@ -6,6 +6,7 @@ import java.util.TimeZone;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
@@ -21,6 +22,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMSession;
@@ -53,7 +55,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	private static final Collection.Key CFQUERY = KeyImpl.intern("cfquery");
 	private static final Collection.Key GENERATEDKEY = KeyImpl.intern("generatedKey");
 	private static final Collection.Key MAX_RESULTS = KeyImpl.intern("maxResults");
-	private static final Collection.Key TIMEOUT = KeyImpl.intern("timeout");
+	private static final Collection.Key TIMEOUT = KeyConstants._timeout;
 	
 	private static final int RETURN_TYPE_QUERY = 1;
 	private static final int RETURN_TYPE_ARRAY_OF_ENTITY = 2;
@@ -211,7 +213,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	* @param datasource value to set
 	**/
 	public void setDatasource(String datasource) throws PageException	{
-		this.datasource=pageContext.getConfig().getDataSource(datasource);
+		this.datasource=((PageContextImpl)pageContext).getDataSource(datasource);
 	}
 
 	/** set the value timeout
@@ -385,18 +387,18 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	public int doStartTag() throws PageException	{
 		// default datasource
 		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
-			String str = pageContext.getApplicationContext().getDefaultDataSource();
-			if(StringUtil.isEmpty(str))
+			Object obj = ((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
+			if(StringUtil.isEmpty(obj))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when attribute [dbtype] has not value [query] and no default datasource is defined",
 						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 			
-			datasource=pageContext.getConfig().getDataSource(str);
+			datasource=obj instanceof DataSource?(DataSource)obj:((PageContextImpl)pageContext).getDataSource(Caster.toString(obj));
 		}
 		
 		
 		// timezone
-		if(timezone!=null || (datasource!=null && (timezone=((DataSourceImpl)datasource).getTimeZone())!=null)) {
+		if(timezone!=null || (datasource!=null && (timezone=datasource.getTimeZone())!=null)) {
 			tmpTZ=pageContext.getTimeZone();
 			pageContext.setTimeZone(timezone);
 		}

@@ -36,7 +36,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 
 	@Override
 	public DatasourceConnection getConnection(PageContext pc,String _datasource, String user, String pass) throws PageException {
-		return getConnection(pc,pc.getConfig().getDataSource(_datasource), user, pass);
+		return getConnection(pc,((PageContextImpl)pc).getDataSource(_datasource), user, pass);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
+import railo.runtime.db.DataSourceSupport;
 
 
 public class DatasourceFlushMetaCache {
@@ -17,10 +18,10 @@ public class DatasourceFlushMetaCache {
     public synchronized static boolean call(PageContext pc,String datasource) {
     	
     	DataSource[] sources = pc.getConfig().getDataSources();
-    	DataSourceImpl ds;
+    	DataSourceSupport ds;
     	boolean has=false;
     	for(int i=0;i<sources.length;i++){
-    		ds=(DataSourceImpl) sources[i];
+    		ds=(DataSourceSupport) sources[i];
     		if(StringUtil.isEmpty(datasource) || ds.getName().equalsIgnoreCase(datasource.trim())){
     			Map cache=ds.getProcedureColumnCache();
     			if(cache!=null) cache.clear();

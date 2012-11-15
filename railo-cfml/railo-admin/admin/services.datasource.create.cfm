@@ -93,6 +93,7 @@
 		<cfset datasource.name=form.name>
 		<cfset datasource.storage=false>
 		<cfset datasource.validate=false>
+		<cfset datasource.passwordEncrypted="">
 		
 	<cfelse>
 		<cfset actionType="update">
@@ -452,13 +453,34 @@
 	
 		
 		<cfif actionType EQ "update">
+<!--- optional settings --->
+<cfscript>
+optional=[];
+// not supported yet optional.append('default:false // default: false');
+if(datasource.blob) optional.append('blob:#datasource.blob# // default: false');
+if(datasource.clob) optional.append('clob:#datasource.clob# // default: false');
+if(isNumeric(datasource.connectionLimit))optional.append('connectionLimit:#datasource.connectionLimit# // default:-1');
+if(datasource.connectionTimeout NEQ 1)optional.append('connectionTimeout:#datasource.connectionTimeout# // default: 1; unit: seconds');
+if(datasource.metaCacheTimeout NEQ 60000)optional.append(',metaCacheTimeout:#datasource.metaCacheTimeout# // default: 60000; unit: milliseconds');
+if(len(datasource.timezone))optional.append("timezone:'#replace(datasource.timezone,"'","''","all")#'");
+if(datasource.storage) optional.append('storage:#datasource.storage# // default: false');
+if(datasource.readOnly) optional.append('readOnly:#datasource.readOnly# // default: false');
+</cfscript>
+
+		
 		<br>
 			<h3>Application.cfc</h3>
-			Overwrite in application.cfc as follows:
+			You can set this datasource connection in the Application.cfc as follows:
 <pre>
-this.datasource<cfif isValid('variableName',#datasource.name#)>.#datasource.name#<cfelse>['#datasource.name#']</cfif>={
-	class:#datasource.classname#,
-	connStr:#datasource.dsnTranslated#
+this.datasources<cfif isValid('variableName',datasource.name) and !find('.',datasource.name)>.#datasource.name#<cfelse>['#datasource.name#']</cfif>={
+	class:'#datasource.classname#'
+	,connectionString:'#replace(datasource.dsnTranslated,"'","''","all")#'<cfif len(datasource._password)>
+	,username:'#replace(datasource.username,"'","''","all")#'
+	,password:"#datasource.passwordEncrypted#"</cfif><cfif optional.len()>
+	
+// optional settings
+<cfloop array="#optional#" index="i" item="value">	,#value#<cfif i LT optional.len()>
+</cfif></cfloop></cfif>
 };</pre>
 		</cfif>
 </cfoutput>

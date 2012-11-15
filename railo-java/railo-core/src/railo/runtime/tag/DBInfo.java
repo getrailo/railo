@@ -13,12 +13,14 @@ import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Constants;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.Array;
@@ -234,9 +236,11 @@ public final class DBInfo extends TagImpl {
 	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
 	*/
 	public int doStartTag() throws PageException	{
-		datasource=getDatasource(pageContext, datasource);
+		Object ds=getDatasource(pageContext, datasource);
 		DataSourceManager manager = pageContext.getDataSourceManager();
-		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
+		DatasourceConnection dc=ds instanceof DataSource?
+	    		manager.getConnection(pageContext,(DataSource)ds,username,password):
+	    		manager.getConnection(pageContext,Caster.toString(ds),username,password);
 		try {
 			
 			if(type==TYPE_TABLE_COLUMNS)	typeColumns(dc.getConnection().getMetaData());
@@ -674,14 +678,15 @@ public final class DBInfo extends TagImpl {
 	}
 	
 
-	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
+	public static Object getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
 		if(StringUtil.isEmpty(datasource)){
-			datasource=(pageContext.getApplicationContext()).getDefaultDataSource();
+			Object ds=((ApplicationContextPro)pageContext.getApplicationContext()).getDefDataSource();
 
-			if(StringUtil.isEmpty(datasource))
+			if(StringUtil.isEmpty(ds))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
 						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
+			return ds;
 		}
 		return datasource;
 	}

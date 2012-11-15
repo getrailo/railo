@@ -237,11 +237,18 @@
 			<description>alias for default datasource</description>
 		</attribute>
 		<attribute>
-			<type>string</type>
+			<type>object</type>
 			<name>defaultdatasource</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>the default datasource for this environment</description>
+		</attribute>
+		<attribute>
+			<type>struct</type>
+			<name>datasources</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>A structure that contains datasources defintions.</description>
 		</attribute>
 		<attribute>
 			<type>string</type>

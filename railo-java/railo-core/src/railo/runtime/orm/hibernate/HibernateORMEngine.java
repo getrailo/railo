@@ -32,6 +32,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
@@ -39,6 +40,7 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.orm.ORMConfiguration;
@@ -80,7 +82,7 @@ public class HibernateORMEngine implements ORMEngine {
 	private Configuration configuration;
 
 	private SessionFactory _factory;
-	private String datasource;
+	private String _datasource;
 	//private Map<String,Long> _cfcids=new HashMap<String, Long>();
 	//private Map<String,String> _cfcs=new HashMap<String, String>();
 	private Map<String,CFCInfo> cfcs=new HashMap<String, CFCInfo>();
@@ -121,12 +123,12 @@ public class HibernateORMEngine implements ORMEngine {
 	 * @see railo.runtime.orm.ORMEngine#getSession(railo.runtime.PageContext)
 	 */
 	public ORMSession createSession(PageContext pc) throws PageException {
-		ApplicationContext appContext = pc.getApplicationContext();
-		String dsn=appContext.getORMDatasource();
+		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
+		Object o=appContext.getORMDataSource();
 		
-		//DatasourceManager manager = pc.getDataSourceManager();
-		//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
-		DatasourceConnection dc = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
+		DataSource ds=o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+		
+		DatasourceConnection dc = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().getDatasourceConnection(pc,ds,null,null);
 		try{
 			
 			return new HibernateORMSession(this,getSessionFactory(pc),dc);
@@ -164,7 +166,7 @@ public class HibernateORMEngine implements ORMEngine {
 			}
 		}
 		else {
-			Object h = hash(pc.getApplicationContext());
+			Object h = hash(pc);
 			if(this.hash.equals(h))return false;
 		}
 		
@@ -174,21 +176,25 @@ public class HibernateORMEngine implements ORMEngine {
 
 
 	private synchronized SessionFactory getSessionFactory(PageContext pc,boolean init) throws PageException {
-		ApplicationContext appContext = pc.getApplicationContext();
+		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		if(!appContext.isORMEnabled())
 			throw new ORMException(this,"ORM is not enabled in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME);
 		
-		this.hash=hash(appContext);
+		this.hash=hash(pc);
 		
 		// datasource
-		String dsn=appContext.getORMDatasource();
-		if(StringUtil.isEmpty(dsn))
+		Object o=appContext.getORMDataSource();
+		if(StringUtil.isEmpty(o))
 			throw new ORMException(this,"missing datasource defintion in "+Constants.APP_CFC+"/"+Constants.CFAPP_NAME);
-		if(!dsn.equalsIgnoreCase(datasource)){
+		
+		DataSource _ds = o instanceof DataSource?(DataSource)o:((PageContextImpl)pc).getDataSource(Caster.toString(o));
+		
+		
+		if(ds==null || !ds.equals(_ds)){
 			configuration=null;
 			if(_factory!=null) _factory.close();
 			_factory=null;
-			datasource=dsn.toLowerCase();
+			ds=_ds;
 		}
 		
 		// config
@@ -211,10 +217,10 @@ public class HibernateORMEngine implements ORMEngine {
 			
 			
 			DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
-			DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
+			DatasourceConnection dc = pool.getDatasourceConnection(pc,ds,null,null);
 			//DataSourceManager manager = pc.getDataSourceManager();
 			//DatasourceConnection dc=manager.getConnection(pc,dsn, null, null);
-			this.ds=dc.getDatasource();
+			//this.ds=dc.getDatasource();
 			try {
 				Iterator<Component> it = arr.iterator();
 				while(it.hasNext()){
@@ -251,7 +257,7 @@ public class HibernateORMEngine implements ORMEngine {
 		String mappings=HibernateSessionFactory.createMappings(this,cfcs);
 		
 		DatasourceConnectionPool pool = ((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool();
-		DatasourceConnection dc = pool.getDatasourceConnection(pc,pc.getConfig().getDataSource(dsn),null,null);
+		DatasourceConnection dc = pool.getDatasourceConnection(pc,ds,null,null);
 		try{
 			configuration = HibernateSessionFactory.createConfiguration(this,mappings,dc,ormConf);
 		} 
@@ -382,8 +388,14 @@ public class HibernateORMEngine implements ORMEngine {
 		return list;
 	}
 
-	private Object hash(ApplicationContext appContext) {
-		String hash=appContext.getORMDatasource()+":"+appContext.getORMConfiguration().hash();
+	private Object hash(PageContext pc) throws PageException {
+		ApplicationContextPro appContext=(ApplicationContextPro) pc.getApplicationContext();
+		Object o=appContext.getORMDataSource();
+		DataSource ds;
+		if(o instanceof DataSource) ds=(DataSource) o;
+		else ds=((PageContextImpl)pc).getDataSource(Caster.toString(""));
+		
+		String hash=ds.getClazz()+":"+ds.getDsnTranslated()+":"+appContext.getORMConfiguration().hash();
 		//print.ds(hash);
 		return hash;
 	}

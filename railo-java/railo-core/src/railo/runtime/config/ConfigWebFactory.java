@@ -2231,12 +2231,12 @@ public final class ConfigWebFactory {
     }
 
 
-	protected static String decrypt(String str) {
+	public static String decrypt(String str) {
 		if(StringUtil.isEmpty(str) || !StringUtil.startsWithIgnoreCase(str, "encrypted:")) return str;
 		str=str.substring(10);
 		return new BlowfishEasy("sdfsdfs").decryptString(str);
 	}
-    protected static String encrypt(String str) {
+    public static String encrypt(String str) {
     	if(StringUtil.isEmpty(str)) return "";
     	if(StringUtil.startsWithIgnoreCase(str, "encrypted:")) return str;
 		return "encrypted:"+new BlowfishEasy("sdfsdfs").encryptString(str);

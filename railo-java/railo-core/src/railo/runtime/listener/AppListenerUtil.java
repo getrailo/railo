@@ -2,6 +2,7 @@ package railo.runtime.listener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TimeZone;
 import java.util.Map.Entry;
 
 import railo.commons.io.res.Resource;
@@ -41,11 +42,20 @@ import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.KeyConstants;
 
 public final class AppListenerUtil {
-	private static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
-	private static final Collection.Key AWS_SECRET_KEY = KeyImpl.intern("awsSecretKey");
-	private static final Collection.Key DEFAULT_LOCATION = KeyImpl.intern("defaultLocation");
-	private static final Collection.Key CONN_STR = KeyImpl.intern("connStr");
+	public static final Collection.Key ACCESS_KEY_ID = KeyImpl.intern("accessKeyId");
+	public static final Collection.Key AWS_SECRET_KEY = KeyImpl.intern("awsSecretKey");
+	public static final Collection.Key DEFAULT_LOCATION = KeyImpl.intern("defaultLocation");
+	public static final Collection.Key CONNECTION_STRING = KeyImpl.intern("connectionString");
 	
+	public static final Collection.Key BLOB = KeyImpl.intern("blob");
+	public static final Collection.Key CLOB = KeyImpl.intern("clob");
+	public static final Collection.Key CONNECTION_LIMIT = KeyImpl.intern("connectionLimit");
+	public static final Collection.Key CONNECTION_TIMEOUT = KeyImpl.intern("connectionTimeout");
+	public static final Collection.Key META_CACHE_TIMEOUT = KeyImpl.intern("metaCacheTimeout");
+	public static final Collection.Key TIMEZONE = KeyImpl.intern("timezone");
+	public static final Collection.Key ALLOW = KeyImpl.intern("allow");
+	public static final Collection.Key STORAGE = KeyImpl.intern("storage");
+	public static final Collection.Key READ_ONLY = KeyImpl.intern("readOnly");
 	
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, String filename, int mode) {
 		if(mode==ApplicationListener.MODE_CURRENT)return getApplicationPageSourceCurrent(requestedPage, filename);
@@ -162,43 +172,55 @@ public final class AppListenerUtil {
 		return "";
 	}
 	
-	public static DataSource[] toDataSources(ConfigWeb cw,Object o,DataSource[] defaultValue) {
+	public static DataSource[] toDataSources(Object o,DataSource[] defaultValue) {
 		try {
-			return toDataSources(cw, o);
-		} catch (Throwable t) {
+			return toDataSources(o);
+		} catch (Throwable t) {t.printStackTrace();
 			return defaultValue;
 		}
 	}
 
-	public static DataSource[] toDataSources(ConfigWeb cw,Object o) throws PageException {
+	public static DataSource[] toDataSources(Object o) throws PageException {
 		Struct sct = Caster.toStruct(o);
 		Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
 		java.util.List<DataSource> dataSources=new ArrayList<DataSource>();
-		ConfigWebImpl config=(ConfigWebImpl) cw;
-		String name,user,pass;
-		Struct data;
 		while(it.hasNext()) {
 			e = it.next();
-			name=translateMappingVirtual(e.getKey().getString());
-			data=Caster.toStruct(e.getValue());
-			user=Caster.toString(data.get(KeyConstants._username,null),null);
-			pass=Caster.toString(data.get(KeyConstants._password,""),"");
+			dataSources.add(toDataSource(e.getKey().getString().trim(), Caster.toStruct(e.getValue())));
+		}
+		return dataSources.toArray(new DataSource[dataSources.size()]);
+	}
+
+	public static DataSource toDataSource(String name,Struct data) throws PageException {
+			String user = Caster.toString(data.get(KeyConstants._username,null),null);
+			String pass = Caster.toString(data.get(KeyConstants._password,""),"");
 			if(StringUtil.isEmpty(user)) {
 				user=null;
 				pass=null;
 			}
+			else {
+				user=user.trim();
+				pass=pass.trim();
+			}
 			
-			dataSources.add(new ApplicationDataSource(
+			return new ApplicationDataSource(
 					name, 
 					Caster.toString(data.get(KeyConstants._class)), 
-					Caster.toString(data.get(CONN_STR)), 
-					user, pass));
+					Caster.toString(data.get(CONNECTION_STRING)), 
+					user, pass,
+					Caster.toBooleanValue(data.get(BLOB,null),false),
+					Caster.toBooleanValue(data.get(CLOB,null),false), 
+					Caster.toIntValue(data.get(CONNECTION_LIMIT,null),-1), 
+					Caster.toIntValue(data.get(CONNECTION_TIMEOUT,null),1), 
+					Caster.toLongValue(data.get(META_CACHE_TIMEOUT,null),60000L), 
+					Caster.toTimeZone(data.get(TIMEZONE,null),null), 
+					Caster.toIntValue(data.get(ALLOW,null),DataSource.ALLOW_ALL),
+					Caster.toBooleanValue(data.get(STORAGE,null),false),
+					Caster.toBooleanValue(data.get(READ_ONLY,null),false));
 			
-		}
-		return dataSources.toArray(new DataSource[dataSources.size()]);
+		
 	}
-	
 
 	public static Mapping[] toMappings(ConfigWeb cw,Object o,Mapping[] defaultValue) {
 		try {

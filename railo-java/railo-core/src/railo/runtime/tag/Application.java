@@ -9,7 +9,9 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ClassicApplicationContext;
+import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
 import railo.runtime.type.Struct;
@@ -47,8 +49,8 @@ public final class Application extends TagImpl {
 	private String secureJsonPrefix;
 	private Boolean secureJson;
 	private String scriptrotect;
-	private String datasource;
-	private String defaultdatasource;
+	private Object datasource;
+	private Object defaultdatasource;
 	private int loginstorage=Scope.SCOPE_UNDEFINED;
 	
 	//ApplicationContextImpl appContext;
@@ -69,6 +71,7 @@ public final class Application extends TagImpl {
 	private String cacheTemplate;
 	private String cacheObject;
 	private String cacheResource;
+	private Struct datasources;
 	
      
     /**
@@ -94,6 +97,7 @@ public final class Application extends TagImpl {
         scriptrotect=null;
         datasource=null;
         defaultdatasource=null;
+        datasources=null;
         this.name="";
         action=ACTION_CREATE;
         localMode=-1;
@@ -151,10 +155,15 @@ public final class Application extends TagImpl {
 	 * @throws PageException 
 	 */
 	public void setDatasource(Object datasource) throws PageException {
-		this.datasource = Caster.toString(datasource);
+		this.datasource = ModernApplicationContext.toDefaultDatasource(datasource);
 	}
-	public void setDefaultdatasource(String defaultdatasource) {
-		this.defaultdatasource = defaultdatasource;
+	
+	public void setDefaultdatasource(Object defaultdatasource) throws PageException {
+		this.defaultdatasource =  ModernApplicationContext.toDefaultDatasource(defaultdatasource);
+	}
+	
+	public void setDatasources(Struct datasources) {
+		this.datasources = datasources;
 	}
 	
 	public void setLocalmode(String strLocalMode) throws ApplicationException {
@@ -332,7 +341,7 @@ public final class Application extends TagImpl {
 	*/
 	public int doStartTag() throws PageException	{
         
-        ApplicationContext ac;
+        ApplicationContextPro ac;
         boolean initORM;
         if(action==ACTION_CREATE){
         	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource()));
@@ -340,7 +349,7 @@ public final class Application extends TagImpl {
         	pageContext.setApplicationContext(ac);
         }
         else {
-        	ac= pageContext.getApplicationContext();
+        	ac=(ApplicationContextPro) pageContext.getApplicationContext();
         	initORM=set(ac);
         }
         
@@ -349,7 +358,7 @@ public final class Application extends TagImpl {
         return SKIP_BODY; 
 	}
 
-	private boolean set(ApplicationContext ac) throws PageException {
+	private boolean set(ApplicationContextPro ac) throws PageException {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
@@ -364,10 +373,16 @@ public final class Application extends TagImpl {
 		if(mappings!=null)						ac.setMappings(mappings);
 		if(loginstorage!=Scope.SCOPE_UNDEFINED)	ac.setLoginStorage(loginstorage);
 		if(!StringUtil.isEmpty(datasource))		{
-			ac.setDefaultDataSource(datasource);
-			ac.setORMDatasource(datasource);
+			ac.setDefDataSource(datasource);
+			ac.setORMDataSource(datasource);
 		}
-		if(!StringUtil.isEmpty(defaultdatasource))ac.setDefaultDataSource(defaultdatasource);
+		if(!StringUtil.isEmpty(defaultdatasource))ac.setDefDataSource(defaultdatasource);
+		if(datasources!=null){
+			ac.setDataSources(AppListenerUtil.toDataSources(datasources));
+		}
+		
+		
+		
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);

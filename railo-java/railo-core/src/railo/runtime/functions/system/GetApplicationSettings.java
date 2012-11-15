@@ -10,9 +10,10 @@ import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.JavaSettings;
 import railo.runtime.listener.ModernApplicationContext;
 import railo.runtime.net.s3.Properties;
@@ -29,6 +30,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
 import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 
 public class GetApplicationSettings {
@@ -37,31 +39,30 @@ public class GetApplicationSettings {
 	}
 	
 	public static Struct call(PageContext pc, boolean suppressFunctions) {
-		ApplicationContext ac = pc.getApplicationContext();
+		ApplicationContextPro ac = (ApplicationContextPro) pc.getApplicationContext();
 		Component cfc = null;
 		if(ac instanceof ModernApplicationContext)cfc= ((ModernApplicationContext)ac).getComponent();
 		
 		Struct sct=new StructImpl();
-		sct.setEL("applicationtimeout", ac.getApplicationTimeout());
-		sct.setEL("clientmanagement", Caster.toBoolean(ac.isSetClientManagement()));
-		sct.setEL("clientstorage", ac.getClientstorage());
-		sct.setEL("sessionstorage", ac.getSessionstorage());
-		sct.setEL("customtagpaths", toArray(ac.getCustomTagMappings()));
-		sct.setEL(KeyConstants._datasource, ac.getDefaultDataSource());
-		sct.setEL("loginstorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
+		sct.setEL("applicationTimeout", ac.getApplicationTimeout());
+		sct.setEL("clientManagement", Caster.toBoolean(ac.isSetClientManagement()));
+		sct.setEL("clientStorage", ac.getClientstorage());
+		sct.setEL("sessionStorage", ac.getSessionstorage());
+		sct.setEL("customTagPaths", toArray(ac.getCustomTagMappings()));
+		sct.setEL("loginStorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
 		sct.setEL("mappings", toStruct(ac.getMappings()));
 		sct.setEL(KeyConstants._name, ac.getName());
-		sct.setEL("scriptprotect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
-		sct.setEL("securejson", Caster.toBoolean(ac.getSecureJson()));
-		sct.setEL("securejsonprefix", ac.getSecureJsonPrefix());
-		sct.setEL("sessionmanagement", Caster.toBoolean(ac.isSetSessionManagement()));
-		sct.setEL("sessiontimeout", ac.getSessionTimeout());
-		sct.setEL("clienttimeout", ac.getClientTimeout());
-		sct.setEL("setclientcookies", Caster.toBoolean(ac.isSetClientCookies()));
-		sct.setEL("setdomaincookies", Caster.toBoolean(ac.isSetDomainCookies()));
+		sct.setEL("scriptProtect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
+		sct.setEL("secureJson", Caster.toBoolean(ac.getSecureJson()));
+		sct.setEL("secureJsonPrefix", ac.getSecureJsonPrefix());
+		sct.setEL("sessionManagement", Caster.toBoolean(ac.isSetSessionManagement()));
+		sct.setEL("sessionTimeout", ac.getSessionTimeout());
+		sct.setEL("clientTimeout", ac.getClientTimeout());
+		sct.setEL("setClientCookies", Caster.toBoolean(ac.isSetClientCookies()));
+		sct.setEL("setDomainCookies", Caster.toBoolean(ac.isSetDomainCookies()));
 		sct.setEL(KeyConstants._name, ac.getName());
-		sct.setEL("localmode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?"always":"update");
-		sct.setEL("sessiontype", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
+		sct.setEL("localMode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?"always":"update");
+		sct.setEL("sessionType", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 
 		sct.setEL("clientCluster", Caster.toBoolean(ac.getClientCluster()));
@@ -73,6 +74,11 @@ public class GetApplicationSettings {
 		sct.setEL("sameformfieldsasarray", Caster.toBoolean(ac.getSameFieldAsArray(Scope.SCOPE_FORM)));
 		sct.setEL("sameurlfieldsasarray", Caster.toBoolean(ac.getSameFieldAsArray(Scope.SCOPE_URL)));
 		
+		Object ds = ac.getDefDataSource();
+		if(ds instanceof DataSource) ds=_call((DataSource)ds);
+		else ds=Caster.toString(ds,null);
+		sct.setEL(KeyConstants._datasource, ds);
+		sct.setEL("defaultDatasource", ds);
 		
 		Resource src = ac.getSource();
 		if(src!=null)sct.setEL(KeyConstants._source,src.getAbsolutePath());
@@ -80,12 +86,23 @@ public class GetApplicationSettings {
 		// orm
 		if(ac.isORMEnabled()){
 			ORMConfiguration conf = ac.getORMConfiguration();
-			if(conf!=null)sct.setEL("orm", conf.toStruct());
+			if(conf!=null)sct.setEL(KeyConstants._orm, conf.toStruct());
 		}
 		// s3
 		Properties props = ac.getS3();
 		if(props!=null) {
-			sct.setEL("s3", props.toStruct());
+			sct.setEL(KeyConstants._s3, props.toStruct());
+		}
+		
+		// datasources
+		DataSource[] sources = ac.getDataSources();
+		if(!ArrayUtil.isEmpty(sources)){
+			Struct _sources = new StructImpl(),s;
+			sct.setEL(KeyConstants._datasources, _sources);
+			for(int i=0;i<sources.length;i++){
+				_sources.setEL(KeyImpl.init(sources[i].getName()), _call(sources[i]));
+			}
+			
 		}
 		
 		//cache
@@ -143,6 +160,23 @@ public class GetApplicationSettings {
 	}
 
 	
+
+	private static Struct _call(DataSource source) {
+		Struct s = new StructImpl();
+		s.setEL(KeyConstants._class, source.getClazz().getName());
+		if(source.getConnectionLimit()>=0)s.setEL(AppListenerUtil.CONNECTION_LIMIT, Caster.toDouble(source.getConnectionLimit()));
+		if(source.getConnectionTimeout()!=1)s.setEL(AppListenerUtil.CONNECTION_TIMEOUT, Caster.toDouble(source.getConnectionTimeout()));
+		s.setEL(AppListenerUtil.CONNECTION_STRING, source.getDsnTranslated());
+		if(source.getMetaCacheTimeout() != 60000)s.setEL(AppListenerUtil.META_CACHE_TIMEOUT, Caster.toDouble(source.getMetaCacheTimeout()));
+		s.setEL(KeyConstants._username, source.getUsername());
+		s.setEL(KeyConstants._password, source.getPassword());
+		if(source.getTimeZone()!=null)s.setEL(AppListenerUtil.TIMEZONE, source.getTimeZone().getID());
+		if(source.isBlob())s.setEL(AppListenerUtil.BLOB, source.isBlob());
+		if(source.isClob())s.setEL(AppListenerUtil.CLOB, source.isClob());
+		if(source.isReadOnly())s.setEL(AppListenerUtil.READ_ONLY, source.isReadOnly());
+		if(source.isStorage())s.setEL(AppListenerUtil.STORAGE, source.isStorage());
+		return s;
+	}
 
 	private static Array toArray(Mapping[] mappings) {
 		Array arr=new ArrayImpl();
