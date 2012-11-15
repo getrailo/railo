@@ -23,7 +23,7 @@ public final class ReplaceNoCase implements Function {
 		
 		String lcStr=str.toLowerCase();
 		String lcSub1=sub1.toLowerCase();
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder( sub2.length() > sub1.length() ? (int)Math.ceil( str.length() * 1.2 ) : str.length() );
 		int start=0;
 		int pos;
 		int sub1Length=sub1.length();

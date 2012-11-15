@@ -455,7 +455,7 @@ public final class StringUtil {
         if(!onlyFirst && sub1.length()==1 && sub2.length()==1)return str.replace(sub1.charAt(0),sub2.charAt(0));
         
         
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb=new StringBuilder( sub2.length() > sub1.length() ? (int)Math.ceil( str.length() * 1.2 ) : str.length() );
         int start=0;
         int pos;
         int sub1Length=sub1.length();
