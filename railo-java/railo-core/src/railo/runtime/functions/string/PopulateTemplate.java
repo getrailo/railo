@@ -37,7 +37,7 @@ public class PopulateTemplate implements Function {
             oldSub  = oldSub.toLowerCase();
         }
         
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder( newSub.length() > oldSub.length() ? (int)Math.ceil( input.length() * 1.2 ) : input.length() );
         
         int start = 0;
         int pos;
