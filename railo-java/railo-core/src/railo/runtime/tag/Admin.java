@@ -58,6 +58,7 @@ import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebAdmin;
+import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.ConfigWebUtil;
 import railo.runtime.config.DebugEntry;
@@ -3380,7 +3381,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         while(it.hasNext()) {
             String key=(String)it.next();
             if(key.equalsIgnoreCase(name)) {
-                DataSourceImpl d=(DataSourceImpl) ds.get(key);
+                DataSource d=(DataSource) ds.get(key);
                 Struct sct=new StructImpl();
                 
                 sct.setEL(KeyConstants._name,key);
@@ -3392,6 +3393,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 sct.setEL("dsnTranslated",d.getDsnTranslated());
                 sct.setEL("timezone",toStringTimeZone(d.getTimeZone()));
                 sct.setEL("password",d.getPassword());
+                sct.setEL("passwordEncrypted",ConfigWebFactory.encrypt(d.getPassword()));
                 sct.setEL("username",d.getUsername());
                 sct.setEL("readonly",Caster.toBoolean(d.isReadOnly()));
                 sct.setEL("select",Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
@@ -3627,10 +3629,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
         while(it.hasNext()) {
             Object key=it.next();
-            DataSourceImpl d=(DataSourceImpl) ds.get(key);
+            DataSource d=(DataSource) ds.get(key);
             row++;
-            qry.setAt("name",row,key);
-            qry.setAt("host",row,d.getHost());
+            qry.setAt(KeyConstants._name,row,key);
+            qry.setAt(KeyConstants._host,row,d.getHost());
             qry.setAt("classname",row,d.getClazz().getName());
             //qry.setAt("driverversion",row,getDriverVersion(d.getClazz())); 
             qry.setAt("dsn",row,d.getDsnOriginal());
