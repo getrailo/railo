@@ -456,7 +456,7 @@ public final class ScopeContext {
 				else if("cookie".equals(storage))
 					return SessionCookie.hasInstance(appContext.getName(),pc);
 				else {
-					DataSourceImpl ds = (DataSourceImpl) ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
 					if(ds!=null && ds.isStorage()){
 						if(SessionDatasource.hasInstance(storage,pc)) return true;
 					}
@@ -513,7 +513,7 @@ public final class ScopeContext {
 				else if("cookie".equals(storage))
 					session=SessionCookie.getInstance(appContext.getName(),pc,getLog());
 				else{
-					DataSourceImpl ds = (DataSourceImpl) ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
+					DataSource ds = ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
 					if(ds!=null && ds.isStorage())session=SessionDatasource.getInstance(storage,pc,getLog(),null);
 					else session=SessionCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
 					
@@ -534,11 +534,6 @@ public final class ScopeContext {
 				isNew.setValue(true);
 			}
 			else {
-				/*if(session instanceof StorageScopeDatasource) {
-					DataSourceImpl ds = (DataSourceImpl) pc.getConfig().getDataSource(((StorageScopeDatasource)session).getDatasourceName());
-					if(ds!=null && !ds.isStorage())
-						throw new ApplicationException("datasource ["+storage+"] is not enabled to be used as session/client storage, you have to enable it in the railo administrator.");
-				}*/
 				getLog().info("scope-context", "use existing session scope for "+appContext.getName()+"/"+pc.getCFID()+" from storage "+storage);
 			}
 			session.touchBeforeRequest(pc);
