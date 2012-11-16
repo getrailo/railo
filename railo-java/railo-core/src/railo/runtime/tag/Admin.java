@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
@@ -16,9 +17,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import javax.management.MBeanServer;
 import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
+
+import com.sun.management.HotSpotDiagnosticMXBean;
 
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
@@ -724,7 +728,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
         
         else if(check("securitymanager",        ACCESS_FREE) && check2(ACCESS_READ             )) doSecurityManager();
-        
+    	
+    	
+        else if(check("heapDump",        		ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doHeapDump();       
         
     	
         else throw new ApplicationException("invalid action ["+action+"] for tag admin");
@@ -760,6 +766,25 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         return false;
     }
     
+   	
+   	private void doHeapDump() throws PageException {
+   		
+   		String filename = getString( "admin", action, "destination" );
+   		
+   		try {
+   		
+   			MBeanServer mbserver = ManagementFactory.getPlatformMBeanServer();
+   		
+   			HotSpotDiagnosticMXBean mxbean = ManagementFactory.newPlatformMXBeanProxy( mbserver, "com.sun.management:type=HotSpotDiagnostic", HotSpotDiagnosticMXBean.class );
+
+   			mxbean.dumpHeap( filename, true );   		
+   		
+   		} catch( IOException ioe ) {
+   			
+   			throw Caster.toPageException( ioe );
+   		}
+   	}
+   	
 
     private void doRunUpdate() throws PageException {
     	doUpdateJars();
