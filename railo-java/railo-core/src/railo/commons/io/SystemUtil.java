@@ -31,6 +31,7 @@ import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.functions.other.CreateUniqueId;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -276,6 +277,24 @@ public final class SystemUtil {
         }
         return tempFile;
     }
+    
+
+    /**
+     * returns the a unique temp file (with no auto delete)
+     * @param extension 
+     * @return temp directory
+     * @throws IOException 
+     */
+    public static Resource getTempFile(String extension, boolean touch) throws IOException {
+    	String filename=CreateUniqueId.invoke();
+    	if(!StringUtil.isEmpty(extension,true)){
+    		if(extension.startsWith("."))filename+=extension;
+    		else filename+="."+extension;
+    	}
+		Resource file = getTempDirectory().getRealResource(filename);
+		if(touch)ResourceUtil.touch(file);
+		return file;
+	}
     
     /**
      * returns the Hoome Directory of the System

@@ -42,6 +42,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.JarLoader;
+import railo.commons.surveillance.HeapDumper;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.PageContextImpl;
@@ -722,7 +723,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateupdate",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateUpdate();
         else if(check("getSerial",              ACCESS_FREE) && check2(ACCESS_READ     )) doGetSerial();
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
-        
+        else if(check("heapDump",            ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doHeapDump();
         else if(check("securitymanager",        ACCESS_FREE) && check2(ACCESS_READ             )) doSecurityManager();
         
         
@@ -4399,6 +4400,17 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 			 ((CFMLFactoryImpl)cw.getFactory()).stopThread(threadId,stopType);
 			 break;
 				
+		}
+	}
+	
+	private void doHeapDump() throws PageException {
+		String strDestination = getString( "admin", action, "destination" );
+		boolean live = getBoolV( "live" ,true);
+    	Resource destination = ResourceUtil.toResourceNotExisting(pageContext, strDestination);
+    	try {
+			HeapDumper.dumpTo(destination, live);
+		} catch (IOException e) {
+			throw Caster.toPageException(e);
 		}
 	}
     
