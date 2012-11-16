@@ -2375,7 +2375,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
 	private static String toString(StackTraceElement[] traces) {
     	StackTraceElement trace;
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder( traces.length * 32 );
         for(int i=0;i<traces.length;i++){
             trace=traces[i];
             sb.append("\tat "+trace+":"+trace.getLineNumber()+ LINE_SEPARATOR );
