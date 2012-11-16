@@ -931,7 +931,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             	Map<String,String> errors = stoponerror?null:new HashTable();
                 doCompileFile(mapping,mapping.getPhysical(),"",errors);
                 if(errors!=null && errors.size()>0) {
-                	StringBuffer sb=new StringBuffer();
+                	StringBuilder sb=new StringBuilder();
                 	Iterator<String> it = errors.keySet().iterator();
                 	Object key;
                 	while(it.hasNext()) {
@@ -2315,10 +2315,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
 	private static String toString(StackTraceElement[] traces) {
     	StackTraceElement trace;
-        StringBuffer sb=new StringBuffer();
+    	StringBuilder sb=new StringBuilder( traces.length * 32 );
         for(int i=0;i<traces.length;i++){
             trace=traces[i];
-            sb.append("\tat "+trace+":"+trace.getLineNumber()+"\n");
+            sb.append("\tat ");
+            sb.append(trace.toString());
+            sb.append(':');
+            sb.append(trace.getLineNumber());
+            sb.append(SystemUtil.getOSSpecificLineSeparator());
         }
         return sb.toString();
     }
