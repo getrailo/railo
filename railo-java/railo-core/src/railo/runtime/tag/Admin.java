@@ -1,6 +1,10 @@
 package railo.runtime.tag;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
@@ -16,9 +20,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import javax.management.MBeanServer;
 import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
+
+import com.sun.management.HotSpotDiagnosticMXBean;
 
 import railo.commons.collections.HashTable;
 import railo.commons.db.DBUtil;
@@ -185,7 +192,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final short MAPPING_CT = 2;
 	private static final short MAPPING_CFC = 4;
 	
-	
+	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
 	/*
 	others:
@@ -724,7 +731,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(check("updateSerial",           ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doUpdateSerial();
         
         else if(check("securitymanager",        ACCESS_FREE) && check2(ACCESS_READ             )) doSecurityManager();
-        
+    	
+    	
+        else if(check("heapDump",        		ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doHeapDump();
+        else if(check("threadDump",        		ACCESS_NOT_WHEN_WEB) && check2(ACCESS_WRITE     )) doThreadDump();
         
     	
         else throw new ApplicationException("invalid action ["+action+"] for tag admin");
@@ -760,6 +770,56 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         return false;
     }
     
+   	
+   	private void doThreadDump() throws PageException {
+   		
+   		String filename = getString( "admin", action, "destination" );
+   		   		
+   		try {
+   		
+	   		Map<Thread, StackTraceElement[]> map = java.lang.Thread.getAllStackTraces();
+	   		
+	   		Iterator<Map.Entry<Thread, StackTraceElement[]>> it = map.entrySet().iterator();
+	   			   		
+	   		BufferedWriter out = new BufferedWriter( new FileWriter( filename ) );
+	   		
+	   		while ( it.hasNext() ) {
+	   			
+	   			Map.Entry<Thread, StackTraceElement[]> e = it.next();
+	   			
+	   			out.append( e.getKey().toString() );
+	   			out.append( LINE_SEPARATOR );
+	   			out.append( toString( e.getValue() ) );
+	   			out.append( LINE_SEPARATOR );
+	   		}
+	   		
+	   		out.close();
+	   		
+   		} catch (IOException ioe) {
+   			
+   			throw Caster.toPageException( ioe );
+   		}
+   	}
+   	
+   	
+   	private void doHeapDump() throws PageException {
+   		
+   		String filename = getString( "admin", action, "destination" );
+   		
+   		try {
+   		
+   			MBeanServer mbserver = ManagementFactory.getPlatformMBeanServer();
+   		
+   			HotSpotDiagnosticMXBean mxbean = ManagementFactory.newPlatformMXBeanProxy( mbserver, "com.sun.management:type=HotSpotDiagnostic", HotSpotDiagnosticMXBean.class );
+
+   			mxbean.dumpHeap( filename, true );   		
+   		
+   		} catch( IOException ioe ) {
+   			
+   			throw Caster.toPageException( ioe );
+   		}
+   	}
+   	
 
     private void doRunUpdate() throws PageException {
     	doUpdateJars();
@@ -2315,10 +2375,10 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
 	private static String toString(StackTraceElement[] traces) {
     	StackTraceElement trace;
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder( traces.length * 32 );
         for(int i=0;i<traces.length;i++){
             trace=traces[i];
-            sb.append("\tat "+trace+":"+trace.getLineNumber()+"\n");
+            sb.append("\tat "+trace+":"+trace.getLineNumber()+ LINE_SEPARATOR );
         }
         return sb.toString();
     }
