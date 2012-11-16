@@ -1,6 +1,6 @@
 package railo.runtime.tag;
 
-import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
 import railo.runtime.config.Config;
@@ -8,7 +8,6 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.AppListenerUtil;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernApplicationContext;
@@ -344,7 +343,8 @@ public final class Application extends TagImpl {
         ApplicationContextPro ac;
         boolean initORM;
         if(action==ACTION_CREATE){
-        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource()));
+        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,
+        			pageContext.getCurrentPageSource().getResourceTranslated(pageContext));
         	initORM=set(ac);
         	pageContext.setApplicationContext(ac);
         }
@@ -378,7 +378,12 @@ public final class Application extends TagImpl {
 		}
 		if(!StringUtil.isEmpty(defaultdatasource))ac.setDefDataSource(defaultdatasource);
 		if(datasources!=null){
-			ac.setDataSources(AppListenerUtil.toDataSources(datasources));
+			try {
+				ac.setDataSources(AppListenerUtil.toDataSources(datasources));
+			} 
+			catch (ClassException e) {
+				throw Caster.toPageException(e);
+			}
 		}
 		
 		

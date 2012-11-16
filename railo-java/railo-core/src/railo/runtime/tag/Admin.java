@@ -2489,8 +2489,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         boolean verify=getBoolV("verify",true);
         Struct custom=getStruct("custom",new StructImpl());
         
-        config.getDatasourceConnectionPool().remove(name);
-        //config.getConnectionPool().remove(name);
+        //config.getDatasourceConnectionPool().remove(name);
         DataSource ds=null;
 		try {
 			ds = new DataSourceImpl(name,classname,host,dsn,database,port,username,password,connLimit,connTimeout,metaCacheTimeout,blob,clob,allow,custom,false,validate,storage,null);
@@ -3637,22 +3636,21 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             //qry.setAt("driverversion",row,getDriverVersion(d.getClazz())); 
             qry.setAt("dsn",row,d.getDsnOriginal());
             qry.setAt("database",row,d.getDatabase());
-            qry.setAt("port",row,d.getPort()<1?"":Caster.toString(d.getPort()));
+            qry.setAt(KeyConstants._port,row,d.getPort()<1?"":Caster.toString(d.getPort()));
             qry.setAt("dsnTranslated",row,d.getDsnTranslated());
             qry.setAt("timezone",row,toStringTimeZone(d.getTimeZone()));
-            qry.setAt("password",row,d.getPassword());
-            qry.setAt("username",row,d.getUsername());
-            qry.setAt("readonly",row,Caster.toBoolean(d.isReadOnly()));
-            qry.setAt("select",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
-            qry.setAt("delete",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DELETE)));
-            qry.setAt("update",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_UPDATE)));
-            qry.setAt("insert",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
-            qry.setAt("create",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_CREATE)));
-            qry.setAt("insert",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
-            qry.setAt("drop",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DROP)));
-            qry.setAt("grant",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_GRANT)));
-            qry.setAt("revoke",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_REVOKE)));
-            qry.setAt("alter",row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_ALTER)));
+            qry.setAt(KeyConstants._password,row,d.getPassword());
+            qry.setAt(KeyConstants._username,row,d.getUsername());
+            qry.setAt(KeyConstants._readonly,row,Caster.toBoolean(d.isReadOnly()));
+            qry.setAt(KeyConstants._select,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_SELECT)));
+            qry.setAt(KeyConstants._delete,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DELETE)));
+            qry.setAt(KeyConstants._update,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_UPDATE)));
+            qry.setAt(KeyConstants._create,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_CREATE)));
+            qry.setAt(KeyConstants._insert,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_INSERT)));
+            qry.setAt(KeyConstants._drop,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_DROP)));
+            qry.setAt(KeyConstants._grant,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_GRANT)));
+            qry.setAt(KeyConstants._revoke,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_REVOKE)));
+            qry.setAt(KeyConstants._alter,row,Boolean.valueOf(d.hasAllow(DataSource.ALLOW_ALTER)));
 
             qry.setAt("connectionLimit",row,d.getConnectionLimit()<1?"":Caster.toString(d.getConnectionLimit()));
             qry.setAt("connectionTimeout",row,d.getConnectionTimeout()<1?"":Caster.toString(d.getConnectionTimeout()));

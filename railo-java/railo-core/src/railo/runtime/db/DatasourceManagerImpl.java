@@ -9,8 +9,10 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.orm.ORMDatasourceConnection;
 import railo.runtime.orm.ORMSession;
 
@@ -233,8 +235,13 @@ public final class DatasourceManagerImpl implements DataSourceManager {
         }
     }
 
-	public void remove(String datasource) {
+	public void remove(DataSource datasource) {
 		config.getDatasourceConnectionPool().remove(datasource);
+	}
+
+	public void remove(String datasource) {
+		throw new PageRuntimeException(new DeprecatedException("method no longer supported!"));
+		//config.getDatasourceConnectionPool().remove(datasource);
 	}
 
 	public void release() {

@@ -820,6 +820,13 @@ public class KeyConstants {
 	public static final Key _history = KeyImpl._const("history");
 	public static final Key _group = KeyImpl._const("group");
 	public static final Key _orm = KeyImpl._const("orm");
+	public static final Key _create = KeyImpl._const("create");
+	public static final Key _drop = KeyImpl._const("drop");
+	public static final Key _grant = KeyImpl._const("grant");
+	public static final Key _revoke = KeyImpl._const("revoke");
+	public static final Key _select = KeyImpl._const("select");
+	public static final Key _update = KeyImpl._const("update");
+	public static final Key _alter = KeyImpl._const("alter");
 	
 	private static HashSet<String> _____keys;
 	

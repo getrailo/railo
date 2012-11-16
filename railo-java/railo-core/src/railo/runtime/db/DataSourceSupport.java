@@ -6,8 +6,12 @@ import java.util.TimeZone;
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.print;
+import railo.commons.lang.ClassException;
+import railo.commons.lang.ClassUtil;
+import railo.runtime.config.Config;
+import railo.runtime.engine.ThreadLocalPageContext;
 
-public abstract class DataSourceSupport implements DataSource, Cloneable {
+public abstract class DataSourceSupport implements DataSourcePro, Cloneable {
 
     private Class clazz;
 	private final boolean blob;
@@ -130,5 +134,36 @@ public abstract class DataSourceSupport implements DataSource, Cloneable {
 	public String getUsername() {
         return username;
     }
+
+	@Override
+	public boolean equals(Object obj) {print.ds();
+		if(this==obj)return true;
+		if(!(obj instanceof DataSourcePro)) return false;
+		DataSourcePro ds = (DataSourcePro)obj;
+		return id().equals(ds.id());
+	} 
+	
+
+	public String id() {
+		return getConnectionStringTranslated()+":"+getConnectionLimit()+":"+getConnectionTimeout()+":"+getMetaCacheTimeout()+":"+getName()+":"
+			+getUsername()+":"+getPassword()+":"+getClazz().getName()+":"+(getTimeZone()==null?"null":getTimeZone().getID())+":"+isBlob()+":"+isClob()+":"
+			+isReadOnly()+":"+isStorage();
+	} 
+
+    @Override
+    public String toString() {
+		return id();
+	}
+    
+    public static Class toClass(String className) throws ClassException {
+    	try {
+			return Class.forName(className);
+		} 
+		catch (ClassNotFoundException e) {
+			Config config = ThreadLocalPageContext.getConfig();
+			if(config!=null) return ClassUtil.loadClass(config.getClassLoader(),className);
+			return ClassUtil.loadClass(className);
+		}
+	}
 
 }

@@ -57,7 +57,8 @@ public interface Debugger {
      * @param src
      * @param time 
      */
-    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
+    public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time); // FUTURE deprecated
+    // FUTURE public void addQuery(Query query,DataSource datasource,String name,SQL sql, int recordcount, PageSource src,int time);
     
     /**
      * sets if toHTML print html output info or not

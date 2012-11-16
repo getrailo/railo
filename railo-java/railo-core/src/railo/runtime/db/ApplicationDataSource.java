@@ -5,35 +5,32 @@ import java.util.TimeZone;
 import railo.commons.lang.ClassException;
 import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.op.Caster;
 import railo.runtime.type.Struct;
 
 public class ApplicationDataSource extends DataSourceSupport {
 
 	private String connStr;
 
-	public ApplicationDataSource(String name, String className, String connStr, String username, String password,
-			boolean blob, boolean clob, int connectionLimit, int connectionTimeout, long metaCacheTimeout, TimeZone timezone, int allow, boolean storage, boolean readOnly) throws PageException {
+	private ApplicationDataSource(String name, String className, String connStr, String username, String password,
+			boolean blob, boolean clob, int connectionLimit, int connectionTimeout, long metaCacheTimeout, TimeZone timezone, int allow, boolean storage, boolean readOnly) throws ClassException {
 		this(name, toClass(className), connStr, username, password,
 				blob, clob, connectionLimit, connectionTimeout, metaCacheTimeout, timezone, allow, storage, readOnly);
 	}
-	
-	private static Class toClass(String className) throws PageException {
-		try {
-			return DataSourceImpl.toClass(className);
-		} catch (ClassException e) {
-			throw Caster.toPageException(e);
-		}
-	}
 
-	public ApplicationDataSource(String name, Class clazz, String connStr, String username, String password,
+	private ApplicationDataSource(String name, Class clazz, String connStr, String username, String password,
 			boolean blob, boolean clob, int connectionLimit, int connectionTimeout, long metaCacheTimeout, TimeZone timezone, int allow, boolean storage, boolean readOnly) {
 		super(name, clazz,username,ConfigWebFactory.decrypt(password),
 				blob,clob,connectionLimit, connectionTimeout, metaCacheTimeout, timezone, allow<0?ALLOW_ALL:allow, storage, readOnly);
 		
 		this.connStr = connStr;
+	}
+	
+
+	public static DataSource getInstance(String name, String className, String connStr, String username, String password,
+			boolean blob, boolean clob, int connectionLimit, int connectionTimeout, long metaCacheTimeout, TimeZone timezone, int allow, boolean storage, boolean readOnly) throws ClassException {
+		
+		return new ApplicationDataSource(name, className, connStr, username, password, blob, clob, connectionLimit, connectionTimeout, metaCacheTimeout, timezone, allow, storage, readOnly);
 	}
 
 	@Override
@@ -42,7 +39,17 @@ public class ApplicationDataSource extends DataSourceSupport {
 	}
 
 	@Override
+	public String getConnectionString() {
+		throw exp();
+	}
+
+	@Override
 	public String getDsnTranslated() {
+		return getConnectionStringTranslated();
+	}
+
+	@Override
+	public String getConnectionStringTranslated() {
 		return connStr;
 	}
 

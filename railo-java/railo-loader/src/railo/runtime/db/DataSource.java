@@ -64,12 +64,16 @@ public interface DataSource extends Cloneable {
     /**
      * @return Returns the dsn.
      */
-    public abstract String getDsnOriginal();
+    public abstract String getDsnOriginal(); // FUTURE deprecated
+    // FUTURE public abstract String getConnectionStringOriginal();
 
     /**
      * @return Returns the dsn.
      */
-    public abstract String getDsnTranslated();
+    public abstract String getDsnTranslated(); // FUTURE deprecated
+    // FUTURE public abstract String getConnectionStringTranslated();
+    
+    
 
     /**
      * @return Returns the password.

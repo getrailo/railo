@@ -5,8 +5,10 @@ import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Map.Entry;
 
+import railo.print;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Mapping;
@@ -20,7 +22,9 @@ import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.ApplicationDataSource;
+import railo.runtime.db.DBUtil;
 import railo.runtime.db.DataSource;
+import railo.runtime.db.DBUtil.DataSourceDefintion;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -56,6 +60,7 @@ public final class AppListenerUtil {
 	public static final Collection.Key ALLOW = KeyImpl.intern("allow");
 	public static final Collection.Key STORAGE = KeyImpl.intern("storage");
 	public static final Collection.Key READ_ONLY = KeyImpl.intern("readOnly");
+	public static final Collection.Key DATABASE = KeyImpl.intern("database");
 	
 	public static PageSource getApplicationPageSource(PageContext pc,PageSource requestedPage, String filename, int mode) {
 		if(mode==ApplicationListener.MODE_CURRENT)return getApplicationPageSourceCurrent(requestedPage, filename);
@@ -180,7 +185,7 @@ public final class AppListenerUtil {
 		}
 	}
 
-	public static DataSource[] toDataSources(Object o) throws PageException {
+	public static DataSource[] toDataSources(Object o) throws PageException, ClassException {
 		Struct sct = Caster.toStruct(o);
 		Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
@@ -192,7 +197,7 @@ public final class AppListenerUtil {
 		return dataSources.toArray(new DataSource[dataSources.size()]);
 	}
 
-	public static DataSource toDataSource(String name,Struct data) throws PageException {
+	public static DataSource toDataSource(String name,Struct data) throws PageException, ClassException {
 			String user = Caster.toString(data.get(KeyConstants._username,null),null);
 			String pass = Caster.toString(data.get(KeyConstants._password,""),"");
 			if(StringUtil.isEmpty(user)) {
@@ -204,10 +209,13 @@ public final class AppListenerUtil {
 				pass=pass.trim();
 			}
 			
-			return new ApplicationDataSource(
+			// first check for {class:... , connectionString:...}
+			Object oConnStr=data.get(CONNECTION_STRING,null);
+			if(oConnStr!=null)
+				return ApplicationDataSource.getInstance(
 					name, 
 					Caster.toString(data.get(KeyConstants._class)), 
-					Caster.toString(data.get(CONNECTION_STRING)), 
+					Caster.toString(oConnStr), 
 					user, pass,
 					Caster.toBooleanValue(data.get(BLOB,null),false),
 					Caster.toBooleanValue(data.get(CLOB,null),false), 
@@ -219,6 +227,33 @@ public final class AppListenerUtil {
 					Caster.toBooleanValue(data.get(STORAGE,null),false),
 					Caster.toBooleanValue(data.get(READ_ONLY,null),false));
 			
+			// then for {type:... , host:... , ...}
+			String type=Caster.toString(data.get(KeyConstants._type));
+			DataSourceDefintion dbt = DBUtil.getDataSourceDefintionForType(type, null);
+			if(dbt==null) throw new ApplicationException("no datasource type ["+type+"] found");
+			DataSourceImpl ds = new DataSourceImpl(
+					name, 
+					dbt.className, 
+					Caster.toString(data.get(KeyConstants._host)), 
+					dbt.connectionString,
+					Caster.toString(data.get(DATABASE)), 
+					Caster.toIntValue(data.get(KeyConstants._port,null),-1), 
+					user,pass, 
+					Caster.toIntValue(data.get(CONNECTION_LIMIT,null),-1), 
+					Caster.toIntValue(data.get(CONNECTION_TIMEOUT,null),1), 
+					Caster.toLongValue(data.get(META_CACHE_TIMEOUT,null),60000L), 
+					Caster.toBooleanValue(data.get(BLOB,null),false), 
+					Caster.toBooleanValue(data.get(CLOB,null),false), 
+					DataSource.ALLOW_ALL, 
+					Caster.toStruct(data.get(KeyConstants._custom,null),false), 
+					Caster.toBooleanValue(data.get(READ_ONLY,null),false), 
+					true, 
+					Caster.toBooleanValue(data.get(STORAGE,null),false), 
+					Caster.toTimeZone(data.get(TIMEZONE,null),null));
+
+			print.e(ds.getClazz().getName());
+			print.e(ds.getConnectionStringTranslated());
+			return ds;
 		
 	}
 

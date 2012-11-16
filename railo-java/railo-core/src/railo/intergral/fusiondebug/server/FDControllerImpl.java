@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import railo.commons.io.SystemUtil;
 import railo.commons.lang.SystemOut;
+import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
 import railo.runtime.PageContextImpl;
@@ -17,6 +18,7 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SerialNumber;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
 import com.intergral.fusiondebug.server.IFDController;
@@ -103,24 +105,24 @@ public class FDControllerImpl implements IFDController {
 	 * @see com.intergral.fusiondebug.server.IFDController#pause()
 	 */
 	public List pause() {
-		List threads = new ArrayList();
-		Iterator it = engine.getCFMLFactories().entrySet().iterator();
-		Entry entry;
+		List<IFDThread> threads = new ArrayList<IFDThread>();
+		Iterator<Entry<String, CFMLFactory>> it = engine.getCFMLFactories().entrySet().iterator();
+		Entry<String, CFMLFactory> entry;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			pause((String) entry.getKey(),(CFMLFactoryImpl) entry.getValue(), threads);
+			entry = it.next();
+			pause(entry.getKey(),(CFMLFactoryImpl) entry.getValue(), threads);
 		}
 		
 		return threads;
 	}
 	
-	private void pause(String name,CFMLFactoryImpl factory,List threads) {
+	private void pause(String name,CFMLFactoryImpl factory,List<IFDThread> threads) {
 		Struct pcs = factory.getRunningPageContextes();
-		Iterator it = pcs.entrySet().iterator();
+		Iterator<Entry<Key, Object>> it = pcs.entryIterator();
 		PageContextImpl pc;
 		
 		while(it.hasNext()){
-			pc=(PageContextImpl) ((Entry) it.next()).getValue();
+			pc=(PageContextImpl) it.next().getValue();
 			try {
 				pc.getThread().wait();
 			} catch (InterruptedException e) {
@@ -148,12 +150,12 @@ public class FDControllerImpl implements IFDController {
 	 * @see com.intergral.fusiondebug.server.IFDController#getByNativeIdentifier(java.lang.String)
 	 */
 	public IFDThread getByNativeIdentifier(String id) {
-		Iterator it = engine.getCFMLFactories().entrySet().iterator();
-		Entry entry;
+		Iterator<Entry<String, CFMLFactory>> it = engine.getCFMLFactories().entrySet().iterator();
+		Entry<String, CFMLFactory> entry;
 		FDThreadImpl thread;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
-			thread = getByNativeIdentifier((String) entry.getKey(),(CFMLFactoryImpl) entry.getValue(),id);
+			entry = it.next();
+			thread = getByNativeIdentifier( entry.getKey(),(CFMLFactoryImpl) entry.getValue(),id);
 			if(thread!=null) return thread;
 		}
 		return null;

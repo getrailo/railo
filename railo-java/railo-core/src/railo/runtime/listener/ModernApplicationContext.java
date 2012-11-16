@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Component;
@@ -17,7 +18,6 @@ import railo.runtime.component.Member;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.DataSource;
-import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
@@ -237,6 +237,9 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 				String name= Caster.toString(sct.get(KeyConstants._name,null),null);
 				if(!StringUtil.isEmpty(name)) return name;
 				throw pe;
+			}
+			catch (ClassException e) {
+				throw Caster.toPageException(e);
 			}
 		}
 		return Caster.toString(o);

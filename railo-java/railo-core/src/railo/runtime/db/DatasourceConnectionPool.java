@@ -65,9 +65,9 @@ public class DatasourceConnectionPool {
 
 	private DatasourceConnectionImpl loadDatasourceConnection(DataSource ds, String user, String pass) throws DatabaseException  {
         Connection conn=null;
-        String dsn = ds.getDsnTranslated();
+        String connStr = ds.getDsnTranslated();
         try {
-        	conn = DBUtil.getConnection(dsn, user, pass);
+        	conn = DBUtil.getConnection(connStr, user, pass);
         	conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
@@ -110,21 +110,20 @@ public class DatasourceConnectionPool {
 		catch(Throwable t){}
 	}
 
-	public void remove(String datasource) {
+	public void remove(DataSource datasource) {
 		Object[] arr = dcs.keySet().toArray();
-		String key;
+		String key,id=createId(datasource);
         for(int i=0;i<arr.length;i++) {
         	key=(String) arr[i];
-        	if(key.startsWith(datasource.toLowerCase())) {
+        	if(key.startsWith(id)) {
 				DCStack conns=dcs.get(key);
 				conns.clear();
         	}
 		}
         
-        String did = createId(datasource);
-		RefInteger ri=counter.get(did);
+        RefInteger ri=counter.get(id);
 		if(ri!=null)ri.setValue(0);
-		else counter.put(did,new RefIntegerImpl(0));
+		else counter.put(id,new RefIntegerImpl(0));
         
 	}
 	
@@ -164,16 +163,16 @@ public class DatasourceConnectionPool {
 	}
 
 	private void _inc(DataSource datasource) {
-		_getCounter(datasource.getName()).plus(1);
+		_getCounter(datasource).plus(1);
 	}
 	private void _dec(DataSource datasource) {
-		_getCounter(datasource.getName()).minus(1);
+		_getCounter(datasource).minus(1);
 	}
 	private int _size(DataSource datasource) {
-		return _getCounter(datasource.getName()).toInt();
+		return _getCounter(datasource).toInt();
 	}
 
-	private RefInteger _getCounter(String datasource) {
+	private RefInteger _getCounter(DataSource datasource) {
 		String did = createId(datasource);
 		RefInteger ri=counter.get(did);
 		if(ri==null) {
@@ -183,9 +182,10 @@ public class DatasourceConnectionPool {
 	}
 
 	public static String createId(DataSource datasource, String user, String pass) {
-		return datasource.getName().toLowerCase()+user+pass;
+		return createId(datasource)+":"+user+":"+pass;
 	}
-	private static String createId(String datasource) {
-		return datasource.toLowerCase();
+	private static String createId(DataSource datasource) {
+		if(datasource instanceof DataSourcePro) return ((DataSourceSupport)datasource).id();
+		return datasource.getClazz().getName()+":"+datasource.getDsnTranslated()+":"+datasource.getClazz().getName();
 	}
 }

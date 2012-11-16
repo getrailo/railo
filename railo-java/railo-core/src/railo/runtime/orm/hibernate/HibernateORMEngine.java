@@ -36,6 +36,7 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
+import railo.runtime.db.DataSourcePro;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.exp.PageException;
@@ -394,10 +395,10 @@ public class HibernateORMEngine implements ORMEngine {
 		DataSource ds;
 		if(o instanceof DataSource) ds=(DataSource) o;
 		else ds=((PageContextImpl)pc).getDataSource(Caster.toString(""));
+		if(ds instanceof DataSourcePro)
+			return hash=((DataSourcePro)ds).id()+":"+appContext.getORMConfiguration().hash();
 		
-		String hash=ds.getClazz()+":"+ds.getDsnTranslated()+":"+appContext.getORMConfiguration().hash();
-		//print.ds(hash);
-		return hash;
+		return ds.getClazz()+":"+ds.getDsnTranslated()+":"+appContext.getORMConfiguration().hash();
 	}
 
 	public void createMapping(PageContext pc,Component cfc, DatasourceConnection dc, ORMConfiguration ormConf) throws PageException {
