@@ -15,8 +15,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.oro.text.regex.MalformedPatternException;
-
 import railo.commons.io.IOUtil;
 import railo.commons.io.compress.ZipUtil;
 import railo.commons.io.res.Resource;
@@ -26,7 +24,7 @@ import railo.commons.io.res.filter.OrResourceFilter;
 import railo.commons.io.res.filter.ResourceFilter;
 import railo.commons.io.res.util.FileWrapper;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.io.res.util.WildCardFilter;
+import railo.commons.io.res.util.WildcardPatternFilter;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -44,7 +42,7 @@ public final class Zip extends BodyTagImpl {
 	private Resource destination;
 	private String entryPath;
 	private Resource file;
-	private WildCardFilter filter;
+	private WildcardPatternFilter filter;
 	private String name;
 	private boolean overwrite;
 	private String prefix;
@@ -146,13 +144,10 @@ public final class Zip extends BodyTagImpl {
 	/**
 	 * @param filter the filter to set
 	 */
-	public void setFilter(String filter) throws PageException {
-		try {
-			this.filter = new WildCardFilter(filter);
-		} 
-		catch (MalformedPatternException e) {
-			throw Caster.toPageException(e);
-		}
+	public void setFilter(String filter) {
+		
+		if ( !filter.isEmpty() )
+			this.filter = new WildcardPatternFilter( filter );
 	}
 
 
