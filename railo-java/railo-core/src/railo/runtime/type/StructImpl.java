@@ -23,7 +23,7 @@ import railo.runtime.type.util.StructSupport;
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;
 
-	
+	// NULL Support private static final Object NULL=new Object();
 	
 	private Map<Collection.Key,Object> map;
 	
@@ -63,7 +63,10 @@ public class StructImpl extends StructSupport {
 	 */
 	public Object get(Collection.Key key, Object defaultValue) {
 		Object rtn=map.get(key);
-		if(rtn!=null) return rtn;
+		if(rtn!=null) {
+			// NULL Support if(rtn==NULL) return null;
+			return rtn;
+		}
 		return defaultValue;
 	}
 
@@ -73,7 +76,10 @@ public class StructImpl extends StructSupport {
 	 */
 	public Object get(Collection.Key key) throws PageException {//print.out("k:"+(kcount++));
 		Object rtn=map.get(key);
-		if(rtn!=null) return rtn;
+		if(rtn!=null) {
+			// NULL Support if(rtn==NULL) return null;
+			return rtn;
+		}
 		throw invalidKey(this,key);
 	}
 	
@@ -81,6 +87,7 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object set(Collection.Key key, Object value) throws PageException {
+		// NULL Support map.put(key,value==null?NULL:value);
 		map.put(key,value);
 		return value;
 	}
@@ -89,6 +96,7 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Collection.Key key, Object value) {
+		// NULL Support map.put(key,value==null?NULL:value);
 		map.put(key,value);
 		return value;
 	}
@@ -229,12 +237,5 @@ public class StructImpl extends StructSupport {
 	 */
 	public java.util.Collection<Object> values() {
 		return map.values();
-	}
-
-	/**
-	 * @return the map
-	 */
-	protected Map<Collection.Key,Object> getMap() {
-		return map;
 	}
 }

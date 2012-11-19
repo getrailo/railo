@@ -157,6 +157,6 @@ public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable 
 	 * @see railo.runtime.type.Sizeable#sizeOf()
 	 */
 	public long sizeOf() {
-		return SizeOf.size(getMap());
+		return 0;
 	}
 }
