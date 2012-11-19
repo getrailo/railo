@@ -32,6 +32,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
 	private static final long serialVersionUID = -5626787508494702023L;
 
+	private static final Object DEFAULT_VALUE = null; // NULL Support new Object();
+
 	private Scope[] scopes;
 	private QueryStackImpl qryStack=new QueryStackImpl();
 	private Variables variable;
@@ -183,11 +185,11 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 		Object rtn=null;
 		if(checkArguments) {
-		    rtn=local.get(key,null);
-		    if(rtn!=null) return rtn;
+		    rtn=local.get(key,DEFAULT_VALUE);
+		    if(rtn!=DEFAULT_VALUE) return rtn;
 
-		    rtn=argument.getFunctionArgument(key,null);
-		    if(rtn!=null) {
+		    rtn=argument.getFunctionArgument(key,DEFAULT_VALUE);
+		    if(rtn!=DEFAULT_VALUE) {
 		    	if(debug) debugCascadedAccess(pc,argument.getTypeAsString(), key);
 				return rtn;
 		    }
@@ -203,16 +205,16 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		}
 		
 		// variable
-		rtn=variable.get(key,null);
-		if(rtn!=null) {
+		rtn=variable.get(key,DEFAULT_VALUE);
+		if(rtn!=DEFAULT_VALUE) {
 			if(debug && checkArguments) debugCascadedAccess(pc,variable,rtn, key);
 			return rtn;
 	    }
 		
 		// thread scopes
 		if(pc.hasFamily()) {
-			rtn = pc.getThreadScope(key,null);
-			if(rtn!=null) {
+			rtn = pc.getThreadScope(key,DEFAULT_VALUE);
+			if(rtn!=DEFAULT_VALUE) {
 				if(debug) debugCascadedAccess(pc,"thread", key);
 				return rtn;
 			}
@@ -220,8 +222,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 		// get a scope value
 		for(int i=0;i<scopes.length;i++) {
-		    rtn=scopes[i].get(key,null);
-			if(rtn!=null) {
+		    rtn=scopes[i].get(key,DEFAULT_VALUE);
+			if(rtn!=DEFAULT_VALUE) {
 				if(debug) debugCascadedAccess(pc,scopes[i].getTypeAsString(),key);
 				return rtn;
 			}
