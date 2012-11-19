@@ -39,7 +39,7 @@ public class WildcardPattern {
         
         StringTokenizer tokenizer = new StringTokenizer( pattern, ",;" );
         
-        patterns = new ArrayList();
+        patterns = new ArrayList<ParsedPattern>();
         
         while ( tokenizer.hasMoreTokens() ) {
             
@@ -95,7 +95,7 @@ public class WildcardPattern {
             if ( !isCaseSensitive )
                 pattern = pattern.toLowerCase();
 
-            parts = new ArrayList();
+            parts = new ArrayList<String>();
 
             int len = pattern.length();
 
@@ -194,138 +194,5 @@ public class WildcardPattern {
             return "[" + sb.toString() + "]";
         }
     }
-
-
-    /*/ // Test methods below
-    public static void main(String[] args) {
-        
-        WildcardPattern wp;        
-        
-        wp = new WildcardPattern( "test", false );
-        
-        System.out.println("test\t" + wp.isMatch( "test" ));
-        System.out.println("sometest\t" + wp.isMatch( "sometest" ));
-        System.out.println("\t" + wp.isMatch( "" ));
-        
-        
-        System.out.println("");
-        
-        wp = new WildcardPattern( "*", false );
-        
-        System.out.println("test\t" + wp.isMatch( "test" ));
-        System.out.println("sometest\t" + wp.isMatch( "sometest" ));
-        System.out.println("\t" + wp.isMatch( "" ));
-        
-        System.out.println("");
-        
-        
-        wp = new WildcardPattern( "?", false );
-        
-        System.out.println("A\t" + wp.isMatch( "A" ));
-        System.out.println("test\t" + wp.isMatch( "test" ));
-        System.out.println("sometest\t" + wp.isMatch( "sometest" ));
-        System.out.println("\t" + wp.isMatch( "" ));
-        
-        
-        System.out.println("");
-        
-        
-        wp = new WildcardPattern( "??", false );
-        
-        System.out.println("A\t" + wp.isMatch( "A" ));
-        System.out.println("BC\t" + wp.isMatch( "BC" ));
-        System.out.println("CD\t" + wp.isMatch( "CD" ));
-        System.out.println("test\t" + wp.isMatch( "test" ));
-        System.out.println("sometest\t" + wp.isMatch( "sometest" ));
-        System.out.println("\t" + wp.isMatch( "" ));
-        
-        
-        System.out.println("");
-        
-        
-        wp = new WildcardPattern( "*.gif, *.jpg, *.png", false );
-        
-        System.out.println("somefile.gif\t" + wp.isMatch( "somefile.gif" ));
-        System.out.println("somefile.jpg\t" + wp.isMatch( "somefile.jpg" ));
-        System.out.println("somefile.png\t" + wp.isMatch( "somefile.png" ));
-        System.out.println("somefile.cfm\t" + wp.isMatch( "somefile.cfm" ));
-        System.out.println("somefile.txt\t" + wp.isMatch( "somefile.txt" ));
-        System.out.println("somefile.txt\t" + wp.isMatch( "somefile.log" ));
-        
-        
-        wp = new WildcardPattern( "*.gif, *.jpg, *.png", false, true );
-        
-        System.out.println("somefile.gif\t" + wp.isMatch( "somefile.gif" ));
-        System.out.println("somefile.jpg\t" + wp.isMatch( "somefile.jpg" ));
-        System.out.println("somefile.png\t" + wp.isMatch( "somefile.png" ));
-        System.out.println("somefile.cfm\t" + wp.isMatch( "somefile.cfm" ));
-        System.out.println("somefile.txt\t" + wp.isMatch( "somefile.txt" ));
-        System.out.println("somefile.txt\t" + wp.isMatch( "somefile.log" ));
-        
-        
-        wp = new WildcardPattern( "/WEB-INF/*.log", false );
-        
-        System.out.println("/WEB-INF/railo/logs/application.log\t" + wp.isMatch( "/WEB-INF/railo/logs/application.log" ));
-        System.out.println("/WEB-INF/railo/logs/exception.log\t" + wp.isMatch( "/WEB-INF/railo/logs/exception.log" ));
-        System.out.println("/WEB-INF/railo/railo-web.cfm.xml\t" + wp.isMatch( "/WEB-INF/railo/railo-web.cfm.xml" ));
-        
-        
-        wp = new WildcardPattern( "/WEB-INF/*.log", true, true );
-        
-        System.out.println("/WEB-INF/railo/logs/application.log\t" + wp.isMatch( "/WEB-INF/railo/logs/application.log" ));
-        System.out.println("/WEB-INF/railo/logs/exception.log\t" + wp.isMatch( "/WEB-INF/railo/logs/exception.log" ));
-        System.out.println("/WEB-INF/railo/railo-web.cfm.xml\t" + wp.isMatch( "/WEB-INF/railo/railo-web.cfm.xml" ));
-             
-        System.out.println("");
-        
-        
-        testPattern( "filename.cf?", "filename.cf", false );
-        testPattern( "filename.cf?", "filename.cfml", false );
-        testPattern( "filename.cf?", "filename.cfc", true );
-        testPattern( "filename.cf?", "filename.cfm", true );
-
-        testPattern( "filename.cf*", "filename.c", false );
-        testPattern( "filename.cf*", "filename.cf", true );
-        testPattern( "filename.cf*", "filename.cfml", true );
-        testPattern( "filename.cf*", "filename.cfc", true );
-        testPattern( "filename.cf*", "filename.cfm", true );
-
-        testPattern( "*.cf*", "filename.cf", true );
-        testPattern( "*.cf*", "filename.cfml", true );
-        testPattern( "*.cf*", "filename.cfc", true );
-        testPattern( "*.cf*", "filename.cfm", true );
-        testPattern( "*.cf*", "filename.txt", false );
-
-        testPattern( "prefix*", "prefix-something.txt", true );
-        testPattern( "prefix*", "prefiy-something.txt", false );
-
-        testPattern( "*.txt", "something.txt", true );
-
-        testPattern( "/path1/*.log", "/path1/daily.log", true );
-        testPattern( "/path1/*.log", "/path1/weekly.log", true );
-        testPattern( "/path1/*.log", "/path1/weekly.logx", false );
-
-        testPattern( "/path1/path2/*.log", "/path/weekly.log", false );
-        testPattern( "/path1/path2/*.log", "/path1/weekly.log", false );
-        testPattern( "/path1/path2/*.log", "/path1/path2/weekly.log", true );
-
-        testPattern( "/path?/path?/*.log", "/path/path/weekly.log", false );
-        testPattern( "/path?/path?/*.log", "/path1/path2/weekly.log", true );
-        testPattern( "/path?/path?/*.log", "/path2/path3/weekly.log", true );
-        testPattern( "/path?/path?/*.log", "/pathx/pathy/weekly.log", true );
-        testPattern( "/path?/path?/*.log", "/path11/path12/weekly.log", false );
-
-    }
-
-
-    static void testPattern( String pattern, String input, boolean expected ) {
-
-        ParsedPattern pp = new ParsedPattern(pattern);
-
-        boolean result = pp.isMatch(input);
-
-        System.out.println( pattern + "\t > \t" + input + " : " + result + "" + ( result != expected ? " ***" : "" ) );
-    }
-    //*/
 }
 
