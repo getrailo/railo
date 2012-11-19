@@ -797,6 +797,13 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        			else throw eof;
 		        		}
 					} 
+				catch (EOFException eof) {
+                        
+		        		if ( rsp.getStatusCode() == 200 )
+		        			throw Caster.toPageException(eof);
+
+					// probably a gzip header with non-gzip'ed content, see Railo-2086
+                    }
 		        	catch (IOException t) {
 		        		throw Caster.toPageException(t);
 					}
@@ -812,8 +819,9 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        		throw Caster.toPageException(t);
 					}
 		        }
-		        //IF Multipart response get file content and parse parts
-			    if(isMultipart) {
+		        if ( barr == null )
+                    		cfhttp.set( FILE_CONTENT, "" );
+		        else if (isMultipart) {						//IF Multipart response get file content and parse parts
 			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
 			    } else {
 			    	cfhttp.set(FILE_CONTENT,barr);
