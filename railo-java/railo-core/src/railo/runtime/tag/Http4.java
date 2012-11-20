@@ -40,6 +40,7 @@ import org.apache.http.protocol.HttpContext;
 
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -1476,11 +1477,12 @@ class Executor4 extends Thread {
 		try {
 			response=execute();
 			done=true;
-			synchronized(http){
-				http.notify();
-			}
-		} catch (Throwable t) {
+		} 
+		catch (Throwable t) {
 			this.t=t;
+		}
+		finally {
+			SystemUtil.notify(http);
 		}
 	}
 	
