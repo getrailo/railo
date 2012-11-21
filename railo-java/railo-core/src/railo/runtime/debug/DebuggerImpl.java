@@ -46,7 +46,7 @@ import railo.runtime.type.util.KeyConstants;
 /**
  * Class to debug the application
  */
-public final class DebuggerImpl implements Debugger {
+public final class DebuggerImpl implements DebuggerPro {
 	private static final long serialVersionUID = 3957043879267494311L;
 	
 	
@@ -150,13 +150,13 @@ public final class DebuggerImpl implements Debugger {
         // Queries
         int len=queries.size();
         for(int i=0;i<len;i++) {
-            QueryEntry entry=queries.get(i);
+            QueryEntryPro entry=(QueryEntryPro) queries.get(i);
             String path=entry.getSrc();
             Object o=entries.get(path);
             
             if(o!=null) {
                 DebugEntryTemplate oe=(DebugEntryTemplate) o;
-                oe.updateQueryTime(entry.getExe());
+                oe.updateQueryTime(entry.getExecutionTime());
             }
         }
         
@@ -181,6 +181,11 @@ public final class DebuggerImpl implements Debugger {
 	
 	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
+		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
+	}
+	
+	@Override
+	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time) {
 		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
 	}
 	
@@ -262,9 +267,9 @@ public final class DebuggerImpl implements Debugger {
 		try {
 		    while(qryIt.hasNext()) {
 		        row++;
-		        QueryEntry qe=qryIt.next();
+		        QueryEntryPro qe=(QueryEntryPro) qryIt.next();
 				qryQueries.setAt(KeyConstants._name,row,qe.getName()==null?"":qe.getName());
-		        qryQueries.setAt(KeyConstants._time,row,Integer.valueOf(qe.getExe()));
+		        qryQueries.setAt(KeyConstants._time,row,Long.valueOf(qe.getExecutionTime()));
 		        qryQueries.setAt(KeyConstants._sql,row,qe.getSQL().toString());
 				qryQueries.setAt(KeyConstants._src,row,qe.getSrc());
                 qryQueries.setAt(KeyConstants._count,row,Integer.valueOf(qe.getRecordcount()));
@@ -276,8 +281,8 @@ public final class DebuggerImpl implements Debugger {
                 
                 
 		        Object o=qryExe.get(KeyImpl.init(qe.getSrc()),null);
-		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Integer.valueOf(qe.getExe()));
-		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Integer.valueOf(((Integer)o).intValue()+qe.getExe()));
+		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(qe.getExecutionTime()));
+		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(((Long)o).longValue()+qe.getExecutionTime()));
 		    }
 		}
 		catch(PageException dbe) {}

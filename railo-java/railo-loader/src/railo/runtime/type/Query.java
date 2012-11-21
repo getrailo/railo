@@ -246,12 +246,6 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
      */
     public QueryColumn removeColumnEL(Collection.Key key);
 
-    
-	/**
-	 * @return returns the execution time
-	 */
-	public int executionTime();
-
 	/**
 	 * sets the execution Time of the query
 	 * @param l
@@ -326,8 +320,16 @@ public interface Query extends Collection, Iterator,com.allaire.cfx.Query {
 
 	public String getTemplate();
 
+	/**
+	 * @return return the query execution time in nanoseconds
+	 */
 	public long getExecutionTime();
 	
-	
+	/**
+	 * @return returns the execution time
+	 * @deprecated use <code>getExecutionTime()</code> instead
+	 */
+	public int executionTime();
+
 	
 }
