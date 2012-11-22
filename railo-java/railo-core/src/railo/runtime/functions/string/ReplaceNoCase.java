@@ -3,6 +3,8 @@
  */
 package railo.runtime.functions.string;
 
+import java.util.Map;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.ext.function.Function;
@@ -37,6 +39,38 @@ public final class ReplaceNoCase implements Function {
 		
 		return sb.toString();
 	}
+
+
+	public static String call( PageContext pc, String input, Object find, String repl, String scope ) throws ExpressionException {
+		
+		if ( !( find instanceof String ) )
+			throw new ExpressionException("When passing three parameters or more, the second parameter must be a String.");
+		
+		if ( ((String)find).isEmpty() )
+			throw new ExpressionException("The string length of parameter 2 of function replace must be greater than 0");
+		
+		return call( pc , input, (String)find, repl, scope );
+	}
+
 	
+	public static String call( PageContext pc, String input, Object find, String repl ) throws ExpressionException {
+		
+		if ( !( find instanceof String ) )
+			throw new ExpressionException("When passing three parameters or more, the second parameter must be a String.");
+		
+		if ( ((String)find).isEmpty() )
+			throw new ExpressionException("The string length of parameter 2 of function replace must be greater than 0");
+		
+		return call( pc , input, (String)find, repl, "one" );
+	}
+	
+	
+	public static String call( PageContext pc, String input, Object struct ) throws ExpressionException {
+		
+		if ( !( struct instanceof Map ) )
+			throw new ExpressionException("When passing only two parameters, the second parameter must be a Struct.");		
+		
+		return StringUtil.replaceMap( input, (Map)struct, false );
+	}
 	
 }

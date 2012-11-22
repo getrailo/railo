@@ -1,6 +1,9 @@
 package railo.commons.lang;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import railo.commons.io.SystemUtil;
 import railo.runtime.op.Caster;
@@ -921,4 +924,142 @@ public final class StringUtil {
 	public static String substring(String str, int off, int len) {
 		return str.substring(off,off+len);
 	}
+	
+	
+	
+	/**
+	 * this is the public entry point for the replaceMap() method
+	 * 
+	 * @param input - the string on which the replacements should be performed.
+	 * @param map - a java.util.Map with key/value pairs where the key is the substring to find and the value is the substring with which to replace the matched key 
+	 * @param isCaseSensitive - if true then matches will not be case sensitive
+	 * @return
+	 */
+	public static String replaceMap( String input, Map map, boolean isCaseSensitive ) {
+		 
+		return replaceMap( input, map, isCaseSensitive, true );
+	}
+
+    
+	/**
+	 * this is the core of the replaceMap() method.  
+	 * 
+	 * it is called once from the public entry point and then internally from resolveInternals()
+	 * 
+	 * when doResolveInternals is true -- this method calls resolveInternals.  therefore, calls from resolveInternals() 
+	 * must pass false to that param to avoid an infinite ping-pong loop 
+	 * 
+	 * @param input - the string on which the replacements should be performed.
+	 * @param map - a java.util.Map with key/value pairs where the key is the substring to find and the value is the substring with which to replace the matched key
+	 * @param isCaseSensitive - if true then matches will not be case sensitive
+	 * @param doResolveInternals - only the initial call (from the public entry point) should pass true
+	 * @return
+	 */
+    private static String replaceMap( String input, Map map, boolean isCaseSensitive, boolean doResolveInternals ) {
+        
+        String result = input;
+        
+        if ( doResolveInternals )
+            map = resolveInternals( map, isCaseSensitive, 0 );
+        
+        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+        
+        while ( it.hasNext() ) {
+            
+            Map.Entry<String, String> e = it.next();
+            
+            result = replaceAll( result, e.getKey().toString(), e.getValue().toString(), isCaseSensitive );
+        }
+        
+        return result;
+    }
+	
+	
+    /**
+     * does a replace-all in a single string
+     * 
+     * this method is based on code from BIF replaceNoCase() and can be made public for use by other classes; initially added from replace-all with values from Map
+     * 
+     * @param input
+     * @param oldSub
+     * @param newSub
+     * @param isCaseSensitive - if true then matches will not be case sensitive
+     * @return
+     */
+	private static String replaceAll( String input, String oldSub, String newSub, boolean isCaseSensitive ) {
+        
+        String in = input;
+        
+        if ( !isCaseSensitive ) {
+            
+            in      = in.toLowerCase();
+            oldSub  = oldSub.toLowerCase();
+        }
+        
+        StringBuilder sb = new StringBuilder( newSub.length() > oldSub.length() ? (int)Math.ceil( input.length() * 1.2 ) : input.length() );
+        
+        int start = 0;
+        int pos;
+        int subLen = oldSub.length();
+        
+        while ( (pos = in.indexOf( oldSub, start ) ) != -1 ) {
+            
+            sb.append( input.substring( start, pos ) );
+            sb.append( newSub );
+            
+            start = pos + subLen;
+        }
+        
+        sb.append( input.substring( start ) );
+
+        return sb.toString();
+    }
+        
+    
+    /**
+     * resolves internal values within the map, so if the map has a key "{signature}" 
+     * and its value is "Team {group}" and there's a key with the value {group} whose
+     * value is "Railo", then {signature} will resolve to "Team Railo".
+     * 
+     *  {signature} = "Team {group}"
+     *  {group}     = "Railo"
+     * 
+     * then signature will resolve to
+     * 
+     *  {signature} = "Team Railo"
+     * 
+     * @param map - key/value pairs for find key/replace with value
+     * @param isCaseSensitive - if true then matches will not be case sensitive
+     * @param count - used internally as safety valve to ensure that we don't go into infinite loop if two values reference each-other
+     * @return 
+     */
+    private static Map resolveInternals( Map map, boolean isCaseSensitive, int count ) {
+        
+        Map result = new HashMap();
+        
+        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+        
+        boolean isModified = false;
+        
+        while ( it.hasNext() ) {
+            
+            Map.Entry<String, String> e = it.next();
+            
+            String k = e.getKey();
+            String v = e.getValue().toString();
+            String r = replaceMap( v, map, isCaseSensitive, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
+            
+            result.put( k, r );
+            
+            if ( !v.equalsIgnoreCase( r ) )
+                isModified = true;
+        }
+                
+        if ( isModified && count++ < map.size() )
+            result = resolveInternals( result, isCaseSensitive, count );	// recursive call
+        
+        return result;
+    }
+	
+	
 }
