@@ -15,6 +15,19 @@ import railo.runtime.op.Caster;
 
 public final class Hash implements Function {
 	
+	// function for old code in ra files calling this function
+	public static String call(PageContext pc, String input) throws PageException {
+		return call( pc, input, null, null, 1 );
+	}
+    public synchronized static String call(PageContext pc , String input, String algorithm) throws PageException {
+		return call( pc, input, algorithm, null, 1 );
+	}
+    public synchronized static String call(PageContext pc , String input, String algorithm, String encoding) throws PageException {
+		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
+	}
+	//////
+	
+	
 	public static String call(PageContext pc, Object input) throws PageException {
 		return call( pc, input, null, null, 1 );
 	}
