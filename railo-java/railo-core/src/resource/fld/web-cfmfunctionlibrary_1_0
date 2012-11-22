@@ -6240,8 +6240,8 @@ Default list delimiter: comma character.</description>
         the hash result back to the source string.)
         32-byte, hexadecimal string</description>
 		<argument>
-			<name>object</name>
-			<type>string</type>
+			<name>input</name>
+			<type>any</type>
 			<required>Yes</required>
 		<description>String to hash.</description>
     </argument>

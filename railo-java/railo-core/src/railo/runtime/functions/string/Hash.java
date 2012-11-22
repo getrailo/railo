@@ -15,20 +15,20 @@ import railo.runtime.op.Caster;
 
 public final class Hash implements Function {
 	
-	public static String call(PageContext pc , String str) throws PageException {
-		return call(pc,str,null,null, 1);
+	public static String call(PageContext pc, Object input) throws PageException {
+		return call( pc, input, null, null, 1 );
 	}
 	
-    public synchronized static String call(PageContext pc , String string, String algorithm) throws PageException {
-		return call(pc,string,algorithm,null, 1);
+    public synchronized static String call(PageContext pc , Object input, String algorithm) throws PageException {
+		return call( pc, input, algorithm, null, 1 );
 	}
 
-    public synchronized static String call(PageContext pc , String string, String algorithm, String encoding) throws PageException {
-		return invoke(pc.getConfig(), string, algorithm, encoding, 1);
+    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding) throws PageException {
+		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
 	}
     
-    public synchronized static String call(PageContext pc , String string, String algorithm, String encoding, int numIterations) throws PageException {
-		return invoke(pc.getConfig(), string, algorithm, encoding, numIterations);
+    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding, int numIterations) throws PageException {
+		return invoke( pc.getConfig(), input, algorithm, encoding, numIterations );
 	}
 
     /*/	this method signature was called from ConfigWebAdmin.createUUID(), comment this comment to enable
@@ -53,7 +53,7 @@ public final class Hash implements Function {
 				arrBytes = (byte[])input;
 				
 				if ( isDefaultAlgo ) 
-					return Md5.stringify( arrBytes );
+					return Md5.getDigestAsString( arrBytes ).toUpperCase();
 			} else {
 				
 				String string = input.toString();

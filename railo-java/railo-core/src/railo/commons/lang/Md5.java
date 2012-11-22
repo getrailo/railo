@@ -317,6 +317,16 @@ public final class Md5 {
 	state[2] = 0x98badcfe;
 	state[3] = 0x10325476;
     }
+
+    /**
+     * return md5 from byte array
+     * @param barr byte array to get md5 from
+     * @return md5 from string
+     * @throws IOException
+     */
+    public static String getDigestAsString(byte[] barr) throws IOException {
+    	return new Md5(barr).getDigest();
+    }
     
     /**
      * return md5 from string as string
