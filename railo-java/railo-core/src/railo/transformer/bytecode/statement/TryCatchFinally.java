@@ -3,6 +3,7 @@ package railo.transformer.bytecode.statement;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -74,8 +75,12 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	
 	private Body tryBody;
 	private Body finallyBody;
-	private ArrayList catches=new ArrayList();
+	private List<Catch> catches=new ArrayList<Catch>();
 	private Position finallyLine;
+
+
+
+	private FlowControlFinalImpl fcf;
 
 
 	/**
@@ -158,6 +163,8 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		// ref.remove(pc);
 		//Reference r=null;
 		GeneratorAdapter adapter = bc.getAdapter();
+		getFlowControlFinal();
+		adapter.visitLabel(fcf.getFinalEntryLabel());
 		ExpressionUtil.visitLine(bc, finallyLine);
 		
 		
@@ -174,6 +181,8 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		adapter.visitLabel(removeEnd);
 		
 		if(finallyBody!=null)finallyBody.writeOut(bc); // finally
+		Label l = fcf.getAfterFinalGOTOLabel();
+		if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
 	}
 	
 	private void _writeOutCatch(BytecodeContext bc, int lRef,int lThrow) throws BytecodeException {
@@ -343,14 +352,20 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		if(finallyBody!=null)len++;
 		Body[] bodies=new Body[len];
 		Catch c;
-		Iterator it = catches.iterator();
+		Iterator<Catch> it = catches.iterator();
 		while(it.hasNext()) {
-			c=(Catch) it.next();
+			c=it.next();
 			bodies[count++]=c.body;
 		}
 		if(tryBody!=null)bodies[count++]=tryBody;
 		if(finallyBody!=null)bodies[count++]=finallyBody;
 		
 		return bodies;
+	}
+
+	@Override
+	public FlowControlFinal getFlowControlFinal() {
+		if(fcf==null) fcf=new FlowControlFinalImpl();
+		return fcf;
 	}
 }

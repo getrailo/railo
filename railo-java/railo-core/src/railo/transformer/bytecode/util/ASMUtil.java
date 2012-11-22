@@ -1,6 +1,7 @@
 package railo.transformer.bytecode.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,12 +14,16 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.digest.MD5;
+import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
+import railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
+import railo.runtime.reflection.Reflector;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.Body;
@@ -44,8 +49,10 @@ import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
+import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -115,11 +122,11 @@ public final class ASMUtil {
 	}
 	
 	public static boolean hasAncestorBreakFCStatement(Statement stat) {
-		return getAncestorBreakFCStatement(stat)!=null;
+		return getAncestorBreakFCStatement(stat,null)!=null;
 	}
 	
 	public static boolean hasAncestorContinueFCStatement(Statement stat) {
-		return getAncestorContinueFCStatement(stat)!=null;
+		return getAncestorContinueFCStatement(stat,null)!=null;
 	}
 	
 	
@@ -145,37 +152,77 @@ public final class ASMUtil {
 		}
 	}*/
 	
-	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat) {
+	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
+		return (FlowControlBreak) getAncestorFCStatement(stat, finallyLabels, FlowControl.BREAK);
+	}
+	
+	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
+		return (FlowControlContinue) getAncestorFCStatement(stat, finallyLabels, FlowControl.CONTINUE);
+	}
+	
+	private static FlowControl getAncestorFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, int flowType) {
 		Statement parent = stat;
+		FlowControlFinal fcf;
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null)return null;
-			if(parent instanceof FlowControlBreak)	{
+			
+			if(finallyLabels!=null){
+				fcf = parent.getFlowControlFinal();
+				if(fcf!=null)finallyLabels.add(fcf);
+			}
+			
+			if(
+			   (flowType==FlowControl.CONTINUE && parent instanceof FlowControlContinue) || 
+			   (flowType==FlowControl.BREAK && parent instanceof FlowControlBreak))	{
 				if(parent instanceof ScriptBody){
-					FlowControlBreak scriptBodyParent = getAncestorBreakFCStatement(parent);
+					FlowControl scriptBodyParent = getAncestorFCStatement(parent,finallyLabels,flowType);
+					
+					
 					if(scriptBodyParent!=null) return scriptBodyParent;
-					return (FlowControlBreak)parent;
+					return (FlowControl)parent;
 				}
-				return (FlowControlBreak) parent;
+				return (FlowControl) parent;
 			}
 		}
 	}
 	
-	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat) {
-		Statement parent = stat;
-		while(true)	{
-			parent=parent.getParent();
-			if(parent==null)return null;
-			if(parent instanceof FlowControlContinue)	{
-				if(parent instanceof ScriptBody){
-					FlowControlContinue scriptBodyParent = getAncestorContinueFCStatement(parent);
-					if(scriptBodyParent!=null) return scriptBodyParent;
-					return (FlowControlContinue)parent;
+	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType) throws BytecodeException {
+		List<FlowControlFinal> finallyLabels=new ArrayList<FlowControlFinal>();
+		
+		FlowControl fc = flowType==FlowControl.BREAK?
+				ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels):
+				ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels);
+		
+		if(fc==null)
+			throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
+		
+		GeneratorAdapter adapter = bc.getAdapter();
+		
+		Label end=flowType==FlowControl.BREAK?((FlowControlBreak)fc).getBreakLabel():((FlowControlContinue)fc).getContinueLabel();
+		
+		// first jump to all final labels
+		FlowControlFinal[] arr = finallyLabels.toArray(new FlowControlFinal[finallyLabels.size()]);
+		if(arr.length>0) {
+			FlowControlFinal fcf;
+			for(int i=0;i<arr.length;i++){
+				fcf=arr[i];
+				
+				// first
+				if(i==0) {
+					adapter.visitJumpInsn(Opcodes.GOTO, fcf.getFinalEntryLabel());
 				}
-				return (FlowControlContinue) parent;
+				
+				// last
+				if(arr.length==i+1) fcf.setAfterFinalGOTOLabel(end);
+				else fcf.setAfterFinalGOTOLabel(arr[i+1].getFinalEntryLabel());
 			}
+			
 		}
+		else bc.getAdapter().visitJumpInsn(Opcodes.GOTO, end);
 	}
+	
+	
 	
 	public static boolean hasAncestorTryStatement(Statement stat) {
 		return getAncestorTryStatement(stat)!=null;

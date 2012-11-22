@@ -13,7 +13,7 @@ import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
-public final class For extends StatementBase implements FlowControl,HasBody {
+public final class For extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
 
 	private Expression init;
 	private Expression condition;

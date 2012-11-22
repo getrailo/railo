@@ -5,7 +5,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.visitor.IfVisitor;
 
-public final class TagJavaScript extends TagBase {
+public final class TagJavaScript extends TagBaseNoFinal {
 	
 	public TagJavaScript(Position start,Position end) {
 		super(start,end);

@@ -19,7 +19,7 @@ import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 
-public final class ForEach extends StatementBase implements FlowControl,HasBody {
+public final class ForEach extends StatementBase implements FlowControlBreak,FlowControlContinue,HasBody {
 
 	
 	private Body body;
@@ -37,6 +37,7 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 
 	private Label begin = new Label();
 	private Label end = new Label();
+	private FlowControlFinal fcf;
 
 	/**
 	 * Constructor of the class
@@ -75,8 +76,12 @@ public final class ForEach extends StatementBase implements FlowControl,HasBody 
 				@Override
 				public void writeOut(BytecodeContext bc) throws BytecodeException {
 					GeneratorAdapter a = bc.getAdapter();
+					getFlowControlFinal();
+					a.visitLabel(fcf.getFinalEntryLabel());
 					a.loadLocal(it);
 					a.invokeStatic(FOR_EACH_UTIL, RESET);
+					Label l=fcf.getAfterFinalGOTOLabel();
+					if(l!=null)a.visitJumpInsn(Opcodes.GOTO, l);
 				}
 			});
 			tfv.visitTryBegin(bc);
@@ -154,5 +159,11 @@ for-each
 	 */
 	public Body getBody() {
 		return body;
+	}
+
+	@Override
+	public FlowControlFinal getFlowControlFinal() {
+		if(fcf==null) fcf=new FlowControlFinalImpl();
+		return fcf;
 	}
 }

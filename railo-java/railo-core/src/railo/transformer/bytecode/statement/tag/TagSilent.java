@@ -9,6 +9,8 @@ import org.objectweb.asm.commons.Method;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
+import railo.transformer.bytecode.statement.FlowControlFinal;
+import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.NotVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -29,6 +31,8 @@ public final class TagSilent extends TagBase {
 			Types.BOOLEAN_VALUE,
 			new Type[]{}
 	);
+
+	private FlowControlFinalImpl fcf;
 	
 	public TagSilent(Position start,Position end) {
 		super(start,end);
@@ -48,8 +52,12 @@ public final class TagSilent extends TagBase {
 		adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_SILENT);
 		adapter.storeLocal(silentMode);
 		
+		// call must be 
+		final FlowControlFinal _fcf = getFlowControlFinal();
+		
 		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
 			public void writeOut(BytecodeContext bc) {
+				adapter.visitLabel(_fcf.getFinalEntryLabel());
 				// if(!silentMode)pc.unsetSilent();
 				Label _if=new Label();
 				adapter.loadLocal(silentMode);
@@ -60,12 +68,21 @@ public final class TagSilent extends TagBase {
 					adapter.pop();
 				
 				adapter.visitLabel(_if);
+				
+				Label l = _fcf.getAfterFinalGOTOLabel();
+				if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
 			}
 		});
 		tfv.visitTryBegin(bc);
 			getBody().writeOut(bc);
 		tfv.visitTryEnd(bc);
 
+	}
+
+	@Override
+	public FlowControlFinal getFlowControlFinal() {
+		if(fcf==null)fcf = new FlowControlFinalImpl();
+		return fcf;
 	}
 
 }
