@@ -12727,6 +12727,31 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	
+	<!-- PopulateTemplate -->
+	<function>
+		<name>PopulateTemplate</name>
+		<class>railo.runtime.functions.string.PopulateTemplate</class>
+		<description>populates a text template with values from a given struct.  
+			this is a recursive, non-case-sensitive replaceAll of key/value pairs from a Struct, 
+			so it's a find Key, replace with Value
+		</description>
+		<argument>
+			<name>template</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>a text template to be populated</description>
+    	</argument>
+    	<argument>
+			<name>values</name>
+			<type>struct</type>
+			<required>Yes</required>
+			<description>Structure that contains the keys to find and values to replace them with</description>
+    	</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
 	<!-- PrecisionEvaluate -->
 	<function>
 		<name>PrecisionEvaluate</name>
