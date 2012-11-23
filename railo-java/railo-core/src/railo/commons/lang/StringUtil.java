@@ -1037,7 +1037,7 @@ public final class StringUtil {
         
         Map result = new HashMap();
         
-        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+        Iterator<Map.Entry> it = map.entrySet().iterator();
         
         boolean isModified = false;
         
