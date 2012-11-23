@@ -1,9 +1,10 @@
 <cfsilent>
-	<cfset dataDir = "/railo-context/admin/searchdata/" />
 	<cfif not directoryExists(dataDir)>
 		<cfdirectory action="create" directory="#dataDir#" mode="777" recurse="true" />
 	</cfif>
-	<cfdirectory action="list" name="qlangs" directory="resources/language/" filter="*.xml" />
+
+	<cfdirectory action="list" name="qlangs" directory="/railo-context/admin/resources/language/" filter="*.xml" />
+
 	<cfset translations = {} />
 	<cfset pageContents = {} />
 
@@ -33,9 +34,10 @@
 	</cfloop>
 
 	<cfset searchresults = {} />
-	<cfdirectory action="list" directory="#getDirectoryFromPath(getCurrentTemplatePath())#" filter="*.*.cfm" name="qFiles" sort="name" />
+	<cfdirectory action="list" directory="#railoArchiveZipPath#/admin" filter="*.*.cfm" name="qFiles" sort="name" />
+
 	<cfloop query="qFiles">
-		<cfset currFile = qFiles.directory & server.separator.file & qFiles.name />
+		<cfset currFile = qFiles.directory & "/" & qFiles.name />
 		<cfset currAction = replace(qFiles.name, '.cfm', '') />
 
 		<cfif listLen(currAction, '.') gt 2>
@@ -83,9 +85,9 @@
 
 	</cfloop>
 
+	<!--- remember the Railo version which is now in use --->
+	<cffile action="write" file="#datadir#indexed-railo-version.cfm" output="#server.railo.version##getRailoVersionDLM()#" mode="644" addnewline="no" />
+
 	<!--- store the searchresults --->
 	<cffile action="write" file="#datadir#searchindex.cfm" charset="utf-8" output="#serialize(searchresults)#" mode="644" />
-
-	<!--- remember the Railo version which is now in use --->
-	<cffile action="write" file="#datadir#indexed-railo-version.cfm" output="#server.railo.version#" mode="644" addnewline="no" />
 </cfsilent>

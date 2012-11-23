@@ -14,9 +14,16 @@
 	<cfreturn ret />
 </cffunction>
 
-<cfset dataDir = "/railo-context/admin/searchdata/" />
-<cfset current.label = "Search the Railo Administrator" />
+<cffunction name="getRailoVersionDLM" output="false" returntype="date">
+	<cfset local.railoArchivePath = expandPath("{railo-web}/context/railo-context.ra") />
+	<cfreturn parseDateTime(getFileInfo(railoArchivePath).lastModified) />
+</cffunction>
 
+<cfset railoArchivePath = expandPath("{railo-web}/context/railo-context.ra") />
+<cfset railoArchiveZipPath = "zip://" & railoArchivePath & "!" />
+<cfset dataDir = expandPath("{railo-server}/searchdata") & server.separator.file />
+
+<cfset current.label = "Search the Railo Administrator" />
 <cfoutput>
 	<h2>Search for keywords within the Railo administrator</h2>
 	<form method="get" action="#cgi.SCRIPT_NAME#">
@@ -32,7 +39,7 @@
 	<!--- do initial or new indexing when a new Railo version is detected --->
 	<cfif not fileExists(variables.indexFile)
 	or structKeyExists(url, "reindex")
-	or fileRead('#dataDir#indexed-railo-version.cfm') neq server.railo.version>
+	or fileRead('#dataDir#indexed-railo-version.cfm') neq server.railo.version & getRailoVersionDLM()>
 		<cfinclude template="admin.search.index.cfm" />
 	</cfif>
 
@@ -89,7 +96,7 @@
 		<cfset startpos = max(1, pos-showchars/2) />
 		<cfif startpos gt 1>
 			<cfset prevSpace = find(' ', reverse(left(tmp, startpos))) />
-			<cfset startpos = startpos - prevSpace + 1 /> 
+			<cfset startpos = startpos - prevSpace + 1 />
 		</cfif>
 		<div><em><cfif startpos gt 1>...</cfif>#replaceNoCase(rereplace(mid(tmp, startpos, showchars), '[a-zA-Z0-9]+$', ''), url.q, '<b>#url.q#</b>', 'all')#</em></div>
 	</cfoutput>
