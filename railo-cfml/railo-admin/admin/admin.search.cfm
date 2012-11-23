@@ -14,11 +14,6 @@
 	<cfreturn ret />
 </cffunction>
 
-<cffunction name="getRailoVersionDLM" output="false" returntype="date">
-	<cfset local.railoArchivePath = expandPath("{railo-web}/context/railo-context.ra") />
-	<cfreturn parseDateTime(getFileInfo(railoArchivePath).lastModified) />
-</cffunction>
-
 <cfset railoArchivePath = expandPath("{railo-web}/context/railo-context.ra") />
 <cfset railoArchiveZipPath = "zip://" & railoArchivePath & "!" />
 <cfset dataDir = expandPath("{railo-server}/searchdata") & server.separator.file />
@@ -34,14 +29,13 @@
 		<input type="submit" class="button submit" value="#stText.buttons.search#" />
 	</form>
 </cfoutput>
-
 <cfif structKeyExists(url, 'q') and len(url.q)>
 	<cfset variables.indexFile = '#dataDir#searchindex.cfm' />
 
 	<!--- do initial or new indexing when a new Railo version is detected --->
 	<cfif not fileExists(variables.indexFile)
 	or structKeyExists(url, "reindex")
-	or fileRead('#dataDir#indexed-railo-version.cfm') neq server.railo.version & getRailoVersionDLM()>
+	or fileRead('#dataDir#indexed-railo-version.cfm') neq server.railo.version & server.railo['release-date']>
 		<cfinclude template="admin.search.index.cfm" />
 	</cfif>
 

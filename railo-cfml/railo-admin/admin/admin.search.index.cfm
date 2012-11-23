@@ -86,7 +86,7 @@
 	</cfloop>
 
 	<!--- remember the Railo version which is now in use --->
-	<cffile action="write" file="#datadir#indexed-railo-version.cfm" output="#server.railo.version##getRailoVersionDLM()#" mode="644" addnewline="no" />
+	<cffile action="write" file="#datadir#indexed-railo-version.cfm" output="#server.railo.version##server.railo['release-date']#" mode="644" addnewline="no" />
 
 	<!--- store the searchresults --->
 	<cffile action="write" file="#datadir#searchindex.cfm" charset="utf-8" output="#serialize(searchresults)#" mode="644" />
