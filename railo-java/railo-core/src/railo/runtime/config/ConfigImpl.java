@@ -1200,7 +1200,7 @@ public abstract class ConfigImpl implements Config {
     }
     
     public void createTag(TagLib tl,String filename) {// Jira 1298
-    	String name=toName(filename);//filename.substring(0,filename.length()-(getCFCExtension().length()+1));xxx
+    	String name=toName(filename);//filename.substring(0,filename.length()-(getCFCExtension().length()+1));
         
     	TagLibTag tlt = new TagLibTag(tl);
         tlt.setName(name);
