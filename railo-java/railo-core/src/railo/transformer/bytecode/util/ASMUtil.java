@@ -49,6 +49,7 @@ import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
 import railo.transformer.bytecode.statement.FlowControlFinal;
+import railo.transformer.bytecode.statement.FlowControlRetry;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -117,6 +118,10 @@ public final class ASMUtil {
 		
 	}
 	
+	public static boolean hasAncestorRetryFCStatement(Statement stat) {
+		return getAncestorRetryFCStatement(stat,null)!=null;
+	}
+	
 	public static boolean hasAncestorBreakFCStatement(Statement stat) {
 		return getAncestorBreakFCStatement(stat,null)!=null;
 	}
@@ -126,28 +131,10 @@ public final class ASMUtil {
 	}
 	
 	
-	/* *
-	 * get ancestor LoopStatement 
-	 * @param stat
-	 * @param ingoreScript 
-	 * @return
-	 * /
-	public static FlowControl getAncestorFlowControlStatement(Statement stat) {
-		Statement parent = stat;
-		while(true)	{
-			parent=parent.getParent();
-			if(parent==null)return null;
-			if(parent instanceof FlowControl)	{
-				if(parent instanceof ScriptBody){
-					FlowControl scriptBodyParent = getAncestorFlowControlStatement(parent);
-					if(scriptBodyParent!=null) return scriptBodyParent;
-					return (FlowControl)parent;
-				}
-				return (FlowControl) parent;
-			}
-		}
-	}*/
 	
+	public static FlowControlRetry getAncestorRetryFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
+		return (FlowControlRetry) getAncestorFCStatement(stat, finallyLabels, FlowControl.RETRY);
+	}
 	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
 		return (FlowControlBreak) getAncestorFCStatement(stat, finallyLabels, FlowControl.BREAK);
 	}
@@ -163,6 +150,7 @@ public final class ASMUtil {
 			parent=parent.getParent();
 			if(parent==null)return null;
 			if(
+			   (flowType==FlowControl.RETRY && parent instanceof FlowControlRetry) || 
 			   (flowType==FlowControl.CONTINUE && parent instanceof FlowControlContinue) || 
 			   (flowType==FlowControl.BREAK && parent instanceof FlowControlBreak))	{
 				if(parent instanceof ScriptBody){
@@ -197,17 +185,31 @@ public final class ASMUtil {
 	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType) throws BytecodeException {
 		List<FlowControlFinal> finallyLabels=new ArrayList<FlowControlFinal>();
 		
-		FlowControl fc = flowType==FlowControl.BREAK?
-				ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels):
-				ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels);
-				
+		FlowControl fc;
+		String name;
+		if(FlowControl.BREAK==flowType) {
+			fc=ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels);
+			name="break";
+		}
+		else if(FlowControl.CONTINUE==flowType) {
+			fc=ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels);
+			name="continue";
+		}
+		else  {
+			fc=ASMUtil.getAncestorRetryFCStatement(stat,finallyLabels);
+			name="retry";
+		}
+		
 		if(fc==null)
-			throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
+			throw new BytecodeException(name+" must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
 		
 		GeneratorAdapter adapter = bc.getAdapter();
 		
-		Label end=flowType==FlowControl.BREAK?((FlowControlBreak)fc).getBreakLabel():((FlowControlContinue)fc).getContinueLabel();
-		
+		Label end;
+		if(FlowControl.BREAK==flowType) end=((FlowControlBreak)fc).getBreakLabel();
+		else if(FlowControl.CONTINUE==flowType) end=((FlowControlContinue)fc).getContinueLabel();
+		else  end=((FlowControlRetry)fc).getRetryLabel();
+
 		// first jump to all final labels
 		FlowControlFinal[] arr = finallyLabels.toArray(new FlowControlFinal[finallyLabels.size()]);
 		if(arr.length>0) {
@@ -272,6 +274,8 @@ public final class ASMUtil {
 			}
 		}
 	}
+	
+	
 
     /**
      * extract the content of a attribut

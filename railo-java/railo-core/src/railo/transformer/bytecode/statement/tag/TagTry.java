@@ -21,6 +21,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
+import railo.transformer.bytecode.statement.FlowControlRetry;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -28,7 +29,7 @@ import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
-public final class TagTry extends TagBase {
+public final class TagTry extends TagBase implements FlowControlRetry {
 
 	private static final ExprString ANY=LitString.toExprString("any");
 
@@ -73,6 +74,7 @@ public final class TagTry extends TagBase {
 	private FlowControlFinal fcf;
 
 	private boolean checked;
+	private Label begin = new Label();
 
 	
 	public TagTry(Position start,Position end) {
@@ -85,6 +87,7 @@ public final class TagTry extends TagBase {
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
+		adapter.visitLabel(begin);
 		Body tryBody=new BodyBase();
 		List<Tag> catches=new ArrayList<Tag>();
 		Tag tmpFinal=null;
@@ -270,6 +273,11 @@ public final class TagTry extends TagBase {
 		}
 			
 		return fcf;
+	}
+
+	@Override
+	public Label getRetryLabel() {
+		return begin;
 	}
 
 

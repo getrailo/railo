@@ -36,7 +36,7 @@ import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 /**
  * produce  try-catch-finally
  */
-public final class TryCatchFinally extends StatementBase implements Opcodes,HasBodies {
+public final class TryCatchFinally extends StatementBase implements Opcodes,HasBodies,FlowControlRetry {
 
 	//private static LitString ANY=LitString.toExprString("any", -1);
 	
@@ -82,6 +82,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	private Position finallyLine;
 
 
+	private Label begin = new Label();
 
 	private FlowControlFinal fcf;
 
@@ -134,6 +135,9 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
+		
+		adapter.visitLabel(begin);
+		
 		// Reference ref=null;
 		final int lRef=adapter.newLocal(Types.REFERENCE);
 		adapter.visitInsn(Opcodes.ACONST_NULL);
@@ -379,5 +383,10 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	public FlowControlFinal getFlowControlFinal() {
 		if(fcf==null) fcf=new FlowControlFinalImpl();
 		return fcf;
+	}
+
+	@Override
+	public Label getRetryLabel() {
+		return begin;
 	}
 }

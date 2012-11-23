@@ -680,6 +680,24 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 		<description>Used to break out of a cfloop,cfwhile or cfforeach.</description>
 		<attribute-type>fixed</attribute-type>
 	</tag>
+	
+	
+	<!-- Retry -->
+	<tag>
+		<name>retry</name>
+		<tag-class>railo.runtime.tag.Retry</tag-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.Retry</tte-class>
+		<ttt-class>railo.transformer.bytecode.statement.tag.TagRetry</ttt-class>
+		<script>
+			<type>single</type>
+			<rtexprvalue>true</rtexprvalue>
+		</script>
+		<body-content>empty</body-content>
+		<body-rtexprvalue>false</body-rtexprvalue>
+		<description>used to jump from a catch block, back to the beginning of the try block.</description>
+		<attribute-type>fixed</attribute-type>
+	</tag>
+	
 	<!-- Cache -->
 	<tag>
 		<name>cache</name>
