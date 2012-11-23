@@ -497,12 +497,29 @@ public final class StringUtil {
     }
     
 	
+	/**
+	 * maintains the legacy signature of this method where matches are CaSe sensitive (sets the default of ignoreCase to false). 
+	 * 
+	 * @param input - the string input to work on 
+     * @param find - the substring to find
+     * @param repl - the substring to replace the matches with
+     * @param firstOnly - if true then only the first occurrence of {@code find} will be replaced
+     * @return - calls replace( input, find, repl, firstOnly, false )
+	 */
 	public static String replace( String input, String find, String repl, boolean firstOnly ) {
 	 
 		return replace( input, find, repl, firstOnly, false );
 	}
 	
-	
+
+	/**
+	 * performs a CaSe sensitive replace all
+	 * 
+	 * @param input - the string input to work on 
+     * @param find - the substring to find
+     * @param repl - the substring to replace the matches with
+     * @return - calls replace( input, find, repl, false, false )
+	 */
 	public static String replace( String input, String find, String repl ) {
 		 
 		return replace( input, find, repl, false, false );
