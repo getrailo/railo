@@ -23,9 +23,11 @@
 <cfset railoArchiveZipPath = "zip://" & railoArchivePath & "!" />
 <cfset dataDir = expandPath("{railo-server}/searchdata") & server.separator.file />
 
-<cfset current.label = "Search the Railo Administrator" />
+<cfset current.label = stText.admin.search.label />
 <cfoutput>
-	<h2>Search for keywords within the Railo administrator</h2>
+	<h2>#stText.admin.search.desc#</h2>
+	
+	
 	<form method="get" action="#cgi.SCRIPT_NAME#">
 		<input type="hidden" name="action" value="admin.search" />
 		<input type="text" name="q" class="medium" size="50"<cfif structKeyExists(url, 'q')> value="#url.q#"</cfif> placeholder="#stText.buttons.search#" />
@@ -100,5 +102,10 @@
 		</cfif>
 		<div><em><cfif startpos gt 1>...</cfif>#replaceNoCase(rereplace(mid(tmp, startpos, showchars), '[a-zA-Z0-9]+$', ''), url.q, '<b>#url.q#</b>', 'all')#</em></div>
 	</cfoutput>
-
+	<div class="warning nofocus">
+		This feature is currently in Beta State.
+		If you have any problems while using this Implementation,
+		please post the bugs and errors in our
+		<a href="https://jira.jboss.org/jira/browse/RAILO" target="_blank">bugtracking system</a>. 
+	</div>
 </cfif>
