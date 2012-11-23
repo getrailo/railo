@@ -103,7 +103,7 @@ public abstract class TagBase extends StatementBase implements Tag {
 	}
 	
 	public void _writeOut(BytecodeContext bc, boolean doReuse) throws BytecodeException {
-		_writeOut(bc,true,null);
+		_writeOut(bc,doReuse,null);
 	}
 	
 	protected void _writeOut(BytecodeContext bc, boolean doReuse, final FlowControlFinalImpl fcf) throws BytecodeException {
