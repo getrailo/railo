@@ -106,7 +106,7 @@ public abstract class TagBase extends StatementBase implements Tag {
 		_writeOut(bc,doReuse,null);
 	}
 	
-	protected void _writeOut(BytecodeContext bc, boolean doReuse, final FlowControlFinalImpl fcf) throws BytecodeException {
+	protected void _writeOut(BytecodeContext bc, boolean doReuse, final FlowControlFinal fcf) throws BytecodeException {
 		//_writeOut(bc, true);
 		boolean output=tagLibTag.getParseBody() || Caster.toBooleanValue(getAttribute("output"), false);
 		
@@ -164,9 +164,4 @@ public abstract class TagBase extends StatementBase implements Tag {
 	public Map<String, Attribute> getMetaData() {
 		return metadata;
 	}
-
-	/*@Override
-	public FlowControlFinal getFlowControlFinal() {
-		return null;
-	}*/
 }

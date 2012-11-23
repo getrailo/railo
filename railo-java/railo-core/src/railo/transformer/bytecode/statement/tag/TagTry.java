@@ -22,6 +22,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.statement.TryCatchFinally;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -69,7 +70,7 @@ public final class TagTry extends TagBase {
 			Types.BOOLEAN_VALUE,
 			new Type[]{Types.STRING});
 
-	private FlowControlFinalImpl fcf;
+	private FlowControlFinal fcf;
 
 	private boolean checked;
 
@@ -113,14 +114,21 @@ public final class TagTry extends TagBase {
 		}
 		final Tag _finally=tmpFinal;
 		
+		// has no try body, if there is no try body, no catches are executed, only finally 
+		if(!tryBody.hasStatements()) {
+			
+			if(_finally!=null && _finally.getBody()!=null)_finally.getBody().writeOut(bc);
+			return;
+		}
 		
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
 			public void writeOut(BytecodeContext bc) throws BytecodeException {
 				if(_finally!=null) {
-					getFlowControlFinal();
 					GeneratorAdapter ga = bc.getAdapter();
-					if(fcf!=null)ga.visitLabel(fcf.getFinalEntryLabel());
+					if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)
+						ASMUtil.visitLabel(ga,fcf.getFinalEntryLabel());
+					
 					ExpressionUtil.visitLine(bc, _finally.getStart());
 					_finally.getBody().writeOut(bc);
 					if(fcf!=null){

@@ -11,6 +11,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.NotVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -53,11 +54,9 @@ public final class TagSilent extends TagBase {
 		adapter.storeLocal(silentMode);
 		
 		// call must be 
-		final FlowControlFinal _fcf = getFlowControlFinal();
-		
 		TryFinallyVisitor tfv=new TryFinallyVisitor(new OnFinally() {
 			public void writeOut(BytecodeContext bc) {
-				adapter.visitLabel(_fcf.getFinalEntryLabel());
+				if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(adapter,fcf.getFinalEntryLabel());
 				// if(!silentMode)pc.unsetSilent();
 				Label _if=new Label();
 				adapter.loadLocal(silentMode);
@@ -68,9 +67,10 @@ public final class TagSilent extends TagBase {
 					adapter.pop();
 				
 				adapter.visitLabel(_if);
-				
-				Label l = _fcf.getAfterFinalGOTOLabel();
-				if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
+				if(fcf!=null) {
+					Label l = fcf.getAfterFinalGOTOLabel();
+					if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
+				}
 			}
 		});
 		tfv.visitTryBegin(bc);

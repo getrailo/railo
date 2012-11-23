@@ -18,17 +18,13 @@ public class TagOther extends TagBase {
 	
 	@Override
 	public FlowControlFinal getFlowControlFinal(){
-		return getFlowControlFinalImpl();
-	}
-	
-	private FlowControlFinalImpl getFlowControlFinalImpl(){
 		if(fcf==null && getTagLibTag().handleException())
 			fcf=new FlowControlFinalImpl();
 		return fcf;
 	}
 	
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		_writeOut(bc,true,getFlowControlFinalImpl());
+		_writeOut(bc,true,getFlowControlFinal());
 	}
 
 }

@@ -14,6 +14,7 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableRef;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -76,12 +77,13 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 				@Override
 				public void writeOut(BytecodeContext bc) throws BytecodeException {
 					GeneratorAdapter a = bc.getAdapter();
-					getFlowControlFinal();
-					a.visitLabel(fcf.getFinalEntryLabel());
+					if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(a,fcf.getFinalEntryLabel());
 					a.loadLocal(it);
 					a.invokeStatic(FOR_EACH_UTIL, RESET);
-					Label l=fcf.getAfterFinalGOTOLabel();
-					if(l!=null)a.visitJumpInsn(Opcodes.GOTO, l);
+					if(fcf!=null){
+						Label l=fcf.getAfterFinalGOTOLabel();
+						if(l!=null)a.visitJumpInsn(Opcodes.GOTO, l);
+					}
 				}
 			});
 			tfv.visitTryBegin(bc);

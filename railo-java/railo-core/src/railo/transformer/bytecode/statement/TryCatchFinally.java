@@ -11,7 +11,9 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import railo.print;
 import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -25,6 +27,7 @@ import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.TagTry;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -80,7 +83,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 
 
 
-	private FlowControlFinalImpl fcf;
+	private FlowControlFinal fcf;
 
 
 	/**
@@ -135,7 +138,14 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		final int lRef=adapter.newLocal(Types.REFERENCE);
 		adapter.visitInsn(Opcodes.ACONST_NULL);
 		adapter.storeLocal(lRef);
-
+		
+		// has no try body, if there is no try body, no catches are executed, only finally 
+		if(!tryBody.hasStatements()) {
+			if(finallyBody!=null)finallyBody.writeOut(bc);
+			return;
+		}
+		
+		
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
 			public void writeOut(BytecodeContext bc) throws BytecodeException {
@@ -163,8 +173,8 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		// ref.remove(pc);
 		//Reference r=null;
 		GeneratorAdapter adapter = bc.getAdapter();
-		getFlowControlFinal();
-		adapter.visitLabel(fcf.getFinalEntryLabel());
+		
+		if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(adapter,fcf.getFinalEntryLabel());
 		ExpressionUtil.visitLine(bc, finallyLine);
 		
 		
@@ -181,8 +191,10 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		adapter.visitLabel(removeEnd);
 		
 		if(finallyBody!=null)finallyBody.writeOut(bc); // finally
-		Label l = fcf.getAfterFinalGOTOLabel();
-		if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
+		if(fcf!=null){
+			Label l = fcf.getAfterFinalGOTOLabel();
+			if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
+		}
 	}
 	
 	private void _writeOutCatch(BytecodeContext bc, int lRef,int lThrow) throws BytecodeException {
@@ -217,10 +229,10 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 
 	    // catch loop
 			Label endAllIf = new Label();
-	        Iterator it = catches.iterator();
+	        Iterator<Catch> it = catches.iterator();
 	        Catch ctElse=null;
 			while(it.hasNext()) {
-				Catch ct=(Catch) it.next();
+				Catch ct=it.next();
 				// store any for else
 				if(ct.type!=null && ct.type instanceof LitString && ((LitString)ct.type).getString().equalsIgnoreCase("any")){
 					ctElse=ct;

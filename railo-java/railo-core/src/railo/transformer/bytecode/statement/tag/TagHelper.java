@@ -26,6 +26,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.util.ASMConstants;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ArrayVisitor;
@@ -299,8 +300,8 @@ public final class TagHelper {
 					
 					public void writeOut(BytecodeContext bc) {
 						Label endIf = new Label();
-						if(fcf!=null && tlt.handleException()){
-							adapter.visitLabel(fcf.getFinalEntryLabel());
+						if(tlt.handleException() && fcf!=null && fcf.getAfterFinalGOTOLabel()!=null){
+							ASMUtil.visitLabel(adapter, fcf.getFinalEntryLabel());
 						}
 						adapter.loadLocal(state);
 						adapter.push(javax.servlet.jsp.tagext.Tag.EVAL_BODY_INCLUDE);
