@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import railo.commons.io.SystemUtil;
+import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 
@@ -446,33 +447,67 @@ public final class StringUtil {
     
 
     /**
-     * @param str String to work with
-     * @param sub1 value to replace
-     * @param sub2 replacement
-     * @param onlyFirst replace only first or all 
-     * @return new String
+     * performs a replace operation on a string
+     *  
+     * @param input - the string input to work on 
+     * @param find - the substring to find
+     * @param repl - the substring to replace the matches with
+     * @param firstOnly - if true then only the first occurrence of {@code find} will be replaced
+     * @param ignoreCase - if true then matches will not be case sensitive
+     * @return
      */
-    public static String replace(String str, String sub1, String sub2, boolean onlyFirst) {
-        if(sub1.equals(sub2)) return str;
+	public static String replace( String input, String find, String repl, boolean firstOnly, boolean ignoreCase ) {
         
-        if(!onlyFirst && sub1.length()==1 && sub2.length()==1)return str.replace(sub1.charAt(0),sub2.charAt(0));
+        String scan = input;        
+        int findLen = find.length();        
         
-        
-        StringBuilder sb=new StringBuilder( sub2.length() > sub1.length() ? (int)Math.ceil( str.length() * 1.2 ) : str.length() );
-        int start=0;
-        int pos;
-        int sub1Length=sub1.length();
-        
-        while((pos=str.indexOf(sub1,start))!=-1){
-            sb.append(str.substring(start,pos));
-            sb.append(sub2);
-            start=pos+sub1Length;
-            if(onlyFirst)break;
+        if ( ignoreCase ) {
+            
+            scan = scan.toLowerCase();
+            find = find.toLowerCase();
+        } else if ( findLen == repl.length() ) {
+
+        	if ( find.equals( repl ) )
+        		return input;
+        	
+        	if ( !firstOnly && findLen == 1 )
+        		return input.replace( find.charAt(0), repl.charAt(0) );
         }
-        sb.append(str.substring(start));
         
+        StringBuilder sb = new StringBuilder( repl.length() > find.length() ? (int)Math.ceil( input.length() * 1.2 ) : input.length() );
+        
+        int start = 0;
+        int pos;        
+        
+        while ( (pos = scan.indexOf( find, start ) ) != -1 ) {
+            
+            sb.append( input.substring( start, pos ) );
+            sb.append( repl );
+            
+            start = pos + findLen;
+            
+            if ( firstOnly )
+            	break;
+        }
+                
+        if ( input.length() > start )
+        	sb.append( input.substring( start ) );
+
         return sb.toString();
     }
+    
+	
+	public static String replace( String input, String find, String repl, boolean firstOnly ) {
+	 
+		return replace( input, find, repl, firstOnly, false );
+	}
+	
+	
+	public static String replace( String input, String find, String repl ) {
+		 
+		return replace( input, find, repl, false, false );
+	}
+	
     
     /**
      * adds zeros add the begin of a int example: addZeros(2,3) return "002"
@@ -932,12 +967,13 @@ public final class StringUtil {
 	 * 
 	 * @param input - the string on which the replacements should be performed.
 	 * @param map - a java.util.Map with key/value pairs where the key is the substring to find and the value is the substring with which to replace the matched key 
-	 * @param isCaseSensitive - if true then matches will not be case sensitive
+	 * @param ignoreCase - if true then matches will not be case sensitive
 	 * @return
+	 * @throws PageException 
 	 */
-	public static String replaceMap( String input, Map map, boolean isCaseSensitive ) {
+	public static String replaceMap( String input, Map map, boolean ignoreCase ) throws PageException {
 		 
-		return replaceMap( input, map, isCaseSensitive, true );
+		return replaceMap( input, map, ignoreCase, true );
 	}
 
     
@@ -951,16 +987,17 @@ public final class StringUtil {
 	 * 
 	 * @param input - the string on which the replacements should be performed.
 	 * @param map - a java.util.Map with key/value pairs where the key is the substring to find and the value is the substring with which to replace the matched key
-	 * @param isCaseSensitive - if true then matches will not be case sensitive
+	 * @param ignoreCase - if true then matches will not be case sensitive
 	 * @param doResolveInternals - only the initial call (from the public entry point) should pass true
 	 * @return
+	 * @throws PageException 
 	 */
-    private static String replaceMap( String input, Map map, boolean isCaseSensitive, boolean doResolveInternals ) {
+    private static String replaceMap( String input, Map map, boolean ignoreCase, boolean doResolveInternals ) throws PageException {
         
         String result = input;
         
         if ( doResolveInternals )
-            map = resolveInternals( map, isCaseSensitive, 0 );
+            map = resolveInternals( map, ignoreCase, 0 );
         
         Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
         
@@ -968,52 +1005,12 @@ public final class StringUtil {
             
             Map.Entry<String, String> e = it.next();
             
-            result = replaceAll( result, e.getKey().toString(), e.getValue().toString(), isCaseSensitive );
+            result = replace( result, e.getKey().toString(), e.getValue().toString(), false, ignoreCase );
         }
         
         return result;
     }
 	
-	
-    /**
-     * does a replace-all in a single string
-     * 
-     * this method is based on code from BIF replaceNoCase() and can be made public for use by other classes; initially added from replace-all with values from Map
-     * 
-     * @param input
-     * @param oldSub
-     * @param newSub
-     * @param isCaseSensitive - if true then matches will not be case sensitive
-     * @return
-     */
-	private static String replaceAll( String input, String oldSub, String newSub, boolean isCaseSensitive ) {
-        
-        String in = input;
-        
-        if ( !isCaseSensitive ) {
-            
-            in      = in.toLowerCase();
-            oldSub  = oldSub.toLowerCase();
-        }
-        
-        StringBuilder sb = new StringBuilder( newSub.length() > oldSub.length() ? (int)Math.ceil( input.length() * 1.2 ) : input.length() );
-        
-        int start = 0;
-        int pos;
-        int subLen = oldSub.length();
-        
-        while ( (pos = in.indexOf( oldSub, start ) ) != -1 ) {
-            
-            sb.append( input.substring( start, pos ) );
-            sb.append( newSub );
-            
-            start = pos + subLen;
-        }
-        
-        sb.append( input.substring( start ) );
-
-        return sb.toString();
-    }
         
     
     /**
@@ -1029,11 +1026,12 @@ public final class StringUtil {
      *  {signature} = "Team Railo"
      * 
      * @param map - key/value pairs for find key/replace with value
-     * @param isCaseSensitive - if true then matches will not be case sensitive
+     * @param ignoreCase - if true then matches will not be case sensitive
      * @param count - used internally as safety valve to ensure that we don't go into infinite loop if two values reference each-other
      * @return 
+     * @throws PageException 
      */
-    private static Map resolveInternals( Map map, boolean isCaseSensitive, int count ) {
+    private static Map resolveInternals( Map map, boolean ignoreCase, int count ) throws PageException {
         
         Map result = new HashMap();
         
@@ -1045,9 +1043,9 @@ public final class StringUtil {
             
             Map.Entry e = it.next();
             
-            String k = e.getKey().toString();
-            String v = e.getValue().toString();
-            String r = replaceMap( v, map, isCaseSensitive, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
+            String k = Caster.toString( e.getKey() );
+            String v = Caster.toString( e.getValue() );
+            String r = replaceMap( v, map, ignoreCase, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
             
             result.put( k, r );
             
@@ -1056,7 +1054,7 @@ public final class StringUtil {
         }
                 
         if ( isModified && count++ < map.size() )
-            result = resolveInternals( result, isCaseSensitive, count );	// recursive call
+            result = resolveInternals( result, ignoreCase, count );	// recursive call
         
         return result;
     }
