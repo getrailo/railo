@@ -17,6 +17,7 @@ import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -176,7 +177,7 @@ public final class Insert extends TagImpl {
 				if(pageContext.getConfig().debug()) {
 					String dsn=ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);
 					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					pageContext.getDebugger().addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
+					((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
 				}
 			}
 			return EVAL_PAGE;

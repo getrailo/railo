@@ -273,18 +273,16 @@ public final class Md5 {
     }
     
 
+    
+
 
     /**
-     * Construct a digestifier for the given string.
-     * @param input The string to be digestified.
+     * Construct a digestifier for the given byte array.
+     * @param input The byte array to be digestified.
      */
-
-    private Md5 (String input) {
-    	byte bytes[] = new byte[input.length()];
-        input.getBytes(0, bytes.length, bytes, 0);
-
-		//this.stringp = true ;
-		this.in      = new ByteArrayInputStream (bytes) ;
+    private Md5 (byte[] bytes) {
+    	
+    	this.in      = new ByteArrayInputStream( bytes ) ;
 		this.state   = new int[4] ;
 		this.buffer  = new byte[64] ;
 		this.count   = 0L ;
@@ -292,6 +290,16 @@ public final class Md5 {
 		state[1] = 0xefcdab89;
 		state[2] = 0x98badcfe;
 		state[3] = 0x10325476;
+    }
+    
+
+    /**
+     * Construct a digestifier for the given string.
+     * @param input The string to be digestified.
+     */
+    private Md5 (String input) {
+    	
+    	this( input.getBytes() );
     }    
   
     /**
@@ -308,6 +316,16 @@ public final class Md5 {
 	state[1] = 0xefcdab89;
 	state[2] = 0x98badcfe;
 	state[3] = 0x10325476;
+    }
+
+    /**
+     * return md5 from byte array
+     * @param barr byte array to get md5 from
+     * @return md5 from string
+     * @throws IOException
+     */
+    public static String getDigestAsString(byte[] barr) throws IOException {
+    	return new Md5(barr).getDigest();
     }
     
     /**

@@ -273,7 +273,7 @@ public final class DBInfo extends TagImpl {
 	private void typeColumns(DatabaseMetaData metaData) throws PageException, SQLException {
 		required("table",table);
 		
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
 
 		table=setCase(metaData, table);
@@ -404,7 +404,7 @@ public final class DBInfo extends TagImpl {
 
 	private void typeDBNames(DatabaseMetaData metaData) throws PageException, SQLException {
 
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         
         railo.runtime.type.Query catalogs = new QueryImpl(metaData.getCatalogs(),"query");
@@ -450,7 +450,7 @@ public final class DBInfo extends TagImpl {
 	private void typeForeignKeys(DatabaseMetaData metaData) throws PageException, SQLException {
 		required("table",table);
 		
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         table=setCase(metaData, table);
         int index=table.indexOf('.');
@@ -495,7 +495,7 @@ public final class DBInfo extends TagImpl {
 	private void typeIndex(DatabaseMetaData metaData) throws PageException, SQLException {
 		required("table",table);
 		
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         
 		table=setCase(metaData, table);
@@ -548,7 +548,7 @@ public final class DBInfo extends TagImpl {
 	}
 
 	private void typeProcedures(DatabaseMetaData metaData) throws SQLException, PageException {
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         
 		String schema=null;
@@ -568,7 +568,7 @@ public final class DBInfo extends TagImpl {
 	private void typeProcedureColumns(DatabaseMetaData metaData) throws SQLException, PageException {
 		required("procedure",procedure);
 		
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
 		
 		procedure=setCase(metaData, procedure);		
@@ -604,7 +604,7 @@ public final class DBInfo extends TagImpl {
 
 		
 		
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         
 		pattern=setCase(metaData, pattern);
@@ -620,7 +620,7 @@ public final class DBInfo extends TagImpl {
 
 	private void typeVersion(DatabaseMetaData metaData) throws PageException, SQLException {
 
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
 		
 		Key[] columns=new Key[]{DATABASE_PRODUCTNAME,DATABASE_VERSION,DRIVER_NAME,DRIVER_VERSION,JDBC_MAJOR_VERSION,JDBC_MINOR_VERSION};
@@ -644,7 +644,7 @@ public final class DBInfo extends TagImpl {
 	
 	private void typeUsers(DatabaseMetaData metaData) throws PageException, SQLException {
 		
-		Stopwatch stopwatch=new Stopwatch();
+		Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
 		stopwatch.start();
         
 		checkTable(metaData);
