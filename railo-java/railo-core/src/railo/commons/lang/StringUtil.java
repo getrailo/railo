@@ -1043,9 +1043,9 @@ public final class StringUtil {
         
         while ( it.hasNext() ) {
             
-            Map.Entry<String, String> e = it.next();
+            Map.Entry e = it.next();
             
-            String k = e.getKey();
+            String k = e.getKey().toString();
             String v = e.getValue().toString();
             String r = replaceMap( v, map, isCaseSensitive, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
             
