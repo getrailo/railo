@@ -36,7 +36,6 @@ public final class Retry extends EvaluatorSupport {
 		Statement parent=stat;
 		while(true)	{
 			parent=parent.getParent();
-			print.e(parent);
 			if(parent==null)return null;
 			if(parent instanceof Tag)	{
 				tag=(Tag) parent;
