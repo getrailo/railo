@@ -615,8 +615,6 @@ cachename: Name of the cache in secondary cache.
 	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
 		DatasourceManagerImpl manager = (DatasourceManagerImpl) pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
-		print.e(datasource);
-		print.e(dc);
 		try {
 			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
 				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());

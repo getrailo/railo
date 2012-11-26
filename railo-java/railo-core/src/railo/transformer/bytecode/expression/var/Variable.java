@@ -20,7 +20,7 @@ import railo.runtime.util.VariableUtilImpl;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
@@ -517,7 +517,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 					return new VT(LitDouble.ZERO,type,-1);
 				return new VT(null,type,-1);
 			}
-			return new VT(Cast.toExpression(LitString.toExprString(defaultValue), type),type,-1);
+			return new VT(CastOther.toExpression(LitString.toExprString(defaultValue), type),type,-1);
 		}
 		BytecodeException be = new BytecodeException("missing required argument ["+flfan+"] for function ["+flfa.getFunction().getName()+"]",line);
 		UDFUtil.addFunctionDoc(be, flfa.getFunction());

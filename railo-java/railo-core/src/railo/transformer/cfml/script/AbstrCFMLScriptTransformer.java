@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -21,7 +22,7 @@ import railo.transformer.bytecode.FunctionBody;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ClosureAsExpression;
@@ -313,12 +314,39 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final While whileStatement(Data data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("while",'('))
+		int pos=data.cfml.getPos();
+		
+		// id
+		String id=variableDec(data, false);
+		if(id==null) {
+			data.cfml.setPos(pos);
 			return null;
+		}
+		if(id.equalsIgnoreCase("while")){
+			id=null;
+			data.cfml.removeSpace();
+			if(!data.cfml.forwardIfCurrent('(')){
+				data.cfml.setPos(pos);
+				return null;
+			}	
+		}
+		else {
+			data.cfml.removeSpace();
+			if(!data.cfml.forwardIfCurrent(':')){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			data.cfml.removeSpace();
+			
+			if(!data.cfml.forwardIfCurrent("while",'(')){
+				data.cfml.setPos(pos);
+				return null;
+			}
+		}
 		
 		Position line = data.cfml.getPosition();
 		Body body=new BodyBase();
-		While whil=new While(condition(data),body,line,null);
+		While whil=new While(condition(data),body,line,null,id);
 		
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"while statement must end with a [)]");
@@ -439,13 +467,43 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final DoWhile doStatement(Data data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/'))
+		int pos=data.cfml.getPos();
+		
+		// id
+		String id=variableDec(data, false);
+		if(id==null) {
+			data.cfml.setPos(pos);
 			return null;
+		}
+		if(id.equalsIgnoreCase("do")){
+			id=null;
+			if(!data.cfml.isCurrent('{') && !data.cfml.isCurrent(' ') && !data.cfml.isCurrent('/')) {
+				data.cfml.setPos(pos);
+				return null;
+			}	
+		}
+		else {
+			data.cfml.removeSpace();
+			if(!data.cfml.forwardIfCurrent(':')){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			data.cfml.removeSpace();
+			
+			if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/')) {
+				data.cfml.setPos(pos);
+				return null;
+			}
+			data.cfml.previous();
+		}
+		
+		//if(!data.cfml.forwardIfCurrent("do",'{') && !data.cfml.forwardIfCurrent("do ") && !data.cfml.forwardIfCurrent("do",'/'))
+		//	return null;
 		
 		Position line = data.cfml.getPosition();
 		Body body=new BodyBase();
 		
-		data.cfml.previous();
+		//data.cfml.previous();
 		statement(data,body,CTX_DO_WHILE);
 		
 		
@@ -453,7 +511,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(!data.cfml.forwardIfCurrent("while",'('))
 			throw new TemplateException(data.cfml,"do statement must have a while at the end");
 		
-		DoWhile doWhile=new DoWhile(condition(data),body,line,data.cfml.getPosition());
+		DoWhile doWhile=new DoWhile(condition(data),body,line,data.cfml.getPosition(),id);
 		
 		if(!data.cfml.forwardIfCurrent(')'))
 			throw new TemplateException(data.cfml,"do statement must end with a [)]");
@@ -471,8 +529,45 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 	 * @throws TemplateException
 	 */
 	private final Statement forStatement(Data data) throws TemplateException {
-		if(!data.cfml.forwardIfCurrent("for",'(')) 
+		
+int pos=data.cfml.getPos();
+		
+		// id
+		String id=variableDec(data, false);
+		if(id==null) {
+			data.cfml.setPos(pos);
 			return null;
+		}
+		if(id.equalsIgnoreCase("for")){
+			id=null;
+			data.cfml.removeSpace();
+			if(!data.cfml.forwardIfCurrent('(')){
+				data.cfml.setPos(pos);
+				return null;
+			}	
+		}
+		else {
+			data.cfml.removeSpace();
+			if(!data.cfml.forwardIfCurrent(':')){
+				data.cfml.setPos(pos);
+				return null;
+			}
+			data.cfml.removeSpace();
+			
+			if(!data.cfml.forwardIfCurrent("for",'(')){
+				data.cfml.setPos(pos);
+				return null;
+			}
+		}
+		
+		
+		
+		
+		//if(!data.cfml.forwardIfCurrent("for",'(')) 
+		//	return null;
+		
+		
+		
 		Expression left=null;
 		Body body=new BodyBase();
 		Position line = data.cfml.getPosition();
@@ -508,7 +603,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				// ex block
 				statement(data,body,CTX_FOR);
 		
-				return new For(left,cont,update,body,line,data.cfml.getPosition());					
+				return new For(left,cont,update,body,line,data.cfml.getPosition(),id);					
 			}
 		// middle foreach
 			else if(data.cfml.forwardIfCurrent("in")) {
@@ -526,7 +621,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 				
 				if(!(value instanceof Variable))
 					throw new TemplateException(data.cfml,"invalid syntax in for statement, right value is invalid");
-				return new ForEach((Variable)left,(Variable)value,body,line,data.cfml.getPosition());	
+				return new ForEach((Variable)left,(Variable)value,body,line,data.cfml.getPosition(),id);	
 			}
 			else 
 				throw new TemplateException(data.cfml,"invalid syntax in for statement");
@@ -1358,7 +1453,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(attrValue!=null){
 			attrName=attr.getName();
 			TagLibTagAttr tlta = tlt.getAttribute(attr.getName());
-			tag.addAttribute(new Attribute(false,attrName,Cast.toExpression(attrValue,tlta.getType()),tlta.getType()));
+			tag.addAttribute(new Attribute(false,attrName,CastOther.toExpression(attrValue,tlta.getType()),tlta.getType()));
 		}
 		else if(ATTR_TYPE_REQUIRED==attrType){
 			data.cfml.setPos(pos);
@@ -1721,7 +1816,7 @@ public abstract class AbstrCFMLScriptTransformer extends AbstrCFMLExprTransforme
 		if(tlt!=null){
 			tlta = tlt.getAttribute(name);
 		}
-		return new Attribute(dynamic.toBooleanValue(),name,tlta!=null?Cast.toExpression(value, tlta.getType()):value,sbType.toString());
+		return new Attribute(dynamic.toBooleanValue(),name,tlta!=null?CastOther.toExpression(value, tlta.getType()):value,sbType.toString());
     }
 	
 	/*private String attributeName(CFMLString cfml, ArrayList<String> args,TagLibTag tag, RefBoolean dynamic, StringBuffer sbType) throws TemplateException {

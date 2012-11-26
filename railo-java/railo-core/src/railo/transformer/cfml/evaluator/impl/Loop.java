@@ -1,10 +1,13 @@
 package railo.transformer.cfml.evaluator.impl;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagLoop;
@@ -37,13 +40,20 @@ public final class Loop extends EvaluatorSupport {
 	public void evaluate(Tag tag,TagLibTag tagLibTag,FunctionLib[] flibs) throws EvaluatorException {
 		TagLoop loop=(TagLoop) tag;
 		
-
-        // attribute maxrows and endrow not allowd at the same time
+		// label
+		if(ASMUtil.isLiteralAttribute(tag, "label", ASMUtil.TYPE_STRING, false, true)) {
+			LitString ls=(LitString) CastString.toExprString(tag.getAttribute("label").getValue());
+			String l = ls.getString();
+			if(!StringUtil.isEmpty(l,true)) {
+				loop.setLabel(l.trim());
+				tag.removeAttribute("label");
+			}
+		}
+		
+		// attribute maxrows and endrow not allowd at the same time
         if(tag.containsAttribute("maxrows") && tag.containsAttribute("endrow"))
         	throw new EvaluatorException("Wrong Context, you cannot use attribute maxrows and endrow at the same time.");
         
-		
-		
 		// file loop      
         if(tag.containsAttribute("file")) {
             if(!tag.containsAttribute("index"))

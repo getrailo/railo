@@ -20,7 +20,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * Cast to a Boolean
  */
-public final class CastBoolean extends ExpressionBase implements ExprBoolean {
+public final class CastBoolean extends ExpressionBase implements ExprBoolean,Cast {
     
     /**
 	 * @see java.lang.Object#toString()
@@ -98,10 +98,8 @@ public final class CastBoolean extends ExpressionBase implements ExprBoolean {
         return Types.BOOLEAN;
     }
 
-    /* *
-     * @see railo.transformer.bytecode.expression.Expression#getType()
-     * /
-    public int getType() {
-        return Types._BOOLEAN;
-    }*/
+	@Override
+	public Expression getExpr() {
+		return expr;
+	}
 }

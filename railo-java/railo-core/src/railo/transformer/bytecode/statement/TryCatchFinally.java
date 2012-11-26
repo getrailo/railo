@@ -389,4 +389,9 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 	public Label getRetryLabel() {
 		return begin;
 	}
+
+	@Override
+	public String getLabel() {
+		return null;
+	}
 }

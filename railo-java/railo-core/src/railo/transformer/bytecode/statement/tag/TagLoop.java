@@ -180,32 +180,6 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 			Types.INT_VALUE,
 			new Type[]{Types.INT_VALUE});
 
-	// double range(double number, double from)
-	/*private static final Method RANGE = new Method(
-			"range",
-			Types.DOUBLE_VALUE,
-			new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
-
-	
-	// Undefined us()
-	private static final Type UNDEFINED = Type.getType(Undefined.class);
-	private static final Method US = new Method(
-			"us",
-			UNDEFINED,
-			new Type[]{});
-
-	// void addQuery(Query coll)
-	private static final Method ADD_QUERY = new Method(
-			"addQuery",
-			Types.VOID,
-			new Type[]{Types.QUERY});
-
-	// void removeCollection()
-	private static final Method REMOVE_QUERY = new Method(
-			"removeQuery",
-			Types.VOID,
-			new Type[]{});*/
-
 	static final Method GO = new Method(
 			"go",
 			Types.BOOLEAN_VALUE,
@@ -229,6 +203,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	
 	private int type;
 	private LoopVisitor loopVisitor;
+	private String label;
 
 	public TagLoop(Position start,Position end) {
 		super(start,end);
@@ -245,6 +220,10 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		boolean old;
+		GeneratorAdapter ga = bc.getAdapter();
+
+
+		
 		switch(type) {
 		case TYPE_COLLECTION:
 			writeOutTypeCollection(bc);
@@ -1038,5 +1017,12 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 		return null;
 	}
 
+	public void setLabel(String label) {
+		this.label=label;
+	}
 
+	@Override
+	public String getLabel() {
+		return label;
+	}
 }

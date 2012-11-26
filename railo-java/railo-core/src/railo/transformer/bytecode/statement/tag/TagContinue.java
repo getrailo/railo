@@ -10,6 +10,8 @@ import railo.transformer.bytecode.util.ASMUtil;
 
 public final class TagContinue extends TagBase {
 
+	private String label;
+
 	public TagContinue(Position start, Position end) {
 		super(start,end);
 		setHasFlowController(true);
@@ -17,7 +19,7 @@ public final class TagContinue extends TagBase {
 
 	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		ASMUtil.leadFlow(bc,this,FlowControl.CONTINUE);
+		ASMUtil.leadFlow(bc,this,FlowControl.CONTINUE,label);
 	}
 	
 	@Override
@@ -29,6 +31,10 @@ public final class TagContinue extends TagBase {
 	@Override
 	public FlowControlFinal getFlowControlFinal() {
 		return null;
+	}
+
+	public void setLabel(String label) {
+		this.label=label;
 	}
 
 }

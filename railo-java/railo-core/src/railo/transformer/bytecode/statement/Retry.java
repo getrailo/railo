@@ -18,7 +18,7 @@ public final class Retry extends StatementBaseNoFinal {
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		ASMUtil.leadFlow(bc,this,FlowControl.RETRY);
+		ASMUtil.leadFlow(bc,this,FlowControl.RETRY,null);
 	}
 	
 	/**

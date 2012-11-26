@@ -39,6 +39,7 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 	private Label begin = new Label();
 	private Label end = new Label();
 	private FlowControlFinal fcf;
+	private String label;
 
 	/**
 	 * Constructor of the class
@@ -47,19 +48,17 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 	 * @param body
 	 * @param line
 	 */
-	public ForEach(Variable key,Variable value,Body body,Position start, Position end) {
+	public ForEach(Variable key,Variable value,Body body,Position start, Position end,String label) {
 		super(start,end);
 		this.key=new VariableRef(key);
 		this.value=value;
 		this.body=body;
+		this.label=label;
 		body.setParent(this);
 		
 	}
 	
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		final int it=adapter.newLocal(Types.ITERATOR);
@@ -117,48 +116,18 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 			tfv.visitTryEnd(bc);
 		
 	}
-/*
-	
-<!--
-for-each
-	Definiert eine for-each Schleife.
-	Dazu werden direkt Sprachkonstrukte von PHP genutzt.
--->
-<xsl:template match="for-each">
-<xsl:variable name="i">_<xsl:value-of select="generate-id(.)"/></xsl:variable>
-	railo.runtime.type.Collection coll<xsl:value-of select="$i"/>=Caster.toCollection(<xsl:apply-templates select="./value"/>);
-	java.util.Iterator it<xsl:value-of select="$i"/>=coll<xsl:value-of select="$i"/>.iterator();
-	railo.runtime.util.VariableReference item<xsl:value-of select="$i"/>=
-	<xsl:apply-templates select="./key"  mode="reference"/>;
-	
-	while(it<xsl:value-of select="$i"/>.hasNext()) {
-		item<xsl:value-of select="$i"/>.set(pc,it<xsl:value-of select="$i"/>.next());
-		<xsl:apply-templates select="./script-body"/>
-	}
-</xsl:template>
 
-
-	*/
-
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
-	 */
+	@Override
 	public Label getBreakLabel() {
 		return end;
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
-	 */
+	@Override
 	public Label getContinueLabel() {
 		return begin;
 	}
 
-	/**
-	 * @see railo.transformer.bytecode.statement.HasBody#getBody()
-	 */
+	@Override
 	public Body getBody() {
 		return body;
 	}
@@ -167,5 +136,10 @@ for-each
 	public FlowControlFinal getFlowControlFinal() {
 		if(fcf==null) fcf=new FlowControlFinalImpl();
 		return fcf;
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
 	}
 }

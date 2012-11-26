@@ -29,7 +29,7 @@ public final class TagRetry extends TagBase {
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		ASMUtil.leadFlow(bc,this,FlowControl.RETRY);
+		ASMUtil.leadFlow(bc,this,FlowControl.RETRY,null);
 	}
 	
 	/**

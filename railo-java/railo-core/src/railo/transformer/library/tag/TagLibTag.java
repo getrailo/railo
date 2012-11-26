@@ -16,7 +16,7 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagBase;
@@ -86,6 +86,11 @@ public final class TagLibTag {
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private Class clazz;
 	private TagLibTagScript script;
+	
+
+	private final static TagLibTagAttr UNDEFINED=new TagLibTagAttr(null);
+	
+	private TagLibTagAttr singleAttr=UNDEFINED;
 
 	public TagLibTag duplicate(boolean cloneAttributes) {
 		TagLibTag tlt = new TagLibTag(tagLib);
@@ -689,7 +694,7 @@ public final class TagLibTag {
 		setter = "set"+StringUtil.ucFirst(attr.getName());
 		Class clazz;
 		try {
-			if(type==null) type = Cast.getType(attr.getType());
+			if(type==null) type = CastOther.getType(attr.getType());
 			clazz=ClassUtil.loadClass(getTagClassName());
 			java.lang.reflect.Method m = ClassUtil.getMethodIgnoreCase(clazz,setter,new Class[]{ClassUtil.loadClass(type.getClassName())});
 			setter=m.getName();
@@ -747,6 +752,24 @@ public final class TagLibTag {
 	 */
 	public TagLibTagScript getScript() {
 		return script;
+	}
+
+
+	public TagLibTagAttr getSingleAttr() {
+		
+		if(singleAttr==UNDEFINED) {
+			singleAttr=null;
+			Iterator<TagLibTagAttr> it = getAttributes().values().iterator();
+			TagLibTagAttr attr;
+			while(it.hasNext()){
+				attr=it.next();
+				if(attr.getNoname()){
+					singleAttr=attr;
+					break;
+				}	
+			}
+		}
+		return singleAttr;
 	}
 
 }

@@ -218,6 +218,8 @@ public final class TagLibFactory extends DefaultHandler {
 				else if(inside.equals("status")) att.setStatus(toStatus(value));
     			// Description
 				else if(inside.equals("description")) att.setDescription(value);
+    			// No-Name
+				else if(inside.equals("noname")) att.setNoname(Caster.toBooleanValue(value,false));
 				// default
 				else if(inside.equals("default")) att.isDefault(Caster.toBooleanValue(value,false));
 				else if(inside.equals("script-support")) att.setScriptSupport(value);

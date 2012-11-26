@@ -30,6 +30,7 @@ import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
+import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.cast.CastString;
@@ -39,6 +40,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
 import railo.transformer.bytecode.expression.var.Member;
+import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.Identifier;
@@ -118,45 +120,47 @@ public final class ASMUtil {
 		
 	}
 	
-	public static boolean hasAncestorRetryFCStatement(Statement stat) {
-		return getAncestorRetryFCStatement(stat,null)!=null;
+	public static boolean hasAncestorRetryFCStatement(Statement stat,String label) {
+		return getAncestorRetryFCStatement(stat,null,label)!=null;
 	}
 	
-	public static boolean hasAncestorBreakFCStatement(Statement stat) {
-		return getAncestorBreakFCStatement(stat,null)!=null;
+	public static boolean hasAncestorBreakFCStatement(Statement stat,String label) {
+		return getAncestorBreakFCStatement(stat,null,label)!=null;
 	}
 	
-	public static boolean hasAncestorContinueFCStatement(Statement stat) {
-		return getAncestorContinueFCStatement(stat,null)!=null;
+	public static boolean hasAncestorContinueFCStatement(Statement stat,String label) {
+		return getAncestorContinueFCStatement(stat,null,label)!=null;
 	}
 	
 	
 	
-	public static FlowControlRetry getAncestorRetryFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
-		return (FlowControlRetry) getAncestorFCStatement(stat, finallyLabels, FlowControl.RETRY);
+	public static FlowControlRetry getAncestorRetryFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, String label) {
+		return (FlowControlRetry) getAncestorFCStatement(stat, finallyLabels, FlowControl.RETRY,label);
 	}
-	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
-		return (FlowControlBreak) getAncestorFCStatement(stat, finallyLabels, FlowControl.BREAK);
+	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, String label) {
+		return (FlowControlBreak) getAncestorFCStatement(stat, finallyLabels, FlowControl.BREAK,label);
 	}
 	
-	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
-		return (FlowControlContinue) getAncestorFCStatement(stat, finallyLabels, FlowControl.CONTINUE);
+	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, String label) {
+		return (FlowControlContinue) getAncestorFCStatement(stat, finallyLabels, FlowControl.CONTINUE,label);
 	}
 
-	private static FlowControl getAncestorFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, int flowType) {
+	private static FlowControl getAncestorFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, int flowType, String label) {
 		Statement parent = stat;
 		FlowControlFinal fcf;
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null)return null;
 			if(
-			   (flowType==FlowControl.RETRY && parent instanceof FlowControlRetry) || 
+			   ((flowType==FlowControl.RETRY && parent instanceof FlowControlRetry) || 
 			   (flowType==FlowControl.CONTINUE && parent instanceof FlowControlContinue) || 
-			   (flowType==FlowControl.BREAK && parent instanceof FlowControlBreak))	{
+			   (flowType==FlowControl.BREAK && parent instanceof FlowControlBreak))
+			   &&
+				labelMatch((FlowControl)parent,label))	{
 				if(parent instanceof ScriptBody){
 					List<FlowControlFinal> _finallyLabels=finallyLabels==null?null:new ArrayList<FlowControlFinal>();
 					
-					FlowControl scriptBodyParent = getAncestorFCStatement(parent,_finallyLabels,flowType);
+					FlowControl scriptBodyParent = getAncestorFCStatement(parent,_finallyLabels,flowType,label);
 					if(scriptBodyParent!=null) {
 						if(finallyLabels!=null){
 							Iterator<FlowControlFinal> it = _finallyLabels.iterator();
@@ -182,21 +186,30 @@ public final class ASMUtil {
 		}
 	}
 	
-	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType) throws BytecodeException {
+	private static boolean labelMatch(FlowControl fc, String label) {
+		if(StringUtil.isEmpty(label,true)) return true;
+		String fcl = fc.getLabel();
+		if(StringUtil.isEmpty(fcl,true)) return false;
+		
+		return label.trim().equalsIgnoreCase(fcl.trim());
+	}
+
+
+	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType, String label) throws BytecodeException {
 		List<FlowControlFinal> finallyLabels=new ArrayList<FlowControlFinal>();
 		
 		FlowControl fc;
 		String name;
 		if(FlowControl.BREAK==flowType) {
-			fc=ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels);
+			fc=ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels,label);
 			name="break";
 		}
 		else if(FlowControl.CONTINUE==flowType) {
-			fc=ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels);
+			fc=ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels,label);
 			name="continue";
 		}
 		else  {
-			fc=ASMUtil.getAncestorRetryFCStatement(stat,finallyLabels);
+			fc=ASMUtil.getAncestorRetryFCStatement(stat,finallyLabels,label);
 			name="retry";
 		}
 		
@@ -881,13 +894,15 @@ public final class ASMUtil {
 		return true;
 	}
 
-
-	
-	
 	public static boolean isLiteralAttribute(Tag tag, String attrName, short type,boolean required,boolean throwWhenNot) throws EvaluatorException {
-		Attribute attr = tag.getAttribute(attrName);
+		return isLiteralAttribute(tag,tag.getAttribute(attrName), type, required, throwWhenNot);
+	}
+	
+	
+	public static boolean isLiteralAttribute(Tag tag,Attribute attr, short type,boolean required,boolean throwWhenNot) throws EvaluatorException {
 		String strType="/constant";
-		if(attr!=null) {
+		if(attr!=null && !isNull(attr.getValue())) {
+			
 			switch(type){
 			case TYPE_ALL:
 				if(attr.getValue() instanceof Literal) return true;
@@ -906,13 +921,23 @@ public final class ASMUtil {
 			break;
 			}
 			if(!throwWhenNot) return false;
-			throw new EvaluatorException("Attribute ["+attrName+"] of the Tag ["+tag.getFullname()+"] must be a literal"+strType+" value");
+			throw new EvaluatorException("Attribute ["+attr.getName()+"] of the Tag ["+tag.getFullname()+"] must be a literal"+strType+" value. "+
+					"attributes java class type "+attr.getValue().getClass().getName());
 		}
 		if(required){
 			if(!throwWhenNot) return false;
-			throw new EvaluatorException("Attribute ["+attrName+"] of the Tag ["+tag.getFullname()+"] is required");
+			throw new EvaluatorException("Attribute ["+attr.getName()+"] of the Tag ["+tag.getFullname()+"] is required");
 		}
-		return true;
+		return false;
+	}
+
+
+	public static boolean isNull(Expression expr) {
+		if(expr instanceof NullExpression) return true;
+		if(expr instanceof Cast) {
+			return isNull(((Cast)expr).getExpr());
+		}
+		return false;
 	}
 
 

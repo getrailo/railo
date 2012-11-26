@@ -24,6 +24,7 @@ public final class For extends StatementBaseNoFinal implements FlowControlBreak,
 
 	Label beforeUpdate = new Label();
 	Label end = new Label();
+	private String label;
 	
 	
 	
@@ -35,20 +36,18 @@ public final class For extends StatementBaseNoFinal implements FlowControlBreak,
 	 * @param body
 	 * @param line
 	 */
-	public For(Expression init,Expression condition,Expression update,Body body,Position start, Position end) {
+	public For(Expression init,Expression condition,Expression update,Body body,Position start, Position end, String label) {
 		super(start,end);
 		this.init=init;
 		this.condition=condition;
 		this.update=update;
 		this.body=body;
+		this.label=label;
 		body.setParent(this);
 		
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		Label beforeInit = new Label();
@@ -83,27 +82,23 @@ public final class For extends StatementBaseNoFinal implements FlowControlBreak,
 		
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
-	 */
+	@Override
 	public Label getBreakLabel() {
 		return end;
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
-	 */
+	@Override
 	public Label getContinueLabel() {
 		return beforeUpdate;
 	}
 
-	/**
-	 * @see railo.transformer.bytecode.statement.HasBody#getBody()
-	 */
+	@Override
 	public Body getBody() {
 		return body;
 	}
 
+	@Override
+	public String getLabel() {
+		return label;
+	}
 }

@@ -4,7 +4,7 @@ import org.objectweb.asm.Type;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -25,7 +25,7 @@ public class Argument extends ExpressionBase {
 		 * @return the value
 		 */
 		public Expression getValue() {
-			return Cast.toExpression(raw,type);
+			return CastOther.toExpression(raw,type);
 		}
 		
 		/**

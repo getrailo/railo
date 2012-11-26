@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import railo.print;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
@@ -24,7 +25,7 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.NullExpression;
 import railo.transformer.bytecode.literal.LitBoolean;
@@ -828,9 +829,10 @@ public final class CFMLTransformer {
 	 */
 	public static void attributes(Data data,TagLibTag tag, Tag parent) throws TemplateException {
 		int type=tag.getAttributeType();
-		
+		int start = data.cfml.getPos();
 	// Tag with attribute names
 		if(	type!=TagLibTag.ATTRIBUTE_TYPE_NONAME)	{
+			try{
 			int min=tag.getMin();
 			int max=tag.getMax();
 			int count=0;
@@ -856,7 +858,7 @@ public final class CFMLTransformer {
 				    	
 						Attribute attr=new Attribute(tag.getAttributeType()==TagLibTag.ATTRIBUTE_TYPE_DYNAMIC,
 				    			att.getName(),
-				    			Cast.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
+				    			CastOther.toExpression(LitString.toExprString(Caster.toString(att.getDefaultValue(),null)),att.getType()),att.getType()
 				    	);
 				    	parent.addAttribute(attr);
 					}
@@ -886,25 +888,39 @@ public final class CFMLTransformer {
 					}
 				}
 			}
+			}
+			catch(TemplateException te){
+				data.cfml.setPos(start);
+				// if the tag supports a non name attribute try this
+				TagLibTagAttr sa = tag.getSingleAttr();
+				print.e(sa);
+				if(sa!=null) attrNoName(parent,tag,data,sa);
+				else throw te;
+			}
 		}
 	// tag without attributes name
 		else	{
-			TagLibTagAttr attr=tag.getFirstAttribute();
-			String strName="noname";
-			String strType="any";
-			boolean pe=true;
-			if(attr!=null) {
-				strName=attr.getName();
-				strType=attr.getType();	
-				pe=attr.getRtexpr();
-			}
-			//LitString.toExprString("",-1);
-			Attribute att=new Attribute(false,strName,attributeValue(data,tag,strType,pe,true,NullExpression.NULL_EXPRESSION),strType);
-			parent.addAttribute(att);
+			attrNoName(parent,tag,data,null);
 		}
 	}
 
-    /**
+    private static void attrNoName(Tag parent, TagLibTag tag, Data data,TagLibTagAttr attr) throws TemplateException {
+    	if(attr==null)attr=tag.getFirstAttribute();
+		String strName="noname";
+		String strType="any";
+		boolean pe=true;
+		if(attr!=null) {
+			strName=attr.getName();
+			strType=attr.getType();	
+			pe=attr.getRtexpr();
+		}
+		//LitString.toExprString("",-1);
+		Attribute att=new Attribute(false,strName,attributeValue(data,tag,strType,pe,true,NullExpression.NULL_EXPRESSION),strType);
+		parent.addAttribute(att);
+	}
+
+
+	/**
      * Liest ein einzelnes Atribut eines tag ein (nicht NONAME).
      * <br />
      * EBNF:<br />
@@ -949,7 +965,7 @@ public final class CFMLTransformer {
     	else {
     		value=LitBoolean.TRUE;
     		if(sbType.toString().length()>0) {
-    			value=Cast.toExpression(value, sbType.toString());
+    			value=CastOther.toExpression(value, sbType.toString());
     		}
     	}		
     	comment(data.cfml,true);
@@ -1064,7 +1080,7 @@ public final class CFMLTransformer {
 			}
 			else expr=transfomer.transformAsString(data.page,data.ep,data.flibs,data.scriptTags,data.cfml,TransfomerSettings.toSetting(data.config),true);
 			if(type.length()>0) {
-				expr=Cast.toExpression(expr, type);
+				expr=CastOther.toExpression(expr, type);
 			}
 		} catch (TagLibException e) {
 			throw new TemplateException(data.cfml,e);

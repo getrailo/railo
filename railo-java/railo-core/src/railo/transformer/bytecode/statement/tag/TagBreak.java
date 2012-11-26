@@ -20,6 +20,8 @@ import railo.transformer.bytecode.util.ASMUtil;
 
 public final class TagBreak extends TagBase {
 	
+	private String label;
+
 	public TagBreak(Position start,Position end) {
 		super(start,end);
 		setHasFlowController(true);
@@ -29,7 +31,9 @@ public final class TagBreak extends TagBase {
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		ASMUtil.leadFlow(bc,this,FlowControl.BREAK);
+		
+		
+		ASMUtil.leadFlow(bc,this,FlowControl.BREAK,label);
 	}
 	
 	/**
@@ -44,5 +48,9 @@ public final class TagBreak extends TagBase {
 	@Override
 	public FlowControlFinal getFlowControlFinal() {
 		return null;
+	}
+
+	public void setLabel(String label) {
+		this.label=label;
 	}
 }

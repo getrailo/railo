@@ -11,7 +11,7 @@ import railo.runtime.functions.query.ValueList;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Argument;
@@ -115,13 +115,13 @@ public final class Query extends EvaluatorSupport {
 				
 			}
 			else if(
-					expr instanceof Cast && 
+					expr instanceof CastOther && 
 					(
-							((Cast) expr).getType().equalsIgnoreCase("String") || 
-							((Cast) expr).getType().equalsIgnoreCase("java.lang.String")
+							((CastOther) expr).getType().equalsIgnoreCase("String") || 
+							((CastOther) expr).getType().equalsIgnoreCase("java.lang.String")
 					)
 				){
-					expr=((Cast) expr).getExpr();
+					expr=((CastOther) expr).getExpr();
 			}
 			else break;
 		}

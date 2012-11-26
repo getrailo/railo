@@ -280,5 +280,10 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 		return begin;
 	}
 
+	@Override
+	public String getLabel() {
+		return null;
+	}
+
 
 }

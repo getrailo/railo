@@ -20,6 +20,7 @@ public final class DoWhile extends StatementBaseNoFinal implements FlowControlBr
 	private Label begin = new Label();
 	private Label beforeEnd = new Label();
 	private Label end = new Label();
+	private String label;
 	
 	
 	/**
@@ -28,17 +29,15 @@ public final class DoWhile extends StatementBaseNoFinal implements FlowControlBr
 	 * @param body
 	 * @param line
 	 */
-	public DoWhile(Expression expr,Body body,Position start, Position end) {
+	public DoWhile(Expression expr,Body body,Position start, Position end, String label) {
 		super(start,end);
 		this.expr=CastBoolean.toExprBoolean(expr);
 		this.body=body;
 		body.setParent(this);
+		this.label=label;
 	}
 	
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
-	 */
+	@Override
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		adapter.visitLabel(begin);
@@ -54,27 +53,24 @@ public final class DoWhile extends StatementBaseNoFinal implements FlowControlBr
 		
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getBreakLabel()
-	 */
+	@Override
 	public Label getBreakLabel() {
 		return end;
 	}
 
-	/**
-	 *
-	 * @see railo.transformer.bytecode.statement.FlowControl#getContinueLabel()
-	 */
+	@Override
 	public Label getContinueLabel() {
 		return beforeEnd;
 	}
 
-	/**
-	 * @see railo.transformer.bytecode.statement.HasBody#getBody()
-	 */
+	@Override
 	public Body getBody() {
 		return body;
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
 	}
 
 }

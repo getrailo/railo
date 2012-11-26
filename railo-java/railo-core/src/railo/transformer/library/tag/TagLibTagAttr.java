@@ -28,6 +28,7 @@ public final class TagLibTagAttr {
     private TagLibTag tag;
 	private boolean hidden;
 	private boolean _default;
+	private boolean noname;
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private short scriptSupport=SCRIPT_SUPPORT_NONE;
 
@@ -41,6 +42,7 @@ public final class TagLibTagAttr {
 		tlta.rtexpr=rtexpr;
 		tlta.defaultValue=defaultValue;
 		tlta.hidden=hidden;
+		tlta.noname=noname;
 		tlta._default=_default;
 		tlta.status=status;
 		
@@ -205,6 +207,13 @@ public final class TagLibTagAttr {
 	}
 	public boolean getHidden() {
 		return hidden;
+	}
+
+	public void setNoname(boolean noname) {
+		this.noname=noname;
+	}
+	public boolean getNoname() {
+		return noname;
 	}
 
 	public String getHash() {

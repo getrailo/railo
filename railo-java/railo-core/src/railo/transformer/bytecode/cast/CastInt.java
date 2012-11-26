@@ -19,7 +19,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * cast a Expression to a Double
  */
-public final class CastInt extends ExpressionBase implements ExprInt {
+public final class CastInt extends ExpressionBase implements ExprInt,Cast {
     
     private Expression expr;
     
@@ -109,12 +109,10 @@ public final class CastInt extends ExpressionBase implements ExprInt {
         return Types.INTEGER;
     }
 
-	/*private void doubleToInt(GeneratorAdapter adapter, int mode) {
-		if(mode==MODE_VALUE)
-        	adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_INT_VALUE_FROM_DOUBLE);
-        else 
-        	adapter.invokeStatic(Types.CASTER,Methods.METHOD_TO_INTEGER_FROM_DOUBLE);
-	}*/
+	@Override
+	public Expression getExpr() {
+		return expr;
+	}
 }
 
 

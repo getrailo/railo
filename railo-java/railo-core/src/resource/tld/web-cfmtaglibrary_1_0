@@ -678,7 +678,15 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used to break out of a cfloop,cfwhile or cfforeach.</description>
-		<attribute-type>fixed</attribute-type>
+		<attribute-type>noname</attribute-type>
+		<attribute>
+			<type>string</type>
+			<name>label</name>
+			<script-support>optional</script-support>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>used to a address a specific loop instead of the nearest one.</description>
+		</attribute>
 	</tag>
 	
 	
@@ -1816,7 +1824,16 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Used within a cfloop tag. Returns processing to the top of a loop.</description>
-		<attribute-type>fixed</attribute-type>
+		<attribute-type>noname</attribute-type>
+		
+		<attribute>
+			<type>string</type>
+			<name>label</name>
+			<script-support>optional</script-support>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>used to a address a specific loop instead of the nearest one.</description>
+		</attribute>
 	</tag>
 	<!-- Content -->
 	<tag>
@@ -8142,6 +8159,17 @@ Railo uses the number of characters in the file.</description>
 		by a case-insensitive SQL query, set the groupCaseSensitive attribute to NO to keep the recordset
 		intact.</description>
 		</attribute>
+		
+		
+		<attribute>
+			<type>string</type>
+			<name>label</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		    <status>implemented</status>
+			<description>used to a address this loop from a "break" or "continue" statement (instead of the nearest one).</description>
+		</attribute>
+		
 	</tag>
 	<!-- Mail -->
 	<tag>
@@ -13999,16 +14027,23 @@ dWord: creates a value of 0 (zero)</description>
 	<tag>
 		<name>while</name>
 		<tag-class>railo.runtime.tag.While</tag-class>
+		<tte-class>railo.transformer.cfml.evaluator.impl.While</tte-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagWhile</ttt-class>
 		<allow-removing-literal>yes</allow-removing-literal>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Simplification of the tag cfloop-condition, analog to the cfscript "while" loop.</description>
-		<attribute-type>noname</attribute-type>
+		<attribute-type>fixed</attribute-type>
 		<attribute>
 			<type>boolean</type>
 			<name>condition</name>
+			<noname>true</noname>
 			<description>condition o the expression</description>
+		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>label</name>
+			<description>used to a address this loop from a "break" or "continue" statement (instead of the nearest one).</description>
 		</attribute>
 	</tag>
 	<!-- Zip -->
