@@ -136,7 +136,7 @@ public abstract class DataSourceSupport implements DataSourcePro, Cloneable {
     }
 
 	@Override
-	public boolean equals(Object obj) {print.ds();
+	public boolean equals(Object obj) {
 		if(this==obj)return true;
 		if(!(obj instanceof DataSourcePro)) return false;
 		DataSourcePro ds = (DataSourcePro)obj;
