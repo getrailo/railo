@@ -251,8 +251,6 @@ public final class AppListenerUtil {
 					Caster.toBooleanValue(data.get(STORAGE,null),false), 
 					Caster.toTimeZone(data.get(TIMEZONE,null),null));
 
-			print.e(ds.getClazz().getName());
-			print.e(ds.getConnectionStringTranslated());
 			return ds;
 		
 	}
