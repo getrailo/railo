@@ -15,6 +15,7 @@ import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.component.Member;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
 import railo.runtime.net.s3.Properties;
@@ -60,6 +61,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private static final Collection.Key SECURE_JSON_PREFIX = KeyImpl.intern("secureJsonPrefix");
 	private static final Collection.Key SECURE_JSON = KeyImpl.intern("secureJson");
 	private static final Collection.Key LOCAL_MODE = KeyImpl.intern("localMode");
+	private static final Collection.Key BUFFER_OUTPUT = KeyImpl.intern("bufferOutput");
 	private static final Collection.Key SESSION_CLUSTER = KeyImpl.intern("sessionCluster");
 	private static final Collection.Key CLIENT_CLUSTER = KeyImpl.intern("clientCluster");
 	
@@ -88,6 +90,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private int scriptProtect;
 	private String defaultDataSource;
 	private int localMode;
+	private boolean bufferOutput;
 	private short sessionType;
 	private boolean sessionCluster;
 	private boolean clientCluster;
@@ -128,6 +131,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	private boolean initCTMappings;
 	private boolean initCMappings;
 	private boolean initLocalMode;
+	private boolean initBufferOutput;
 	private boolean initS3;
 	private boolean ormEnabled;
 	private ORMConfiguration ormConfig;
@@ -151,6 +155,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
         scriptProtect=config.getScriptProtect();
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
+        this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
@@ -594,6 +599,21 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		}
 		return localMode;
 	}
+	
+
+	public boolean getBufferOutput() {
+		boolean bo = _getBufferOutput();
+		return bo;
+	}
+	
+	public boolean _getBufferOutput() {
+		if(!initBufferOutput) {
+			Object o = get(component,BUFFER_OUTPUT,null);
+			if(o!=null)bufferOutput=Caster.toBooleanValue(o, bufferOutput);
+			initBufferOutput=true; 
+		}
+		return bufferOutput;
+	}
 
 	/**
 	 * @see railo.runtime.listener.ApplicationContext#getS3()
@@ -770,6 +790,10 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	public void setLocalMode(int localMode) {
 		initLocalMode=true;
 		this.localMode=localMode;
+	}
+	public void setBufferOutput(boolean bufferOutput) {
+		initBufferOutput=true;
+		this.bufferOutput=bufferOutput;
 	}
 
 	@Override

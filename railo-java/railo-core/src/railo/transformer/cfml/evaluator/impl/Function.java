@@ -90,6 +90,15 @@ public final class Function extends EvaluatorSupport {
 			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
 		}
 		
+		Attribute attrBufferOutput = tag.getAttribute("bufferoutput");
+		if(attrBufferOutput!=null) {
+			Expression expr = CastBoolean.toExprBoolean(attrBufferOutput.getValue());
+			if(!(expr instanceof LitBoolean))
+				throw new EvaluatorException("Attribute bufferOutput of the Tag Function, must be a literal boolean value (true or false, yes or no)");
+			//boolean output = ((LitBoolean)expr).getBooleanValue();
+			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
+		}
+		
 		
         //if(ASMUtil.isRoot(pp)) {
         	Map attrs = tag.getAttributes();
