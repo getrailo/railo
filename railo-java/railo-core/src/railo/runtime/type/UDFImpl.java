@@ -31,6 +31,8 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.UDFCasterException;
 import railo.runtime.functions.cache.Util;
+import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Duplicator;
@@ -44,6 +46,7 @@ import railo.runtime.type.udf.UDFCacheEntry;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
+import railo.runtime.writer.BodyContentImpl;
 import railo.runtime.writer.BodyContentUtil;
 
 /**
@@ -72,9 +75,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		this.properties= (UDFPropertiesImpl) properties;
 	}
 
-	/**
-	 * @see railo.runtime.engine.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(properties);
 	}
@@ -87,18 +88,17 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return udf;
 	}
 	
+	@Override
 	public UDF duplicate(boolean deepCopy) {
 		return duplicate(ownerComponent);
 	}
 	
+	@Override
 	public UDF duplicate() {
 		return duplicate(ownerComponent);
 	}
 
-	/**
-     * @throws Throwable 
-	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
-     */
+	@Override
 	public Object implementation(PageContext pageContext) throws Throwable {
 		return ComponentUtil.getPage(pageContext, properties.pageSource).udfCall(pageContext,this,properties.index);
 	}
@@ -266,19 +266,15 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return KeyImpl.init(str);
 	}
 
-	/**
-     * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-     */
-    public Object callWithNamedValues(PageContext pc, Struct values,boolean doIncludePath) throws PageException {
+	@Override
+	public Object callWithNamedValues(PageContext pc, Struct values,boolean doIncludePath) throws PageException {
     	return this.properties.cachedWithin>0?
     			_callCachedWithin(pc, null, values, doIncludePath):
     			_call(pc, null, values, doIncludePath);
     }
 
-	/**
-     * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-     */
-    public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
+    @Override
+	public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
     	return  this.properties.cachedWithin>0?
     			_callCachedWithin(pc, args,null, doIncludePath):
     			_call(pc, args,null, doIncludePath);
@@ -352,10 +348,16 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			}
 			pci.addPageSource(ps,psInc);
 			pci.addUDF(this);
+			
 //////////////////////////////////////////
-			BodyContent bc =  (getOutput()?null:pci.pushBody());
-		    //boolean isC=ownerComponent!=null;
-		    
+			BodyContent bc=null;
+			Boolean wasSilent=null;
+			boolean bufferOutput=getBufferOutput(pci);
+			if(!getOutput()) {
+				if(bufferOutput) bc =  pci.pushBody();
+				else wasSilent=pc.setSilent()?Boolean.TRUE:Boolean.FALSE;
+			}
+			
 		    UDF parent=null;
 		    if(ownerComponent!=null) {
 			    parent=pci.getActiveUDF();
@@ -373,12 +375,19 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			}
 	        catch(Throwable t) {
 	        	if(ownerComponent!=null)pci.setActiveUDF(parent);
-	        	BodyContentUtil.flushAndPop(pc,bc);
+	        	if(!getOutput()) {
+	        		if(bufferOutput)BodyContentUtil.flushAndPop(pc,bc);
+	        		else if(!wasSilent)pc.unsetSilent();
+	        	}
+	        	//BodyContentUtil.flushAndPop(pc,bc);
 	        	throw Caster.toPageException(t);
 	        }
-	        BodyContentUtil.clearAndPop(pc,bc);
-	        //pc.popBody();
-			
+	        if(!getOutput()) {
+        		if(bufferOutput)BodyContentUtil.clearAndPop(pc,bc);
+        		else if(!wasSilent)pc.unsetSilent();
+        	}
+	        //BodyContentUtil.clearAndPop(pc,bc);
+        	
 	        
 	        
 	        
@@ -399,10 +408,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		}
 	}
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
-
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return toDumpData(pageContext, maxlevel, dp,this,false);
 	}
@@ -452,16 +458,10 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			catch (ExpressionException e) {}
 			func.setTitle(f+udf.getFunctionName());
 		}
-		
-		
-		
-		
+
 		if(udf instanceof UDFImpl)func.setComment("source:"+((UDFImpl)udf).getPageSource().getDisplayPath());
-		
-		
+
 		if(!StringUtil.isEmpty(udf.getDescription()))func.setComment(udf.getDescription());
-		
-		
 		
 		func.appendRow(1,new SimpleDumpData("arguments"),atts);
 		func.appendRow(1,new SimpleDumpData("return type"),new SimpleDumpData(udf.getReturnTypeAsString()));
@@ -476,35 +476,21 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 			box.appendRow(0,func);
 			return box;
 		}
-		
-		/* / meta data
-		try {
-			Struct meta = udf.getMetaData(pageContext);
-			if(meta.size()>0)
-				func.appendRow(1,new SimpleDumpData("metadata"),meta.toDumpData(pageContext, maxlevel, dp));
-				
-		}
-		catch (PageException e) {}
-		*/
 		return func;
 	}
-	/**
-     * @see railo.runtime.type.UDF#getDisplayName()
-     */
+	
+	@Override
 	public String getDisplayName() {
 		return properties.displayName;
 	}
-	/**
-     * @see railo.runtime.type.UDF#getHint()
-     */
+	
+	@Override
 	public String getHint() {
 		return properties.hint;
 	}
     
-    /**
-     * @see railo.runtime.type.UDF#getPageSource()
-     */
-    public PageSource getPageSource() {
+	@Override
+	public PageSource getPageSource() {
         return properties.pageSource;
     }
 
@@ -512,76 +498,13 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return properties.meta;
 	}
 	
+	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
 		return ComponentUtil.getMetaData(pc, properties);
 		//return getMetaData(pc, this);
 	}
-	
-	/*public static Struct getMetaData(PageContext pc,UDFImpl udf) throws PageException {
-		StructImpl func=new StructImpl();
-        
-		// TODO func.set("roles", value);
-        // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche a
-        // meta data
-        Struct meta = udf.getMeta();
-        if(meta!=null) StructUtil.copy(meta, func, true);
-        
-		
-		func.set(KeyImpl.ACCESS,ComponentUtil.toStringAccess(udf.getAccess()));
-        String hint=udf.getHint();
-        if(!StringUtil.isEmpty(hint))func.set(KeyImpl.HINT,hint);
-        String displayname=udf.getDisplayName();
-        if(!StringUtil.isEmpty(displayname))func.set(KeyImpl.DISPLAY_NAME,displayname);
-        func.set(KeyImpl.NAME,udf.getFunctionName());
-        func.set(KeyImpl.OUTPUT,Caster.toBoolean(udf.getOutput()));
-        func.set(KeyImpl.RETURN_TYPE, udf.getReturnTypeAsString());
-        func.set(KeyImpl.DESCRIPTION, udf.getDescription());
-        
-        func.set(KeyImpl.OWNER, udf.getPageSource().getDisplayPath());
-        
-	    	   
-	    int format = udf.getReturnFormat();
-        if(format==UDF.RETURN_FORMAT_WDDX)			func.set(KeyImpl.RETURN_FORMAT, "wddx");
-        else if(format==UDF.RETURN_FORMAT_PLAIN)	func.set(KeyImpl.RETURN_FORMAT, "plain");
-        else if(format==UDF.RETURN_FORMAT_JSON)	func.set(KeyImpl.RETURN_FORMAT, "json");
-        else if(format==UDF.RETURN_FORMAT_SERIALIZE)func.set(KeyImpl.RETURN_FORMAT, "serialize");
-        
-        
-        FunctionArgument[] args =  udf.getFunctionArguments();
-        Array params=new ArrayImpl();
-        //Object defaultValue;
-        Struct m;
-        //Object defaultValue;
-        for(int y=0;y<args.length;y++) {
-            StructImpl param=new StructImpl();
-            param.set(KeyImpl.NAME,args[y].getName().getString());
-            param.set(KeyImpl.REQUIRED,Caster.toBoolean(args[y].isRequired()));
-            param.set(KeyConstants._type,args[y].getTypeAsString());
-            displayname=args[y].getDisplayName();
-            if(!StringUtil.isEmpty(displayname)) param.set(KeyImpl.DISPLAY_NAME,displayname);
-            
-            int defType = args[y].getDefaultType();
-            if(defType==FunctionArgument.DEFAULT_TYPE_RUNTIME_EXPRESSION){
-            	param.set(KeyImpl.DEFAULT, "[runtime expression]");
-            }
-            else if(defType==FunctionArgument.DEFAULT_TYPE_LITERAL){
-            	param.set(KeyImpl.DEFAULT, udf.getDefaultValue(pc,y));
-            }
-            
-            hint=args[y].getHint();
-            if(!StringUtil.isEmpty(hint))param.set(KeyImpl.HINT,hint);
-            // TODO func.set("userMetadata", value); neo unterstﾟtzt irgendwelche attr, die dann hier ausgebenen werden blﾚdsinn
-            
-            // meta data
-            m=args[y].getMetaData();
-            if(m!=null) StructUtil.copy(m, param, true);
-                
-            params.append(param);
-        }
-        func.set(KeyImpl.PARAMETERS,params);
-		return func;
-	}*/
 
+	@Override
 	public Object getValue() {
 		return this;
 	}
@@ -595,14 +518,12 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		this.ownerComponent = component;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getOwnerComponent()
-	 */
+	@Override
 	public Component getOwnerComponent() {
 		return ownerComponent;//+++
 	}
 	
-
+	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer(properties.functionName);
 		sb.append("(");
@@ -624,83 +545,68 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		return sb.toString();
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getSecureJson()
-	 */
+	@Override
 	public Boolean getSecureJson() {
 		return properties.secureJson;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getVerifyClient()
-	 */
+	@Override
 	public Boolean getVerifyClient() {
 		return properties.verifyClient;
 	}
 	
-	/*public boolean isInjected() {
-		return injected;
-	}*/
-
+	@Override
 	public Object clone() {
 		return duplicate();
 	}
 
-
-	
-	/**
-     * @see railo.runtime.type.UDF#getFunctionArguments()
-     */
-    public FunctionArgument[] getFunctionArguments() {
+	@Override
+	public FunctionArgument[] getFunctionArguments() {
         return properties.arguments;
     }
 	
-	/**
-     * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
-     */
-    public Object getDefaultValue(PageContext pc,int index) throws PageException {
+    @Override
+	public Object getDefaultValue(PageContext pc,int index) throws PageException {
     	return ComponentUtil.getPage(pc,properties.pageSource).udfDefaultValue(pc,properties.index,index);
     }
     // public abstract Object getDefaultValue(PageContext pc,int index) throws PageException;
 
-	/**
-     * @see railo.runtime.type.UDF#getFunctionName()
-     */
+    @Override
 	public String getFunctionName() {
 		return properties.functionName;
 	}
 
-	/**
-     * @see railo.runtime.type.UDF#getOutput()
-     */
+	@Override
 	public boolean getOutput() {
 		return properties.output;
 	}
+	
+	public Boolean getBufferOutput() {
+		return properties.bufferOutput;
+	}
+	
+	private boolean getBufferOutput(PageContextImpl pc) {// FUTURE move to interface
+		if(properties.bufferOutput!=null)
+			return properties.bufferOutput.booleanValue();
+		return ((ApplicationContextSupport)pc.getApplicationContext()).getBufferOutput();
+	}
 
-	/**
-     * @see railo.runtime.type.UDF#getReturnType()
-     */
+	@Override
 	public int getReturnType() {
 		return properties.returnType;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
-	 */
+	@Override
 	public String getReturnTypeAsString() {
 		return properties.strReturnType;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getDescription()
-	 */
+	@Override
 	public String getDescription() {
 		return properties.description;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getReturnFormat()
-	 */
+	@Override
 	public int getReturnFormat() {
 		return properties.returnFormat;
 	}
@@ -740,6 +646,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		else return defaultValue;
 	}
 
+	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		// access
 		setAccess(in.readInt());
@@ -748,7 +655,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		properties=(UDFPropertiesImpl) in.readObject();
 	}
 
-
+	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
 		// access
 		out.writeInt(getAccess());
@@ -757,7 +664,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		out.writeObject(properties);
 	}
 	
-
+	@Override
 	public boolean equals(Object obj){
 		if(!(obj instanceof UDF)) return false;
 		return equals(this,(UDF)obj);

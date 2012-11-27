@@ -3711,6 +3711,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	//admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
     	admin.updateAllowCompression(getBoolObject("admin",action, "allowCompression"));
     	admin.updateContentLength(getBoolObject("admin",action, "contentLength"));
+    	admin.updateBufferOutput(getBoolObject("admin",action, "bufferOutput"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3873,6 +3874,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         sct.set("contentLength",Caster.toBoolean(config.contentLength()));
         //sct.set("showVersion",Caster.toBoolean(config.isShowVersion()));
         sct.set("allowCompression",Caster.toBoolean(config.allowCompression()));
+        sct.set("bufferOutput",Caster.toBoolean(config.getBufferOutput()));
         
         
     }

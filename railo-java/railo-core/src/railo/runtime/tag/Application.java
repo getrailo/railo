@@ -9,6 +9,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
+import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.orm.ORMUtil;
@@ -45,6 +46,7 @@ public final class Application extends TagImpl {
 	private Mapping[] customTagMappings;
 	private Mapping[] componentMappings;
 	private String secureJsonPrefix;
+	private Boolean bufferOutput;
 	private Boolean secureJson;
 	private String scriptrotect;
 	private String datasource;
@@ -88,6 +90,7 @@ public final class Application extends TagImpl {
         mappings=null;
         customTagMappings=null;
         componentMappings=null;
+        bufferOutput=null;
         secureJson=null;
         secureJsonPrefix=null;
         loginstorage=Scope.SCOPE_UNDEFINED;
@@ -306,6 +309,10 @@ public final class Application extends TagImpl {
 		this.secureJson=secureJson?Boolean.TRUE:Boolean.FALSE;
 	    //getAppContext().setSecureJson(secureJson);
 	}
+	public void setBufferoutput(boolean bufferOutput) 	{
+		this.bufferOutput=bufferOutput?Boolean.TRUE:Boolean.FALSE;
+	    //getAppContext().setSecureJson(secureJson);
+	}
 	
     /**
      * @param loginstorage The loginstorage to set.
@@ -332,7 +339,7 @@ public final class Application extends TagImpl {
 	*/
 	public int doStartTag() throws PageException	{
         
-        ApplicationContext ac;
+		ApplicationContextSupport ac;
         boolean initORM;
         if(action==ACTION_CREATE){
         	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource()));
@@ -340,7 +347,7 @@ public final class Application extends TagImpl {
         	pageContext.setApplicationContext(ac);
         }
         else {
-        	ac= pageContext.getApplicationContext();
+        	ac= (ApplicationContextSupport)pageContext.getApplicationContext();
         	initORM=set(ac);
         }
         
@@ -349,7 +356,7 @@ public final class Application extends TagImpl {
         return SKIP_BODY; 
 	}
 
-	private boolean set(ApplicationContext ac) throws PageException {
+	private boolean set(ApplicationContextSupport ac) throws PageException {
 		if(applicationTimeout!=null)			ac.setApplicationTimeout(applicationTimeout);
 		if(sessionTimeout!=null)				ac.setSessionTimeout(sessionTimeout);
 		if(clientTimeout!=null)				ac.setClientTimeout(clientTimeout);
@@ -369,6 +376,7 @@ public final class Application extends TagImpl {
 		}
 		if(!StringUtil.isEmpty(defaultdatasource))ac.setDefaultDataSource(defaultdatasource);
 		if(scriptrotect!=null)					ac.setScriptProtect(AppListenerUtil.translateScriptProtect(scriptrotect));
+		if(bufferOutput!=null)					ac.setBufferOutput(bufferOutput.booleanValue());
 		if(secureJson!=null)					ac.setSecureJson(secureJson.booleanValue());
 		if(secureJsonPrefix!=null)				ac.setSecureJsonPrefix(secureJsonPrefix);
 		if(setClientCookies!=null)				ac.setSetClientCookies(setClientCookies.booleanValue());

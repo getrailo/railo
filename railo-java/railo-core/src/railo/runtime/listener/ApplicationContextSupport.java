@@ -44,4 +44,7 @@ public abstract class ApplicationContextSupport implements ApplicationContext {
 		return idletimeout;
 	}
 
+	public abstract boolean getBufferOutput();
+	public abstract void setBufferOutput(boolean bufferOutput);
+
 }

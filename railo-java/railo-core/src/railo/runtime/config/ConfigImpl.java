@@ -3441,5 +3441,13 @@ public abstract class ConfigImpl implements Config {
 	public RestSettings getRestSetting(){
 		return restSetting; 
 	}
+
+	private boolean bufferOutput=true;
+	public boolean getBufferOutput() {
+		return bufferOutput;
+	}
+	protected void setBufferOutput(boolean bufferOutput) {
+		this.bufferOutput= bufferOutput;
+	}
 	
 }

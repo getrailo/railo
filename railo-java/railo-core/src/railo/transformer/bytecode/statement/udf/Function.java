@@ -119,6 +119,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.STRING,
 					Types.BOOLEAN_VALUE,
 					Types.INT_VALUE,
+					Types.BOOLEAN,
 					Types.STRING,
 					Types.STRING,
 					Types.STRING,
@@ -140,6 +141,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.STRING,
 					Types.BOOLEAN_VALUE,
 					Types.INT_VALUE,
+					Types.BOOLEAN,
 					Types.STRING,
 					Types.STRING,
 					Types.STRING,
@@ -265,6 +267,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	ExprString name;
 	ExprString returnType=ANY;
 	ExprBoolean output=LitBoolean.TRUE;
+	ExprBoolean bufferOutput;
 	//ExprBoolean abstry=LitBoolean.FALSE;
 	int access=Component.ACCESS_PUBLIC;
 	ExprString displayName=LitString.EMPTY;
@@ -295,7 +298,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		arrayIndex=indexes[ARRAY_INDEX];
 	}
 	
-	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,
+	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression bufferOutput,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
 			Expression verifyClient,long cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
 		super(start,end);
@@ -304,6 +307,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		this.returnType=CastString.toExprString(returnType);
 		this.returnFormat=returnFormat!=null?CastString.toExprString(returnFormat):null;
 		this.output=CastBoolean.toExprBoolean(output);
+		this.bufferOutput=bufferOutput==null?null:CastBoolean.toExprBoolean(bufferOutput);
 		this.access=access;
 		this.description=description!=null?CastString.toExprString(description):null;
 		this.displayName=CastString.toExprString(displayName);
@@ -402,6 +406,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		// output
 		ExpressionUtil.writeOutSilent(output,bc, Expression.MODE_VALUE);
 		
+		
 		// access
 		writeOutAccess(bc, access);
 		
@@ -412,12 +417,18 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		if(light && secureJson!=null)light=false;
 		if(light && verifyClient!=null)light=false;
 		if(light && cachedWithin>0)light=false;
+		if(light && bufferOutput!=null)light=false;
 		if(light && Page.hasMetaDataStruct(metadata, null))light=false;
 		
 		if(light){
 			adapter.invokeConstructor(Types.UDF_PROPERTIES_IMPL, INIT_UDF_PROPERTIES_SHORTTYPE_LIGHT);
 			return;
 		}
+		
+
+		// buffer output
+		if(bufferOutput!=null)ExpressionUtil.writeOutSilent(bufferOutput,bc, Expression.MODE_REF);
+		else ASMConstants.NULL(adapter);
 		
 		// displayName
 		ExpressionUtil.writeOutSilent(displayName,bc, Expression.MODE_REF);// displayName;
