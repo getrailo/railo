@@ -31,7 +31,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
-import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.MD5;
@@ -2850,7 +2849,6 @@ public final class ConfigWebFactory {
              	if(StringUtil.isEmpty(str))str=setting.getAttribute("bufferoutput");
              }  
              Boolean b=Caster.toBoolean(str,null);
-             print.e("b:"+b);
              if(b!=null && hasAccess) {
              	config.setBufferOutput(b.booleanValue());
              }
