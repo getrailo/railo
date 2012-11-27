@@ -19,7 +19,7 @@ import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.KeyConstants;
-
+//NULL Support 
 /**
  * Class to check and interpret Variable Strings
  */
@@ -159,43 +159,6 @@ public final class VariableInterpreter {
 		if(value!=NULL) return setVariable(pc, str,value);
 		return getVariable(pc, str);
 	}
-	
-	
-	
-	
-    /**
-	 * get a variable from page context
-	 * @param pc Page Context
-	 * @param var variable string to get value to
-	 * @return the value
-	 * @deprecated use instead <code>getVariableEL(PageContext pc,String var, Object defaultValue)</code>
-	 */
-	public static Object getVariableEL(PageContext pc,String var) {
-        StringList list = parse(pc,new ParserString(var),false);
-        if(list==null) return null;
-        
-		int scope=scopeString2Int(list.next());
-		Object coll =null; 
-		if(scope==Scope.SCOPE_UNDEFINED) {
-		    coll=pc.undefinedScope().get(list.current(),null);
-		    if(coll==null) return null;
-		}
-		else {
-		    try {
-                coll=VariableInterpreter.scope(pc, scope, list.hasNext());
-		    	//coll=pc.scope(scope);
-            } 
-		    catch (PageException e) {
-                return null;
-            }
-		}
-		
-		while(list.hasNext()) {
-			coll=pc.getVariableUtil().get(pc,coll,list.next(),null);
-			if(coll==null) return null;
-		}
-		return coll;
-    }
 	
 	/**
 	 * get a variable from page context
