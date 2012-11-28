@@ -41,7 +41,7 @@
 	<jar version="" path="flex-messaging-remoting.jar" comment=""/>
 	<jar version="" path="fonts.jar" comment=""/>
 	<jar version="" path="fusiondebug-api-server.jar" comment=""/>
-	<jar version="1.3.165" path="h2.jar" comment=""/>
+	<jar version="1.3.169" path="h2.jar" comment=""/>
 	<jar version="3.5.5" path="hibernate.jar" comment=""/>
 	<jar version="" path="hypersonic-hsqldb.jar" comment=""/>
 	<jar version="" path="icepdf-core.jar" comment=""/>
@@ -58,7 +58,7 @@
 	<jar version="2.1" path="joda-time.jar" comment=""/>
 	<jar version="" path="jpedal_gpl.jar" comment=""/>
 	<jar version="" path="jta.jar" comment=""/>
-	<jar version="1.2.5" path="jtds.jar" comment=""/>
+	<jar version="1.3.0" path="jtds.jar" comment=""/>
 	<jar version="" path="jug.jar" comment=""/>
 	<jar version="" path="lowagie.itext.jar" comment=""/>
 	<jar version="2.4.0-beta-1" path="metadata-extractor.jar" comment="retired"/>
