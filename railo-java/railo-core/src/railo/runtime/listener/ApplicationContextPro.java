@@ -27,4 +27,9 @@ public interface ApplicationContextPro extends ApplicationContext {
 
 	public void setDefDataSource(Object datasource);
 	public void setORMDataSource(Object string);
+	
+
+
+	public abstract boolean getBufferOutput();
+	public abstract void setBufferOutput(boolean bufferOutput);
 }
