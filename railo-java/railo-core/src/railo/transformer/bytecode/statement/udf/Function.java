@@ -678,6 +678,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		}
 		
 		else if("output".equals(name))		this.output=toLitBoolean(name,attr.getValue());
+		else if("bufferoutput".equals(name))this.bufferOutput=toLitBoolean(name,attr.getValue());
 		else if("displayname".equals(name))	this.displayName=toLitString(name,attr.getValue());
 		else if("hint".equals(name))		this.hint=toLitString(name,attr.getValue());
 		else if("description".equals(name))	this.description=toLitString(name,attr.getValue());
