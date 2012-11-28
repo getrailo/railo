@@ -231,6 +231,13 @@ public final class AppListenerUtil {
 		return mappings;
 	}
 
+
+	public static String toLocalMode(int mode, String defaultValue) {
+		if(Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS==mode) return "modern";
+		if(Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS==mode)return "classic";
+		return defaultValue;
+	}
+	
 	public static int toLocalMode(Object oMode, int defaultValue) {
 		if(oMode==null) return defaultValue;
 		
@@ -240,15 +247,17 @@ public final class AppListenerUtil {
 			return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
 		}
 		String strMode=Caster.toString(oMode,null);
-		if("always".equalsIgnoreCase(strMode)) return Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
-		if("update".equalsIgnoreCase(strMode)) return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
+		if("always".equalsIgnoreCase(strMode) || "modern".equalsIgnoreCase(strMode)) 
+			return Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
+		if("update".equalsIgnoreCase(strMode) || "classic".equalsIgnoreCase(strMode)) 
+			return Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
 		return defaultValue;
 	}
 	
 	public static int toLocalMode(String strMode) throws ApplicationException {
 		int lm = toLocalMode(strMode, -1);
 		if(lm!=-1) return lm;
-		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [always,update]");
+		throw new ApplicationException("invalid localMode definition ["+strMode+"] for tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC+", valid values are [classic,modern,true,false]");
 	}
 
 	public static short toSessionType(String str, short defaultValue) {

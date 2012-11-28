@@ -71,6 +71,7 @@ import railo.runtime.exp.SecurityException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.net.amf.AMFCaster;
@@ -2787,13 +2788,7 @@ public abstract class ConfigImpl implements Config {
 	 * @param localMode the localMode to set
 	 */
 	protected void setLocalMode(String strLocalMode) {
-		strLocalMode=strLocalMode.trim().toLowerCase();
-		if("always".equals(strLocalMode))
-			this.localMode=Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS;
-		else if("update".equals(strLocalMode))
-			this.localMode=Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
-		else
-			this.localMode=Undefined.MODE_LOCAL_OR_ARGUMENTS_ONLY_WHEN_EXISTS;
+		this.localMode=AppListenerUtil.toLocalMode(strLocalMode,this.localMode);
 	}
 
 	public Resource getVideoDirectory() {

@@ -3885,8 +3885,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetScope() throws PageException {
         String sessionType=config.getSessionType()==Config.SESSION_TYPE_J2EE?"j2ee":"cfml";
-        String localMode="update";
-        if(config.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS)localMode="always";
+        String localMode=AppListenerUtil.toLocalMode(config.getLocalMode(),"classic");
         
         
         Struct sct=new StructImpl();

@@ -49,7 +49,7 @@ public class GetApplicationSettings {
 		sct.setEL("customtagpaths", toArray(ac.getCustomTagMappings()));
 		sct.setEL(KeyConstants._datasource, ac.getDefaultDataSource());
 		sct.setEL("loginstorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
-		sct.setEL("mappings", toStruct(ac.getMappings()));
+		sct.setEL(KeyConstants._mappings, toStruct(ac.getMappings()));
 		sct.setEL(KeyConstants._name, ac.getName());
 		sct.setEL("scriptprotect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
 		sct.setEL("securejson", Caster.toBoolean(ac.getSecureJson()));
@@ -60,7 +60,7 @@ public class GetApplicationSettings {
 		sct.setEL("setclientcookies", Caster.toBoolean(ac.isSetClientCookies()));
 		sct.setEL("setdomaincookies", Caster.toBoolean(ac.isSetDomainCookies()));
 		sct.setEL(KeyConstants._name, ac.getName());
-		sct.setEL("localmode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?"always":"update");
+		sct.setEL("localmode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?Boolean.TRUE:Boolean.FALSE);
 		sct.setEL("sessiontype", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 
@@ -80,12 +80,12 @@ public class GetApplicationSettings {
 		// orm
 		if(ac.isORMEnabled()){
 			ORMConfiguration conf = ac.getORMConfiguration();
-			if(conf!=null)sct.setEL("orm", conf.toStruct());
+			if(conf!=null)sct.setEL(KeyConstants._orm, conf.toStruct());
 		}
 		// s3
 		Properties props = ac.getS3();
 		if(props!=null) {
-			sct.setEL("s3", props.toStruct());
+			sct.setEL(KeyConstants._s3, props.toStruct());
 		}
 		
 		//cache

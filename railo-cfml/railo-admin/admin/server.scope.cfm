@@ -217,6 +217,7 @@ Error Output --->
 					<th scope="row">#stText.Scopes.LocalMode#</th>
 					<td>
 						<cfif hasAccess>
+						#scope.localMode#
 							<select name="LocalMode" class="medium">
 								<option value="always" <cfif scope.LocalMode EQ "always">selected</cfif>>#stText.Scopes.LocalModeAlways#</option>
 								<option value="update" <cfif scope.LocalMode EQ "update">selected</cfif>>#stText.Scopes.LocalModeUpdate#</option>
