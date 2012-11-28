@@ -3716,6 +3716,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	//admin.updateShowVersion(getBoolObject("admin",action, "showVersion"));
     	admin.updateAllowCompression(getBoolObject("admin",action, "allowCompression"));
     	admin.updateContentLength(getBoolObject("admin",action, "contentLength"));
+    	admin.updateBufferOutput(getBoolObject("admin",action, "bufferOutput"));
         store();
         adminSync.broadcast(attributes, config);
     }
@@ -3882,7 +3883,9 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         if(wt==ConfigImpl.CFML_WRITER_WS) cfmlWriter="white-space";
         else if(wt==ConfigImpl.CFML_WRITER_WS_PREF) cfmlWriter="white-space-pref";
         
-        sct.set("cfmlWriter",cfmlWriter);   
+        sct.set("cfmlWriter",cfmlWriter);
+        sct.set("bufferOutput",Caster.toBoolean(config.getBufferOutput()));
+        
     }
     
     /**
@@ -3891,8 +3894,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      */
     private void doGetScope() throws PageException {
         String sessionType=config.getSessionType()==Config.SESSION_TYPE_J2EE?"j2ee":"cfml";
-        String localMode="update";
-        if(config.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS)localMode="always";
+        String localMode=AppListenerUtil.toLocalMode(config.getLocalMode(),"classic");
         
         
         Struct sct=new StructImpl();

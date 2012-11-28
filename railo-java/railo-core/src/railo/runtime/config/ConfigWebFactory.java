@@ -2883,7 +2883,19 @@ public final class ConfigWebFactory {
             	config.setContentLength(toBoolean(str,true));
             }
           else if(hasCS)config.setContentLength(configServer.contentLength());   
-            
+
+        // buffer-output 
+             str=null;
+             if(setting!=null){
+             	str=setting.getAttribute("buffer-output");
+             	if(StringUtil.isEmpty(str))str=setting.getAttribute("bufferoutput");
+             }  
+             Boolean b=Caster.toBoolean(str,null);
+             if(b!=null && hasAccess) {
+             	config.setBufferOutput(b.booleanValue());
+             }
+             else if(hasCS)config.setBufferOutput(configServer.getBufferOutput());   
+                  
 
         // allow-compression
              str=null;

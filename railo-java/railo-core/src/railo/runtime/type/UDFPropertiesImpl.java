@@ -23,6 +23,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	public  int returnType;
 	public  String strReturnType;
 	public  boolean output;
+	public  Boolean bufferOutput;
 	public String hint;
 	public String displayName;
 	//public Page page;
@@ -46,6 +47,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		
 	}
 	
+	
 	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
@@ -53,8 +55,9 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        String functionName, 
 	        String strReturnType, 
 	        String strReturnFormat, 
-	        boolean output, 
+	        boolean output,
 	        int access, 
+	        Boolean bufferOutput,
 	        String displayName, 
 	        String description, 
 	        String hint, 
@@ -84,6 +87,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.index = index;
 		this.meta = meta;
 		this.output = output;
+		this.bufferOutput = bufferOutput;
 		//this.page = PageProxy.toProxy(page);
 		this.pageSource=pageSource;
 		
@@ -99,21 +103,6 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.cachedWithin=cachedWithin;
 	}
 	
-
-	public UDFPropertiesImpl(
-	        PageSource pageSource,
-	        FunctionArgument[] arguments,
-			int index,
-	        String functionName, 
-	        short returnType, 
-	        String strReturnFormat, 
-	        boolean output, 
-	        int access) throws ExpressionException {
-		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, 
-				"","", "", null, null, 0L, null);
-	}
-		
-	
 	public UDFPropertiesImpl(
 	        PageSource pageSource,
 	        FunctionArgument[] arguments,
@@ -123,6 +112,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        String strReturnFormat, 
 	        boolean output, 
 	        int access, 
+	        Boolean bufferOutput,
 	        String displayName, 
 	        String description, 
 	        String hint, 
@@ -153,6 +143,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.index = index;
 		this.meta = meta;
 		this.output = output;
+		this.bufferOutput = bufferOutput;
 		this.pageSource = pageSource;
 		
 		this.strReturnType=CFTypes.toString(returnType,"any");
@@ -166,7 +157,67 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.cachedWithin=cachedWithin;
 	}
 	
+	/**
+	 * @deprecated only supported for old compile templates in .ra archives
+	 * */
+	public UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        String strReturnType, 
+	        String strReturnFormat, 
+	        boolean output,
+	        int access, 
+	        String displayName, 
+	        String description, 
+	        String hint, 
+	        Boolean secureJson,
+	        Boolean verifyClient,
+	        long cachedWithin,
+	        StructImpl meta) throws ExpressionException {
+		this(pageSource, arguments, index, functionName, strReturnType, strReturnFormat, 
+				output,  access, null,displayName, description, hint, secureJson, verifyClient, cachedWithin, meta);
+	}
 	
+	/**
+	 * @deprecated only supported for old compile templates in .ra archives
+	 * */
+	public UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        short returnType, 
+	        String strReturnFormat, 
+	        boolean output, 
+	        int access, 
+	        String displayName, 
+	        String description, 
+	        String hint, 
+	        Boolean secureJson,
+	        Boolean verifyClient,
+	        long cachedWithin,
+	        StructImpl meta) throws ExpressionException {
+		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, 
+				output,  access,null, displayName, description, hint, secureJson, verifyClient, cachedWithin, meta);
+	}
+		
+	/**
+	 * @deprecated only supported for very old compile templates in .ra archives
+	 * */
+	public UDFPropertiesImpl(
+	        PageSource pageSource,
+	        FunctionArgument[] arguments,
+			int index,
+	        String functionName, 
+	        short returnType, 
+	        String strReturnFormat, 
+	        boolean output, 
+	        int access) throws ExpressionException {
+		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, null,
+				"","", "", null, null, 0L, null);
+	}
 
 	/**
 	 * @see railo.runtime.engine.Sizeable#sizeOf()
@@ -177,6 +228,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		SizeOf.size(returnType)+
 		SizeOf.size(strReturnType)+
 		SizeOf.size(output)+
+		SizeOf.size(bufferOutput)+
 		SizeOf.size(hint)+
 		SizeOf.size(index)+
 		SizeOf.size(displayName)+
@@ -222,6 +274,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		hint = ExternalizableUtil.readString(in);
 		meta = (Struct) in.readObject();
 		output = in.readBoolean();
+		bufferOutput = ExternalizableUtil.readBoolean(in);
 		secureJson = ExternalizableUtil.readBoolean(in);
 		strReturnFormat = ExternalizableUtil.readString(in);
 		strReturnType = ExternalizableUtil.readString(in);
@@ -252,6 +305,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		ExternalizableUtil.writeString(out,hint);
 		out.writeObject(meta);
 		out.writeBoolean(output);
+		ExternalizableUtil.writeBoolean(out,bufferOutput);
 		ExternalizableUtil.writeBoolean(out,secureJson);
 		ExternalizableUtil.writeString(out,strReturnFormat);
 		ExternalizableUtil.writeString(out,strReturnType);

@@ -9,6 +9,7 @@ import railo.runtime.Mapping;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.db.DataSource;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageException;
@@ -44,6 +45,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	private Mapping[] mappings;
 	private Mapping[] ctmappings;
 	private Mapping[] cmappings;
+	private boolean bufferOutput;
 	private boolean secureJson;
 	private String secureJsonPrefix="//";
 	private boolean isDefault;
@@ -90,6 +92,8 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.isDefault=isDefault;
         this.defaultDataSource=config.getDefaultDataSource();
         this.localMode=config.getLocalMode();
+
+        this.bufferOutput=((ConfigImpl)config).getBufferOutput();
         this.sessionType=config.getSessionType();
         this.sessionCluster=config.getSessionCluster();
         this.clientCluster=config.getClientCluster();
@@ -127,6 +131,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		dbl.dataSources=dataSources;
 		dbl.ctmappings=ctmappings;
 		dbl.cmappings=cmappings;
+		dbl.bufferOutput=bufferOutput;
 		dbl.secureJson=secureJson;
 		dbl.secureJsonPrefix=secureJsonPrefix;
 		dbl.isDefault=isDefault;
@@ -343,16 +348,24 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	public void setSecureJson(boolean secureJson) {
 		this.secureJson=secureJson;
 	}
-	
-	public void setSecureJsonPrefix(String secureJsonPrefix) {
-		this.secureJsonPrefix=secureJsonPrefix;
-	}
 
 	/**
 	 * @return the secureJson
 	 */
 	public boolean getSecureJson() {
 		return secureJson;
+	}
+	
+	public boolean getBufferOutput(){
+		return bufferOutput;
+	}
+	
+	public void setBufferOutput(boolean bufferOutput){
+		this.bufferOutput= bufferOutput;
+	}
+	
+	public void setSecureJsonPrefix(String secureJsonPrefix) {
+		this.secureJsonPrefix=secureJsonPrefix;
 	}
 
 	/**

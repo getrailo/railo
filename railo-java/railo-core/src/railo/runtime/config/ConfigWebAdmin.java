@@ -1957,6 +1957,17 @@ public final class ConfigWebAdmin {
         scope.setAttribute("content-length",Caster.toString(value,""));
     }
     
+
+	public void updateBufferOutput(Boolean value) throws SecurityException {
+		checkWriteAccess();
+        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
+        
+        if(!hasAccess) throw new SecurityException("no access to update scope setting");
+        
+        Element scope=_getRootElement("setting");
+        scope.setAttribute("buffer-output",Caster.toString(value,""));
+	}
+    
     /**
      * updates request timeout value
      * @param span

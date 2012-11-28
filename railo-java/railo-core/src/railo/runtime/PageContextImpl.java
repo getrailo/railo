@@ -1428,6 +1428,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	Object value=null;
 		boolean isNew=false;
+		
 		// get value
 		value=VariableInterpreter.getVariableEL(this,name,null);// NULL Support 
 		if(value==null) {

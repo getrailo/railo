@@ -70,4 +70,7 @@ public abstract class ApplicationContextSupport implements ApplicationContextPro
 		return source;
 	}
 
+	public abstract boolean getBufferOutput();
+	public abstract void setBufferOutput(boolean bufferOutput);
+
 }

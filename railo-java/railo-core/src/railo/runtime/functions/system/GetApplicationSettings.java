@@ -50,7 +50,7 @@ public class GetApplicationSettings {
 		sct.setEL("sessionStorage", ac.getSessionstorage());
 		sct.setEL("customTagPaths", toArray(ac.getCustomTagMappings()));
 		sct.setEL("loginStorage", AppListenerUtil.translateLoginStorage(ac.getLoginStorage()));
-		sct.setEL("mappings", toStruct(ac.getMappings()));
+		sct.setEL(KeyConstants._mappings, toStruct(ac.getMappings()));
 		sct.setEL(KeyConstants._name, ac.getName());
 		sct.setEL("scriptProtect", AppListenerUtil.translateScriptProtect(ac.getScriptProtect()));
 		sct.setEL("secureJson", Caster.toBoolean(ac.getSecureJson()));
@@ -61,7 +61,7 @@ public class GetApplicationSettings {
 		sct.setEL("setClientCookies", Caster.toBoolean(ac.isSetClientCookies()));
 		sct.setEL("setDomainCookies", Caster.toBoolean(ac.isSetDomainCookies()));
 		sct.setEL(KeyConstants._name, ac.getName());
-		sct.setEL("localMode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?"always":"update");
+		sct.setEL("localMode", ac.getLocalMode()==Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS?Boolean.TRUE:Boolean.FALSE);
 		sct.setEL("sessionType", ((PageContextImpl) pc).getSessionType()==ConfigImpl.SESSION_TYPE_CFML?"cfml":"j2ee");
 		sct.setEL("serverSideFormValidation", Boolean.FALSE); // TODO impl
 

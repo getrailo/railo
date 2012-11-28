@@ -195,6 +195,10 @@ public final class TagFunction extends TagBase implements IFunction {
 		// output
 		attr = removeAttribute("output");
 		Expression output = (attr == null) ? LitBoolean.TRUE : attr.getValue();
+		
+		// bufferOutput
+		attr = removeAttribute("bufferoutput");
+		Expression bufferOutput = (attr == null) ? null : attr.getValue();
 
 		// modifier
 		boolean _abstract=false,_final=false;
@@ -251,7 +255,7 @@ public final class TagFunction extends TagBase implements IFunction {
 		if(acc==-1)
 			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
         
-		Function func = new FunctionImpl(page,name, returnType,returnFormat, output, acc, displayname,description,
+		Function func = new FunctionImpl(page,name, returnType,returnFormat, output, bufferOutput, acc, displayname,description,
 				hint,secureJson,verifyClient,cachedWithin,_abstract,_final, body, getStart(),getEnd());
 		 
 		
