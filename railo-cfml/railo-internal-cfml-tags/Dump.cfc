@@ -33,7 +33,8 @@ component {
 - html (default when output  equal ""browser""): regular output with html/css/javascript
 - classic: classic view with html/css/javascript"},
 		abort:{required:false,type:"boolean",default:false,hint="stops further processing of request."},
-		contextlevel:{required:false,type:"number",default:2,hidden:true}
+		contextlevel:{required:false,type:"number",default:2,hidden:true},
+		async:{required:false, type="boolean", default=false, hint="if true and output is not to browser, the dump-writing takes place in a separte thread."}
 	};
 
 
@@ -86,16 +87,44 @@ component {
 		catch(e) {
 			var meta = dumpStruct(structKeyExists(attrib,'var') ? attrib.var : nullValue(), attrib.top, attrib.show, attrib.hide, attrib.keys, attrib.metaInfo, attrib.showUDFs);
 		}
+		
+
+		if ( attributes.async && ( attributes.output NEQ "browser" ) ) {
+
+			thread name="dump-#createUUID()#" attrib="#attrib#" meta="#meta#" context="#context#" caller="#caller#" {
+
+			//	try {
+
+					doOutput( attrib, meta, context, caller );
+
+			//	} catch ( ex ) { file action="write" file="F:\test\railo-2185\err-#getTickCount()#.txt" output="#ex.toString()#"; }
+			}
+		} else {
+
+			doOutput( attrib, meta, context, caller );
+		}
+
+
+		if( attrib.abort )
+			abort;
+
+		return true;
+	}
+
+
+	function doOutput( attrib, meta, context, caller  ) {
+
 		var dumpID = createId();
 
-		// create output
 		var hasReference = structKeyExists(meta,'hasReference') && meta.hasReference;
 		var result = this[attrib.format](meta, context, attrib.expand, attrib.output, hasReference, 0, dumpID);
 
-		// output
+		// sleep( 5000 );	// simulate long process to test async=true
+		
 		if(attrib.output EQ "browser") {
+
 			echo(variables.NEWLINE & '<!-- ==start== dump #now()# format: #attrib.format# -->' & variables.NEWLINE);
-			echo('<div id="#dumpID#">#result#</div>' & variables.NEWLINE);
+			echo('<div id="#dumpID#" class="-railo-dump">#result#</div>' & variables.NEWLINE);
 			echo('<!-- ==stop== dump -->' & variables.NEWLINE);
 		}
 		else if(attrib.output EQ "console") {
@@ -104,12 +133,8 @@ component {
 		else {
 			file action="write" addnewline="yes" file="#attrib.output#" output="#result#";
 		}
-
-		// abort
-		if(attrib.abort) abort;
-
-		return true;
 	}
+
 
 	/* ==================================================================================================
 	   html                                                                                             =
@@ -139,7 +164,7 @@ component {
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
 				rtn&=('<tr>');
-				rtn&=('<td class="#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
+				rtn&=('<td class="#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)#" onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="cursor:pointer;">');
 				rtn&=('<span>#arguments.meta.title##metaID#</span>');
 				rtn&=(comment & '</td>');
 				rtn&=('</tr>');
@@ -276,7 +301,7 @@ component {
 				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
 
 				rtn&=('<tr>');
-				rtn&=('<td onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="background:#h1Color#; border-color:#borderColor#; color:white;">');
+				rtn&=('<td onclick="dumpOC(''#id#'');" colspan="#columnCount#" style="background:#h1Color#; border-color:#borderColor#; color:white;" style="cursor:pointer;">');
 				rtn&=('<span>#arguments.meta.title##metaID#</span>');
 				rtn&=(comment & '</td>');
 				rtn&=('</tr>');
