@@ -93,11 +93,7 @@ component {
 
 			thread name="dump-#createUUID()#" attrib="#attrib#" meta="#meta#" context="#context#" caller="#arguments.caller#" {
 
-			//	try {						// should we log errors? if so, enable the try/catch block
-
-					doOutput( attrib, meta, context, caller );
-
-			//	} catch ( ex ) { file action="write" file="F:\test\railo-2185\err-#getTickCount()#.txt" output="#ex.toString()#"; }
+				doOutput( attrib, meta, context, caller );
 			}
 		} else {
 
