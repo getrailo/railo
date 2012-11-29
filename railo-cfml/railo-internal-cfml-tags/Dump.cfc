@@ -76,7 +76,7 @@ component {
 			else if(attrib.output EQ "browser") attrib['format'] = variables.default.browser;
 			else                                attrib['format'] = variables.default.console;
 		}
-		else if(not arrayFindNoCase(supportedFormats, attrib.format)){
+		else if( !arrayFindNoCase( variables.supportedFormats, attrib.format ) ) {
 			throw message="format [#attrib.format#] is not supported, supported formats are [#arrayToList(supportedFormats)#]";
 		}
 
@@ -89,11 +89,11 @@ component {
 		}
 		
 
-		if ( attributes.async && ( attributes.output NEQ "browser" ) ) {
+		if ( attrib.async && ( attrib.output NEQ "browser" ) ) {
 
-			thread name="dump-#createUUID()#" attrib="#attrib#" meta="#meta#" context="#context#" caller="#caller#" {
+			thread name="dump-#createUUID()#" attrib="#attrib#" meta="#meta#" context="#context#" caller="#arguments.caller#" {
 
-			//	try {
+			//	try {						// should we log errors? if so, enable the try/catch block
 
 					doOutput( attrib, meta, context, caller );
 
@@ -101,7 +101,7 @@ component {
 			}
 		} else {
 
-			doOutput( attrib, meta, context, caller );
+			doOutput( attrib, meta, context, arguments.caller );
 		}
 
 
@@ -116,22 +116,22 @@ component {
 
 		var dumpID = createId();
 
-		var hasReference = structKeyExists(meta,'hasReference') && meta.hasReference;
-		var result = this[attrib.format](meta, context, attrib.expand, attrib.output, hasReference, 0, dumpID);
+		var hasReference = structKeyExists( arguments.meta,'hasReference' ) && arguments.meta.hasReference;
+		var result = this[ arguments.attrib.format ]( arguments.meta, arguments.context, arguments.attrib.expand, arguments.attrib.output, hasReference, 0, dumpID );
 
 		// sleep( 5000 );	// simulate long process to test async=true
 		
-		if(attrib.output EQ "browser") {
+		if (arguments.attrib.output EQ "browser") {
 
 			echo(variables.NEWLINE & '<!-- ==start== dump #now()# format: #attrib.format# -->' & variables.NEWLINE);
 			echo('<div id="#dumpID#" class="-railo-dump">#result#</div>' & variables.NEWLINE);
 			echo('<!-- ==stop== dump -->' & variables.NEWLINE);
 		}
-		else if(attrib.output EQ "console") {
+		else if (arguments.attrib.output EQ "console") {
 			systemOutput(result);
 		}
 		else {
-			file action="write" addnewline="yes" file="#attrib.output#" output="#result#";
+			file action="write" addnewline="yes" file="#arguments.attrib.output#" output="#result#";
 		}
 	}
 
