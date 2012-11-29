@@ -3,8 +3,11 @@ package railo.transformer.bytecode.reflection;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -12,12 +15,17 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import railo.print;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.commons.lang.PhysicalClassLoader;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.util.ASMConstants;
@@ -79,9 +87,11 @@ public class ASMProxyFactory {
     		);
 	
 	
+	private static final Map<String,ASMMethod>methods=new HashMap<String, ASMMethod>();
+	
 	public ASMProxyFactory(Object obj,Resource classRoot) throws IOException{
 		
-		create(obj.getClass(),classRoot);
+		create((ConfigWeb)ThreadLocalPageContext.getConfig(),obj.getClass());
 		
 	}
 	
@@ -95,7 +105,7 @@ public class ASMProxyFactory {
 		
 	}
 	
-	public void create(Class clazz,Resource classRoot) throws IOException{
+	public ASMClass load(ConfigWeb config,Class clazz) throws IOException{
 		Type type = Type.getType(clazz); 
 		/*String className = clazz.getName()+"Proxy";
 		
@@ -134,22 +144,70 @@ public class ASMProxyFactory {
         
         
         
+
+	    // Fields
+	    Field[] fields = clazz.getFields();
+	    for(int i=0;i<fields.length;i++){
+	    	if(Modifier.isPrivate(fields[i].getModifiers())) continue;
+	    	createField(type,fields[i]);
+	    }
 	    
 	    // Methods
 	    Method[] methods = clazz.getMethods();
+	    Map<String,ASMMethod> amethods=new HashMap<String, ASMMethod>();
 	    for(int i=0;i<methods.length;i++){
 	    	if(Modifier.isPrivate(methods[i].getModifiers())) continue;
-	    	createMethod(type,methods[i],classRoot);
+	    	amethods.put(methods[i].getName(), getMethod(config,type,clazz,methods[i]));
 	    }
+	    
+	    ASMClass asmc=new ASMClass(clazz.getName(),amethods);
 	    
 	}
 	
-	private void createMethod(Type type,Method method,Resource classRoot) throws IOException {
-		Class<?> clazz = method.getDeclaringClass();
-		String className = "proxy."+clazz.getName()+"."+method.getName()+paramNames(method.getParameterTypes());
+	private void createField(Type type, Field field) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	private ASMMethod getMethod(ConfigWeb config,Type type,Class clazz, Method method) throws IOException {
+		String className = "method."+clazz.getName()+"."+method.getName()+paramNames(method.getParameterTypes());
+		
+		// check if already in memory cache
+		ASMMethod asmm = methods.get(className);
+		if(asmm!=null)return asmm;
+		
+		// check if class already exists
+		// TODO
+		
+		// create and load
+		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
+		Resource classRoot = cl.getDirectory();
+		
+		
+		
+		try {
+			byte[] barr = _createMethod(config, type, clazz, method, classRoot, className);
+			return (ASMMethod) cl.loadClass(className, barr).newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	private byte[] _createMethod(ConfigWeb config,Type type,Class clazz, Method method,Resource classRoot, String className) throws IOException {
+		
 		className=className.replace('.',File.separatorChar);
 		Resource classFile=classRoot.getRealResource(className+".class");
-
+		print.e(classFile);
 		ClassWriter cw = ASMUtil.getClassWriter();
 	    cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, ASM_METHOD.getInternalName(), null);
 		
@@ -247,7 +305,7 @@ public class ASMProxyFactory {
         // call method
     	final org.objectweb.asm.commons.Method m = new org.objectweb.asm.commons.Method(method.getName(),rtnType,paramTypes);
     	adapter.invokeVirtual(type, m);
-        
+         
     	
     	// return
     	if(rtn==void.class) ASMConstants.NULL(adapter);
@@ -285,16 +343,7 @@ public class ASMProxyFactory {
         mv.visitMaxs(3, 3);
         mv.visitEnd();
 		*/
-		
-		
-		
-		
-		
-		
-		
-		
-		store(cw,classFile);
-	    
+        return store(cw.toByteArray(),classFile);
 	}
 	
 
@@ -343,12 +392,11 @@ public class ASMProxyFactory {
 		return sb.toString();
 	}
 
-	private void store(ClassWriter cw,Resource classFile) throws IOException {
+	private byte[] store(byte[] barr,Resource classFile) throws IOException {
 		// create class file
-        byte[] barr = cw.toByteArray();
-    	ResourceUtil.touch(classFile);
+        ResourceUtil.touch(classFile);
         IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
-       
+       return barr;
 	}
 	/*private void store(ClassWriter cw) {
 		// create class file
