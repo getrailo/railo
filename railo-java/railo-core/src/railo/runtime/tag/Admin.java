@@ -9,6 +9,7 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.jsp.tagext.Tag;
 
 import org.opencfml.eventgateway.Gateway;
@@ -68,6 +70,7 @@ import railo.runtime.config.RemoteClientImpl;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
+import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ExecutionLogFactory;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
@@ -168,7 +171,6 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	private static final Collection.Key LABEL = KeyConstants._label;
 	private static final Collection.Key HASH = KeyConstants._hash;
 	private static final Collection.Key ROOT = KeyConstants._root;
-	private static final Collection.Key CONFIG = KeyConstants._config;
 	private static final Collection.Key FILE_ACCESS = KeyImpl.intern("file_access");
 	private static final Collection.Key IP_RANGE = KeyImpl.intern("ipRange");
 	private static final Collection.Key CUSTOM = KeyConstants._custom;
@@ -282,7 +284,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                     pageContext.getConfig().hasPassword():
                     pageContext.getConfig().hasServerPassword();
                     
-            pageContext.setVariable(getString("admin",action,"returnVariable"),Caster.toBoolean(hasPassword));
+            pageContext.setVariable(getString("admin",action,"returnVariable",true),Caster.toBoolean(hasPassword));
             return SKIP_BODY;
         }
         
@@ -290,7 +292,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         else if(action.equals("updatepassword")) {
             try {
             	((ConfigWebImpl)pageContext.getConfig()).setPassword(type!=TYPE_WEB,
-                        getString("oldPassword",null),getString("admin",action,"newPassword"));
+                        getString("oldPassword",null),getString("admin",action,"newPassword",true));
             } 
             catch (Exception e) {
                 throw Caster.toPageException(e);
@@ -1359,14 +1361,39 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         
         if(config instanceof ConfigWebImpl){
         	ConfigWebImpl cw=(ConfigWebImpl) config;
-        	sct.setEL(LABEL, cw.getLabel());
+        	sct.setEL(KeyConstants._label, cw.getLabel());
         	sct.setEL(HASH, cw.getHash());
         	sct.setEL(ROOT, cw.getRootDirectory().getAbsolutePath());
         }
         
-        sct.setEL(CONFIG, config
+        sct.setEL(KeyConstants._config, config
         		.getConfigFile()
         		.getAbsolutePath());
+        
+        // Servlets
+        if(config instanceof ConfigServer) {
+        	ConfigServer cs=(ConfigServer) config;
+        	CFMLEngineImpl engine = (CFMLEngineImpl) cs.getCFMLEngine();
+	        Struct srv=new StructImpl(),params;
+	        
+	        
+	        ServletConfig[] configs = engine.getServletConfigs();
+	        ServletConfig sc;
+	        Enumeration e;
+	        String name,value;
+	        for(int i=0;i<configs.length;i++){
+	        	sc=configs[i];
+	        	e = sc.getInitParameterNames();
+	        	params=new StructImpl();
+	        	while(e.hasMoreElements()){
+	        		name=(String) e.nextElement();
+	        		value = sc.getInitParameter(name);
+	        		params.set(name, value);
+	        	}
+	        	srv.set(sc.getServletName(), params);
+	        }
+	        sct.set("servlets", srv);
+        }
         
     }
 
@@ -4484,11 +4511,14 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             throw Caster.toPageException(e);
         } 
     }
-
     private String getString(String tagName, String actionName, String attributeName) throws ApplicationException {
+    	return getString(tagName, actionName, attributeName,true);
+    }
+    
+    private String getString(String tagName, String actionName, String attributeName,boolean trim) throws ApplicationException {
         String value=getString(attributeName,null);
         if(value==null) throw new ApplicationException("Attribute ["+attributeName+"] for tag ["+tagName+"] is required if attribute action has the value ["+actionName+"]");
-        return value;
+        return trim?value.trim():value;
     }
 
     private double getDouble(String tagName, String actionName, String attributeName) throws ApplicationException {

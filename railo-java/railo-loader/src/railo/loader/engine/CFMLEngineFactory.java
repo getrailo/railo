@@ -44,7 +44,7 @@ public class CFMLEngineFactory {
     private CFMLEngine engine;
     private ClassLoader mainClassLoader=new TP().getClass().getClassLoader();
     private int version;
-    private ArrayList listeners=new ArrayList();
+    private List<EngineChangeListener> listeners=new ArrayList<EngineChangeListener>();
     private File resourceRoot;
 
 	private PrintWriter out;
@@ -525,9 +525,9 @@ public class CFMLEngineFactory {
      * @param engine
      */
     private void callListeners(CFMLEngine engine) {
-        Iterator it = listeners.iterator();
+        Iterator<EngineChangeListener> it = listeners.iterator();
         while(it.hasNext()) {
-            ((EngineChangeListener)it.next()).onUpdate(engine);
+            it.next().onUpdate(engine);
         }
     }
     
