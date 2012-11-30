@@ -59,6 +59,8 @@ public interface Debugger {
      */
     public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time);
     
+    // FUTURE add ans set method above to deprecated -> public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
+    
     /**
      * sets if toHTML print html output info or not
      * @param output The output to set.

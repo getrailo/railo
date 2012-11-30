@@ -13,6 +13,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.StatementBase;
+import railo.transformer.bytecode.statement.StatementBaseNoFinal;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
@@ -20,7 +21,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * Base Body implementation
  */
-public class BodyBase extends StatementBase implements Body {
+public class BodyBase extends StatementBaseNoFinal implements Body {
 
 	private static long counter=0;
 	private LinkedList statements=new LinkedList();

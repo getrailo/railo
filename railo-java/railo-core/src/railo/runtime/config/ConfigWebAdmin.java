@@ -3236,9 +3236,9 @@ public final class ConfigWebAdmin {
 
 	private String createUid(String provider, String id) throws PageException {
 		if(Decision.isUUId(id)) {
-			return Hash.invoke(config,id,null,null);
+			return Hash.invoke(config,id,null,null, 1);
 		}
-		return Hash.invoke(config,provider+id,null,null);
+		return Hash.invoke(config,provider+id,null,null, 1);
 	}
 
 

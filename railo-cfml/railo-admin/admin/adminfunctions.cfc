@@ -73,7 +73,11 @@
 	</cffunction>
 
 	<cffunction name="getDataFilePath" access="private" output="no" returntype="string">
-		<cfset var datadir = "/railo-context/admin/userdata/" />
+		<cfif request.admintype eq "server">
+			<cfset local.datadir = expandPath("{railo-server}/userdata") & server.separator.file />
+		<cfelse>
+			<cfset local.datadir = "/railo-context/admin/userdata/" />
+		</cfif>
 		<cfif not directoryExists(datadir)>
 			<cfdirectory action="create" directory="#datadir#" />
 		</cfif>

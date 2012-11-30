@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.commons.date.DateTimeUtil;
+import railo.runtime.Component;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
@@ -483,9 +484,6 @@ public final class Operator {
 			return compare(left.getTime()/1000,right.getTime()/1000); 
 	}        
 
-	private static int error(boolean leftIsOk, boolean rightIsOk, Object left, Object right) throws ExpressionException { 
-		throw new ExpressionException("can't compare complex object types ("+Caster.toClassName(left)+" - "+Caster.toClassName(right)+") as simple value");
-	}
 	private static int error(boolean leftIsOk, boolean rightIsOk) throws ExpressionException { 
 		// TODO remove this method
 		throw new ExpressionException("can't compare complex object types as simple value");
@@ -525,7 +523,7 @@ public final class Operator {
 		return _equalsComplexEL(null,left, right, caseSensitive);
 	}
 	
-	public static boolean _equalsComplexEL(Set done,Object left, Object right, boolean caseSensitive) {
+	public static boolean _equalsComplexEL(Set<Object> done,Object left, Object right, boolean caseSensitive) {
 		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
 			try {
 				return equals(left, right, caseSensitive);
@@ -535,11 +533,13 @@ public final class Operator {
 		}
 		if(left==null) return right==null;
 		
-		
-		if(done==null)done=new HashSet();
+		if(done==null)done=new HashSet<Object>();
 		else if(done.contains(left) && done.contains(right)) return true;
 		done.add(left);
 		done.add(right);
+		
+		if(left instanceof Component && right instanceof Component)
+			return __equalsComplexEL(done,(Component)left, (Component)right,caseSensitive);
 		
 		if(left instanceof Collection && right instanceof Collection)
 			return __equalsComplexEL(done,(Collection)left, (Collection)right,caseSensitive);
@@ -553,7 +553,17 @@ public final class Operator {
 		return left.equals(right);
 	}
 	
-	private static boolean __equalsComplexEL(Set done,Collection left, Collection right,boolean caseSensitive) {
+	private static boolean __equalsComplexEL(Set<Object> done,Component left, Component right,boolean caseSensitive) {
+		if(left==null || right==null) return false;
+		if(!left.getPageSource().equals(right.getPageSource())) return false;
+		
+		if(!__equalsComplexEL(done,left.getComponentScope(),right.getComponentScope(), caseSensitive)) return false;
+		if(!__equalsComplexEL(done,(Collection)left,(Collection)right, caseSensitive)) return false;
+
+		return true;
+	}
+	
+	private static boolean __equalsComplexEL(Set<Object> done,Collection left, Collection right,boolean caseSensitive) {
 		if(left.size()!=right.size()) return false;
 		Iterator<Key> it = left.keyIterator();
 		Key k;
@@ -580,12 +590,12 @@ public final class Operator {
 	}
 	
 
-	public static boolean _equalsComplex(Set done,Object left, Object right, boolean caseSensitive) throws PageException {
+	public static boolean _equalsComplex(Set<Object> done,Object left, Object right, boolean caseSensitive) throws PageException {
 		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
 			return equals(left, right, caseSensitive);
 		}
 		if(left==null) return right==null;
-		if(done==null)done=new HashSet();
+		if(done==null)done=new HashSet<Object>();
 		else if(done.contains(left) && done.contains(right)) return true;
 		done.add(left);
 		done.add(right);
@@ -602,7 +612,7 @@ public final class Operator {
 		return left.equals(right);
 	}
 	
-	private static boolean __equalsComplex(Set done,Collection left, Collection right,boolean caseSensitive) throws PageException {
+	private static boolean __equalsComplex(Set<Object> done,Collection left, Collection right,boolean caseSensitive) throws PageException {
 		if(left.size()!=right.size()) return false;
 		Iterator<Key> it = left.keyIterator();
 		Key k;

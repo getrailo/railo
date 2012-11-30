@@ -45,8 +45,8 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	 * @see railo.runtime.type.QueryImpl#executionTime()
 	 */
 	
+	@Override
 	public int executionTime() {
-		
 		return qry.executionTime();
 	}
 
@@ -421,10 +421,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.getColumn(key, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setExecutionTime(long)
-	 */
-	
+	@Override
 	public void setExecutionTime(long exeTime) {
 		log();
 		qry.setExecutionTime(exeTime);

@@ -6,7 +6,7 @@ import org.apache.oro.text.regex.MalformedPatternException;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.io.res.util.WildCardFilter;
+import railo.commons.io.res.util.WildcardPatternFilter;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -101,12 +101,9 @@ public final class ZipParam extends TagImpl {
 		if(source!=null) {
 			notAllowed("source","charset", charset);
 			notAllowed("source","content", content);
-			try {
-				WildCardFilter f = filter==null?null:new WildCardFilter(filter);
-				getZip().setParam(new ZipParamSource(source,entryPath,f,prefix,recurse()));
-			} catch (MalformedPatternException e) {
-				throw Caster.toPageException(e);
-			}
+		
+			WildcardPatternFilter f = ( filter == null ? null : new WildcardPatternFilter( filter ) );
+			getZip().setParam( new ZipParamSource( source, entryPath, f, prefix, recurse() ) );		
 		}
 		else if(content!=null) {
 			required("content","entrypath",entryPath);

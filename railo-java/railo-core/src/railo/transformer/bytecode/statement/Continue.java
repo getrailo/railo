@@ -1,14 +1,12 @@
 package railo.transformer.bytecode.statement;
 
-import org.objectweb.asm.Opcodes;
-
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ASMUtil;
 
-public final class Continue extends StatementBase {
+public final class Continue extends StatementBaseNoFinal {
 
 	/**
 	 * Constructor of the class
@@ -23,9 +21,7 @@ public final class Continue extends StatementBase {
 	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(railo.transformer.bytecode.BytecodeContext)
 	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		FlowControlContinue ls = ASMUtil.getAncestorContinueFCStatement(this);
-		if(ls!=null)
-			bc.getAdapter().visitJumpInsn(Opcodes.GOTO, ls.getContinueLabel());
+		ASMUtil.leadFlow(bc,this,FlowControl.CONTINUE);
 	}
 	/**
 	 *

@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,7 @@ import org.apache.http.protocol.HttpContext;
 
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -46,6 +48,7 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLEncoder;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.Header;
+import railo.commons.net.http.httpclient4.CachingGZIPInputStream;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
 import railo.commons.net.http.httpclient4.HTTPResponse4Impl;
 import railo.commons.net.http.httpclient4.ResourceBody;
@@ -737,10 +740,18 @@ public final class Http4 extends BodyTagImpl implements Http {
                 try {
                 	is = rsp.getContentAsStream();
                     if(is!=null &&isGzipEncoded(contentEncoding))
-                    	is = new GZIPInputStream(is);
+                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
                         	
                     try {
+                    	try{
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
+                    	}
+                    	catch(EOFException eof){
+                    		if(is instanceof CachingGZIPInputStream) {
+                    			str = IOUtil.toString(is=((CachingGZIPInputStream)is).getRawData(),responseCharset);
+                    		}
+                    		else throw eof;
+                    	}
                     }
                     catch (UnsupportedEncodingException uee) {
                     	str = IOUtil.toString(is,null);
@@ -775,9 +786,17 @@ public final class Http4 extends BodyTagImpl implements Http {
 		    else {
 		    	byte[] barr=null;
 		        if(isGzipEncoded(contentEncoding)){
-		        	is = new GZIPInputStream(rsp.getContentAsStream());
+		        	is=rsp.getContentAsStream();
+		        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
 		        	try {
-		        		barr = IOUtil.toBytes(is);
+		        		try{
+		        			barr = IOUtil.toBytes(is);
+		        		}
+		        		catch(EOFException eof){
+		        			if(is instanceof CachingGZIPInputStream)
+		        				barr = IOUtil.toBytes(((CachingGZIPInputStream)is).getRawData());
+		        			else throw eof;
+		        		}
 					} 
 		        	catch (IOException t) {
 		        		throw Caster.toPageException(t);
@@ -1458,11 +1477,12 @@ class Executor4 extends Thread {
 		try {
 			response=execute();
 			done=true;
-			synchronized(http){
-				http.notify();
-			}
-		} catch (Throwable t) {
+		} 
+		catch (Throwable t) {
 			this.t=t;
+		}
+		finally {
+			SystemUtil.notify(http);
 		}
 	}
 	

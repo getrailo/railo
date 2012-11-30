@@ -14,6 +14,7 @@ public interface QueryEntry extends Serializable {
      * @return Returns the exe.
      */
     public abstract int getExe();
+    // FUTURE add the following method ans set method above to deprecated -> public abstract long getExeutionTime();
 
     /**
      * @return Returns the query.

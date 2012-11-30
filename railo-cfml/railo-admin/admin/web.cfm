@@ -33,6 +33,10 @@
 <cfparam name="form.rememberMe" default="s">
 <cfset ad=request.adminType>
 
+<cfparam name="cookie.railo_admin_lang" default="en">
+<cfset session.railo_admin_lang = cookie.railo_admin_lang>
+
+
 <cfset login_error="">
 
 <!--- Form --->

@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <language key="de" label="Deutsch">
+	<data key="admin.search.label">Durchsuche den Railo Administrator</data>
+	<data key="admin.search.desc">Suche nach Keywords im Railo Administrator</data>
+	
 	<data key="services.update.locdesc">Definieren Sie die URL von der ein Railo Update bezogen werden kann, typischerweise &apos;http://www.railo.ch&apos;</data>
 	<data key="services.update.type_manually">Manuell</data>
 	<data key="services.update.location">URL</data>
