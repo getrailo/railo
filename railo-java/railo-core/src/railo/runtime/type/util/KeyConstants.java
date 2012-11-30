@@ -474,6 +474,7 @@ public class KeyConstants {
 	public static final Key _parameters=KeyImpl._const("parameters");
 	public static final Key _parent=KeyImpl._const("parent");
 	public static final Key _password=KeyImpl._const("password");
+	public static final Key _username=KeyImpl._const("username");
 	public static final Key _path=KeyImpl._const("path");
 	public static final Key _path_info=KeyImpl._const("path_info");
 	public static final Key _pattern=KeyImpl._const("pattern");
