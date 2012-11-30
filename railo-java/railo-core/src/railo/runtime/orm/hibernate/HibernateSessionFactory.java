@@ -158,7 +158,7 @@ public class HibernateSessionFactory {
 		if(ormConf.secondaryCacheEnabled()){
 			if(cacheConfig!=null) {
 				//http://forum.springsource.org/showthread.php?80048-spring-hibernate-ecache-setup-trouble
-				//configuration.setProperty("net.sf.ehcache.configurationResourceName",cacheConfig);
+				configuration.setProperty("net.sf.ehcache.configurationResourceName",cacheConfig);
 				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig);
 			}
 			if(cacheProvider.equals("net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory")) {
