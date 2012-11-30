@@ -6,9 +6,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -94,6 +97,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private final RefBoolean controlerState=new RefBooleanImpl(true);
 	private boolean allowRequestTimeout=true;
 	private Monitor monitor;
+	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>(); 
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
 
@@ -148,6 +152,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @see railo.loader.engine.CFMLEngine#addServletConfig(javax.servlet.ServletConfig)
      */
     public void addServletConfig(ServletConfig config) throws ServletException {
+    	servletConfigs.add(config);
     	String real=config.getServletContext().getRealPath("/");
         if(!initContextes.containsKey(real)) {             
         	CFMLFactory jspFactory = loadJSPFactory(getConfigServerImpl(),config,initContextes.size());
@@ -632,8 +637,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		serviceCFML(servlet, req, rsp);
 		String res = os.toString(rsp.getCharacterEncoding());
 		System.out.println(res);
-		
-
+	}
+	
+	public ServletConfig[] getServletConfigs(){
+		return servletConfigs.toArray(new ServletConfig[servletConfigs.size()]);
 	}
 
 }
