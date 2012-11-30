@@ -91,7 +91,7 @@ public class ASMProxyFactory {
 	
 	public ASMProxyFactory(Object obj,Resource classRoot) throws IOException{
 		
-		create((ConfigWeb)ThreadLocalPageContext.getConfig(),obj.getClass());
+		load((ConfigWeb)ThreadLocalPageContext.getConfig(),obj.getClass());
 		
 	}
 	
@@ -160,7 +160,7 @@ public class ASMProxyFactory {
 	    	amethods.put(methods[i].getName(), getMethod(config,type,clazz,methods[i]));
 	    }
 	    
-	    ASMClass asmc=new ASMClass(clazz.getName(),amethods);
+	    return new ASMClass(clazz.getName(),amethods);
 	    
 	}
 	
