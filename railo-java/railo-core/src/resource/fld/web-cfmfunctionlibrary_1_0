@@ -13535,19 +13535,19 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 			<required>Yes</required>
 		<description>String in which to search. </description>
-    </argument>
+		</argument>
 		<argument>
 			<name>substring1</name>
-			<type>string</type>
+			<type>any</type>
 			<required>Yes</required>
-		<description>String for which to search.</description>
-    </argument>
+		<description>Substring for which to search.  Optionally pass a Struct with key/value pairs to do a replace all</description>
+		</argument>
 		<argument>
 			<name>substring2</name>
 			<type>string</type>
-			<required>Yes</required>
-		<description>string replacement</description>
-    </argument>
+			<required>No</required>
+			<description>Substring with which to replace the found matches.  This arg is required if the substring1 arg is a string</description>
+		</argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -13556,10 +13556,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<description>scope for the execution:
 - one (default): replaces only the first occurrence	
 - all: replaces all occurrences</description>
-			
-
-
-    </argument>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -13619,19 +13616,19 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 			<required>Yes</required>
 		<description>A string (or variable that contains one) within which to replace substring.</description>
-    </argument>
+		</argument>
 		<argument>
 			<name>substring1</name>
-			<type>string</type>
+			<type>any</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+		<description>Substring for which to search.  Optionally pass a Struct with key/value pairs to do a replace all</description>
+		</argument>
 		<argument>
 			<name>substring2</name>
 			<type>string</type>
-			<required>Yes</required>
-		<description></description>
-    </argument>
+			<required>No</required>
+			<description>Substring with which to replace the found matches.  This arg is required if the substring1 arg is a string</description>
+		</argument>
 		<argument>
 			<name>scope</name>
 			<type>string</type>
@@ -13640,7 +13637,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>scope for the execution:
 - one (default): Replace the first occurrence
 - all: Replace all occurrences</description>
-    </argument>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
