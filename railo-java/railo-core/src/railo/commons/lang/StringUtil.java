@@ -1010,21 +1010,16 @@ public final class StringUtil {
 	 * @throws PageException 
 	 */
     private static String replaceMap( String input, Map map, boolean ignoreCase, boolean doResolveInternals ) throws PageException {
-        
-        String result = input;
-        
         if ( doResolveInternals )
             map = resolveInternals( map, ignoreCase, 0 );
         
-        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
-        
+        String result = input;
+        Iterator<Map.Entry> it = map.entrySet().iterator();
+        Map.Entry e;
         while ( it.hasNext() ) {
-            
-            Map.Entry<String, String> e = it.next();
-            
-            result = replace( result, e.getKey().toString(), e.getValue().toString(), false, ignoreCase );
+            e = it.next();
+            result = replace( result, Caster.toString(e.getKey()), Caster.toString(e.getValue()), false, ignoreCase );
         }
-        
         return result;
     }
 	
@@ -1055,16 +1050,16 @@ public final class StringUtil {
         Iterator<Map.Entry> it = map.entrySet().iterator();
         
         boolean isModified = false;
-        
+        Map.Entry e;
+        String v,r;
         while ( it.hasNext() ) {
             
-            Map.Entry e = it.next();
+            e = it.next();
             
-            String k = Caster.toString( e.getKey() );
-            String v = Caster.toString( e.getValue() );
-            String r = replaceMap( v, map, ignoreCase, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
+            v = Caster.toString( e.getValue() );
+            r = replaceMap( v, map, ignoreCase, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
             
-            result.put( k, r );
+            result.put( Caster.toString( e.getKey() ), r );
             
             if ( !v.equalsIgnoreCase( r ) )
                 isModified = true;
