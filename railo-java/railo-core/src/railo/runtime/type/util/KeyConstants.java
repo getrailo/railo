@@ -816,7 +816,6 @@ public class KeyConstants {
 	public static final Key _script = KeyImpl._const("script");
 	public static final Key _applicationTimeout = KeyImpl._const("applicationTimeout");
 	public static final Key _clientManagement = KeyImpl._const("clientManagement");
-	public static final Key _username = KeyImpl._const("username");
 	public static final Key _queries = KeyImpl._const("queries");
 	public static final Key _history = KeyImpl._const("history");
 	public static final Key _group = KeyImpl._const("group");
