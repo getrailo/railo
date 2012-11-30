@@ -20,7 +20,8 @@
     name="showUDFs" type="boolean" required="no" hint="show UDFs in cfdump output."><cfargument 
     name="top" type="numeric" required="no" hint="The number of rows to display."><cfargument 
     name="abort" type="boolean" required="no" hint="stops further processing of the request."><cfargument 
-    name="eval" type="string" required="no" hint="name of the variable to display, also used as label, when no label defined."><!---
+    name="eval" type="string" required="no" hint="name of the variable to display, also used as label, when no label defined."><cfargument 
+    name="async" type="boolean" required="no" hint="if true and output is not to browser, the dump-writing takes place in a separte thread."><!---
 
     ---><cfdump attributeCollection="#arguments#" contextlevel="3"><!---
 ---></cffunction>
