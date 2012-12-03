@@ -1044,23 +1044,16 @@ public final class StringUtil {
      * @throws PageException 
      */
     private static Map resolveInternals( Map map, boolean ignoreCase, int count ) throws PageException {
-        
         Map result = new HashMap();
-        
         Iterator<Map.Entry> it = map.entrySet().iterator();
-        
         boolean isModified = false;
         Map.Entry e;
         String v,r;
         while ( it.hasNext() ) {
-            
             e = it.next();
-            
             v = Caster.toString( e.getValue() );
             r = replaceMap( v, map, ignoreCase, false );		// pass false for last arg so that replaceMap() will not call this method in an infinite loop
-            
             result.put( Caster.toString( e.getKey() ), r );
-            
             if ( !v.equalsIgnoreCase( r ) )
                 isModified = true;
         }
@@ -1070,6 +1063,4 @@ public final class StringUtil {
         
         return result;
     }
-	
-	
 }
