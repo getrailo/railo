@@ -46,6 +46,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 				Boolean.FALSE,
 				Boolean.FALSE,
 				0L,
+				null,
 				new StructImpl()
 				
 		));
@@ -70,6 +71,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 	        Boolean secureJson,
 	        Boolean verifyClient,
 	        long cachedWithin,
+	        Integer localMode,
 	        StructImpl meta) {
 		try {
 			return new UDFPropertiesImpl( pageSource,
@@ -87,6 +89,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 			         secureJson,
 			         verifyClient,
 			         cachedWithin,
+			         localMode,
 			         meta);
 		} catch (ExpressionException e) {
 			return new UDFPropertiesImpl();

@@ -11,10 +11,11 @@ public final class Closure extends Function {
 
 	public Closure(Page page,Expression name, Expression returnType, Expression returnFormat, Expression output,Expression bufferOutput,
 			int access, Expression displayName, Expression description,Expression hint, Expression secureJson, Expression verifyClient,
+			Expression localMode,
 			long cachedWithin, boolean _abstract, boolean _final,
 			Body body, Position start,Position end) {
 		super(page,name, returnType, returnFormat, output,bufferOutput, access, displayName,description, hint, secureJson, verifyClient,
-				cachedWithin,_abstract,_final,body, start, end);
+				localMode,cachedWithin,_abstract,_final,body, start, end);
 		
 	}
 	

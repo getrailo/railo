@@ -39,6 +39,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	public Set<Collection.Key> argumentsSet;
 	public int access;
 	public long cachedWithin; 
+	public Integer localMode;
 
 	/**
 	 * NEVER USE THIS CONSTRUCTOR, this constructor is only for deserialize this object from stream
@@ -64,6 +65,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean secureJson,
 	        Boolean verifyClient,
 	        long cachedWithin,
+	        Integer localMode,
 	        StructImpl meta) throws ExpressionException {
 		
 		// this happens when a arcive is based on older source code
@@ -101,6 +103,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.verifyClient = verifyClient;
 		this.access = access;
 		this.cachedWithin=cachedWithin;
+		this.localMode=localMode;
 	}
 	
 	public UDFPropertiesImpl(
@@ -119,6 +122,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        Boolean secureJson,
 	        Boolean verifyClient,
 	        long cachedWithin,
+	        Integer localMode,
 	        StructImpl meta) throws ExpressionException {
 		
 		// this happens when a arcive is based on older source code
@@ -155,6 +159,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 		this.verifyClient = verifyClient;
 		this.access = access;
 		this.cachedWithin=cachedWithin;
+		this.localMode=localMode;
 	}
 	
 	/**
@@ -177,7 +182,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        long cachedWithin,
 	        StructImpl meta) throws ExpressionException {
 		this(pageSource, arguments, index, functionName, strReturnType, strReturnFormat, 
-				output,  access, null,displayName, description, hint, secureJson, verifyClient, cachedWithin, meta);
+				output,  access, null,displayName, description, hint, secureJson, verifyClient, cachedWithin,null, meta);
 	}
 	
 	/**
@@ -200,7 +205,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        long cachedWithin,
 	        StructImpl meta) throws ExpressionException {
 		this(pageSource, arguments, index, functionName, returnType, strReturnFormat, 
-				output,  access,null, displayName, description, hint, secureJson, verifyClient, cachedWithin, meta);
+				output,  access,null, displayName, description, hint, secureJson, verifyClient, cachedWithin, null, meta);
 	}
 		
 	/**
@@ -216,7 +221,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 	        boolean output, 
 	        int access) throws ExpressionException {
 		this(pageSource, arguments, index, functionName, returnType,strReturnFormat, output, access, null,
-				"","", "", null, null, 0L, null);
+				"","", "", null, null, 0L, null, null);
 	}
 
 	/**

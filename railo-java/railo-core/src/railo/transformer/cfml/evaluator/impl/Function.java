@@ -7,6 +7,7 @@ import java.util.Map;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.functions.system.CFFunction;
+import railo.runtime.listener.AppListenerUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
@@ -78,6 +79,17 @@ public final class Function extends EvaluatorSupport {
 			tag.addAttribute(new Attribute(attrCachedWithin.isDynamicType(), attrCachedWithin.getName(), LitLong.toExpr(ASMUtil.timeSpanToLong(val), null, null), "numeric"));
 		}
 		
+		// Attribute localMode
+		Attribute attrLocalMode = tag.getAttribute("localmode");
+		if(attrLocalMode!=null) {
+			Expression expr = attrLocalMode.getValue();
+			String str = ASMUtil.toString(expr,null);
+			if(!StringUtil.isEmpty(str) && AppListenerUtil.toLocalMode(str, -1)==-1)
+				throw new EvaluatorException("Attribute localMode of the Tag Function, must be a literal value (modern, classic, true or false)");
+			//boolean output = ((LitBoolean)expr).getBooleanValue();
+			//if(!output) ASMUtil.removeLiterlChildren(tag, true);
+		}
+		
 		
 		// Attribute Output
 		// "output=true" wird in "railo.transformer.cfml.attributes.impl.Function" gehändelt
@@ -111,8 +123,7 @@ public final class Function extends EvaluatorSupport {
         //}
         
 	}
-
-
+	
 	public static void checkFunctionName(String name, FunctionLib[] flibs) throws EvaluatorException {
 		FunctionLibFunction flf;
 		for (int i = 0; i < flibs.length; i++) {
@@ -122,7 +133,6 @@ public final class Function extends EvaluatorSupport {
 			}
 		}
 	}
-
 
 	public static void throwIfNotEmpty(Tag tag) throws EvaluatorException {
 		Body body = tag.getBody();

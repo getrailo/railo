@@ -14,6 +14,7 @@ import railo.commons.lang.CFTypes;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Component;
 import railo.runtime.exp.TemplateException;
+import railo.runtime.listener.AppListenerUtil;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.FunctionArgumentImpl;
 import railo.runtime.type.FunctionArgumentLight;
@@ -25,8 +26,10 @@ import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastInt;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprBoolean;
+import railo.transformer.bytecode.expression.ExprInt;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.var.Variable;
@@ -126,6 +129,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.BOOLEAN,
 					Types.BOOLEAN,
 					Types.LONG_VALUE,
+					Types.INTEGER,
 					Page.STRUCT_IMPL
 				}
     		);
@@ -148,6 +152,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 					Types.BOOLEAN,
 					Types.BOOLEAN,
 					Types.LONG_VALUE,
+					Types.INTEGER,
 					Page.STRUCT_IMPL
 				}
     		);
@@ -279,6 +284,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	ExprString description;
 	ExprBoolean secureJson;
 	ExprBoolean verifyClient;
+	ExprInt localMode;
 	protected int valueIndex;
 	protected int arrayIndex;
 	private long cachedWithin;
@@ -300,7 +306,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 	
 	public Function(Page page,Expression name,Expression returnType,Expression returnFormat,Expression output,Expression bufferOutput,
 			int access,Expression displayName,Expression description,Expression hint,Expression secureJson,
-			Expression verifyClient,long cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
+			Expression verifyClient,Expression localMode,long cachedWithin, boolean _abstract, boolean _final,Body body,Position start, Position end) {
 		super(start,end);
 		
 		this.name=CastString.toExprString(name);
@@ -317,6 +323,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		this.cachedWithin=cachedWithin;
 		this._abstract=_abstract;
 		this._final=_final;
+		this.localMode=toLocalMode(localMode, null);
 		
 		this.body=body;
 		body.setParent(this);
@@ -325,6 +332,19 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		arrayIndex=indexes[ARRAY_INDEX];
 		
 	}
+
+
+	public static ExprInt toLocalMode(Expression expr, ExprInt defaultValue) {
+		int mode=-1;
+		if(expr instanceof Literal) {
+			String str = ((Literal)expr).getString();
+			str=str.trim().toLowerCase();
+			mode = AppListenerUtil.toLocalMode(str,-1);
+		}
+		if(mode==-1) return defaultValue;
+		return LitInteger.toExpr(mode);
+	}
+	
 
 
 	/*private static void checkNameConflict(ExprString expr) {
@@ -418,6 +438,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		if(light && verifyClient!=null)light=false;
 		if(light && cachedWithin>0)light=false;
 		if(light && bufferOutput!=null)light=false;
+		if(light && localMode!=null)light=false;
 		if(light && Page.hasMetaDataStruct(metadata, null))light=false;
 		
 		if(light){
@@ -450,6 +471,10 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		
 		// cachedwithin
 		adapter.push(cachedWithin<0?0:cachedWithin);
+		
+		// localMode
+		if(localMode!=null)ExpressionUtil.writeOutSilent(localMode,bc, Expression.MODE_REF);
+		else ASMConstants.NULL(adapter);
 		
 		// meta
 		Page.createMetaDataStruct(bc,metadata,null);
@@ -685,6 +710,17 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		else if("returnformat".equals(name))this.returnFormat=toLitString(name,attr.getValue());
 		else if("securejson".equals(name))	this.secureJson=toLitBoolean(name,attr.getValue());
 		else if("verifyclient".equals(name))	this.verifyClient=toLitBoolean(name,attr.getValue());
+		else if("localmode".equals(name))	{
+			Expression v = attr.getValue();
+			if(v!=null) {
+				String str = ASMUtil.toString(v,null);
+				if(!StringUtil.isEmpty(str)){
+					int mode = AppListenerUtil.toLocalMode(str, -1);
+					if(mode!=-1) this.localMode=LitInteger.toExpr(mode);
+					else throw new BytecodeException("Attribute localMode of the Tag Function, must be a literal value (modern, classic, true or false)",getStart());
+				}
+			}
+		}
 		else if("cachedwithin".equals(name))	{
 			try {
 				this.cachedWithin=ASMUtil.timeSpanToLong(attr.getValue());
@@ -723,6 +759,13 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		if(!(eb instanceof LitBoolean))
 			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
 		return (LitBoolean) eb;
+	}
+	
+	private final ExprInt toLitInt(String name, Expression value) throws BytecodeException {
+		ExprInt eb = CastInt.toExprInt(value);
+		if(!(eb instanceof Literal))
+			throw new BytecodeException("value of attribute ["+name+"] must have a literal/constant value",getStart());
+		return eb;
 	}
 
 }

@@ -31,7 +31,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.UDFCasterException;
 import railo.runtime.functions.cache.Util;
-import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationContextSupport;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -46,7 +45,6 @@ import railo.runtime.type.udf.UDFCacheEntry;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.UDFUtil;
-import railo.runtime.writer.BodyContentImpl;
 import railo.runtime.writer.BodyContentUtil;
 
 /**
@@ -332,7 +330,8 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
         Local		oldLocal=pc.localScope();
         
 		pc.setFunctionScopes(newLocal,newArgs);
-		int oldCheckArgs=undefined.setMode(pc.getApplicationContext().getLocalMode());
+		
+		int oldCheckArgs=undefined.setMode(properties.localMode==null?pc.getApplicationContext().getLocalMode():properties.localMode.intValue());
 		PageSource psInc=null;
 		try {
 			PageSource ps = getPageSource();

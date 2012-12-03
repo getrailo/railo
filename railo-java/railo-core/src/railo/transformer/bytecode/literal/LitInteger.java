@@ -20,10 +20,10 @@ public final class LitInteger extends ExpressionBase implements Literal,ExprInt 
     
     private int i;
 
-	public static Expression toExpr(int i, Position start,Position end) {
+	public static ExprInt toExpr(int i, Position start,Position end) {
 		return new LitInteger(i,start,end);
 	}
-	public static Expression toExpr(int i) {
+	public static ExprInt toExpr(int i) {
 		return new LitInteger(i,null,null);
 	}
     

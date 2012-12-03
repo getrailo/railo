@@ -25,6 +25,7 @@ import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.udf.Function;
 import railo.transformer.bytecode.statement.udf.FunctionImpl;
+import railo.transformer.bytecode.util.ASMUtil;
  
 public final class TagFunction extends TagBase implements IFunction {
 
@@ -241,6 +242,12 @@ public final class TagFunction extends TagBase implements IFunction {
 		attr = removeAttribute("verifyclient");
 		Expression verifyClient = (attr == null) ? null : attr.getValue();
 
+		// localMode
+		attr = removeAttribute("localmode");
+		Expression localMode = (attr == null) ? null : attr.getValue();
+		
+		
+		
 		// cachedWithin
 		long cachedWithin=0;
 		attr = removeAttribute("cachedwithin");
@@ -256,7 +263,7 @@ public final class TagFunction extends TagBase implements IFunction {
 			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
         
 		Function func = new FunctionImpl(page,name, returnType,returnFormat, output, bufferOutput, acc, displayname,description,
-				hint,secureJson,verifyClient,cachedWithin,_abstract,_final, body, getStart(),getEnd());
+				hint,secureJson,verifyClient,localMode,cachedWithin,_abstract,_final, body, getStart(),getEnd());
 		 
 		
 		
