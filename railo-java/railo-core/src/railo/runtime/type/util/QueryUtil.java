@@ -1,9 +1,15 @@
 package railo.runtime.type.util;
 
+import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Ref;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.util.Date;
 
 import railo.commons.lang.FormatUtil;
@@ -197,5 +203,43 @@ public class QueryUtil {
 		} catch (SQLException e) {
 			return meta.getColumnName(column);
 		}
+	}
+
+	public static Object getObject(ResultSet rs,int columnIndex, Class type) throws SQLException {
+		if(BigDecimal.class==type) return rs.getBigDecimal(columnIndex);
+		if(Blob.class==type) return rs.getBlob(columnIndex);
+		if(boolean.class==type || Boolean.class==type) return rs.getBoolean(columnIndex);
+		if(byte.class==type || Byte.class==type) return rs.getByte(columnIndex);
+		if(Clob.class==type) return rs.getClob(columnIndex);
+		if(Date.class==type) return rs.getDate(columnIndex);
+		if(double.class==type || Double.class==type) return rs.getDouble(columnIndex);
+		if(float.class==type || Float.class==type) return rs.getFloat(columnIndex);
+		if(int.class==type || Integer.class==type) return rs.getInt(columnIndex);
+		if(long.class==type || Long.class==type) return rs.getLong(columnIndex);
+		if(short.class==type || Short.class==type) return rs.getShort(columnIndex);
+		if(String.class==type) return rs.getString(columnIndex);
+		if(Time.class==type) return rs.getTime(columnIndex);
+		if(Ref.class==type) return rs.getRef(columnIndex);
+		
+		throw new SQLFeatureNotSupportedException("type ["+type.getName()+"] is not supported");
+	}
+
+	public static Object getObject(ResultSet rs,String columnLabel, Class type) throws SQLException {
+		if(BigDecimal.class==type) return rs.getBigDecimal(columnLabel);
+		if(Blob.class==type) return rs.getBlob(columnLabel);
+		if(boolean.class==type || Boolean.class==type) return rs.getBoolean(columnLabel);
+		if(byte.class==type || Byte.class==type) return rs.getByte(columnLabel);
+		if(Clob.class==type) return rs.getClob(columnLabel);
+		if(Date.class==type) return rs.getDate(columnLabel);
+		if(double.class==type || Double.class==type) return rs.getDouble(columnLabel);
+		if(float.class==type || Float.class==type) return rs.getFloat(columnLabel);
+		if(int.class==type || Integer.class==type) return rs.getInt(columnLabel);
+		if(long.class==type || Long.class==type) return rs.getLong(columnLabel);
+		if(short.class==type || Short.class==type) return rs.getShort(columnLabel);
+		if(String.class==type) return rs.getString(columnLabel);
+		if(Time.class==type) return rs.getTime(columnLabel);
+		if(Ref.class==type) return rs.getRef(columnLabel);
+		
+		throw new SQLFeatureNotSupportedException("type ["+type.getName()+"] is not supported");
 	}
 }
