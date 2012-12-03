@@ -9,6 +9,8 @@ import railo.runtime.ext.tag.AppendixTag;
 import railo.runtime.ext.tag.DynamicAttributes;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.op.Caster;
+import railo.runtime.type.Collection;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 
@@ -27,32 +29,29 @@ public final class CFXTag extends TagImpl implements DynamicAttributes,AppendixT
 	private Struct attributes=new StructImpl();
 	private String appendix;
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#release()
-	 */
+	@Override
 	public void release() {
 		attributes.clear();
 		appendix=null;
 	}
 
-    /**
-     * @param appendix The appendix to set.
-     */
-    public void setAppendix(String appendix) {
+	@Override
+	public void setAppendix(String appendix) {
     	//print.out(appendix);
         this.appendix = appendix;
     }
 	
-	/**
-	 * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
-	 */
+    @Override
 	public void setDynamicAttribute(String domain, String key, Object value) {
+		setDynamicAttribute(domain, KeyImpl.init(key), value);
+	}
+	
+	@Override
+	public void setDynamicAttribute(String domain, Collection.Key key, Object value) {
 		attributes.setEL(key,value);
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException {
 	    // RR SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    // if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lscurrencyformat
+ * Implements the CFML Function lscurrencyformat
  */
 package railo.runtime.functions.international;
 

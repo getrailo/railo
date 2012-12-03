@@ -1,6 +1,7 @@
 package railo.runtime.config;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,10 +9,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import railo.commons.io.IOUtil;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.type.file.FileResource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.SystemOut;
+import railo.runtime.CFMLFactory;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
 import railo.transformer.library.function.FunctionLibException;
@@ -37,9 +42,27 @@ public final class ConfigServerFactory {
      * @throws TagLibException
      * @throws FunctionLibException
      */
-    public static ConfigServerImpl newInstance(CFMLEngineImpl engine,Map initContextes, Map contextes, Resource configDir) 
+    public static ConfigServerImpl newInstance(CFMLEngineImpl engine,Map<String,CFMLFactory> initContextes, Map<String,CFMLFactory> contextes, Resource configDir) 
         throws SAXException, ClassException, PageException, IOException, TagLibException, FunctionLibException {
-    	SystemOut.print(SystemUtil.PRINTWRITER_OUT,
+    	
+    	boolean isCLI=SystemUtil.isCLICall();
+    	if(isCLI){
+    		Resource logs = configDir.getRealResource("logs");
+    		logs.mkdirs();
+    		Resource out = logs.getRealResource("out");
+    		Resource err = logs.getRealResource("err");
+    		ResourceUtil.touch(out);
+    		ResourceUtil.touch(err);
+    		if(logs instanceof FileResource) {
+    			SystemUtil.setPrintWriter(SystemUtil.OUT, new PrintWriter((FileResource)out));
+    			SystemUtil.setPrintWriter(SystemUtil.ERR, new PrintWriter((FileResource)err));
+    		}
+    		else{
+    			SystemUtil.setPrintWriter(SystemUtil.OUT, new PrintWriter(IOUtil.getWriter(out,"UTF-8")));
+    			SystemUtil.setPrintWriter(SystemUtil.ERR, new PrintWriter(IOUtil.getWriter(err,"UTF-8")));	
+    		}
+    	}
+    	SystemOut.print(SystemUtil.getPrintWriter(SystemUtil.OUT),
     			"===================================================================\n"+
     			"SERVER CONTEXT\n" +
     			"-------------------------------------------------------------------\n"+
@@ -47,7 +70,7 @@ public final class ConfigServerFactory {
     			"===================================================================\n"
     			
     			);
-    	
+    	boolean doNew=ConfigWebFactory.doNew(configDir);
     	
     	Resource configFile=configDir.getRealResource("railo-server.xml");
         if(!configFile.exists()) {
@@ -63,9 +86,9 @@ public final class ConfigServerFactory {
         Document doc=ConfigWebFactory.loadDocument(configFile);
        
         ConfigServerImpl config=new ConfigServerImpl(engine,initContextes,contextes,configDir,configFile);
-		load(config,doc,false);
+		load(config,doc,false,doNew);
 	    
-		createContextFiles(configDir,config);
+		createContextFiles(configDir,config,doNew);
 	    return config;
     }
     /**
@@ -84,8 +107,8 @@ public final class ConfigServerFactory {
         
         if(configFile==null) return ;
         if(second(configServer.getLoadTime())>second(configFile.lastModified())) return ;
-        
-        load(configServer,ConfigWebFactory.loadDocument(configFile),true);
+        boolean doNew=ConfigWebFactory.doNew(configServer.getConfigDir());
+        load(configServer,ConfigWebFactory.loadDocument(configFile),true,doNew);
     }
     
     private static long second(long ms) {
@@ -101,8 +124,8 @@ public final class ConfigServerFactory {
      * @throws TagLibException
      * @throws PageException
      */
-    static void load(ConfigServerImpl configServer, Document doc, boolean isReload) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
-        ConfigWebFactory.load(null,configServer,doc, isReload);
+    static void load(ConfigServerImpl configServer, Document doc, boolean isReload, boolean doNew) throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
+        ConfigWebFactory.load(null,configServer,doc, isReload,doNew);
         loadLabel(configServer,doc);
     }
     
@@ -124,17 +147,19 @@ public final class ConfigServerFactory {
         configServer.setLabels(labels);
 	}
 	
-	public static void createContextFiles(Resource configDir, ConfigServer config) throws IOException {
-		//Resource tagDir = configDir.getRealResource("library/tag/");
-		//if()
-		//f=cDir.getRealResource("Cache.cfc");
-        //if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/admin/cdriver/Cache.cfc",f);
-		
+	public static void createContextFiles(Resource configDir, ConfigServer config, boolean doNew) {
 		// Security certificate
         Resource secDir = configDir.getRealResource("security");
         if(!secDir.exists())secDir.mkdirs();
         Resource f = secDir.getRealResource("cacerts");
         if(!f.exists())ConfigWebFactory.createFileFromResourceEL("/resource/security/cacerts",f);
         System.setProperty("javax.net.ssl.trustStore",f.toString());
+		
+        // ESAPI
+        Resource propDir = configDir.getRealResource("properties");
+        if(!propDir.exists())propDir.mkdirs();
+        f = propDir.getRealResource("ESAPI.properties");
+        if(!f.exists())ConfigWebFactory.createFileFromResourceEL("/resource/properties/ESAPI.properties",f);
+        System.setProperty("org.owasp.esapi.resources", propDir.toString());
 	}
 }

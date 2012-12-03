@@ -5,33 +5,37 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import railo.commons.lang.StringUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Page;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.Function;
+import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.IFunction;
+import railo.transformer.bytecode.statement.PrintOut;
+import railo.transformer.bytecode.statement.udf.Function;
+import railo.transformer.bytecode.statement.udf.FunctionImpl;
  
 public final class TagFunction extends TagBase implements IFunction {
 
-	private static final ExprString ANY = LitString.toExprString("any", -1);
+	private static final ExprString ANY = LitString.toExprString("any");
 
-	private static final Expression PUBLIC = LitString.toExprString("public",-1);
+	private static final Expression PUBLIC = LitString.toExprString("public");
 
-	private static final Expression EMPTY = LitString.toExprString("", -1);
-
-	public TagFunction(int startline) {
-		this(startline,-1);
-	}
+	private static final Expression EMPTY = LitString.toExprString("");
 	
-	public TagFunction(int startline,int endline) {
-		super(startline,endline);
+	public TagFunction(Position start,Position end) {
+		super(start,end);
 		
 	}
 	
@@ -53,15 +57,67 @@ public final class TagFunction extends TagBase implements IFunction {
 
 	public void _writeOut(BytecodeContext bc, int type) throws BytecodeException {
 		Body functionBody = new BodyBase();
-		Function func = createFunction(functionBody);
+		Function func = createFunction(bc.getPage(),functionBody);
 		func.setParent(getParent());
 
-		List statements = getBody().getStatements();
+		List<Statement> statements = getBody().getStatements();
 		Statement stat;
 		Tag tag;
-		Iterator it = statements.iterator();
+		
+		// supress WS between cffunction and the last cfargument
+		Tag last=null;
+		if(bc.getSupressWSbeforeArg()){
+			// check if there is a cfargument at all
+			Iterator<Statement> it = statements.iterator();
+			while (it.hasNext()) {
+				stat = it.next();
+				if (stat instanceof Tag) {
+					tag = (Tag) stat;
+					if (tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Argument")) {
+						last=tag;
+					}
+				}
+			}
+			
+			// check if there are only literal WS printouts
+			if(last!=null) {
+				it = statements.iterator();
+				while (it.hasNext()) {
+					stat = it.next();
+					if(stat==last) break;
+					
+					if(stat instanceof PrintOut){
+						PrintOut po=(PrintOut) stat;
+						Expression expr = po.getExpr();
+						if(!(expr instanceof LitString) || !StringUtil.isWhiteSpace(((LitString)expr).getString())) {
+							last=null;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		
+		
+		Iterator<Statement> it = statements.iterator();
+		boolean beforeLastArgument=last!=null;
 		while (it.hasNext()) {
-			stat = (Statement) it.next();
+			stat = it.next();
+			if(beforeLastArgument) {
+				if(stat==last) {
+					beforeLastArgument=false;
+				}
+				else if(stat instanceof PrintOut){
+					PrintOut po=(PrintOut) stat;
+					Expression expr = po.getExpr();
+					if(expr instanceof LitString) {
+						LitString ls=(LitString) expr;
+						if(StringUtil.isWhiteSpace(ls.getString())) continue;
+					}
+				}
+				
+			}
 			if (stat instanceof Tag) {
 				tag = (Tag) stat;
 				if (tag.getTagLibTag().getTagClassName().equals(
@@ -72,7 +128,6 @@ public final class TagFunction extends TagBase implements IFunction {
 			}
 			functionBody.addStatement(stat);
 		}
-		;
 		func._writeOut(bc,type);
 
 	}
@@ -123,7 +178,7 @@ public final class TagFunction extends TagBase implements IFunction {
 
 	}
 
-	private Function createFunction(Body body) throws BytecodeException {
+	private Function createFunction(Page page, Body body) throws BytecodeException {
 		Attribute attr;
 
 		// name
@@ -141,9 +196,18 @@ public final class TagFunction extends TagBase implements IFunction {
 		attr = removeAttribute("output");
 		Expression output = (attr == null) ? LitBoolean.TRUE : attr.getValue();
 
-		// abstract
-		attr = removeAttribute("abstract");
-		Expression abstr = (attr == null) ? LitBoolean.FALSE : attr.getValue();
+		// modifier
+		boolean _abstract=false,_final=false;
+		attr = removeAttribute("modifier");
+		if(attr!=null) {
+			Expression val = attr.getValue();
+			if(val instanceof Literal) {
+				Literal l=(Literal) val;
+				String str = StringUtil.emptyIfNull(l.getString()).trim();
+				if("abstract".equalsIgnoreCase(str))_abstract=true;
+				else if("final".equalsIgnoreCase(str))_final=true;
+			}
+		}
 
 		// access
 		attr = removeAttribute("access");
@@ -172,14 +236,26 @@ public final class TagFunction extends TagBase implements IFunction {
 		// verifyClient
 		attr = removeAttribute("verifyclient");
 		Expression verifyClient = (attr == null) ? null : attr.getValue();
+
+		// cachedWithin
+		long cachedWithin=0;
+		attr = removeAttribute("cachedwithin");
+		if(attr!=null) {
+			Expression val = attr.getValue();
+			if(val instanceof LitLong)
+				cachedWithin=((LitLong)val).getLongValue();
+		}
 		
 		String strAccess = ((LitString)access).getString();
 		int acc = ComponentUtil.toIntAccess(strAccess,-1);
 		if(acc==-1)
-			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getLine());
+			throw new BytecodeException("invalid access type ["+strAccess+"], access types are remote, public, package, private",getStart());
         
-		Function func = new Function(name, returnType,returnFormat, output,abstr, acc, displayname,description,
-				hint,secureJson,verifyClient, body, getStartLine(),getEndLine());
+		Function func = new FunctionImpl(page,name, returnType,returnFormat, output, acc, displayname,description,
+				hint,secureJson,verifyClient,cachedWithin,_abstract,_final, body, getStart(),getEnd());
+		 
+		
+		
 		
 //		 %**%
 		Map attrs = getAttributes();
@@ -191,6 +267,11 @@ public final class TagFunction extends TagBase implements IFunction {
 		}
 		func.setMetaData(metadatas);
 		return func;
+	}
+	
+	@Override
+	public FlowControlFinal getFlowControlFinal() {
+		return null;
 	}
 
 }

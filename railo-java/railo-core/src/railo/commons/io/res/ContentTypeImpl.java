@@ -21,9 +21,9 @@ public final class ContentTypeImpl implements ContentType {
 	 * @param charset
 	 */
 	public ContentTypeImpl(String type,String subtype, String charset) {
-		this.type=type.trim().toLowerCase();
-		this.subtype=subtype.trim().toLowerCase();
-		this.charset=charset.trim().toLowerCase();
+		this.type=StringUtil.isEmpty(type,true)?null:type.trim().toLowerCase();
+		this.subtype=StringUtil.isEmpty(subtype,true)?null:subtype.trim().toLowerCase();
+		this.charset=StringUtil.isEmpty(charset,true)?null:charset.trim().toLowerCase();
 	}
 	
 	/**
@@ -32,12 +32,11 @@ public final class ContentTypeImpl implements ContentType {
 	 * @param subtype
 	 */
 	public ContentTypeImpl(String type,String subtype) {
-		this.type=type.trim().toLowerCase();
-		this.subtype=subtype.trim().toLowerCase();
+		this(type,subtype,null);
 	}
 
 	public ContentTypeImpl(InputStream is) {
-		String raw=IOUtil.getMymeType(is, null);
+		String raw=IOUtil.getMimeType(is, null);
 		String[] arr = List.listToStringArray(raw, '/');
 		this.type=arr[0];
 		this.subtype=arr[1];
@@ -60,7 +59,6 @@ public final class ContentTypeImpl implements ContentType {
 		return type+"/"+subtype+" charset="+charset;
 	}
 	
-	// FUTURE add to interface
 	/**
 	 * @return the mime type
 	 */
@@ -69,7 +67,6 @@ public final class ContentTypeImpl implements ContentType {
 		return type+"/"+subtype;
 	}
 
-	// FUTURE add to interface
 	/**
 	 * @return the charset
 	 */

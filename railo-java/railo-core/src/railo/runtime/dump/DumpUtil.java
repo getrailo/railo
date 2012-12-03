@@ -38,6 +38,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.scope.CookieImpl;
 
 public class DumpUtil {
 
@@ -48,7 +49,7 @@ public class DumpUtil {
 		}
 		// null
 		if(o == null) {
-			DumpTable table=new DumpTablePro("null","#ff6600","#ffcc99","#000000");
+			DumpTable table=new DumpTable("null","#ff6600","#ffcc99","#000000");
 			table.appendRow(new DumpRow(0,new SimpleDumpData("Empty:null")));
 			return table;
 		}
@@ -66,7 +67,7 @@ public class DumpUtil {
 			SimpleDateFormat df = new SimpleDateFormat("EE, dd MMM yyyy HH:mm:ss zz",Locale.ENGLISH);
 			df.setTimeZone(c.getTimeZone());
 			
-			DumpTable table=new DumpTablePro("date","#ff9900","#ffcc00","#000000");
+			DumpTable table=new DumpTable("date","#ff9900","#ffcc00","#000000");
 			table.setTitle("java.util.Calendar");
 			table.appendRow(1, new SimpleDumpData("Timezone"), new SimpleDumpData(TimeZoneUtil.toString(c.getTimeZone())));
 			table.appendRow(1, new SimpleDumpData("Time"), new SimpleDumpData(df.format(c.getTime())));
@@ -97,7 +98,7 @@ public class DumpUtil {
 					Object rst = converter.deserialize(str,false);
 					DumpData data = toDumpData(rst, pageContext, maxlevel, props);
 					
-					DumpTable table = new DumpTablePro("string","#cc9999","#ffffff","#000000");
+					DumpTable table = new DumpTable("string","#cc9999","#ffffff","#000000");
 					table.setTitle("WDDX");
 					table.appendRow(1,new SimpleDumpData("encoded"),data);
 					table.appendRow(1,new SimpleDumpData("raw"),new SimpleDumpData(str));
@@ -105,38 +106,38 @@ public class DumpUtil {
 				}
 				catch(Throwable t) {}
 			}
-			DumpTable table = new DumpTablePro("string","#ff6600","#ffcc99","#000000");
+			DumpTable table = new DumpTable("string","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("string"),new SimpleDumpData(str));
 			return table;
 		}
 		// Character
 		if(o instanceof Character) {
-			DumpTable table = new DumpTablePro("character","#ff6600","#ffcc99","#000000");
+			DumpTable table = new DumpTable("character","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("character"),new SimpleDumpData(o.toString()));
 			return table;
 		}
 		// Number
 		if(o instanceof Number) {
-			DumpTable table = new DumpTablePro("numeric","#ff6600","#ffcc99","#000000");
+			DumpTable table = new DumpTable("numeric","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("number"),new SimpleDumpData(Caster.toString(((Number)o).doubleValue())));
 			return table;
 		}
 		// Boolean
 		if(o instanceof Boolean) {
-			DumpTable table = new DumpTablePro("boolean","#ff6600","#ffcc99","#000000");
+			DumpTable table = new DumpTable("boolean","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("boolean"),new SimpleDumpData(((Boolean)o).booleanValue()));
 			return table;
 		}
 		// File
 		if(o instanceof File) {
-			DumpTable table = new DumpTablePro("file","#ffcc00","#ffff66","#000000");
+			DumpTable table = new DumpTable("file","#ffcc00","#ffff66","#000000");
 			table.appendRow(1,new SimpleDumpData("File"),new SimpleDumpData(o.toString()));
 			return table;
 		}
 		// Cookie
 		if(o instanceof Cookie) {
 			Cookie c=(Cookie) o;
-			DumpTable table = new DumpTablePro("Cookie","#979EAA","#DEE9FB","#000000");
+			DumpTable table = new DumpTable("Cookie","#979EAA","#DEE9FB","#000000");
 			table.setTitle("Cookie ("+c.getClass().getName()+")");
 			table.appendRow(1,new SimpleDumpData("name"),new SimpleDumpData(c.getName()));
 			table.appendRow(1,new SimpleDumpData("value"),new SimpleDumpData(c.getValue()));
@@ -145,12 +146,13 @@ public class DumpUtil {
 			table.appendRow(1,new SimpleDumpData("maxAge"),new SimpleDumpData(c.getMaxAge()));
 			table.appendRow(1,new SimpleDumpData("version"),new SimpleDumpData(c.getVersion()));
 			table.appendRow(1,new SimpleDumpData("domain"),new SimpleDumpData(c.getDomain()));
+			table.appendRow(1,new SimpleDumpData("httpOnly"),new SimpleDumpData(CookieImpl.isHTTPOnly(c)));
 			table.appendRow(1,new SimpleDumpData("comment"),new SimpleDumpData(c.getComment()));
 			return table;
 		}
 		// Resource
 		if(o instanceof Resource) {
-			DumpTable table = new DumpTablePro("resource","#ffcc00","#ffff66","#000000");
+			DumpTable table = new DumpTable("resource","#ffcc00","#ffff66","#000000");
 			table.appendRow(1,new SimpleDumpData("Resource"),new SimpleDumpData(o.toString()));
 			return table;
 		}
@@ -158,7 +160,7 @@ public class DumpUtil {
 		if(o instanceof byte[]) {
 			byte[] bytes=(byte[]) o;
 			
-			DumpTable table = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
+			DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 			table.setTitle("Native Array  ("+Caster.toClassName(o)+")");
 			
 			StringBuffer sb=new StringBuffer();
@@ -176,7 +178,7 @@ public class DumpUtil {
 		// Collection.Key
 		if(o instanceof Collection.Key) {
 			Collection.Key key=(Collection.Key) o;
-			DumpTable table = new DumpTablePro("string","#ff6600","#ffcc99","#000000");
+			DumpTable table = new DumpTable("string","#ff6600","#ffcc99","#000000");
 			table.appendRow(1,new SimpleDumpData("Collection.Key"),new SimpleDumpData(key.getString()));
 			return table;
 		}
@@ -185,7 +187,7 @@ public class DumpUtil {
 		String id=""+IDGenerator.intId();
 		String refid=ThreadLocalDump.get(o);
 		if(refid!=null) {
-			DumpTablePro table = new DumpTablePro("ref","#ffffff","#cccccc","#000000");
+			DumpTable table = new DumpTable("ref","#ffffff","#cccccc","#000000");
 			table.appendRow(1,new SimpleDumpData("Reference"),new SimpleDumpData(refid));
 			table.setRef(refid);
 			return setId(id,table);
@@ -202,7 +204,7 @@ public class DumpUtil {
 				Map map=(Map) o;
 				Iterator it=map.keySet().iterator();
 	
-				DumpTable table = new DumpTablePro("struct","#ff9900","#ffcc00","#000000");
+				DumpTable table = new DumpTable("struct","#ff9900","#ffcc00","#000000");
 				table.setTitle("Map ("+Caster.toClassName(o)+")");
 				
 				while(it.hasNext()) {
@@ -217,7 +219,7 @@ public class DumpUtil {
 				List list=(List) o;
 				ListIterator it=list.listIterator();
 				
-				DumpTable table = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
+				DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 				table.setTitle("Array (List)");
 				
 				while(it.hasNext()) {
@@ -241,7 +243,7 @@ public class DumpUtil {
 			if(o instanceof Enumeration) {
 				Enumeration e=(Enumeration)o;
 				
-				DumpTable table = new DumpTablePro("enumeration","#ff9900","#ffcc00","#000000");
+				DumpTable table = new DumpTable("enumeration","#ff9900","#ffcc00","#000000");
 				table.setTitle("Enumeration");
 				
 				while(e.hasMoreElements()) {
@@ -254,7 +256,7 @@ public class DumpUtil {
 				Array arr;
 				try {
 					arr = Caster.toArray(o);
-					DumpTable htmlBox = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
+					DumpTable htmlBox = new DumpTable("array","#ff9900","#ffcc00","#000000");
 					htmlBox.setTitle("Native Array ("+Caster.toClassName(o)+")");
 				
 					int length=arr.size();
@@ -285,7 +287,7 @@ public class DumpUtil {
 			if(o instanceof NodeList) {
 				NodeList list=(NodeList)o;
 				int len=list.getLength();
-				DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
+				DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 				for(int i=0;i<len;i++) {
 					table.appendRow(1,new SimpleDumpData(i),toDumpData(list.item(i),pageContext,maxlevel,props));
 				}
@@ -301,7 +303,7 @@ public class DumpUtil {
 			    HttpSession hs = (HttpSession)o;
 			    Enumeration e = hs.getAttributeNames();
 			    
-			    DumpTable htmlBox = new DumpTablePro("httpsession","#9999ff","#ccccff","#000000");
+			    DumpTable htmlBox = new DumpTable("httpsession","#9999ff","#ccccff","#000000");
 				htmlBox.setTitle("HttpSession");
 			    while(e.hasMoreElements()) {
 			        String key=e.nextElement().toString();
@@ -313,7 +315,7 @@ public class DumpUtil {
 		
 		// reflect
 		//else {
-			DumpTable table = new DumpTablePro(o.getClass().getName(),"#cc9999","#ffcccc","#000000");
+			DumpTable table = new DumpTable(o.getClass().getName(),"#cc9999","#ffcccc","#000000");
 			
 			Class clazz=o.getClass();
 			if(o instanceof Class) clazz=(Class) o;
@@ -395,8 +397,8 @@ public class DumpUtil {
 	}
 
 	private static DumpData setId(String id, DumpData data) {
-		if(data instanceof DumpTablePro) {
-			((DumpTablePro)data).setId(id);
+		if(data instanceof DumpTable) {
+			((DumpTable)data).setId(id);
 		}
 		// TODO Auto-generated method stub
 		return data;

@@ -19,6 +19,9 @@ public class FTPException extends ApplicationException {
 		msg = client.getReplyString();
 	}
 
+	/**
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
+	 */
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock cb = super.getCatchBlock(config);
 		cb.setEL("Cause", msg);

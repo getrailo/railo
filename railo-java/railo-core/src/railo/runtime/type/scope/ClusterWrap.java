@@ -11,12 +11,13 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 
 public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable {
 
+	private static final long serialVersionUID = -4952656252539755770L;
+	
 	private ClusterRemote core;
 	private int offset;
 	private ConfigServer configServer;
@@ -37,12 +38,12 @@ public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable 
 		// for the custer wrap this method is not invoked, but it is part of the interface
 	}
 
-	/**
+	/*  *
 	 * @see railo.runtime.type.StructImpl#remove(java.lang.String)
-	 */
-	public Object remove(String key) throws PageException {
+	 * /
+	public Object remove (String key) throws PageException {
 		return remove(KeyImpl.init(key));
-	}
+	}*/
 
 	
 	

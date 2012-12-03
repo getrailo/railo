@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function duplicate
+ * Implements the CFML Function duplicate
  */
 package railo.runtime.functions.struct;
 

@@ -24,7 +24,7 @@ public final class OpString extends ExpressionBase implements ExprString {
 			new Type[]{Types.STRING});
     
     private OpString(Expression left, Expression right) {
-        super(left.getLine());
+        super(left.getStart(),right.getEnd());
         this.left=CastString.toExprString(left);
         this.right=CastString.toExprString(right);   
     }
@@ -44,7 +44,7 @@ public final class OpString extends ExpressionBase implements ExprString {
         if(concatStatic && left instanceof Literal && right instanceof Literal) {
             String l = ((Literal)left).getString();
         	String r = ((Literal)right).getString();
-        	if((l.length()+r.length())<=LitString.MAX_SIZE)return new LitString(l.concat(r),left.getLine());
+        	if((l.length()+r.length())<=LitString.MAX_SIZE)return new LitString(l.concat(r),left.getStart(),right.getEnd());
         }
         return new OpString(left,right);
     }

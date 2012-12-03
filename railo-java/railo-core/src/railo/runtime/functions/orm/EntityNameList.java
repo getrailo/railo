@@ -12,8 +12,8 @@ public class EntityNameList {
 		return call(pc,",");
 	}
 	
-	public static String call(PageContext pc, String delimeter) throws PageException {
+	public static String call(PageContext pc, String delimiter) throws PageException {
 		ORMEngine engine = ORMUtil.getSession(pc).getEngine();
-		return List.arrayToList(engine.getEntityNames(),delimeter);
+		return List.arrayToList(engine.getEntityNames(),delimiter);
 	}
 }

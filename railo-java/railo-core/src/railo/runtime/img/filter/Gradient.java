@@ -373,7 +373,7 @@ public class Gradient extends ArrayColormap implements Cloneable {
 		yKnots[0] = yKnots[1];
 		yKnots[numKnots-1] = yKnots[numKnots-2];
 
-		int knot = 0;
+		//int knot = 0;
 		for (int i = 1; i < numKnots-1; i++) {
 			float spanLength = xKnots[i+1]-xKnots[i];
 			int end = xKnots[i+1];

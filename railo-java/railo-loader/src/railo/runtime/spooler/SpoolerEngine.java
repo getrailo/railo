@@ -1,6 +1,7 @@
 package railo.runtime.spooler;
 
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Query;
 
 public interface SpoolerEngine {
 	
@@ -16,17 +17,6 @@ public interface SpoolerEngine {
 	 */
 	public void add(SpoolerTask task);
 	
-	/**
-	 * return all open task that are inside the Engine
-	 * @return all open tasks
-	 */
-	public SpoolerTask[] getOpenTasks(); //FUTURE remove
-	
-	/**
-	 * return all closed task that are inside the Engine
-	 * @return all closed tasks
-	 */
-	public SpoolerTask[] getClosedTasks(); //FUTURE remove
 
 	/**
 	 * remove that task from Spooler
@@ -53,6 +43,18 @@ public interface SpoolerEngine {
 	 * @throws SpoolerException
 	 */
 	public PageException execute(SpoolerTask task);
+	
+	public Query getOpenTasksAsQuery(int startrow, int maxrow) throws PageException;
+
+	public Query getClosedTasksAsQuery(int startrow, int maxrow) throws PageException;
+
+	public Query getAllTasksAsQuery(int startrow, int maxrow) throws PageException;
+	
+	public int getOpenTaskCount();
+	
+	public int getClosedTaskCount();
+	
+	
 
 
 	//public void setLabel(String label);

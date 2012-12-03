@@ -13,10 +13,11 @@ import railo.runtime.cache.eh.remote.rest.RESTClient;
 import railo.runtime.cache.eh.remote.rest.sax.CacheConfiguration;
 import railo.runtime.cache.eh.remote.soap.Element;
 import railo.runtime.cache.eh.remote.soap.SoapClient;
+import railo.runtime.config.Config;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.Cast;
 
 public class EHCacheRemote extends CacheSupport {
@@ -30,11 +31,11 @@ public class EHCacheRemote extends CacheSupport {
 	public EHCacheRemote() {	
 	}
 	
-	public static void init(ConfigWeb config,String[] cacheNames,Struct[] arguments) throws IOException {
+	public static void init(ConfigWeb config,String[] cacheNames,Struct[] arguments) {
 		
 	}
 
-	public void init(String name, Struct arguments) throws IOException {
+	public void init(Config config,String name, Struct arguments) throws IOException {
 		Cast caster = CFMLEngineFactory.getInstance().getCastUtil();
 		String strUrl=null;
 		
@@ -130,7 +131,7 @@ public class EHCacheRemote extends CacheSupport {
 			info.setEL("max_elements_on_disk", new Double(conf.getMaxElementsOnDisk()));
 			info.setEL("time_to_idle", new Double(conf.getTimeToIdleSeconds()));
 			info.setEL("time_to_live", new Double(conf.getTimeToLiveSeconds()));
-			info.setEL(KeyImpl.NAME, conf.getName());
+			info.setEL(KeyConstants._name, conf.getName());
 		}
 		catch(Throwable t){
 			//print.printST(t);

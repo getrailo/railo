@@ -2,14 +2,17 @@ package railo.runtime;
 
 
 import railo.commons.lang.types.RefBoolean;
+import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
-
+import railo.runtime.type.UDF;
+import railo.runtime.type.UDFProperties;
 /**
  * interface for a Component
  */
-public interface Component extends Struct,Objects {
+public interface Component extends Struct,Objects,CFObject {
     
     /**
      * Constant for Access Mode Remote
@@ -63,8 +66,6 @@ public interface Component extends Struct,Objects {
      * @return Returns the Name.
      */
     public abstract String getName();
-    
-    // FUTURE alle attribute bis cf8 aufnehmen
 
     /**
      * @return Returns the Name.
@@ -123,11 +124,40 @@ public interface Component extends Struct,Objects {
      * @throws PageException
      */
     public abstract Object callWithNamedValues(PageContext pc, String key, Struct args) throws PageException;
+    
+    
+	/**
+	 * return all properties from component
+	 * @param onlyPeristent if true return only columns where attribute persistent is not set to false
+	 * @return
+	 */
+	public Property[] getProperties(boolean onlyPeristent);// FUTURE deprecated
 
-    public Page getPage();// FUTURE deprecated
-    
-    // FUTURE public PageSource getPageSource();
-    
+	public void setProperty(Property property) throws PageException;
+	
+	public ComponentScope getComponentScope();
+	
+	public boolean contains(PageContext pc,Key key);
+	
+	public PageSource getPageSource();
+	//public Member getMember(int access,Collection.Key key, boolean dataMember,boolean superAccess);
+	
+	public String getBaseAbsName();
+	
+	public boolean isBasePeristent();
+	
+	public boolean equalTo(String type);
+	
+	public String getWSDLFile();
+	
 
+	
+
+    public void registerUDF(String key, UDF udf);
     
+    public void registerUDF(Collection.Key key, UDF udf);
+    
+    public void registerUDF(String key, UDFProperties props);
+    
+    public void registerUDF(Collection.Key key, UDFProperties props);
 }

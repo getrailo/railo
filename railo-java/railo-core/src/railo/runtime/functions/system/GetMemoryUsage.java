@@ -16,7 +16,6 @@ public final class GetMemoryUsage implements Function {
         return call(pc, null);
     }
 	public static Query call(PageContext pc,String type) throws PageException {
-		int _type=SystemUtil.MEMORY_TYPE_ALL;
 		if(StringUtil.isEmpty(type))
 			return SystemUtil.getMemoryUsage(SystemUtil.MEMORY_TYPE_ALL);
 		
@@ -24,7 +23,7 @@ public final class GetMemoryUsage implements Function {
 		if("heap".equalsIgnoreCase(type))
 			return SystemUtil.getMemoryUsage(SystemUtil.MEMORY_TYPE_HEAP);
 		if("non_heap".equalsIgnoreCase(type) || "nonheap".equalsIgnoreCase(type) || "non-heap".equalsIgnoreCase(type) ||
-				"none_heap".equalsIgnoreCase(type) || "noneheap".equalsIgnoreCase(type) || "none-heap".equalsIgnoreCase(type)) 
+				"none_heap".equalsIgnoreCase(type) || "noneheap".equalsIgnoreCase(type) || "none-heap".equalsIgnoreCase(type))
 				return SystemUtil.getMemoryUsage(SystemUtil.MEMORY_TYPE_NON_HEAP);
         
 		throw new FunctionException(pc, "GetMemoryUsage", 1, "type", "invalid value ["+type+"], valid values are [heap,non_heap]");

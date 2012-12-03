@@ -22,8 +22,8 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * A filter which simulates the appearance of looking through glass. A separate grayscale displacement image is provided and
@@ -78,8 +78,8 @@ public class DisplaceFilter extends TransformFilter  implements DynFiltering {
 	}
 	
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-		int w = src.getWidth();
-		int h = src.getHeight();
+		//int w = src.getWidth();
+		//int h = src.getHeight();
 
 		BufferedImage dm = displacementMap != null ? displacementMap : src;
 
@@ -124,9 +124,9 @@ public class DisplaceFilter extends TransformFilter  implements DynFiltering {
 	}
 	
 	protected void transformInverse(int x, int y, float[] out) {
-		float xDisplacement, yDisplacement;
-		float nx = x;
-		float ny = y;
+		//float xDisplacement, yDisplacement;
+		//float nx = x;
+		//float ny = y;
 		int i = (y % dh)*dw + x % dw;
 		out[0] = x + amount * xmap[i];
 		out[1] = y + amount * ymap[i];
@@ -144,7 +144,7 @@ public class DisplaceFilter extends TransformFilter  implements DynFiltering {
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, DisplacementMap, EdgeAction, Interpolation]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, DisplacementMap, EdgeAction, Interpolation]");
 		}
 
 		return filter(src, dst);

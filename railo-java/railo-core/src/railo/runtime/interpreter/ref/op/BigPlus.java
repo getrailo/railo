@@ -1,5 +1,6 @@
 package railo.runtime.interpreter.ref.op;
 
+import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 
@@ -17,11 +18,9 @@ public final class BigPlus extends Big {
 		super(left,right);
 	}
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getValue()
-	 */
-	public Object getValue() throws PageException {
-		return getLeft().add(getRight()).toString();
+	@Override
+	public Object getValue(PageContext pc) throws PageException {
+		return getLeft(pc).add(getRight(pc)).toString();
 	}
     
 

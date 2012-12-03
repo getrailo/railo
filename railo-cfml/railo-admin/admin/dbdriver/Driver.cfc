@@ -40,7 +40,7 @@
 		<cfargument name="required" required="false" type="boolean" default="no">
 		<cfargument name="description" required="false" type="string" default="">
 		<cfargument name="type" required="false" type="string" default="text">
-		<cfreturn createObject("component","types.Field").init(displayName,name,defaultValue,required,description,type)>
+		<cfreturn createObject("component","types.Field").init(arguments.displayName,arguments.name,arguments.defaultValue,arguments.required,arguments.description,arguments.type)>
 	</cffunction>
 	
 	
@@ -52,7 +52,7 @@
 	
 	<cffunction name="getType" returntype="numeric" output="no">
 		<cfargument name="key" required="true" type="string">
-		<cfreturn this.type[key]>
+		<cfreturn this.type[arguments.key]>
 	</cffunction>
 	
 	<cffunction name="getValue" returntype="string" output="no">

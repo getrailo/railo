@@ -3,16 +3,20 @@ package railo.runtime.cfx;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -20,17 +24,11 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
 
-
-//JDK6: uncomment this for compiling with JDK6 
-import java.sql.NClob;
-import java.sql.RowId;
-import java.sql.SQLXML;
-
-
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.PageException;
+import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 
 import com.allaire.cfx.Query;
@@ -83,8 +81,6 @@ public class QueryWrap implements Query {
 		return rst.getColumns();
 	}
 	
-	/*
-	FUTURE
 	public Collection.Key[] getColumnNames() {
     	return rst.getColumnNames();
     }
@@ -92,7 +88,7 @@ public class QueryWrap implements Query {
 
 	public String[] getColumnNamesAsString() {
 		return rst.getColumnNamesAsString();
-	}*/
+	}
 
 	/**
 	 * @see com.allaire.cfx.Query#getData(int, int)
@@ -624,12 +620,14 @@ public class QueryWrap implements Query {
 	public boolean isLast() throws SQLException {
 		return rst.isLast();
 	}
+	
 	/**
 	 * @return iterator for he keys
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return rst.keyIterator();
 	}
+	
 	/**
 	 * @return all keys of the Query
 	 */
@@ -1261,10 +1259,25 @@ public class QueryWrap implements Query {
 	}
 	
 	
+
+
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    	try {
+    		Method m = rst.getClass().getMethod("getObject", new Class[]{int.class,Class.class});
+    		return (T) m.invoke(rst, new Object[]{columnIndex,type});
+		} 
+    	catch (Throwable t) {}
+    	throw notSupported();
+	}
 	
-	
-	
-	
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    	try {
+    		Method m = rst.getClass().getMethod("getObject", new Class[]{String.class,Class.class});
+    		return (T) m.invoke(rst, new Object[]{columnLabel,type});
+		} 
+    	catch (Throwable t) {}
+    	throw notSupported();
+	}
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");

@@ -3,6 +3,7 @@ package railo.runtime.functions.struct;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -26,17 +27,19 @@ public class StructKeyTranslate {
     }
 	
 	public static int translate(Collection coll,boolean deep,boolean leaveOrg) throws PageException {
-		Key[] keys = coll.keys();
+		Iterator<Entry<Key, Object>> it = coll.entryIterator();
+		Entry<Key, Object> e;
 		boolean isStruct=coll instanceof Struct;
 		String key;
 		int index;
 		int count=0;
-		for(int i=0;i<keys.length;i++){
-			key=keys[i].getString();
-			if(deep)count+=translate(coll.get(keys[i]),leaveOrg);
+		while(it.hasNext()){
+			e = it.next();
+			key=e.getKey().getString();
+			if(deep)count+=translate(e.getValue(),leaveOrg);
 			if(isStruct && (index=key.indexOf('.'))!=-1){
 				count++;
-				translate(index,keys[i],key,coll,leaveOrg);
+				translate(index,e.getKey(),key,coll,leaveOrg);
 			}
 		}
 		return count;

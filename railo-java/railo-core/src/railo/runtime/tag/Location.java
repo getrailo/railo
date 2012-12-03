@@ -11,13 +11,13 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
-import railo.runtime.util.ApplicationContext;
 
 
 public final class Location extends TagImpl {
 
-	/** Yes or No. clientManagement must be enabled, see cfapplication. Yes appends client variable 
+	/** Yes or No. clientManagement must be enabled. Yes appends client variable 
 	** 		information to the URL you specify in the url. */
 	private boolean addtoken=true;
 
@@ -52,7 +52,7 @@ public final class Location extends TagImpl {
 
 
 	/** set the value addtoken
-	*  Yes or No. clientManagement must be enabled, see cfapplication. Yes appends client variable 
+	*  Yes or No. clientManagement must be enabled. Yes appends client variable 
 	* 		information to the URL you specify in the url.
 	* @param addtoken value to set
 	**/

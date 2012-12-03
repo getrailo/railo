@@ -10,6 +10,7 @@ import railo.runtime.registry.RegistryQuery;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
 * Reads, writes, and deletes keys and values in the system registry. The cfregistry tag is supported 
@@ -99,7 +100,7 @@ public final class Registry extends TagImpl {
 	    else if(action.equals("get")) this.action=ACTION_GET;
 	    else if(action.equals("set")) this.action=ACTION_SET;
 	    else if(action.equals("delete")) this.action=ACTION_DELETE;
-	    else throw new ApplicationException("attribute action of the tag registry has a invalid value ["+action+"], valid values are [getAll, get, set, delete]");
+	    else throw new ApplicationException("attribute action of the tag registry has an invalid value ["+action+"], valid values are [getAll, get, set, delete]");
 	}
 
 	/** set the value sort
@@ -128,7 +129,7 @@ public final class Registry extends TagImpl {
 	    else if(type.equals("dword")) this.type=RegistryEntry.TYPE_DWORD;
 	    else if(type.equals("key")) this.type=RegistryEntry.TYPE_KEY;
 	    else if(type.equals("any")) this.type=RegistryEntry.TYPE_ANY;
-	    else throw new ApplicationException("attribute type of the tag registry has a invalid value ["+type+"], valid values are [string, dword]");
+	    else throw new ApplicationException("attribute type of the tag registry has an invalid value ["+type+"], valid values are [string, dword]");
 	}
 
 	/** set the value branch
@@ -234,9 +235,9 @@ public final class Registry extends TagImpl {
                 for(int i=0;i<entries.length;i++) {
                     RegistryEntry e = entries[i];
                     int row=i+1;
-                    qry.setAt(KeyImpl.ENTRY,row,e.getKey());
-                    qry.setAt(KeyImpl.TYPE,row,RegistryEntry.toCFStringType(e.getType()));
-                    qry.setAt(KeyImpl.VALUE,row,e.getValue());
+                    qry.setAt(KeyConstants._entry,row,e.getKey());
+                    qry.setAt(KeyConstants._type,row,RegistryEntry.toCFStringType(e.getType()));
+                    qry.setAt(KeyConstants._value,row,e.getValue());
                 }
                 
 

@@ -5,10 +5,10 @@ import javax.servlet.jsp.tagext.Tag;
 import railo.commons.io.res.Resource;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
-import railo.runtime.util.ApplicationContext;
+import railo.runtime.type.scope.Scope;
 
 /**
  * 

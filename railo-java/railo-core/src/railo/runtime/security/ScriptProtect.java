@@ -1,6 +1,9 @@
 package railo.runtime.security;
 
-import railo.runtime.type.Collection;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
 /**
@@ -17,12 +20,14 @@ public final class ScriptProtect {
 	 * @param sct Struct to translate its values
 	 */
 	public static void translate(Struct sct) {
-		Collection.Key[] keys = sct.keys();
+		Iterator<Entry<Key, Object>> it = sct.entryIterator();
+		Entry<Key, Object> e;
 		Object value;
-		for(int i=0;i<keys.length;i++) {
-			value=sct.get(keys[i],null); 
+		while(it.hasNext()) {
+			e = it.next();
+			value=e.getValue(); 
 			if(value instanceof String) {
-				sct.setEL(keys[i],translate((String)value));
+				sct.setEL(e.getKey(),translate((String)value));
 			}
 		}
 	}

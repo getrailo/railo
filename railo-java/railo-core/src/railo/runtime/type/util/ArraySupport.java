@@ -1,9 +1,13 @@
 package railo.runtime.type.util;
 
+import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
+import org.apache.poi.ss.formula.functions.T;
+
+import railo.commons.lang.CFTypes;
+import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -12,11 +16,24 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Objects;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 
-public abstract class ArraySupport implements Array,List,Sizeable {
+public abstract class ArraySupport extends AbstractList implements Array,List,Sizeable,Objects {
 
+	
+	public static final short TYPE_OBJECT = 0;
+	public static final short TYPE_BOOLEAN = 1;
+	public static final short TYPE_BYTE = 2;
+	public static final short TYPE_SHORT = 3;
+	public static final short TYPE_INT = 4;
+	public static final short TYPE_LONG = 5;
+	public static final short TYPE_FLOAT = 6;
+	public static final short TYPE_DOUBLE = 7;
+	public static final short TYPE_CHARACTER = 8;
+	public static final short TYPE_STRING = 9;
 	
 	/**
 	 * @see java.util.List#add(int, E)
@@ -40,95 +57,7 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 		}
 		return true;
 	}
-
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
-	public final boolean addAll(int index, java.util.Collection c) {
-		Iterator it = c.iterator();
-		while(it.hasNext()) {
-			add(index++,it.next());
-		}
-		return !c.isEmpty();
-	}
 	
-	/**
-     * adds a value and return this array
-     * @param o
-     * @return this Array
-     */
-    public synchronized boolean add(Object o) {
-    	appendEL(o);
-        return true;
-    }
-
-	/**
-	 * @see java.util.List#contains(java.lang.Object)
-	 */
-	public final boolean contains(Object o) {
-		return indexOf(o)!=-1;
-	}
-
-	/**
-	 * @see java.util.List#containsAll(java.util.Collection)
-	 */
-	public final boolean containsAll(java.util.Collection c) {
-		Iterator it = c.iterator();
-		while(it.hasNext()) {
-			if(!contains(it.next()))return false;
-		}
-		return true;
-	}
-
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
-	public final int indexOf(Object o) {
-		Iterator it=iterator();
-		int index=0;
-		while(it.hasNext()) {
-			if(it.next().equals(o))return index;
-			index++;
-		}
-		return -1;
-	}
-
-	/**
-	 * @see java.util.List#isEmpty()
-	 */
-	public final boolean isEmpty() {
-		return size()==0;
-	}
-
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
-	public final int lastIndexOf(Object o) {
-		Iterator it=iterator();
-		int index=0;
-		int rtn=-1;
-		while(it.hasNext()) {
-			if(it.next().equals(o))rtn=index;
-			index++;
-		}
-		return rtn;
-	}
-
-	/**
-	 * @see java.util.List#listIterator()
-	 */
-	public final ListIterator listIterator() {
-		return new ListIteratorImpl(this,0);
-	}
-
-	/**
-	 * @see java.util.List#listIterator(int)
-	 */
-	public final ListIterator listIterator(int index) {
-		return new ListIteratorImpl(this,index);
-		//return toArrayList().listIterator(index);
-	}
-
 	/**
 	 * @see java.util.List#remove(java.lang.Object)
 	 */
@@ -161,34 +90,17 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 	 */
 	public final boolean retainAll(java.util.Collection c) {
 		boolean modified = false;
-		Iterator it = iterator();
-		while (it.hasNext()) {
-		    if(!c.contains(it.next())) {
-		    	it.remove();
+		Key[] keys = CollectionUtil.keys(this);
+		Key k;
+		for(int i=keys.length-1;i>=0;i--) {
+			k = keys[i];
+			if(!c.contains(get(k,null))) {
+		    	removeEL(k);
 		    	modified = true;
 		    }
 		}
 		return modified;
 	}
-
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
-	public final List subList(int fromIndex, int toIndex) {
-		throw new RuntimeException("method subList is not supported");
-	}
-	
-
-	public static final short TYPE_OBJECT = 0;
-	public static final short TYPE_BOOLEAN = 1;
-	public static final short TYPE_BYTE = 2;
-	public static final short TYPE_SHORT = 3;
-	public static final short TYPE_INT = 4;
-	public static final short TYPE_LONG = 5;
-	public static final short TYPE_FLOAT = 6;
-	public static final short TYPE_DOUBLE = 7;
-	public static final short TYPE_CHARACTER = 8;
-	public static final short TYPE_STRING = 9;
 
 	/**
 	 * @see java.util.List#toArray(T[])
@@ -334,7 +246,7 @@ public abstract class ArraySupport implements Array,List,Sizeable {
      */
     public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Array to String",
-          "Use Build-In-Function \"serialize(Array):String\" to create a String from Array");
+          "Use Built-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
     /**
@@ -429,7 +341,7 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return iterator();
 	}
 	
@@ -437,5 +349,46 @@ public abstract class ArraySupport implements Array,List,Sizeable {
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);
 	}
-	
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key, defaultValue);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public java.util.Iterator<Object> getIterator() {
+    	return valueIterator();
+    } 
+
+	@Override
+	public synchronized void sort(String sortType, String sortOrder) throws PageException {
+		if(getDimension()>1)
+			throw new ExpressionException("only 1 dimensional arrays can be sorted");
+		sort(ArrayUtil.toComparator(null, sortType, sortOrder,false));
+	}
 }

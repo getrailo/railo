@@ -13,11 +13,11 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructSupport;
 
 public abstract class FileStreamWrapper extends StructSupport implements Struct {
@@ -71,12 +71,12 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	public Struct info() {
 		if(info==null) {
 			info=new StructImpl();
-			info.setEL("mode", getMode());
-			info.setEL(KeyImpl.NAME, res.getName());
-			info.setEL(KeyImpl.PATH, res.getParent());
-			info.setEL("status", getStatus());
-			info.setEL(KeyImpl.SIZE, getSize()+" bytes");
-			info.setEL("lastmodified", getLastmodified());
+			info.setEL(KeyConstants._mode, getMode());
+			info.setEL(KeyConstants._name, res.getName());
+			info.setEL(KeyConstants._path, res.getParent());
+			info.setEL(KeyConstants._status, getStatus());
+			info.setEL(KeyConstants._size, getSize()+" bytes");
+			info.setEL(KeyConstants._lastmodified, getLastmodified());
 		}
 		
 		return info;
@@ -169,14 +169,6 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 		return info.keys();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return info().keysAsString();
-	}
-
 	public Object remove(Key key) throws PageException {
 		throw new PageRuntimeException("can't remove key ["+key.getString()+"] from struct, struct is readonly");
 	}
@@ -221,8 +213,23 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return info().keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return info().keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return info().entryIterator();
+	}
+	
+	@Override
+	public Iterator<Object> valueIterator() {
+		return info().valueIterator();
 	}
 
 	/**

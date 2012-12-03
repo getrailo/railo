@@ -1,5 +1,7 @@
 package railo.runtime.db;
 
+import java.util.TimeZone;
+
 import railo.runtime.type.Struct;
 
 /**
@@ -139,10 +141,14 @@ public interface DataSource extends Cloneable {
      * @return Returns the connectionTimeout.
      */
     public abstract int getConnectionTimeout();
+    
+    public long getMetaCacheTimeout();
+    
+    public TimeZone getTimeZone();
 
     /**
      * @param key 
-     * @return Returns matching custom value or null if not exists.
+     * @return Returns matching custom value or null if not exist.
      */
     public abstract String getCustomValue(String key);
 
@@ -171,10 +177,10 @@ public interface DataSource extends Cloneable {
      */
     public abstract void setClazz(Class clazz);
 
-    // FUTURE public abstract boolean isStorage();
+    public abstract boolean isStorage();
 
-	// FUTURE public abstract boolean validate();
+	public abstract boolean validate();
 
-	//public abstract int getMaxConnection();
+	//  public abstract int getMaxConnection();
 
 }

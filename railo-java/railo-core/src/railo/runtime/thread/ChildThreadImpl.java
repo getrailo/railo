@@ -3,6 +3,8 @@ package railo.runtime.thread;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,6 +15,7 @@ import railo.commons.lang.Pair;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
@@ -24,15 +27,15 @@ import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.HttpUtil;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Argument;
-import railo.runtime.type.scope.ArgumentPro;
 import railo.runtime.type.scope.ArgumentThreadImpl;
+import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalImpl;
 import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.Undefined;
@@ -90,7 +93,6 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		if(attrs==null) this.attrs=new StructImpl();
 		else this.attrs=attrs;
 		
-		
 		if(!serializable){
 			this.page=page;
 			if(parent!=null){
@@ -108,7 +110,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			this.template=page.getPageSource().getFullRealpath();
 			HttpServletRequest req = parent.getHttpServletRequest();
 			serverName=req.getServerName();
-			queryString=req.getQueryString();
+			queryString=ReqRspUtil.getQueryString(req);
 			cookies=SerializableCookie.toSerializableCookie(ReqRspUtil.getCookies(ThreadLocalPageContext.getConfig(parent),req));
 			parameters=HttpUtil.cloneParameters(req);
 			requestURI=req.getRequestURI();
@@ -140,13 +142,15 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 			ConfigWebImpl cwi;
 			try {
 				cwi = (ConfigWebImpl)config;
-				p=cwi.getPageSource(oldPc,null, template, false,false,true).loadPage(cwi);
+				DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
+				pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
+				pc.setRequestTimeout(requestTimeout);
+				p=PageSourceImpl.loadPage(pc, cwi.getPageSources(oldPc==null?pc:oldPc,null, template, false,false,true));
+				//p=cwi.getPageSources(oldPc,null, template, false,false,true).loadPage(cwi);
 			} catch (PageException e) {
 				return e;
 			}
-			DevNullOutputStream os = DevNullOutputStream.DEV_NULL_OUTPUT_STREAM;
-			pc=ThreadUtil.createPageContext(cwi, os, serverName, requestURI, queryString, SerializableCookie.toCookies(cookies), headers, parameters, attributes);
-			pc.setRequestTimeout(requestTimeout);pc.addPageSource(p.getPageSource(), true);
+				pc.addPageSource(p.getPageSource(), true);
 		}
 		pc.setThreadScope("thread", new ThreadsImpl(this));
 		pc.setThread(Thread.currentThread());
@@ -155,19 +159,20 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		
 		Undefined undefined=pc.us();
 		
-		ArgumentPro newArgs=new ArgumentThreadImpl((Struct) attrs.duplicate(false));//(ArgumentPro) pc.getScopeFactory().getArgumentInstance();// FUTURE
+		Argument newArgs=new ArgumentThreadImpl((Struct) Duplicator.duplicate(attrs,false));
         LocalImpl newLocal=pc.getScopeFactory().getLocalInstance();
-        Key[] keys = attrs.keys();
-		for(int i=0;i<keys.length;i++){
-			newArgs.setEL(keys[i],attrs.get(keys[i],null));
-			//newLocal.setEL(keys[i],attrs.get(keys[i],null));
+        //Key[] keys = attrs.keys();
+        Iterator<Entry<Key, Object>> it = attrs.entryIterator();
+        Entry<Key, Object> e;
+		while(it.hasNext()){
+			e = it.next();
+			newArgs.setEL(e.getKey(),e.getValue());
 		}
 		
-		//print.out(newArgs);
-		
 		newLocal.setEL(KEY_ATTRIBUTES, newArgs);
+
 		Argument oldArgs=pc.argumentsScope();
-        Scope oldLocal=pc.localScope();
+        Local oldLocal=pc.localScope();
         
         int oldMode=undefined.setMode(Undefined.MODE_LOCAL_OR_ARGUMENTS_ALWAYS);
 		pc.setFunctionScopes(newLocal,newArgs);
@@ -175,17 +180,18 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 		try {
 			p.threadCall(pc, threadIndex); 
 		}
-		catch(Abort a){}
 		catch (Throwable t) {
-			ConfigWeb c = pc.getConfig();
-			if(c instanceof ConfigImpl) {
-				ConfigImpl ci=(ConfigImpl) c;
-				LogAndSource log = ci.getThreadLogger();
-				if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+			if(!Abort.isSilentAbort(t)) {
+				ConfigWeb c = pc.getConfig();
+				if(c instanceof ConfigImpl) {
+					ConfigImpl ci=(ConfigImpl) c;
+					LogAndSource log = ci.getThreadLogger();
+					if(log!=null)log.error(this.getName(), ExceptionUtil.getStacktrace(t,true));
+				}
+				PageException pe = Caster.toPageException(t);
+				if(!serializable)catchBlock=pe.getCatchBlock(pc);
+				return pe;
 			}
-			PageException pe = Caster.toPageException(t);
-			if(!serializable)catchBlock=pe.getCatchBlock(pc);
-			return pe;
 		}
 		finally {
 			completed=true;
@@ -198,7 +204,7 @@ public class ChildThreadImpl extends ChildThread implements Serializable {
 	            HttpServletResponseDummy rsp=(HttpServletResponseDummy) pc.getHttpServletResponse();
 	            pc.flush();
 	            contentType=rsp.getContentType();
-	            Pair[] _headers = rsp.getHeaders();
+	            Pair<String,Object>[] _headers = rsp.getHeaders();
 	            if(_headers!=null)for(int i=0;i<_headers.length;i++){
 	            	if(_headers[i].getName().equalsIgnoreCase("Content-Encoding"))
 	            		contentEncoding=Caster.toString(_headers[i].getValue(),null);

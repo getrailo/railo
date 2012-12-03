@@ -1,8 +1,8 @@
 package railo.runtime.type.trace;
 
 import railo.runtime.Component;
-import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageSource;
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.FunctionArgument;
@@ -174,13 +174,12 @@ public class TOUDF extends TOObjects implements UDF {
 		return udf.getHint();
 	}
 
-
 	/**
-	 * @see railo.runtime.type.UDF#getPage()
+	 * @see railo.runtime.type.UDF#getPageSource()
 	 */
-	public Page getPage() {
+	public PageSource getPageSource() {
 		log(null);
-		return udf.getPage();
+		return udf.getPageSource();
 	}
 
 

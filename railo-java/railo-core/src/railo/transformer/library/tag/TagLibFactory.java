@@ -14,7 +14,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.commons.collections.HashTable;
 import railo.commons.io.IOUtil;
@@ -23,6 +22,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.util.ArrayUtil;
 
 /**
@@ -125,22 +125,24 @@ public final class TagLibFactory extends DefaultHandler {
 	private void init(String saxParser,InputSource is) throws TagLibException	{
 		//print.dumpStack();
 		try {
-			xmlReader=XMLReaderFactory.createXMLReader(saxParser);
+			xmlReader=XMLUtil.createXMLReader(saxParser);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.setEntityResolver(new TagLibEntityResolver());
 			xmlReader.parse(is);
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			
-			String fileName=is.getSystemId();
-			String message="IOException: ";
-			if(fileName!=null) message+="In File ["+fileName+"], ";
+			//String fileName=is.getSystemId();
+			//String message="IOException: ";
+			//if(fileName!=null) message+="In File ["+fileName+"], ";
 			throw new TagLibException(e);
-		} catch (SAXException e) {
+		} 
+		catch (SAXException e) {
 			e.printStackTrace();
-			String fileName=is.getSystemId();
-			String message="SAXException: ";
-			if(fileName!=null) message+="In File ["+fileName+"], ";
+			//String fileName=is.getSystemId();
+			//String message="SAXException: ";
+			//if(fileName!=null) message+="In File ["+fileName+"], ";
 			throw new TagLibException(e);
 		} 
 		

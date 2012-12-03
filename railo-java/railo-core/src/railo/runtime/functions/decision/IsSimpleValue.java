@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function issimplevalue
+ * Implements the CFML Function issimplevalue
  */
 package railo.runtime.functions.decision;
 

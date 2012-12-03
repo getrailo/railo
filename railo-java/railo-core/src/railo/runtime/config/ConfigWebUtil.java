@@ -2,6 +2,9 @@ package railo.runtime.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -21,6 +24,7 @@ import railo.commons.lang.SystemOut;
 import railo.runtime.Mapping;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.security.SecurityManager;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
 
@@ -90,65 +94,79 @@ public final class ConfigWebUtil {
     	}
     	return _replacePlaceholder(str, config);
     }*/
+    
     public static String replacePlaceholder(String str, Config config) {
     	if(StringUtil.isEmpty(str)) return str;
     	
     	if(StringUtil.startsWith(str,'{')){
-            ConfigServer cs;
             
             
             // Config Server
             if(str.startsWith("{railo-config")) {    
-                if(str.startsWith("}",13)) str=config.getConfigDir().getReal(str.substring(14));
-                else if(str.startsWith("-dir}",13)) str=config.getConfigDir().getReal(str.substring(18));
-                else if(str.startsWith("-directory}",13)) str=config.getConfigDir().getReal(str.substring(24));
+                if(str.startsWith("}",13)) str=checkResult(str,config.getConfigDir().getReal(str.substring(14)));
+                else if(str.startsWith("-dir}",13)) str=checkResult(str,config.getConfigDir().getReal(str.substring(18)));
+                else if(str.startsWith("-directory}",13)) str=checkResult(str,config.getConfigDir().getReal(str.substring(24)));
             }
             
             
-            else if(str.startsWith("{railo-server")) {
-                cs=((ConfigImpl)config).getConfigServerImpl();
+            else if(config!=null && str.startsWith("{railo-server")) {
+            	Resource dir=config instanceof ConfigWeb?((ConfigWeb)config).getConfigServerDir():config.getConfigDir();
                 //if(config instanceof ConfigServer && cs==null) cs=(ConfigServer) cw;
-                if(cs!=null) {
-                    if(str.startsWith("}",13)) str=cs.getConfigDir().getReal(str.substring(14));
-                    else if(str.startsWith("-dir}",13)) str=cs.getConfigDir().getReal(str.substring(18));
-                    else if(str.startsWith("-directory}",13)) str=cs.getConfigDir().getReal(str.substring(24));
+                if(dir!=null) {
+                    if(str.startsWith("}",13)) str=checkResult(str,dir.getReal(str.substring(14)));
+                    else if(str.startsWith("-dir}",13)) str=checkResult(str,dir.getReal(str.substring(18)));
+                    else if(str.startsWith("-directory}",13)) str=checkResult(str,dir.getReal(str.substring(24)));
                 }
             }
             // Config Web
             else if(str.startsWith("{railo-web")) {
                 //if(cw instanceof ConfigServer) cw=null;
                 //if(config instanceof ConfigWeb) {
-                    if(str.startsWith("}",10)) str=config.getConfigDir().getReal(str.substring(11));
-                    else if(str.startsWith("-dir}",10)) str=config.getConfigDir().getReal(str.substring(15));
-                    else if(str.startsWith("-directory}",10)) str=config.getConfigDir().getReal(str.substring(21));
+                    if(str.startsWith("}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(11)));
+                    else if(str.startsWith("-dir}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(15)));
+                    else if(str.startsWith("-directory}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(21)));
                 //}
             }
             // Web Root
             else if(str.startsWith("{web-root")) {
                 //if(cw instanceof ConfigServer) cw=null;
                 if(config instanceof ConfigWeb) {
-                    if(str.startsWith("}",9)) str=config.getRootDirectory().getReal(str.substring(10));
-                    else if(str.startsWith("-dir}",9)) str=config.getRootDirectory().getReal(str.substring(14));
-                    else if(str.startsWith("-directory}",9)) str=config.getRootDirectory().getReal(str.substring(20));
+                    if(str.startsWith("}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(10)));
+                    else if(str.startsWith("-dir}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(14)));
+                    else if(str.startsWith("-directory}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(20)));
                 }
             }
             // Temp
             else if(str.startsWith("{temp")) {
-                if(str.startsWith("}",5)) str=config.getTempDirectory().getRealResource(str.substring(6)).toString();
-                else if(str.startsWith("-dir}",5)) str=config.getTempDirectory().getRealResource(str.substring(10)).toString();
-                else if(str.startsWith("-directory}",5)) str=config.getTempDirectory().getRealResource(str.substring(16)).toString();
+                if(str.startsWith("}",5)) str=checkResult(str,config.getTempDirectory().getRealResource(str.substring(6)).toString());
+                else if(str.startsWith("-dir}",5)) str=checkResult(str,config.getTempDirectory().getRealResource(str.substring(10)).toString());
+                else if(str.startsWith("-directory}",5)) str=checkResult(str,config.getTempDirectory().getRealResource(str.substring(16)).toString());
             }
-            else if(config instanceof ServletConfig)str=SystemUtil.parsePlaceHolder(str,((ServletConfig)config).getServletContext(),((ConfigImpl)config).getConfigServerImpl().getLabels());
+            else if(config instanceof ServletConfig){
+            	Map<String,String> labels=null;
+            	// web
+            	if(config instanceof ConfigWebImpl){
+            		labels=((ConfigWebImpl)config).getAllLabels();
+            	}
+            	// server
+            	else if(config instanceof ConfigServerImpl){
+            		labels=((ConfigServerImpl)config).getLabels();
+            	}
+            	if(labels!=null)str=SystemUtil.parsePlaceHolder(str,((ServletConfig)config).getServletContext(),labels);
+            }
             else str=SystemUtil.parsePlaceHolder(str);
             
             if(StringUtil.startsWith(str,'{')){
             	Struct constants = ((ConfigImpl)config).getConstants();
-            	String[] arr = constants.keysAsString();
-            	for(int i=0;i<arr.length;i++) {
-            		if(StringUtil.startsWithIgnoreCase(str,"{"+arr[i]+"}")) {
-            			String value=(String) constants.get(arr[i],null);
-            			str=config.getResource( value)
-            				.getReal(str.substring(arr[i].length()+2));
+            	//Collection.Key[] arr = constants.keys();
+            	Iterator<Entry<Key, Object>> it = constants.entryIterator();
+            	Entry<Key, Object> e;
+            	while(it.hasNext()) {
+            		e = it.next();
+            		if(StringUtil.startsWithIgnoreCase(str,"{"+e.getKey().getString()+"}")) {
+            			String value=(String) e.getValue();
+            			str=checkResult(str,config.getResource( value)
+            				.getReal(str.substring(e.getKey().getString().length()+2)));
                         break;
             			
             		}
@@ -159,7 +177,17 @@ public final class ConfigWebUtil {
     }
     
     
-    /**
+    
+    private static String checkResult(String src, String res) { 
+    	boolean srcEndWithSep=StringUtil.endsWith(src, ResourceUtil.FILE_SEPERATOR) || StringUtil.endsWith(src, '/') || StringUtil.endsWith(src, '\\');
+    	boolean resEndWithSep=StringUtil.endsWith(res, ResourceUtil.FILE_SEPERATOR) || StringUtil.endsWith(res, '/') || StringUtil.endsWith(res, '\\');
+    	if(srcEndWithSep && !resEndWithSep) return res+ResourceUtil.FILE_SEPERATOR;
+    	if(!srcEndWithSep && resEndWithSep) return res.substring(0,res.length()-1);
+    	
+    	return res;
+	}
+
+	/**
      * get only a existing file, dont create it
      * @param sc
      * @param strDir
@@ -241,7 +269,7 @@ public final class ConfigWebUtil {
     }*/
     
     /**
-     * checks if file is a directory or not, if directory dosent exists, it will be created
+     * checks if file is a directory or not, if directory doesn't exist, it will be created
      * @param directory
      * @return is directory or not
      */
@@ -251,7 +279,7 @@ public final class ConfigWebUtil {
     }
     
     /**
-     * checks if file is a file or not, if file dosent exists, it will be created
+     * checks if file is a file or not, if file doesn't exist, it will be created
      * @param file
      * @return is file or not
      */
@@ -292,7 +320,7 @@ public final class ConfigWebUtil {
     */
     public static LogAndSource getLogAndSource( ConfigServer configServer, Config config, String strLogger, boolean hasAccess, int logLevel) throws IOException {
         if(logLevel==-1)logLevel=Log.LEVEL_ERROR;
-    	boolean isCS=config instanceof ConfigServer;
+    	//boolean isCS=config instanceof ConfigServer;
         if(!StringUtil.isEmpty(strLogger) && hasAccess && !"console".equalsIgnoreCase(strLogger)) {
         	return ConfigWebUtil.getLogAndSource(config,strLogger,logLevel);
         }

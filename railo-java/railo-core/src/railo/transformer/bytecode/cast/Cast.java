@@ -11,6 +11,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
+import railo.transformer.bytecode.expression.var.Variable;
 import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.util.Methods_Caster;
 import railo.transformer.bytecode.util.Types;
@@ -25,7 +26,7 @@ public final class Cast extends ExpressionBase {
     private String lcType;
     
     private Cast(Expression expr, String type, String lcType) {
-        super(expr.getLine());
+        super(expr.getStart(),expr.getEnd());
         this.expr=expr;
         this.type=type;
         this.lcType=lcType;
@@ -48,8 +49,10 @@ public final class Cast extends ExpressionBase {
     	case 'd':
     		if("double".equals(type))							return CastDouble.toExprDouble(expr);
     	break;
+    	case 'i':
+        	if("int".equals(lcType))							return CastInt.toExprInt(expr);
     	case 'n':
-        	if("number".equals(lcType))							return CastDouble.toExprDouble(expr);
+        	if("number".equals(lcType) || "numeric".equals(lcType))return CastDouble.toExprDouble(expr);
         break;
     	case 'o':
         	if("object".equals(lcType))							{
@@ -118,7 +121,11 @@ public final class Cast extends ExpressionBase {
     final public static Method GET_TIMEZONE = new Method("getTimeZone",
     			Types.TIMEZONE,
     			new Type[]{});
-    
+
+    // Excel toExcel (Object)
+    final public static Method TO_EXCEL = new Method("toExcel",
+			Types.EXCEL,
+			new Type[]{Types.OBJECT}); 
     
     /**
      * @see railo.transformer.bytecode.expression.Expression#_writeOut(org.objectweb.asm.commons.GeneratorAdapter, int)
@@ -214,6 +221,13 @@ public final class Cast extends ExpressionBase {
             	rtn=expr.writeOut(bc,MODE_REF);
             	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_DECIMAL[Types.getType(rtn)]);
                 return Types.STRING;
+            }
+        break;
+        case 'e':
+        	if("excel".equals(type)) {
+            	expr.writeOut(bc,MODE_REF);
+                adapter.invokeStatic(Types.EXCEL_UTIL,TO_EXCEL);
+                return Types.EXCEL;
             }
         break;
         case 'f':
@@ -402,6 +416,12 @@ public final class Cast extends ExpressionBase {
                 	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_QUERY);
                 return Types.QUERY;
             }
+            if("querycolumn".equals(lcType)) {
+            	rtn=(expr instanceof Variable)?((Variable)expr).writeOutCollection(bc, mode):expr.writeOut(bc,MODE_REF);
+                if(!rtn.equals(Types.QUERY_COLUMN))
+                	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_QUERY_COLUMN);
+                return Types.QUERY_COLUMN;
+            }
             else if("timespan".equals(lcType)) {
             	rtn=expr.writeOut(bc,MODE_REF);
                 if(!rtn.equals(Types.TIMESPAN))
@@ -410,7 +430,6 @@ public final class Cast extends ExpressionBase {
             }
         }
         Type t=getType(type);
-        
         
         expr.writeOut(bc,MODE_REF);
         adapter.checkCast(t);
@@ -460,11 +479,15 @@ public final class Cast extends ExpressionBase {
             if("decimal".equals(lcType))						return Types.STRING;
             
         break;
-        
+
+        case 'e':
+        	if("excel".equals(lcType)) 							return Types.EXCEL;
+        break;
         case 'f':
         	if("file".equals(lcType)) 							return Types.FILE;
             if("float".equals(type)) 							return Types.FLOAT_VALUE;
             if("float".equals(lcType))							return Types.FLOAT;
+            if("function".equals(lcType))							return Types.UDF;
         break;
 
         case 'i':
@@ -494,9 +517,11 @@ public final class Cast extends ExpressionBase {
         break;
         case 'u':
         	if("uuid".equals(lcType)) 							return Types.STRING;
+        	if("udf".equals(lcType)) 							return Types.UDF;
         break;
         case 'q':
         	if("query".equals(lcType)) 							return Types.QUERY;
+        	if("querycolumn".equals(lcType)) 							return Types.QUERY_COLUMN;
         break;
         case 't':
         	if("timespan".equals(lcType))						return Types.TIMESPAN;
@@ -516,7 +541,7 @@ public final class Cast extends ExpressionBase {
 			return Type.getType(ClassUtil.loadClass(type));
 		} 
         catch (ClassException e) {
-			throw new BytecodeException(e.getMessage(),-1);
+			throw new BytecodeException(e.getMessage(),null);
 		}
 		
 	}

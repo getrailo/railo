@@ -41,6 +41,22 @@ public class Component extends EvaluatorSupport {
 			// is script Component
 			Tag p = ASMUtil.getParentTag(tag);
 			if(p.getTagLibTag().getName().equals("script") && (pPage = p.getParent()) instanceof Page){
+				
+				// move imports from script to component body
+				List children = p.getBody().getStatements();
+				Iterator it = children.iterator();
+				Statement stat;
+				Tag t;
+				while(it.hasNext()){
+					stat=(Statement) it.next();
+					if(!(stat instanceof Tag)) continue;
+					t=(Tag) stat;
+					if(t.getTagLibTag().getName().equals("import")){
+						tag.getBody().addStatement(t);
+					}
+				}
+				
+				// replace script with component	
 				ASMUtil.replace(p, tag, false);
 			}
 			else

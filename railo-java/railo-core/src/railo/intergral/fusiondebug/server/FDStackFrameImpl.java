@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import railo.commons.lang.StringUtil;
 import railo.intergral.fusiondebug.server.type.FDVariable;
 import railo.intergral.fusiondebug.server.util.FDCaster;
@@ -14,12 +16,10 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.scope.ClusterNotSupported;
-import railo.runtime.type.scope.UndefinedImpl;
+import railo.runtime.type.scope.Scope;
+import railo.runtime.type.util.KeyConstants;
 
 import com.intergral.fusiondebug.server.FDLanguageException;
 import com.intergral.fusiondebug.server.IFDStackFrame;
@@ -29,8 +29,6 @@ import com.intergral.fusiondebug.server.IFDVariable;
 public class FDStackFrameImpl implements IFDStackFrame {
 
 
-	private static final Collection.Key CALLER = KeyImpl.intern("caller");
-	
 	private static final int[] SCOPES_AS_INT = new int[]{
 		Scope.SCOPE_VARIABLES,Scope.SCOPE_CGI,Scope.SCOPE_URL,Scope.SCOPE_FORM,
 		Scope.SCOPE_COOKIE,Scope.SCOPE_CLIENT,Scope.SCOPE_APPLICATION,Scope.SCOPE_CALLER,
@@ -125,15 +123,15 @@ public class FDStackFrameImpl implements IFDStackFrame {
 	/**
 	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getScopeNames()
 	 */
-	public List getScopeNames() {
-		List implScopes = ((UndefinedImpl) pc.undefinedScope()).getScopeNames();
+	public List<String> getScopeNames() {
+		List<String> implScopes = pc.undefinedScope().getScopeNames();
 		for(int i=0;i<SCOPES_AS_INT.length;i++){
 			if(!implScopes.contains(SCOPES_AS_STRING[i]) && enabled(pc,SCOPES_AS_INT[i]))
 				implScopes.add(SCOPES_AS_STRING[i]);
 		}
 		return implScopes;
 	}
-	public static List testScopeNames(PageContextImpl pc) {
+	public static List<String> testScopeNames(PageContextImpl pc) {
 		return new FDStackFrameImpl(null,pc,null,null).getScopeNames();
 	}
 	
@@ -145,7 +143,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 			return pc.getApplicationContext().isSetSessionManagement();
 		}
 		if(Scope.SCOPE_CALLER==scope){
-			return pc.undefinedScope().get(CALLER,null) instanceof Struct;
+			return pc.undefinedScope().get(KeyConstants._caller,null) instanceof Struct;
 		}
 		if(Scope.SCOPE_CLUSTER==scope){
 			try {

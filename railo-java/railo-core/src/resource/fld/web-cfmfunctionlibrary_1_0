@@ -42,7 +42,7 @@
 	<function>
 		<name>AjaxLink</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxLink</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Causes an HTML href attribute to display link results in the current Ajax container.</description>
 		<argument>
 			<name>url</name>
@@ -58,7 +58,7 @@
 	<function>
 		<name>AjaxOnLoad</name>
 		<class>railo.runtime.functions.displayFormatting.AjaxOnLoad</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Causes the specified JavaScript function to run when the page loads.</description>
 		<argument>
 			<name>functionName</name>
@@ -66,6 +66,24 @@
 			<required>Yes</required>
 		<description>The name of the function to run when the page loads. The specified function does not take a parameter.</description>
     </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- ApplicationStartTime -->
+	<function>
+		<name>ApplicationStartTime</name>
+		<class>railo.runtime.functions.system.ApplicationStartTime</class>
+		<description>Provides information about the time when the current application scope was created.</description>
+		<return>
+			<type>date</type>
+		</return>
+	</function>
+	<!-- ApplicationStop -->
+	<function>
+		<name>ApplicationStop</name>
+		<class>railo.runtime.functions.system.ApplicationStop</class>
+		<description>stops the current application context</description>
 		<return>
 			<type>void</type>
 		</return>
@@ -95,6 +113,8 @@
 	<function>
 		<name>arrayAppend</name>
 		<class>railo.runtime.functions.arrays.ArrayAppend</class>
+		<member-name>append</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Appends an array element to an array.</description>
 		<argument>
 			<name>array</name>
@@ -104,9 +124,18 @@
 		</argument>
 		<argument>
 			<name>value</name>
+			<alias>object,obj</alias>
 			<type>any</type>
 			<required>Yes</required>
 			<description>The element to append. Can be any type.</description>
+		</argument>
+		<argument>
+			<name>merge</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>This argument only applies when the value is an array.
+			If set to true appends array elements individually to the source array. 
+			If false (default) the complete array is added as one element at the end, in the source array.</description>
 		</argument>
 		<return>
 			<type>boolean</type>
@@ -116,6 +145,7 @@
 	<function>
 		<name>arrayAvg</name>
 		<class>railo.runtime.functions.arrays.ArrayAvg</class>
+		<member-name>avg</member-name>
 		<description>Calculates the average of the values in an array.
 All elements in the array must contain values that can be automatically converted to numeric.</description>
 		<argument>
@@ -132,6 +162,8 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayClear</name>
 		<class>railo.runtime.functions.arrays.ArrayClear</class>
+		<member-name>clear</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Removes all elements from an array.</description>
 		<argument>
 			<name>array</name>
@@ -147,6 +179,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>ArrayContains</name>
 		<class>railo.runtime.functions.arrays.ArrayContains</class>
+		<member-name>contains</member-name>
 		<description>Returns true if specified object is present is given array</description>
 		<argument>
 			<name>haystack</name>
@@ -158,7 +191,7 @@ All elements in the array must contain values that can be automatically converte
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
-			<type>string</type>
+			<type>object</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
 		</argument>
@@ -170,6 +203,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>ArrayContainsNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayContainsNoCase</class>
+		<member-name>containsNoCase</member-name>
 		<description>Search an array to find a case insensitive item</description>
 		<argument>
 			<name>haystack</name>
@@ -181,7 +215,7 @@ All elements in the array must contain values that can be automatically converte
 		<argument>
 			<name>needle</name>
 			<alias>object,obj,o</alias>
-			<type>string</type>
+			<type>object</type>
 			<required>Yes</required>
 			<description>The item that we are looking for in the array</description>
 		</argument>
@@ -193,6 +227,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayDelete</name>
 		<class>railo.runtime.functions.arrays.ArrayDelete</class>
+		<member-name>delete</member-name>
 		<description>Deletes specified object from given array</description>
 		<argument>
 			<name>array</name>
@@ -223,6 +258,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayDeleteAt</name>
 		<class>railo.runtime.functions.arrays.ArrayDeleteAt</class>
+		<member-name>deleteAt</member-name>
 		<description>Deletes an element from an array and resizes the array so that the deleted element doesn't leave a gap.</description>
 		<argument>
 			<name>array</name>
@@ -244,7 +280,54 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayFind</name>
 		<class>railo.runtime.functions.arrays.ArrayFind</class>
+		<member-name>find</member-name>
 		<description>These functions searches the array for the specified object.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>The array to search in</description>
+		</argument>
+		<argument>
+			<name>value_or_closure</name>
+			<alias>value,closure,function,udf</alias>
+			<type>any</type>
+			<required>Yes</required>
+			<description>The value to find or a closure/function that gets every value of the array as input and returns true if the given value is right.</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	<!-- arrayFindAll -->
+	<function>
+		<name>arrayFindAll</name>
+		<class>railo.runtime.functions.arrays.ArrayFindAll</class>
+		<member-name>findAll</member-name>
+		<description>These functions searches the array for the specified object and return the positions of all occurrence of this values.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>The array to search in</description>
+		</argument>
+		<argument>
+			<name>value_or_closure</name>
+			<alias>value,closure,function,udf</alias>
+			<type>any</type>
+			<required>Yes</required>
+			<description>The value to find or a closure/function that gets every value of the array as input and returns true if the given value is right.</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	<!-- arrayFindAllNoCase -->
+	<function>
+		<name>arrayFindAllNoCase</name>
+		<class>railo.runtime.functions.arrays.ArrayFindAllNoCase</class>
+		<member-name>findAllNoCase</member-name>
+		<description>These functions searches the array for the specified object and return the positions of all occurrence of this values.</description>
 		<argument>
 			<name>array</name>
 			<type>array</type>
@@ -258,13 +341,60 @@ All elements in the array must contain values that can be automatically converte
 			<description>The value to find</description>
 		</argument>
 		<return>
-			<type>number</type>
+			<type>array</type>
+		</return>
+	</function>
+	<!-- arrayEach -->
+	<function>
+		<name>arrayEach</name>
+		<class>railo.runtime.functions.arrays.ArrayEach</class>
+		<member-name>each</member-name>
+		<member-chaining>true</member-chaining>
+		<description>call the given UDF/Closure with every value in the array.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the values from array</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- arrayFilter -->
+	<function>
+		<name>arrayFilter</name>
+		<class>railo.runtime.functions.arrays.ArrayFilter</class>
+		<member-name>filter</member-name>
+		<description>This function creates a new Array that returns all the values from an array that match the given filter.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to filter values from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any arg):boolean].</description>
+		</argument>
+		<return>
+			<type>array</type>
 		</return>
 	</function>
 	<!-- arrayFindNoCase -->
 	<function>
 		<name>arrayFindNoCase</name>
 		<class>railo.runtime.functions.arrays.ArrayFindNoCase</class>
+		<member-name>findNoCase</member-name>
 		<description>These functions performs a case-insensitive search in the array for the specified object.</description>
 		<argument>
 			<name>array</name>
@@ -286,6 +416,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayFirst</name>
 		<class>railo.runtime.functions.arrays.ArrayFirst</class>
+		<member-name>first</member-name>
 		<description>Returns the first item from an array. Throws an error if the array is empty.</description>
 		<argument>
 			<name>array</name>
@@ -301,6 +432,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>ArrayIndexExists</name>
 		<class>railo.runtime.functions.arrays.ArrayIndexExists</class>
+		<member-name>indexExists</member-name>
 		<description>Returns whether there exists an item in the array at the selected index.</description>
 		<argument>
 			<name>array</name>
@@ -323,6 +455,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>ArrayIsDefined</name>
 		<class>railo.runtime.functions.arrays.ArrayIsDefined</class>
+		<member-name>isDefined</member-name>
 		<description>Returns whether there exists an item in the array at the selected index.</description>
 		<argument>
 			<name>array</name>
@@ -347,6 +480,7 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayLast</name>
 		<class>railo.runtime.functions.arrays.ArrayLast</class>
+		<member-name>last</member-name>
 		<description>Returns the last element of an array</description>
 		<argument>
 			<name>array</name>
@@ -362,6 +496,8 @@ All elements in the array must contain values that can be automatically converte
 	<function>
 		<name>arrayInsertAt</name>
 		<class>railo.runtime.functions.arrays.ArrayInsertAt</class>
+		<member-name>insertAt</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Inserts a value at the specified position in the array.
 If the element is inserted before the end of the array, Railo shifts the positions of all elements with a higher index to make room.</description>
 		<argument>
@@ -392,6 +528,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayIsEmpty</name>
 		<class>railo.runtime.functions.arrays.ArrayIsEmpty</class>
+		<member-name>isEmpty</member-name>
 		<description>Determines if the array is empty.</description>
 		<argument>
 			<name>array</name>
@@ -407,6 +544,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayLen</name>
 		<class>railo.runtime.functions.arrays.ArrayLen</class>
+		<member-name>len</member-name>
 		<description>Returns the length of the array</description>
 		<argument>
 			<name>array</name>
@@ -422,6 +560,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayMax</name>
 		<class>railo.runtime.functions.arrays.ArrayMax</class>
+		<member-name>max</member-name>
 		<description>Returns the largest numeric value in an array. If the array
         parameter value is an empty array, returns zero.
         All elements must contain values that can be automatically
@@ -436,10 +575,39 @@ Remember CFML arrays start at 1 not 0.</description>
 			<type>number</type>
 		</return>
 	</function>
+	<!-- arrayMid -->
+	<function>
+		<name>arrayMid</name>
+		<class>railo.runtime.functions.arrays.ArrayMid</class>
+		<member-name>mid</member-name>
+		<description>Extracts a sub array from a array.</description>
+		<argument>
+			<name>array</name>
+			<type>array</type>
+			<required>Yes</required>
+			<description>array to substract data from</description>
+	    </argument>
+		<argument>
+			<name>start</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>The position of the first element to retrieve. </description>
+	    </argument>
+		<argument>
+			<name>count</name>
+			<type>number</type>
+			<required>no</required>
+			<description>The number of elements to retrieve. If not set, all elements until the end of the array will be returned. </description>
+	    </argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	<!-- arrayMin -->
 	<function>
 		<name>arrayMin</name>
 		<class>railo.runtime.functions.arrays.ArrayMin</class>
+		<member-name>min</member-name>
 		<description>Returns the smallest numeric value in an array. If the array
         parameter value is an empty array, returns zero.
         All elements must contain values that can be automatically
@@ -458,6 +626,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayMerge</name>
 		<class>railo.runtime.functions.arrays.ArrayMerge</class>
+		<member-name>merge</member-name>
 		<description>This function merges two arrays to a single one.</description>
 		<argument>
 			<name>array1</name>
@@ -501,6 +670,8 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayPrepend</name>
 		<class>railo.runtime.functions.arrays.ArrayPrepend</class>
+		<member-name>prepend</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Inserts an array element at the beginning of an array
         and shifts the positions of the existing elements to
         make room.</description>
@@ -524,6 +695,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayResize</name>
 		<class>railo.runtime.functions.arrays.ArrayResize</class>
+		<member-name>resize</member-name>
 		<description>Resets an array to a specified minimum number of elements.
         This can improve performance, if used to size an array to its
         expected maximum. For more than 500 elements, use ArrayResize
@@ -548,6 +720,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arrayReverse</name>
 		<class>railo.runtime.functions.arrays.ArrayReverse</class>
+		<member-name>reverse</member-name>
 		<description>Returns a new array, with all the elements reversed</description>
 		<argument>
 			<name>array</name>
@@ -563,6 +736,8 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySet</name>
 		<class>railo.runtime.functions.arrays.ArraySet</class>
+		<member-name>set</member-name>
+		<member-chaining>true</member-chaining>
 		<description>In a one-dimensional array, sets the elements in a specified
         index range to a value. Useful for initializing an array after
         a call to ArrayNew.</description>
@@ -598,6 +773,7 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySlice</name>
 		<class>railo.runtime.functions.arrays.ArraySlice</class>
+		<member-name>slice</member-name>
 		<description>Returns a new array, from the start position up to the count of elements</description>
 		<argument>
 			<name>array</name>
@@ -625,6 +801,8 @@ Remember CFML arrays start at 1 not 0.</description>
 	<function>
 		<name>arraySort</name>
 		<class>railo.runtime.functions.arrays.ArraySort</class>
+		<member-name>sort</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Sorts array elements numerically or alphanumerically.</description>
 		<argument>
 			<name>array</name>
@@ -633,17 +811,28 @@ Remember CFML arrays start at 1 not 0.</description>
 		<description>Name of an array </description>
     </argument>
 		<argument>
-			<name>sort_type</name>
-			<type>string</type>
+			<name>sorttype_or_closure</name>
+			<alias>sort_type,sortType,closure,function,udf</alias>
+			<type>object</type>
 			<required>Yes</required>
 		<description>
-		define one of the following:
-- numeric: sorts numbers
-- text: sorts text alphabetically, taking case into account (case sensitive)
-- textnocase: sorts text alphabetically, without regard to case (case insensitive)</description>
+value can be a string or a closure/function.
+		
+a string must be one of the following values:
+- "numeric": sorts numbers
+- "text": sorts text alphabetically, taking case into account (case sensitive)
+- "textnocase": sorts text alphabetically, without regard to case (case insensitive)
+
+if you define a closure/function, the closure/function must accept 2 parameters of any type and return:
+-1, if first parameter is "smaller" than second parameter
+0, if first parameter is equal to second parameter
+1, first parameter is "bigger" than second parameter
+
+</description>
     </argument>
 		<argument>
 			<name>sort_order</name>
+			<alias>sortOrder</alias>
 			<type>string</type>
 			<required>No</required>
 			<default>asc</default>
@@ -651,6 +840,14 @@ Remember CFML arrays start at 1 not 0.</description>
 sort direction:		
 - asc(default): ascending sort order
 - desc: descending sort order.</description>
+    </argument>
+		<argument>
+			<name>locale_sensitive</name>
+			<alias>localeSensitive</alias>
+			<type>boolean</type>
+			<required>No</required>
+			<default>false</default>
+		<description>if true it does a locale sensitive sorting.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -660,6 +857,7 @@ sort direction:
 	<function>
 		<name>arraySum</name>
 		<class>railo.runtime.functions.arrays.ArraySum</class>
+		<member-name>sum</member-name>
 		<description>The sum of values in an array. If the array parameter value is
         an empty array, returns zero.</description>
 		<argument>
@@ -676,6 +874,8 @@ sort direction:
 	<function>
 		<name>arraySwap</name>
 		<class>railo.runtime.functions.arrays.ArraySwap</class>
+		<member-name>swap</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Swaps array values of an array at specified positions. This
         function is more efficient than multiple cfset tags</description>
 		<argument>
@@ -704,6 +904,7 @@ sort direction:
 	<function>
 		<name>arrayToList</name>
 		<class>railo.runtime.functions.list.ArrayToList</class>
+		<member-name>toList</member-name>
 		<description>Transform the array to a list of elements delimiter by the given string</description>
 		<argument>
 			<name>array</name>
@@ -727,6 +928,7 @@ sort direction:
 	<function>
 		<name>arrayToStruct</name>
 		<class>railo.runtime.functions.arrays.ArrayToStruct</class>
+		<member-name>toStruct</member-name>
 		<description>Transform the array to a struct, the index of the array is the key of the struct</description>
 		<argument>
 			<name>array</name>
@@ -1554,6 +1756,51 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</return>
 	</function>
 	
+	<!-- CSRFGenerateToken -->
+	<function>
+		<name>CSRFGenerateToken</name>
+		<class>railo.runtime.functions.csrf.CSRFGenerateToken</class>
+		<description>Provides a random token and stores it in the session. You can also provide a specific key to store in the session.</description>
+		<argument>
+			<name>key</name>
+			<type>string</type>
+			<required>No</required>
+			<description>A random token is generated for the key provided.</description>
+	    </argument>
+		<argument>
+			<name>forceNew</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>If set to true, a new token is generated every time the function is called. 
+			If false, in case a token exists for the key, the same key is returned.</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- CSRFVerifyToken -->
+	<function>
+		<name>CSRFVerifyToken</name>
+		<class>railo.runtime.functions.csrf.CSRFVerifyToken</class>
+		<description>Validates the given token against the same stored in the session for a specific key.</description>
+		<argument>
+			<name>token</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>Token that to be validated against the token stored in the session.</description>
+	    </argument>
+		<argument>
+			<name>key</name>
+			<type>string</type>
+			<required>No</required>
+			<description>The key against which the token be searched.</description>
+	    </argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
 	<!-- ctCacheClear -->
 	<function>
 		<name>ctCacheClear</name>
@@ -1755,6 +2002,32 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<status>hidden</status>
 		<description>literal component definition, used by the serialize function</description>
 		<argument-type>dynamic</argument-type>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	
+	
+	<!-- CreateDynamicProxy -->
+	<function>
+		<name>CreateDynamicProxy</name>
+		<class>railo.runtime.functions.other.CreateDynamicProxy</class>
+		<status>hidden</status>
+		<description>wrap the given component with a java class that implements the given interfaces.</description>
+		<argument>
+			<name>cfc</name>
+			<alias>cfcName,component,componentName</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>component or component name</description>
+	    </argument>
+		<argument>
+			<name>interfaces</name>
+			<alias>interface</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description>array of strings containg interface pathes or a string list of interface pathes.</description>
+	    </argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -2042,10 +2315,57 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>datetime</type>
 		</return>
 	</function>
+
+	<!-- _dateAdd (used only as member function) -->
+	<function>
+		<name>_dateAdd</name>
+		<class>railo.runtime.functions.dateTime.DateAddMember</class>
+		<member-name>add</member-name>
+		<description>Adds units of time to a date.
+        [datepart - quicky]
+        yyyy: Year; q: Quarter; m: Month; y: Day of year; d: Day
+        w: Weekday; ww: Week; h: Hour; n: Minute; s: Second;
+        l: Millisecond</description>
+		<argument>
+			<name>date</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>a datetime object</description>
+	    </argument>
+		<argument>
+			<name>datepart</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>one of the following:
+- yyyy: Year
+- q: Quarter
+- m: Month
+- y: Day of year
+- d: Day
+- w: Weekday
+- ww: Week
+- h: Hour
+- n: Minute
+- s: Second
+- l: Millisecond
+			</description>
+	    </argument>
+		<argument>
+			<name>number</name>
+			<type>number</type>
+			<required>Yes</required>
+			<description>Number of units of datepart to add to date (positive, to get dates in the future; negative, to get dates in the past). Number must be an integer.</description>
+	    </argument>
+		<return>
+			<type>datetime</type>
+		</return>
+	</function>
+	
 	<!-- dateCompare -->
 	<function>
 		<name>dateCompare</name>
 		<class>railo.runtime.functions.dateTime.DateCompare</class>
+		<member-name>compare</member-name>
 		<description>Compares to date, to the given optional resolution. Returns -1 if date1 is before date2. Returns 1 if date1 is after date2. Returns 0 if equal</description>
 		<argument>
 			<name>date1</name>
@@ -2139,6 +2459,49 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	
+	<!-- _dateDiff (only for member types) -->
+	<function>
+		<name>_dateDiff</name>
+		<class>railo.runtime.functions.dateTime.DateDiffMember</class>
+		<member-name>diff</member-name>
+		<description>Determines the number of given date parts between two different dates</description>
+		<argument>
+			<name>date1</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>date time object to compare</description>
+	    </argument>
+		<argument>
+			<name>date2</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>date time object to compare</description>
+	    </argument>
+		<argument>
+			<name>datepart</name>
+			<type>string</type>
+			<required>no</required>
+			<default>s</default>
+		<description>String that specifies the units in which to count:
+- yyyy: Years
+- q: Quarters
+- m: Months
+- y: Days of year (same as d)
+- d: Days
+- w: Weekdays (same as ww)
+- ww: Weeks
+- h: Hours
+- n: Minutes
+- s (Default): Seconds
+			</description>
+   	 	</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
+	
 	<!-- dateFormat -->
 	<function>
 		<name>dateFormat</name>
@@ -2197,6 +2560,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dateTimeFormat</name>
 		<class>railo.runtime.functions.displayFormatting.DateTimeFormat</class>
+		<member-name>format</member-name>
 		<description>Formats a date/time string to a given output</description>
 		<argument>
 			<name>datetime</name>
@@ -2208,37 +2572,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>mask</name>
 			<type>string</type>
 			<required>No</required>
-			<default>dd-mmm-yy hh:nn tt</default>
+			<default>dd-MMM-yyyy HH:mm:ss</default>
 		<description>
-Characters that show how Railo displays a date:
-- d: Day of the month as digits; no leading zero for single-digit days.
-- dd: Day of the month as digits; leading zero for single-digit days.
-- ddd: Day of the week as a three-letter abbreviation.
-- dddd: Day of the week as its full name.
-- m: Month as digits; no leading zero for single-digit months.
-- mm: Month as digits; leading zero for single-digit months.
-- mmm: Month as a three-letter abbreviation.
-- mmmm: Month as its full name.
-- yy: Year as last two digits; leading zero for years less than 10.
-- yyyy: Year represented by four digits.
-- gg: Period/era string. Ignored. Reserved. The following masks tell how to format the full date and cannot be combined with other masks:
-- h: hours; no leading zero for single-digit hours (12-hour clock)
-- hh: hours; leading zero for single-digit hours (12-hour clock)
-- H: hours; no leading zero for single-digit hours (24-hour clock)
-- HH: hours; leading zero for single-digit hours (24-hour clock)
-- n: minutes; no leading zero for single-digit minutes
-- nn: minutes; a leading zero for single-digit minutes
-- s: seconds; no leading zero for single-digit seconds
-- ss: seconds; leading zero for single-digit seconds
-- l or L: milliseconds, with no leading zeros
-- t: one-character time marker string, such as A or P
-- tt: multiple-character time marker string, such as AM or PM
-
-- short: equivalent to m/d/y h:mm tt
-- medium: equivalent to mmm d, yyyy h:mm:ss tt
-- long: equivalent to mmmm d, yyyy h:mm:ss tt {timezone-3-letters}
-- full: equivalent to dddd, mmmm d, yyyy h:mm:ss tt {timezone-3-letters}
-
+Mask that has to be used for formatting. The function follows Java date time mask. 
+For details, see the section Date and Time Patterns at the following URL: http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
 </description>
     </argument>
 		<argument>
@@ -2260,7 +2597,6 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		</return>
 	</function>
 	 -->
-	
 	<!-- datePart -->
 	<function>
 		<name>datePart</name>
@@ -2307,11 +2643,60 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<return>
 			<type>number</type>
 		</return>
+	</function>	
+	<!-- _datePart (used only as member function) -->
+	<function>
+		<name>_datePart</name>
+		<class>railo.runtime.functions.dateTime.DatePartMember</class>
+		<member-name>part</member-name>
+		<description>Extracts the given date part from the date object</description>
+		<argument>
+			<name>date</name>
+			<type>datetime</type>
+			<required>Yes</required>
+			<description>dateobject the get part from</description>
+	    </argument>
+		<argument>
+			<name>datepart</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>one of the following:
+- yyyy: Year
+- q: Quarter
+- m: Month
+- y: Day of year
+- d: Day
+- w: Weekday
+- ww: Week
+- h: Hour
+- n: Minute
+- s: Second
+- l: Millisecond
+			</description>
+    	</argument>
+		<argument>
+			<name>timezone</name>
+			<type>string</type>
+			<required>No</required>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
+    </argument>
+		<return>
+			<type>number</type>
+		</return>
 	</function>
 	<!-- day -->
 	<function>
 		<name>day</name>
 		<class>railo.runtime.functions.dateTime.Day</class>
+		<member-name>day</member-name>
 		<description>Determines the day of the month, in a date.
         The ordinal for the day of the month, ranging from 1 to 31.</description>
 		<argument>
@@ -2342,6 +2727,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dayOfWeek</name>
 		<class>railo.runtime.functions.dateTime.DayOfWeek</class>
+		<member-name>dayOfWeek</member-name>
 		<description>Determines the day of the week, in a date.</description>
 		<argument>
 			<name>date</name>
@@ -2371,6 +2757,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>lsdayOfWeek</name>
 		<class>railo.runtime.functions.international.LSDayOfWeek</class>
+		<member-name>lsDayOfWeek</member-name>
 		<description>Returns the day of the week the date represents in locale format</description>
 		<argument>
 			<name>date</name>
@@ -2448,6 +2835,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>dayOfYear</name>
 		<class>railo.runtime.functions.dateTime.DayOfYear</class>
+		<member-name>dayOfYear</member-name>
 		<description>Determines the day of the year, in a date.</description>
 		<argument>
 			<name>date</name>
@@ -2477,6 +2865,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>daysInMonth</name>
 		<class>railo.runtime.functions.dateTime.DaysInMonth</class>
+		<member-name>daysInMonth</member-name>
 		<description>Determines the number of days in a month.</description>
 		<argument>
 			<name>date</name>
@@ -2506,6 +2895,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>daysInYear</name>
 		<class>railo.runtime.functions.dateTime.DaysInYear</class>
+		<member-name>daysInYear</member-name>
 		<description>Determines the number of days in a year.</description>
 		<argument>
 			<name>date</name>
@@ -2580,6 +2970,97 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	
+	<!-- decodeFromURL -->	
+	<function>
+		<name>decodeFromURL</name>
+		<class>railo.runtime.functions.owasp.DecodeFromURL</class>
+		<status>deprecated</status>
+		<description>Decodes a string that has been encoded in the URL using the encodeForURL.
+		this function is deprecated, use function ESAPIDecode('url',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- each -->
+	<function>
+		<name>each</name>
+		<class>railo.runtime.functions.closure.Each</class>
+		<description>call the given UDF/Closure with every entry (key/value) in the given collection.</description>
+		<argument>
+			<name>collection</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>collection to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the entries from struct</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- Empty -->
+	<function>
+		<name>Empty</name>
+		<class>railo.runtime.functions.system.Empty</class>
+		<description>return true if a function exists and is not "empty". 
+The following things are considered to be empty:
+- string:"" (an empty string)
+- number:return always false
+- boolean: return always false
+- array: [] (an empty array)
+- struct: {} (an empty struct)
+		 </description>
+		<argument>
+			<name>variable</name>
+			<alias>variableName,object</alias>
+			<type>variable_string</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	<!-- ESAPIDecode -->	
+	<function>
+		<name>ESAPIDecode</name>
+		<class>railo.runtime.functions.owasp.ESAPIDecode</class>
+		<description>Decodes a string that has been encoded with ESAPIEncode.</description>
+		<argument>
+			<name>decodeFrom</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>given value is encoded as:
+- url
+</description>
+	    </argument>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>string to encode</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	
 	<!-- decrypt -->
 	<function>
 		<name>decrypt</name>
@@ -2679,6 +3160,46 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 			<type>boolean</type>
 		</return>
 	</function>
+	<!-- DirectoryCopy -->
+	<function>
+		<name>DirectoryCopy</name>
+		<class>railo.runtime.functions.file.DirectoryCopy</class>
+		<description>Copies the contents of a directory to a destination directory.</description>
+		<argument>
+			<name>source</name>
+			<alias>directory</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>Pathname of directory from which you copy content.</description>
+		</argument>
+		<argument>
+			<name>destination</name>
+			<alias>newDirectory</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path of the destination directory. If not an absolute path, it is relative to the source directory.</description>
+		</argument>
+		<argument>
+			<name>recurse</name>
+			<alias>recursive</alias>
+			<type>boolean</type>
+			<required>no</required>
+			<default>false</default>
+			<description>If true, copies the subdirectories, otherwise only the files in the source directory.</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>any</type>
+			<required>no</required>
+			<description>
+Filter to be used to filter the data copied:
+- A string that uses "*" as a wildcard, for example, "*.cfm"
+- a UDF (User defined Function) using the following pattern "functioname(String path):boolean", the function is run for every single file, if the function returns true, then the file is will be added to the list otherwise it will be omitted</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	<!-- DirectoryCreate -->
 	<function>
 		<name>DirectoryCreate</name>
@@ -2714,6 +3235,7 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 		</argument>
 		<argument>
 			<name>recurse</name>
+			<alias>recursive</alias>
 			<type>boolean</type>
 			<required>no</required>
 			<description>delete content of the directory</description>
@@ -2728,8 +3250,8 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 		<class>railo.runtime.functions.system.DirectoryExists</class>
 		<description>Determines whether a directory exists.</description>
 		<argument>
-			<name>absolute_path</name>
-			<alias>path</alias>
+			<name>path</name>
+			<alias>absolute_path,absolutePath</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>An absolute path. Alternatively, you can specify IP address as in the following example: DirectoryExists(\"//12.3.123.123/c_drive/test\");</description>
@@ -2751,8 +3273,8 @@ The algorithm to use to decrypt the string. Must be the same as the algorithm us
 		<class>railo.runtime.functions.file.DirectoryList</class>
 		<description>Lists the directory and returns the list of files under it as array or query</description>
 		<argument>
-			<name>absolute_path</name>
-			<alias>path</alias>
+			<name>path</name>
+			<alias>absolute_path,absolutePath</alias>
 			<type>string</type>
 			<required>Yes</required>
 		<description>The absolute path of the directory for which to list the contents. Alternatively, you can specify IP address as in the following example: DirectoryList(\"//12.3.123.123/c_drive/test\");.</description>
@@ -2987,7 +3509,11 @@ dec: descending (z to a) sort order.
 			<name>output</name>
 			<type>string</type>
 			<required>No</required>
-		<description></description>
+		<description>Where to send the results of the dump. The following values are valid:
+- browser: outputs in browser window
+- console: outputs on (System.out stream; see also setting in railo-server.xml {system-out})
+- filename: outputs in a file
+		</description>
     </argument>
 		<argument>
 			<name>format</name>
@@ -3148,6 +3674,223 @@ dec: descending (z to a) sort order.
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- ESAPI Functions -->
+	<!-- encodeForHTML -->
+	<function>
+		<name>encodeForHTML</name>
+		<class>railo.runtime.functions.owasp.EncodeForHTML</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('html',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForHTMLAttribute -->
+	<function>
+		<name>encodeForHTMLAttribute</name>
+		<class>railo.runtime.functions.owasp.EncodeForHTMLAttribute</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in HTML to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('html_attr',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>	
+	
+	<!-- encodeForCSS -->
+	<function>
+		<name>encodeForCSS</name>
+		<class>railo.runtime.functions.owasp.EncodeForCSS</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in CSS to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('css',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForJavaScript -->
+	<function>
+		<name>encodeForJavaScript</name>
+		<class>railo.runtime.functions.owasp.EncodeForJavaScript</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in JavaScript to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('javascript',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForXML -->
+	<function>
+		<name>encodeForXML</name>
+		<class>railo.runtime.functions.owasp.EncodeForXML</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in XML to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('xml',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- encodeForXMLAttribute -->
+	<function>
+		<name>encodeForXMLAttribute</name>
+		<class>railo.runtime.functions.owasp.EncodeForXMLAttribute</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in XMLAttribute to stop Cross Site Scripting attacks.
+		this function is deprecated, use function ESAPIEncode('xml_attr',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- encodeForURL -->	
+	<function>
+		<name>encodeForURL</name>
+		<class>railo.runtime.functions.owasp.EncodeForURL</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in a URL.
+		this function is deprecated, use function ESAPIEncode('url',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	
+	<!-- encodeForLDAP -->	
+	<function>
+		<name>encodeForLDAP</name>
+		<class>railo.runtime.functions.owasp.EncodeForLDAP</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in LDAP queries.
+		this function is deprecated, use function ESAPIEncode('ldap',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForDN -->	
+	<function>
+		<name>encodeForDN</name>
+		<class>railo.runtime.functions.owasp.EncodeForDN</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe output in LDAP Distinguished Names.
+		this function is deprecated, use function ESAPIEncode('dn',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- encodeForXPath -->	
+	<function>
+		<name>encodeForXPath</name>
+		<class>railo.runtime.functions.owasp.EncodeForXPath</class>
+		<status>deprecated</status>
+		<description>Encodes the given string for safe use in an XPath Query.
+		this function is deprecated, use function ESAPIEncode('xpath',...) instead.</description>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+		<description>string to encode</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	<!-- ESAPIEncode -->	
+	<function>
+		<name>ESAPIEncode</name>
+		<class>railo.runtime.functions.owasp.ESAPIEncode</class>
+		<description>Encodes the given string for safe output to stop Cross Site Scripting attacks.</description>
+		<argument>
+			<name>encodeFor</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>encode for what, valid values are:
+- css: for output inside Cascading Style Sheets (CSS)
+- dn: for output in LDAP Distinguished Names
+- html: for output inside HTML
+- html_attr: for output inside HTML Attributes
+- javascript: for output inside Javascript
+- ldap: for output in LDAP queries
+- url: for output in URL
+- vbscript: for output inside vbscript
+- xml: for output inside XML
+- xml_attr: for output inside XML Attributes
+- xpath: for output in XPath
+</description>
+	    </argument>
+		<argument>
+			<name>string</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>string to encode</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+
+
+	
 	
 	
 	<!-- encrypt -->
@@ -3422,7 +4165,7 @@ If you set unique=true and multiple records are returned, then an exception occu
 		<class>railo.runtime.functions.orm.EntityNameList</class>
 		<description>return all loaded entities as string list</description>
 		<argument>
-			<name>delimeter</name>
+			<name>delimiter</name>
 			<type>string</type>
 			<required>no</required>
 		<description>delimter used for the list</description>
@@ -3560,8 +4303,8 @@ EntitySave(entity, [forceinsert])</description>
 		<class>railo.runtime.functions.dynamicEvaluation.EvaluateJava</class>
 		<description>literal representation of a serializable Java Object, used by the serialize method.</description>
 		<argument>
-			<name>string</name>
-			<type>string</type>
+			<name>stringOrBinary</name>
+			<type>any</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
@@ -3596,8 +4339,8 @@ EntitySave(entity, [forceinsert])</description>
 		<class>railo.runtime.functions.system.ContractPath</class>
 		<description>Does the opposite of the function expandPath(), tries to match given absolute path, to the mappings in the enviroment, when no mapping match, railo creates a relatie path from the current position,</description>
 		<argument>
-			<name>absolute_path</name>
-			<alias>path</alias>
+			<name>path</name>
+			<alias>absolute_path,absolutePath</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>a absolute path</description>
@@ -3664,7 +4407,57 @@ EntitySave(entity, [forceinsert])</description>
 			<type>boolean</type>
 		</return>
 	</function>
+		<!-- FileAppend -->
+	<function>
+		<name>FileAppend</name>
+		<class>railo.runtime.functions.file.FileAppend</class>
+		<description>appends the entire content to the specified file. </description>
+		<argument>
+			<name>file</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>file path</description>
+		</argument>
+		<argument>
+			<name>data</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>data to append to the file</description>
+		</argument>
+		<argument>
+			<name>charset</name>
+			<type>string</type>
+			<required>no</required>
+			<description>The character encoding in which the file contents is encoded.</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
 	
+	<!-- FileGetMimeType -->
+	<function>
+		<name>FileGetMimeType</name>
+		<class>railo.runtime.functions.file.FileGetMimeType</class>
+		<description>Returns the mimetype of the given file</description>
+		<argument>
+			<name>file</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>file path or object</description>
+		</argument>
+		<argument>
+			<name>checkHeader</name>
+			<name>checkNotExtension</name>
+			<type>boolean</type>
+			<required>No</required>
+			<default>true</default>
+			<description>if set to true, Railo checks the header of the file, when set to false, Railo only checks the extension.</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
 
 	<!-- fileOpen -->
 	<function>
@@ -4245,6 +5038,7 @@ Set the attribute to normal to make a file not read-only and not hidden.</descri
 	<function>
 		<name>firstDayOfMonth</name>
 		<class>railo.runtime.functions.dateTime.FirstDayOfMonth</class>
+		<member-name>firstDayOfMonth</member-name>
 		<description>Determines the ordinal (day number, in the year) of the first
         day of the month in which a given date falls.</description>
 		<argument>
@@ -4353,10 +5147,10 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>struct</type>
 		</return>
 	</function>
-	<!-- ApplicationGetMetaData -->
+	<!-- GetApplicationMetadata -->
 	<function>
-		<name>ApplicationGetMetaData</name>
-		<class>railo.runtime.functions.system.ApplicationGetMetaData</class>
+		<name>GetApplicationMetadata</name>
+		<class>railo.runtime.functions.system.GetApplicationMetadata</class>
 		<description>return all data from this scope, when using a application.cfc or all setting defined in tag cfapplication</description>
 		<return>
 			<type>struct</type>
@@ -4391,11 +5185,11 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<class>railo.runtime.functions.other.GetBaseTagList</class>
 		<description>Gets ancestor tag names, starting with the parent tag.</description>
 		<argument>
-			<name>delimeter</name>
+			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
-		<description>delimeter used for the list</description>
+		<description>delimiter used for the list</description>
     </argument>
 		<return>
 			<type>string</type>
@@ -4443,6 +5237,23 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	<!-- GetCPUUsage -->
+	<function>
+		<name>GetCPUUsage</name>
+		<class>railo.runtime.functions.system.GetCPUUsage</class>
+		<description>returns the CPU usage for a defined time range (default: 1000ms).</description>
+		<argument>
+			<name>time</name>
+			<alias>interval</alias>
+			<type>number</type>
+			<required>no</required>
+			<default>1000</default>
+			<description>time range for a certain range.</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
 	<!-- getClientVariablesList -->
 	<function>
 		<name>getClientVariablesList</name>
@@ -4466,9 +5277,83 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>getCurrentContext</name>
 		<class>railo.runtime.functions.system.GetCurrentContext</class>
+		<status>deprecated</status>
+		<description>this function is deprecated, use function CallStackGet instead.</description>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	<!-- CallStackDump -->
+	<function>
+		<name>CallStackDump</name>
+		<class>railo.runtime.functions.system.CallStackDump</class>
+		<description>dump the context (stacktrace) of the current position.</description>
+		<argument>
+			<name>output</name>
+			<type>string</type>
+			<required>no</required>
+			<default>browser</default>
+			<description>Where to send the results of cfdump. The following values are valid:
+- browser: outputs in browser window
+- console: outputs on (System.out stream; see also setting in railo-server.xml {system-out})
+- filename: outputs in a file</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	<!-- CallStackGet -->
+	<function>
+		<name>CallStackGet</name>
+		<class>railo.runtime.functions.system.CallStackGet</class>
 		<description>return the context (stacktrace) of the current position.</description>
 		<return>
 			<type>array</type>
+		</return>
+	</function>
+	
+	<!-- Canonicalize -->
+	<function>
+		<name>Canonicalize</name>
+		<class>railo.runtime.functions.owasp.Canonicalize</class>
+		<description>Canonicalization is simply the operation of reducing a possibly encoded string down to its simplest form. 
+		This is important, because attackers frequently use encoding to change their input in a way that will bypass validation filters, 
+		but still be interpreted properly by the target of the attack. 
+		Note that data encoded more than once is not something that a normal user would generate and should be regarded as an attack.</description>
+		<argument>
+			<name>input</name>
+			<alias>inputString</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>the input string to encode</description>
+	    </argument>
+		<argument>
+			<name>restrictMultiple</name>
+			<alias>multiple</alias>
+			<type>boolean</type>
+			<required>Yes</required>
+			<description>true if checking for multiple encoding is desired, false otherwise.</description>
+	    </argument>
+		<argument>
+			<name>restrictMixed</name>
+			<alias>mixed</alias>
+			<type>boolean</type>
+			<required>Yes</required>
+			<description>true if checking for mixed encoding is desired, false otherwise</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	
+	<!-- GetFunctionCalledName -->
+	<function>
+		<name>GetFunctionCalledName</name>
+		<class>railo.runtime.functions.system.GetFunctionCalledName</class>
+		<description></description>
+		<return>
+			<type>string</type>
 		</return>
 	</function>
 	<!-- GetFreeSpace -->
@@ -4489,6 +5374,9 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>numeric</type>
 		</return>
 	</function>
+	
+	
+	
 	<!-- GetTotalSpace -->
 	<function>
 		<name>GetTotalSpace</name>
@@ -5005,13 +5893,13 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPRequest</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequest</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Returns an XML object that contains the entire SOAP
         request. Usually called from within a web service CFC.</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
-			<required>Yes</required>
+			<required>no</required>
 		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
     </argument>
 		<return>
@@ -5023,7 +5911,6 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPRequestHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPRequestHeader</class>
-		<status>unimplemeted</status>
 		<description>Obtains a SOAP request header. Call only from within
         a CFC web service function that is processing a request
         as a SOAP web service.</description>
@@ -5051,20 +5938,95 @@ if this attribute is not provided all types are returned.</description>
 		</return>
 	</function>
 	
+	
+	<!-- AddSOAPRequestHeader -->
+	<function>
+		<name>AddSOAPRequestHeader</name>
+		<class>railo.runtime.functions.xml.AddSOAPRequestHeader</class>
+		<status>implemeted</status>
+		<description>Adds a SOAP header to a web service request before making the request.</description>
+		<argument>
+			<name>webservice</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>A web service object as returned from the cfobject tag or the CreateObject function.</description>
+	    </argument>
+		<argument>
+			<name>namespace</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the namespace for the header.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the name of the header</description>
+    	</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>the value for the SOAP header; this can be a CFML XML value.</description>
+    	</argument>
+		<argument>
+			<name>mustUnderstand</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>Sets the SOAP mustunderstand value for this header.</description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
+	<!-- addSOAPResponseHeader -->
+	<function>
+		<name>addSOAPResponseHeader</name>
+		<class>railo.runtime.functions.xml.AddSOAPResponseHeader</class>
+		<status>implemeted</status>
+		<description>Adds a SOAP response header to a web service response. Call only from within a CFC web service function that is processing a request as a SOAP web service.</description>
+		<argument>
+			<name>namespace</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the namespace for the header.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>A String that is the name of the header</description>
+    	</argument>
+		<argument>
+			<name>value</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>the value for the SOAP header; this can be a XML value.</description>
+    	</argument>
+		<argument>
+			<name>mustUnderstand</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>Sets the SOAP mustunderstand value for this header.</description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 		
 	<!-- GetSOAPResponse -->
 	<function>
 		<name>getSOAPResponse</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponse</class>
-		<status>unimplemeted</status>
 		<description>Returns an XML object that contains the entire
         SOAP response after invoking a web service.</description>
 		<argument>
 			<name>webservice</name>
 			<type>any</type>
 			<required>Yes</required>
-		<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
-    </argument>
+			<description>A webservice object as returned from the cfobject tag or the CreateObject function.</description>
+    	</argument>
 		<return>
 			<type>any</type>
 		</return>
@@ -5074,7 +6036,6 @@ if this attribute is not provided all types are returned.</description>
 	<function>
 		<name>getSOAPResponseHeader</name>
 		<class>railo.runtime.functions.xml.GetSOAPResponseHeader</class>
-		<status>unimplemeted</status>
 		<description>Returns a SOAP response header. Call this function
         from within code that is invoking a web service after
         making a web service request.</description>
@@ -5116,17 +6077,27 @@ if this attribute is not provided all types are returned.</description>
 			<type>string</type>
 		</return>
 	</function>
-	<!-- GetSystemInfo
+
+	<!-- getSystemFreeMemory -->
 	<function>
-		<name>GetSystemInfo</name>
-		<class>railo.runtime.functions.system.GetSystemInfo</class>
-		<status>deprecated</status>
-		<description>This function is deprecated. </description>
+		<name>GetSystemFreeMemory</name>
+		<class>railo.runtime.functions.system.GetSystemFreeMemory</class>
+		<description>The amount of memory that is currently free, in bytes.</description>
 		<return>
-			<type>struct</type>
+			<type>number</type>
 		</return>
 	</function>
-	 -->
+
+	<!-- getSystemTotalMemory -->
+	<function>
+		<name>GetSystemTotalMemory</name>
+		<class>railo.runtime.functions.system.GetSystemTotalMemory</class>
+		<description>The amount of memory that is available to the operating system, in bytes.</description>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
 	<!-- getTempFile -->
 	<function>
 		<name>getTempFile</name>
@@ -5269,8 +6240,8 @@ Default list delimiter: comma character.</description>
         the hash result back to the source string.)
         32-byte, hexadecimal string</description>
 		<argument>
-			<name>string</name>
-			<type>string</type>
+			<name>input</name>
+			<type>any</type>
 			<required>Yes</required>
 		<description>String to hash.</description>
     </argument>
@@ -5290,9 +6261,15 @@ Default list delimiter: comma character.</description>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-		<description>A string specifying the encoding to use when converting
+			<description>A string specifying the encoding to use when converting
             the string to byte data used by the hash algorithm.</description>
-    </argument>
+		</argument>
+		<argument>
+			<name>numIterations</name>
+			<type>int</type>
+			<required>No</required>
+			<description>number of iterations; default is 1.</description>
+		</argument>
 		<return>
 			<type>string</type>
 		</return>
@@ -5301,6 +6278,7 @@ Default list delimiter: comma character.</description>
 	<function>
 		<name>hour</name>
 		<class>railo.runtime.functions.dateTime.Hour</class>
+		<member-name>hour</member-name>
 		<description>Gets the current hour of the day.
         Ordinal value of the hour, in the range 0 - 23.</description>
 		<argument>
@@ -5327,6 +6305,48 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 		</return>
 	</function>
+	
+	
+	<!-- HMAC -->
+	<function>
+		<name>HMAC</name>
+		<class>railo.runtime.functions.displayFormatting.HMAC</class>
+		<description>Creates Hash-based Message Authentication Code for the given string based on the algorithm and encoding. 
+		Hash-based Message Authentication Code (HMAC) is used to verify the data integrity and authenticity of a messagetransmitted. 
+		It involves a cryptographic hash function in combination with a secret key. 
+		The cryptographic hashfunction can be Message Digest 5 (MD5), Secure Hash Algorithm (SHA), and so on</description>
+		<argument>
+			<name>message</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>The message to transmit. The message can be a String or a byte array.</description>
+	    </argument>
+		<argument>
+			<name>key</name>
+			<type>object</type>
+			<required>Yes</required>
+			<description>The secret key to create HMAC. The key can be a String or a byte array.</description>
+	    </argument>
+		<argument>
+			<name>algorithm</name>
+			<type>string</type>
+			<required>no</required>
+			<default>HmacMD5</default>
+			<description>the algorithm used, default is "HmacMD5"</description>
+	    </argument>
+		<argument>
+			<name>encoding</name>
+			<alias>charset</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>the encoding used, default encoding is the web charset of the enviroment.</description>
+	    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	
 	<!-- hTMLCodeFormat -->
 	<function>
 		<name>hTMLCodeFormat</name>
@@ -8758,6 +9778,53 @@ The value determines whether the image is blurred or sharpened:
 		</return>
 	</function>
 	
+	<!-- Invoke -->
+	<function>
+		<name>Invoke</name>
+		<class>railo.runtime.functions.dynamicEvaluation.Invoke</class>
+		<description>invokes a function/operation of the given object and if given object is a string, Railo tries to load as component.</description>
+		<argument>
+			<name>object</name>
+			<alias>cfcinstance,obj,value,variable</alias>
+			<type>any</type>
+			<required>Yes</required>
+			<description>a component, struct or scope that holds a function, can also be the name of a component, in this case the component get loaded.</description>
+	    </argument>
+		<argument>
+			<name>name</name>
+			<alias>methodname,method,functionname,function</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>name of the function/operation</description>
+	    </argument>
+		<argument>
+			<name>arguments</name>
+			<alias>args,argumentcollection</alias>
+			<type>any</type>
+			<required>no</required>
+			<description>arguments to pass to the function/operation</description>
+	    </argument>
+		
+		<return>
+			<type>object</type>
+		</return>
+	</function>
+	<!-- IsClosure -->
+	<function>
+		<name>IsClosure</name>
+		<class>railo.runtime.functions.decision.IsClosure</class>
+		<description>checks if given Object is a closure or not.</description>
+		<argument>
+			<name>object</name>
+			<alias>obj,value</alias>
+			<type>any</type>
+			<required>Yes</required>
+		<description>The object that is checked.</description>
+    </argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
 	<!-- IsImage -->
 	<function>
 		<name>IsImage</name>
@@ -8784,6 +9851,31 @@ The value determines whether the image is blurred or sharpened:
 			<required>Yes</required>
 		<description>The pathname of the file to be checked. The pathname can be absolute or relative to the CFM page and must be enclosed in quotation marks.</description>
     </argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	<!-- IsIPInRange -->
+	<function>
+		<name>IsIPInRange</name>
+		<class>railo.runtime.functions.decision.IsIPInRange</class>
+		<description>Checks if an ip is in the range of a list of given ips. IPv4 and IPv6 are supported.</description>
+		<argument>
+			<name>ips</name>
+			<type>any</type>
+			<required>Yes</required>
+			<description>A comma separeted list of strings or a string array of ip defintions. The following patterns are allowed:
+- a single ip, like "127.0.0.1"
+- an ip with wildcards like "127.0.0.*", in this case all ips between "127.0.0.0" and "127.0.0.255" are valid
+- an ip range like "127.0.0.1-127.0.0.10", in this case all ips between "127.0.0.1" and "127.0.0.10" are valid
+</description>
+    	</argument>
+    	<argument>
+			<name>ip</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>ip to search</description>
+    	</argument>
 		<return>
 			<type>boolean</type>
 		</return>
@@ -9279,7 +10371,7 @@ The value determines whether the image is blurred or sharpened:
 	<function>
 		<name>IsSOAPRequest</name>
 		<class>railo.runtime.functions.decision.IsSOAPRequest</class>
-		<status>unimplemeted</status>
+		<status>implemeted</status>
 		<description>Determines whether a CFC is being called as a web service.</description>
 		<return>
 			<type>boolean</type>
@@ -9709,7 +10801,7 @@ The value determines whether the image is blurred or sharpened:
 			<name>new_delimiter</name>
 			<type>string</type>
 			<required>Yes</required>
-			<description>new delimeter to set. a delimeter is a characters that separate list elements.</description>
+			<description>new delimiter to set. a delimiter is a characters that separate list elements.</description>
 		</argument>
 		<argument>
 			<name>delimiters</name>
@@ -9717,7 +10809,7 @@ The value determines whether the image is blurred or sharpened:
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
-			<description>existing delimeter to replace. a delimeter is a characters that separate list elements. The default value is comma.</description>
+			<description>existing delimiter to replace. a delimiter is a characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<argument>
 			<name>includeEmptyFields</name>
@@ -9858,6 +10950,27 @@ The value determines whether the image is blurred or sharpened:
 			<type>boolean</type>
 			<required>No</required>
 			<description>if set to true, empty values are included as well</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- listFilter -->
+	<function>
+		<name>listFilter</name>
+		<class>railo.runtime.functions.list.ListFilter</class>
+		<description>This function creates a new string list that returns all entries from an string list that match the given filter.</description>
+		<argument>
+			<name>list</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>list to filter entries from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any value):boolean].</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -10058,7 +11171,7 @@ The value determines whether the image is blurred or sharpened:
 			<description>index to check for.</description>
 		</argument>
 		<argument>
-			<name>delimeter</name>
+			<name>delimiter</name>
 			<type>string</type>
 			<required>No</required>
 			<default>,</default>
@@ -10260,6 +11373,29 @@ The value determines whether the image is blurred or sharpened:
 			<type>boolean</type>
 			<required>No</required>
 			<description>if set to true, empty values are included as well</description>
+		</argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	<!-- ListRemoveDuplicates -->
+	<function>
+		<name>ListRemoveDuplicates</name>
+		<class>railo.runtime.functions.list.ListRemoveDuplicates</class>
+		<description>Removes duplicate values from list.</description>
+		<argument>
+			<name>list</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>a string list</description>
+		</argument>
+		<argument>
+			<name>delimiters</name>
+			<alias>delimiter</alias>
+			<type>string</type>
+			<required>No</required>
+			<default>,</default>
+			<description>Characters that separate list elements. The default value is comma.</description>
 		</argument>
 		<return>
 			<type>string</type>
@@ -10610,6 +11746,54 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+
+	<!-- lSDateTimeFormat -->
+	<function>
+		<name>lSDateTimeFormat</name>
+		<class>railo.runtime.functions.international.LSDateTimeFormat</class>
+		<description>Formats a date string to a given output using the current locale</description>
+		<argument>
+			<name>date</name>
+			<type>any</type>
+			<required>Yes</required>
+		<description>date object</description>
+    </argument>
+		<argument>
+			<name>mask</name>
+			<type>string</type>
+			<required>No</required>
+			<default>dd-MMM-yyyy HH:mm:ss</default>
+		<description>
+		Mask that has to be used for formatting. The function follows Java date time mask. For details, see the section Date and Time Patterns at the following URL: http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
+		</description>
+    </argument>
+		<argument>
+			<name>locale</name>
+			<type>string</type>
+			<required>No</required>
+		<description>Locale to use instead of the locale of the page when processing the function</description>
+    </argument>
+		<argument>
+			<name>timezone</name>
+			<type>string</type>
+			<required>No</required>
+		<description>
+A datetime object is independent of a specific timezone, it is only a offset in milliseconds from 1970-1-1 00.00:00 UTC (Coordinated Universal Time).
+This means that the timezone only comes into play when you need specific information like hours in a day, minutes in a hour or which day it is since those calculations depend on the timezone.
+For these calculations, a timezone must be specified in order to translate the date object to something else. If you do not provide the timezone in the function call, it will default to the timezone specified in the Railo Administrator (Settings/Regional), or the timezone specified for the current request using the function setTimezone.
+You can find a list of all available timezones in the Railo administrator (Settings/Regional). Some examples of valid timezones:
+       - AGT (for time in Argentina)
+       - Europe/Zurich (for time in Zurich/Switzerland)
+       - HST (Hawaiian Standard Time in the USA)
+		</description>
+    </argument>
+		<return>
+			<type>string</type>
+		</return>
+	</function>
+	
+	
 	<!-- lSEuroCurrencyFormat -->
 	<function>
 		<name>lSEuroCurrencyFormat</name>
@@ -10788,10 +11972,11 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>locale</name>
 			<type>string</type>
 			<required>No</required>
-		<description>Locale to use instead of the locale of the page when processing the function</description>
-    </argument>
+			<description>Locale to use instead of the locale of the page when processing the function</description>
+	    </argument>
 		<argument>
 			<name>timezone</name>
+			<alias>timezone</alias>
 			<type>string</type>
 			<required>No</required>
 		<description>
@@ -10802,7 +11987,15 @@ You can find a list of all available timezones in the Railo administrator (Setti
        - AGT (for time in Argentina)
        - Europe/Zurich (for time in Zurich/Switzerland)
        - HST (Hawaiian Standard Time in the USA)
-		</description>
+			</description>
+	    </argument>
+	    
+		<argument>
+			<name>format</name>
+			<type>string</type>
+			<required>No</required>
+		<description>The format (Java Syntax) of the string. This string is used to parse the given date string to date time object.
+		For details see: http://docs.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html</description>
     </argument>
 		<return>
 			<type>datetime</type>
@@ -11000,6 +12193,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>minute</name>
 		<class>railo.runtime.functions.dateTime.Minute</class>
+		<member-name>minute</member-name>
 		<description>Extracts the minute value from a date/time object.</description>
 		<argument>
 			<name>date</name>
@@ -11029,6 +12223,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>millisecond</name>
 		<class>railo.runtime.functions.dateTime.MilliSecond</class>
+		<member-name>millisecond</member-name>
 		<description>Returns the milliseconds of the referenced date</description>
 		<argument>
 			<name>date</name>
@@ -11058,6 +12253,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>month</name>
 		<class>railo.runtime.functions.dateTime.Month</class>
+		<member-name>month</member-name>
 		<description>Extracts the month value from a date/time object.</description>
 		<argument>
 			<name>Date</name>
@@ -11185,6 +12381,30 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>returns null</description>
 		<return>
 			<type>any</type>
+		</return>
+	</function>
+	
+	<!-- ObjectEquals -->
+	<function>
+		<name>ObjectEquals</name>
+		<class>railo.runtime.functions.other.ObjectEquals</class>
+		<description>compares simply and complex objects for equality, attention string comparsion is case sensitive</description>
+		<argument>
+			<name>left</name>
+			<alias>param1</alias>
+			<type>any</type>
+			<required>yes</required>
+			<description>left operant</description>
+   		</argument>
+		<argument>
+			<name>right</name>
+			<alias>param2</alias>
+			<type>any</type>
+			<required>yes</required>
+			<description>right operant</description>
+   		</argument>
+		<return>
+			<type>boolean</type>
 		</return>
 	</function>
 	
@@ -11541,6 +12761,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>quarter</name>
 		<class>railo.runtime.functions.dateTime.Quarter</class>
+		<member-name>quarter</member-name>
 		<description>Calculates the quarter of the year in which a date falls.</description>
 		<argument>
 			<name>date</name>
@@ -11580,6 +12801,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryAddColumn</name>
 		<class>railo.runtime.functions.query.QueryAddColumn</class>
+		<member-name>addColumn</member-name>
 		<description>Adds a column to a query and populates its rows with the
         contents of a one-dimensional array. Pads query columns,
         if necessary, to ensure that all columns have the same number
@@ -11618,6 +12840,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryAddRow</name>
 		<class>railo.runtime.functions.query.QueryAddRow</class>
+		<member-name>addRow</member-name>
 		<description>Adds a specified number of empty rows to a query.</description>
 		<argument>
 			<name>query</name>
@@ -11646,6 +12869,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryColumnCount</name>
 		<class>railo.runtime.functions.query.QueryColumnCount</class>
+		<member-name>columnCount</member-name>
 		<description>column count of given query</description>
 		<argument>
 			<name>query</name>
@@ -11662,6 +12886,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryColumnExists</name>
 		<class>railo.runtime.functions.query.QueryColumnExists</class>
+		<member-name>columnExists</member-name>
 		<description>Determines whether a specific column is present in a query.</description>
 		<argument>
 			<name>query</name>
@@ -11713,7 +12938,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryColumnArray</name>
 		<class>railo.runtime.functions.query.QueryColumnArray</class>
-		<description>Returns all the data in a query for a given column</description>
+		<member-name>columnArray</member-name>
+		<description>return the column names as array</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -11724,11 +12950,44 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>array</type>
 		</return>
 	</function>
+	<!-- queryColumnData -->
+	<function>
+		<name>queryColumnData</name>
+		<class>railo.runtime.functions.query.QueryColumnData</class>
+		<member-name>columnData</member-name>
+		<description>Returns all the data in a query for a given column</description>
+		<argument>
+			<name>query</name>
+			<type>query</type>
+			<required>Yes</required>
+			<description>query object do get data from</description>
+	    </argument>	
+		<argument>
+			<name>columnName</name>
+			<type>string</type>
+			<required>Yes</required>
+			<description>name of the column returned</description>
+	    </argument>	
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>No</required>
+			<description>UDF/Closure that call with the values from column</description>
+		</argument>
+		<return>
+			<type>array</type>
+		</return>
+	</function>
+	
+	
+	
 	<!-- queryColumnList -->
 	<function>
 		<name>queryColumnList</name>
 		<class>railo.runtime.functions.query.QueryColumnList</class>
-		<description>Returns all the data in a query for a given column as a list</description>
+		<member-name>columnList</member-name>
+			<description>return the column names as list</description>
 		<argument>
 			<name>query</name>
 			<type>query</type>
@@ -11736,7 +12995,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description></description>
     </argument>
 		<argument>
-			<name>delimeter</name>
+			<name>delimiter</name>
 			<type>string</type>
 			<required>no</required>
 			<default>,</default>
@@ -11750,6 +13009,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>QueryDeleteColumn</name>
 		<class>railo.runtime.functions.query.QueryDeleteColumn</class>
+		<member-name>deleteColumn</member-name>
 		<description>
 		removes a row from a query and return removed row as array
 		</description>
@@ -11773,6 +13033,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>QueryDeleteRow</name>
 		<class>railo.runtime.functions.query.QueryDeleteRow</class>
+		<member-name>deleteRow</member-name>
 		<description>Deletes the row within a query object. Modifies the original query object</description>
 		<argument>
 			<name>query</name>
@@ -11795,6 +13056,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>queryGetCell</name>
 		<class>railo.runtime.functions.query.QueryGetCell</class>
+		<member-name>getCell</member-name>
 		<description>return the value of a specific query cell</description>
 		<argument>
 			<name>query</name>
@@ -11872,6 +13134,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>querySetCell</name>
 		<class>railo.runtime.functions.query.QuerySetCell</class>
+		<member-name>setCell</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Sets a cell to a value. If no row number is specified,
         the cell on the last row is set.</description>
 		<argument>
@@ -11907,6 +13171,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>querySlice</name>
 		<class>railo.runtime.functions.query.QuerySlice</class>
+		<member-name>slice</member-name>
 		<description>creates a new query containing a part of the given query</description>
 		<argument>
 			<name>query</name>
@@ -11934,6 +13199,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>querySort</name>
 		<class>railo.runtime.functions.query.QuerySort</class>
+		<member-name>sort</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Sorts the query based on the column specified and the order criteria given. Modifies the original query object</description>
 		<argument>
 			<name>query</name>
@@ -11964,10 +13231,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>quotedValueList</name>
 		<class>railo.runtime.functions.other.QuotedValueList</class>
-		<description>Returns a quoted list of all the values, for a given column within the query, delimited by the value given</description>
+		<status>deprecated</status>
+		<description>Returns a quoted list of all the values, for a given column within the query, delimited by the value given.
+		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
 			<name>query_column</name>
-			<type>variable_string</type>
+			<type>queryColumn</type>
 			<required>Yes</required>
 		<description>Name of an executed query and column. Separate query name and column name with a period.</description>
     </argument>
@@ -12293,20 +13562,35 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>A string</description>
-    </argument>
+			<description>A string</description>
+	    </argument>
 		<argument>
 			<name>list1</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+			<description>string list of search strings</description>
+	    </argument>
 		<argument>
 			<name>list2</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+			<description>string list of replacement strings</description>
+	    </argument>
+		<argument>
+			<name>delimiter_list1</name>
+			<alias>delimiter</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>Delimiter for search, or if no replacement delimiter is defined, this delimiter is used for search and replacement.</description>
+	    </argument>
+		<argument>
+			<name>delimiter_list2</name>
+			<type>string</type>
+			<required>no</required>
+			<description>Delimiter for replacement.</description>
+	    </argument>
+	    
+	    
 		<return>
 			<type>string</type>
 		</return>
@@ -12424,6 +13708,88 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	<!-- RestDeleteApplication -->
+	<function>
+		<name>RestDeleteApplication</name>
+		<class>railo.runtime.functions.rest.RestDeleteApplication</class>
+		<description>Deletes a existing REST mapping.</description>
+		<argument>
+			<name>dirPath</name>
+			<alias>dir,directory,path</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path to the directory to be registered or reseted.</description>
+	    </argument>
+		<argument>
+			<name>password</name>
+			<alias>webAdminPassword</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>password for the web administrator, this is needed delete a REST mapping.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- RestInitApplication -->
+	<function>
+		<name>RestInitApplication</name>
+		<class>railo.runtime.functions.rest.RestInitApplication</class>
+		<description>Registers the directory path with the service mapping provided. 
+		If no service mapping is provided, the application name is used. 
+		If the rest application is already registered, it is refreshed.</description>
+		<argument>
+			<name>dirPath</name>
+			<alias>dir,directory,path</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>Path to the directory to be registered or reseted.</description>
+	    </argument>
+		<argument>
+			<name>serviceMapping</name>
+			<alias>mapping</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>Alternate string to be used for application name while calling the REST service.</description>
+	    </argument>
+		<argument>
+			<name>default</name>
+			<type>boolean</type>
+			<required>no</required>
+			<description>set if the mapping is a default mapping or not</description>
+	    </argument>
+		<argument>
+			<name>password</name>
+			<alias>webAdminPassword</alias>
+			<type>string</type>
+			<required>no</required>
+			<description>password for the web administrator, this is needed when you update/create a REST mapping.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	
+	<!-- RestSetResponse -->
+	<function>
+		<name>RestSetResponse</name>
+		<class>railo.runtime.functions.rest.RestSetResponse</class>
+		<description>Sets the custom responses.</description>
+		<argument>
+			<name>response</name>
+			<alias>rsp</alias>
+			<type>struct</type>
+			<required>yes</required>
+			<description>A struct that contains the response details.</description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- reverse -->
 	<function>
 		<name>reverse</name>
@@ -12518,6 +13884,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>second</name>
 		<class>railo.runtime.functions.dateTime.Second</class>
+		<member-name>second</member-name>
 		<description>Extracts the ordinal for the second from a date/time object.</description>
 		<argument>
 			<name>date</name>
@@ -12601,6 +13968,40 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	
+	
+	<!-- SessionStartTime -->
+	<function>
+		<name>SessionStartTime</name>
+		<class>railo.runtime.functions.system.SessionStartTime</class>
+		<description>Provides information about the time when the current users session scope was created.</description>
+		<return>
+			<type>date</type>
+		</return>
+	</function>
+	
+	<!-- SessionInvalidate -->
+	<function>
+		<name>SessionInvalidate</name>
+		<class>railo.runtime.functions.system.SessionInvalidate</class>
+		<description>Invalidates or cleans up the current session.</description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- SessionRotate -->
+	<function>
+		<name>SessionRotate</name>
+		<class>railo.runtime.functions.system.SessionRotate</class>
+		<description>
+		invalidate current session, creates a new session and migrate the data from the old session to the new.
+		</description>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- setEncoding -->
 	<function>
 		<name>setEncoding</name>
@@ -12738,10 +14139,16 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<name>obj</name>
 			<type>object</type>
 			<required>Yes</required>
-		<description></description>
-    </argument>
+			<description>object to get size for</description>
+	    </argument>
+	    <argument>
+			<name>complex</name>
+			<type>boolean</type>
+			<required>No</required>
+			<description>if set to false, the size is returned, if set to true a struct containing the element count and the size is returned</description>
+	    </argument>
 		<return>
-			<type>number</type>
+			<type>any</type>
 		</return>
 	</function>
 	<!-- soundex -->
@@ -12807,6 +14214,100 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>string</type>
 		</return>
 	</function>
+	 
+	<!-- SpreadsheetSetCellValue -->
+	<function>
+		<name>SpreadsheetSetCellValue</name>
+		<class>railo.runtime.functions.poi.SpreadsheetSetCellValue</class>
+		<description></description>
+		<argument>
+			<name>spreadSheet</name>
+			<alias>excel</alias>
+			<type>excel</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>value</name>
+			<type>string</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>row</name>
+			<type>number</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>column</name>
+			<alias>col</alias>
+			<type>number</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
+	<!-- SpreadSheetNew -->
+	<function>
+		<name>SpreadSheetNew</name>
+		<class>railo.runtime.functions.poi.SpreadSheetNew</class>
+		<description></description>
+		<argument>
+			<name>sheetName</name>
+			<alias>sheetNameOrXMLFormat</alias>
+			<type>any</type>
+			<required>no</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>xmlFormat</name>
+			<type>any</type>
+			<required>no</required>
+		<description></description>
+    </argument>
+		<return>
+			<type>any</type>
+		</return>
+	</function>
+	<!-- SpreadSheetWrite -->
+	<function>
+		<name>SpreadSheetWrite</name>
+		<class>railo.runtime.functions.poi.SpreadSheetWrite</class>
+		<description></description>
+		<argument>
+			<name>spreadSheet</name>
+			<alias>excel</alias>
+			<type>excel</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>path</name>
+			<type>string</type>
+			<required>yes</required>
+			<description></description>
+	    </argument>
+		<argument>
+			<name>password</name>
+			<type>any</type>
+			<required>no</required>
+		<description></description>
+    </argument>
+		<argument>
+			<name>overwrite</name>
+			<type>boolean</type>
+			<required>no</required>
+		<description></description>
+    </argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+	
 	<!-- sqr -->
 	<function>
 		<name>sqr</name>
@@ -12996,6 +14497,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structAppend</name>
 		<class>railo.runtime.functions.struct.StructAppend</class>
+		<member-name>append</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Appends all the data from struct2 into struct2, replacing duplicate keys unless specified by the overwrite flag</description>
 		<argument>
 			<name>Struct1</name>
@@ -13025,6 +14528,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structClear</name>
 		<class>railo.runtime.functions.struct.StructClear</class>
+		<member-name>clear</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Removes all data from a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -13040,6 +14545,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structCopy</name>
 		<class>railo.runtime.functions.struct.StructCopy</class>
+		<member-name>copy</member-name>
 		<description>Copies a structure. Copies top-level keys, values, and arrays
         in the structure by value; copies nested structures by
         reference.</description>
@@ -13057,6 +14563,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structCount</name>
 		<class>railo.runtime.functions.struct.StructCount</class>
+		<member-name>len</member-name>
 		<description>Counts the keys in a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -13072,6 +14579,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structDelete</name>
 		<class>railo.runtime.functions.struct.StructDelete</class>
+		<member-name>delete</member-name>
 		<description>Removes an element from a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -13095,10 +14603,58 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>boolean</type>
 		</return>
 	</function>
+	
+	<!-- structEach -->
+	<function>
+		<name>structEach</name>
+		<class>railo.runtime.functions.struct.StructEach</class>
+		<member-name>each</member-name>
+		<member-chaining>true</member-chaining>
+		<description>call the given UDF/Closure with every entry (key/value) in the struct.</description>
+		<argument>
+			<name>struct</name>
+			<type>struct</type>
+			<required>Yes</required>
+			<description>struct to take values from</description>
+		</argument>
+		<argument>
+			<name>closure</name>
+			<alias>udf,function</alias>
+			<type>function</type>
+			<required>Yes</required>
+			<description>UDF/Closure that call with the entries from struct</description>
+		</argument>
+		<return>
+			<type>void</type>
+		</return>
+	</function>
+		<!-- structFilter -->
+	<function>
+		<name>structFilter</name>
+		<class>railo.runtime.functions.struct.StructFilter</class>
+		<member-name>filter</member-name>
+		<description>This function creates a new Struct that returns all entries from an struct that match the given filter.</description>
+		<argument>
+			<name>struct</name>
+			<type>struct</type>
+			<required>Yes</required>
+			<description>struct to filter entries from</description>
+		</argument>
+		<argument>
+			<name>filter</name>
+			<type>function</type>
+			<required>Yes</required>
+			<description>filter can be a function/closure that implements the following constructor [function(any key,any value):boolean].</description>
+		</argument>
+		<return>
+			<type>struct</type>
+		</return>
+	</function>
 	<!-- structFind -->
 	<function>
 		<name>structFind</name>
 		<class>railo.runtime.functions.struct.StructFind</class>
+		<member-name>find</member-name>
 		<description>Determines the value associated with a key in a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -13120,6 +14676,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structFindKey</name>
 		<class>railo.runtime.functions.struct.StructFindKey</class>
+		<member-name>findKey</member-name>
 		<description>Searches recursively through a substructure of nested arrays,
         structures, and other elements, for structures whose values
         match the search key in the value parameter.</description>
@@ -13152,6 +14709,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structFindValue</name>
 		<class>railo.runtime.functions.struct.StructFindValue</class>
+		<member-name>findValue</member-name>
 		<description>Searches recursively through a substructure of nested arrays,
         structures, and other elements for structures with values that
         match the search key in the value parameter.</description>
@@ -13199,6 +14757,8 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structInsert</name>
 		<class>railo.runtime.functions.struct.StructInsert</class>
+		<member-name>insert</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Inserts a key-value pair into a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -13232,6 +14792,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structIsEmpty</name>
 		<class>railo.runtime.functions.struct.StructIsEmpty</class>
+		<member-name>isEmpty</member-name>
 		<description>Determines whether a structure contains data.</description>
 		<argument>
 			<name>structure</name>
@@ -13247,6 +14808,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structKeyArray</name>
 		<class>railo.runtime.functions.struct.StructKeyArray</class>
+		<member-name>keyArray</member-name>
 		<description>Finds the keys in a struct.
         An array of keys; if structure does not exist, CFML
         throws an exception.</description>
@@ -13265,6 +14827,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<name>structKeyExists</name>
 		<class>railo.runtime.functions.struct.StructKeyExists</class>
 		<tte-class>railo.transformer.cfml.evaluator.func.impl.StructKeyExists</tte-class>
+		<member-name>keyExists</member-name>
 		<description>Determines whether a specific key is present in a structure.</description>
 		<argument>
 			<name>structure</name>
@@ -13286,6 +14849,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structKeyList</name>
 		<class>railo.runtime.functions.struct.StructKeyList</class>
+		<member-name>keyList</member-name>
 		<description>Extracts keys from a struct.</description>
 		<argument>
 			<name>structure</name>
@@ -13309,6 +14873,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structKeyTranslate</name>
 		<class>railo.runtime.functions.struct.StructKeyTranslate</class>
+		<member-name>keyTranslate</member-name>
 		<description></description>
 		<argument>
 			<name>structure</name>
@@ -13349,7 +14914,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<required>No</required>
 			<default>normal</default>
 			<description>
-			the type the new struct (normal,weak,linked)
+			the type the struct created:
+  - normal (default): a regular struct
+  - weak: a struct containing weak referenced values, which do not prevent their referents from being made garbage collected. Weak references are most often used to implement simple caches.
+  - soft: a struct with soft reference values, which are cleared at the discretion of the garbage collector in response to memory demand.
+  - linked: a struct with linked keys, maintain their creation order
+  - synchronized: a struct with a synchronized (thread-safe) access
 			</description>
 		</argument>
 		<return>
@@ -13360,6 +14930,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>structSort</name>
 		<class>railo.runtime.functions.struct.StructSort</class>
+		<member-name>sort</member-name>
 		<description>Returns a sorted array of the top level keys in a structure.
         Sorts using alphabetic or numeric sorting, and can sort based
         on the values of any structure element.</description>
@@ -13404,6 +14975,8 @@ _- asc (default): ascending (a to z) sort order
 	<function>
 		<name>structUpdate</name>
 		<class>railo.runtime.functions.struct.StructUpdate</class>
+		<member-name>update</member-name>
+		<member-chaining>true</member-chaining>
 		<description>Updates a key with a value.</description>
 		<argument>
 			<name>structure</name>
@@ -13856,10 +15429,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>valueArray</name>
 		<class>railo.runtime.functions.query.ValueArray</class>
-		<description>Returns a array of all the values, for a given column within the query.</description>
+		<status>deprecated</status>
+		<description>Returns a array of all the values, for a given column within the query.
+		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
 			<name>query_column</name>
-			<type>variable_string</type>
+			<type>queryColumn</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
@@ -13871,13 +15446,12 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>valueList</name>
 		<class>railo.runtime.functions.query.ValueList</class>
-		<description>Inserts a delimiter between each value in an executed query.
-        CFML does not evaluate the arguments.
-        A delimited list of the values of each record returned from an
-        executed query</description>
+		<status>deprecated</status>
+		<description>Returns a list of all the values, for a given column within the query, delimited by the value given.
+		this function is deprecated, use instead the function queryColumnData</description>
 		<argument>
 			<name>query_column</name>
-			<type>variable_string</type>
+			<type>queryColumn</type>
 			<required>Yes</required>
 		<description>Name of an executed query and column. Separate query name and column name with a period.</description>
     </argument>
@@ -13907,6 +15481,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>week</name>
 		<class>railo.runtime.functions.dateTime.Week</class>
+		<member-name>week</member-name>
 		<description>From a date/time object, determines the week number within
         the year. An integer in the range 1-53; the ordinal of the
         week, within the year.</description>
@@ -14240,7 +15815,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
     </argument>
 		<argument>
 			<name>parameters</name>
-			<type>array</type>
+			<type>struct</type>
 			<required>false</required>
 			<status>unimplemeted</status>
 		<description>A structure containing XSL template parameter name-value
@@ -14281,6 +15856,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>year</name>
 		<class>railo.runtime.functions.dateTime.Year</class>
+		<member-name>year</member-name>
 		<description>From a date/time object, gets the year value.</description>
 		<argument>
 			<name>date</name>

@@ -5,10 +5,10 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
-import railo.runtime.type.scope.ClientPlus;
+import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.storage.StorageScopeCookie;
 
-public final class ClientCookie extends StorageScopeCookie implements ClientPlus {
+public final class ClientCookie extends StorageScopeCookie implements Client {
 
 	private static final long serialVersionUID = 4203695198240254464L;
 	private static final String TYPE = "CLIENT";
@@ -43,7 +43,7 @@ public final class ClientCookie extends StorageScopeCookie implements ClientPlus
 	 * @param log 
 	 * @return
 	 */
-	public static ClientPlus getInstance(String name, PageContext pc, Log log) {
+	public static Client getInstance(String name, PageContext pc, Log log) {
 		if(!StringUtil.isEmpty(name))
 			name=StringUtil.toUpperCase(StringUtil.toVariableName(name));
 		String cookieName="CF_"+TYPE+"_"+name;

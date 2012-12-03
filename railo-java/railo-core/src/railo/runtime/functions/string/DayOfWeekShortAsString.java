@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function dayofweekasstring
+ * Implements the CFML Function dayofweekasstring
  */
 package railo.runtime.functions.string;
 

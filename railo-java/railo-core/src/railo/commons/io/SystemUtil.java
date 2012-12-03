@@ -29,6 +29,8 @@ import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
+import railo.runtime.exp.ApplicationException;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
@@ -36,15 +38,18 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.Struct;
+import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
+
+import com.jezhumble.javasysmon.CpuTimes;
+import com.jezhumble.javasysmon.JavaSysMon;
+import com.jezhumble.javasysmon.MemoryStats;
 
 /**
  * 
  */
 public final class SystemUtil {
-
-	private static final Collection.Key MAX = KeyImpl.intern("max");
-	private static final Collection.Key INIT = KeyImpl.intern("init");
-	private static final Collection.Key USED = KeyImpl.intern("used");
 
 	public static final int MEMORY_TYPE_ALL=0;
 	public static final int MEMORY_TYPE_HEAP=1;
@@ -58,8 +63,14 @@ public final class SystemUtil {
 	public static final char CHAR_POUND=(char)163;
 	public static final char CHAR_EURO=(char)8364;
 	
-	public static final PrintWriter PRINTWRITER_OUT = new PrintWriter(System.out);
-	public static final PrintWriter PRINTWRITER_ERR = new PrintWriter(System.err);
+
+	public static final int OUT = 0;
+	public static final int ERR = 1;
+	
+	private static final PrintWriter PRINTWRITER_OUT = new PrintWriter(System.out);
+	private static final PrintWriter PRINTWRITER_ERR = new PrintWriter(System.err);
+	
+	private static PrintWriter[] printWriter=new PrintWriter[2];
     
     
 	private static final boolean isWindows=System.getProperty("os.name").toLowerCase().startsWith("windows");
@@ -132,6 +143,8 @@ public final class SystemUtil {
 	}
 	
     private static Boolean isFSCaseSensitive;
+	private static JavaSysMon jsm;
+	private static Boolean isCLI;
 
     /**
      * returns if the file system case sensitive or not
@@ -405,7 +418,7 @@ public final class SystemUtil {
     
 
 	public static String addPlaceHolder(Resource file,  Config config, String defaultValue) {
-    	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
+    	//ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
     	
         // temp
         	Resource dir = config.getTempDirectory();
@@ -427,20 +440,6 @@ public final class SystemUtil {
         	path = addPlaceHolder(dir,file,"{web-root-directory}");
         	if(!StringUtil.isEmpty(path)) return path;
 
-        	
-        
-        	/* TODO
-        else if(str.startsWith("{railo-server")) {
-            cs=((ConfigImpl)config).getConfigServerImpl();
-            //if(config instanceof ConfigServer && cs==null) cs=(ConfigServer) cw;
-            if(cs!=null) {
-                if(str.startsWith("}",13)) str=cs.getConfigDir().getReal(str.substring(14));
-                else if(str.startsWith("-dir}",13)) str=cs.getConfigDir().getReal(str.substring(18));
-                else if(str.startsWith("-directory}",13)) str=cs.getConfigDir().getReal(str.substring(24));
-            }
-        }*/
-        
-    	
         return addPlaceHolder(file, defaultValue);
     }
 	
@@ -588,6 +587,7 @@ public final class SystemUtil {
 		if(jreArch==-1) {
 			jreArch = toIntArch(System.getProperty("sun.arch.data.model"));
 			if(jreArch==ARCH_UNKNOW)jreArch = toIntArch(System.getProperty("com.ibm.vm.bitmode"));
+			if(jreArch==ARCH_UNKNOW)jreArch = toIntArch(System.getProperty("java.vm.name"));
 			if(jreArch==ARCH_UNKNOW) {
 				int addrSize = getAddressSize();
 				if(addrSize==4) return ARCH_32;
@@ -628,7 +628,7 @@ public final class SystemUtil {
 		}
 	    
 	}
-	private static MemoryUsage getPermGenSpaceSize() {
+	/*private static MemoryUsage getPermGenSpaceSize() {
 		MemoryUsage mu = getPermGenSpaceSize(null);
 		if(mu!=null) return mu;
 		
@@ -643,7 +643,7 @@ public final class SystemUtil {
 			sb.append(bean.getName());
 		}
 		throw new RuntimeException("PermGen Space information not available, available Memory blocks are ["+sb+"]");
-	}
+	}*/
 	
 	private static MemoryUsage getPermGenSpaceSize(MemoryUsage defaultValue) {
 		if(permGenSpaceBean!=null) return permGenSpaceBean.getUsage();
@@ -675,17 +675,17 @@ public final class SystemUtil {
 		return (int)(1000L-(1000L*used/max));
 	}
 	
-	public static Query getMemoryUsage(int type) {
+	public static Query getMemoryUsage(int type) throws DatabaseException {
 		
 		
 		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
 		Iterator<MemoryPoolMXBean> it = manager.iterator();
 		Query qry=new QueryImpl(new Collection.Key[]{
-				KeyImpl.NAME,
-				KeyImpl.TYPE,
-				USED,
-				MAX,
-				INIT
+				KeyConstants._name,
+				KeyConstants._type,
+				KeyConstants._used,
+				KeyConstants._max,
+				KeyConstants._init
 		},0,"memory");
 		
 		int row=0;
@@ -701,15 +701,38 @@ public final class SystemUtil {
 				
 			row++;
 			qry.addRow();
-			qry.setAtEL(KeyImpl.NAME, row, bean.getName());
-			qry.setAtEL(KeyImpl.TYPE, row, _type.name());
-			qry.setAtEL(MAX, row, Caster.toDouble(usage.getMax()));
-			qry.setAtEL(USED, row, Caster.toDouble(usage.getUsed()));
-			qry.setAtEL(INIT, row, Caster.toDouble(usage.getInit()));
+			qry.setAtEL(KeyConstants._name, row, bean.getName());
+			qry.setAtEL(KeyConstants._type, row, _type.name());
+			qry.setAtEL(KeyConstants._max, row, Caster.toDouble(usage.getMax()));
+			qry.setAtEL(KeyConstants._used, row, Caster.toDouble(usage.getUsed()));
+			qry.setAtEL(KeyConstants._init, row, Caster.toDouble(usage.getInit()));
 			
 		}
 		return qry;
 	}
+	
+	public static Struct getMemoryUsageCompaact(int type) {
+		java.util.List<MemoryPoolMXBean> manager = ManagementFactory.getMemoryPoolMXBeans();
+		Iterator<MemoryPoolMXBean> it = manager.iterator();
+		
+		MemoryPoolMXBean bean;
+		MemoryUsage usage;
+		MemoryType _type;
+		Struct sct=new StructImpl();
+		while(it.hasNext()){
+			bean = it.next();
+			usage = bean.getUsage();
+			_type = bean.getType();
+			if(type==MEMORY_TYPE_HEAP && _type!=MemoryType.HEAP)continue;
+			if(type==MEMORY_TYPE_NON_HEAP && _type!=MemoryType.NON_HEAP)continue;
+				
+			double d=((int)(100D/usage.getMax()*usage.getUsed()))/100D;
+			sct.setEL(KeyImpl.init(bean.getName()), Caster.toDouble(d));
+			
+		}
+		return sct;
+	}
+	
 	public static String getPropertyEL(String key) {
 		try{
 			String str = System.getProperty(key);
@@ -731,4 +754,88 @@ public final class SystemUtil {
 	public static long microTime() {
 		return System.nanoTime()/1000L;
 	}
+	
+	public static TemplateLine getCurrentContext() {
+		return _getCurrentContext(new Exception("Stack trace"));
+	}
+	private static TemplateLine _getCurrentContext(Throwable t) {
+		
+		//Throwable root = t.getRootCause();
+		Throwable cause = t.getCause(); 
+		if(cause!=null)_getCurrentContext(cause);
+		StackTraceElement[] traces = t.getStackTrace();
+		
+		
+        int line=0;
+		String template;
+		
+		StackTraceElement trace=null;
+		for(int i=0;i<traces.length;i++) {
+			trace=traces[i];
+			template=trace.getFileName();
+			if(trace.getLineNumber()<=0 || template==null || ResourceUtil.getExtension(template,"").equals("java")) continue;
+			line=trace.getLineNumber();
+			return new TemplateLine(template,line);
+		}
+		return null;
+	}
+	
+	public static class TemplateLine {
+
+		public final String template;
+		public final int line;
+
+		public TemplateLine(String template, int line) {
+			this.template=template;
+			this.line=line;
+		}
+		public String toString(){
+			return template+":"+line;
+		}
+	}
+
+	public static long getFreeBytes() throws ApplicationException {
+		return physical().getFreeBytes();
+	}
+
+	public static long getTotalBytes() throws ApplicationException {
+		return physical().getTotalBytes();
+	}
+	
+	public static double getCpuUsage(long time) throws ApplicationException {
+		if(time<1) throw new ApplicationException("time has to be bigger than 0");
+		if(jsm==null) jsm=new JavaSysMon();
+		CpuTimes cput = jsm.cpuTimes();
+		if(cput==null) throw new ApplicationException("CPU information are not available for this OS");
+		CpuTimes previous = new CpuTimes(cput.getUserMillis(),cput.getSystemMillis(),cput.getIdleMillis());
+        sleep(time);
+        
+        return jsm.cpuTimes().getCpuUsage(previous)*100D;
+    }
+	
+
+	private synchronized static MemoryStats physical() throws ApplicationException {
+		if(jsm==null) jsm=new JavaSysMon();
+		MemoryStats p = jsm.physical();
+		if(p==null) throw new ApplicationException("Memory information are not available for this OS");
+		return p;
+	}
+	public static void setPrintWriter(int type,PrintWriter pw) {
+		printWriter[type]=pw;
+	}
+	public static PrintWriter getPrintWriter(int type) {
+		if(printWriter[type]==null) {
+			if(type==OUT) printWriter[OUT]=PRINTWRITER_OUT;
+			else printWriter[ERR]=PRINTWRITER_ERR;
+		}
+		return printWriter[type];
+	}
+	public static boolean isCLICall() {
+    	if(isCLI==null){
+    		isCLI=Caster.toBoolean(System.getProperty("railo.cli.call"),Boolean.FALSE);
+    	}
+    	return isCLI.booleanValue();
+	}
+	
+	
 }

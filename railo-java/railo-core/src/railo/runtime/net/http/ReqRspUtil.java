@@ -1,25 +1,45 @@
 package railo.runtime.net.http;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.xml.sax.InputSource;
+
+import railo.commons.io.IOUtil;
 import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
+import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLDecoder;
 import railo.commons.net.URLEncoder;
+import railo.runtime.PageContext;
 import railo.runtime.config.Config;
+import railo.runtime.converter.WDDXConverter;
+import railo.runtime.exp.PageException;
+import railo.runtime.functions.decision.IsLocalHost;
+import railo.runtime.interpreter.CFMLExpressionInterpreter;
+import railo.runtime.interpreter.JSONExpressionInterpreter;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.text.xml.XMLCaster;
+import railo.runtime.text.xml.XMLUtil;
+import railo.runtime.type.UDF;
 
 public final class ReqRspUtil {
 
-	public static String get(Pair[] items, String name) {
+	
+	
+	public static String get(Pair<String,Object>[] items, String name) {
 		for(int i=0;i<items.length;i++) {
 			if(items[i].getName().equalsIgnoreCase(name)) 
 				return Caster.toString(items[i].getValue(),null);
@@ -27,19 +47,19 @@ public final class ReqRspUtil {
 		return null;
 	}
 	
-	public static Pair[] add(Pair[] items, String name, Object value) {
-		Pair[] tmp = new Pair[items.length+1];
+	public static Pair<String,Object>[] add(Pair<String,Object>[] items, String name, Object value) {
+		Pair<String,Object>[] tmp = new Pair[items.length+1];
 		for(int i=0;i<items.length;i++) {
 			tmp[i]=items[i];
 		}
-		tmp[items.length]=new Pair(name,value);
+		tmp[items.length]=new Pair<String,Object>(name,value);
 		return tmp;
 	}
 	
-	public static Pair[] set(Pair[] items, String name, Object value) {
+	public static Pair<String,Object>[] set(Pair<String,Object>[] items, String name, Object value) {
 		for(int i=0;i<items.length;i++) {
 			if(items[i].getName().equalsIgnoreCase(name)) {
-				items[i]=new Pair(name,value);
+				items[i]=new Pair<String,Object>(name,value);
 				return items;
 			}
 		}
@@ -74,7 +94,7 @@ public final class ReqRspUtil {
 		String charset = config.getWebCharset();
 		
 		if(cookies!=null) {
-			Cookie cookie,c;
+			Cookie cookie;
 			String tmp;
 			for(int i=0;i<cookies.length;i++){
 				cookie=cookies[i];	
@@ -90,10 +110,10 @@ public final class ReqRspUtil {
 			String str = req.getHeader("Cookie");
 			if(str!=null) {
 				try{
-					String[] arr = List.listToStringArray(str, ';'),tmp;
+					String[] arr = railo.runtime.type.List.listToStringArray(str, ';'),tmp;
 					java.util.List<Cookie> list=new ArrayList<Cookie>();
 					for(int i=0;i<arr.length;i++){
-						tmp=List.listToStringArray(arr[i], '=');
+						tmp=railo.runtime.type.List.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
 							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
 						}
@@ -112,25 +132,13 @@ public final class ReqRspUtil {
 		try {
 			Method setCharacterEncoding = rsp.getClass().getMethod("setCharacterEncoding", new Class[0]);
 			setCharacterEncoding.invoke(rsp, new Object[0]);
-			
-			
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		} 
+		catch (Throwable t) {}
+	}
+
+	public static String getQueryString(HttpServletRequest req) {
+		//String qs = req.getAttribute("javax.servlet.include.query_string");
+		return req.getQueryString();
 	}
 
 	public static String getHeader(HttpServletRequest request, String name,String defaultValue) {
@@ -142,30 +150,45 @@ public final class ReqRspUtil {
 		}
 	}
 
+	public static String getHeaderIgnoreCase(PageContext pc, String name,String defaultValue) {
+		String charset = pc.getConfig().getWebCharset();
+		HttpServletRequest req = pc.getHttpServletRequest();
+		Enumeration e = req.getHeaderNames();
+		String keyDecoded,key;
+		while(e.hasMoreElements()) {
+			key=e.nextElement().toString();
+			keyDecoded=ReqRspUtil.decode(key, charset,false);
+			if(name.equalsIgnoreCase(key) || name.equalsIgnoreCase(keyDecoded))
+				return ReqRspUtil.decode(req.getHeader(key),charset,false);
+		}
+		return defaultValue;
+	}
+
+	public static List<String> getHeadersIgnoreCase(PageContext pc, String name) {
+		String charset = pc.getConfig().getWebCharset();
+		HttpServletRequest req = pc.getHttpServletRequest();
+		Enumeration e = req.getHeaderNames();
+		List<String> rtn=new ArrayList<String>();
+		String keyDecoded,key;
+		while(e.hasMoreElements()) {
+			key=e.nextElement().toString();
+			keyDecoded=ReqRspUtil.decode(key, charset,false);
+			if(name.equalsIgnoreCase(key) || name.equalsIgnoreCase(keyDecoded))
+				rtn.add(ReqRspUtil.decode(req.getHeader(key),charset,false));
+		}
+		return rtn;
+	}
+
 	public static String getScriptName(HttpServletRequest req) {
 		return StringUtil.emptyIfNull(req.getContextPath())+StringUtil.emptyIfNull(req.getServletPath());
 	}
-	
-	/*public static boolean isURLEncoded(String str) {
-		if(StringUtil.isEmpty(str,true)) return false;
-		if(!ReqRspUtil.isSubAscci(str,false)) return false;
-		int index,last=0;
-		boolean rtn=false;
-		while((index=str.indexOf('%',last))!=-1){
-			if(index+2>=str.length()) return false;
-			if(!isHex(str.charAt(index+1)) || !isHex(str.charAt(index+2))) return false;
-			last=index+1;
-			rtn=true;
-		}
-		return rtn;
-	}*/
 
 	private static boolean isHex(char c) {
 		return (c>='0' && c<='9') || (c>='a' && c<='f') || (c>='A' && c<='F');
 	}
 	
 
-	private static String dec(String str, String charset, boolean force) throws UnsupportedEncodingException {
+	private static String dec(String str, String charset, boolean force) {
 		str=str.trim();
 		if(StringUtil.startsWith(str, '"') && StringUtil.endsWith(str, '"'))
 			str=str.substring(1,str.length()-1);
@@ -265,5 +288,162 @@ public final class ReqRspUtil {
     		return false;
     	}
     	return need;
+    }
+
+	public static boolean isThis(HttpServletRequest req, String url) { 
+		try {
+			return isThis(req, HTTPUtil.toURL(url));
+		} 
+		catch (Throwable t) {
+			return false;
+		}
+	}
+
+	public static boolean isThis(HttpServletRequest req, URL url) { 
+		try {
+			// Port
+			int reqPort=req.getServerPort();
+			int urlPort=url.getPort();
+			if(urlPort<=0) urlPort=HTTPUtil.isSecure(url)?443:80;
+			if(reqPort<=0) reqPort=req.isSecure()?443:80;
+			if(reqPort!=urlPort) return false;
+			
+			// host
+			String reqHost = req.getServerName();
+			String urlHost = url.getHost();
+			if(reqHost.equalsIgnoreCase(urlHost)) return true;
+			if(IsLocalHost.invoke(reqHost) && IsLocalHost.invoke(reqHost)) return true;
+			
+			InetAddress urlAddr = InetAddress.getByName(urlHost);
+			
+			InetAddress reqAddr = InetAddress.getByName(reqHost);
+			if(reqAddr.getHostName().equalsIgnoreCase(urlAddr.getHostName())) return true;
+			if(reqAddr.getHostAddress().equalsIgnoreCase(urlAddr.getHostAddress())) return true;
+			
+			reqAddr = InetAddress.getByName(req.getRemoteAddr());
+			if(reqAddr.getHostName().equalsIgnoreCase(urlAddr.getHostName())) return true;
+			if(reqAddr.getHostAddress().equalsIgnoreCase(urlAddr.getHostAddress())) return true;
+		}
+		catch(Throwable t){}
+		return false;
+	}
+	
+
+    public static LinkedList<MimeType> getAccept(PageContext pc) {
+    	LinkedList<MimeType> accept=new LinkedList<MimeType>();
+    	java.util.Iterator<String> it = ReqRspUtil.getHeadersIgnoreCase(pc, "accept").iterator();
+    	String value;
+		while(it.hasNext()){
+			value=it.next();
+			MimeType[] mtes = MimeType.getInstances(value, ',');
+			if(mtes!=null)for(int i=0;i<mtes.length;i++){
+				accept.add(mtes[i]);
+			}
+		}
+		return accept;
+	}
+    
+    public static MimeType getContentType(PageContext pc) {
+    	java.util.Iterator<String> it = ReqRspUtil.getHeadersIgnoreCase(pc, "content-type").iterator();
+    	String value;
+    	MimeType rtn=null;
+		while(it.hasNext()){
+			value=it.next();
+			MimeType[] mtes = MimeType.getInstances(value, ',');
+			if(mtes!=null)for(int i=0;i<mtes.length;i++){
+				rtn= mtes[i];
+			}
+		}
+		if(rtn==null) return MimeType.ALL;
+		return rtn;
+	}
+    
+    public static String getContentTypeAsString(PageContext pc,String defaultValue) {
+    	MimeType mt = getContentType(pc);
+    	if(mt==MimeType.ALL) return defaultValue;
+    	return mt.toString();
+    }
+
+	/**
+	 * returns the body of the request
+	 * @param pc
+	 * @param deserialized if true railo tries to deserialize the body based on the content-type, for example when the content type is "application/json"
+	 * @param defaultValue value returned if there is no body
+	 * @return
+	 */
+	public static Object getRequestBody(PageContext pc,boolean deserialized, Object defaultValue) {
+		HttpServletRequest req = pc.getHttpServletRequest();
+    	
+		MimeType contentType = getContentType(pc);
+		String strContentType=contentType==MimeType.ALL?null:contentType.toString();
+        String charEncoding = req.getCharacterEncoding();
+        Object obj = "";
+        
+        boolean isBinary =!(
+        		strContentType == null || 
+        		HTTPUtil.isTextMimeType(contentType) ||
+        		strContentType.toLowerCase().startsWith("application/x-www-form-urlencoded"));
+        
+        if(req.getContentLength() > -1) {
+        	ServletInputStream is=null;
+            try {
+                byte[] data = IOUtil.toBytes(is=req.getInputStream());//new byte[req.getContentLength()];
+                
+                if(isBinary) return data;
+                
+                String str;
+                if(charEncoding != null && charEncoding.length() > 0)
+                    obj = str = new String(data, charEncoding);
+                else
+                    obj = str = new String(data);
+                
+                if(deserialized){
+                	int format = MimeType.toFormat(contentType, -1);
+                	switch(format) {
+                	case UDF.RETURN_FORMAT_JSON:
+                		try{
+                			obj=new JSONExpressionInterpreter().interpret(pc, str);
+                		}
+                		catch(PageException pe){}
+                	break;
+                	case UDF.RETURN_FORMAT_SERIALIZE:
+                		try{
+                			obj=new CFMLExpressionInterpreter().interpret(pc, str);
+                		}
+                		catch(PageException pe){}
+                	break;
+                	case UDF.RETURN_FORMAT_WDDX:
+                		try{
+                			WDDXConverter converter =new WDDXConverter(pc.getTimeZone(),false,true);
+                			converter.setTimeZone(pc.getTimeZone());
+                			obj = converter.deserialize(str,false);
+                		}
+                		catch(Exception pe){}
+                	break;
+                	case UDF.RETURN_FORMAT_XML:
+                		try{
+                			InputSource xml = XMLUtil.toInputSource(pc,str.trim());
+                			InputSource validator =null;
+                			obj = XMLCaster.toXMLStruct(XMLUtil.parse(xml,validator,false),true);
+                		}
+                		catch(Exception pe){}
+                	break;
+                	}
+                }
+               
+                
+                
+            }
+            catch(Exception e) {
+            	return defaultValue;
+            }
+            finally {
+            	IOUtil.closeEL(is);
+            }
+        }
+        else {
+        	return defaultValue;
+        }
+        return obj;
     }
 }

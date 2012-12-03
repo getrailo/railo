@@ -5,10 +5,9 @@ import java.util.Map;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.functions.system.GetApplicationSettings;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.SharedScope;
-import railo.runtime.util.ApplicationContext;
 
 
 
@@ -22,12 +21,14 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 	private static final Collection.Key APPLICATION_NAME = KeyImpl.intern("applicationname");
 	private long lastAccess;
 	private long timeSpan;
+	private long created;
 	
 	/**
 	 * default constructor of the session scope
 	 */
 	public ApplicationImpl() {
 		super(true,"application",SCOPE_APPLICATION);
+		created = System.currentTimeMillis();
 	}
 
 	/**
@@ -45,7 +46,7 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void touchBeforeRequest(PageContext pc){
 	    ApplicationContext appContext = pc.getApplicationContext();
@@ -86,5 +87,10 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 	 */
 	public Map getApplicationSettings(){
 		return GetApplicationSettings.call(ThreadLocalPageContext.get());
+	}
+
+	@Override
+	public long getCreated() {
+		return created;
 	}
 }

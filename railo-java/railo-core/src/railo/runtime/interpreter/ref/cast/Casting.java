@@ -4,6 +4,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
+import railo.runtime.interpreter.ref.var.Variable;
 import railo.runtime.op.Caster;
 
 /**
@@ -14,7 +15,6 @@ public final class Casting extends RefSupport implements Ref {
     private short type;
     private Ref ref;
     private Object val;
-    private PageContext pc;
     private String strType;
     
     /**
@@ -24,25 +24,26 @@ public final class Casting extends RefSupport implements Ref {
      * @param type
      * @param ref
      */
-    public Casting(PageContext pc,String strType,short type, Ref ref) {
-    	this.pc=pc;
-        this.type=type;
+    public Casting(String strType,short type, Ref ref) {
+    	this.type=type;
         this.strType=strType;
         this.ref=ref;
     }
-    public Casting(PageContext pc,String strType,short type, Object val) {
-    	this.pc=pc;
-        this.type=type;
+    public Casting(String strType,short type, Object val) {
+    	this.type=type;
         this.strType=strType;
         this.val=val;
     }
     
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() throws PageException {
+    @Override
+    public Object getValue(PageContext pc) throws PageException {
     	if(val!=null) return Caster.castTo(pc,type,strType,val);
-        return Caster.castTo(pc,type,strType,ref.getValue());
+    	// patch for valueList ..., the complete interpreter code should be removed soon anyway
+    	if(ref instanceof Variable && "queryColumn".equalsIgnoreCase(strType)) {
+    		Variable var=(Variable) ref;
+    		return Caster.castTo(pc,type,strType,var.getCollection(pc));
+    	}
+    	return Caster.castTo(pc,type,strType,ref.getValue(pc));
     }
     
     public Ref getRef() {

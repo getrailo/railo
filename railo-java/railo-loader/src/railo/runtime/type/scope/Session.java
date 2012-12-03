@@ -1,20 +1,26 @@
 package railo.runtime.type.scope;
 
-import railo.runtime.type.Scope;
+import railo.runtime.type.Collection;
+
 
 /**
  * 
  */
-public interface Session extends Scope {
+public interface Session extends Scope,UserScope {
     /**
      * @return returns the last acces to this session scope
+     * @deprecated 
      */
-    public abstract long getLastAccess(); // FUTURE deprecated
+    public abstract long getLastAccess();
 
     /**
      * @return returns the actuell timespan of the session
+     * @deprecated 
      */
-    public abstract long getTimeSpan(); // FUTURE deprecated
+    public abstract long getTimeSpan();
+    
+
+	public long getCreated();
 
 
     /**
@@ -26,4 +32,12 @@ public interface Session extends Scope {
 	 * sets the last access timestamp to now
 	 */
 	public abstract void touch();
+	
+	public int _getId();
+
+	/**
+	 * @return all keys except the readpnly ones (cfid,cftoken,hitcount,lastvisit ...)
+	 */
+	public abstract Collection.Key[] pureKeys();
+
 }

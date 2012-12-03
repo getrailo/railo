@@ -24,7 +24,7 @@ import railo.transformer.library.tag.TagLibTag;
 
 public final class Sprite extends EvaluatorSupport {
 	
-	private static final Expression DELIMETER = LitString.toExprString(",");
+	private static final Expression DELIMITER = LitString.toExprString(",");
 	private static Map<String,Previous> sprites=new HashMap<String,Previous>(); 
 	
 	
@@ -56,7 +56,7 @@ public final class Sprite extends EvaluatorSupport {
 			previous.ids.add(id);
 			if(previous.src==null)previous.src=src;
 			else {
-				previous.src=OpString.toExprString(previous.src,DELIMETER);
+				previous.src=OpString.toExprString(previous.src,DELIMITER);
 				previous.src=OpString.toExprString(previous.src,src);
 			}
 			

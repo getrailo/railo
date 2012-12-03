@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function NullValue
+ * Implements the CFML Function NullValue
  */
 package railo.runtime.functions.other;
 

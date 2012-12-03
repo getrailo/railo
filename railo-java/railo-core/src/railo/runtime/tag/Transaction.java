@@ -56,7 +56,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         else if(strAction.equals("rollback")) action=ACTION_ROLLBACK;
         else if(strAction.equals("setsavepoint")) action=ACTION_SET_SAVEPOINT;
         else {
-            throw new DatabaseException("attribute action has a invalid value, valid values are [begin,commit,setsavepoint and rollback]",null,null,null);
+            throw new DatabaseException("attribute action has an invalid value, valid values are [begin,commit,setsavepoint and rollback]",null,null,null);
         }
     	
     	
@@ -73,7 +73,7 @@ public final class Transaction extends BodyTagTryCatchFinallyImpl {
         else if(isolation.equals("repeatable_read"))this.isolation=Connection.TRANSACTION_REPEATABLE_READ;
         else if(isolation.equals("serializable"))   this.isolation=Connection.TRANSACTION_SERIALIZABLE;
         else if(isolation.equals("none"))           this.isolation=Connection.TRANSACTION_NONE;
-        else throw new DatabaseException("transaction has a invalid isolation level (attribute isolation, valid values are [read_uncommitted,read_committed,repeatable_read,serializable])",null,null,null);
+        else throw new DatabaseException("transaction has an invalid isolation level (attribute isolation, valid values are [read_uncommitted,read_committed,repeatable_read,serializable])",null,null,null);
     }
 
     /**

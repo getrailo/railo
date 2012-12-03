@@ -1,5 +1,6 @@
 package coldfusion.server;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import railo.runtime.exp.SecurityException;
@@ -70,7 +71,7 @@ public interface DataSourceService extends Service {
 
 	public abstract void setCachedQuery(String arg0, Object arg1);
 
-	public abstract void purgeQueryCache();
+	public abstract void purgeQueryCache() throws IOException;
 
 	public abstract boolean disableConnection(String arg0);
 

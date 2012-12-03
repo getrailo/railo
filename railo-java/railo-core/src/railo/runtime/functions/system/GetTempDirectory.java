@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gettempdirectory
+ * Implements the CFML Function gettempdirectory
  */
 package railo.runtime.functions.system;
 

@@ -3,11 +3,11 @@ package railo.runtime.type.scope.client;
 import railo.commons.io.log.Log;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
-import railo.runtime.type.scope.ClientPlus;
+import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.storage.MemoryScope;
 import railo.runtime.type.scope.storage.StorageScopeMemory;
 
-public class ClientMemory extends StorageScopeMemory implements ClientPlus,MemoryScope {
+public class ClientMemory extends StorageScopeMemory implements Client,MemoryScope {
 
 	private static final long serialVersionUID = 5032226519712666589L;
 
@@ -35,7 +35,7 @@ public class ClientMemory extends StorageScopeMemory implements ClientPlus,Memor
 	 * @param log 
 	 * @return
 	 */
-	public static ClientPlus getInstance(PageContext pc, Log log) {
+	public static Client getInstance(PageContext pc, Log log) {
 		return new ClientMemory(pc,log);
 	}
 	

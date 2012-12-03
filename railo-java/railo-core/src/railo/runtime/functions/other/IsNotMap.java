@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isnotmap
+ * Implements the CFML Function isnotmap
  */
 package railo.runtime.functions.other;
 

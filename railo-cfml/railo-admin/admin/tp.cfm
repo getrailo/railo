@@ -1,1 +1,1 @@
-<cfmodule template="img.cfm" src="tp.gif" height="#attributes.height#" width="#attributes.width#" />
+<cfoutput><img src="resources/img/tp.gif.cfm" height="#attributes.height#" width="#attributes.width#" /></cfoutput>

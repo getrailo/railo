@@ -6,14 +6,17 @@ import railo.runtime.type.Query;
 /**
  * 
  */
-public final class QueryEntryImpl implements QueryEntry {
-	private String src;
-	private SQL sql;
-	private int exe;
-    private String name;
-    private int recordcount;
-    private String datasource;
-	private Query qry;
+public final class QueryEntryImpl implements QueryEntryPro {
+
+	private static final long serialVersionUID = 8655915268130645466L;
+	
+	private final String src;
+	private final SQL sql;
+	private final long exe;
+    private final String name;
+    private final int recordcount;
+    private final String datasource;
+	private final Query qry;
 	
 	/**
 	 * constructor of the class
@@ -22,7 +25,7 @@ public final class QueryEntryImpl implements QueryEntry {
 	 * @param src
 	 * @param exe
 	 */
-	public QueryEntryImpl(Query qry,String datasource, String name,SQL sql,int recordcount, String src, int exe) {
+	public QueryEntryImpl(Query qry,String datasource, String name,SQL sql,int recordcount, String src, long exe) {
         this.datasource=datasource;
         this.recordcount=recordcount;
         this.name=name;
@@ -31,46 +34,41 @@ public final class QueryEntryImpl implements QueryEntry {
 		this.exe=exe;
 		this.qry=qry;
 	}
-	/** FUTURE add to interface
-	 * @return the qry
-	 */
+	
+	@Override
 	public Query getQry() {
 		return qry;
 	}
-	/**
-     * @see railo.runtime.debug.QueryEntry#getExe()
-     */
+	
+	@Override
 	public int getExe() {
+		return (int)getExecutionTime();
+	}
+	
+	@Override
+	public long getExecutionTime() {
 		return exe;
 	}
-	/**
-     * @see railo.runtime.debug.QueryEntry#getSQL()
-     */
+	
+	
+	@Override
 	public SQL getSQL() {
 		return sql;
 	}
-	/**
-     * @see railo.runtime.debug.QueryEntry#getSrc()
-     */
+	@Override
 	public String getSrc() {
 		return src;
 	}
-    /**
-     * @see railo.runtime.debug.QueryEntry#getName()
-     */
-    public String getName() {
+	@Override
+	public String getName() {
         return name;
     }
-    /**
-     * @see railo.runtime.debug.QueryEntry#getRecordcount()
-     */
-    public int getRecordcount() {
+	@Override
+	public int getRecordcount() {
         return recordcount;
     }
-    /**
-     * @see railo.runtime.debug.QueryEntry#getDatasource()
-     */
-    public String getDatasource() {
+	@Override
+	public String getDatasource() {
         return datasource;
     }
 }

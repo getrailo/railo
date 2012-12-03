@@ -7,11 +7,12 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 
-public final class DoWhile extends StatementBase implements FlowControl,HasBody {
+public final class DoWhile extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
 
 	private ExprBoolean expr;
 	private Body body;
@@ -27,8 +28,8 @@ public final class DoWhile extends StatementBase implements FlowControl,HasBody 
 	 * @param body
 	 * @param line
 	 */
-	public DoWhile(Expression expr,Body body,int startline,int endline) {
-		super(startline,endline);
+	public DoWhile(Expression expr,Body body,Position start, Position end) {
+		super(start,end);
 		this.expr=CastBoolean.toExprBoolean(expr);
 		this.body=body;
 		body.setParent(this);

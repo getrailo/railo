@@ -16,17 +16,15 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * Decodes Binary Data that are encoded as String
  */
 public final class DeserializeJSON implements Function {
 
-	private static final Key COLUMNS = KeyImpl.intern("COLUMNS");
-	private static final Key COLUMNLIST = KeyImpl.intern("COLUMNLIST");
-	private static final Key DATA = KeyImpl.intern("DATA");
 	private static final Key ROWCOUNT = KeyImpl.intern("ROWCOUNT");
-	private static final Key RECORDCOUNT = KeyImpl.intern("RECORDCOUNT");
 
 	public static Object call(PageContext pc, String JSONVar) throws PageException {
 	    return call(pc,JSONVar,true);
@@ -42,34 +40,34 @@ public final class DeserializeJSON implements Function {
 	private static Object toQuery(Object obj) throws PageException {
 		if(obj instanceof Struct) {
 			Struct sct=(Struct) obj;
-			Key[] keys = sct.keys();
+			Key[] keys = CollectionUtil.keys(sct);
 			
 			// Columns
 			Key[] columns = null;
-			if(contains(keys,COLUMNS)) 
-				columns = toColumns(sct.get(COLUMNS,null));
-			else if(contains(keys,COLUMNLIST)) 
-				columns = toColumnlist(sct.get(COLUMNLIST,null));
+			if(contains(keys,KeyConstants._COLUMNS)) 
+				columns = toColumns(sct.get(KeyConstants._COLUMNS,null));
+			else if(contains(keys,KeyConstants._COLUMNLIST)) 
+				columns = toColumnlist(sct.get(KeyConstants._COLUMNLIST,null));
 			
 			// rowcount
 			int rowcount = -1;
 			if(contains(keys,ROWCOUNT))
 				rowcount = toRowCount(sct.get(ROWCOUNT,null));
-			else if(contains(keys,RECORDCOUNT))
-				rowcount = toRowCount(sct.get(RECORDCOUNT,null));
+			else if(contains(keys,KeyConstants._RECORDCOUNT))
+				rowcount = toRowCount(sct.get(KeyConstants._RECORDCOUNT,null));
 				
 			
 			if(columns!=null) {
-				if(keys.length==2 && contains(keys,DATA)) {
+				if(keys.length==2 && contains(keys,KeyConstants._DATA)) {
 					
-					Array[] data = toData(sct.get(DATA,null),columns);
+					Array[] data = toData(sct.get(KeyConstants._DATA,null),columns);
 					if(data!=null) {
 						return new QueryImpl(columns,data,"query");
 					}
 				}
 				
-				else if(keys.length==3 && rowcount!=-1 && contains(keys,DATA)) {
-					Array[] data = toData(sct.get(DATA,null),columns,rowcount);
+				else if(keys.length==3 && rowcount!=-1 && contains(keys,KeyConstants._DATA)) {
+					Array[] data = toData(sct.get(KeyConstants._DATA,null),columns,rowcount);
 					if(data!=null) {
 						return new QueryImpl(columns,data,"query");
 					}
@@ -82,7 +80,7 @@ public final class DeserializeJSON implements Function {
 		}*/	
 		else if(obj instanceof Collection) {
 			Collection coll=(Collection) obj;
-			return toQuery(coll, coll.keys());
+			return toQuery(coll, CollectionUtil.keys(coll));
 		}
 		
 		return obj;
@@ -126,7 +124,7 @@ public final class DeserializeJSON implements Function {
 			for(int i=0;i<columns.length;i++) {
 				col=Caster.toArray(sct.get(columns[i],null),null);
 				if(col==null || colLen!=-1 && colLen!=col.size()) return null;
-				datas[i]=(Array) toQuery(col,col.keys());
+				datas[i]=(Array) toQuery(col,CollectionUtil.keys(col));
 				colLen=col.size();
 			}
 			return datas;
@@ -145,7 +143,7 @@ public final class DeserializeJSON implements Function {
 			}
 			
 			Array data;
-			Iterator it = arr.iterator();
+			Iterator<Object> it = arr.valueIterator();
 			while(it.hasNext()) {
 				data=Caster.toArray(it.next(),null);
 				if(data==null || data.size()!=datas.length) return null;
@@ -165,7 +163,7 @@ public final class DeserializeJSON implements Function {
 			Key[] columns=new Key[arr.size()];
 			String column;
 			int index=0;
-			Iterator it = arr.iterator();
+			Iterator<Object> it = arr.valueIterator();
 			while(it.hasNext()) {
 				column=Caster.toString(it.next(),null);
 				if(StringUtil.isEmpty(column)) return null;

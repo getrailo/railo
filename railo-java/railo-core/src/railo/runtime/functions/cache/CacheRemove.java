@@ -35,20 +35,22 @@ public final class CacheRemove implements Function {
 		String id;
 		Cache cache;
 		try {
-			cache = Util.getCache(pc.getConfig(),cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
+			cache = Util.getCache(pc,cacheName,ConfigImpl.CACHE_DEFAULT_OBJECT);
 		} catch (IOException e) {
 			throw Caster.toPageException(e);
 		}
 		StringBuffer sb=null;
-		while(it.hasNext()){
-			id= Util.key(Caster.toString(it.next()));
-			if(!cache.remove(id) && throwOnError){
-				if(sb==null)sb=new StringBuffer();
-				else sb.append(',');
-				sb.append(id);
+		try{
+			while(it.hasNext()){
+				id= Util.key(Caster.toString(it.next()));
+				if(!cache.remove(id) && throwOnError){
+					if(sb==null)sb=new StringBuffer();
+					else sb.append(',');
+					sb.append(id);
+				}		
 			}
-				
-		}
+		} 
+		catch (IOException e) {}
 		if(throwOnError && sb!=null)
 			throw new ApplicationException("can not remove the elements with the following id(s) ["+sb+"]");
 		return null;

@@ -1,11 +1,11 @@
 package railo.runtime.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
@@ -67,17 +67,8 @@ public class DatasourceConnectionPool {
         Connection conn=null;
         String dsn = ds.getDsnTranslated();
         try {
-        	try {
-        		conn = DriverManager.getConnection(dsn, user, pass);
-            } 
-            catch (SQLException e) {
-            	if(dsn.indexOf('?')!=-1) {
-                    String connStr=dsn+"&user="+user+"&password="+pass;
-                    conn = DriverManager.getConnection(connStr);
-                }
-            	else throw e;
-            }
-            conn.setAutoCommit(true);
+        	conn = DBUtil.getConnection(dsn, user, pass);
+        	conn.setAutoCommit(true);
         } 
         catch (SQLException e) {
         	throw new DatabaseException("can't connect to datasource ["+ds.getName()+"]",e,null,null);
@@ -91,7 +82,7 @@ public class DatasourceConnectionPool {
 		
 		DCStack stack=getDCStack(dc.getDatasource(), dc.getUsername(), dc.getPassword());
 		synchronized (stack) {
-			stack.add((DatasourceConnectionPro)dc);
+			stack.add(dc);
 			int max = dc.getDatasource().getConnectionLimit();
 
 			if(max!=-1) {
@@ -104,7 +95,7 @@ public class DatasourceConnectionPool {
 	}
 
 	public void clear() {
-		int size=0;
+		//int size=0;
 		
 		// remove all timed out conns
 		try{
@@ -113,7 +104,7 @@ public class DatasourceConnectionPool {
 			for(int i=0;i<arr.length;i++) {
 				DCStack conns=(DCStack) ((Map.Entry) arr[i]).getValue();
 				if(conns!=null)conns.clear();
-				size+=conns.size();
+				//size+=conns.size();
 			}
 		}
 		catch(Throwable t){}
@@ -125,13 +116,13 @@ public class DatasourceConnectionPool {
         for(int i=0;i<arr.length;i++) {
         	key=(String) arr[i];
         	if(key.startsWith(datasource.toLowerCase())) {
-				DCStack conns=(DCStack) dcs.get(key);
+				DCStack conns=dcs.get(key);
 				conns.clear();
         	}
 		}
         
         String did = createId(datasource);
-		RefInteger ri=(RefInteger) counter.get(did);
+		RefInteger ri=counter.get(did);
 		if(ri!=null)ri.setValue(0);
 		else counter.put(did,new RefIntegerImpl(0));
         
@@ -164,7 +155,7 @@ public class DatasourceConnectionPool {
 	private DCStack getDCStack(DataSource datasource, String user, String pass) {
 		String id = createId(datasource,user,pass);
 		
-		DCStack stack=(DCStack)dcs.get(id);
+		DCStack stack=dcs.get(id);
 		
 		if(stack==null){
 			dcs.put(id, stack=new DCStack());
@@ -184,7 +175,7 @@ public class DatasourceConnectionPool {
 
 	private RefInteger _getCounter(String datasource) {
 		String did = createId(datasource);
-		RefInteger ri=(RefInteger) counter.get(did);
+		RefInteger ri=counter.get(did);
 		if(ri==null) {
 			counter.put(did,ri=new RefIntegerImpl(0));
 		}

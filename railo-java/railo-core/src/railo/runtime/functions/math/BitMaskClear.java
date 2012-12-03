@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function bitmaskclear
+ * Implements the CFML Function bitmaskclear
  */
 package railo.runtime.functions.math;
 

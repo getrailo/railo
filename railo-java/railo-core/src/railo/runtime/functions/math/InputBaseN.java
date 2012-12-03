@@ -6,7 +6,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 
 /**
- * Implements the Cold Fusion Function inputbasen
+ * Implements the CFML Function inputbasen
  */
 public final class InputBaseN implements Function {
 	public static double call(PageContext pc , String string, double radix) throws ExpressionException {

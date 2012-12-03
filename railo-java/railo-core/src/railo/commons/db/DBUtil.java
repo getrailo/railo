@@ -1,7 +1,9 @@
 package railo.commons.db;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -72,6 +74,19 @@ public final class DBUtil {
             try {
                 rs.close();
             } catch (Throwable t) {}
+        }
+	}
+
+	public static Connection getConnection(String dsn, String user, String pass) throws SQLException {
+		try {
+    		return DriverManager.getConnection(dsn, user, pass);
+        } 
+        catch (SQLException e) {
+        	if(dsn.indexOf('?')!=-1) {
+                String connStr=dsn+"&user="+user+"&password="+pass;
+                return DriverManager.getConnection(connStr);
+            }
+        	throw e;
         }
 	}
 

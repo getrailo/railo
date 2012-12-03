@@ -21,8 +21,8 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.math.Noise;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * This filter applies a marbling effect to an image, displacing pixels by random amounts.
@@ -154,7 +154,7 @@ public class MarbleFilter extends TransformFilter  implements DynFiltering {
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Turbulence, XScale, YScale, EdgeAction, Interpolation]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Amount, Turbulence, XScale, YScale, EdgeAction, Interpolation]");
 		}
 
 		return filter(src, dst);

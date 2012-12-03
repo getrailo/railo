@@ -5,7 +5,7 @@ import java.io.IOException;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.op.Caster;
 import railo.runtime.security.Credential;
 import railo.runtime.type.Array;
@@ -14,7 +14,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.util.ApplicationContext;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * 
@@ -22,7 +22,6 @@ import railo.runtime.util.ApplicationContext;
 public final class Login extends BodyTagImpl {
     
     private static final Key CFLOGIN = KeyImpl.intern("cflogin");
-	private static final Key PASSWORD = KeyImpl.intern("password");
 	private int idletimeout=1800;
     private String applicationtoken;
     private String cookiedomain;
@@ -63,10 +62,8 @@ public final class Login extends BodyTagImpl {
      */
     public int doStartTag() throws PageException  {
     	
-    	if(pageContext.getApplicationContext() instanceof ApplicationContextPro){
-    		ApplicationContextPro ac=(ApplicationContextPro) pageContext.getApplicationContext();
-    		ac.setSecuritySettings(applicationtoken,cookiedomain,idletimeout);
-    	}
+    	ApplicationContext ac=pageContext.getApplicationContext();
+    	ac.setSecuritySettings(applicationtoken,cookiedomain,idletimeout);
     	
         Credential remoteUser = pageContext.getRemoteUser();
         if(remoteUser==null) {
@@ -118,8 +115,8 @@ public final class Login extends BodyTagImpl {
         if(password==null) password="";
         
         Struct sct=new StructImpl();
-        sct.setEL(KeyImpl.NAME,username);
-        sct.setEL(PASSWORD,password);
+        sct.setEL(KeyConstants._name,username);
+        sct.setEL(KeyConstants._password,password);
         pageContext.undefinedScope().setEL(CFLOGIN,sct);
     }
 
@@ -132,23 +129,14 @@ public final class Login extends BodyTagImpl {
     }
 
 	public static String getApplicationName(ApplicationContext appContext) {
-		if(appContext instanceof ApplicationContextPro) {
-	    	return "cfauthorization_"+((ApplicationContextPro) appContext).getSecurityApplicationToken();
-	    }
-	    return "cfauthorization_"+appContext.getName();
+		return "cfauthorization_"+appContext.getSecurityApplicationToken();
 	}
 
 	public static String getCookieDomain(ApplicationContext appContext) {
-		if(appContext instanceof ApplicationContextPro) {
-			((ApplicationContextPro) appContext).getSecurityCookieDomain();
-	    }
-	    return null;
+		return appContext.getSecurityCookieDomain();
 	}
 
 	public static int getIdleTimeout(ApplicationContext appContext) {
-		if(appContext instanceof ApplicationContextPro) {
-	    	return ((ApplicationContextPro) appContext).getSecurityIdleTimeout();
-	    }
-	    return 1800;
+		return appContext.getSecurityIdleTimeout();
 	}
 }

@@ -16,11 +16,13 @@ import railo.runtime.search.SearchDataImpl;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.search.SearchException;
 import railo.runtime.search.SuggestionItem;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public final class Search extends TagImpl {
 
@@ -104,7 +106,7 @@ public final class Search extends TagImpl {
 	    if(type.equals("simple"))this.type=SearchCollection.SEARCH_TYPE_SIMPLE;
 	    else if(type.equals("explicit"))this.type=SearchCollection.SEARCH_TYPE_EXPLICIT;
 	    else 
-	        throw new ApplicationException("attribute type of tag search has a invalid value, valid values are [simple,explicit] now is ["+type+"]");
+	        throw new ApplicationException("attribute type of tag search has an invalid value, valid values are [simple,explicit] now is ["+type+"]");
 
 	}
 
@@ -156,8 +158,7 @@ public final class Search extends TagImpl {
 	* @param language value to set
 	**/
 	public void setLanguage(String language)	{
-		//this.language=language;
-		// deprecated and ignored
+		DeprecatedUtil.tagAttribute(pageContext,"Search", "language");
 	}
 
 	/** set the value external
@@ -165,7 +166,7 @@ public final class Search extends TagImpl {
 	 * @throws ApplicationException
 	**/
 	public void setExternal(boolean external) throws ApplicationException	{
-		throw new ApplicationException("attribute external ["+external+"] in tag search is deprecated");
+		DeprecatedUtil.tagAttribute(pageContext,"Search", "external");
 	}
 
 	/** set the value name
@@ -266,7 +267,7 @@ public final class Search extends TagImpl {
 			this.suggestions=Caster.toIntValue(suggestions);
 		}
 		else	
-			throw new ApplicationException("attribute suggestions has a invalid value ["+suggestions+"], valid values are [always,never,<positive numeric value>]");
+			throw new ApplicationException("attribute suggestions has an invalid value ["+suggestions+"], valid values are [always,never,<positive numeric value>]");
 		
 		
 	}
@@ -322,7 +323,7 @@ public final class Search extends TagImpl {
 	    	pageContext.setVariable(status, sct);
 	    	sct.set(FOUND, new Double(qry.getRecordcount()));
 	    	sct.set(SEARCHED, recSearched);
-	    	sct.set(KeyImpl.TIME, new Double(time));
+	    	sct.set(KeyConstants._time, new Double(time));
 	    	
 	    	// TODO impl this values
 	    	

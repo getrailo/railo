@@ -111,6 +111,7 @@ public final class DateCaster {
 	 */
 	public static DateTime toDateAdvanced(String str,boolean alsoNumbers,TimeZone timeZone, DateTime defaultValue) {
 		str=str.trim();
+		if(StringUtil.isEmpty(str)) return defaultValue;
 		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
 		DateTime dt=toDateSimple(str,alsoNumbers,timeZone,defaultValue);
 		if(dt==null) {	
@@ -123,7 +124,7 @@ public final class DateCaster {
 						pp.setErrorIndex(-1);
 						pp.setIndex(0);
 						d = formats[i].parse(str,pp);
-						if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;						
+						if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
 						dt= new DateTimeImpl(d.getTime(),false);
 						return dt;
 					//}catch (ParseException e) {}
@@ -855,6 +856,12 @@ public final class DateCaster {
     	DateTime date = DateCaster.toDateAdvanced(o, timeZone);
     	return new railo.runtime.format.DateFormat(Locale.US).format(date,"dd.mm.yyyy");
     }
-    
-    
+
+	public static String toShortTime(long time) {
+		return Long.toString(time/1000,36);
+	}
+	
+	public static long fromShortTime(String str) {
+		return Long.parseLong(str,36)*1000;
+	}
 }

@@ -8,6 +8,7 @@ import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Literal;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastDouble;
 import railo.transformer.bytecode.expression.ExprDouble;
 import railo.transformer.bytecode.expression.Expression;
@@ -24,8 +25,8 @@ public final class OpNegateNumber extends ExpressionBase implements ExprDouble {
 	public static final int PLUS = 0;
 	public static final int MINUS = 1;
 
-	private OpNegateNumber(Expression expr, int line) {
-        super(line);
+	private OpNegateNumber(Expression expr, Position start, Position end) {
+        super(start,end);
         this.expr=CastDouble.toExprDouble(expr);
     }
     
@@ -37,18 +38,18 @@ public final class OpNegateNumber extends ExpressionBase implements ExprDouble {
      * @return String expression
      * @throws TemplateException 
      */
-    public static ExprDouble toExprDouble(Expression expr, int line) {
+    public static ExprDouble toExprDouble(Expression expr, Position start, Position end) {
         if(expr instanceof Literal) {
         	Double d=((Literal) expr).getDouble(null);
         	if(d!=null) {
-        		return new LitDouble(-d.doubleValue(),line);
+        		return LitDouble.toExprDouble(-d.doubleValue(),start,end);
         	}
         }
-        return new OpNegateNumber(expr,line);
+        return new OpNegateNumber(expr,start,end);
     }
     
-    public static ExprDouble toExprDouble(Expression expr, int operation, int line) {
-    	if(operation==MINUS) return toExprDouble(expr, line);
+    public static ExprDouble toExprDouble(Expression expr, int operation, Position start, Position end) {
+    	if(operation==MINUS) return toExprDouble(expr, start,end);
     	return CastDouble.toExprDouble(expr);
     }
 	

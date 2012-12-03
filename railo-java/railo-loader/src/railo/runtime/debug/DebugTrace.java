@@ -1,6 +1,8 @@
 package railo.runtime.debug;
 
-public interface DebugTrace {
+import java.io.Serializable;
+
+public interface DebugTrace extends Serializable {
 
 	/**
 	 * @return the category
@@ -40,5 +42,7 @@ public interface DebugTrace {
 	 * @return the var
 	 */
 	public String getVarValue();
+	
+	public String getAction();
 	
 }

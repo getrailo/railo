@@ -1,5 +1,7 @@
 package railo.runtime.lock;
 
+import railo.commons.lock.Lock;
+
 
 /**
  * lock data
@@ -8,8 +10,9 @@ public interface LockData {
     /**
      * is type of token read only
      * @return is read only
+     * @deprecated 
      */
-    boolean isReadOnly();//FUTURE deprecated
+    boolean isReadOnly();
 
     /**
      * @return Returns the id.
@@ -21,6 +24,5 @@ public interface LockData {
      */
     String getName();
     
-    //FUTURE public Lock getLock();
-
+    public Lock getLock();
 }

@@ -18,7 +18,6 @@ import railo.runtime.type.CastableStruct;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -31,16 +30,7 @@ import railo.runtime.type.util.StructUtil;
  */
 public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable {
 	
-
-	public static final Key APPLICATION = KeyImpl.intern("application");
-	public static final Key CGI = KeyImpl.intern("cgi");
-	public static final Key COOKIE = KeyImpl.intern("cookie");
-	public static final Key CLIENT = KeyImpl.intern("client");
-	public static final Key CLUSTER = KeyImpl.intern("cluster");
-	public static final Key FORM = KeyImpl.intern("form");
-	public static final Key REQUEST = KeyImpl.intern("request");
-	public static final Key SESSION = KeyImpl.intern("session");
-	public static final Key URL = KeyImpl.intern("url");
+	private static final long serialVersionUID = -4185219623238374574L;
 	
 	private String name;
     private String dspName;
@@ -48,8 +38,6 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 	private int id=0;
     private static final byte[] EMPTY="".getBytes();
 	
-    public static final int SCOPE_VAR=15; // FUTURE add to interface Scope
-    public static final int SCOPE_COUNT=16;
 	
 	/**
 	 * Field <code>isInit</code>
@@ -102,7 +90,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 	 * @see railo.runtime.type.StructImpl#invalidKey(java.lang.String)
 	 */
 	protected ExpressionException invalidKey(String key) {
-		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+List.arrayToList(keysAsString(), ",")+")");
+		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+List.arrayToList(keys(), ",")+")");
 	}
 
     /**
@@ -117,9 +105,9 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 	protected static URLItem[] setFromTextPlain(String str) {
 		return setFrom___(str, '\n');
 	}
-	protected static URLItem[] setFrom___(String tp,char delimeter) {
+	protected static URLItem[] setFrom___(String tp,char delimiter) {
         if(tp==null) return new URLItem[0];
-        Array arr=List.listToArrayRemoveEmpty(tp,delimeter);
+        Array arr=List.listToArrayRemoveEmpty(tp,delimiter);
         URLItem[] pairs=new URLItem[arr.size()];
         
         //Array item;
@@ -149,12 +137,12 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
         }
     }
     
-    protected void fillDecodedEL(URLItem[] raw, String encoding, boolean scriptProteced) {
+    protected void fillDecodedEL(URLItem[] raw, String encoding, boolean scriptProteced, boolean sameAsArray) {
     	try {
-			fillDecoded(raw, encoding,scriptProteced);
+			fillDecoded(raw, encoding,scriptProteced,sameAsArray);
 		} catch (UnsupportedEncodingException e) {
 			try {
-				fillDecoded(raw, "iso-8859-1",scriptProteced);
+				fillDecoded(raw, "iso-8859-1",scriptProteced,sameAsArray);
 			} catch (UnsupportedEncodingException e1) {}
 		}
     }
@@ -166,7 +154,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
      * @param encoding
      * @throws UnsupportedEncodingException
      */
-    protected void fillDecoded(URLItem[] raw, String encoding, boolean scriptProteced) throws UnsupportedEncodingException {
+    protected void fillDecoded(URLItem[] raw, String encoding, boolean scriptProteced, boolean sameAsArray) throws UnsupportedEncodingException {
     	clear();
     	String name,value;
         //Object curr;
@@ -182,19 +170,19 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
                 StringList list=List.listToStringListRemoveEmpty(name,'.');
                 Struct parent=this;
                 while(list.hasNextNext()) {
-                    parent=_fill(parent,list.next(),new CastableStruct(),false,scriptProteced);
+                    parent=_fill(parent,list.next(),new CastableStruct(),false,scriptProteced,sameAsArray);
                 }
-                _fill(parent,list.next(),value,true,scriptProteced);
+                _fill(parent,list.next(),value,true,scriptProteced,sameAsArray);
             } 
             //else 
-                _fill(this,name,value,true,scriptProteced);
+                _fill(this,name,value,true,scriptProteced,sameAsArray);
         }
     }
     
-    private Struct _fill(Struct parent, String name, Object value, boolean isLast, boolean scriptProteced) {
-        Object curr;
-        boolean isArrayDef=false;
-        Collection.Key key=KeyImpl.getInstance(name);
+    private Struct _fill(Struct parent, String name, Object value, boolean isLast, boolean scriptProteced, boolean sameAsArray) {
+    	Object curr;
+        boolean isArrayDef=sameAsArray;
+        Collection.Key key=KeyImpl.init(name);
         
         // script protect
         if(scriptProteced && value instanceof String) {
@@ -263,23 +251,29 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
     }*/
     
     /**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return isInit;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
         isInit=true;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {
+		clear();
+		isInit=false;
+	}
+	
+	@Override
+	public void release(PageContext pc) {
 		clear();
 		isInit=false;
 	}
@@ -301,14 +295,14 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
     }
     
     /**
-     * @see railo.runtime.type.Scope#getType()
+     * @see railo.runtime.type.scope.Scope#getType()
      */
     public int getType() {
         return type;
     }
     
     /**
-     * @see railo.runtime.type.Scope#getTypeAsString()
+     * @see railo.runtime.type.scope.Scope#getTypeAsString()
      */
     public String getTypeAsString() {
         return name;

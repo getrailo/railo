@@ -2,10 +2,15 @@ package railo.runtime.type.wrap;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 
+import org.apache.poi.ss.formula.functions.T;
+
+import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
@@ -20,11 +25,13 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
-import railo.runtime.type.comparator.NumberComparator;
-import railo.runtime.type.comparator.TextComparator;
+import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.MemberUtil;
 
 /**
  * 
@@ -195,44 +202,16 @@ public class ListAsArray implements Array,List,Sizeable {
 		return value;
 	}
 
+	@Override
 	public void sort(String sortType, String sortOrder) throws PageException {
+		sort(ArrayUtil.toComparator(null, sortType, sortOrder, false));
+	}
+
+	@Override
+	public synchronized void sort(Comparator comp) throws PageException {
 		if(getDimension()>1)
 			throw new ExpressionException("only 1 dimensional arrays can be sorted");
-		
-		// check sortorder
-		boolean isAsc=true;
-		PageException ee=null;
-		if(sortOrder.equalsIgnoreCase("asc"))isAsc=true;
-		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
-		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
-		
-		// text
-		if(sortType.equalsIgnoreCase("text")) {
-			TextComparator comp=new TextComparator(isAsc,false);
-			Collections.sort(list,comp);
-			//Arrays.sort(arr,offset,offset+size,comp);
-			ee=comp.getPageException();
-		}
-		// text no case
-		else if(sortType.equalsIgnoreCase("textnocase")) {
-			TextComparator comp=new TextComparator(isAsc,true);
-			Collections.sort(list,comp);
-			//Arrays.sort(arr,offset,offset+size,comp);
-			ee=comp.getPageException();
-		}
-		// numeric
-		else if(sortType.equalsIgnoreCase("numeric")) {
-			NumberComparator comp=new NumberComparator(isAsc);
-			Collections.sort(list,comp);
-			//Arrays.sort(arr,offset,offset+size,comp);
-			ee=comp.getPageException();
-		}
-		else {
-			throw new ExpressionException("invalid sort type ["+sortType+"], sort types are [text, textNoCase, numeric]");
-		}
-		if(ee!=null) {
-			throw new ExpressionException("can only sort arrays with simple values",ee.getMessage());
-		}
+		Collections.sort(list,comp);
 	}
 
 	/**
@@ -322,18 +301,6 @@ public class ListAsArray implements Array,List,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		int[] intKeys = intKeys();
-		String[] keys = new String[intKeys.length];
-		for(int i=0;i<intKeys.length;i++) {
-			keys[i]=Caster.toString(intKeys[i]);
-		}
-		return keys;
-	}
-
-	/**
 	 *
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
@@ -400,11 +367,19 @@ public class ListAsArray implements Array,List,Sizeable {
 		return list.iterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this,keys());
 	}
 
 	/**
@@ -412,7 +387,7 @@ public class ListAsArray implements Array,List,Sizeable {
      */
     public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to String",
-          "Use Build-In-Function \"serialize(Array):String\" to create a String from Array");
+          "Use Built-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
 	/**
@@ -661,4 +636,39 @@ public class ListAsArray implements Array,List,Sizeable {
 	public long sizeOf() {
 		return ArrayUtil.sizeOf(list);
 	}
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key, defaultValue);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public java.util.Iterator<Object> getIterator() {
+    	return valueIterator();
+    } 
 }

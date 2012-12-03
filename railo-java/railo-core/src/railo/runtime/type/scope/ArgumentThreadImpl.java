@@ -1,25 +1,30 @@
 package railo.runtime.type.scope;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.CasterException;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.StructUtil;
 
-public final class ArgumentThreadImpl implements ArgumentPro,Sizeable {
+public final class ArgumentThreadImpl implements Argument,Sizeable {
 
 	private final Struct sct;
 
@@ -82,36 +87,37 @@ public final class ArgumentThreadImpl implements ArgumentPro,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getType()
+	 * @see railo.runtime.type.scope.Scope#getType()
 	 */
 	public int getType() {
 		return SCOPE_ARGUMENTS;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#getTypeAsString()
+	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
 	 */
 	public String getTypeAsString() {
 		return "arguments";
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#initialize(railo.runtime.PageContext)
+	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
 	 */
 	public void initialize(PageContext pc) {
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#isInitalized()
+	 * @see railo.runtime.type.scope.Scope#isInitalized()
 	 */
 	public boolean isInitalized() {
 		return true;
 	}
 
 	/**
-	 * @see railo.runtime.type.Scope#release()
+	 * @see railo.runtime.type.scope.Scope#release()
 	 */
 	public void release() {}
+	public void release(PageContext pc) {}
 
 	/**
 	 * @see railo.runtime.type.Collection#clear()
@@ -138,14 +144,14 @@ public final class ArgumentThreadImpl implements ArgumentPro,Sizeable {
 	 * @see railo.runtime.type.Collection#duplicate(boolean)
 	 */
 	public Collection duplicate(boolean deepCopy) {
-		return new ArgumentThreadImpl((Struct)sct.duplicate(deepCopy));
+		return new ArgumentThreadImpl((Struct)Duplicator.duplicate(sct,deepCopy));
 	}
 
 	/**
 	 * @see railo.runtime.type.Collection#get(java.lang.String)
 	 */
 	public Object get(String key) throws PageException {
-		return sct.get(key);
+		return get(KeyImpl.init(key));
 	}
 
 	/**
@@ -174,13 +180,6 @@ public final class ArgumentThreadImpl implements ArgumentPro,Sizeable {
 	 */
 	public Key[] keys() {
 		return sct.keys();
-	}
-
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		return sct.keysAsString();
 	}
 
 	/**
@@ -240,23 +239,26 @@ public final class ArgumentThreadImpl implements ArgumentPro,Sizeable {
 	}
 
 	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return sct.iterator();
-	}
-
-	/**
 	 * @see railo.runtime.type.Iteratorable#keyIterator()
 	 */
-	public Iterator keyIterator() {
+	public Iterator<Collection.Key> keyIterator() {
 		return sct.keyIterator();
+	}
+    
+    @Override
+	public Iterator<String> keysAsStringIterator() {
+    	return sct.keysAsStringIterator();
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return sct.entryIterator();
 	}
 
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return sct.valueIterator();
 	}
 
@@ -520,6 +522,10 @@ public final class ArgumentThreadImpl implements ArgumentPro,Sizeable {
 		throw new CasterException(sct,"Array");
 	}
 
+	public void sort(Comparator com) throws ExpressionException {
+		throw new CasterException(sct,"Array");
+	}
+
 	/**
 	 * @see railo.runtime.type.Array#toArray()
 	 */
@@ -555,5 +561,40 @@ public final class ArgumentThreadImpl implements ArgumentPro,Sizeable {
 	public long sizeOf() {
 		return StructUtil.sizeOf(this);
 	}
+
+	@Override
+	public Object get(PageContext pc, Key key, Object defaultValue) {
+		return get(key, defaultValue);
+	}
+
+	@Override
+	public Object get(PageContext pc, Key key) throws PageException {
+		return get(key);
+	}
+
+	@Override
+	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
+		return set(propertyName, value);
+	}
+
+	@Override
+	public Object setEL(PageContext pc, Key propertyName, Object value) {
+		return setEL(propertyName, value);
+	}
+
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		return MemberUtil.call(pc, this, methodName, args, CFTypes.TYPE_ARRAY, "array");
+	}
+
+	@Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		return MemberUtil.callWithNamedValues(pc,this,methodName,args, CFTypes.TYPE_ARRAY, "array");
+	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    } 
 
 }

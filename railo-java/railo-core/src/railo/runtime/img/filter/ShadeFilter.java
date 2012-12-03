@@ -27,8 +27,8 @@ import railo.runtime.img.math.ImageFunction2D;
 import railo.runtime.img.vecmath.Color4f;
 import railo.runtime.img.vecmath.Vector3f;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 public class ShadeFilter extends WholeImageFilter  implements DynFiltering {
 	
@@ -43,29 +43,29 @@ public class ShadeFilter extends WholeImageFilter  implements DynFiltering {
 	private float bumpHeight;
 	private float bumpSoftness;
 	private float viewDistance = 10000.0f;
-	private int colorSource = COLORS_FROM_IMAGE;
+	//private int colorSource = COLORS_FROM_IMAGE;
 	private int bumpSource = BUMPS_FROM_IMAGE;
 	private Function2D bumpFunction;
 	private BufferedImage environmentMap;
 	private int[] envPixels;
 	private int envWidth = 1, envHeight = 1;
-	private Vector3f l;
+	//private Vector3f l;
 	private Vector3f v;
-	private Vector3f n;
-	private Color4f shadedColor;
-	private Color4f diffuse_color;
-	private Color4f specular_color;
+	//private Vector3f n;
+	//private Color4f shadedColor;
+	//private Color4f diffuse_color;
+	//private Color4f specular_color;
 	private Vector3f tmpv, tmpv2;
 
 	public ShadeFilter() {
 		bumpHeight = 1.0f;
 		bumpSoftness = 5.0f;
-		l = new Vector3f();
+		//l = new Vector3f();
 		v = new Vector3f();
-		n = new Vector3f();
-		shadedColor = new Color4f();
-		diffuse_color = new Color4f();
-		specular_color = new Color4f();
+		//n = new Vector3f();
+		//shadedColor = new Color4f();
+		//diffuse_color = new Color4f();
+		//specular_color = new Color4f();
 		tmpv = new Vector3f();
 		tmpv2 = new Vector3f();
 	}
@@ -315,7 +315,7 @@ public class ShadeFilter extends WholeImageFilter  implements DynFiltering {
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [BumpFunction, BumpHeight, BumpSoftness, EnvironmentMap, BumpSource]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [BumpFunction, BumpHeight, BumpSoftness, EnvironmentMap, BumpSource]");
 		}
 
 		return filter(src, dst);

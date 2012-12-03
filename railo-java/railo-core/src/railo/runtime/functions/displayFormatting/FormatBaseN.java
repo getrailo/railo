@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function formatbasen
+ * Implements the CFML Function formatbasen
  */
 package railo.runtime.functions.displayFormatting;
 

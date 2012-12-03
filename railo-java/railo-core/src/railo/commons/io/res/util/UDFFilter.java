@@ -2,6 +2,8 @@ package railo.commons.io.res.util;
 
 import java.io.File;
 
+import org.apache.oro.text.regex.MalformedPatternException;
+
 import railo.commons.io.res.Resource;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -51,5 +53,27 @@ public class UDFFilter extends UDFFilterSupport implements ResourceAndResourceNa
 	 */
 	public String toString() {
 		return "UDFFilter:"+udf;
+	}
+	
+	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(Object filter) throws PageException	{
+	   if(filter instanceof UDF)
+		   return createResourceAndResourceNameFilter((UDF)filter);
+	   return createResourceAndResourceNameFilter(Caster.toString(filter));
+	}
+
+	
+	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(UDF filter) throws PageException	{
+		return new UDFFilter(filter);
+	}
+	
+	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(String pattern) throws PageException	{
+	    if(pattern.trim().length()>0) {
+            try {
+            	return new WildCardFilter(pattern);
+            } catch (MalformedPatternException e) {
+                throw Caster.toPageException(e);
+            }
+        }
+	    return null;
 	}
 }

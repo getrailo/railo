@@ -33,7 +33,7 @@
 			<cfif directoryExists(parent)>
 				<cfdirectory directory="#form.custom_path#" action="create" mode="777">
 			<cfelse>
-				<cfthrow message="directory [#form.custom_path#] doesnt exists">
+				<cfthrow message="directory [#form.custom_path#] doesn't exist">
 			</cfif>
 		</cfif>
 	</cffunction>

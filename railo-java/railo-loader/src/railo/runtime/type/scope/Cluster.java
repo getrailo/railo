@@ -1,7 +1,6 @@
 package railo.runtime.type.scope;
 
 import railo.runtime.config.ConfigServer;
-import railo.runtime.type.Scope;
 
 public interface Cluster extends Scope {
 

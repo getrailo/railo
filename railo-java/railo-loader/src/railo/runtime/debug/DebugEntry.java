@@ -1,57 +1,21 @@
 package railo.runtime.debug;
 
-import railo.runtime.PageSource;
+import java.io.Serializable;
 
 /**
  * a single debug entry
  */
-public interface DebugEntry {
-
-    /* *
-     * start the watch
-     */
-    //public abstract void start();
-
-    /* *
-     * stops the watch
-     * @return returns the current time or 0 if watch not was running
-     */
-    //public abstract int stop();
-
-    /* *
-     * @return returns the current time or 0 if watch is not running
-     */
-    //public abstract int time();
-
-    /* *
-     * resets the stopwatch
-     */
-    //public abstract void reset();
+public interface DebugEntry extends Serializable {
 
     /**
      * @return Returns the exeTime.
      */
-    public abstract int getExeTime();
+    public abstract long getExeTime();
 
     /**
      * @param exeTime The exeTime to set.
      */
-    public abstract void updateExeTime(int exeTime);
-
-    /**
-     * @return Returns the fileLoadTime.
-     */
-    public abstract int getFileLoadTime();
-
-    /**
-     * @param fileLoadTime The fileLoadTime to set.
-     */
-    public abstract void updateFileLoadTime(int fileLoadTime);
-
-    /**
-     * @param queryTime update queryTime
-     */
-    public abstract void updateQueryTime(int queryTime);
+    public abstract void updateExeTime(long exeTime);
 
     /**
      * @return Returns the src.
@@ -64,30 +28,22 @@ public interface DebugEntry {
     public abstract int getCount();
 
     /**
-     * @return Returns the queryTime.
-     */
-    public abstract int getQueryTime();
-
-    /**
      * @return Returns the max.
      */
-    public abstract int getMax();
+    public abstract long getMax();
 
     /**
      * @return Returns the min.
      */
-    public abstract int getMin();
-
+    public abstract long getMin();
+    
     /**
-     * @return Returns the PageSource.
+     * @return the file path of this entry
      */
-    public abstract PageSource getPageSource();
+    public abstract String getPath();
+    
+    
     
     public abstract String getId();
-
-    /**
-     * resets the query time to zero
-     */
-    public abstract void resetQueryTime();
 
 }

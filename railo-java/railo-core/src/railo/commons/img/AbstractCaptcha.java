@@ -94,7 +94,7 @@ public abstract class AbstractCaptcha {
 			if(f!=null) fontList.add(f);
 			
 		}
-		if(fonts==null || fonts.length==0) 
+		if(fonts.length==0) 
 			throw new CaptchaException("defined fonts are not available on this system");
 		
 

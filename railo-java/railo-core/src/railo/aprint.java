@@ -193,8 +193,8 @@ public class aprint {
 	
 	
 	private static void _(PrintStream ps,Object o) {
-    	if(o instanceof Enumeration) _(ps,(Enumeration)o);
-    	if(o instanceof Object[]) _(ps,(Object[])o);
+		if(o instanceof Enumeration) _(ps,(Enumeration)o);
+    	else if(o instanceof Object[]) _(ps,(Object[])o);
     	else if(o instanceof boolean[]) _(ps,(boolean[])o);
     	else if(o instanceof byte[]) _(ps,(byte[])o);
     	else if(o instanceof int[]) _(ps,(int[])o);

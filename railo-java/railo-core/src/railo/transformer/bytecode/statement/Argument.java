@@ -15,9 +15,9 @@ import railo.transformer.bytecode.literal.LitString;
 public final class Argument {
 
 	
-	private static final Expression DEFAULT_TYPE_NULL = 				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_NULL, -1);
-	private static final Expression DEFAULT_TYPE_LITERAL =				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_LITERAL, -1);
-	private static final Expression DEFAULT_TYPE_RUNTIME_EXPRESSION =	LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_RUNTIME_EXPRESSION, -1);
+	private static final Expression DEFAULT_TYPE_NULL = 				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_NULL);
+	private static final Expression DEFAULT_TYPE_LITERAL =				LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_LITERAL);
+	private static final Expression DEFAULT_TYPE_RUNTIME_EXPRESSION =	LitInteger.toExpr(FunctionArgumentImpl.DEFAULT_TYPE_RUNTIME_EXPRESSION);
 	private static final LitString RUNTIME_EXPRESSION =				(LitString) LitString.toExprString("[runtime expression]");
 	
 	

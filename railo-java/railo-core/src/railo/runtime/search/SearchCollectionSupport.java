@@ -31,6 +31,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * represent a single Collection
@@ -206,16 +207,16 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             // populate query with a single row
                 qv=new QueryImpl(columns,1,"query");
                 // body
-                qv.setAt(KeyImpl.KEY, 1, key);
+                qv.setAt(KeyConstants._key, 1, key);
                 key="key";
 
                 // body
-                qv.setAt(KeyImpl.BODY, 1, body);
+                qv.setAt(KeyConstants._body, 1, body);
                 body="body";
 
                 // title
                 if(!StringUtil.isEmpty(title)){
-                	qv.setAt(KeyImpl.TITLE, 1, title);
+                	qv.setAt(KeyConstants._title, 1, title);
                 	title="title";
                 }
 
@@ -515,7 +516,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             		qv = Caster.toQuery(pc.getVariable(queryName));
             	}
             	else {
-            		k=KeyImpl.ID;
+            		k=KeyConstants._id;
                     Key[] cols = new Key[]{k};
                     String[] types = new String[]{"VARCHAR"};
             		qv=new QueryImpl(cols,types, 1,"query");
@@ -672,15 +673,13 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             String custom3;
             String custom4;
             String url;
-            SearchResultItemPro record;
+            SearchResulItem record;
             SearchIndex si;
-            boolean hasContextSummary=false;
             for(int y=0;y<to;y++) {
             		
                 int row=len+y+1;
-                record = SearchResulItemImpl.toSearchResultItemPro(records[y]);
-                if(y==0)hasContextSummary=record instanceof SearchResultItemPro;
-            	si=(SearchIndex)indexes.get(record.getId());
+                record = records[y];
+            	si=indexes.get(record.getId());
 
                 title=record.getTitle();
                 custom1=record.getCustom1();
@@ -689,24 +688,24 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 custom4=record.getCustom4();
                 url=record.getUrl();
                 
-                qry.setAt(KeyImpl.TITLE,row,title);
-                qry.setAt("custom1",row,custom1);
-                qry.setAt("custom2",row,custom2);
-                qry.setAt("custom3",row,custom3);
-                qry.setAt("custom4",row,custom4);
+                qry.setAt(KeyConstants._title,row,title);
+                qry.setAt(KeyConstants._custom1,row,custom1);
+                qry.setAt(KeyConstants._custom2,row,custom2);
+                qry.setAt(KeyConstants._custom3,row,custom3);
+                qry.setAt(KeyConstants._custom4,row,custom4);
                 qry.setAt("categoryTree",row,record.getCategoryTree());
-                qry.setAt("category",row,record.getCategory());
-                qry.setAt(KeyImpl.TYPE,row,record.getMimeType());
-                qry.setAt("author",row,record.getAuthor());
-                qry.setAt(KeyImpl.SIZE,row,record.getSize());
+                qry.setAt(KeyConstants._category,row,record.getCategory());
+                qry.setAt(KeyConstants._type,row,record.getMimeType());
+                qry.setAt(KeyConstants._author,row,record.getAuthor());
+                qry.setAt(KeyConstants._size,row,record.getSize());
 
-                qry.setAt("summary",row,record.getSummary());
-                if(hasContextSummary)qry.setAt("context",row,((SearchResultItemPro)record).getContextSummary());
-                qry.setAt("score",row,new Float(record.getScore()));
-                qry.setAt(KeyImpl.KEY,row,record.getKey());
-                qry.setAt(KeyImpl.URL,row,url);
-                qry.setAt("collection",row,getName());
-                qry.setAt("rank",row,new Double(row));
+                qry.setAt(KeyConstants._summary,row,record.getSummary());
+                qry.setAt(KeyConstants._context,row,record.getContextSummary());
+                qry.setAt(KeyConstants._score,row,new Float(record.getScore()));
+                qry.setAt(KeyConstants._key,row,record.getKey());
+                qry.setAt(KeyConstants._url,row,url);
+                qry.setAt(KeyConstants._collection,row,getName());
+                qry.setAt(KeyConstants._rank,row,new Double(row));
                 String rootPath,file;
                 String urlPath;
                 if(si!=null) {
@@ -716,7 +715,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 		rootPath=rootPath.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
                 		file=record.getKey();
                 		file=file.replace(FileUtil.FILE_ANTI_SEPERATOR,FileUtil.FILE_SEPERATOR);
-                		qry.setAt(KeyImpl.URL,row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyConstants._url,row,toURL(si.getUrlpath(),StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
@@ -729,24 +728,24 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 		catch (MalformedURLException e) {}
                 		if(StringUtil.isEmpty(urlPath))urlPath=rootPath;
                 		file=record.getKey();
-                		qry.setAt(KeyImpl.URL,row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
+                		qry.setAt(KeyConstants._url,row,toURL(urlPath,StringUtil.replace(file, rootPath, "", true)));
                 		
                 		
                 	break;
                 	case SearchIndex.TYPE_CUSTOM:
-                		qry.setAt(KeyImpl.URL,row,url);
+                		qry.setAt(KeyConstants._url,row,url);
                 	break;
                 	default:
-                		qry.setAt(KeyImpl.URL,row,toURL(si.getUrlpath(),url));
+                		qry.setAt(KeyConstants._url,row,toURL(si.getUrlpath(),url));
                 	break;
                 	}
                 	
                 	
-                    if(StringUtil.isEmpty(title))      qry.setAt(KeyImpl.TITLE,row,si.getTitle());
-                    if(StringUtil.isEmpty(custom1))    qry.setAt("custom1",row,si.getCustom1());
-                    if(StringUtil.isEmpty(custom2))    qry.setAt("custom2",row,si.getCustom2());
-                    if(StringUtil.isEmpty(custom3))    qry.setAt("custom3",row,si.getCustom3());
-                    if(StringUtil.isEmpty(custom4))    qry.setAt("custom4",row,si.getCustom4());
+                    if(StringUtil.isEmpty(title))      qry.setAt(KeyConstants._title,row,si.getTitle());
+                    if(StringUtil.isEmpty(custom1))    qry.setAt(KeyConstants._custom1,row,si.getCustom1());
+                    if(StringUtil.isEmpty(custom2))    qry.setAt(KeyConstants._custom2,row,si.getCustom2());
+                    if(StringUtil.isEmpty(custom3))    qry.setAt(KeyConstants._custom3,row,si.getCustom3());
+                    if(StringUtil.isEmpty(custom4))    qry.setAt(KeyConstants._custom4,row,si.getCustom4());
                     
                 }
             }
@@ -861,18 +860,18 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 query.setAt("categories",row,List.arrayToList(index.getCategories(),""));
                 query.setAt("categoryTree",row,index.getCategoryTree());
                 
-                query.setAt("custom1",row,index.getCustom1());
-                query.setAt("custom2",row,index.getCustom2());
-                query.setAt("custom3",row,index.getCustom3());
-                query.setAt("custom4",row,index.getCustom4());
+                query.setAt(KeyConstants._custom1,row,index.getCustom1());
+                query.setAt(KeyConstants._custom2,row,index.getCustom2());
+                query.setAt(KeyConstants._custom3,row,index.getCustom3());
+                query.setAt(KeyConstants._custom4,row,index.getCustom4());
                 
-                query.setAt("extensions",row,List.arrayToList(index.getExtensions(),","));
-                query.setAt(KeyImpl.KEY,row,index.getKey());
-                query.setAt("language",row,index.getLanguage());
-                query.setAt("query",row,index.getQuery());
-                query.setAt(KeyImpl.TITLE,row,index.getTitle());
-                query.setAt("urlpath",row,index.getUrlpath());
-                query.setAt(KeyImpl.TYPE,row,SearchIndex.toStringTypeEL(index.getType()));
+                query.setAt(KeyConstants._extensions,row,List.arrayToList(index.getExtensions(),","));
+                query.setAt(KeyConstants._key,row,index.getKey());
+                query.setAt(KeyConstants._language,row,index.getLanguage());
+                query.setAt(KeyConstants._query,row,index.getQuery());
+                query.setAt(KeyConstants._title,row,index.getTitle());
+                query.setAt(KeyConstants._urlpath,row,index.getUrlpath());
+                query.setAt(KeyConstants._type,row,SearchIndex.toStringTypeEL(index.getType()));
                 
 	        }
 		    catch(PageException pe) {}

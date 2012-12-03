@@ -33,6 +33,7 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.it.ItAsEnum;
 import railo.runtime.util.EnumerationWrapper;
 
 public final class HttpServletRequestDummy implements HttpServletRequest,Serializable {
@@ -41,8 +42,8 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	private Cookie[] cookies;
 	
 	private String authType;
-	private Pair[] headers=new Pair[0];
-	private Pair[] parameters=new Pair[0];
+	private Pair<String,Object>[] headers=new Pair[0];
+	private Pair<String,Object>[] parameters=new Pair[0];
 	private Struct attributes=new StructImpl();
 	private String method="GET";
 	private String pathInfo;
@@ -519,7 +520,7 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	 * @see javax.servlet.ServletRequest#getAttributeNames()
 	 */
 	public Enumeration getAttributeNames() {
-		return new EnumerationWrapper(attributes.keyIterator());
+		return ItAsEnum.toStringEnumeration(attributes.keyIterator());
 	}
 	/**
 	 * @see javax.servlet.ServletRequest#getCharacterEncoding()

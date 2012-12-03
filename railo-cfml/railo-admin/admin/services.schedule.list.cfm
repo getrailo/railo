@@ -20,8 +20,8 @@ Defaults --->
 	<cfargument name="exact" required="no" type="boolean" default="false">
 	
 	<cfset arguments.filter=replace(arguments.filter,'*','',"all")>
-    <cfset filter=trim(filter)>
-	<cfif not len(filter)>
+    <cfset arguments.filter=trim(arguments.filter)>
+	<cfif not len(arguments.filter)>
 		<cfreturn true>
 	</cfif>
 	<cfif exact>
@@ -142,211 +142,213 @@ Redirtect to entry --->
 	<cflocation url="#request.self#?action=#url.action#" addtoken="no">
 </cfif>
 
-<!--- 
-Error Output--->
-<cfif error.message NEQ "">
-<cfoutput><span class="CheckError">
-#error.message#<br>
-#error.detail#
-</span><br><br></cfoutput>
-</cfif>
-
-<cfoutput>#stText.Schedule.Description#</cfoutput><br><br>
-
-
-<!--- 
-list all mappings and display necessary edit fields --->
-
-
 <cfschedule action="list" returnvariable="tasks">
 <cfif len(session.st.sortName) and len(session.st.sortOrder)>
 	<cfset querysort(tasks, session.st.sortName,session.st.sortOrder)>
 </cfif>
 
 
-<!--- 
-List --->
-<cfif tasks.recordcount>
-
-
-
-<table class="tbl" width="740">
-<tr>
-	<td colspan="4"><cfoutput><h2>#stText.Schedule.Detail#</h2>
-#stText.Schedule.DetailDescription#</cfoutput></td>
-</tr>
-<tr>
-	<td colspan="4"><cfmodule template="tp.cfm"  width="1" height="1"></td>
-</tr>
-<cfform action="#request.self#?action=#url.action#" method="post">
-	<cfoutput>
-	<tr>
-		<td width="20"></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="nameFilter" style="width:225px" value="#session.st.nameFilter#" /></td>
-		<td width="130" class="tblHead" nowrap><input type="text" name="IntervalFilter" style="width:130px" value="#session.st.IntervalFilter#" /></td>
-		<td width="225" class="tblHead" nowrap><input type="text" name="urlFilter" style="width:225px" value="#session.st.urlFilter#" /></td>
-		<td class="tblHead" nowrap><input type="submit" class="submit" name="mainAction" value="filter"></td>
-	</tr>
-	<tr>
-		<td width="380" colspan="5" align="right"></td>
-	</tr>
-    
-    
-    <tr>
-		<td width="20"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)"></td>
-		<td width="140" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=task">#stText.Schedule.Name#
-		<cfif session.st.sortName EQ "task" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
-		<td width="160" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=interval">#stText.Schedule.Interval#
-		<cfif session.st.sortName EQ "interval" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
-		<td width="170" class="tblHead" nowrap><a href="#request.self#?action=#url.action#&order=url">#stText.Schedule.URL#
-		<cfif session.st.sortName EQ "url" and len(session.st.sortOrder)><cfmodule template="img.cfm" src="arrow-#session.st.sortOrder EQ "asc"?"up":"down"#.gif" hspace="4" vspace="2" border="0"></cfif></a></td>
-		<td width="60" class="tblHead" nowrap>#stText.Schedule.paused#</td>
-	</tr>
-	
-	<cfloop query="tasks">
-		
-		<cfif isNumeric(tasks.interval)>
-				<cfset _int=toStructInterval(tasks.interval)>
-				<cfset _intervall="#stText.Schedule.Every# (hh:mm:ss) #two(_int.hour)#:#two(_int.minute)#:#two(_int.second)#">
-			<cfelse>
-				<cfset _intervall=tasks.interval>
-			</cfif>
-	
-	<cfif
-			doFilter(session.st.nameFilter,tasks.task,false)
-			and
-			doFilter(session.st.IntervalFilter,_intervall,false)
-			and
-			doFilter(session.st.urlFilter,tasks.url,false)
-			>
-		<cfset css=iif(tasks.valid and not tasks.paused,de('Green'),de('Red'))>
-		<!--- and now display --->
-	<tr>
-		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><input type="checkbox" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#"></td>
-			<td><a href="#request.self#?action=#url.action#&action2=edit&task=#hash(tasks.task)#">
-			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></td>
-		</tr>
-		</table>
-		</td>
-		<td class="tblContent#css#" nowrap><input type="hidden" 
-			name="name_#tasks.currentrow#" value="#HTMLEditFormat( tasks.task)#">#tasks.task#</td>
-		<td class="tblContent#css#" nowrap>#_intervall#</td>
-		<td class="tblContent#css#" title="#tasks.url#" nowrap>#cut(tasks.url,50)#</td>
-		<td class="tblContent#css#"  nowrap>#YesNoFormat(tasks.paused)#</td>
-	</tr>
-</cfif></cfloop>
-
-<cfmodule template="remoteclients.cfm" colspan="8" line=true>
-	<tr>
-		<td colspan="8">
-		 <table border="0" cellpadding="0" cellspacing="0">
-		 <tr>
-			<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-			<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="10"></td>
-			<td></td>
-		 </tr>
-		 <tr>
-			<td></td>
-			<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
-			<td>&nbsp;
-			<cfoutput>
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Execute#">
-			<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Schedule.pause#">
-			<input type="submit" class="submit" name="mainAction" value="#stText.Schedule.resume#">
-			</cfoutput>
-			</td>	
-		</tr>
-		 </table>
-		 </td>
-	</tr>
-</cfoutput>
-</cfform>
-</table>
-<br><br>
-</cfif>
-<!--- 
-Create Task --->
 <cfoutput>
+	<div class="pageintro">
+		<cfoutput>#stText.Schedule.Description#</cfoutput>
+	</div>
 
-<table class="tbl" width="740">
-<tr>
-	<td colspan="2"><h2>#stText.Schedule.CreateTask#</h2></td>
-</tr>
-<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
-<tr>
-	<td class="tblHead" width="100">#stText.Schedule.Name#</td>
-	<td class="tblContent" width="500"><cfinput type="text" name="name" value="" style="width:200px" required="yes" 
-		message="#stText.Schedule.NameMissing#"></td>
-</tr>
-<tr>
-	<td class="tblHead">#stText.Schedule.URL#</td>
-	<td class="tblContent">
-		<span class="comment">#stText.Schedule.URLDescription#</span><br>
-		<cfinput type="text" name="url" value="" style="width:350px" required="yes" 
-		message="#stText.Schedule.URLMissing#"></td>
-</tr>
-<tr>
-	<td class="tblHead">#stText.Schedule.IntervalType#</td>
-	<td class="tblContent"><span class="comment">#stText.Schedule.IntervalTypeDesc#</span><br><select name="interval">
-		<option value="3600">#stText.Schedule.Every# ...</option>
-		<option value="once">#stText.Schedule.Once#</option>
-		<option value="daily">#stText.Schedule.Daily#</option>
-		<option value="weekly">#stText.Schedule.Weekly#</option>
-		<option value="monthly">#stText.Schedule.Monthly#</option>
-	</select></td>
-</tr>
-<tr>
-	<td class="tblHead">#stText.Schedule.StartDate#</td>
-	<td class="tblContent">
-		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td class="comment">#stText.General.Day#</td>
-			<td class="comment">#stText.General.Month#</td>
-			<td class="comment">#stText.General.Year#</td>
-		</tr>
-		<tr>
-			<td><cfinput type="text" name="start_day" value="#two(day(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_month" value="#two(month(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_year" value="#two(year(now()))#" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-		</tr>
-		</table></td>
-</tr>
-<tr>
-	<td class="tblHead">#stText.Schedule.StartTime#</td>	
-	<td class="tblContent">
-		<table class="tbl" border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td class="comment">#stText.General.Hour#</td>
-			<td class="comment">#stText.General.Minute#</td>
-			<td class="comment">#stText.General.second#</td>
-		</tr>
-        <tr>
-			<td><cfinput type="text" name="start_hour" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_minute" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-			<td><cfinput type="text" name="start_second" value="00" style="width:40px" required="yes" validate="integer">&nbsp;</td>
-		</tr>
-        
-		</table></td>
-</tr>
-<tr>
-	<td class="tblHead">#stText.Schedule.paused#</td>	
-	<td class="tblContent"><input type="checkbox" name="paused" value="true" /></td>
-</tr>
-<cfmodule template="remoteclients.cfm" colspan="2">
-<tr>
-	<td colspan="2">
-		<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-		<input type="submit" class="submit" name="run" value="#stText.Buttons.Create#">
-	</td>
-</tr>
-</cfform>
+	<!--- Error Output--->
+	<cfif error.message NEQ "">
+		<cfoutput><div class="error">
+			#error.message#<br>
+			#error.detail#
+		</div></cfoutput>
+	</cfif>
+
+	<!--- list all mappings and display necessary edit fields --->
+	
+	<!--- List --->
+	<cfif tasks.recordcount>
+		<h2>#stText.Schedule.Detail#</h2>
+		<div class="itemintro">
+			#stText.Schedule.DetailDescription#
+		</div>
+		
+		<div class="filterform">
+			<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+				<ul>
+					<li>
+						<label for="filter">#stText.Schedule.Name#:</label>
+						<input type="text" name="nameFilter" class="txt" value="#session.st.nameFilter#" />
+					</li>
+					<li>
+						<label for="filter">#stText.Schedule.interval#:</label>
+						<input type="text" name="IntervalFilter" class="txt" value="#session.st.IntervalFilter#" />
+					</li>
+					<li>
+						<label for="filter">#stText.Schedule.URL#:</label>
+						<input type="text" name="urlFilter" class="txt" value="#session.st.urlFilter#" />
+					</li>
+					<li>
+						<input type="submit" class="button submit" name="mainAction" value="#stText.buttons.filter#" />
+					</li>
+				</ul>
+				<div class="clear"></div>
+			</cfform>
+		</div>
+
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl checkboxtbl">
+				<thead>
+					<tr>
+						<th width="3%"><input type="checkbox" class="checkbox" name="rro" onclick="selectAll(this)" /></th>
+						<th><a href="#request.self#?action=#url.action#&order=task">#stText.Schedule.Name#
+							<cfif session.st.sortName EQ "task" and len(session.st.sortOrder)><img src="resources/img/arrow-#session.st.sortOrder EQ 'asc' ? 'up':'down'#.gif.cfm" hspace="4" vspace="2" border="0"></cfif></a></th>
+						<th><a href="#request.self#?action=#url.action#&order=interval">#stText.Schedule.Interval#
+							<cfif session.st.sortName EQ "interval" and len(session.st.sortOrder)><img src="resources/img/arrow-#session.st.sortOrder EQ 'asc' ? 'up':'down'#.gif.cfm" hspace="4" vspace="2" border="0"></cfif></a></th>
+						<th><a href="#request.self#?action=#url.action#&order=url">#stText.Schedule.URL#
+							<cfif session.st.sortName EQ "url" and len(session.st.sortOrder)><img src="resources/img/arrow-#session.st.sortOrder EQ 'asc' ? 'up':'down'#.gif.cfm" hspace="4" vspace="2" border="0"></cfif></a></th>
+						<th>#stText.Schedule.paused#</th>
+						<th width="3%">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody>
+					<cfloop query="tasks">
+						<cfif isNumeric(tasks.interval)>
+							<cfset _int=toStructInterval(tasks.interval)>
+							<cfset _intervall="#stText.Schedule.Every# (hh:mm:ss) #two(_int.hour)#:#two(_int.minute)#:#two(_int.second)#">
+						<cfelse>
+							<cfset _intervall=tasks.interval>
+						</cfif>
+						<cfif
+							doFilter(session.st.nameFilter,tasks.task,false)
+							and
+							doFilter(session.st.IntervalFilter,_intervall,false)
+							and
+							doFilter(session.st.urlFilter,tasks.url,false)
+						>
+							<!--- and now display --->
+							<tr<cfif tasks.valid and not tasks.paused><!--- class="OK"---><cfelse> class="notOK"</cfif>>
+								<td>
+									<input type="checkbox" class="checkbox" name="row_#tasks.currentrow#" value="#tasks.currentrow#">
+								</td>
+								<td>
+									<input type="hidden" name="name_#tasks.currentrow#" value="#HTMLEditFormat(tasks.task)#">
+									#tasks.task#
+								</td>
+								<td>#_intervall#</td>
+								<td><cfif len(tasks.url) gt 50><abbr title="#tasks.url#">#cut(tasks.url,50)#</abbr><cfelse>#tasks.url#</cfif></td>
+								<td>#YesNoFormat(tasks.paused)#</td>
+								<td>
+									<a href="#request.self#?action=#url.action#&action2=edit&task=#hash(tasks.task)#" class="btn-mini edit"><span>edit</span></a>
+								</td>
+							</tr>
+						</cfif>
+					</cfloop>
+					<cfmodule template="remoteclients.cfm" colspan="6" line=true>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="6">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Execute#">
+							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Schedule.pause#">
+							<input type="submit" class="button submit" name="mainAction" value="#stText.Schedule.resume#">
+						</td>
+					</tr>
+				</tfoot>
+			 </table>
+		</cfform>
+	</cfif>
+
+	<!--- Create Task --->
+	<h2>#stText.Schedule.CreateTask#</h2>
+	<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
+		<table class="maintbl">
+			<tbody>
+				<tr>
+					<th scope="row">#stText.Schedule.Name#</th>
+					<td><cfinput type="text" name="name" value="" class="large" required="yes" 
+						message="#stText.Schedule.NameMissing#"></td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Schedule.URL#</th>
+					<td>
+						<cfinput type="text" name="url" value="" class="xlarge" required="yes" 
+						message="#stText.Schedule.URLMissing#">
+						<div class="comment">#stText.Schedule.URLDescription#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Schedule.IntervalType#</th>
+					<td>
+						<select name="interval" class="small">
+							<option value="3600">#stText.Schedule.Every# ...</option>
+							<option value="once">#stText.Schedule.Once#</option>
+							<option value="daily">#stText.Schedule.Daily#</option>
+							<option value="weekly">#stText.Schedule.Weekly#</option>
+							<option value="monthly">#stText.Schedule.Monthly#</option>
+						</select>
+						<div class="comment">#stText.Schedule.IntervalTypeDesc#</div>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Schedule.StartDate#</th>
+					<td>
+						<table class="maintbl autowidth">
+							<thead>
+								<tr>
+									<th>#stText.General.Day#</th>
+									<th>#stText.General.Month#</th>
+									<th>#stText.General.Year#</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><cfinput type="text" name="start_day" value="#two(day(now()))#" class="number" required="yes" validate="integer">&nbsp;</td>
+									<td><cfinput type="text" name="start_month" value="#two(month(now()))#" class="number" required="yes" validate="integer">&nbsp;</td>
+									<td><cfinput type="text" name="start_year" value="#two(year(now()))#" class="number" required="yes" validate="integer">&nbsp;</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Schedule.StartTime#</th>	
+					<td>
+						<table class="maintbl autowidth">
+							<thead>
+								<tr>
+									<th>#stText.General.Hour#</th>
+									<th>#stText.General.Minute#</th>
+									<th>#stText.General.second#</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><cfinput type="text" name="start_hour" value="00" class="number" required="yes" validate="integer">&nbsp;</td>
+									<td><cfinput type="text" name="start_minute" value="00" class="number" required="yes" validate="integer">&nbsp;</td>
+									<td><cfinput type="text" name="start_second" value="00" class="number" required="yes" validate="integer">&nbsp;</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">#stText.Schedule.paused#</th>	
+					<td><input type="checkbox" class="checkbox" name="paused" value="true" /></td>
+				</tr>
+				<cfmodule template="remoteclients.cfm" colspan="2">
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2">
+						<input type="reset" class="button reset" name="cancel" value="#stText.Buttons.Cancel#">
+						<input type="submit" class="button submit" name="run" value="#stText.Buttons.Create#">
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</cfform>
 </cfoutput>
-</table>
+
 <!---
 <cfmodule template="log.cfm" name="scheduled-task" title="Log" description="this is ...">
 --->

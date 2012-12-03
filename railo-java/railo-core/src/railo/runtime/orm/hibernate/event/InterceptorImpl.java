@@ -73,14 +73,20 @@ public class InterceptorImpl extends EmptyInterceptor {
 		boolean rtn=false;
 		String prop;
 		Object before,current;
+		/* jira2049
+		ORMSession session = null;
+		try {
+			session=ORMUtil.getSession(ThreadLocalPageContext.get());
+		} catch (PageException pe) {}*/
+		
         for(int i = 0; i < propertyNames.length; i++)	{
             prop = propertyNames[i];
             before = state[i];
-            current = ORMUtil.getPropertyValue(cfc, prop,null);
+            current = ORMUtil.getPropertyValue(/* jira2049 session,*/cfc, prop,null);
             
-            if(before != current && (current == null || !Operator.equalsEL(before, current, false, true))) {
+            if(before != current && (current == null || !Operator.equalsComplexEL(before, current, false))) {
             	try {
-					state[i] = HibernateCaster.toSQL(null, types[i], current);
+					state[i] = HibernateCaster.toSQL(null, types[i], current,null);
 				} catch (PageException e) {
 					state[i] = current;
 				}

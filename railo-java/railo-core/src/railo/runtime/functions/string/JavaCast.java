@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function javacast
+ * Implements the CFML Function javacast
  */
 package railo.runtime.functions.string;
 

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listlen
+ * Implements the CFML Function listlen
  */
 package railo.runtime.functions.list;
 

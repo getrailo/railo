@@ -6,7 +6,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.XMLException;
@@ -96,7 +95,7 @@ public class XMLValidator extends XMLEntityResolverDefaultHandler {
 		fatals=new ArrayImpl();
 		
 		try {
-            XMLReader parser = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+            XMLReader parser = XMLUtil.createXMLReader("org.apache.xerces.parsers.SAXParser");
             parser.setContentHandler(this);
             parser.setErrorHandler(this);
             parser.setEntityResolver(this);

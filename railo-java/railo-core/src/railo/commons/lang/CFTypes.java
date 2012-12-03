@@ -2,8 +2,8 @@ package railo.commons.lang;
 
 
 
+
 public final class CFTypes {
-	// FUTURE sollten auch pattern wie zip unterstuetzt sein
 
     /**
      * Field <code>TYPE_ANY</code>
@@ -85,6 +85,9 @@ public final class CFTypes {
     public static final short TYPE_SIZE = 21;
 
     public static final short TYPE_GUID = 22;
+
+    public static final short TYPE_FUNCTION = 23;
+    public static final short TYPE_QUERY_COLUMN=24;
     
     /**
 	 * Wandelt einen String Datentypen in ein CFML short Typ um.
@@ -103,6 +106,7 @@ public final class CFTypes {
 			case TYPE_GUID:return "guid";
 			case TYPE_NUMERIC:return "numeric";
 			case TYPE_QUERY:return "query";
+			case TYPE_QUERY_COLUMN:return "querycolumn";
 			case TYPE_STRING:return "string";
 			case TYPE_STRUCT:return "struct";
 			case TYPE_TIMESPAN:return "timespan";
@@ -113,6 +117,7 @@ public final class CFTypes {
 			case TYPE_VARIABLE_STRING:return "variablestring";
 			case TYPE_VOID:return "void";
 			case TYPE_XML:return "xml";
+			case TYPE_FUNCTION:return "function";
 		}
 		return defaultValue;
     
@@ -134,6 +139,8 @@ public final class CFTypes {
 	        	break;	           	
 	        	case 'd':
 	                if(type.equals("date") || type.equals("datetime"))	return TYPE_DATETIME;
+	        	case 'f':
+	                if(type.equals("function"))	return TYPE_FUNCTION;
 	        	break; 
 	        	case 'g':
 	                if("guid".equals(type)) 							return TYPE_GUID;
@@ -147,6 +154,7 @@ public final class CFTypes {
 	        	    break;
 	        	case 'q':
 	        	    if(type.equals("query")) return TYPE_QUERY;
+	        	    if(type.equals("querycolumn")) return TYPE_QUERY_COLUMN;
 	        	    break;
 	        	case 's':
 	        	    if(type.equals("string")) return TYPE_STRING;
@@ -206,6 +214,7 @@ public final class CFTypes {
 	            break;
 	            case 'f':
 	                if("float".equals(type)) 							return TYPE_NUMERIC;
+	                if("function".equals(type)) 							return TYPE_FUNCTION;
 	            break;
 	            case 'g':
 	                if("guid".equals(type)) 							return TYPE_GUID;
@@ -218,10 +227,6 @@ public final class CFTypes {
 
 	            case 'l':
 	                if("long".equals(type))								return TYPE_NUMERIC;
-	            break;
-	        	
-	            case 'm':
-	                if("memory".equals(type))								return TYPE_STRING;
 	            break;
 	        	
 	        	case 'n':
@@ -237,6 +242,7 @@ public final class CFTypes {
 	        	    break;
 	        	case 'q':
 	        	    if(type.equals("query")) return TYPE_QUERY;
+	        	    if(type.equals("querycolumn")) return TYPE_QUERY_COLUMN;
 	        	    break;
 	        	case 's':
 	        	    if(type.equals("string")) return TYPE_STRING;
@@ -252,6 +258,7 @@ public final class CFTypes {
 	        	case 'u':
 	        	    if(type.equals("uuid")) return TYPE_UUID;
 	                if("usdate".equals(type))return TYPE_DATETIME;
+	                if("udf".equals(type))return TYPE_FUNCTION;
 	        	    break;
 	        	case 'v':
 	        	    if(type.equals("variablename")) return TYPE_VARIABLE_NAME;
@@ -267,5 +274,9 @@ public final class CFTypes {
 		   }
 		}
 		return defaultValue;
+	}
+
+	public static boolean isSimpleType(short type) {
+		return 	type==TYPE_BOOLEAN || type==TYPE_DATETIME || type==TYPE_NUMERIC || type==TYPE_STRING;
 	}
 }

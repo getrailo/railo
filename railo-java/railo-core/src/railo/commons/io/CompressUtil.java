@@ -16,10 +16,10 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.compress.archivers.tar.TarEntry;
-import org.apache.commons.compress.archivers.tar.TarInputStream;
-import org.apache.commons.compress.archivers.tar.TarOutputStream;
-import org.apache.commons.compress.bzip2.CBZip2OutputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -150,12 +150,12 @@ public final class CompressUtil {
         }
         
 //      read the zip file and build a query from its contents
-        TarInputStream tis=null;
+        TarArchiveInputStream tis=null;
         try {
-	        tis = new TarInputStream( IOUtil.toBufferedInputStream(tarFile.getInputStream()) ) ;     
-	        TarEntry entry;
+	        tis = new TarArchiveInputStream( IOUtil.toBufferedInputStream(tarFile.getInputStream()) ) ;     
+	        TarArchiveEntry entry;
 	        int mode;
-	        while ( ( entry = tis.getNextEntry()) != null ) {
+	        while ( ( entry = tis.getNextTarEntry()) != null ) {
 	        	//print.ln(entry);
 	        	Resource target=targetDir.getRealResource(entry.getName());
 	            if(entry.isDirectory()) {
@@ -164,50 +164,6 @@ public final class CompressUtil {
 	            else {
 	            	Resource parent=target.getParentResource();
 	                if(!parent.exists())parent.mkdirs();
-	                IOUtil.copy(tis,target,false);
-	            }
-	            target.setLastModified(entry.getModTime().getTime());
-	            mode=entry.getMode();
-	            if(mode>0)target.setMode(mode);
-	            //tis.closeEntry() ;
-	        }
-        }
-        finally {
-        	IOUtil.closeEL(tis);
-        }
-    }
-    
-    private static void extractZipOld(Resource zipFile, Resource targetDir) throws IOException {
-        if(!targetDir.exists() || !targetDir.isDirectory())
-            throw new IOException(targetDir+" is not a existing directory");
-        
-        if(!zipFile.exists())
-            throw new IOException(zipFile+" is not a existing file");
-        
-        if(zipFile.isDirectory()) {
-        	Resource[] files = zipFile.listResources(new ExtensionResourceFilter("tar"));
-            if(files==null) 
-                throw new IOException("directory "+zipFile+" is empty");
-            extract(FORMAT_ZIP,files,targetDir);
-            return;
-        }
-        
-//      read the zip file and build a query from its contents
-        TarInputStream tis=null;
-        try {
-	        tis = new TarInputStream( IOUtil.toBufferedInputStream(zipFile.getInputStream()) ) ;     
-	        TarEntry entry;
-	        int mode;
-	        while ( ( entry = tis.getNextEntry()) != null ) {
-	        	//print.ln(entry);
-	        	Resource target=targetDir.getRealResource(entry.getName());
-	            if(entry.isDirectory()) {
-	                target.mkdirs();
-	            }
-	            else {
-	            	Resource parent=target.getParentResource();
-	                if(!parent.exists())parent.mkdirs();
-	                
 	                IOUtil.copy(tis,target,false);
 	            }
 	            target.setLastModified(entry.getModTime().getTime());
@@ -477,7 +433,7 @@ public final class CompressUtil {
     private static void _compressBZip2(InputStream source, OutputStream target) throws IOException {
         
         InputStream is = IOUtil.toBufferedInputStream(source);
-        OutputStream os = new CBZip2OutputStream(IOUtil.toBufferedOutputStream(target));
+        OutputStream os = new BZip2CompressorOutputStream(IOUtil.toBufferedOutputStream(target));
         IOUtil.copy(is,os,true,true);
     }
     
@@ -553,12 +509,12 @@ public final class CompressUtil {
     }
     
     public static void compressTar(Resource[] sources,OutputStream target, int mode) throws IOException {
-        if(target instanceof TarOutputStream){
-            compressTar("",sources,(TarOutputStream)target,mode);
+        if(target instanceof TarArchiveOutputStream){
+            compressTar("",sources,(TarArchiveOutputStream)target,mode);
             return;
         }
-    	TarOutputStream tos=new TarOutputStream(target);
-        tos.setLongFileMode(TarOutputStream.LONGFILE_GNU);
+        TarArchiveOutputStream tos=new TarArchiveOutputStream(target);
+        tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
         try {
             compressTar("",sources, tos,mode);
         }
@@ -567,7 +523,7 @@ public final class CompressUtil {
         }
     }
     
-    public static void compressTar(String parent, Resource[] sources, TarOutputStream tos, int mode) throws IOException {
+    public static void compressTar(String parent, Resource[] sources, TarArchiveOutputStream tos, int mode) throws IOException {
 
         if(parent.length()>0)parent+="/";
         for(int i=0;i<sources.length;i++) { 
@@ -575,10 +531,10 @@ public final class CompressUtil {
         }
     }
     
-    private static void compressTar(String parent, Resource source,TarOutputStream tos, int mode) throws IOException {
+    private static void compressTar(String parent, Resource source,TarArchiveOutputStream tos, int mode) throws IOException {
     	if(source.isFile()) {
     		//TarEntry entry = (source instanceof FileResource)?new TarEntry((FileResource)source):new TarEntry(parent);
-    		TarEntry entry = new TarEntry(parent);
+    		TarArchiveEntry entry = new TarArchiveEntry(parent);
             
             entry.setName(parent);
             
@@ -589,12 +545,12 @@ public final class CompressUtil {
             
             entry.setSize(source.length());
             entry.setModTime(source.lastModified());
-            tos.putNextEntry(entry);
+            tos.putArchiveEntry(entry);
             try {
             	IOUtil.copy(source,tos,false);
             } 
             finally {
-        		tos.closeEntry();
+        		tos.closeArchiveEntry();
             }
         }
         else if(source.isDirectory()) {

@@ -59,7 +59,7 @@ public class ProcParam extends TagSupport {
 		else if("outin".equals(type))	param.setDirection(ProcParamBean.DIRECTION_INOUT);
 		else if("out_in".equals(type))	param.setDirection(ProcParamBean.DIRECTION_INOUT);
 		else if("out".equals(type))		param.setDirection(ProcParamBean.DIRECTION_OUT);
-		else throw new ApplicationException("attribute type of tag procparam has a invalid value ["+type+"], valid values are [in, out, inout]");
+		else throw new ApplicationException("attribute type of tag procparam has an invalid value ["+type+"], valid values are [in, out, inout]");
 		
 	}
 

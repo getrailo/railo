@@ -12,6 +12,7 @@ import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -22,6 +23,7 @@ import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
 * Updates existing records in data sources.
@@ -165,7 +167,7 @@ public final class Update extends TagImpl {
 				
 				if(pageContext.getConfig().debug()) {
 					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
+					((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
 				}
 			}
 			return EVAL_PAGE;
@@ -222,7 +224,7 @@ public final class Update extends TagImpl {
         String[] fields=null; 
         Form form = pageContext.formScope();
         if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
-        else fields=pageContext.formScope().keysAsString();
+        else fields=CollectionUtil.keysAsString(pageContext.formScope());
         
         StringBuffer set=new StringBuffer();
         StringBuffer where=new StringBuffer();

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function monthasstring
+ * Implements the CFML Function monthasstring
  */
 package railo.runtime.functions.string;
 

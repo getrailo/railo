@@ -19,7 +19,9 @@ public interface Body extends Statement {
 	 * returns all statements
 	 * @return the statements
 	 */
-	public abstract List getStatements();
+	public abstract boolean hasStatements();
+	
+	public abstract List<Statement> getStatements();
 
 	/**
 	 * move all statements to target body
@@ -33,7 +35,7 @@ public interface Body extends Statement {
 	 */
 	public abstract boolean isEmpty();
 	
-	public void addPrintOut(String str, int line);
+	public void addPrintOut(String str, Position start,Position end);
 
 	public void remove(Statement stat);
 

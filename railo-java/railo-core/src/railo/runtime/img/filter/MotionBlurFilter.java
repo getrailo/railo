@@ -23,8 +23,8 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * A filter which produces motion blur the slow, but higher-quality way.
@@ -174,10 +174,10 @@ public class MotionBlurFilter extends AbstractBufferedImageOp  implements DynFil
         int[] outPixels = new int[width*height];
         getRGB( src, 0, 0, width, height, inPixels );
 
-		float sinAngle = (float)Math.sin(angle);
-		float cosAngle = (float)Math.cos(angle);
+		//float sinAngle = (float)Math.sin(angle);
+		//float cosAngle = (float)Math.cos(angle);
 
-		float total;
+		//float total;
 		int cx = width/2;
 		int cy = height/2;
 		int index = 0;
@@ -266,7 +266,7 @@ public class MotionBlurFilter extends AbstractBufferedImageOp  implements DynFil
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [PremultiplyAlpha, Angle, Distance, Rotation, Zoom, WrapEdges]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [PremultiplyAlpha, Angle, Distance, Rotation, Zoom, WrapEdges]");
 		}
 
 		return filter(src, dst);

@@ -1,9 +1,7 @@
 package railo.transformer.bytecode.statement;
 
-
-import org.objectweb.asm.Label;
-
 public interface FlowControl {
-	public Label getBreakLabel();
-	public Label getContinueLabel();
+
+	public static final int BREAK=1;
+	public static final int CONTINUE=2;
 }

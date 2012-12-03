@@ -20,7 +20,7 @@ public final class _Execute extends Thread {
     //private static final int BLOCK_SIZE=4096;
     private Object monitor;
 	private Exception exception;
-	private String body;
+	//private String body;
 	private boolean finished;
 	private Process process;
 
@@ -39,7 +39,7 @@ public final class _Execute extends Thread {
          this.command=command;
          this.outputfile=outputfile;
          this.variable=variable;
-         this.body=body;
+         //this.body=body;
     }
     
     /**

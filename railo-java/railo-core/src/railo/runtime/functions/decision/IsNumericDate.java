@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isnumericdate
+ * Implements the CFML Function isnumericdate
  */
 package railo.runtime.functions.decision;
 

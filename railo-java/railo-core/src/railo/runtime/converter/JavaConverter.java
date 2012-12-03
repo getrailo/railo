@@ -8,9 +8,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.Writer;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.runtime.PageContext;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.CoderException;
 
@@ -19,18 +21,24 @@ import railo.runtime.coder.CoderException;
 /**
  * 
  */
-public final class JavaConverter {
+public final class JavaConverter extends ConverterSupport implements BinaryConverter {
 
-    /**
-     * serialize a Java Object of Type Serializable
-     * @param o
-     * @return serialized String
-     * @throws IOException
-     */
-    public static String serialize(Object o) throws IOException {
-        if(!(o instanceof Serializable))throw new IOException("Java Object is not of type Serializable");
-        return serialize((Serializable)o);
-    }
+   
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		if(!(source instanceof Serializable))throw new ConverterException("Java Object is not of type Serializable");
+	    writer.write(serialize((Serializable)source));
+		writer.flush();
+	}
+
+	@Override
+	public void writeOut(PageContext pc, Object source, OutputStream os) throws ConverterException, IOException {
+		if(!(source instanceof Serializable))throw new ConverterException("Java Object is not of type Serializable");
+	    serialize((Serializable)source, os);
+	    os.flush();
+	}
+    
+    
     /**
      * serialize a Java Object of Type Serializable
      * @param o

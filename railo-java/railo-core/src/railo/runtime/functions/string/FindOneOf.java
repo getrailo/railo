@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function findoneof
+ * Implements the CFML Function findoneof
  */
 package railo.runtime.functions.string;
 

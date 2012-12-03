@@ -106,10 +106,8 @@ public final class EmailNamePair {
 			if(!StringUtil.isEmpty(pair.getName()))return new InternetAddress(pair.getEmail(),pair.getName());
 			return new InternetAddress(pair.getEmail());
 		}
-		else {
-			InternetAddress[] addresses = toInternetAddresses(emails);
-			if(addresses!=null && addresses.length>0) return addresses[0];
-		}
+		InternetAddress[] addresses = toInternetAddresses(emails);
+		if(addresses!=null && addresses.length>0) return addresses[0];
 		return null;
 	}
 	
@@ -179,11 +177,11 @@ public final class EmailNamePair {
 		if(StringUtil.isEmpty(strEmails,true)) return new EmailNamePair[0];
 		Array raw = List.listWithQuotesToArray(strEmails,",;","\"");
 		
-		Iterator<String> it = raw.valueIterator();
+		Iterator<Object> it = raw.valueIterator();
 		ArrayList<EmailNamePair> pairs=new ArrayList<EmailNamePair>();
 		String address;
 		while(it.hasNext()) {
-			address=it.next();
+			address=Caster.toString(it.next(),null);
 			if(StringUtil.isEmpty(address,true))continue;
 			pairs.add(new EmailNamePair(address));
 		}

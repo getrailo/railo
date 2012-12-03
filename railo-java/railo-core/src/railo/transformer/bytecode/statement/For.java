@@ -7,12 +7,13 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
-public final class For extends StatementBase implements FlowControl,HasBody {
+public final class For extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
 
 	private Expression init;
 	private Expression condition;
@@ -34,8 +35,8 @@ public final class For extends StatementBase implements FlowControl,HasBody {
 	 * @param body
 	 * @param line
 	 */
-	public For(Expression init,Expression condition,Expression update,Body body,int startline,int endline) {
-		super(startline,endline);
+	public For(Expression init,Expression condition,Expression update,Body body,Position start, Position end) {
+		super(start,end);
 		this.init=init;
 		this.condition=condition;
 		this.update=update;
@@ -54,7 +55,7 @@ public final class For extends StatementBase implements FlowControl,HasBody {
 		Label afterInit = new Label();
 		Label afterUpdate = new Label();
 
-		ExpressionUtil.visitLine(bc, getStartLine());
+		ExpressionUtil.visitLine(bc, getStart());
 		adapter.visitLabel(beforeInit);
 		if(init!=null) {
 			init.writeOut(bc, Expression.MODE_VALUE);

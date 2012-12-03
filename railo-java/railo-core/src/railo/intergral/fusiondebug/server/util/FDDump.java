@@ -2,19 +2,6 @@ package railo.intergral.fusiondebug.server.util;
 
 import java.util.Iterator;
 
-import railo.intergral.fusiondebug.server.type.FDVariable;
-import railo.runtime.exp.PageException;
-import railo.runtime.op.Constants;
-import railo.runtime.type.Array;
-import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.Collection;
-import railo.runtime.type.Collection.Key;
-import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Query;
-import railo.runtime.type.QueryImpl;
-import railo.runtime.type.Struct;
-import railo.runtime.type.StructImpl;
-
 import com.intergral.fusiondebug.server.IFDValue;
 import com.intergral.fusiondebug.server.IFDVariable;
 
@@ -82,7 +69,7 @@ public class FDDump {
 		}
 	}
 	
-	public static void main(String[] args) throws PageException {
+	/*public static void main(String[] args) throws PageException {
 		Array arr = new ArrayImpl();
 		arr.setEL(1, "aaa");
 		arr.setEL(2, Boolean.TRUE);
@@ -112,5 +99,5 @@ public class FDDump {
 		//dump(new FDVariable(null,"susi",FDCaster.toFDValue(null,"susi",arr)));
 		
 		//dump(FDCaster.toFDVariable("susi",arr));
-	}
+	}*/
 }

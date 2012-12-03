@@ -2,7 +2,6 @@ package railo.commons.net;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -17,44 +16,23 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-
-import railo.aprint;
 import railo.commons.io.IOUtil;
-import railo.commons.io.res.ContentType;
-import railo.commons.io.res.ContentTypeImpl;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.MimeType;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
-import railo.runtime.net.http.HttpClientUtil;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.net.proxy.ProxyData;
-import railo.runtime.net.proxy.ProxyDataImpl;
-import railo.runtime.op.Caster;
-import railo.runtime.op.Decision;
 import railo.runtime.type.List;
 
 /**
@@ -77,24 +55,10 @@ public final class HTTPUtil {
 	 */
 	public static final int STATUS_OK=200;
 	//private static final String NO_MIMETYPE="Unable to determine MIME type of file.";
-     
-    /**
-     * make a http requst to given url 
-     * @param url
-     * @param username
-     * @param password
-     * @param timeout
-     * @param charset
-     * @param useragent
-     * @param proxyserver
-     * @param proxyport
-     * @param proxyuser
-     * @param proxypassword
-     * @param headers
-     * @return
-     * @throws IOException
-     */
-    public static HttpMethod invoke(URL url, String username, String password, long timeout, 
+
+	public static final int MAX_REDIRECT = 15;
+    
+    /*public static HttpMethod invoke(URL url, String username, String password, long timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -112,16 +76,13 @@ public final class HTTPUtil {
         setCredentials(client,httpMethod,username,password);  
         setProxy(config,state,proxyserver,proxyport,proxyuser,proxypassword);
         
-        /*if(followRedirects!=null){
-        	client.executeMethod(httpMethod);
-        }
-        else */
+        
         	httpMethod = HttpClientUtil.execute(client,httpMethod,true);
         
         return httpMethod;
-    }
+    }*/
     
-    public static HttpMethod post(URL url, String username, String password, long timeout, 
+    /*public static HttpMethod post(URL url, String username, String password, long timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -139,14 +100,10 @@ public final class HTTPUtil {
         setCredentials(client,httpMethod,username,password);  
         setProxy(config,state,proxyserver,proxyport,proxyuser,proxypassword);
         
-        /*if(followRedirects!=null){
-        	client.executeMethod(httpMethod);
-        }
-        else */
-        	httpMethod = HttpClientUtil.execute(client,httpMethod,true);
+        httpMethod = HttpClientUtil.execute(client,httpMethod,true);
         
         return httpMethod;
-    }
+    }*/
     
 
     /**
@@ -276,14 +233,14 @@ public final class HTTPUtil {
        		       
     }
     
-    private static String decodeQuery(String query,char startDelimeter) {
+    private static String decodeQuery(String query,char startDelimiter) {
     	if(!StringUtil.isEmpty(query)) {
     		StringBuilder res=new StringBuilder();
         	
         	StringList list = List.toList(query, '&');
         	String str;
         	int index;
-        	char del=startDelimeter;
+        	char del=startDelimiter;
         	while(list.hasNext()){
         		res.append(del);
         		del='&';
@@ -413,109 +370,15 @@ public final class HTTPUtil {
     	
     	return new URI(rtn.toString()); 
     }
-    
-    private static void test(String str) throws URISyntaxException {
-    	//print.o(str);
-    	int port=-1;
-    	String res;
-    	try {
-			res=toURL(new URL(str),port).toString();
-		} catch (MalformedURLException e) {
-			res=toURI(str).toString();
-		}
-    	String res2 = encode(str);
-		
-    	if(res.equals(res2)){
-    		aprint.o(res);
-    	}
-    	else {
-    		aprint.e(str);
-    		aprint.e("- uri:"+res);
-    		aprint.e("- enc:"+res2);
-    	}
-    	
-		
-    	/*String uri = toURI(str).toString();
-    	String url = toURL(str).toString();
-    	
-    	if(uri.equals(url)){
-    		print.o(uri);
-    	}
-    	else {
-    		print.e(str);
-    		print.e("uri:"+uri);
-    		print.e("url:"+url);
-    	}*/
-		
-	}
 
-	public static void main(String[] args) throws Exception {
-		
-		// valid urls
-		test("http://localhost:8080/jm/test/tags/_http.cfm;jsessionid=48lhqe568il0d?CFID=2fa614d8-9deb-4051-92e9-100ed44fd2df&CFTOKEN=0&jsessionid=48lhqe568il0d");
-		test("http://www.railo.ch");
-		test("http://www.railo.ch/");
-		test("http://www.railo.ch/a.cfm");
-		test("http://www.railo.ch/a.cfm?");
-		test("http://www.railo.ch/a.cfm?test=1");
-		test("http://www.railo.ch/a.cfm?test=1&");
-		test("http://www.railo.ch:80/a.cfm?test=1&");
-		test("http://hans@www.railo.ch:80/a.cfm?test=1&");
-		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x");
-		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x#");
-		test("http://hans:peter@www.railo.ch:80/a.cfm?test=1&x#xx");
-		
-		test("http://www.railo.ch");
-		test("http://www.railo.ch/");
-		test("http://www.railo.ch/Š.cfm");
-		test("http://www.railo.ch/Š.cfm?");
-		test("http://www.railo.ch/Š.cfm?testŠ=Š");
-		test("http://www.railo.ch/Š.cfm?testŠ=Š&");
-		test("http://www.railo.ch:80/Š.cfm?testŠ=Š&");
-		test("http://hŠns@www.railo.ch:80/Š.cfm?testŠ=Š&");
-		test("http://hŠns:pŸter@www.railo.ch:80/Š.cfm?testŠ=Š&x");
-		test("http://hŠns:pŸter@www.railo.ch:80/Š.cfm?testŠ=Š&x#");
-		test("http://hŠns:pŸter@www.railo.ch:80/Š.cfm?testŠ=Š&x#Ÿ");
-		
-		test("/");
-		test("/a.cfm");
-		test("/a.cfm?");
-		test("/a.cfm?test=1");
-		test("/a.cfm?test=1&");
-		test("/a.cfm?test=1&");
-		test("/a.cfm?test=1&");
-		test("/a.cfm?test=1&x");
-		test("/a.cfm?test=1&x#");
-		test("/a.cfm?test=1&x#xx");
-		
-
-		test("/");
-		test("/Š.cfm");
-		test("/Š.cfm?");
-		test("/Š.cfm?testš=1Ÿ");
-		test("/Š.cfm?testš=1Ÿ&");
-		test("/Š.cfm?testš=1Ÿ&");
-		test("/Š.cfm?testš=1Ÿ&");
-		test("/Š.cfm?testš=1Ÿ&x");
-		test("/Š.cfm?testš=1Ÿ&x#");
-		test("/Š.cfm?testš=1Ÿ&x#xxŠ");
-		//test("http://hašns:gehešim@www.example.org:80/dšemo/example.cgi?lanšd=de&stadt=aa#geschiŠchte");
-		//print.o(toURI("http://www.railo.ch/tešst.cfm?do=pšhoto.view&id=289#commentAdd"));
-		//print.o(toURI("/test.cfm?do=photo.view&id=289#commentAdd"));
-		//print.o(toURI("http://localhost/testingapp/index.cfm?do=photo.view&id=289#commentAdd"));
-	}
-    
-    
-
-
-	private static String getProtocol(URI uri) {
+	/*private static String getProtocol(URI uri) {
     	String p=uri.getRawSchemeSpecificPart();
     	if(p==null) return null;
 		if(p.indexOf('/')==-1) return p;
 		if(p.indexOf("https")!=-1) return "https";
 		if(p.indexOf("http")!=-1) return "http";
 		return p;
-	}
+	}*/
     
     private static String getProtocol(URL url) {
 		String p=url.getProtocol().toLowerCase();
@@ -524,16 +387,6 @@ public final class HTTPUtil {
 		if(p.indexOf("http")!=-1) return "http";
 		return p;
 	}
-
-
-	/*public static void main(String[] args) throws MalformedURLException {
-    	print.o(toURL("http://www.railo.ch/index.cfm#susi"));
-    	print.o(toURL("http://www.railo.ch/index.cfm#šŠŸ"));
-    	print.o(toURL("http://hans:geheim@www.example.org:80/demo/example.cgi?land=de&stadt=aa#geschichte"));
-    	print.o(toURL("http://hašns:gehešim@www.example.org/dšemo/example.cgi?lanšd=de&stadt=aa#geschiŠchte"));
-		// 
-	}*/
-
     
 
     
@@ -549,10 +402,10 @@ public final class HTTPUtil {
     	return URLEncoder.encode(str);
 	}
 
-	public static HttpMethod put(URL url, String username, String password, int timeout, 
+	/*public static HttpMethod put(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
-            String proxypassword, Header[] headers, RequestEntity body) throws IOException {
+            String proxypassword, Header[] headers, Object body) throws IOException {
 		
 		
 		HttpClient client = new HttpClient();
@@ -572,9 +425,9 @@ public final class HTTPUtil {
         
         return HttpClientUtil.execute(client,httpMethod,true);
          
-	}
+	}*/
     
-    public static HttpMethod delete(URL url, String username, String password, int timeout, 
+    /*public static HttpMethod delete(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -596,9 +449,9 @@ public final class HTTPUtil {
         
         return HttpClientUtil.execute(client,httpMethod,true);
          
-	}
+	}*/
 
-    public static HttpMethod head(URL url, String username, String password, int timeout, 
+    /*public static HttpMethod head(URL url, String username, String password, int timeout, 
             String charset, String useragent,
             String proxyserver, int proxyport, String proxyuser, 
             String proxypassword, Header[] headers) throws IOException {
@@ -620,60 +473,13 @@ public final class HTTPUtil {
         
         return HttpClientUtil.execute(client,httpMethod,true);
          
-	}
+	}*/
 
     
 
-    private static void setBody(EntityEnclosingMethod httpMethod, RequestEntity body) {
-        // body
-        if(body!=null)httpMethod.setRequestEntity(body);
-	}
+	
 
-	private static void setProxy(HostConfiguration config, HttpState state, String proxyserver,int proxyport, String proxyuser, String proxypassword) {
-
-        // set Proxy
-            if(!StringUtil.isEmpty(proxyserver)) {
-                config.setProxy(proxyserver,proxyport);
-                if(!StringUtil.isEmpty(proxyuser)) {
-                    if(proxypassword==null)proxypassword="";
-                    state.setProxyCredentials(null,null,new UsernamePasswordCredentials(proxyuser,proxypassword));
-                }
-            } 
-	}
-
-	private static void setCredentials(HttpClient client, HttpMethod httpMethod, String username,String password) {
-        // set Username and Password
-            if(username!=null) {
-                if(password==null)password="";
-                client.getState().setCredentials(null,null,new UsernamePasswordCredentials(username, password));
-                httpMethod.setDoAuthentication( true );
-            }
-	}
-
-	private static void setTimeout(HttpClient client, long timeout) {
-        if(timeout>0){
-        	
-        	client.setConnectionTimeout((int)timeout);
-        	client.setTimeout((int)timeout);
-        }
-	}
-
-	private static void setUserAgent(HttpMethod httpMethod, String useragent) {
-        if(useragent!=null)httpMethod.setRequestHeader("User-Agent",useragent);
-	}
-
-	private static void setContentType(HttpMethod httpMethod, String charset) {
-    	if(charset!=null)httpMethod.addRequestHeader("Content-type", "text/html; charset="+charset );
-	}
-
-	private static void setHeader(HttpMethod httpMethod,Header[] headers) {
-    	if(headers!=null) {
-        	for(int i=0;i<headers.length;i++)
-        		httpMethod.addRequestHeader(headers[i].getName(), headers[i].getValue());
-        }
-	}
-
-	public static RequestEntity toRequestEntity(Object value) throws PageException {
+	/*public static RequestEntity toRequestEntity(Object value) throws PageException {
     	if(value instanceof RequestEntity) return (RequestEntity) value;
     	else if(value instanceof InputStream) {
 			return new InputStreamRequestEntity((InputStream)value,"application/octet-stream");
@@ -684,7 +490,7 @@ public final class HTTPUtil {
 		else {
 			return new StringRequestEntity(Caster.toString(value));
 		}
-    }
+    }*/
     
 	
 	public static URL removeRef(URL url) throws MalformedURLException{
@@ -706,7 +512,7 @@ public final class HTTPUtil {
 	
 			
 
-	public static URL toURL(HttpMethod httpMethod) {
+	/*public static URL toURL(HttpMethod httpMethod) {
 		HostConfiguration config = httpMethod.getHostConfiguration();
 		
 		try {
@@ -717,7 +523,7 @@ public final class HTTPUtil {
 		} catch (MalformedURLException e) {
 			return null;
 		}
-	}
+	}*/
 
 	public static String optimizeRealPath(PageContext pc,String realPath) {
 		int index;
@@ -726,7 +532,7 @@ public final class HTTPUtil {
 			requestURI=realPath.substring(0,index);
 			queryString=realPath.substring(index+1);
 		}
-		PageSource ps = pc.getRelativePageSource(requestURI);
+		PageSource ps = PageSourceImpl.best(((PageContextImpl)pc).getRelativePageSources(requestURI));
 		requestURI=ps.getFullRealpath();
 		if(queryString!=null) return requestURI+"?"+queryString;
 		return requestURI;
@@ -864,38 +670,14 @@ public final class HTTPUtil {
 	 * return the length of a file defined by a url.
 	 * @param dataUrl
 	 * @return
+	 * @throws IOException 
 	 */
-	public static long length(URL url) {
-		long length=0;
-		
-		// check response header "content-length"
-		ProxyData pd=ProxyDataImpl.NO_PROXY;
-		try {
-			HttpMethod http = HTTPUtil.head(url, null, null, -1,null, "Railo", pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),null);
-			Header cl = http.getResponseHeader("content-length");
-			if(cl!=null)	{
-				length=Caster.toIntValue(cl.getValue(),-1);
-				if(length!=-1) return length;
-			}
-		} 
-		catch (IOException e) {}
-		
-		// get it for size
-		try {
-			HttpMethod http = HTTPUtil.invoke(url, null, null, -1,null, "Railo", pd.getServer(), pd.getPort(),pd.getUsername(), pd.getPassword(),null);
-			InputStream is = http.getResponseBodyAsStream();
-			byte[] buffer = new byte[1024];
-	        int len;
-	        length=0;
-	        while((len = is.read(buffer)) !=-1){
-	          length+=len;
-	        }
-		} 
-		catch (IOException e) {}
-		return length;
+	public static long length(URL url) throws IOException {
+		HTTPResponse http = HTTPEngine.head(url, null, null, -1,HTTPEngine.MAX_REDIRECT,null, "Railo", null,null);
+		return http.getContentLength();	
 	}
 
-	public static ContentType getContentType(HttpMethod http) {
+	/*public static ContentType getContentType(HttpMethod http) {
 		Header[] headers = http.getResponseHeaders();
 		for(int i=0;i<headers.length;i++){
 			if("Content-Type".equalsIgnoreCase(headers[i].getName())){
@@ -905,7 +687,7 @@ public final class HTTPUtil {
 			}
 		}
 		return null;
-	}
+	}*/
 	
 	
 
@@ -966,5 +748,39 @@ public final class HTTPUtil {
 	        }
     	}
     	return rtn;
+	}
+
+	public static boolean isTextMimeType(String mimetype) {
+		if(mimetype==null)mimetype="";
+		else mimetype=mimetype.trim().toLowerCase();
+		return StringUtil.startsWithIgnoreCase(mimetype,"text")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/atom+xml")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/xhtml")  ||  
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/json")  || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"message") || 
+    	StringUtil.startsWithIgnoreCase(mimetype,"application/octet-stream") || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "xml")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "json")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "rss")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "atom")!=-1 || 
+    	StringUtil.indexOfIgnoreCase(mimetype, "text")!=-1;
+		
+		// "application/x-www-form-urlencoded" ???
+	}
+	
+	public static boolean isTextMimeType(MimeType mimetype) {
+		if(mimetype==null) return false;
+		if(MimeType.APPLICATION_JSON.same(mimetype)) return true;
+		if(MimeType.APPLICATION_PLAIN.same(mimetype)) return true;
+		if(MimeType.APPLICATION_CFML.same(mimetype)) return true;
+		if(MimeType.APPLICATION_WDDX.same(mimetype)) return true;
+		if(MimeType.APPLICATION_XML.same(mimetype)) return true;
+		
+		return isTextMimeType(mimetype.toString());
+	}
+
+	public static boolean isSecure(URL url) {
+		return StringUtil.indexOfIgnoreCase(url.getProtocol(),"https")!=-1;
 	}
 }

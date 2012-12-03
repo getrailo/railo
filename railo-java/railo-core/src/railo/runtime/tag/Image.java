@@ -319,7 +319,7 @@ public final class Image extends TagImpl {
 		try {
 			if(this.oSource!=null){
 				if(isbase64) this.source=new railo.runtime.img.Image(Caster.toString(oSource));
-				else this.source=railo.runtime.img.Image.createImage(pageContext, oSource, false, false,true);
+				else this.source=railo.runtime.img.Image.createImage(pageContext, oSource, false, false,true,null);
 			}
 			
 			if(action==ACTION_BORDER)		doActionBorder();
@@ -454,7 +454,7 @@ public final class Image extends TagImpl {
 	private void doActionResize() throws PageException, IOException {
 		required("source", source);
 		
-		Info i = new Info(source);
+		//Info i = new Info(source);
 		/*int w = toDimension("width",width,i);
 		int h = toDimension("height",height,i);
 		if(w==-1 && h==-1)
@@ -562,11 +562,11 @@ public final class Image extends TagImpl {
 						dimension.substring(0,dimension.length()-1).trim(),
 						-1);
 			if(pro<0 || pro>100) 
-				throw new ExpressionException("attribute ["+label+"] value has a invalid percent definition ["+dimension+"]"); 
+				throw new ExpressionException("attribute ["+label+"] value has an invalid percent definition ["+dimension+"]"); 
 			pro/=100F;
 			return (int)(Caster.toFloatValue(info.getStruct().get(label))*pro);
 		}
-		throw new ExpressionException("attribute ["+label+"] value has a invalid definition ["+dimension+"]"); 
+		throw new ExpressionException("attribute ["+label+"] value has an invalid definition ["+dimension+"]"); 
 		
 	}
 

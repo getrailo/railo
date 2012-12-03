@@ -1,18 +1,28 @@
 package railo.runtime.engine;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
 
+import railo.cli.servlet.HTTPServletImpl;
 import railo.commons.collections.HashTable;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -22,14 +32,17 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.io.res.util.ResourceUtilImpl;
+import railo.commons.lang.Pair;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.commons.net.HTTPUtil;
 import railo.intergral.fusiondebug.server.FDControllerImpl;
 import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.engine.CFMLEngineWrapper;
+import railo.loader.util.Util;
 import railo.runtime.CFMLFactory;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Info;
@@ -43,19 +56,22 @@ import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
+import railo.runtime.net.http.HttpServletRequestDummy;
+import railo.runtime.net.http.HttpServletResponseDummy;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.CastImpl;
+import railo.runtime.op.Caster;
 import railo.runtime.op.CreationImpl;
 import railo.runtime.op.DecisionImpl;
 import railo.runtime.op.ExceptonImpl;
 import railo.runtime.op.OperationImpl;
 import railo.runtime.query.QueryCacheSupport;
+import railo.runtime.type.StructImpl;
 import railo.runtime.util.BlazeDSImpl;
 import railo.runtime.util.Cast;
 import railo.runtime.util.Creation;
 import railo.runtime.util.Decision;
 import railo.runtime.util.Excepton;
-import railo.runtime.util.HTTPUtil;
 import railo.runtime.util.HTTPUtilImpl;
 import railo.runtime.util.Operation;
 import railo.runtime.util.ZipUtil;
@@ -71,8 +87,8 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
 public final class CFMLEngineImpl implements CFMLEngine {
     
     
-	private static Map initContextes=new HashTable();
-    private static Map contextes=new HashTable();
+	private static Map<String,CFMLFactory> initContextes=new HashTable();
+    private static Map<String,CFMLFactory> contextes=new HashTable();
     private static ConfigServerImpl configServer=null;
     private static CFMLEngineImpl engine=null;
     //private ServletConfig config;
@@ -81,6 +97,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private final RefBoolean controlerState=new RefBooleanImpl(true);
 	private boolean allowRequestTimeout=true;
 	private Monitor monitor;
+	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>(); 
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
 
@@ -89,12 +106,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
     	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
         ConfigServerImpl cs = getConfigServerImpl();
     	
-        SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"Start CFML Controller");
+        SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"Start CFML Controller");
         Controler controler = new Controler(cs,initContextes,5*1000,controlerState);
         controler.setDaemon(true);
         controler.setPriority(Thread.MIN_PRIORITY);
-        controler.start();  
-        
+        controler.start();
 
         touchMonitor(cs);  
         
@@ -118,7 +134,6 @@ public final class CFMLEngineImpl implements CFMLEngine {
     public static synchronized CFMLEngine getInstance(CFMLEngineFactory factory) {
     	if(engine==null) {
     		engine=new CFMLEngineImpl(factory);
-    		
         }
         return engine;
     }
@@ -137,6 +152,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @see railo.loader.engine.CFMLEngine#addServletConfig(javax.servlet.ServletConfig)
      */
     public void addServletConfig(ServletConfig config) throws ServletException {
+    	servletConfigs.add(config);
     	String real=config.getServletContext().getRealPath("/");
         if(!initContextes.containsKey(real)) {             
         	CFMLFactory jspFactory = loadJSPFactory(getConfigServerImpl(),config,initContextes.size());
@@ -168,10 +184,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
             // Load Config
             Resource configDir=getConfigDirectory(sg,configServer,countExistingContextes);
             
-            QueryCacheSupport queryCache=QueryCacheSupport.getInstance(configServer);
+            QueryCacheSupport queryCache=QueryCacheSupport.getInstance();
             CFMLFactoryImpl factory=new CFMLFactoryImpl(this,queryCache);
             ConfigWebImpl config=ConfigWebFactory.newInstance(factory,configServer,configDir,sg);
-            queryCache.setConfigWeb(config);
             factory.setConfig(config);
             return factory;
         }
@@ -197,6 +212,8 @@ public final class CFMLEngineImpl implements CFMLEngine {
         if(strConfig==null)strConfig="{web-root-directory}/WEB-INF/railo/";
         else if("/WEB-INF/railo/".equals(strConfig))strConfig="{web-root-directory}/WEB-INF/railo/";
         
+        strConfig=Util.removeQuotes(strConfig,true);
+        
         // static path is not allowed
         if(countExistingContextes>1 && strConfig!=null && strConfig.indexOf('{')==-1){
         	String text="static path ["+strConfig+"] for servlet init param [railo-web-directory] is not allowed, path must use a web-context specific placeholder.";
@@ -214,7 +231,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         if(configDir==null) {
             configDir=ResourceUtil.createResource(frp.getResource(strConfig), FileUtil.LEVEL_GRAND_PARENT_FILE,FileUtil.TYPE_DIR);
         }
-        
+        if(configDir==null) throw new PageServletException(new ApplicationException("path ["+strConfig+"] is invalid"));
         if(!configDir.exists()){
         	try {
 				configDir.createDirectory(true);
@@ -273,7 +290,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
     public void serviceCFML(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
     	
     	CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
+    	
         PageContext pc = factory.getRailoPageContext(servlet,req,rsp,null,false,-1,false);
+        ThreadQueue queue = factory.getConfig().getThreadQueue();
+        queue.enter(pc);
         try {
         	/*print.out("INCLUDE");
         	print.out("servlet_path:"+req.getAttribute("javax.servlet.include.servlet_path"));
@@ -292,14 +312,13 @@ public final class CFMLEngineImpl implements CFMLEngine {
         	print.out(pc.getHttpServletRequest().getServletPath());
         	*/
         	
-        	
-        	
         	pc.execute(pc.getHttpServletRequest().getServletPath(),false);
         } 
         catch (PageException pe) {
 			throw new PageServletException(pe);
 		}
         finally {
+        	queue.exit(pc);
             factory.releaseRailoPageContext(pc);
             FDControllerFactory.notifyPageComplete();
         }
@@ -309,9 +328,9 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		req=new HTTPServletRequestWrap(req);
 		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
         ConfigWeb config = factory.getConfig();
-        Resource res = ((ConfigWebImpl)config).getPhysical(null,req.getServletPath(),true);
+        Resource res = ((ConfigWebImpl)config).getPhysicalResourceExisting(null, null, req.getServletPath(), false, true, true); 
         
-		if(!res.exists()) {
+		if(res==null) {
     		rsp.sendError(404);
     	}
     	else {
@@ -320,6 +339,29 @@ public final class CFMLEngineImpl implements CFMLEngine {
     		if(!StringUtil.isEmpty(mt))rsp.setContentType(mt);
     		IOUtil.copy(res, rsp.getOutputStream(), true);
     	}
+	}
+	
+
+	public void serviceRest(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException {
+		req=new HTTPServletRequestWrap(req);
+		CFMLFactory factory=getCFMLFactory(servlet.getServletContext(), servlet.getServletConfig(), req);
+        
+		PageContext pc = factory.getRailoPageContext(servlet,req,rsp,null,false,-1,false);
+        ThreadQueue queue = factory.getConfig().getThreadQueue();
+        queue.enter(pc);
+        try {
+        	pc.executeRest(pc.getHttpServletRequest().getServletPath(),false);
+        } 
+        catch (PageException pe) {
+			throw new PageServletException(pe);
+		}
+        finally {
+        	queue.exit(pc);
+            factory.releaseRailoPageContext(pc);
+            FDControllerFactory.notifyPageComplete();
+        }
+		
+		
 	}
     
 
@@ -379,10 +421,10 @@ public final class CFMLEngineImpl implements CFMLEngine {
         CFMLFactoryImpl cfmlFactory;
         //ScopeContext scopeContext;
         try {
-	        Iterator it = contextes.keySet().iterator();
+	        Iterator<String> it = contextes.keySet().iterator();
 	        while(it.hasNext()) {
 	        	try {
-		            cfmlFactory=(CFMLFactoryImpl)contextes.get(it.next());
+		            cfmlFactory=(CFMLFactoryImpl) contextes.get(it.next());
 		            if(configId!=null && !configId.equals(cfmlFactory.getConfigWebImpl().getId())) continue;
 		            	
 		            // scopes
@@ -392,7 +434,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		            try{cfmlFactory.resetPageContext();}catch(Throwable t){t.printStackTrace();}
 		            
 		            // Query Cache
-		            try{ cfmlFactory.getQueryCache().clear();}catch(Throwable t){t.printStackTrace();}
+		            try{ cfmlFactory.getDefaultQueryCache().clear(null);}catch(Throwable t){t.printStackTrace();}
 		            
 		            // Gateway
 		            try{ cfmlFactory.getConfigWebImpl().getGatewayEngine().reset();}catch(Throwable t){t.printStackTrace();}
@@ -441,7 +483,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @see railo.loader.engine.CFMLEngine#getCreationUtil()
      */
     public Creation getCreationUtil() {
-        return CreationImpl.getInstance();
+        return CreationImpl.getInstance(this);
     }
 
 	/**
@@ -460,7 +502,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		return new FDControllerImpl(engine,engine.getConfigServerImpl().getSerialNumber());
 	}
 
-	public Map getCFMLFactories() {
+	public Map<String,CFMLFactory> getCFMLFactories() {
 		return initContextes;
 	}
 
@@ -474,15 +516,18 @@ public final class CFMLEngineImpl implements CFMLEngine {
 	/**
 	 * @see railo.loader.engine.CFMLEngine#getHTTPUtil()
 	 */
-	public HTTPUtil getHTTPUtil() {
+	public railo.runtime.util.HTTPUtil getHTTPUtil() {
 		return HTTPUtilImpl.getInstance();
 	}
 
-	/**
-	 * @see railo.loader.engine.CFMLEngine#getThreadPageContext()
-	 */
+	@Override
 	public PageContext getThreadPageContext() {
 		return ThreadLocalPageContext.get();
+	}
+
+	@Override
+	public void registerThreadPageContext(PageContext pc) {
+		ThreadLocalPageContext.register(pc);
 	}
 
 	/**
@@ -527,6 +572,75 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		}
 		catch(Throwable t){}
 		return controlerState.toBooleanValue();
+	}
+
+	@Override
+	public void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException,JspException,ServletException {
+		ServletContext servletContext = servletConfig.getServletContext();
+		HTTPServletImpl servlet=new HTTPServletImpl(servletConfig, servletContext, servletConfig.getServletName());
+
+		// webroot
+		String strWebroot=config.get("webroot");
+		if(Util.isEmpty(strWebroot,true)) throw new IOException("missing webroot configuration");
+		Resource root=ResourcesImpl.getFileResourceProvider().getResource(strWebroot);
+		root.mkdirs();
+		
+		// serverName
+		String serverName=config.get("server-name");
+		if(Util.isEmpty(serverName,true))serverName="localhost";
+		
+		// uri
+		String strUri=config.get("uri");
+		if(Util.isEmpty(strUri,true)) throw new IOException("missing uri configuration");
+		URI uri;
+		try {
+			uri = railo.commons.net.HTTPUtil.toURI(strUri);
+		} catch (URISyntaxException e) {
+			throw Caster.toPageException(e);
+		}
+		
+		// cookie
+		Cookie[] cookies;
+		String strCookie=config.get("cookie");
+		if(Util.isEmpty(strCookie,true)) cookies=new Cookie[0];
+		else {
+			Map<String,String> mapCookies=HTTPUtil.parseParameterList(strCookie,false,null);
+			int index=0;
+			cookies=new Cookie[mapCookies.size()];
+			Entry<String, String> entry;
+			Iterator<Entry<String, String>> it = mapCookies.entrySet().iterator();
+			while(it.hasNext()){
+				entry = it.next();
+				cookies[index++]=new Cookie(entry.getKey(),entry.getValue());
+			}
+		}
+		
+
+		// header
+		Pair[] headers=new Pair[0];
+		
+		// parameters
+		Pair[] parameters=new Pair[0];
+		
+		// attributes
+		StructImpl attributes = new StructImpl();
+		ByteArrayOutputStream os=new ByteArrayOutputStream();
+		
+		
+		
+		
+		HttpServletRequestDummy req=new HttpServletRequestDummy(
+				root,serverName,uri.getPath(),uri.getQuery(),cookies,headers,parameters,attributes,null);
+		req.setProtocol("CLI/1.0");
+		HttpServletResponse rsp=new HttpServletResponseDummy(os);
+		
+		serviceCFML(servlet, req, rsp);
+		String res = os.toString(rsp.getCharacterEncoding());
+		System.out.println(res);
+	}
+	
+	public ServletConfig[] getServletConfigs(){
+		return servletConfigs.toArray(new ServletConfig[servletConfigs.size()]);
 	}
 
 }

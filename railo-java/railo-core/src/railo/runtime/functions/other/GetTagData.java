@@ -1,13 +1,13 @@
 /**
- * Implements the Cold Fusion Function getfunctiondescription
+ * Implements the CFML Function getfunctiondescription
  */
 package railo.runtime.functions.other;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.ComponentWrap;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
@@ -22,6 +22,7 @@ import railo.runtime.tag.CFTagCore;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 import railo.transformer.library.tag.TagLib;
 import railo.transformer.library.tag.TagLibFactory;
 import railo.transformer.library.tag.TagLibTag;
@@ -75,10 +76,10 @@ public final class GetTagData implements Function {
 
 	private static Struct cfmlBasedTag(PageContext pc, TagLib tld, TagLibTag tag) throws PageException {
 		
-		Map attrs = tag.getAttributes();
+		//Map attrs = tag.getAttributes();
 
 		TagLibTagAttr attrFilename = tag.getAttribute("__filename");
-		TagLibTagAttr attrName = tag.getAttribute("__name");
+		//TagLibTagAttr attrName = tag.getAttribute("__name");
 		TagLibTagAttr attrIsWeb = tag.getAttribute("__isweb");
 		
 		String filename = Caster.toString(attrFilename.getDefaultValue());
@@ -86,7 +87,7 @@ public final class GetTagData implements Function {
 		boolean isWeb = Caster.toBooleanValue(attrIsWeb.getDefaultValue());
 		InitFile source = CFTagCore.createInitFile(pc, isWeb, filename);
 		
-		ComponentPro cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
+		Component cfc = ComponentLoader.loadComponent(pc,null,source.getPageSource(), source.getFilename().substring(0,source.getFilename().length()-(pc.getConfig().getCFCExtension().length()+1)), false,true);
         ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, cfc);
 		Struct metadata=Caster.toStruct(cw.get("metadata",null),null,false);
 		
@@ -94,10 +95,10 @@ public final class GetTagData implements Function {
 		Struct sct=new StructImpl();
 		sct.set("nameSpaceSeperator",tld.getNameSpaceSeparator());
 		sct.set("nameSpace",tld.getNameSpace());
-		sct.set("name",name.substring(0,name.lastIndexOf('.')));
+		sct.set(KeyConstants._name,name.substring(0,name.lastIndexOf('.')));
 		sct.set("hasNameAppendix",Boolean.FALSE);
-		sct.set("status","implemeted");
-		sct.set("type","cfml");
+		sct.set(KeyConstants._status,"implemeted");
+		sct.set(KeyConstants._type,"cfml");
 		
 		sct.set("bodyType",getBodyType(tag));
 		sct.set("attrMin",Caster.toDouble(0));
@@ -105,37 +106,38 @@ public final class GetTagData implements Function {
 		
 		// TODO add support for script for cfml tags
 		Struct scp=new StructImpl();
-		sct.set("script",scp);
+		sct.set(KeyConstants._script,scp);
 		scp.set("rtexpr", Boolean.FALSE);
-		scp.set("type", "none");
+		scp.set(KeyConstants._type, "none");
 		
 		
 		
 		
 		if(metadata!=null) {
-			sct.set("description",metadata.get("hint",""));
+			sct.set(KeyConstants._description,metadata.get("hint",""));
 			sct.set("attributeType",metadata.get("attributeType",""));
 			sct.set("parseBody",Caster.toBoolean(metadata.get("parseBody",Boolean.FALSE),Boolean.FALSE));
 			
 			Struct _attrs=new StructImpl();
-			sct.set("attributes",_attrs);
+			sct.set(KeyConstants._attributes,_attrs);
 			
-			Struct srcAttrs = Caster.toStruct(metadata.get("attributes",null),null,false);
+			Struct srcAttrs = Caster.toStruct(metadata.get(KeyConstants._attributes,null),null,false);
 			Struct src;
 			if(srcAttrs!=null){
-				Key[] keys = srcAttrs.keys();
-				for(int i=0;i<keys.length;i++){
-					
-					src = Caster.toStruct(srcAttrs.get(keys[i]),null,false);
-					if(Caster.toBooleanValue(src.get("hidden",null),false))continue;
+				//Key[] keys = srcAttrs.keys();
+				Iterator<Entry<Key, Object>> it = srcAttrs.entryIterator();
+				Entry<Key, Object> e;
+				while(it.hasNext()){
+					e = it.next();
+					src = Caster.toStruct(e.getValue(),null,false);
+					if(Caster.toBooleanValue(src.get(KeyConstants._hidden,null),false))continue;
 					Struct _attr=new StructImpl();
-					_attr.set("status","implemeted");
-					_attr.set("description",src.get("hint",""));
-					_attr.set("type",src.get("type","any"));
-					_attr.set("required",Caster.toBoolean(src.get("required",""),null));
+					_attr.set(KeyConstants._status,"implemeted");
+					_attr.set(KeyConstants._description,src.get(KeyConstants._hint,""));
+					_attr.set(KeyConstants._type,src.get(KeyConstants._type,"any"));
+					_attr.set(KeyConstants._required,Caster.toBoolean(src.get(KeyConstants._required,""),null));
 					_attr.set("scriptSupport","none");
-					
-					_attrs.setEL(keys[i].getLowerString(),_attr);
+					_attrs.setEL(e.getKey().getLowerString(),_attr);
 					
 				}
 			}
@@ -172,9 +174,9 @@ public final class GetTagData implements Function {
 		Struct sct=new StructImpl();
 		sct.set("nameSpaceSeperator",tld.getNameSpaceSeparator());
 		sct.set("nameSpace",tld.getNameSpace());
-		sct.set("name",tag.getName());
-		sct.set("description",tag.getDescription());
-		sct.set("status",TagLibFactory.toStatus(tag.getStatus()));
+		sct.set(KeyConstants._name,tag.getName());
+		sct.set(KeyConstants._description,tag.getDescription());
+		sct.set(KeyConstants._status,TagLibFactory.toStatus(tag.getStatus()));
 		
 		sct.set("attributeType",getAttributeType(tag));
 		sct.set("parseBody",Caster.toBoolean(tag.getParseBody()));
@@ -187,9 +189,9 @@ public final class GetTagData implements Function {
 		TagLibTagScript script = tag.getScript();
 		if(script!=null) {
 			Struct scp=new StructImpl();
-			sct.set("script",scp);
+			sct.set(KeyConstants._script,scp);
 			scp.set("rtexpr", Caster.toBoolean(script.getRtexpr()));
-			scp.set("type", script.getTypeAsString());
+			scp.set(KeyConstants._type, script.getTypeAsString());
 			if(script.getType()==TagLibTagScript.TYPE_SINGLE) {
 				TagLibTagAttr attr = script.getSingleAttr();
 				if(attr!=null)scp.set("singletype", attr.getScriptSupportAsString());
@@ -198,10 +200,10 @@ public final class GetTagData implements Function {
 		}
 		
 		
-		sct.set("type","java");
+		sct.set(KeyConstants._type,"java");
 		
 		Struct _args=new StructImpl();
-		sct.set("attributes",_args);
+		sct.set(KeyConstants._attributes,_args);
 		
 		Map atts = tag.getAttributes();
 		Iterator it = atts.keySet().iterator();
@@ -212,10 +214,10 @@ public final class GetTagData implements Function {
 		    if(attr.getHidden()) continue;
 		//for(int i=0;i<args.size();i++) {
 			Struct _arg=new StructImpl();
-			_arg.set("status",TagLibFactory.toStatus(attr.getStatus()));
-			_arg.set("description",attr.getDescription());
-			_arg.set("type",attr.getType());
-			_arg.set("required",attr.isRequired()?Boolean.TRUE:Boolean.FALSE);
+			_arg.set(KeyConstants._status,TagLibFactory.toStatus(attr.getStatus()));
+			_arg.set(KeyConstants._description,attr.getDescription());
+			_arg.set(KeyConstants._type,attr.getType());
+			_arg.set(KeyConstants._required,attr.isRequired()?Boolean.TRUE:Boolean.FALSE);
 			_arg.set("scriptSupport",attr.getScriptSupportAsString());
 			_args.setEL(attr.getName(),_arg);
 		}

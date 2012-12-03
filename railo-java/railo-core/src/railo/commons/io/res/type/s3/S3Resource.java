@@ -17,6 +17,7 @@ import railo.commons.io.res.ResourceProvider;
 import railo.commons.io.res.util.ResourceSupport;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.http.httpclient3.HTTPEngine3Impl;
 import railo.loader.util.Util;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
@@ -95,7 +96,7 @@ public final class S3Resource extends ResourceSupport {
 			if(isBucket()) {
 				s3.putBuckets(bucketName, acl,storage);
 			}
-			else s3.put(bucketName, objectName+"/", acl, new EmptyRequestEntity());	
+			else s3.put(bucketName, objectName+"/", acl, HTTPEngine3Impl.getEmptyEntity("application"));	
 		}
 		catch (IOException ioe) {
 			throw ioe;
@@ -115,7 +116,7 @@ public final class S3Resource extends ResourceSupport {
 		if(isBucket()) throw new IOException("can't create file ["+getPath()+"], on this level (Bucket Level) you can only create directories");
 		try {
 			provider.lock(this);
-			s3.put(bucketName, objectName, acl, new EmptyRequestEntity());
+			s3.put(bucketName, objectName, acl, HTTPEngine3Impl.getEmptyEntity("application"));
 		} 
 		catch (Exception e) {
 			throw new IOException(e.getMessage());
@@ -551,7 +552,7 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 
-	public AccessControlPolicy getAccessControlPolicy() throws IOException {
+	public AccessControlPolicy getAccessControlPolicy() {
 		String p = getInnerPath();
 		try {
 			AccessControlPolicy acp = s3.getACP(p);
@@ -568,7 +569,7 @@ public final class S3Resource extends ResourceSupport {
 		}
 	}
 	
-	public void setAccessControlPolicy(AccessControlPolicy acp) throws IOException {
+	public void setAccessControlPolicy(AccessControlPolicy acp) {
 		
 		try {
 			s3.setAccessControlPolicy(bucketName, getObjectName(),acp);

@@ -1,6 +1,7 @@
 package railo.runtime.db;
 
 import java.io.ByteArrayInputStream;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -20,6 +21,7 @@ import railo.runtime.sql.old.ZOrderBy;
 import railo.runtime.sql.old.ZQuery;
 import railo.runtime.sql.old.ZSelectItem;
 import railo.runtime.sql.old.ZqlParser;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -85,9 +87,12 @@ public final class Executer {
 				
 				if(!isSMS && !select.getColumn().equals("*"))
 					throw new DatabaseException("can't execute this type of query at the moment",null,sql,null);
-				String[] keys = qr.keysAsString();
-				for(int y=0;y<keys.length;y++){
-					selects.put(keys[y],keys[y]);
+				//Collection.Key[] keys = qr.keys();
+				Iterator<Key> it = qr.keyIterator();
+				Key k;
+				while(it.hasNext()){
+					k = it.next();
+					selects.put(k.getString(),k.getString());
 				}
 				isSMS=false;
 			}
@@ -241,7 +246,7 @@ public final class Executer {
 		else if(op.equals("or")) return executeOr(pc,sql,qr,expression,row);
 		if(count==0 && op.equals("?")) {
 		    int pos=sql.getPosition(); 
-		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
+		    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
 		    sql.setPosition(pos+1);
 		    return sql.getItems()[pos].getValueForCF();
 		}
@@ -745,7 +750,7 @@ public final class Executer {
 			    if(constant.getValue().equals(SQLPrettyfier.PLACEHOLDER_QUESTION)) {
 				    int pos=sql.getPosition();
 				    sql.setPosition(pos+1);
-				    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statment",null,sql,null);
+				    if(sql.getItems().length<=pos) throw new DatabaseException("invalid syntax for SQL Statement",null,sql,null);
 				    return sql.getItems()[pos].getValueForCF();
 				}
 		        return qr.getAt(List.last(constant.getValue(),".",true),row);

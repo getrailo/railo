@@ -8,10 +8,11 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 
-public final class SystemOut extends StatementBase {
+public final class SystemOut extends StatementBaseNoFinal {
     
 
     // void println (Object)
@@ -26,8 +27,8 @@ public final class SystemOut extends StatementBase {
      * @param expr
      * @param line 
      */
-    public SystemOut(Expression expr, int line) {
-        super(line);
+    public SystemOut(Expression expr, Position start,Position end) {
+        super(start,end);
         this.expr=expr;
     }
  

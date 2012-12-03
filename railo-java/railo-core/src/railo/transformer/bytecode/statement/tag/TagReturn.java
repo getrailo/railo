@@ -2,17 +2,15 @@ package railo.transformer.bytecode.statement.tag;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.Return;
 
-public final class TagReturn extends TagBase {
+public final class TagReturn extends TagBaseNoFinal {
 
-	public TagReturn(int line) {
-		this(line,-1);
-	}
-	public TagReturn(int sl,int el) {
-		super(sl,el);
+	public TagReturn(Position start,Position end) {
+		super(start,end);
 		setHasFlowController(true);
 	}
 
@@ -24,12 +22,7 @@ public final class TagReturn extends TagBase {
 		Attribute attr = getAttribute("expr");
 		Expression expr=null;
 		if(attr!=null)expr=attr.getValue();
-		new Return(expr,-1).writeOut(bc);
-		
-		/*if(attr!=null)attr.getValue().writeOut(bc, Expression.MODE_REF);
-		else ASMConstants.NULL(adapter);
-		adapter.returnValue();
-		*/
+		new Return(expr,expr.getStart(),expr.getEnd()).writeOut(bc);
 	}
 
 	/**

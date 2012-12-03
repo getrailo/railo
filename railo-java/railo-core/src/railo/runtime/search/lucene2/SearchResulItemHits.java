@@ -6,10 +6,11 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Hits;
 
-import railo.runtime.search.SearchResultItemPro;
+import railo.runtime.search.SearchException;
+import railo.runtime.search.SearchResulItem;
 import railo.runtime.search.lucene2.highlight.Highlight;
 
-public class SearchResulItemHits implements SearchResultItemPro {
+public class SearchResulItemHits implements SearchResulItem {
 
 	
 	
@@ -85,6 +86,15 @@ public class SearchResulItemHits implements SearchResultItemPro {
 	public String getCustom4() {
 		return doc("custom4");
 	}
+    
+    public String getCustom(int index) throws SearchException {
+    	if(index==1) return doc("custom1");
+    	if(index==2) return doc("custom2");
+    	if(index==3) return doc("custom3");
+    	if(index==4) return doc("custom4");
+    	
+        throw new SearchException("invalid index ["+index+"], valid index is [1,2,3,4]");
+    }
 
 	/**
 	 * @see railo.runtime.search.coreDuplicate.SearchResulItem#getId()

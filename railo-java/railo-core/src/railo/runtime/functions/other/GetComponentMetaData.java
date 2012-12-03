@@ -1,15 +1,14 @@
 /**
- * Implements the Cold Fusion Function getmetadata
+ * Implements the CFML Function getmetadata
  */
 package railo.runtime.functions.other;
 
 import java.util.HashMap;
 
 import railo.runtime.Component;
-import railo.runtime.ComponentPro;
 import railo.runtime.InterfaceImpl;
+import railo.runtime.Page;
 import railo.runtime.PageContext;
-import railo.runtime.PagePlus;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
@@ -25,7 +24,7 @@ public final class GetComponentMetaData implements Function {
 		}
 		// load existing meta without loading the cfc
 		try{
-			PagePlus page = ComponentLoader.loadPage(pc, Caster.toString(obj), null,null);
+			Page page = ComponentLoader.loadPage(pc, Caster.toString(obj), null,null);
 			if(page.metaData!=null && page.metaData.get()!=null) return page.metaData.get();
 		}
 		catch(Throwable t){}
@@ -43,12 +42,17 @@ public final class GetComponentMetaData implements Function {
 		// load the cfc when metadata was not defined before
 		try{
 			Component cfc = CreateObject.doComponent(pc, Caster.toString(obj));
-			return GetMetaData.getMetaData((ComponentPro) cfc, pc);
+			return GetMetaData.getMetaData(cfc, pc);
 		}
 		// TODO better solution
 		catch(ApplicationException ae){
-			InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
-			return inter.getMetaData(pc);
+			try{
+				InterfaceImpl inter = ComponentLoader.loadInterface(pc, Caster.toString(obj), new HashMap());
+				return inter.getMetaData(pc);
+			}
+			catch(PageException pe){
+				throw ae;
+			}
 		}
 	}
 }

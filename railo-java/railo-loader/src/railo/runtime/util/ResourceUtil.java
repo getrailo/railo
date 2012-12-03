@@ -101,7 +101,7 @@ public interface ResourceUtil {
 	     * @param defaultValue 
 	     * @return mime type of the file
 	     */
-	    public String getMymeType(Resource res, String defaultValue);
+	    public String getMimeType(Resource res, String defaultValue);
 
 	    /**
 	     * return the mime type of a byte array
@@ -109,7 +109,7 @@ public interface ResourceUtil {
 	     * @param defaultValue 
 	     * @return mime type of the file
 	     */
-	    public String getMymeType(byte[] barr, String defaultValue);
+	    public String getMimeType(byte[] barr, String defaultValue);
 	    
 		/**
 		 * check if file is a child of given directory
@@ -130,17 +130,31 @@ public interface ResourceUtil {
 	     * get the Extension of a file resource
 	     * @param res
 	     * @return extension of file
+	     * @deprecated use instead <code>getExtension(Resource res, String defaultValue);</code>
 	     */
-	    public String getExtension(Resource res);// FUTURE set deprecated
-	 // FUTURE public String getExtension(Resource res, String defaultValue);
+	    public String getExtension(Resource res);
+
+	    /**
+	     * get the Extension of a file resource
+	     * @param res
+	     * @return extension of file
+	     */
+	    public String getExtension(Resource res, String defaultValue);
 
 	    /**
 	     * get the Extension of a file
 	     * @param strFile
 	     * @return extension of file
+	     * @deprecated use instead <code>getExtension(String strFile, String defaultValue);</code>
 	     */
-	    public String getExtension(String strFile);// FUTURE set deprecated
-	    // FUTURE public String getExtension(String strFile, String defaultValue);
+	    public String getExtension(String strFile);
+
+	    /**
+	     * get the Extension of a file resource
+	     * @param res
+	     * @return extension of file
+	     */
+	    public String getExtension(String strFile, String defaultValue);
 	    
 
 	    /**
@@ -173,7 +187,7 @@ public interface ResourceUtil {
 
 		/**
 		 * return if Resource is empty, means is directory and has no children or a empty file,
-		 * if not exists return false.
+		 * if not exist return false.
 		 * @param res
 		 */
 		public boolean isEmpty(Resource res);
@@ -246,5 +260,8 @@ public interface ResourceUtil {
 
 
 		public String toString(Resource r, String charset) throws IOException;
+
+
+		public String contractPath(PageContext pc, String path);
 
 }

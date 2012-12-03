@@ -16,15 +16,14 @@ limitations under the License.
 
 package railo.runtime.img.filter;import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 /**
  * A filter which can be used to produce wipes by transferring the luma of a Destination image into the alpha channel of the source.
  */
@@ -77,12 +76,14 @@ public class ChromaKeyFilter extends AbstractBufferedImageOp  implements DynFilt
     public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
         int width = src.getWidth();
         int height = src.getHeight();
-		int type = src.getType();
-		WritableRaster srcRaster = src.getRaster();
+		//int type = src.getType();
+		//WritableRaster srcRaster = 
+        src.getRaster();
 
         if ( dst == null )
             dst = createCompatibleDestImage( src, null );
-		WritableRaster dstRaster = dst.getRaster();
+		//WritableRaster dstRaster = 
+        dst.getRaster();
 
 		float[] hsb1 = null;
 		float[] hsb2 = null;
@@ -128,7 +129,7 @@ public class ChromaKeyFilter extends AbstractBufferedImageOp  implements DynFilt
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [HTolerance, STolerance, BTolerance, Color]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [HTolerance, STolerance, BTolerance, Color]");
 		}
 
 		return filter(src, dst);

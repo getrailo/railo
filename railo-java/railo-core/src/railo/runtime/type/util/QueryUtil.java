@@ -1,10 +1,18 @@
 package railo.runtime.type.util;
 
+import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
+import java.sql.Time;
 import java.util.Date;
 
-import org.hibernate.QueryException;
-
+import railo.commons.lang.FormatUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
@@ -16,7 +24,6 @@ import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.DatabaseException;
@@ -30,15 +37,14 @@ import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
-import railo.runtime.type.QueryColumnPro;
-import railo.runtime.type.QueryPro;
+import railo.runtime.type.QueryColumnImpl;
 import railo.runtime.type.query.SimpleQuery;
 
 public class QueryUtil {
 
 	public static long sizeOf(QueryColumn column) {
-		if(column instanceof QueryColumnPro){
-			return ((QueryColumnPro)column).sizeOf();
+		if(column instanceof QueryColumnImpl){
+			return ((QueryColumnImpl)column).sizeOf();
 		}
 		int len = column.size();
 		long size=0;
@@ -55,7 +61,7 @@ public class QueryUtil {
 	 * @return
 	 */
 	public static Key[] getColumnNames(Query qry) {
-		QueryPro qp = Caster.toQueryPro(qry,null);
+		Query qp = Caster.toQuery(qry,null);
 		
 		if(qp!=null) return qp.getColumnNames();
 		String[] strNames = qry.getColumns();
@@ -104,13 +110,13 @@ public class QueryUtil {
 	
 	private static void checkSQLRestriction(DatasourceConnection dc, String keyword, Array sqlparts, SQL sql) throws PageException {
         if(ArrayFind.find(sqlparts,keyword,false)>0) {
-            throw new DatabaseException("access denied to execute \""+StringUtil.ucFirst(keyword)+"\" SQL statment for datasource "+dc.getDatasource().getName(),null,sql,dc);
+            throw new DatabaseException("access denied to execute \""+StringUtil.ucFirst(keyword)+"\" SQL statement for datasource "+dc.getDatasource().getName(),null,sql,dc);
         }
     }
 
-	public static DumpData toDumpData(QueryPro query,PageContext pageContext, int maxlevel, DumpProperties dp) {
+	public static DumpData toDumpData(Query query,PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
-		Collection.Key[] keys=query.keys();
+		Collection.Key[] keys=CollectionUtil.keys(query);
 		DumpData[] heads=new DumpData[keys.length+1];
 		//int tmp=1;
 		heads[0]=new SimpleDumpData("");
@@ -126,7 +132,7 @@ public class QueryUtil {
 			comment.append("Template:").append(template).append("\n");
 		//table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
 		
-		comment.append("Execution Time (ms):").append(Caster.toString(query.getExecutionTime())).append("\n");
+		comment.append("Execution Time (ms):").append(Caster.toString(FormatUtil.formatNSAsMSDouble(query.getExecutionTime()))).append("\n");
 		comment.append("Recordcount:").append(Caster.toString(query.getRecordcount())).append("\n");
 		comment.append("Cached:").append(query.isCached()?"Yes\n":"No\n");
 		comment.append("Lazy:").append(query instanceof SimpleQuery?"Yes\n":"No\n");
@@ -141,7 +147,7 @@ public class QueryUtil {
 		
 		
 		
-		DumpTable recs=new DumpTablePro("query","#cc99cc","#ffccff","#000000");
+		DumpTable recs=new DumpTable("query","#cc99cc","#ffccff","#000000");
 		recs.setTitle("Query");
 		if(dp.getMetainfo())recs.setComment(comment.toString());
 		recs.appendRow(new DumpRow(-1,heads));
@@ -176,14 +182,64 @@ public class QueryUtil {
 
 	public static void removeRows(Query query, int index, int count) throws PageException {
 		if(query.getRecordcount()==0) 
-			throw new QueryException("cannot remove rows, query is empty");
+			throw new DatabaseException("cannot remove rows, query is empty",null,null,null);
 		if(index<0 || index>=query.getRecordcount()) 
-			throw new QueryException("invalid index ["+index+"], index must be between 0 and "+(query.getRecordcount()-1));
+			throw new DatabaseException("invalid index ["+index+"], index must be between 0 and "+(query.getRecordcount()-1),null,null,null);
 		if(index+count>query.getRecordcount()) 
-			throw new QueryException("invalid count ["+count+"], count+index ["+(count+index)+"] must less or equal to "+(query.getRecordcount()));
+			throw new DatabaseException("invalid count ["+count+"], count+index ["+(count+index)+"] must less or equal to "+(query.getRecordcount()),null,null,null);
 		
 		for(int row=count;row>=1;row--){
 			query.removeRow(index+row);
 		}
+	}
+
+	public static boolean execute(Statement stat, boolean createGeneratedKeys, SQL sql) throws SQLException {
+		return createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+	}
+
+	public static String getColumnName(ResultSetMetaData meta, int column) throws SQLException {
+		try {
+			return meta.getColumnLabel(column);
+		} catch (SQLException e) {
+			return meta.getColumnName(column);
+		}
+	}
+
+	public static Object getObject(ResultSet rs,int columnIndex, Class type) throws SQLException {
+		if(BigDecimal.class==type) return rs.getBigDecimal(columnIndex);
+		if(Blob.class==type) return rs.getBlob(columnIndex);
+		if(boolean.class==type || Boolean.class==type) return rs.getBoolean(columnIndex);
+		if(byte.class==type || Byte.class==type) return rs.getByte(columnIndex);
+		if(Clob.class==type) return rs.getClob(columnIndex);
+		if(Date.class==type) return rs.getDate(columnIndex);
+		if(double.class==type || Double.class==type) return rs.getDouble(columnIndex);
+		if(float.class==type || Float.class==type) return rs.getFloat(columnIndex);
+		if(int.class==type || Integer.class==type) return rs.getInt(columnIndex);
+		if(long.class==type || Long.class==type) return rs.getLong(columnIndex);
+		if(short.class==type || Short.class==type) return rs.getShort(columnIndex);
+		if(String.class==type) return rs.getString(columnIndex);
+		if(Time.class==type) return rs.getTime(columnIndex);
+		if(Ref.class==type) return rs.getRef(columnIndex);
+		
+		throw new SQLFeatureNotSupportedException("type ["+type.getName()+"] is not supported");
+	}
+
+	public static Object getObject(ResultSet rs,String columnLabel, Class type) throws SQLException {
+		if(BigDecimal.class==type) return rs.getBigDecimal(columnLabel);
+		if(Blob.class==type) return rs.getBlob(columnLabel);
+		if(boolean.class==type || Boolean.class==type) return rs.getBoolean(columnLabel);
+		if(byte.class==type || Byte.class==type) return rs.getByte(columnLabel);
+		if(Clob.class==type) return rs.getClob(columnLabel);
+		if(Date.class==type) return rs.getDate(columnLabel);
+		if(double.class==type || Double.class==type) return rs.getDouble(columnLabel);
+		if(float.class==type || Float.class==type) return rs.getFloat(columnLabel);
+		if(int.class==type || Integer.class==type) return rs.getInt(columnLabel);
+		if(long.class==type || Long.class==type) return rs.getLong(columnLabel);
+		if(short.class==type || Short.class==type) return rs.getShort(columnLabel);
+		if(String.class==type) return rs.getString(columnLabel);
+		if(Time.class==type) return rs.getTime(columnLabel);
+		if(Ref.class==type) return rs.getRef(columnLabel);
+		
+		throw new SQLFeatureNotSupportedException("type ["+type.getName()+"] is not supported");
 	}
 }

@@ -5,24 +5,19 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.literal.LStringBuffer;
-import railo.runtime.interpreter.ref.op.Concat;
 
 public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
 	public JSONExpressionInterpreter(){
 		allowNullConstant=true;
     }
         
-	/**
-	 *
-	 * @see railo.runtime.interpreter.CFMLExpressionInterpreter#string()
-	 */
-	protected Ref string() throws PageException {
+	@Override
+    protected Ref string() throws PageException {
         
         // Init Parameter
         char quoter = cfml.getCurrentLower();
         //String str="";
         LStringBuffer str=new LStringBuffer();
-        Ref value=null;
         
         while(cfml.hasNext()) {
             cfml.next();
@@ -108,10 +103,11 @@ public class JSONExpressionInterpreter extends CFMLExpressionInterpreter {
         
         cfml.removeSpace();
         mode=STATIC;
+        /*Ref value=null;
         if(value!=null) {
             if(str.isEmpty()) return value;
             return new Concat(pc,value,str);
-        }
+        }*/
         return str;
     }
 

@@ -2,6 +2,7 @@ package railo.loader.engine;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -9,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
 
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
@@ -48,8 +50,6 @@ public interface CFMLEngine {
      */
     public abstract void addServletConfig(ServletConfig config) throws ServletException;
     
-    //public ConfigServer getConfigServer();
-    
     /**
      * method to invoke the engine for CFML
      * @param servlet
@@ -79,7 +79,7 @@ public interface CFMLEngine {
      * @param message
      * @return
      * /
-    //public Object executeFlex(ServiceAdapter serviceAdapter, Message message);
+    //public Object executeFlex(ServiceAdapter serviceAdapter, Message message);*/
     
     
 
@@ -92,6 +92,16 @@ public interface CFMLEngine {
      * @throws IOException
      */
     public void serviceFile(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException; 
+    
+    /**
+     * method to invoke the engine for a Rest Requests
+     * @param servlet
+     * @param req
+     * @param rsp
+     * @throws ServletException
+     * @throws IOException
+     */
+    public abstract void serviceRest(HttpServlet servlet, HttpServletRequest req, HttpServletResponse rsp) throws ServletException, IOException; 
     
     
     /**
@@ -201,4 +211,10 @@ public interface CFMLEngine {
 	public VideoUtil getVideoUtil();
 
 	public ZipUtil getZipUtil();
+
+	public abstract void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException, JspException, ServletException;
+
+	public abstract void registerThreadPageContext(PageContext pc);
+
+	
 }

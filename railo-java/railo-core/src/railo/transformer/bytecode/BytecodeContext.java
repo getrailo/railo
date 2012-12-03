@@ -8,11 +8,12 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
 import railo.commons.lang.StringUtil;
+import railo.transformer.Context;
 import railo.transformer.bytecode.extern.StringExternalizerWriter;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.visitor.TryCatchFinallyData;
+import railo.transformer.bytecode.visitor.OnFinally;
 
-public class BytecodeContext {
+public class BytecodeContext implements Context {
 	
 
 	private ClassWriter classWriter;
@@ -24,6 +25,7 @@ public class BytecodeContext {
 	private boolean doSubFunctions=true;
 	private BytecodeContext staticConstr;
 	private BytecodeContext constr;
+	private final boolean supressWSbeforeArg;
 	
 	private static long _id=0;
 	private synchronized static String id() {
@@ -32,8 +34,9 @@ public class BytecodeContext {
 	}
 	
 	private String id=id();
+	private Page page;
 
-	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,StringExternalizerWriter externalizer,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method,boolean writeLog) {
+	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,Page page,StringExternalizerWriter externalizer,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method,boolean writeLog, boolean supressWSbeforeArg) {
 		this.classWriter = classWriter;
 		this.className = className;
 		this.writeLog = writeLog;
@@ -43,6 +46,8 @@ public class BytecodeContext {
 		this.staticConstr=statConstr;
 		this.constr=constr;
 		this.externalizer=externalizer;
+		this.page=page;
+		this.supressWSbeforeArg=supressWSbeforeArg;
 	}
 	
 	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List keys,BytecodeContext bc, GeneratorAdapter adapter,Method method) {
@@ -56,6 +61,8 @@ public class BytecodeContext {
 		this.method=method;
 		this.staticConstr=statConstr;
 		this.constr=constr;
+		this.page=bc.getPage();
+		this.supressWSbeforeArg=bc.supressWSbeforeArg;
 	}
 	
 	/**
@@ -132,21 +139,29 @@ public class BytecodeContext {
 	}
 
 
-	Stack tcf=new Stack();
+	Stack<OnFinally> tcf=new Stack<OnFinally>();
 	private int currentTag;
 	private int line;
 	private BytecodeContext root;
 	private boolean writeLog;
 	private StringExternalizerWriter externalizer;
 	//private static BytecodeContext staticConstr;
-	public void pushTryCatchFinallyData(TryCatchFinallyData data) {
+	
+	public void pushOnFinally(OnFinally onFinally) {
+		tcf.push(onFinally);
+	}
+	public void popOnFinally() {
+		tcf.pop();
+	}
+	
+	/*public void pushTryCatchFinallyData(TryCatchFinallyData data) {
 		tcf.push(data);
 	}
 	public void popTryCatchFinallyData() {
 		tcf.pop();
-	}
+	}*/
 	
-	public Stack getTryCatchFinallyDataStack() {
+	public Stack<OnFinally> getOnFinallyStack() {
 		return tcf;
 	}
 
@@ -219,4 +234,11 @@ public class BytecodeContext {
 		return externalizer;
 	}
 
+	public Page getPage() {
+		return page;
+	}
+	
+	public boolean getSupressWSbeforeArg(){
+		return supressWSbeforeArg;
+	}
 }

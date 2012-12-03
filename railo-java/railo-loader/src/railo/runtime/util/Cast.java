@@ -26,7 +26,7 @@ import railo.runtime.type.dt.TimeSpan;
 
 
 /**
- * This class can cast object of one type to a other by cold fusion rules
+ * This class can cast object of one type to a other by CFML rules
  */
 public interface Cast { 
     
@@ -537,6 +537,10 @@ public interface Cast {
      * @return casted Long Object
      */
     public Long toLong(Object o, Long defaultValue);
+
+    public Collection.Key toKey(Object o) throws PageException;
+    
+    public Collection.Key toKey(Object o, Collection.Key defaultValue);
 
     /**
      * cast a boolean value to a short value

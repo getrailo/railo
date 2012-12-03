@@ -9,15 +9,16 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
 import railo.transformer.bytecode.visitor.DecisionIntVisitor;
 
-public final class TagSwitch extends TagBase {
+public final class TagSwitch extends TagBaseNoFinal {
 
-	// int listFindNoCase(String list, String value, String delimeter)
+	// int listFindNoCase(String list, String value, String delimiter)
 	private static final Method LIST_FIND_NO_CASE = new Method(
 														"listFindForSwitch",
 														Types.INT_VALUE,
@@ -25,19 +26,11 @@ public final class TagSwitch extends TagBase {
 
 	/**
 	 * Constructor of the class
-	 * @param line
-	 */
-	public TagSwitch(int line) {
-		super(line);
-	}
-	
-	/**
-	 * Constructor of the class
 	 * @param sl
 	 * @param el
 	 */
-	public TagSwitch(int sl,int el) {
-		super(sl,el);
+	public TagSwitch(Position start,Position end) {
+		super(start,end);
 	}
 	
 	/**
@@ -73,7 +66,7 @@ public final class TagSwitch extends TagBase {
 				}
 				else if(tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Defaultcase"))	{
 					if(def!=null)
-						throw new BytecodeException("multiple defaultcases are not allowed",getLine());
+						throw new BytecodeException("multiple defaultcases are not allowed",getStart());
 					def=tag;
 					//setDefaultCase(bc,cv,tag);
 					//break;

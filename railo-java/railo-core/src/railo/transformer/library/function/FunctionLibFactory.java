@@ -13,13 +13,14 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.commons.collections.HashTable;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.util.ResourceUtil;
+import railo.runtime.op.Caster;
+import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.library.tag.TagLibFactory;
 
@@ -102,8 +103,12 @@ public final class FunctionLibFactory extends DefaultHandler {
 	 * @throws FunctionLibException
 	 */
 	private void init(String saxParser,InputSource is) throws FunctionLibException	{
+		
+		
+		
 		try {
-			xmlReader=XMLReaderFactory.createXMLReader(saxParser);
+
+			xmlReader=XMLUtil.createXMLReader(saxParser);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.setEntityResolver(new FunctionLibEntityResolver());
@@ -244,9 +249,14 @@ public final class FunctionLibFactory extends DefaultHandler {
 				else if(inside.equals("tte-class"))
 					function.setTteClass(value);
     			
-				
+
 				else if(inside.equals("description"))
 					function.setDescription(value);
+
+				else if(inside.equals("member-name"))
+					function.setMemberName(value);
+				else if(inside.equals("member-chaining"))
+					function.setMemberChaining(Caster.toBooleanValue(value,false));
 				
 				else if(inside.equals("status"))
 					function.setStatus(TagLibFactory.toStatus(value));

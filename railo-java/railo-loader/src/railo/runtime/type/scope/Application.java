@@ -1,6 +1,5 @@
 package railo.runtime.type.scope;
 
-import railo.runtime.type.Scope;
 
 /**
  * implemetnation of the application scope
@@ -26,5 +25,7 @@ public interface Application extends Scope {
 	 * sets the last access timestamp to now
 	 */
 	public abstract void touch();
+
+	public long getCreated();
 
 }

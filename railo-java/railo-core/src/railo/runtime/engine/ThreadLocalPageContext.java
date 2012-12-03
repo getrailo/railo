@@ -1,5 +1,6 @@
 package railo.runtime.engine;
 
+import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.runtime.PageContext;
@@ -11,6 +12,7 @@ import railo.runtime.config.Config;
  */
 public final class ThreadLocalPageContext {
 
+	private static final Locale DEFAULT_LOCALE = Locale.getDefault();
 	private static final TimeZone DEFAULT_TIMEZONE = TimeZone.getDefault();
 	private static ThreadLocal<PageContext> pcThreadLocal=new ThreadLocal<PageContext>();
 
@@ -69,6 +71,22 @@ public final class ThreadLocalPageContext {
 			return config.getTimeZone();
 		}
 	    return DEFAULT_TIMEZONE;
+	}
+	
+	public static Locale getLocale(PageContext pc) {
+		// pc
+		pc = get(pc);
+		if(pc!=null){
+			if(pc.getLocale()!=null)return  pc.getLocale();
+			return DEFAULT_LOCALE;
+		}
+		
+		// config
+		Config config = getConfig((Config)null);
+		if(config!=null && config.getLocale()!=null) {
+			return config.getLocale();
+		}
+	    return DEFAULT_LOCALE;
 	}
 	
 	public static TimeZone getTimeZone(Config config) {

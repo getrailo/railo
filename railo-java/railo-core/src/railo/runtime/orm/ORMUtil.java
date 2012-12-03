@@ -1,6 +1,8 @@
 package railo.runtime.orm;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.commons.lang.SystemOut;
 import railo.runtime.Component;
@@ -10,14 +12,13 @@ import railo.runtime.PageContextImpl;
 import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.op.Operator;
 import railo.runtime.orm.hibernate.HBMCreator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Struct;
-import railo.runtime.type.util.ComponentUtil;
 
 public class ORMUtil {
 
@@ -76,12 +77,12 @@ public class ORMUtil {
 
 		// arrays
 		if(Decision.isArray(left) && Decision.isArray(right)){
-			return _equals(done,(Component)left, (Component)right);
+			return _equals(done,Caster.toArray(left,null), Caster.toArray(right,null));
 		}
 
 		// struct
 		if(Decision.isStruct(left) && Decision.isStruct(right)){
-			return _equals(done,(Struct)left, (Struct)right);
+			return _equals(done,Caster.toStruct(left,null), Caster.toStruct(right,null));
 		}
 		
 		try {
@@ -97,11 +98,14 @@ public class ORMUtil {
 		done.add(right);
 		
 		if(left.size()!=right.size()) return false;
-		Key[] keys = left.keys();
+		//Key[] keys = left.keys();
+		Iterator<Entry<Key, Object>> it = left.entryIterator();
+		Entry<Key, Object> e;
 		Object l,r;
-		for(int i=0;i<keys.length;i++){
-			l=left.get(keys[i],null);
-			r=right.get(keys[i],null);
+		while(it.hasNext()){
+			e = it.next();
+			l=e.getValue();
+			r=right.get(e.getKey(),null);
 			if(r==null || !_equals(done,l, r)) return false;
 		}
 		return true;
@@ -113,30 +117,62 @@ public class ORMUtil {
 		done.add(right);
 		
 		
-		ComponentPro cpl =ComponentUtil.toComponentPro(left,null);
-		ComponentPro cpr = ComponentUtil.toComponentPro(right,null);
 		
-		if(cpl==null || cpr==null) return false;
-		if(!cpl.getPageSource().equals(cpr.getPageSource())) return false;
-		Property[] props = cpl.getProperties(true);
+		if(left==null || right==null) return false;
+		if(!left.getPageSource().equals(right.getPageSource())) return false;
+		Property[] props = getProperties(left);
 		Object l,r;
 		props=HBMCreator.getIds(null,null,props,null,true);
 		for(int i=0;i<props.length;i++){
-			l=cpl.getComponentScope().get(KeyImpl.getInstance(props[i].getName()),null);
-			r=cpr.getComponentScope().get(KeyImpl.getInstance(props[i].getName()),null);
+			l=left.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
+			r=right.getComponentScope().get(KeyImpl.init(props[i].getName()),null);
 			if(!_equals(done,l, r)) return false;
 		}
 		return true;
 	}
 	
 	public static Object getPropertyValue(Component cfc, String name, Object defaultValue) {
-		ComponentPro cp =ComponentUtil.toComponentPro(cfc,null);
+		Property[] props=getProperties(cfc);
 		
-		Property[] props = cp.getProperties(true);
 		for(int i=0;i<props.length;i++){
 			if(!props[i].getName().equalsIgnoreCase(name)) continue;
-			return cp.getComponentScope().get(KeyImpl.getInstance(name),null);
+			return cfc.getComponentScope().get(KeyImpl.getInstance(name),null);
 		}
 		return defaultValue;
+	}
+	/* jira2049
+	public static Object getPropertyValue(ORMSession session,Component cfc, String name, Object defaultValue) {
+		Property[] props=getProperties(cfc);
+		Object raw=null;
+		SessionImpl sess=null;
+		if(session!=null){
+			raw=session.getRawSession();
+			if(raw instanceof SessionImpl)
+				sess=(SessionImpl) raw;
+		}
+		Object val;
+		for(int i=0;i<props.length;i++){
+			if(!props[i].getName().equalsIgnoreCase(name)) continue;
+			val = cfc.getComponentScope().get(KeyImpl.getInstance(name),null);
+			if(sess!=null && !(val instanceof PersistentCollection)){
+				if(val instanceof List)
+					return new PersistentList(sess,(List)val);
+				if(val instanceof Map && !(val instanceof Component))
+					return new PersistentMap(sess,(Map)val);
+				if(val instanceof Set)
+					return new PersistentSet(sess,(Set)val);
+				if(val instanceof Array)
+					return new PersistentList(sess,Caster.toList(val,null));
+					
+			}
+			return val;
+		}
+		return defaultValue;
+	}*/
+
+	private static Property[] getProperties(Component cfc) {
+		if(cfc instanceof ComponentPro)
+			return ((ComponentPro)cfc).getProperties(true,true,false,false);
+		return cfc.getProperties(true);
 	}
 }

@@ -198,15 +198,15 @@ public class FeedDeclaration {
 
 
 	public static FeedDeclaration getInstance(String decName) {
-		FeedDeclaration fd=(FeedDeclaration) declarations.get(decName);
+		FeedDeclaration fd= declarations.get(decName);
 		if(fd!=null)return fd;
 		
 		if(StringUtil.startsWithIgnoreCase(decName, "rss"))
-				fd=(FeedDeclaration) declarations.get("rss");
+				fd=declarations.get("rss");
 		if(fd!=null)return fd;
 		
 		if(StringUtil.startsWithIgnoreCase(decName, "atom"))
-			fd=(FeedDeclaration) declarations.get("atom");
+			fd=declarations.get("atom");
 		if(fd!=null)return fd;
 		
 		return defaultDeclaration;

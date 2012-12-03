@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function reverse
+ * Implements the CFML Function reverse
  */
 package railo.runtime.functions.string;
 

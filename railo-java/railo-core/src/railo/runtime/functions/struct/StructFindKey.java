@@ -1,7 +1,12 @@
 /**
- * Implements the Cold Fusion Function structfindkey
+ * Implements the CFML Function structfindkey
  */
 package railo.runtime.functions.struct;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
@@ -10,10 +15,13 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Argument;
+import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.wrap.ListAsArray;
+import railo.runtime.type.wrap.MapAsStruct;
 
 public final class StructFindKey implements Function {
 	
@@ -42,29 +50,40 @@ public final class StructFindKey implements Function {
      * @throws PageException
      */
     private static boolean getValues(Array array,Collection coll, String value, boolean all, String path) throws PageException {
-        Collection.Key[] keys=coll.keys();
+        //Collection.Key[] keys=coll.keys();
+    	Iterator<Entry<Key, Object>> it = coll.entryIterator();
+    	Entry<Key, Object> e;
         boolean abort=false;
         Collection.Key key;
         
-        for(int i=0;i<keys.length;i++) {
+        while(it.hasNext()) {
+        	e = it.next();
             if(abort)break;
-            key=keys[i];
-            Object o=coll.get(key);
+            key=e.getKey();
+            Object o=e.getValue();
 
             // matching value  (this function search first for base)
             if(key.getString().equalsIgnoreCase(value)) {
                 Struct sct=new StructImpl();
                 
-	            sct.setEL(KeyImpl.VALUE,o);
-                sct.setEL(KeyImpl.PATH,createKey(coll,path,key));
-                sct.setEL(KeyImpl.OWNER,coll);
+	            sct.setEL(KeyConstants._value,o);
+                sct.setEL(KeyConstants._path,createKey(coll,path,key));
+                sct.setEL(KeyConstants._owner,coll);
                 array.append(sct);
                 if(!all)abort=true;
             }
             
             // Collection
-            if(!abort && o instanceof Collection) {
-                abort=getValues(array,((Collection)o), value, all, createKey(coll,path,key));
+            if(!abort) {
+	            if(o instanceof Collection) {
+	                abort=getValues(array,((Collection)o), value, all, createKey(coll,path,key));
+	            }
+	            else if(o instanceof List){
+	            	abort=getValues(array,ListAsArray.toArray((List)o), value, all, createKey(coll,path,key));
+	            }
+	            else if(o instanceof Map){
+	            	abort=getValues(array,MapAsStruct.toStruct((Map)o), value, all, createKey(coll,path,key));
+	            }
             }
         }
         

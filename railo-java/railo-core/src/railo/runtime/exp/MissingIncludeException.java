@@ -46,8 +46,7 @@ public final class MissingIncludeException extends PageExceptionImpl {
 	}
 
 	/**
-	 *
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
 	 */
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock sct=super.getCatchBlock(config);

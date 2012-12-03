@@ -1,6 +1,10 @@
 package railo.runtime.text.feed;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import railo.commons.lang.StringUtil;
+import railo.runtime.exp.DatabaseException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.CastableArray;
@@ -11,6 +15,7 @@ import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public class FeedQuery {
 
@@ -204,7 +209,7 @@ public class FeedQuery {
 	};
 	
 	
-	public static Query toQuery(Struct data,boolean hasDC) {
+	public static Query toQuery(Struct data,boolean hasDC) throws DatabaseException {
 		Query qry=new QueryImpl(hasDC?COLUMNS_WITH_DC:COLUMNS,0,"");
 		
 		String version=Caster.toString(data.get(VERSION,""),"");
@@ -232,16 +237,18 @@ public class FeedQuery {
 		int len=items.size();
 		Struct item;
 		int row=0;
-		Collection.Key[] keys;
+		Iterator<Entry<Key, Object>> it;
+		Entry<Key, Object> e;
 		for(int i=1;i<=len;i++) {
 			item=Caster.toStruct(items.get(i, null),null,false);
 			if(item==null) continue;
 			qry.addRow();
 			row++;
-			keys=item.keys();
-			for(int y=0;y<keys.length;y++) {
-				if(isRss)setQueryValueRSS(qry,keys[y],item.get(keys[y],null),row);
-				else setQueryValueAtom(qry,keys[y],item.get(keys[y],null),row);
+			it = item.entryIterator();
+			while(it.hasNext()) {
+				e = it.next();
+				if(isRss)setQueryValueRSS(qry,e.getKey(),e.getValue(),row);
+				else setQueryValueAtom(qry,e.getKey(),e.getValue(),row);
 			}
 			
 		}
@@ -278,7 +285,7 @@ public class FeedQuery {
 				qry.setAtEL(CONTENT, row, getValue(sct));
 				qry.setAtEL(CONTENTMODE, row, sct.get(MODE,null));
 				qry.setAtEL(CONTENTSRC, row, sct.get(SRC,null));
-				qry.setAtEL(CONTENTTYPE, row, sct.get(KeyImpl.TYPE,null));
+				qry.setAtEL(CONTENTTYPE, row, sct.get(KeyConstants._type,null));
 				qry.setAtEL(XMLBASE, row, sct.get("xml:base",null));
 			}
 			else qry.setAtEL(CONTENT, row, getValue(value));
@@ -287,7 +294,7 @@ public class FeedQuery {
 			Struct sct=toStruct(value);
 			if(sct!=null){
 				qry.setAtEL(CONTRIBUTOREMAIL, row, sct.get("email",null));
-				qry.setAtEL(CONTRIBUTORNAME, row, sct.get(KeyImpl.NAME,null));
+				qry.setAtEL(CONTRIBUTORNAME, row, sct.get(KeyConstants._name,null));
 				qry.setAtEL(CONTRIBUTORURI, row, sct.get("uri",null));
 			}
 		}
@@ -305,7 +312,7 @@ public class FeedQuery {
 				qry.setAtEL(LINKLENGTH, row, sct.get(LENGTH,null));
 				qry.setAtEL(LINKREL, row, sct.get("rel",null));
 				qry.setAtEL(LINKTITLE, row, sct.get(TITLE,null));
-				qry.setAtEL(LINKTYPE, row, sct.get(KeyImpl.TYPE,null));
+				qry.setAtEL(LINKTYPE, row, sct.get(KeyConstants._type,null));
 			}
 		}
 		else if(key.equals(PUBLISHED)) {
@@ -326,7 +333,7 @@ public class FeedQuery {
 				qry.setAtEL(SUMMARY, row, getValue(sct));
 				qry.setAtEL(SUMMARYMODE, row, sct.get(MODE,null));
 				qry.setAtEL(SUMMARYSRC, row, sct.get(SRC,null));
-				qry.setAtEL(SUMMARYTYPE, row, sct.get(KeyImpl.TYPE,null));
+				qry.setAtEL(SUMMARYTYPE, row, sct.get(KeyConstants._type,null));
 			}
 			else qry.setAtEL(SUMMARY, row, getValue(value));
 		}
@@ -334,7 +341,7 @@ public class FeedQuery {
 			Struct sct=toStruct(value);
 			if(sct!=null){
 				qry.setAtEL(TITLE, row, getValue(sct));
-				qry.setAtEL(TITLETYPE, row, sct.get(KeyImpl.TYPE,null));
+				qry.setAtEL(TITLETYPE, row, sct.get(KeyConstants._type,null));
 			}
 			else qry.setAtEL(TITLE, row, getValue(value));
 		}
@@ -362,7 +369,7 @@ public class FeedQuery {
 		else if(key.equals(COMMENTS)) {
 			qry.setAtEL(COMMENTS, row, getValue(value));
 		}
-		else if(key.equals(KeyImpl.DESCRIPTION)) {
+		else if(key.equals(KeyConstants._description)) {
 			qry.setAtEL(CONTENT, row, getValue(value));
 		}
 		else if(key.equals(EXPIRATIONDATE)) {
@@ -382,7 +389,7 @@ public class FeedQuery {
 			if(sct!=null){
 				qry.setAtEL(LINKHREF, row, sct.get(URL,null));
 				qry.setAtEL(LINKLENGTH, row, sct.get(LENGTH,null));
-				qry.setAtEL(LINKTYPE, row, sct.get(KeyImpl.TYPE,null));
+				qry.setAtEL(LINKTYPE, row, sct.get(KeyConstants._type,null));
 			}
 		}
 		else if(key.equals(PUBDATE)) {
@@ -417,7 +424,7 @@ public class FeedQuery {
 			if(sct!=null){
 				qry.setAtEL(SUMMARY, row, getValue(sct));
 				qry.setAtEL(SUMMARYMODE, row, sct.get(MODE,null));
-				qry.setAtEL(SUMMARYTYPE, row, sct.get(KeyImpl.TYPE,null));
+				qry.setAtEL(SUMMARYTYPE, row, sct.get(KeyConstants._type,null));
 			}
 			else qry.setAtEL(SUMMARY, row, getValue(value));
 		}
@@ -490,7 +497,7 @@ public class FeedQuery {
 	}
 
 	public static Object getValue(Struct sct,boolean includeChildren) {
-		Object obj = sct.get(KeyImpl.VALUE, null);
+		Object obj = sct.get(KeyConstants._value, null);
 		if(obj==null)obj=sct.get(TEXT,null);
 		return obj;
 	}
@@ -502,18 +509,22 @@ public class FeedQuery {
 			Struct sct=new StructImpl(),row;
 			Array arr = (Array)value;
 			int len=arr.size();
-			Key[] keys;
+			//Key[] keys;
+			Iterator<Entry<Key, Object>> it;
+			Entry<Key, Object> e;
 			String nw;
 			Object ext;
 			for(int i=1;i<=len;i++){
 				row=Caster.toStruct(arr.get(i,null),null,false);
 				if(row==null)continue;
-				keys = row.keys();
-				for(int y=0;y<keys.length;y++){
-					ext=sct.get(keys[y],null);
-					nw=Caster.toString(row.get(keys[y],null),null);
+				it = row.entryIterator();
+				//keys = row.keys();
+				while(it.hasNext()){
+					e = it.next();
+					ext=sct.get(e.getKey(),null);
+					nw=Caster.toString(e.getValue(),null);
 					if(nw!=null){
-						if(ext==null) sct.setEL(keys[y], nw);
+						if(ext==null) sct.setEL(e.getKey(), nw);
 						else if(ext instanceof CastableArray){
 							((CastableArray)ext).appendEL(nw);
 						}
@@ -521,7 +532,7 @@ public class FeedQuery {
 							CastableArray ca=new CastableArray();
 							ca.appendEL(Caster.toString(ext,null));
 							ca.appendEL(nw);
-							sct.setEL(keys[y], ca);
+							sct.setEL(e.getKey(), ca);
 						}
 						
 					}

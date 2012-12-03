@@ -2,12 +2,9 @@ package railo.runtime.tag;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.oro.text.regex.MalformedPatternException;
 
@@ -15,11 +12,9 @@ import railo.commons.io.IOUtil;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
-import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContextImpl;
 import railo.runtime.cache.legacy.CacheItem;
-import railo.runtime.cache.legacy.MetaData;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.Abort;
 import railo.runtime.exp.ApplicationException;
@@ -34,6 +29,7 @@ import railo.runtime.functions.cache.CacheRemove;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.functions.dateTime.GetHttpTimeString;
 import railo.runtime.op.Caster;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -73,10 +69,10 @@ public final class Cache extends BodyTagImpl {
 	private int action=CACHE;
 
 	/** When required for basic authentication, a valid username. */
-	private String username;
+	//private String username;
 
 	/** When required for basic authentication, a valid password. */
-	private String password;
+	//private String password;
     
 	private TimeSpan timespan=TIMESPAN_FAR_AWAY;
 	private TimeSpan idletime=TIMESPAN_0;
@@ -124,8 +120,8 @@ public final class Cache extends BodyTagImpl {
     public void release()   {
         super.release();
         directory=null;
-        username=null;
-        password=null;
+        //username=null;
+        //password=null;
         protocol=null;
         expireurl=null;
         action=CACHE;
@@ -152,7 +148,7 @@ public final class Cache extends BodyTagImpl {
 	 * @throws DeprecatedException
 	 */
 	public void setTimeout(Object obj) throws DeprecatedException {
-		throw new DeprecatedException("Cache","timeout");
+		DeprecatedUtil.tagAttribute(pageContext,"Cache","timeout");
 	}
 
 	/** set the value directory
@@ -164,13 +160,6 @@ public final class Cache extends BodyTagImpl {
 	}
 	public void setCachedirectory(String directory) throws ExpressionException	{
 		setDirectory(directory);
-	}
-	private Resource getDirectory() throws IOException {
-		if(directory==null) {
-			directory= pageContext.getConfig().getCacheDir();	
-        }
-        if(!directory.exists())directory.createDirectory(true);
-        return directory;
 	}
 	
 
@@ -184,12 +173,12 @@ public final class Cache extends BodyTagImpl {
 		this.protocol=protocol.toLowerCase();
 	}
 	
-	private String getProtocol()	{
+	/*private String getProtocol()	{
 		if(StringUtil.isEmpty(protocol)) {
 			return pageContext. getHttpServletRequest().getScheme();
 		}
 		return protocol;
-	}
+	}*/
 
 	/** set the value expireurl
 	*  
@@ -242,7 +231,7 @@ public final class Cache extends BodyTagImpl {
 	* @param username value to set
 	**/
 	public void setUsername(String username)	{
-		this.username=username;
+		//this.username=username;
 	}
 	
 	/** set the value password
@@ -250,7 +239,7 @@ public final class Cache extends BodyTagImpl {
 	* @param password value to set
 	**/
 	public void setPassword(String password)	{
-		this.password=password;
+		//this.password=password;
 	}
 	
 	public void setKey(String key)	{
@@ -358,24 +347,23 @@ public final class Cache extends BodyTagImpl {
         // call via cfcache disable debugger output
             pageContext.getDebugger().setOutput(false);
 		
-        HttpServletRequest req = pageContext. getHttpServletRequest();
+        HttpServletResponse rsp = pageContext.getHttpServletResponse();
         
         // generate cache resource matching request object
-        CacheItem ci = generateCacheResource(req,null,false);
-        Resource cacheResource=ci.getResource();
+        CacheItem ci = generateCacheResource(null,false);
         
         // use cached resource
-        if(isOK(cacheResource)){
+        if(ci.isValid(timespan)){ //if(isOK(cacheResource)){
         	if(pageContext. getHttpServletResponse().isCommitted()) return;
         	
-        	InputStream is=null;
         	OutputStream os=null;
         	try {
-                IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
+                ci.writeTo(os=getOutputStream(),rsp.getCharacterEncoding());
+        		//IOUtil.copy(is=cacheResource.getInputStream(),os=getOutputStream(),false,false);
             } 
             finally {
                 IOUtil.flushEL(os);
-                IOUtil.closeEL(is,os);
+                IOUtil.closeEL(os);
                 ((PageContextImpl)pageContext).getRootOut().setClosed(true);
             }
         	throw new Abort(Abort.SCOPE_REQUEST);
@@ -389,18 +377,17 @@ public final class Cache extends BodyTagImpl {
         	
     }
 
-	private boolean isOK(Resource cacheResource) {
+	/*private boolean isOK(Resource cacheResource) {
 		return cacheResource.exists() && (cacheResource.lastModified()+timespan.getMillis()>=System.currentTimeMillis());
-	}
+	}*/
 
 	private int doContentCache() throws IOException {
 
         // file
-        HttpServletRequest req = pageContext. getHttpServletRequest();
-        cacheItem = generateCacheResource(req,key,true);
+        cacheItem = generateCacheResource(key,true);
         // use cache
-        if(isOK(cacheItem.getResource())){
-        	pageContext.write(IOUtil.toString(cacheItem.getResource(),"UTF-8"));
+        if(cacheItem.isValid(timespan)){
+        	pageContext.write(cacheItem.getValue());
         	doCaching=false;
             return SKIP_BODY;
         }
@@ -417,7 +404,7 @@ public final class Cache extends BodyTagImpl {
 		}
 		else {
 			railo.commons.io.cache.Cache cache = 
-				Util.getCache(pageContext.getConfig(),cachename,ConfigImpl.CACHE_DEFAULT_OBJECT);
+				Util.getCache(pageContext,cachename,ConfigImpl.CACHE_DEFAULT_OBJECT);
 			CacheEntry entry = throwOnError?cache.getCacheEntry(Util.key(id)):cache.getCacheEntry(Util.key(id),null);
 			if(entry!=null){
 				pageContext.setVariable(name,entry.getValue());
@@ -454,55 +441,27 @@ public final class Cache extends BodyTagImpl {
 			required("cache", "id", id);
 			CacheRemove.call(pageContext, id,throwOnError,cachename);
 		}
-		if(StringUtil.isEmpty(expireurl)) {
-			ResourceUtil.removeChildrenEL(getDirectory());
+		else if(StringUtil.isEmpty(expireurl)) {
+			CacheItem.flushAll(pageContext,directory,cachename);
 		}
 		else {
+			CacheItem.flush(pageContext,directory,cachename,expireurl);
 			
-			Resource dir = getDirectory();
-			List names = MetaData.getInstance(dir).get(expireurl);
-			Iterator it = names.iterator();
-			String name;
-			while(it.hasNext()){
-				name=(String)it.next();
-				//print.out(name);
-				if(dir.getRealResource(name).delete());
-					
-			}
 			//ResourceUtil.removeChildrenEL(getDirectory(),(ResourceNameFilter)new ExpireURLFilter(expireurl));
 		}
     }
 
 
-    private CacheItem generateCacheResource(HttpServletRequest req, String key, boolean useId) throws IOException {
-    	String filename=req.getServletPath();
-        if(!StringUtil.isEmpty(req.getQueryString())) {
-        	filename+="?"+req.getQueryString();
-        	if(useId)filename+="&cfcache_id="+_id;
-        }
-        else {
-        	if(useId)filename+="?cfcache_id="+_id;
-        }
-    	if(useId && !StringUtil.isEmpty(key)) filename=key;
-    	
-    	Resource dir = getDirectory();
-    	CacheItem ci=new CacheItem();
-    	ci.setDirectory(dir);
-    	ci.setRaw(filename);
-        if(!StringUtil.isEmpty(req.getContextPath())) filename=req.getContextPath()+filename;
-        filename=compressFileName(filename)+".cache";
-        ci.setName(filename);
-        ci.setResource(dir.getRealResource(filename));
-        return ci;
+    private CacheItem generateCacheResource(String key, boolean useId) throws IOException {
+    	return CacheItem.getInstance(pageContext,_id,key,useId,directory,cachename,timespan);
 	}
 
-	private String compressFileName(String path) throws IOException {
-		return Md5.getDigestAsString(path);
-	}
+	
 
 	private void writeCacheResource(CacheItem cacheItem, String result) throws IOException {
-		IOUtil.write(cacheItem.getResource(), result,"UTF-8", false); 
-		MetaData.getInstance(cacheItem.getDirectory()).add(cacheItem.getName(), cacheItem.getRaw());
+		cacheItem.store(result);
+		//IOUtil.write(cacheItem.getResource(), result,"UTF-8", false); 
+		//MetaData.getInstance(cacheItem.getDirectory()).add(cacheItem.getName(), cacheItem.getRaw());
 	}
 	
 

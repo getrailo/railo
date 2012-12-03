@@ -20,6 +20,7 @@ import railo.commons.lang.Pair;
 import railo.commons.lang.SystemOut;
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
@@ -62,11 +63,11 @@ public class CFMLProxy {
             cfc="/"+serviceName.replace('.','/')+".cfc";
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             pc=createPageContext(factory,cfc,"method="+serviceMethodName,baos,req);
-            PageSource source = pc.getPageSource(cfc);
+            PageSource source = ((PageContextImpl)pc).getPageSourceExisting(cfc);
 
             if(caster==null)caster=((ConfigImpl)pc.getConfig()).getAMFCaster(configMap);
             parameters=caster.toCFMLObject(rawParams);
-        	if(source.exists()) {
+        	if(source!=null) {
         		print(pc,cfc+"?method="+serviceMethodName);
             	// Map
         			//print.err(parameters);
@@ -106,9 +107,9 @@ public class CFMLProxy {
         try {
             cfml="/"+(serviceName.replace('.','/')+'/'+serviceMethodName.replace('.','/'))+".cfm";
             pc=createPageContext(factory,cfml,"",null,req);
-            PageSource source = pc.getPageSource(cfml);
+            PageSource source = ((PageContextImpl)pc).getPageSourceExisting(cfml);
             
-            if(source.exists()) {
+            if(source!=null) {
             	print(pc,cfml);
             	// Before
                 Struct params=new StructImpl();
@@ -165,8 +166,8 @@ public class CFMLProxy {
         }
         
         // header
-        Pair[] headers = hsrd.getHeaders();
-        Pair header ;
+        Pair<String,Object>[] headers = hsrd.getHeaders();
+        Pair<String,Object> header ;
         Object value;
         if(headers!=null) {
         	for(int i=0;i<headers.length;i++) {

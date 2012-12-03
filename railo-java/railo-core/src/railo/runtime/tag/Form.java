@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import railo.commons.lang.IDGenerator;
 import railo.commons.lang.StringUtil;
@@ -16,9 +17,11 @@ import railo.runtime.functions.string.JSStringFormat;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.tag.util.DeprecatedUtil;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * implementation of the form tag 
@@ -62,6 +65,7 @@ public final class Form extends BodyTagImpl {
 	private int timeout=0;
 	private int wMode=WMODE_WINDOW;
 	private boolean accessible=false;
+	private String onError;
       
 
     /**
@@ -88,7 +92,7 @@ public final class Form extends BodyTagImpl {
     	timeout=0;
     	wMode=WMODE_WINDOW;
     	accessible=false;
-    	
+    	onError=null;
         inputs.clear();
     }
     
@@ -97,8 +101,8 @@ public final class Form extends BodyTagImpl {
      * @param enablecab The enablecab to set.
      * @throws ApplicationException
      */
-    public void setEnablecab(boolean enablecab) throws ApplicationException {
-        if(enablecab)throw new ApplicationException("the attribute enableCAB has been deprecated and is non-functional");
+    public void setEnablecab(boolean enablecab) {
+		DeprecatedUtil.tagAttribute(pageContext,"Form", "enablecab");
         
     }
     /**
@@ -208,10 +212,25 @@ public final class Form extends BodyTagImpl {
     }
     /**
      * @param name The name to set.
+     * @throws ApplicationException 
      */
-    public void setName(String name) {
+    public void setName(String name) throws ApplicationException {
         this.name=name;
+        checkName(name);
     }
+    
+    private static void checkName(String name) throws ApplicationException {
+		if(name.length()==0)return;
+		int len=name.length();
+		
+		for(int pos=0;pos<len;pos++) {
+			char c=name.charAt(pos);
+			if((c>='a' && c<='z')||(c>='A' && c<='Z')||(c>='0' && c<='9')||(c=='_')||(c=='-')||(c==':')||(c=='.'))
+				continue;
+			throw new ApplicationException("value of attribute name ["+name+"] is invalid, only the following characters are allowed [a-z,A-Z,0-9,-,_,:,.]");
+		}
+	}
+    
     /**
      * @param onreset The onreset to set.
      */
@@ -231,6 +250,10 @@ public final class Form extends BodyTagImpl {
      */
     public void setOnsubmit(String onsubmit) {
         this.onsubmit = onsubmit;
+    }
+
+    public void setOnerror(String onError) {
+    	this.onError=onError;
     }
 
     public void setOnclick(String onclick) {
@@ -280,11 +303,13 @@ public final class Form extends BodyTagImpl {
     public void setPassthrough(Object passthrough) throws PageException {
         if(passthrough instanceof Struct) {
             Struct sct = (Struct) passthrough;
-            railo.runtime.type.Collection.Key[] keys=sct.keys();
-            railo.runtime.type.Collection.Key key;
-            for(int i=0;i<keys.length;i++) {
-                key=keys[i];
-                attributes.setEL(key,sct.get(key,null));
+            //railo.runtime.type.Collection.Key[] keys=sct.keys();
+            //railo.runtime.type.Collection.Key key;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e;
+            while(it.hasNext()) {
+            	e = it.next();
+                attributes.setEL(e.getKey(),e.getValue());
             }
         }
         else this.passthrough = Caster.toString(passthrough);
@@ -389,10 +414,10 @@ public final class Form extends BodyTagImpl {
         if(name==null) {
             name="CFForm_"+count;
         }
-        attributes.setEL(KeyImpl.NAME,name);
+        attributes.setEL(KeyConstants._name,name);
         
         if(action==null) 	action=ReqRspUtil.self(pageContext. getHttpServletRequest());
-        attributes.setEL(KeyImpl.ACTION,action);
+        attributes.setEL(KeyConstants._action,action);
         
         String suffix=StringUtil.isEmpty(name)?""+count:StringUtil.toVariableName(name);
         String funcName="railo_form_"+count;
@@ -403,19 +428,19 @@ public final class Form extends BodyTagImpl {
         
         
         
-        boolean hasListener=false;
+        //boolean hasListener=false;
         if(onsubmit==null) attributes.setEL("onsubmit","return "+funcName+".check();");
         else {
             attributes.setEL("onsubmit","return "+checkName+"();");
-            hasListener=true;
+            //hasListener=true;
         }
         if(onreset!=null) {
             attributes.setEL("onreset",resetName+"();");
-            hasListener=true;
+            //hasListener=true;
         }
         if(onload!=null) {
             attributes.setEL("onload",loadName+"();");
-            hasListener=true;
+            //hasListener=true;
         }
         
         if(scriptSrc==null)scriptSrc=contextPath+"/railo-context/form.cfm";
@@ -435,14 +460,14 @@ public final class Form extends BodyTagImpl {
         //}
         pageContext.forceWrite("<form");
         
-        railo.runtime.type.Collection.Key[] keys = attributes.keys();
-        railo.runtime.type.Collection.Key key;
-        for(int i=0;i<keys.length;i++) {
-            key = keys[i];
+        Iterator<Entry<Key, Object>> it = attributes.entryIterator();
+        Entry<Key, Object> e;
+        while(it.hasNext()) {
+        	e = it.next();
             pageContext.forceWrite(" ");
-            pageContext.forceWrite(key.getString());
+            pageContext.forceWrite(e.getKey().getString());
             pageContext.forceWrite("=");
-            pageContext.forceWrite(de(Caster.toString(attributes.get(key,null))));
+            pageContext.forceWrite(de(Caster.toString(e.getValue())));
             
         }
         
@@ -463,7 +488,7 @@ public final class Form extends BodyTagImpl {
         String funcName="railo_form_"+count;
         try {
             pageContext.forceWrite("</form><!-- name:"+name+" --><script>\n");
-            pageContext.forceWrite(funcName+"=new RailoForms("+js(name)+");\n");
+            pageContext.forceWrite(funcName+"=new RailoForms("+js(name)+","+js(onError)+");\n");
             Iterator it = inputs.keySet().iterator();
             while(it.hasNext()) {
                 InputBean input=(InputBean) inputs.get(it.next());
@@ -514,6 +539,10 @@ public final class Form extends BodyTagImpl {
                 throw new ApplicationException("duplicate input field ["+i.getName()+"] for form","a text or password field must be unique");
             }
         }
+        
+        //if(StringUtil.isEmpty(input.getOnError(),true) && !StringUtil.isEmpty(onError,true))
+        //	input.setOnError(onError);
+        
         inputs.put(input.getName().toLowerCase(),input);
     }
 

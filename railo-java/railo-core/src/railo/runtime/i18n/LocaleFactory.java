@@ -15,7 +15,7 @@ import railo.runtime.type.List;
 
 
 /**
- * Factory to create Locales by Cold Fusion rules
+ * Factory to create Locales by CFML rules
  */
 public final class LocaleFactory {
 	//private static Pattern localePattern = Pattern.compile("^\\s*([^\\s\\(]+)\\s*(\\(\\s*([^\\s\\)]+)\\s*\\))?\\s*$");
@@ -116,10 +116,10 @@ public final class LocaleFactory {
 	 */
 	public static Locale getLocale(String strLocale) throws ExpressionException {
 		String strLocaleLC = strLocale.toLowerCase().trim();
-		Locale l=(Locale) locales.get(strLocaleLC);
+		Locale l=locales.get(strLocaleLC);
 		if(l!=null) return l;
 		
-		l=(Locale) localeAlias.get(strLocaleLC);
+		l=localeAlias.get(strLocaleLC);
 		if(l!=null) return l;
 
 		Matcher matcher = localePattern2.matcher(strLocaleLC);
@@ -198,7 +198,7 @@ public final class LocaleFactory {
 	private static String getSupportedLocalesAsString() {
 		//StringBuffer sb=new StringBuffer();
 	    // TODO chnge from ArryObject to string
-		String[] arr = (String[])locales.keySet().toArray(new String[locales.size()]);
+		String[] arr = locales.keySet().toArray(new String[locales.size()]);
 		Arrays.sort(arr);
 		return List.arrayToList(arr,",");
 		
@@ -218,7 +218,7 @@ public final class LocaleFactory {
 			while(it.hasNext()) {
 				entry= it.next();
 				//Object qkey=it.next();
-				Locale curr=(Locale) entry.getValue();
+				Locale curr=entry.getValue();
 				if(lang.equals(curr.getLanguage()) && country.equals(curr.getCountry())) {
 					return entry.getKey().toString();
 				}

@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function repeatstring
+ * Implements the CFML Function repeatstring
  */
 package railo.runtime.functions.string;
 

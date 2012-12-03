@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function gettemplatepath
+ * Implements the CFML Function gettemplatepath
  */
 package railo.runtime.functions.system;
 
@@ -21,7 +21,6 @@ public final class PagePoolClear implements Function {
 		clear(config.getServerFunctionMapping());
 		clear(config.getTagMapping());
 		clear(config.getServerTagMapping());
-		if(config instanceof ConfigWebImpl)clear(((ConfigWebImpl)config).getServerTagMapping());
     	
 		return true;
 	}

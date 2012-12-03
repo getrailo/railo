@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listsort
+ * Implements the CFML Function listsort
  */
 package railo.runtime.functions.list;
 

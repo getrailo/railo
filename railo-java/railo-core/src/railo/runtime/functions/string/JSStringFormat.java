@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function jsstringformat
+ * Implements the CFML Function jsstringformat
  */
 package railo.runtime.functions.string;
 
@@ -36,7 +36,7 @@ public final class JSStringFormat implements Function {
 	
 	public static String callx(PageContext pc , String jsString) {// MUST ????
 		int len=jsString.length();
-		StringBuffer sb=new StringBuffer(len);
+		//StringBuffer sb=new StringBuffer(len);
 		int plus=0;
 		
 		for(int pos=0;pos<len;pos++) {
@@ -98,50 +98,6 @@ public final class JSStringFormat implements Function {
             	break;
             }
 		}
-        
-        
-		//if(start<len)sb.append(xmlString.substring(start,len));
-		return new String(chars);
+        return new String(chars);
 	}
-	
-	
-	
-	
-	
-	
-	/*public static void main(String[] args) {
-        long start;
-        int count=1000000;
-        
-
-        print.ln(call(null,"sasffdf\nfsd\n'ss'"));
-        print.ln(callx(null,"sasffdf\nfsd\n'ss'"));
-
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) call(null,"sasffdf\nfsd\n'ss'");
-        print.ln(System.currentTimeMillis()-start);
-        
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) call(null,"sasffdf");
-        print.ln(System.currentTimeMillis()-start);
-        
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) callx(null,"sasffdf\nfsd\n'ss'");
-        print.ln(System.currentTimeMillis()-start);
-        
-        start=System.currentTimeMillis();
-        for(int i=0;i<count;i++) callx(null,"sasffdf");
-        print.ln(System.currentTimeMillis()-start);
-    }*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

@@ -24,9 +24,6 @@ public class TextDumpWriter implements DumpWriter {
 		}
 		DumpTable table=(DumpTable) data;
 		
-		if(table==null) return;
-		
-		
 		DumpRow[] rows = table.getRows();
 		int cols=0;
 		for(int i=0;i<rows.length;i++)if(rows[i].getItems().length>cols)cols=rows[i].getItems().length;
@@ -50,11 +47,11 @@ public class TextDumpWriter implements DumpWriter {
 		DumpData value;
 		for(int i=0;i<rows.length;i++) {
 			DumpData[] items=rows[i].getItems();
-			int comperator=1;
+			//int comperator=1;
 			for(int y=0;y<cols;y++) {
 				if(y<=items.length-1) value=items[y];
 				else value=new SimpleDumpData("");
-				comperator*=2;
+				//comperator*=2;
 				if(value==null)value=new SimpleDumpData("null");
 				writeOut(pc,value, writer,expand,level+1);
 				writer.write(" ");

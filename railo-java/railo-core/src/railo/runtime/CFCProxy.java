@@ -6,6 +6,7 @@ import java.io.Serializable;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
+import railo.runtime.component.Property;
 import railo.runtime.orm.hibernate.tuplizer.proxy.CFCLazyInitializer;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.cfc.ComponentAccessProxy;
@@ -36,6 +37,20 @@ public class CFCProxy extends ComponentAccessProxy implements HibernateProxy, Se
 	public LazyInitializer getHibernateLazyInitializer() {
 		return li;
 	}
-	
 
+	@Override
+	public long sizeOf() {
+		return li.getCFC().sizeOf();
+	}
+	
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    }
+
+
+	@Override
+	public Property[] getProperties(boolean onlyPeristent, boolean includeBaseProperties, boolean overrideProperties, boolean inheritedMappedSuperClassOnly) {
+		return li.getCFC().getProperties(onlyPeristent, includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
+	}
 }

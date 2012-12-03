@@ -11,7 +11,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.UDFImpl;
+import railo.runtime.type.UDF;
 
 /**
  * 
@@ -50,8 +50,8 @@ public final class ComponentController {
 		
 		Object udf = c.get(p,key,null);
 		String rt="any";
-		if(udf instanceof UDFImpl) {
-			rt=((UDFImpl)udf).getReturnTypeAsString();
+		if(udf instanceof UDF) {
+			rt=((UDF)udf).getReturnTypeAsString();
 		}
 		Object rv = c.call(p, key, args);
 		

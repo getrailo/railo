@@ -8,12 +8,15 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -39,6 +42,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -920,12 +924,12 @@ public final class XMLUtil {
      * @return all matching child node
      */
     public static Node[] getChildNodesAsArray(Node node, short type) {
-        ArrayNodeList nodeList=(ArrayNodeList)getChildNodes(node, type);
+        ArrayNodeList nodeList=getChildNodes(node, type);
         return (Node[]) nodeList.toArray(new Node[nodeList.getLength()]);
     }
 
     public static Node[] getChildNodesAsArray(Node node, short type, boolean caseSensitive, String filter) {
-        ArrayNodeList nodeList=(ArrayNodeList)getChildNodes(node, type,caseSensitive,filter);
+        ArrayNodeList nodeList=getChildNodes(node, type,caseSensitive,filter);
         return (Node[]) nodeList.toArray(new Node[nodeList.getLength()]);
     }
     
@@ -935,36 +939,72 @@ public final class XMLUtil {
      * @return all matching child node
      */
     public static Element[] getChildElementsAsArray(Node node) {
-        ArrayNodeList nodeList=(ArrayNodeList)getChildNodes(node,Node.ELEMENT_NODE);
+        ArrayNodeList nodeList=getChildNodes(node,Node.ELEMENT_NODE);
         return (Element[]) nodeList.toArray(new Element[nodeList.getLength()]);
     }
 
     /**
      * transform a XML Object to a other format, with help of a XSL Stylesheet
-     * @param strXML XML String 
-     * @param strXSL XSL String
-     * @return transformed Object
+     * @param xml xml to convert
+     * @param xsl xsl used to convert
+     * @return resulting string
      * @throws TransformerException
-     * @throws IOException
      * @throws SAXException
-     * @throws  
+     * @throws IOException
      */
     public static String transform(InputSource xml, InputSource xsl) throws TransformerException, SAXException, IOException {
-    	//toInputSource(pc, xml)
-        return transform(parse(xml,null , false), xsl);
+    	return transform( parse( xml, null , false ), xsl, null );
+    }
+    
+    /**
+     * transform a XML Object to a other format, with help of a XSL Stylesheet
+     * @param xml xml to convert
+     * @param xsl xsl used to convert
+     * @param parameters parameters used to convert
+     * @return resulting string
+     * @throws TransformerException
+     * @throws SAXException
+     * @throws IOException
+     */
+    public static String transform(InputSource xml, InputSource xsl, Map parameters) throws TransformerException, SAXException, IOException {
+    	return transform( parse( xml, null , false ), xsl, parameters );
     }
 
-	/**
-	 * transform a XML Object to a other format, with help of a XSL Stylesheet
-	 * @param doc XML Document Object
-	 * @param strXSL XSL String
-	 * @return transformed Object
-	 * @throws TransformerException
-	 */
-	public static String transform(Document doc, InputSource xsl) throws TransformerException {
-		StringWriter sw = new StringWriter();
-		Transformer transformer = 
-            XMLUtil.getTransformerFactory().newTransformer(new StreamSource(xsl.getCharacterStream()));
+    /**
+     * transform a XML Document to a other format, with help of a XSL Stylesheet
+     * @param xml xml to convert
+     * @param xsl xsl used to convert
+     * @return resulting string
+     * @throws TransformerException
+     * @throws SAXException
+     * @throws IOException
+     */
+    public static String transform( Document doc, InputSource xsl ) throws TransformerException {
+		return transform( doc, xsl, null );
+	}
+    
+    /**
+     * transform a XML Document to a other format, with help of a XSL Stylesheet
+     * @param xml xml to convert
+     * @param xsl xsl used to convert
+     * @param parameters parameters used to convert
+     * @return resulting string
+     * @throws TransformerException
+     * @throws SAXException
+     * @throws IOException
+     */
+    public static String transform(Document doc, InputSource xsl, Map parameters) throws TransformerException {
+    	StringWriter sw = new StringWriter();
+    	TransformerFactory factory = XMLUtil.getTransformerFactory();
+    	factory.setErrorListener(SimpleErrorListener.THROW_FATAL);
+		Transformer transformer = factory.newTransformer(new StreamSource(xsl.getCharacterStream()));
+		if (parameters != null) {
+			Iterator it = parameters.entrySet().iterator();
+			while ( it.hasNext() ) {
+				Map.Entry e = (Map.Entry) it.next();
+				transformer.setParameter(e.getKey().toString(), e.getValue());
+			}
+		}
 		transformer.transform(new DOMSource(doc), new StreamResult(sw));
 		return sw.toString();
 	}
@@ -1091,5 +1131,14 @@ public final class XMLUtil {
 		Node first = parent.getFirstChild();
 		if(first!=null) parent.insertBefore(node, first);
 		else parent.appendChild(node);
+	}
+
+	public static XMLReader createXMLReader(String oprionalDefaultSaxParser) throws SAXException {
+		try{
+			return XMLReaderFactory.createXMLReader(oprionalDefaultSaxParser);
+		}
+		catch(Throwable t){
+			return XMLReaderFactory.createXMLReader();
+		}
 	}
 }

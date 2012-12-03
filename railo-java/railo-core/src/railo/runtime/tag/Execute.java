@@ -1,5 +1,7 @@
 package railo.runtime.tag;
 
+import java.util.Iterator;
+
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SerializableObject;
@@ -67,10 +69,11 @@ public final class Execute extends BodyTagImpl {
 	    if(args instanceof railo.runtime.type.Collection) {
 		    StringBuffer sb=new StringBuffer();
 		    railo.runtime.type.Collection coll=(railo.runtime.type.Collection)args;
-		    railo.runtime.type.Collection.Key[] keys=coll.keys();
-		    for(int i=0;i<keys.length;i++) {
+		    //railo.runtime.type.Collection.Key[] keys=coll.keys();
+		    Iterator<Object> it = coll.valueIterator();
+		    while(it.hasNext()) {
 		        sb.append(' ');
-		        sb.append(coll.get(keys[i],null));
+		        sb.append(it.next());
 		    }
 		    arguments=args.toString();
 		}

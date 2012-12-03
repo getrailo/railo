@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import railo.commons.db.DBUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -15,15 +16,16 @@ import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Form;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
 * Inserts records in data sources.
@@ -169,7 +171,7 @@ public final class Insert extends TagImpl {
 				
 				if(pageContext.getConfig().debug()) {
 					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					((DebuggerImpl)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
+					((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
 				}
 			}
 			return EVAL_PAGE;
@@ -184,12 +186,12 @@ public final class Insert extends TagImpl {
 
 	public static String getDatasource(PageContext pageContext, String datasource) throws ApplicationException {
 		if(StringUtil.isEmpty(datasource)){
-			datasource=((ApplicationContextPro)pageContext.getApplicationContext()).getDefaultDataSource();
+			datasource=pageContext.getApplicationContext().getDefaultDataSource();
 
 			if(StringUtil.isEmpty(datasource))
 				throw new ApplicationException(
 						"attribute [datasource] is required, when no default datasource is defined",
-						"you can define a default datasource as attribute [defaultdatasource] of the tag cfapplication or as data member of the application.cfc (this.defaultdatasource=\"mydatasource\";)");
+						"you can define a default datasource as attribute [defaultdatasource] of the tag "+Constants.CFAPP_NAME+" or as data member of the "+Constants.APP_CFC+" (this.defaultdatasource=\"mydatasource\";)");
 		}
 		return datasource;
 	}
@@ -222,7 +224,7 @@ public final class Insert extends TagImpl {
         String[] fields=null; 
         Form form = pageContext.formScope();
         if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
-        else fields=pageContext.formScope().keysAsString();
+        else fields=CollectionUtil.keysAsString(pageContext.formScope());
         
         StringBuffer names=new StringBuffer();
         StringBuffer values=new StringBuffer();

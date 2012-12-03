@@ -4,12 +4,11 @@ package railo.runtime.orm;
 import railo.runtime.Component;
 import railo.runtime.db.DataSource;
 import railo.runtime.exp.ApplicationException;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.type.List;
-import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 public class ORMException extends ApplicationException {
 
@@ -66,12 +65,7 @@ public class ORMException extends ApplicationException {
 	
 
 	private void setContext(Component cfc) {
-		try {
-			if(cfc!=null && getPageDeep()==0)addContext(ComponentUtil.toComponentPro(cfc).getPageSource(), 1, 1, null);
-			
-			
-		} 
-		catch (ExpressionException e) {}
+		if(cfc!=null && getPageDeep()==0)addContext(cfc.getPageSource(), 1, 1, null);
 	}
 
 	public static PageException toPageException(ORMEngine engine,Throwable t) {
@@ -90,8 +84,8 @@ public class ORMException extends ApplicationException {
 			String dsn=null;
 			DataSource ds = engine.getDataSource();
 			if(ds!=null) dsn=ds.getName();
-			pei.setAdditional("Entities", List.arrayToList(names, ", "));
-			if(dsn!=null)pei.setAdditional("Datasource", dsn);
+			pei.setAdditional(KeyConstants._Entities, List.arrayToList(names, ", "));
+			if(dsn!=null)pei.setAdditional(KeyConstants._Datasource, dsn);
 		}
 	}
 

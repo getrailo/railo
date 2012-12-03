@@ -1,10 +1,11 @@
 /**
- * Implements the Cold Fusion Function xmlelemnew
+ * Implements the CFML Function xmlelemnew
  */
 package railo.runtime.functions.xml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import railo.commons.lang.StringUtil;
@@ -13,6 +14,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.text.xml.struct.XMLStructFactory;
+import railo.runtime.type.List;
 
 public final class XmlElemNew implements Function {
 	
@@ -37,7 +39,21 @@ public final class XmlElemNew implements Function {
 		
 		// without namespace
 		if(StringUtil.isEmpty(namespace)){
-			el=doc.createElement(childname);
+			if(childname.indexOf(':')!=-1) {
+				String[] parts = List.listToStringArray(childname, ':');
+				childname = parts[1];
+				String prefix = parts[0];
+				namespace = getNamespaceForPrefix(doc.getDocumentElement(),prefix);
+				if(StringUtil.isEmpty(namespace)) {
+					el=doc.createElement(childname);
+				} else {
+					el=doc.createElementNS(namespace,childname);
+					el.setPrefix(prefix);
+				}
+				
+			} else {
+				el=doc.createElement(childname);	
+			}
 		}
 		// with namespace
 		else {
@@ -46,6 +62,28 @@ public final class XmlElemNew implements Function {
 		return (Element)XMLStructFactory.newInstance(el,false);
 	}
 	
+	private static String getNamespaceForPrefix(Node node,String prefix) {
+		if (node==null) return null;
+		NamedNodeMap atts = node.getAttributes();
+
+		if (atts != null) {
+			String currLocalName,currPrefix;
+			int len=atts.getLength();
+			for (int i = 0; i < len; i++) {
+				Node currAttr = atts.item(i);
+				currLocalName = currAttr.getLocalName();
+				currPrefix = currAttr.getPrefix();
+				if (prefix.equals(currLocalName) && "xmlns".equals(currPrefix)) {
+					return currAttr.getNodeValue();
+				} 
+				else if (StringUtil.isEmpty(prefix) && "xmlns".equals(currLocalName)
+						&& StringUtil.isEmpty(currPrefix)) {
+					return currAttr.getNodeValue();
+				}
+			}
+		}
+		return null;
+	}
 	
 	
 }

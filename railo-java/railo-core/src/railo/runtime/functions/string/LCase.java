@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function lcase
+ * Implements the CFML Function lcase
  */
 package railo.runtime.functions.string;
 

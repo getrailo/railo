@@ -18,65 +18,6 @@ import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 
 public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Externalizable {
-	//private static Map<String,Long> keys = new HashMap<String, Long>();//HashTableNotSync();
-	
-
-	public static final Key ACTION=KeyImpl.intern("action");
-	public static final Key CFID=KeyImpl.intern("cfid");
-	public static final Key CFTOKEN=KeyImpl.intern("cftoken");
-	public static final Key DETAIL=KeyImpl.intern("detail");
-	public static final Key ID=KeyImpl.intern("id");
-	public static final Key RETURN_FORMAT =KeyImpl.intern("returnFormat");
-	public static final Key NAME=KeyImpl.intern("name");
-	public static final Key NAME_UC=KeyImpl.intern("NAME");
-	public static final Key DATA=KeyImpl.intern("data");
-	public static final Key S3=KeyImpl.intern("s3");
-	public static final Key SIZE=KeyImpl.intern("size");
-	public static final Key SUPER=KeyImpl.intern("super");
-	public static final Key SUPER_UC=KeyImpl.intern("SUPER");
-	public static final Key TEMPLATE=KeyImpl.intern("template");
-	public static final Key THIS=KeyImpl.intern("this");
-	public static final Key THIS_UC=KeyImpl.intern("THIS");
-	public static final Key TIME=KeyImpl.intern("time");
-	public static final Key TYPE=KeyImpl.intern("type");
-	public static final Key HINT = 		KeyImpl.intern("hint");
-	public static final Key REQUIRED = 	KeyImpl.intern("required");
-	public static final Key DEFAULT = 		KeyImpl.intern("default");
-	public static final Key DATA_SOURCE = 		KeyImpl.intern("datasource");
-	
-
-	public static final Key ARGUMENT_COLLECTION = KeyImpl.intern("argumentCollection");
-	public static final Key ACCESS = 		KeyImpl.intern("access");
-	public static final Key OUTPUT = 		KeyImpl.intern("output");
-	public static final Key RETURN_TYPE = 	KeyImpl.intern("returntype");
-	public static final Key DESCRIPTION = 	KeyImpl.intern("description");
-	public static final Key OWNER = 	KeyImpl.intern("owner");
-	public static final Key DISPLAY_NAME = KeyImpl.intern("displayname");
-	public static final Key PARAMETERS = 	KeyImpl.intern("parameters");
-	
-
-	public static final Key VALUE = KeyImpl.intern("value");
-	public static final Key PATH = KeyImpl.intern("path");
-	public static final Key ENTRY = KeyImpl.intern("entry");
-	public static final Key KEY = KeyImpl.intern("key");
-	public static final Key LINE = KeyImpl.intern("line");
-	public static final Key COLUMN = KeyImpl.intern("column");
-	public static final Key ARGUMENTS = KeyImpl.intern("arguments");
-	public static final Key STATUS = KeyImpl.intern("status");
-	public static final Key THREAD = KeyImpl.intern("thread");
-	public static final Key VARIABLES = KeyImpl.intern("variables");
-	public static final Key FIELD_NAMES = KeyImpl.intern("fieldnames");
-	public static final Key LOCAL = KeyImpl.intern("local");
-	public static final Key SERVER = KeyImpl.intern("server");
-	public static final Key EXCEPTIONS = KeyImpl.intern("exceptions");
-	public static final Key BODY = KeyImpl.intern("body");
-	public static final Key TITLE = KeyImpl.intern("title");
-	public static final Key URL = KeyImpl.intern("url");
-	public static final Key LABEL = KeyImpl.intern("label");
-	public static final Key TOTAL = KeyImpl.intern("total");
-	
-	
-	
 	
 	//private boolean intern;
 	private String key;
@@ -103,10 +44,34 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		//if(intern)lcKey=lcKey.intern();
 	}
 	
+	
 	protected KeyImpl(String key) {
 		this.key=key;
 		this.lcKey=key.toLowerCase();
+		//RefIntegerImpl count=log.get(key);
+		//if(count!=null) count.plus(1);
+		//else log.put(key, new RefIntegerImpl(1));
+		
 	}
+	
+	/*public static void print(){
+		//Iterator<Entry<String, RefIntegerImpl>> it = log.entrySet().iterator();
+		String[] keys = log.keySet().toArray(new String[log.size()]);
+		Arrays.sort(keys);
+		int total=0,big=0;
+		for(int i=0;i<keys.length;i++){
+			RefIntegerImpl value = log.get(keys[i]);
+			if(value.toInt()>10 && keys[i].length()<=10 && keys[i].indexOf('.')==-1 && keys[i].indexOf('-')==-1) {
+				print.e("public static final Key "+keys[i]+"=KeyImpl.intern(\""+keys[i]+"\");");
+				big++;
+			}
+			total++;
+		}
+		print.e("total:"+total);
+		print.e("big:"+big);
+	}*/
+	
+	
 	
 	/*private KeyImpl(String key, boolean intern) {
 		this.key=key;
@@ -124,17 +89,24 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	}
 	
 
+	public static Collection.Key _const(String key) {
+		return new KeyImpl(key);
+	}
+	
+
 	/**
 	 * used for static iniatisation of a key object (used by compiler)
 	 * @param string
 	 * @return
 	 */
 	public synchronized static Collection.Key getInstance(String key) {
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		return new KeyImpl(key);
 	}
 	
 
 	public synchronized static Collection.Key intern(String key) {
+		//if(KeyConstants.getFieldName(key)!=null)print.ds(key);
 		/*Long l= keys.get(key);
 		String st=ExceptionUtil.getStacktrace(new Exception("Stack trace"), false);
 		String[] arr = railo.runtime.type.List.listToStringArray(st,'\n');
@@ -366,12 +338,12 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return arr;
 	}
 
-	public static String toUpperCaseList(Key[] array, String delimeter) {
+	public static String toUpperCaseList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getUpperString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(((KeyImpl)array[i]).getUpperString());
@@ -379,39 +351,39 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(((KeyImpl)array[i]).getUpperString());
 			}
 		}
 		return sb.toString();
 	}
 
-	public static String toList(Key[] array, String delimeter) {
+	public static String toList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
-		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getString());
+		StringBuilder sb=new StringBuilder(((KeyImpl)array[0]).getString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
-				sb.append(((KeyImpl)array[i]).getString());
+				sb.append((array[i]).getString());
 			}
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
-				sb.append(((KeyImpl)array[i]).getString());
+				sb.append(delimiter);
+				sb.append((array[i]).getString());
 			}
 		}
 		return sb.toString();
 	}
 
-	public static String toLowerCaseList(Key[] array, String delimeter) {
+	public static String toLowerCaseList(Key[] array, String delimiter) {
 		if(array.length==0) return "";
 		StringBuffer sb=new StringBuffer(((KeyImpl)array[0]).getLowerString());
 		
-		if(delimeter.length()==1) {
-			char c=delimeter.charAt(0);
+		if(delimiter.length()==1) {
+			char c=delimiter.charAt(0);
 			for(int i=1;i<array.length;i++) {
 				sb.append(c);
 				sb.append(((KeyImpl)array[i]).getLowerString());
@@ -419,7 +391,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 		else {
 			for(int i=1;i<array.length;i++) {
-				sb.append(delimeter);
+				sb.append(delimiter);
 				sb.append(((KeyImpl)array[i]).getLowerString());
 			}
 		}
@@ -448,5 +420,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		SizeOf.size(this.ucKey)+
 		SizeOf.REF_SIZE;
 	}
-	
+
+	@Override
+	public int length() {
+		return key.length();
+	}
 }

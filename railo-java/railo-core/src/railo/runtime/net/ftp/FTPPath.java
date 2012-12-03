@@ -4,7 +4,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.Dumpable;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.PageException;
@@ -97,7 +96,7 @@ public final class FTPPath implements Dumpable{
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("string","#ff6600","#ffcc99","#000000");
+		DumpTable table = new DumpTable("string","#ff6600","#ffcc99","#000000");
 		table.appendRow(1,new SimpleDumpData("FTPPath"),new SimpleDumpData(toString()));
 		return table;
     }

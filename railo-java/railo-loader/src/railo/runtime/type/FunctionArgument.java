@@ -36,13 +36,6 @@ public interface FunctionArgument extends Serializable {
      */
     public abstract String getHint();
  
-
-    /**
-     * @return Returns the display name (Label) of the argument.
-     * @deprecated replaced with <code>getDisplayName();</code>
-     */
-    public abstract String getDspName();
-
 	/**
      * @return Returns the Display name of the argument.
      */

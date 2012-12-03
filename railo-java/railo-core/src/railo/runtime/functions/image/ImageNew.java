@@ -8,21 +8,20 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.exp.SecurityException;
 import railo.runtime.img.Image;
 import railo.runtime.op.Caster;
 
 public class ImageNew {
 
 
-	public static Object call(PageContext pc) throws SecurityException {
+	public static Object call(PageContext pc) {
 		return new Image();
 	}
 	
 	public static Object call(PageContext pc, Object source) throws PageException {
 		if(StringUtil.isEmpty(source))
 			return call(pc);//throw new FunctionException(pc,"ImageNew",1,"source","missing argument");
-		return Image.createImage(pc, source, true,true,true);
+		return Image.createImage(pc, source, true,true,true,null);
 	}
 	
 	public static Object call(PageContext pc,Object source, String width) throws PageException {
@@ -60,7 +59,7 @@ public class ImageNew {
 			else if("argb".equals(strImageType)) imageType=BufferedImage.TYPE_INT_ARGB;
 			else if("gray".equals(strImageType)) imageType=BufferedImage.TYPE_BYTE_GRAY;
 			else if("grayscale".equals(strImageType)) imageType=BufferedImage.TYPE_BYTE_GRAY;
-			else throw new FunctionException(pc,"ImageNew",4,"imageType","imageType has a invalid value ["+strImageType+"]," +
+			else throw new FunctionException(pc,"ImageNew",4,"imageType","imageType has an invalid value ["+strImageType+"]," +
 				"valid values are [rgb,argb,grayscale]");
 		}
 		// canvas color

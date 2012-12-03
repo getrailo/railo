@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function paragraphformat
+ * Implements the CFML Function paragraphformat
  */
 package railo.runtime.functions.displayFormatting;
 

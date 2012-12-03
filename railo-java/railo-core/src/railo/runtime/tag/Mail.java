@@ -242,7 +242,7 @@ public final class Mail extends BodyTagImpl {
 		else if(type.equals("text/html") || type.equals("html") || type.equals("htm"))
 			getPart().isHTML(true);
 		else
-			throw new ApplicationException("attribute type of tag mail has a invalid values","valid values are [plain,text,html] but value is now ["+type+"]");
+			throw new ApplicationException("attribute type of tag mail has an invalid values","valid values are [plain,text,html] but value is now ["+type+"]");
 			//throw new ApplicationException(("invalid type "+type);
 	}
 

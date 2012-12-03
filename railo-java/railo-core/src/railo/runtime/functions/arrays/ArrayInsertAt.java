@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arrayinsertat
+ * Implements the CFML Function arrayinsertat
  */
 package railo.runtime.functions.arrays;
 

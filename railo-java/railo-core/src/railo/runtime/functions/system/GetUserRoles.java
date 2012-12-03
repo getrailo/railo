@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function isuserinrole
+ * Implements the CFML Function isuserinrole
  */
 package railo.runtime.functions.system;
 

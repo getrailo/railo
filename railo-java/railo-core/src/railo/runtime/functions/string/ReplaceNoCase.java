@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function replacenocase
+ * Implements the CFML Function replacenocase
  */
 package railo.runtime.functions.string;
 
@@ -14,9 +14,9 @@ public final class ReplaceNoCase implements Function {
 	}
 
 	public static String call(PageContext pc , String str, String sub1, String sub2, String scope) throws ExpressionException {
-		if(sub1.length()==0)
+		if(sub1.length()==0){
 			throw new ExpressionException("the string length of Parameter 2 of function replaceNoCase which is now ["+sub1.length()+"] must be greater than 0");
-
+		}
 		//if(sub1.equals(sub2)) return str;
 		boolean doAll=scope.equalsIgnoreCase("all");
 		

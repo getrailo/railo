@@ -860,6 +860,14 @@ public final class CastImpl implements Cast {
         return Caster.toNull(value);
     }
 
+    public Collection.Key toKey(Object o) throws PageException{
+    	return Caster.toKey(o);
+    }
+    
+    public Collection.Key toKey(Object o, Collection.Key defaultValue){
+    	return Caster.toKey(o,defaultValue);
+    }
+    
     /**
      * @see railo.runtime.util.Cast#toPageException(java.lang.Throwable)
      */

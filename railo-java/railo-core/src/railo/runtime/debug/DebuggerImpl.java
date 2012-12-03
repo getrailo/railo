@@ -2,32 +2,32 @@ package railo.runtime.debug;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.Component;
+import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
+import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.SQL;
-import railo.runtime.dump.DumpData;
-import railo.runtime.dump.DumpProperties;
-import railo.runtime.dump.DumpRow;
-import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpUtil;
-import railo.runtime.dump.Dumpable;
-import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
-import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
@@ -39,43 +39,46 @@ import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.KeyConstants;
 
 
 /**
  * Class to debug the application
  */
-public final class DebuggerImpl implements Dumpable, Debugger {
-
-	private static final long serialVersionUID = 4103405920561543718L;
-	private static final Collection.Key PAGES = KeyImpl.intern("pages");
-	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
-	private static final Collection.Key TIMERS = KeyImpl.intern("timers");
-	private static final Collection.Key TRACES = KeyImpl.intern("traces");
-	private static final Collection.Key HISTORY = KeyImpl.intern("history");
-	private static final Collection.Key SQL = KeyImpl.intern("sql");
-	private static final Collection.Key SRC = KeyImpl.intern("src");
-	private static final Collection.Key COUNT = KeyImpl.intern("count");
-	private static final Collection.Key DATASOURCE = KeyImpl.intern("datasource");
-	private static final Collection.Key USAGE = KeyImpl.intern("usage");
+public final class DebuggerImpl implements DebuggerPro {
+	private static final long serialVersionUID = 3957043879267494311L;
 	
-	private Map<String,DebugEntryImpl> pages=new HashMap<String,DebugEntryImpl>();
-	private List<QueryEntryImpl> queries=new ArrayList<QueryEntryImpl>();
+	
+	private static final Collection.Key QUERIES = KeyImpl.intern("queries");
+	private static final Collection.Key IMPLICIT_ACCESS= KeyImpl.intern("implicitAccess");
+	private static final Collection.Key PAGE_PARTS= KeyImpl.intern("pageParts");
+
+
+	private static final int MAX_PARTS = 100;
+
+	private Map<String,DebugEntryTemplateImpl> entries=new HashMap<String,DebugEntryTemplateImpl>();
+	private Map<String,DebugEntryTemplatePartImpl> partEntries;
+	private List<QueryEntry> queries=new ArrayList<QueryEntry>();
 	private List<DebugTimerImpl> timers=new ArrayList<DebugTimerImpl>();
 	private List<DebugTraceImpl> traces=new ArrayList<DebugTraceImpl>();
 	private List<CatchBlock> exceptions=new ArrayList<CatchBlock>();
+	private Map<String,ImplicitAccessImpl> implicitAccesses=new HashMap<String,ImplicitAccessImpl>();
 	
 	private boolean output=true;
 	private long lastEntry;
 	private long lastTrace;
 	private Array historyId=new ArrayImpl();
 	private Array historyLevel=new ArrayImpl();
-	
-	/**
-     * @see railo.runtime.debug.Debugger#reset()
-     */
+
+	private DateTimeImpl starttime;
+
+	@Override
 	public void reset() {
-		pages.clear();
+		entries.clear();
+		if(partEntries!=null)partEntries.clear();
 		queries.clear();
+		implicitAccesses.clear();
 		timers.clear();
 		traces.clear();
 		exceptions.clear();
@@ -84,345 +87,173 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		output=true;
 	}
 
-	/**
-	 * standart Constructor of the class
-	 */
-	public DebuggerImpl() {
-		
+	public DebuggerImpl() {	
 	}
 
-    /**
-     *
-     * @see railo.runtime.debug.Debugger#getEntry(railo.runtime.PageContext, railo.runtime.PageSource)
-     */
-    public DebugEntry getEntry(PageContext pc,PageSource source) {
+	@Override
+	public DebugEntryTemplate getEntry(PageContext pc,PageSource source) {
         return getEntry(pc,source,null);
     }
 
-    /**
-     *
-     * @see railo.runtime.debug.Debugger#getEntry(railo.runtime.PageContext, railo.runtime.PageSource, java.lang.String)
-     */
-    public DebugEntry getEntry(PageContext pc,PageSource source, String key) {
+	@Override
+	public DebugEntryTemplate getEntry(PageContext pc,PageSource source, String key) {
     	lastEntry = System.currentTimeMillis();
-        String src=DebugEntryImpl.getSrc(source,key);
+        String src=DebugEntryTemplateImpl.getSrc(source==null?"":source.getDisplayPath(),key);
         
-        DebugEntryImpl de=(DebugEntryImpl) pages.get(src);
+        DebugEntryTemplateImpl de= entries.get(src);
         if(de!=null ){
             de.countPP();
 			historyId.appendEL(de.getId());
 			historyLevel.appendEL(Caster.toInteger(pc.getCurrentLevel()));
             return de;
         }
-        de=new DebugEntryImpl(source,key);
-        pages.put(src,de);
+        de=new DebugEntryTemplateImpl(source,key);
+        entries.put(src,de);
 		historyId.appendEL(de.getId());
 		historyLevel.appendEL(Caster.toInteger(pc.getCurrentLevel()));
         return de;
     }
+	
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
-	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		if(!output) return null;
-		
-        // fill pages to aray
-        ArrayList<DebugEntry> arrPages = toArray();
-        QueryEntry[] arrQueries=(QueryEntry[]) queries.toArray(new QueryEntry[queries.size()]);
 
-		
-		DumpTable boxPage = new DumpTable("#cccccc","#ffffff","#000000");
-		boxPage.setWidth("100%");
-		
-        int len=arrPages.size();
-        int tLoad=0;
-        int tQuery=0;
-        int tApp=0;
-        int tCount=0;
-        for(int i=0;i<len;i++) {
-            DebugEntry de=(DebugEntry) arrPages.get(i);
-            tLoad+=de.getFileLoadTime();
-            tQuery+=de.getQueryTime();
-            tApp+=de.getExeTime();
-            tCount+=de.getCount();
-            boxPage.appendRow(new DumpRow(0,new DumpData[]{
-                    new SimpleDumpData(de.getSrc()),
-                    new SimpleDumpData(String.valueOf(de.getCount())),
-                    //plus(de.getMin()),//Min
-                    //plus(de.getExeTime()/de.getCount()),
-                    //plus(de.getMax()),//Max
-                    _toDumpData(de.getFileLoadTime()),
-                    _toDumpData(de.getQueryTime()),
-                    new SimpleDumpData(_toDumpData(de.getExeTime()-de.getQueryTime())+""),
-                    new SimpleDumpData(""),
-                    _toDumpData(de.getFileLoadTime()+de.getExeTime())}));
-			
-		}
-        // Total
-        DumpRow row = new DumpRow(1023,new DumpData[]{new SimpleDumpData("Total"),_toDumpData(tCount),_toDumpData(tLoad),_toDumpData(tQuery),_toDumpData(tApp-tQuery),new SimpleDumpData(""),_toDumpData(tLoad+tApp)});
-        boxPage.appendRow(row);
-        boxPage.prependRow(row);
-        
-        row=new DumpRow(1023,new DumpData[]{new SimpleDumpData("file"),new SimpleDumpData("count"),new SimpleDumpData("load"),new SimpleDumpData("query"),new SimpleDumpData("app"),new SimpleDumpData(""),new SimpleDumpData("total")});
-        boxPage.appendRow(row);
-        boxPage.prependRow(row);
+	@Override
+	public DebugEntryTemplatePart getEntry(PageContext pc,PageSource source, int startPos, int endPos) {
+    	String src=DebugEntryTemplatePartImpl.getSrc(source==null?"":source.getDisplayPath(),startPos,endPos);
+    	DebugEntryTemplatePartImpl de=null;
+    	if(partEntries!=null){
+    		de=partEntries.get(src);
+    		if(de!=null ){
+	            de.countPP();
+	            return de;
+	        }
+    	}
+    	else {
+    		partEntries=new HashMap<String, DebugEntryTemplatePartImpl>();
+    	}
+        de=new DebugEntryTemplatePartImpl(source,startPos,endPos);
+        partEntries.put(src,de);
+        return de;
+    }
 
-//      Exceptions
-        DumpTable tableExceptions=null;
-		int tl=exceptions==null?0:exceptions.size();
-		if(tl>0) {
-			tableExceptions = new DumpTable("#cccccc","#ffffff","#000000");
-			
-			tableExceptions.appendRow(15, new SimpleDumpData("type"),new SimpleDumpData("message"),new SimpleDumpData("detail"), new SimpleDumpData("template"));
-			
-			
-	        	Iterator<CatchBlock> it = exceptions.iterator();
-	        	CatchBlock block;
-	        	PageException pe;
-	        	String type,msg,detail,templ;
-	        	while(it.hasNext()) {
-	        		block=it.next();
-	        		pe=block.getPageException();
-	        		type=StringUtil.emptyIfNull(pe.getTypeAsString());
-	        		msg=StringUtil.emptyIfNull(pe.getMessage());
-	        		detail=StringUtil.emptyIfNull(pe.getDetail());
-	        		templ=getTemplate(pageContext.getConfig(),pe,true);
-	        		tableExceptions.appendRow(0, 
-	        				new SimpleDumpData(type),
-	        				new SimpleDumpData(msg),
-	        				new SimpleDumpData(detail),
-	        				new SimpleDumpData(templ)) ;
-	        	}
-		}
-		
-//      Timers
-        DumpTable tableTimer=null;
-		tl=timers==null?0:timers.size();
-		if(tl>0) {
-			tableTimer = new DumpTable("#cccccc","#ffffff","#000000");
-			//boxTimer.setWidth("100%");
-			tableTimer.appendRow(7, new SimpleDumpData("label"), new SimpleDumpData("time (ms)"),new SimpleDumpData("template"));
-			
-			
-	        	Iterator<DebugTimerImpl> it = timers.iterator();
-	        	DebugTimer timer;
-	        	while(it.hasNext()) {
-	        		timer=(DebugTimer) it.next();
-	        		tableTimer.appendRow(0, new SimpleDumpData(timer.getLabel()),new SimpleDumpData(timer.getTime()),new SimpleDumpData(timer.getTemplate())) ;
-	        	}
-		}
-
-//      Traces
-		DumpTable tableTraces=null;
-		tl=traces==null?0:traces.size();
-		if(tl>0) {
-			tableTraces = new DumpTable("#cccccc","#ffffff","#000000");
-			tableTraces.setWidth("100%");
-			tableTraces.appendRow(
-					new DumpRow(2047, 
-							new DumpData[]{
-							new SimpleDumpData("type"), 
-							new SimpleDumpData("category"),
-							new SimpleDumpData("text"),
-							new SimpleDumpData("template"),
-							new SimpleDumpData("line"),
-							new SimpleDumpData("action"),
-							new SimpleDumpData("var name"),
-							new SimpleDumpData("var value"),
-							new SimpleDumpData("total time (ms)"),
-							new SimpleDumpData("trace slot time (ms)")}));
-		
-            	Iterator<DebugTraceImpl> it = traces.iterator();
-	        	DebugTraceImpl trace;
-	        	int total=0;
-	        	while(it.hasNext()) {
-	        		trace=(DebugTraceImpl) it.next();
-	        		total+=trace.getTime();
-	        		DumpTable tableVar=new DumpTable("#cccccc","#ffffff","#000000");
-	        		SimpleDumpData varValue = new SimpleDumpData(toString(trace.getVarValue()));
-	        		DumpData var;
-	        		try {
-	        			Object value = new CFMLExpressionInterpreter().interpret(pageContext,toString(trace.getVarValue()));
-	        			tableVar.appendRow(0, varValue);
-	        			tableVar.appendRow(0,DumpUtil.toDumpData(value, pageContext, maxlevel,dp) );
-	        			var=tableVar;
-	        		}
-	        		catch(Throwable t) {
-	        			var=varValue;
-	        		}
-	        		
-	        		tableTraces.appendRow(new DumpRow(0, new DumpData[]{
-	        				new SimpleDumpData(LogUtil.toStringType(trace.getType(), "INFO")),
-	        				new SimpleDumpData(toString(trace.getCategory())),
-	        				new SimpleDumpData(toString(trace.getText())),
-	        				new SimpleDumpData(toString(trace.getTemplate())),
-	        				new SimpleDumpData(Caster.toString(trace.getLine())),
-	        				new SimpleDumpData(trace.getAction()),
-	        				new SimpleDumpData(toString(trace.getVarName())),
-	        				var,
-	        				new SimpleDumpData(Caster.toString(total)),
-	        				new SimpleDumpData(Caster.toString(trace.getTime()))}));
-	        	}
-		}
-		
-//		 Query
-		DumpTable tableQuery=null;
-		DumpTable tableQueryItem = null;
-		if(arrQueries.length>0) {
-			
-			tableQuery = new DumpTable("#cccccc","#ffffff","#000000");
-			tableQuery.setWidth("100%");
-			
-			for(int i=0;i<arrQueries.length;i++) {
-				tableQueryItem = new DumpTable("#cccccc","#ffffff","#000000");
-				tableQueryItem.appendRow(1, new SimpleDumpData("Source"), new SimpleDumpData(arrQueries[i].getSrc()));
-				tableQueryItem.appendRow(1, new SimpleDumpData("Execution Time"), new SimpleDumpData(arrQueries[i].getExe()));
-				tableQueryItem.appendRow(1, new SimpleDumpData("Recordcount"), new SimpleDumpData(arrQueries[i].getRecordcount()));
-				tableQueryItem.appendRow(1, new SimpleDumpData("SQL"), new SimpleDumpData((arrQueries[i].getSQL().toString().trim())));
-				
-				// usage
-				try {
-					String usage = getUsageList(arrQueries[i]);
-					if(!StringUtil.isEmpty(usage)) {
-	                	tableQueryItem.appendRow(1, new SimpleDumpData("Columns not read"), new SimpleDumpData(usage));	
-	                }
-				} catch (PageException e) {}
-                
-                
-				
-				
-			    tableQuery.appendRow(0,tableQueryItem);
-			}
-		}
-		
-		DumpTable table = new DumpTable("#cccccc","#ffffff","#000000");
-		table.setTitle("Debugging Output");
-		table.setWidth("100%");
-		table.appendRow(1,new SimpleDumpData("Pages"),boxPage);
-		
-		
-		if(tableExceptions!=null && !tableExceptions.isEmpty())table.appendRow(1,new SimpleDumpData("Caught Exceptions"),tableExceptions);
-		if(tableTimer!=null && !tableTimer.isEmpty())table.appendRow(1,new SimpleDumpData("Timers"),tableTimer);
-		if(tableTraces!=null && !tableTraces.isEmpty())table.appendRow(1,new SimpleDumpData("Traces"),tableTraces);
-		if(tableQuery!=null && !tableQuery.isEmpty())table.appendRow(1,new SimpleDumpData("Queries"),tableQuery);
-		
-		return table;
-	}
-
-	private String getTemplate(Config config,PageException pe,boolean withLine) {
-		try {
-			Array arr = ((PageExceptionImpl)pe).getTagContext(config);
-			Struct sct=Caster.toStruct(arr.getE(1));
-			
-			String templ= Caster.toString(sct.get(KeyImpl.TEMPLATE));
-			if(withLine)templ +=":"+ Caster.toString(sct.get(KeyImpl.LINE));
-			return templ;
-		} 
-		catch (Throwable t) {}
-		
-		return "";
-	}
-
-	private String toString(Object o) {
-		if(o==null) return "";
-		return Caster.toString(o,"");
-	}
-
-	private ArrayList<DebugEntry> toArray() {
-        ArrayList<DebugEntry> arrPages=new ArrayList<DebugEntry>(pages.size());
-        Iterator<String> it = pages.keySet().iterator();
+	private ArrayList<DebugEntryTemplate> toArray() {
+        ArrayList<DebugEntryTemplate> arrPages=new ArrayList<DebugEntryTemplate>(entries.size());
+        Iterator<String> it = entries.keySet().iterator();
         while(it.hasNext()) {
-            DebugEntry page = (DebugEntry) pages.get(it.next());
+            DebugEntryTemplate page =entries.get(it.next());
             page.resetQueryTime();
             arrPages.add(page);
             
         }
-        
-        Collections.sort(arrPages,new DebugEntryComparator());
+        Collections.sort(arrPages,new DebugEntryTemplateComparator());
         
 
         // Queries
         int len=queries.size();
         for(int i=0;i<len;i++) {
-            QueryEntry entry=(QueryEntry) queries.get(i);
+            QueryEntryPro entry=(QueryEntryPro) queries.get(i);
             String path=entry.getSrc();
-            Object o=pages.get(path);
+            Object o=entries.get(path);
             
             if(o!=null) {
-                DebugEntry oe=(DebugEntry) o;
-                oe.updateQueryTime(entry.getExe());
+                DebugEntryTemplate oe=(DebugEntryTemplate) o;
+                oe.updateQueryTime(entry.getExecutionTime());
             }
         }
         
         return arrPages;
     }
 
-	private DumpData _toDumpData(int value) {
+	/*private DumpData _toDumpData(int value) {
         return new SimpleDumpData(_toString(value));
+    }
+	private DumpData _toDumpData(long value) {
+        return new SimpleDumpData(_toString(value));
+    }*/
+	
+	private String _toString(long value) {
+        if(value<=0) return "0";
+        return String.valueOf(value);
     }
 	private String _toString(int value) {
         if(value<=0) return "0";
         return String.valueOf(value);
     }
- 
-    /**
-     * @see railo.runtime.debug.Debugger#addQueryExecutionTime(java.lang.String, java.lang.String, railo.runtime.db.SQL, int, railo.runtime.PageSource, int)
-     */
-	// FUTURE set deprecated
-	public void addQueryExecutionTime(String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
-		queries.add(new QueryEntryImpl(null,datasource,name,sql,recordcount,src.getDisplayPath(),time));
-	}
 	
-	// FUTURE add to interface
+	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
 		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
 	}
 	
-	/**
-     * @see railo.runtime.debug.Debugger#setOutput(boolean)
-     */
+	@Override
+	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time) {
+		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
+	}
+	
+	@Override
 	public void setOutput(boolean output) {
 		this.output = output;
 	}
     
-    /**
-     * @see railo.runtime.debug.Debugger#getQueries()
-     */
-    public List<QueryEntryImpl> getQueries() {
+	@Override
+	public List<QueryEntry> getQueries() {
         return queries;
     }
 
-    /**
-     * @see railo.runtime.debug.Debugger#writeOut(railo.runtime.PageContext)
-     */
-    public void writeOut(PageContext pc) throws IOException {
+	@Override
+	public void writeOut(PageContext pc) throws IOException {
         //stop();
         if(!output)return;
-        
-        String template=pc.getConfig().getDebugTemplate();
+        String addr = pc.getHttpServletRequest().getRemoteAddr();
+        railo.runtime.config.DebugEntry debugEntry = ((ConfigImpl)pc.getConfig()).getDebugEntry(addr, null);
 		
         // no debug File 
-		if(StringUtil.isEmpty(template)) {
-		    pc.forceWrite(pc.getConfig().getDefaultDumpWriter().toString(pc,toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true)); 
+
+		if(debugEntry==null) {
+		    //pc.forceWrite(pc.getConfig().getDefaultDumpWriter().toString(pc,toDumpData(pc, 9999,DumpUtil.toDumpProperties()),true)); 
 		    return;
 		} 
+		
+		Struct args=new StructImpl();
+		args.setEL(KeyConstants._custom, debugEntry.getCustom());
 		try {
-		    pc.doInclude(pc.getRelativePageSource(template));
+			args.setEL(KeyConstants._debugging, pc.getDebugger().getDebuggingData(pc));
+		} catch (PageException e1) {}
+		
+		try {
+			PageSource[] arr = ((PageContextImpl)pc).getPageSources(debugEntry.getPath());
+			Page p = PageSourceImpl.loadPage(pc, arr);
+			pc.addPageSource(p.getPageSource(), true);
+			try{
+				Component cfc = pc.loadComponent(debugEntry.getFullname());
+				cfc.callWithNamedValues(pc, "output", args);
+			}
+			finally {
+				pc.removeLastPageSource(true);
+			}
         } 
 		catch (PageException e) {
             pc.handlePageException(e);
         }
     }
+
+	@Override
+	public Struct getDebuggingData(PageContext pc) throws DatabaseException {
+    	return getDebuggingData(pc, false);
+    }
     
-    /**
-     * @see railo.runtime.debug.Debugger#getDebuggingData()
-     */
-    public Struct getDebuggingData() {
-		List<QueryEntryImpl> queries = getQueries();
+	@Override
+	public Struct getDebuggingData(PageContext pc, boolean addAddionalInfo) throws DatabaseException {
+		List<QueryEntry> queries = getQueries();
 	    Struct qryExe=new StructImpl();
-	    ListIterator<QueryEntryImpl> qryIt = queries.listIterator();
-        String[] cols = new String[]{"name","time","sql","src","count","datasource","usage"};
+	    ListIterator<QueryEntry> qryIt = queries.listIterator();
+        Collection.Key[] cols = new Collection.Key[]{
+        		KeyConstants._name,
+        		KeyConstants._time,
+        		KeyConstants._sql,
+        		KeyConstants._src,
+        		KeyConstants._count,
+        		KeyConstants._datasource,
+        		KeyConstants._usage};
         String[] types = new String[]{"VARCHAR","DOUBLE","VARCHAR","VARCHAR","DOUBLE","VARCHAR","ANY"};
         
         //queries
@@ -436,22 +267,22 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		try {
 		    while(qryIt.hasNext()) {
 		        row++;
-		        QueryEntry qe=(QueryEntry) qryIt.next();
-				qryQueries.setAt(KeyImpl.NAME,row,qe.getName()==null?"":qe.getName());
-		        qryQueries.setAt(KeyImpl.TIME,row,Integer.valueOf(qe.getExe()));
-		        qryQueries.setAt(SQL,row,qe.getSQL().toString());
-				qryQueries.setAt(SRC,row,qe.getSrc());
-                qryQueries.setAt(COUNT,row,Integer.valueOf(qe.getRecordcount()));
-                qryQueries.setAt(DATASOURCE,row,qe.getDatasource());
+		        QueryEntryPro qe=(QueryEntryPro) qryIt.next();
+				qryQueries.setAt(KeyConstants._name,row,qe.getName()==null?"":qe.getName());
+		        qryQueries.setAt(KeyConstants._time,row,Long.valueOf(qe.getExecutionTime()));
+		        qryQueries.setAt(KeyConstants._sql,row,qe.getSQL().toString());
+				qryQueries.setAt(KeyConstants._src,row,qe.getSrc());
+                qryQueries.setAt(KeyConstants._count,row,Integer.valueOf(qe.getRecordcount()));
+                qryQueries.setAt(KeyConstants._datasource,row,qe.getDatasource());
                 
                 Struct usage = getUsage(qe);
-                if(usage!=null) qryQueries.setAt(USAGE,row,usage);
+                if(usage!=null) qryQueries.setAt(KeyConstants._usage,row,usage);
                 
                 
                 
 		        Object o=qryExe.get(KeyImpl.init(qe.getSrc()),null);
-		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Integer.valueOf(qe.getExe()));
-		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Integer.valueOf(((Integer)o).intValue()+qe.getExe()));
+		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(qe.getExecutionTime()));
+		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(((Long)o).longValue()+qe.getExecutionTime()));
 		    }
 		}
 		catch(PageException dbe) {}
@@ -459,38 +290,104 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	    // Pages
 	    // src,load,app,query,total
 	    Struct debugging=new StructImpl();
-		    
-		row=0;
-        ArrayList<DebugEntry> arrPages = toArray();
+	    row=0;
+        ArrayList<DebugEntryTemplate> arrPages = toArray();
 		int len=arrPages.size();
         Query qryPage=new QueryImpl(
-                new String[]{"id","count","min","max","avg","app","load","query","total","src"},
+                new Collection.Key[]{
+                		KeyConstants._id,
+                		KeyConstants._count,
+                		KeyConstants._min,
+                		KeyConstants._max,
+                		KeyConstants._avg
+                		,KeyConstants._app,
+                		KeyConstants._load,
+                		KeyConstants._query,
+                		KeyConstants._total,
+                		KeyConstants._src},
                 len,"query");
 
 		try {
-            DebugEntry de;
+            DebugEntryTemplate de;
             //PageSource ps;
 		    for(int i=0;i<len;i++) {
 		        row++;
-		        de=(DebugEntry) arrPages.get(i);
+		        de=arrPages.get(i);
                 //ps = de.getPageSource();
                 
-		        qryPage.setAt("id",row,de.getId());
-		        qryPage.setAt("count",row,_toString(de.getCount()));
-                qryPage.setAt("min",row,_toString(de.getMin()));
-                qryPage.setAt("max",row,_toString(de.getMax()));
-                qryPage.setAt("avg",row,_toString(de.getExeTime()/de.getCount()));
-                qryPage.setAt("app",row,_toString(de.getExeTime()-de.getQueryTime()));
-                qryPage.setAt("load",row,_toString(de.getFileLoadTime()));
-		        qryPage.setAt("query",row,_toString(de.getQueryTime()));
-                qryPage.setAt(KeyImpl.TOTAL,row,_toString(de.getFileLoadTime()+de.getExeTime()));
-		        qryPage.setAt("src",row,de.getSrc());    
+		        qryPage.setAt(KeyConstants._id,row,de.getId());
+		        qryPage.setAt(KeyConstants._count,row,_toString(de.getCount()));
+                qryPage.setAt(KeyConstants._min,row,_toString(de.getMin()));
+                qryPage.setAt(KeyConstants._max,row,_toString(de.getMax()));
+                qryPage.setAt(KeyConstants._avg,row,_toString(de.getExeTime()/de.getCount()));
+                qryPage.setAt(KeyConstants._app,row,_toString(de.getExeTime()-de.getQueryTime()));
+                qryPage.setAt(KeyConstants._load,row,_toString(de.getFileLoadTime()));
+		        qryPage.setAt(KeyConstants._query,row,_toString(de.getQueryTime()));
+                qryPage.setAt(KeyConstants._total,row,_toString(de.getFileLoadTime()+de.getExeTime()));
+		        qryPage.setAt(KeyConstants._src,row,de.getSrc());    
 			}
 		}
 		catch(PageException dbe) {}
+		
+
+		
+	    // Pages Parts
+		boolean hasParts=partEntries!=null && !partEntries.isEmpty();
+		int qrySize=0;
+		if(hasParts) {
+			qrySize=partEntries.size()<MAX_PARTS?partEntries.size():MAX_PARTS;
+		}
+		
+		Query qryPart=new QueryImpl(
+                new Collection.Key[]{
+                		KeyConstants._id
+                		,KeyConstants._count,
+                		KeyConstants._min,
+                		KeyConstants._max,
+                		KeyConstants._avg,
+                		KeyConstants._total,
+                		KeyConstants._path,
+                		KeyConstants._start,
+                		KeyConstants._end},
+                qrySize,"query");
+		if(hasParts) {
+			row=0;
+			DebugEntryTemplatePart[] tmp = partEntries.values().toArray(new DebugEntryTemplatePart[partEntries.size()]);
+	        Arrays.sort(tmp,new DebugEntryTemplatePartComparator());
+	       
+	        len=tmp.length<MAX_PARTS?tmp.length:MAX_PARTS;
+	        DebugEntryTemplatePart[] parts=new DebugEntryTemplatePart[len];
+	        for(int i=0;i<len;i++) {
+	        	parts[i]=tmp[i];
+	        }
+	        
+	
+			try {
+	            DebugEntryTemplatePart de;
+	            //PageSource ps;
+			    for(int i=0;i<parts.length;i++) {
+			        row++;
+			        de=parts[i];
+	                
+			        qryPart.setAt(KeyConstants._id,row,de.getId());
+			        qryPart.setAt(KeyConstants._count,row,_toString(de.getCount()));
+			        qryPart.setAt(KeyConstants._min,row,_toString(de.getMin()));
+			        qryPart.setAt(KeyConstants._max,row,_toString(de.getMax()));
+			        qryPart.setAt(KeyConstants._avg,row,_toString(de.getExeTime()/de.getCount()));
+			        qryPart.setAt(KeyConstants._start,row,_toString(de.getStartPosition()));
+			        qryPart.setAt(KeyConstants._end,row,_toString(de.getEndPosition()));
+			        qryPart.setAt(KeyConstants._total,row,_toString(de.getExeTime()));
+			        qryPart.setAt(KeyConstants._path,row,de.getPath());    
+				}
+			}
+			catch(PageException dbe) {}
+		}
+		
+		
+		
 
 		// exceptions
-		len=exceptions==null?0:exceptions.size();
+		len = exceptions==null?0:exceptions.size();
 		
         Array arrExceptions=new ArrayImpl();
         if(len>0) {
@@ -505,7 +402,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		// timers
 		len=timers==null?0:timers.size();
         Query qryTimers=new QueryImpl(
-                new String[]{"label","time","template"},
+                new Collection.Key[]{KeyConstants._label,KeyConstants._time,KeyConstants._template},
                 len,"timers");
         if(len>0) {
         	try {
@@ -513,11 +410,11 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	DebugTimer timer;
 	        	row=0;
 	        	while(it.hasNext()) {
-	        		timer=(DebugTimer) it.next();
+	        		timer=it.next();
 	        		row++;
-	        		qryTimers.setAt(KeyImpl.LABEL,row,timer.getLabel()); 
-	        		qryTimers.setAt(KeyImpl.TEMPLATE,row,timer.getTemplate()); 
-	        		qryTimers.setAt(KeyImpl.TIME,row,Caster.toDouble(timer.getTime()));    
+	        		qryTimers.setAt(KeyConstants._label,row,timer.getLabel()); 
+	        		qryTimers.setAt(KeyConstants._template,row,timer.getTemplate()); 
+	        		qryTimers.setAt(KeyConstants._time,row,Caster.toDouble(timer.getTime()));    
 	        	}
 			}
 			catch(PageException dbe) {}
@@ -526,7 +423,16 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		// traces
 		len=traces==null?0:traces.size();
         Query qryTraces=new QueryImpl(
-                new String[]{"type","category","text","template","line","action","varname","varvalue","time"},
+                new Collection.Key[]{
+                		KeyConstants._type,
+                		KeyConstants._category,
+                		KeyConstants._text,
+                		KeyConstants._template,
+                		KeyConstants._line,
+                		KeyConstants._action,
+                		KeyConstants._varname,
+                		KeyConstants._varvalue,
+                		KeyConstants._time},
                 len,"traces");
         if(len>0) {
         	try {
@@ -536,39 +442,76 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 	        	while(it.hasNext()) {
 	        		trace= it.next();
 	        		row++;
-	        		qryTraces.setAt(KeyImpl.TYPE,row,LogUtil.toStringType(trace.getType(), "INFO"));  
-	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt("category",row,trace.getCategory()); 
-	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt("text",row,trace.getText()); 
-	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyImpl.TEMPLATE,row,trace.getTemplate()); 
-	        		if(trace.getLine()>0)qryTraces.setAt(KeyImpl.LINE,row,new Double(trace.getLine())); 
-	        		if(!StringUtil.isEmpty(trace.getAction()))qryTraces.setAt("action",row,trace.getAction()); 
-	        		if(!StringUtil.isEmpty(trace.getVarName()))qryTraces.setAt("varname",row,trace.getVarName()); 
-	        		if(!StringUtil.isEmpty(trace.getVarValue()))qryTraces.setAt("varvalue",row,trace.getVarValue()); 
-	        		qryTraces.setAt(KeyImpl.TIME,row,new Double(trace.getTime())); 
+	        		qryTraces.setAt(KeyConstants._type,row,LogUtil.toStringType(trace.getType(), "INFO"));  
+	        		if(!StringUtil.isEmpty(trace.getCategory()))qryTraces.setAt(KeyConstants._category,row,trace.getCategory()); 
+	        		if(!StringUtil.isEmpty(trace.getText()))qryTraces.setAt(KeyConstants._text,row,trace.getText()); 
+	        		if(!StringUtil.isEmpty(trace.getTemplate()))qryTraces.setAt(KeyConstants._template,row,trace.getTemplate()); 
+	        		if(trace.getLine()>0)qryTraces.setAt(KeyConstants._line,row,new Double(trace.getLine())); 
+	        		if(!StringUtil.isEmpty(trace.getAction()))qryTraces.setAt(KeyConstants._action,row,trace.getAction()); 
+	        		if(!StringUtil.isEmpty(trace.getVarName()))qryTraces.setAt(KeyImpl.init("varname"),row,trace.getVarName()); 
+	        		if(!StringUtil.isEmpty(trace.getVarValue()))qryTraces.setAt(KeyImpl.init("varvalue"),row,trace.getVarValue()); 
+	        		qryTraces.setAt(KeyConstants._time,row,new Double(trace.getTime())); 
 	        	}
 			}
 			catch(PageException dbe) {}
         }
-		
-        Query history=new QueryImpl(new String[]{},0,"history");
+        
+
+
+		// scope access
+		len=implicitAccesses==null?0:implicitAccesses.size();
+        Query qryImplicitAccesseses=new QueryImpl(
+                new Collection.Key[]{
+                		KeyConstants._template,
+                		KeyConstants._line,
+                		KeyConstants._scope,
+                		KeyConstants._count,
+                		KeyConstants._name},
+                len,"implicitAccess");
+        if(len>0) {
+        	try {
+	        	Iterator<ImplicitAccessImpl> it = implicitAccesses.values().iterator();
+	        	ImplicitAccessImpl das;
+	        	row=0;
+	        	while(it.hasNext()) {
+	        		das= it.next();
+	        		row++;
+	        		qryImplicitAccesseses.setAt(KeyConstants._template,row,das.getTemplate()); 
+	        		qryImplicitAccesseses.setAt(KeyConstants._line,row,new Double(das.getLine()));
+	        		qryImplicitAccesseses.setAt(KeyConstants._scope,row,das.getScope()); 
+	        		qryImplicitAccesseses.setAt(KeyConstants._count,row,new Double(das.getCount())); 
+	        		qryImplicitAccesseses.setAt(KeyConstants._name,row,das.getName());  
+	        		
+	        	}
+			}
+			catch(PageException dbe) {}
+        }
+        
+        Query history=new QueryImpl(new Collection.Key[]{},0,"history");
         try {
-			history.addColumn(KeyImpl.ID, historyId);
-	        history.addColumn("level", historyLevel);
+			history.addColumn(KeyConstants._id, historyId);
+	        history.addColumn(KeyConstants._level, historyLevel);
 		} catch (PageException e) {
 		}
-        
-		debugging.setEL(PAGES,qryPage);
+		
+		if(addAddionalInfo) {
+			debugging.setEL(KeyConstants._cgi,pc.cgiScope());
+			debugging.setEL(KeyImpl.init("starttime"),starttime);
+			debugging.setEL(KeyConstants._id,pc.getId());
+		}
+
+		debugging.setEL(KeyConstants._pages,qryPage);
+		debugging.setEL(PAGE_PARTS,qryPart);
 		debugging.setEL(QUERIES,qryQueries);
-		debugging.setEL(TIMERS,qryTimers);
-		debugging.setEL(TRACES,qryTraces);
-		debugging.setEL(HISTORY,history);
-		debugging.setEL(KeyImpl.EXCEPTIONS,arrExceptions);
-		//debugging.setEL(TRACE_OBJECTS,arrTO);
+		debugging.setEL(KeyConstants._timers,qryTimers);
+		debugging.setEL(KeyConstants._traces,qryTraces);
+		debugging.setEL(IMPLICIT_ACCESS,qryImplicitAccesseses);
+		
+		debugging.setEL(KeyImpl.intern("history"),history);
+		debugging.setEL(KeyConstants._exceptions,arrExceptions);
+		
 		return debugging;
     }
-
-    
-    
     
 	private static Struct getUsage(QueryEntry qe) throws PageException {
 		Query qry = ((QueryEntryImpl)qe).getQry();
@@ -577,23 +520,22 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         DebugQueryColumn dqc;
         outer:if(qry!=null) {
         	Struct usage=null;
-        	String[] columnNames = qry.getColumns();
-        	Collection.Key colName;
+        	Collection.Key[] columnNames = qry.getColumnNames();
+        	Collection.Key columnName; 
         	for(int i=0;i<columnNames.length;i++){
-        		colName=KeyImpl.init(columnNames[i]);
-        		c = qry.getColumn(colName);
+        		columnName=columnNames[i];
+        		c = qry.getColumn(columnName);
         		if(!(c instanceof DebugQueryColumn)) break outer;
         		dqc=(DebugQueryColumn) c;
         		if(usage==null) usage=new StructImpl();
-        		usage.setEL(colName, Caster.toBoolean(dqc.isUsed()));
+        		usage.setEL(columnName, Caster.toBoolean(dqc.isUsed()));
         	}
         	return usage;
         }
         return null;
 	}
-	
 
-	private static String getUsageList(QueryEntry qe) throws PageException  {
+	/*private static String getUsageList(QueryEntry qe) throws PageException  {
 		Query qry = ((QueryEntryImpl)qe).getQry();
         StringBuilder sb=new StringBuilder();
         QueryColumn c;
@@ -613,20 +555,16 @@ public final class DebuggerImpl implements Dumpable, Debugger {
         	}
         }
         return sb.toString();
-	}
+	}*/
 
-	/**
-	 * @see railo.runtime.debug.Debugger#addTimer(java.lang.String, long, java.lang.String)
-	 */
+	@Override
 	public DebugTimer addTimer(String label, long time, String template) {
 		DebugTimerImpl t;
 		timers.add(t=new DebugTimerImpl(label,time,template));
 		return t;
 	}
 
-	/**
-	 * @see railo.runtime.debug.Debugger#addTrace(int, java.lang.String, java.lang.String, railo.runtime.PageSource, java.lang.String)
-	 */
+	@Override
 	public DebugTrace addTrace(int type, String category, String text, PageSource page,String varName,String varValue) {
 		
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
@@ -640,6 +578,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 			StackTraceElement trace=_traces[i];
     		if(trace.getClassName().startsWith(clazz)) {
     			line=trace.getLineNumber();
+    			break;
 			}
 		}
 		
@@ -648,6 +587,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return t;
 	}
 	
+	@Override
 	public DebugTrace addTrace(int type, String category, String text, String template,int line,String action,String varName,String varValue) {
 		
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
@@ -658,15 +598,12 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return t;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.debug.Debugger#getTraces()
-	 */
+	@Override
 	public DebugTrace[] getTraces() {
 		return traces.toArray(new DebugTrace[traces.size()]);
 	}
 	
-	// FUTURE add to interface
+	@Override
 	public void addException(Config config,PageException pe) {
 		if(exceptions.size()>1000) return;
 		try {
@@ -675,8 +612,7 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		catch(Throwable t){}
 	}
 	
-	
-	// FUTURE add to interface
+	@Override
 	public CatchBlock[] getExceptions() {
 		return exceptions.toArray(new CatchBlock[exceptions.size()]);
 	}
@@ -691,4 +627,46 @@ public final class DebuggerImpl implements Dumpable, Debugger {
 		return false;
 	}
 
+	public void init(Config config) {
+		this.starttime=new DateTimeImpl(config);
+	}
+
+	@Override
+	public void addImplicitAccess(String scope, String name) {
+		if(implicitAccesses.size()>1000) return;
+		try {
+			SystemUtil.TemplateLine tl = SystemUtil.getCurrentContext(); 
+			String key=tl+":"+scope+":"+name;
+			ImplicitAccessImpl dsc = implicitAccesses.get(key);
+			if(dsc!=null)
+				dsc.inc();
+			else 
+				implicitAccesses.put(key,new ImplicitAccessImpl(scope,name,tl.template,tl.line));
+		}
+		catch(Throwable t){}
+	}
+
+	@Override
+	public ImplicitAccess[] getImplicitAccesses(int scope, String name) {
+		return implicitAccesses.values().toArray(new ImplicitAccessImpl[implicitAccesses.size()]);
+	}
+}
+
+final class DebugEntryTemplateComparator implements Comparator<DebugEntryTemplate> {
+    
+	public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
+		long result = ((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
+        // we do this addional step to try to avoid ticket RAILO-2076
+        return result>0L?1:(result<0L?-1:0);
+    }
+}
+
+final class DebugEntryTemplatePartComparator implements Comparator<DebugEntryTemplatePart> {
+	
+	@Override
+	public int compare(DebugEntryTemplatePart de1,DebugEntryTemplatePart de2) {
+		long result=de2.getExeTime()-de1.getExeTime();
+		// we do this addional step to try to avoid ticket RAILO-2076
+        return result>0L?1:(result<0L?-1:0);
+    }
 }

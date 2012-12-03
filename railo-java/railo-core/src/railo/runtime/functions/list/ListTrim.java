@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function listlast
+ * Implements the CFML Function listlast
  */
 package railo.runtime.functions.list;
 
@@ -15,8 +15,8 @@ public final class ListTrim implements Function {
 		DeprecatedUtil.function(pc,"ListTrim","ListCompact");
 		return ListCompact.call(pc,list,",");
 	}
-	public static String call(PageContext pc , String list, String delimeter) {
+	public static String call(PageContext pc , String list, String delimiter) {
 		DeprecatedUtil.function(pc,"ListTrim","ListCompact");
-		return ListCompact.call(pc,list,delimeter);
+		return ListCompact.call(pc,list,delimiter);
 	}
 }

@@ -15,16 +15,14 @@ import railo.runtime.query.QueryCacheSupport;
 import railo.runtime.type.Collection;
 import railo.runtime.type.DoubleStruct;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeContext;
+import railo.runtime.type.util.KeyConstants;
 
-public class Surveillance {
+ class Surveillance {
 
-	private static final Collection.Key MEMORY = KeyImpl.intern("memory");
-	private static final Collection.Key SCOPES = KeyImpl.intern("scopes");
-	private static final Collection.Key MAPPINGS = KeyImpl.intern("mappings");
 	private static final Collection.Key PAGE_POOL = KeyImpl.intern("pagePool");
 	private static final Collection.Key CLASS_LOADER = KeyImpl.intern("classLoader");
 	private static final Collection.Key QUERY_CACHE = KeyImpl.intern("queryCache");
@@ -37,7 +35,7 @@ public class Surveillance {
 		
 		// memory
 		DoubleStruct mem=new DoubleStruct();
-		sct.set(MEMORY, mem);
+		sct.set(KeyConstants._memory, mem);
 		getInfoMemory(mem, config);
 		
 		// count
@@ -52,8 +50,8 @@ public class Surveillance {
 	private static void getInfoMemory(Struct parent, ConfigImpl config) throws PageException {
 		DoubleStruct server = new DoubleStruct();
 		DoubleStruct web = new DoubleStruct();
-		parent.set("server", server);
-		parent.set("web", web);
+		parent.set(KeyConstants._server, server);
+		parent.set(KeyConstants._web, web);
 		
 		boolean isConfigWeb=config instanceof ConfigWeb;
 		
@@ -78,18 +76,12 @@ public class Surveillance {
 
 	private static void _getInfoMemory(Struct web, Struct server, ConfigImpl config) throws PageException {
 		DoubleStruct sct = new DoubleStruct();
-		//long start=System.currentTimeMillis();
 		infoMapping(sct,config);
-			//print.out(System.currentTimeMillis()-start);
 		//infoResources(sct,config);
-			//print.out(System.currentTimeMillis()-start);
 		
 		infoScopes(sct,server,config);
-			//print.out(System.currentTimeMillis()-start);
 		infoPageContextStack(sct,config.getFactory());
-			//print.out(System.currentTimeMillis()-start);
 		infoQueryCache(sct,config.getFactory());
-			//print.out(System.currentTimeMillis()-start);
 		//size+=infoResources(sct,cs);
 		
 		web.set(config.getConfigDir().getPath(), sct);
@@ -103,7 +95,7 @@ public class Surveillance {
 		DoubleStruct map=new DoubleStruct();
 		infoMapping(map,config.getMappings(),false);
     	infoMapping(map,config.getCustomTagMappings(),true);
-    	parent.set(MAPPINGS, map);
+    	parent.set(KeyConstants._mappings, map);
 	}
 
 	private static void infoMapping(Struct map, Mapping[] mappings, boolean isCustomTagMapping) throws PageException {
@@ -158,12 +150,12 @@ public class Surveillance {
 		s=sc.getScopesSize(Scope.SCOPE_CLIENT);
 		webScopes.set("client", Caster.toDouble(s));
 		
-		web.set(SCOPES, webScopes);
-		server.set(SCOPES, srvScopes);
+		web.set(KeyConstants._scopes, webScopes);
+		server.set(KeyConstants._scopes, srvScopes);
 	}
 
 	private static void infoQueryCache(Struct parent,CFMLFactory factory) throws PageException {
-		long size= ((QueryCacheSupport)factory.getQueryCache()).sizeOf();
+		long size= ((QueryCacheSupport)factory.getDefaultQueryCache()).sizeOf();
 		parent.set(QUERY_CACHE, Caster.toDouble(size));
 	}
 	

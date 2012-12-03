@@ -5,6 +5,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
@@ -102,9 +103,10 @@ public class CustomTagUtil {
         // search local
         if(pc.getConfig().doLocalCustomTag()){
 		    for(int i=0;i<filenames.length;i++){
-	            ps=pc.getRelativePageSource(filenames[i]);
-	            
-				if(ps !=null && MappingImpl.isOK(ps)) {
+	            PageSource[] arr = ((PageContextImpl)pc).getRelativePageSources(filenames[i]);
+		    	//ps=pc.getRelativePageSource(filenames[i]);
+	            ps=MappingImpl.isOK(arr);
+				if(ps !=null) {
 					initFile= new InitFile(ps,filenames[i],filenames[i].endsWith('.'+config.getCFCExtension()));
 					if(doCache)config.putCTInitFile(localCacheName, initFile);
 	        		return initFile;
@@ -112,7 +114,7 @@ public class CustomTagUtil {
 	        }
         }
     	
-        // search application mapping
+        // search application custom tag mapping
         if(actms!=null){
         	for(int i=0;i<filenames.length;i++){
             	ps=getMapping(actms, filenames[i],doCustomTagDeepSearch);
@@ -124,7 +126,7 @@ public class CustomTagUtil {
             }
         }
     	
-        // search config mapping
+        // search custom tag mappings
         for(int i=0;i<filenames.length;i++){
         	ps=getMapping(cctms, filenames[i], doCustomTagDeepSearch);
         	if(ps!=null) {

@@ -2,6 +2,7 @@ package railo.loader.engine;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -9,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
 
 import railo.runtime.CFMLFactory;
 import railo.runtime.PageContext;
@@ -60,9 +62,18 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
         engine.serviceAMF(servlet,req,rsp);
     }
     
+    /**
+     * @see railo.loader.engine.CFMLEngine#serviceFile(javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
     public void serviceFile(HttpServlet servlet, HttpServletRequest req,
             HttpServletResponse rsp) throws ServletException, IOException {
         engine.serviceFile(servlet,req,rsp);
+    }
+    
+
+    public void serviceRest(HttpServlet servlet, HttpServletRequest req,
+            HttpServletResponse rsp) throws ServletException, IOException {
+        engine.serviceRest(servlet,req,rsp);
     }
 
     /**
@@ -161,7 +172,6 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	 * @see railo.loader.engine.CFMLEngine#getCFMLFactory(javax.servlet.ServletContext, javax.servlet.ServletConfig, javax.servlet.http.HttpServletRequest)
 	 */
 	public CFMLFactory getCFMLFactory(ServletContext srvContext, ServletConfig srvConfig, HttpServletRequest req) throws ServletException {
-		System.out.println(engine);
 		return engine.getCFMLFactory(srvContext, srvConfig, req);
 	}
 
@@ -232,5 +242,15 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 			other=((CFMLEngineWrapper)other).engine;
 		if(checkReferenceEqualityOnly) return engine==other;
 		return engine.equals(other);
+	}
+
+	@Override
+	public void cli(Map<String, String> config, ServletConfig servletConfig) throws IOException, JspException, ServletException {
+		engine.cli(config, servletConfig);
+	}
+
+	@Override
+	public void registerThreadPageContext(PageContext pc) {
+		engine.registerThreadPageContext(pc);
 	}
 }

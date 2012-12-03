@@ -6,15 +6,19 @@ import java.io.PrintWriter;
 import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.config.Config;
+import railo.runtime.config.Constants;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
+import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionImpl;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 public final class ModernAppListenerException extends PageException {
 
@@ -58,27 +62,28 @@ public final class ModernAppListenerException extends PageException {
 	 * @see railo.runtime.exp.IPageException#getCatchBlock()
 	 */
 	public Struct getCatchBlock() {
-		return getCatchBlock(ThreadLocalPageContext.get());
+		return getCatchBlock(ThreadLocalPageContext.getConfig());
+	}
+	
+
+	public Struct getCatchBlock(PageContext pc) {
+		return getCatchBlock(pc.getConfig());
 	}
 	
 	/**
 	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
 	 */
-	public Struct getCatchBlock(PageContext pc) {
-		
-		Struct cb=rootCause.getCatchBlock(pc);
-		Collection cause = cb.duplicate(false);
+	public CatchBlock getCatchBlock(Config config) {
+		CatchBlock cb=rootCause.getCatchBlock(config);
+		Collection cause = (Collection) Duplicator.duplicate(cb,false);
 		//rtn.setEL("message", getMessage());
-		if(!cb.containsKey(KeyImpl.DETAIL))cb.setEL(KeyImpl.DETAIL, "Exception throwed while invoking function ["+eventName+"] from Application.cfc");
+		if(!cb.containsKey(KeyConstants._detail))cb.setEL(KeyConstants._detail, "Exception throwed while invoking function ["+eventName+"] from "+Constants.APP_CFC);
 		cb.setEL(ROOT_CAUSE, cause);
 		cb.setEL(CAUSE, cause);
 		//cb.setEL("stacktrace", getStackTraceAsString());
 		//rtn.setEL("tagcontext", new ArrayImpl());
 		//rtn.setEL("type", getTypeAsString());
-		cb.setEL(KeyImpl.NAME, eventName);
-
-		
-		
+		cb.setEL(KeyConstants._name, eventName);
 		return cb;
 	}
 

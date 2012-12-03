@@ -26,6 +26,7 @@ import java.util.zip.ZipFile;
 import javax.mail.Transport;
 
 import net.sf.jmimemagic.Magic;
+import net.sf.jmimemagic.MagicMatch;
 import railo.commons.io.res.Resource;
 import railo.commons.net.URLEncoder;
 import railo.runtime.exp.PageException;
@@ -154,7 +155,6 @@ public final class IOUtil {
     	copy(in, out, offset, length,0xffff);
     }
     
-
     public static final void copy(InputStream in, OutputStream out, long offset, long length) throws IOException {
     	int len;
         byte[] buffer;
@@ -162,15 +162,23 @@ public final class IOUtil {
     	
     	// first offset to start
     	if(offset>0) {
-    		while(true) {
-            	if(block>offset)block=(int)offset;
-            	buffer = new byte[block];
-            	len = in.read(buffer);
-            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
-            	//dnos.write(buffer, 0, len);
-            	offset-=len;
-            	if(offset<=0) break;
-            }
+    		long skipped=0;
+    		try{
+    			skipped = in.skip(offset);
+    		}
+    		catch(Throwable t){}
+    		
+			if(skipped<=0) {
+	    		while(true) {
+	            	if(block>offset)block=(int)offset;
+	            	buffer = new byte[block];
+	            	len = in.read(buffer);
+	            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
+	            	//dnos.write(buffer, 0, len);
+	            	offset-=len;
+	            	if(offset<=0) break;
+	            }
+    		}
     	}
     	
     	// write part
@@ -198,16 +206,24 @@ public final class IOUtil {
     	
     	// first offset to start
     	if(offset>0) {
-    		block = blockSize;//0xffff;
-        	while(true) {
-            	if(block>offset)block=offset;
-            	buffer = new byte[block];
-            	len = in.read(buffer);
-            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
-            	//dnos.write(buffer, 0, len);
-            	offset-=len;
-            	if(offset<=0) break;
-            }
+    		long skipped=0;
+    		try{
+    			skipped = in.skip(offset);
+    		}
+    		catch(Throwable t){}
+    		
+			if(skipped<=0) {
+	    		block = blockSize;//0xffff;
+	        	while(true) {
+	            	if(block>offset)block=offset;
+	            	buffer = new byte[block];
+	            	len = in.read(buffer);
+	            	if(len==-1) throw new IOException("reading offset is bigger than input itself");
+	            	//dnos.write(buffer, 0, len);
+	            	offset-=len;
+	            	if(offset<=0) break;
+	            }
+			}
     	}
     	
     	// write part
@@ -225,7 +241,6 @@ public final class IOUtil {
         	length-=len;
         	if(length<=0) break;
         }
-    	
     }
 
 	/**
@@ -728,11 +743,17 @@ public final class IOUtil {
             closeEL(writer);
         }
     }
-    
+
 
     public static void write(Resource res, byte[] barr) throws IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(barr);
     	OutputStream os=IOUtil.toBufferedOutputStream(res.getOutputStream());
+        IOUtil.copy(bais, os, true, true);
+    }
+
+    public static void write(Resource res, byte[] barr, boolean append) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(barr);
+    	OutputStream os=IOUtil.toBufferedOutputStream(res.getOutputStream(append));
         IOUtil.copy(bais, os, true, true);
     }
     
@@ -849,76 +870,57 @@ public final class IOUtil {
 		}
 	}
     
-
     /**
      * return the mime type of a file, dont check extension
      * @param barr
      * @param defaultValue 
      * @return mime type of the file
      */
-    public static String getMymeType(byte[] barr, String defaultValue) {
-        PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            return Magic.getMagicMatch(barr).getMimeType();
-        }
-        catch (Exception e) {
-            return defaultValue;
-        }
-        finally {
-        	System.setOut(out);
-        }
-    }
-    
-
-    public static String getMymeType(File file, String defaultValue) {
-        PrintStream out = System.out;
-        try {
-        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
-            return Magic.getMagicMatch(file,false).getMimeType();
-        }
-        catch (Exception e) {
-            return defaultValue;
-        }
-        finally {
-        	System.setOut(out);
-        }
-    }
-    
-    /**
-     * return the mime type of a file, dont check extension
-     * @param barr
-     * @param defaultValue 
-     * @return mime type of the file
-     */
-    public static String getMymeType(InputStream is, String defaultValue) {
-        try {
-			return getMymeType(IOUtil.toBytesMax(is,1000), defaultValue);
+    public static String getMimeType(InputStream is, String defaultValue) {
+    	try {
+			return getMimeType(IOUtil.toBytesMax(is,1000), defaultValue);
 		} catch (IOException e) {
 			return defaultValue;
 		}
+    	
+    	
+    	/*try {
+			return URLConnection.guessContentTypeFromStream(is);
+		} catch (Throwable t) {
+			return defaultValue;
+		}*/
+		
+        /*try {
+			return getMimeType(IOUtil.toBytesMax(is,1000), defaultValue);
+		} catch (IOException e) {
+			return defaultValue;
+		}*/
     }
+    
     
     /**
      * return the mime type of a file, dont check extension
      * @param barr
-     * @param defaultValue 
      * @return mime type of the file
+     * @throws IOException 
      */
-    public static String getMymeType(Resource res, String defaultValue) {
-        if(res instanceof File)
-        	return getMymeType((File)res, defaultValue);
-    	InputStream is = null;
-    	try {
-    		is = res.getInputStream();
-			return getMymeType(IOUtil.toBytesMax(is,1000), defaultValue);
-		} 
-    	catch (IOException e) {
+    public static String getMimeType(byte[] barr, String defaultValue) {
+        
+    	//String mt = getMimeType(new ByteArrayInputStream(barr), null);
+    	//if(!StringUtil.isEmpty(mt,true)) return mt;
+    	
+    	PrintStream out = System.out;
+        try {
+        	System.setOut(new PrintStream(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM));
+            MagicMatch match = Magic.getMagicMatch(barr);
+            return match.getMimeType();
+        } 
+        catch (Throwable t) {
 			return defaultValue;
-		}
-		finally {
-			closeEL(is);
-		}
+        }
+        finally {
+        	System.setOut(out);
+        }
     }
     
  	public static Writer getWriter(Resource res, String charset) throws IOException {

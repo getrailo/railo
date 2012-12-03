@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function yesnoformat
+ * Implements the CFML Function yesnoformat
  */
 package railo.runtime.functions.displayFormatting;
 

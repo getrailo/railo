@@ -1,7 +1,6 @@
 package railo.runtime.functions.system;
 
 import java.io.InputStream;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import railo.commons.io.IOUtil;
@@ -14,9 +13,9 @@ public class IsZipFile {
 		InputStream is=null;
 		boolean hasEntries=false;
 		try {
-			ZipEntry ze;
+			//ZipEntry ze;
 			ZipInputStream zis = new ZipInputStream(is=ResourceUtil.toResourceExisting(pc, path).getInputStream());
-			while ((ze=zis.getNextEntry()) != null ) {
+			while ((zis.getNextEntry()) != null ) {
 	        	zis.closeEntry();
 	        	hasEntries=true;
 	        }

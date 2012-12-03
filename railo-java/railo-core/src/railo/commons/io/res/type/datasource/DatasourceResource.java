@@ -295,7 +295,7 @@ public final class DatasourceResource extends ResourceSupport {
 	 * @see railo.commons.io.res.Resource#setMode(int)
 	 */
 	public void setMode(int mode) throws IOException {
-		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exists");
+		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exist");
 		provider.setMode(data,fullPathHash(),parent,name,mode);
 	}
 

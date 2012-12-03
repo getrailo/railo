@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function randomize
+ * Implements the CFML Function randomize
  */
 package railo.runtime.functions.math;
 

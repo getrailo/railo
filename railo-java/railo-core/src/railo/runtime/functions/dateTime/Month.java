@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function month
+ * Implements the CFML Function month
  */
 package railo.runtime.functions.dateTime;
 

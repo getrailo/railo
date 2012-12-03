@@ -6,12 +6,13 @@ import org.objectweb.asm.commons.Method;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 
-public final class PrintOut extends StatementBase {
+public final class PrintOut extends StatementBaseNoFinal {
 
 	// void write (String)
     private final static Method METHOD_WRITE =  new Method("write",
@@ -33,8 +34,8 @@ public final class PrintOut extends StatementBase {
      * @param expr
      * @param line 
      */
-    public PrintOut(Expression expr, int line) {
-        super(line);
+    public PrintOut(Expression expr, Position start,Position end) {
+        super(start,end);
         this.expr=CastString.toExprString(expr);
     }
 

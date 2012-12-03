@@ -14,18 +14,23 @@ import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BodyBase;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.statement.FlowControlFinal;
+import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.statement.TryCatchFinally;
+import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
+import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryCatchFinallyVisitor;
 
 public final class TagTry extends TagBase {
 
-	private static final ExprString ANY=LitString.toExprString("any", -1);
+	private static final ExprString ANY=LitString.toExprString("any");
 
 	private static final Method GET_VARIABLE = new Method(
 			"getVariable",
@@ -38,10 +43,10 @@ public final class TagTry extends TagBase {
 			new Type[]{Types.THROWABLE});
 	
 	// PageException setCatch(Throwable t)
-	private static final Method SET_CATCH_T = new Method(
+	/*private static final Method SET_CATCH_T = new Method(
 			"setCatch",
 			Types.PAGE_EXCEPTION,
-			new Type[]{Types.THROWABLE});
+			new Type[]{Types.THROWABLE});*/
 	
 	
 	public static final Method SET_CATCH_PE = new Method(
@@ -65,14 +70,13 @@ public final class TagTry extends TagBase {
 			Types.BOOLEAN_VALUE,
 			new Type[]{Types.STRING});
 
+	private FlowControlFinal fcf;
+
+	private boolean checked;
+
 	
-
-	public TagTry(int line) {
-		super(line);
-	}
-
-	public TagTry(int sl,int el) {
-		super(sl,el);
+	public TagTry(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**
@@ -82,17 +86,18 @@ public final class TagTry extends TagBase {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
 		Body tryBody=new BodyBase();
-		List catches=new ArrayList();
-		Tag _finally=null;
+		List<Tag> catches=new ArrayList<Tag>();
+		Tag tmpFinal=null;
 
 		tryBody.setParent(getBody().getParent());
 		
-		List statements = getBody().getStatements();
+		List<Statement> statements = getBody().getStatements();
 		Statement stat;
 		Tag tag;
-		Iterator it = statements.iterator();
+		{
+		Iterator<Statement> it = statements.iterator();
 		while(it.hasNext()) {
-			stat=(Statement) it.next();
+			stat= it.next();
 			if(stat instanceof Tag) {
 				tag=(Tag) stat;
 				if(tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Catch"))	{
@@ -100,24 +105,45 @@ public final class TagTry extends TagBase {
 					continue;
 				}
 				else if(tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Finally"))	{
-					_finally=tag;
+					tmpFinal=tag;
 					continue;
 				}
 			}
 			tryBody.addStatement(stat);
 		};
+		}
+		final Tag _finally=tmpFinal;
+		
+		// has no try body, if there is no try body, no catches are executed, only finally 
+		if(!tryBody.hasStatements()) {
+			
+			if(_finally!=null && _finally.getBody()!=null)_finally.getBody().writeOut(bc);
+			return;
+		}
+		
+		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
+			
+			public void writeOut(BytecodeContext bc) throws BytecodeException {
+				if(_finally!=null) {
+					GeneratorAdapter ga = bc.getAdapter();
+					if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)
+						ASMUtil.visitLabel(ga,fcf.getFinalEntryLabel());
+					
+					ExpressionUtil.visitLine(bc, _finally.getStart());
+					_finally.getBody().writeOut(bc);
+					if(fcf!=null){
+						Label l=fcf.getAfterFinalGOTOLabel();
+						if(l!=null)ga.visitJumpInsn(Opcodes.GOTO, l);
+					}
+				}
+			}
+		});
 		
 		
-		
-		
-		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor();
 		// Try
 		tcfv.visitTryBegin(bc);
 			tryBody.writeOut(bc);
-		tcfv.visitTryEnd(bc);
-		
-		// Catch
-		int e=tcfv.visitCatchBegin(bc, Types.THROWABLE);
+		int e=tcfv.visitTryEndCatchBeging(bc);
 			// if(e instanceof railo.runtime.exp.Abort) throw e;
 			Label abortEnd=new Label();
 			adapter.loadLocal(e);
@@ -136,37 +162,22 @@ public final class TagTry extends TagBase {
 	        // PageExceptionImpl old=pc.getCatch();
 	        int old=adapter.newLocal(Types.PAGE_EXCEPTION);
 	        adapter.loadArg(0);
-	        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, GET_CATCH);
+	        adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_CATCH);
 			adapter.storeLocal(old);
 			
-			/*int obj=adapter.newLocal(Types.OBJECT);
-	        adapter.loadArg(0);
-	        adapter.push("cfcatch");
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_VARIABLE);
-			adapter.storeLocal(obj);*/
-			
-	        
 	        // PageException pe=Caster.toPageEception(e);
 	        int pe=adapter.newLocal(Types.PAGE_EXCEPTION);
 	        adapter.loadLocal(e);
 	        adapter.invokeStatic(Types.CASTER, TO_PAGE_EXCEPTION);
 			adapter.storeLocal(pe);
-			/*
-			adapter.loadArg(0);
-	        adapter.loadLocal(e);
-	        adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH_T);
-			adapter.storeLocal(pe);
-			*/
 			
-			
-			it=catches.iterator();
+			Iterator<Tag> it = catches.iterator();
 			Attribute attrType;
 			Expression type;
 			Label endAllIfs=new Label();
 			Tag tagElse=null;
 			while(it.hasNext()) {
-				tag=(Tag) it.next();
+				tag=it.next();
 				Label endIf=new Label();
 				attrType = tag.getAttribute("type");
 				type=ANY;
@@ -177,7 +188,7 @@ public final class TagTry extends TagBase {
 					continue;
 				}
 				
-				ExpressionUtil.visitLine(bc, tag.getLine());
+				ExpressionUtil.visitLine(bc, tag.getStart());
 				
 				// if(pe.typeEqual(@type)
 				adapter.loadLocal(pe);
@@ -200,11 +211,10 @@ public final class TagTry extends TagBase {
 			else{
 				// pc.setCatch(pe,true);
 				adapter.loadArg(0);
-		        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
 		        adapter.loadLocal(pe);
 		        adapter.push(false);
 		        adapter.push(true);
-		        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, SET_CATCH3);
+		        adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
 				
 				//throw pe;
 				adapter.loadLocal(pe);
@@ -215,37 +225,51 @@ public final class TagTry extends TagBase {
 		
 		// PageExceptionImpl old=pc.getCatch();
         adapter.loadArg(0);
-        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
         adapter.loadLocal(old);
-        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, SET_CATCH_PE);
+        adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH_PE);
 			
 		tcfv.visitCatchEnd(bc);
-		
-		
-		
-		// Finally
-		tcfv.visitFinallyBegin(bc);
-			// pc.clearCatch();
-				//adapter.loadArg(0);
-				//adapter.invokeVirtual(Types.PAGE_CONTEXT, CLEAR_CATCH);
-		
-			if(_finally!=null) {
-				ExpressionUtil.visitLine(bc, _finally.getLine());
-				_finally.getBody().writeOut(bc);
-			}
-		tcfv.visitFinallyEnd(bc);
 	}
+	
 
 	private static void catchBody(BytecodeContext bc, GeneratorAdapter adapter,Tag tag, int pe,boolean caugth) throws BytecodeException {
 		// pc.setCatch(pe,true);
 		adapter.loadArg(0);
-        adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
         adapter.loadLocal(pe);
         adapter.push(caugth);
         adapter.push(true);
-        adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL, SET_CATCH3);
+        adapter.invokeVirtual(Types.PAGE_CONTEXT, SET_CATCH3);
 		tag.getBody().writeOut(bc);
     	
+	}
+	
+	private boolean hasFinally(){
+		List<Statement> statements = getBody().getStatements();
+		Statement stat;
+		Tag tag;
+		Iterator<Statement> it = statements.iterator();
+		while(it.hasNext()) {
+			stat= it.next();
+			if(stat instanceof Tag) {
+				tag=(Tag) stat;
+				if(tag.getTagLibTag().getTagClassName().equals("railo.runtime.tag.Finally"))	{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+
+	@Override
+	public FlowControlFinal getFlowControlFinal() {
+		if(!checked) {
+			checked=true;
+			if(!hasFinally()) return null;
+			fcf=new FlowControlFinalImpl();
+		}
+			
+		return fcf;
 	}
 
 

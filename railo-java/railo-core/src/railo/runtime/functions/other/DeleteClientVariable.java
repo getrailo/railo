@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function deleteclientvariable
+ * Implements the CFML Function deleteclientvariable
  */
 package railo.runtime.functions.other;
 

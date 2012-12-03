@@ -2,7 +2,12 @@ package railo.runtime.text.xml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -20,6 +25,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -29,7 +35,6 @@ import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.CasterException;
@@ -42,7 +47,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.text.xml.struct.XMLStructFactory;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Struct;
 
 /**
@@ -92,12 +97,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Text[] textes=new Text[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				textes[i]=toText(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Text> textes=new ArrayList<Text>();
+			while(it.hasNext()) {
+				textes.add(toText(doc,it.next()));
 			}
-			return textes;
+			return textes.toArray(new Text[textes.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -121,9 +126,9 @@ public final class XMLCaster {
 		if(o instanceof Attr) return (Attr)o;
 		if(o instanceof Struct && ((Struct)o).size()==1) {
 			Struct sct=(Struct)o;
-			Collection.Key key=sct.keys()[0];
-			Attr attr= doc.createAttribute(key.getString());
-			attr.setValue(Caster.toString(sct.get(key,null)));
+			Entry<Key, Object> e = sct.entryIterator().next();
+			Attr attr= doc.createAttribute(e.getKey().getString());
+			attr.setValue(Caster.toString(e.getValue()));
 			return attr;
 		}
 		
@@ -152,14 +157,19 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			String[] keys=coll.keysAsString();
-			Attr[] attres=new Attr[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				attres[i]=doc.createAttribute(IsNumeric.call(null,key)?"attribute-"+key:key);
-				attres[i].setValue(Caster.toString(coll.get(KeyImpl.init(key),null)));
+			Iterator<Entry<Key, Object>> it = coll.entryIterator();
+			Entry<Key, Object> e;
+			List<Attr> attres=new ArrayList<Attr>();
+			Attr attr;
+			Collection.Key k;
+			while(it.hasNext()) {
+				e = it.next();
+				k=e.getKey();
+				attr=doc.createAttribute(IsNumeric.call(null,k.getString())?"attribute-"+k.getString():k.getString());
+				attr.setValue(Caster.toString(e.getValue()));
+				attres.add(attr);
 			}
-			return attres;
+			return attres.toArray(new Attr[attres.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -207,12 +217,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Comment[] comments=new Comment[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				comments[i]=toComment(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Comment> comments=new ArrayList<Comment>();
+			while(it.hasNext()) {
+				comments.add(toComment(doc,it.next()));
 			}
-			return comments;
+			return comments.toArray(new Comment[comments.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -260,12 +270,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Element[] elements=new Element[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				elements[i]=toElement(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Element> elements=new ArrayList<Element>();
+			while(it.hasNext()) {
+				elements.add(toElement(doc,it.next()));
 			}
-			return elements;
+			return elements.toArray(new Element[elements.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -327,12 +337,12 @@ public final class XMLCaster {
 	// Collection
 		else if(o instanceof Collection) {
 			Collection coll=(Collection)o;
-			Collection.Key[] keys=coll.keys();
-			Node[] nodes=new Node[keys.length];
-			for(int i=0;i<keys.length;i++) {
-				nodes[i]=toNode(doc,coll.get(keys[i],null));
+			Iterator<Object> it = coll.valueIterator();
+			List<Node> nodes=new ArrayList<Node>();
+			while(it.hasNext()) {
+				nodes.add(toNode(doc,it.next()));
 			}
-			return nodes;
+			return nodes.toArray(new Node[nodes.size()]);
 		}
 	// Node Map and List
 		Node[] nodes=_toNodeArray(doc,o);
@@ -486,7 +496,7 @@ public final class XMLCaster {
         OutputStream os=null;
 		try {
 			os=IOUtil.toBufferedOutputStream(file.getOutputStream());
-			writeTo(node, new StreamResult(os),false,null,null,null);
+			writeTo(node, new StreamResult(os),false,false,null,null,null);
 		}
 		catch(IOException ioe){
 			throw Caster.toPageException(ioe);
@@ -500,7 +510,7 @@ public final class XMLCaster {
 	public static String toString(Node node) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),false,null,null,null);
+			writeTo(node, new StreamResult(sw),false,false,null,null,null);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
@@ -508,10 +518,10 @@ public final class XMLCaster {
 		return sw.getBuffer().toString();
 	}
 
-	public static String toString(Node node,boolean omitXMLDecl) throws PageException {
+	public static String toString(Node node,boolean omitXMLDecl, boolean indent) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),omitXMLDecl,null,null,null);
+			writeTo(node, new StreamResult(sw),omitXMLDecl,indent,null,null,null);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
@@ -520,10 +530,10 @@ public final class XMLCaster {
 	}
 	
 	
-	public static String toString(Node node,boolean omitXMLDecl,String publicId,String systemId,String encoding) throws PageException {
+	public static String toString(Node node,boolean omitXMLDecl,boolean indent,String publicId,String systemId,String encoding) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),omitXMLDecl,publicId,systemId,encoding);
+			writeTo(node, new StreamResult(sw),omitXMLDecl,indent,publicId,systemId,encoding);
 		} 
 		finally {
 			IOUtil.closeEL(sw);
@@ -531,12 +541,12 @@ public final class XMLCaster {
 		return sw.getBuffer().toString();
 	}
 	
-	public static String toString(NodeList nodes,boolean omitXMLDecl) throws PageException {
+	public static String toString(NodeList nodes,boolean omitXMLDecl, boolean indent) throws PageException {
 		StringWriter sw=new StringWriter();
 		try {
 			int len = nodes.getLength();
 			for(int i=0;i<len;i++){
-				writeTo(nodes.item(i), new StreamResult(sw),omitXMLDecl,null,null,null);
+				writeTo(nodes.item(i), new StreamResult(sw),omitXMLDecl,indent,null,null,null);
 			}
 		} 
 		finally {
@@ -548,7 +558,7 @@ public final class XMLCaster {
 	public static String toString(Node node,String defaultValue) {
 		StringWriter sw=new StringWriter();
 		try {
-			writeTo(node, new StreamResult(sw),false,null,null,null);
+			writeTo(node, new StreamResult(sw),false,false,null,null,null);
 		} 
 		catch(Throwable t){
 			return defaultValue;
@@ -560,10 +570,10 @@ public final class XMLCaster {
 	}
 	
 	
-	public static void writeTo(Node node,Result res,boolean omitXMLDecl, String publicId,String systemId,String encoding) throws PageException {
+	public static void writeTo(Node node,Result res,boolean omitXMLDecl,boolean indent, String publicId,String systemId,String encoding) throws PageException {
 		try {
 			Transformer t = XMLUtil.getTransformerFactory().newTransformer();
-			t.setOutputProperty(OutputKeys.INDENT,"no");
+			t.setOutputProperty(OutputKeys.INDENT,indent?"yes":"no");
 			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,omitXMLDecl?"yes":"no");
 			//t.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2"); 
 			
@@ -592,7 +602,7 @@ public final class XMLCaster {
 		maxlevel--;
 		// Document
 		if(node instanceof Document) {
-			DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
+			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Document");
 			table.appendRow(1,new SimpleDumpData("XmlComment"),new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCOMMENT).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlRoot"),	DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLROOT), pageContext,maxlevel,props));
@@ -601,7 +611,7 @@ public final class XMLCaster {
 		}
 		// Element
 		if(node instanceof Element) {
-			DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
+			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Element");
 			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));
@@ -615,7 +625,7 @@ public final class XMLCaster {
 		}
 		// Attr
 		if(node instanceof Attr) {
-			DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
+			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Attr");
 			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlValue"),	DumpUtil.toDumpData(((Attr)node).getValue(), pageContext,maxlevel,props));
@@ -625,7 +635,7 @@ public final class XMLCaster {
 			
 		}
 		// Node
-		DumpTable table = new DumpTablePro("xml","#cc9999","#ffffff","#000000");
+		DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 		table.setTitle("XML Node ("+ListLast.call(null,node.getClass().getName(),".")+")");
 		table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
 		table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));
@@ -700,5 +710,18 @@ public final class XMLCaster {
 	    return XMLStructFactory.newInstance(node,caseSensitive);
 	}
 	
-	
+	public static Element toRawElement(Object value, Element defaultValue) {
+		if(value instanceof Node) {
+			Node node=XMLCaster.toRawNode((Node) value);
+			if(node instanceof Document) return ((Document) node).getDocumentElement();
+			if(node instanceof Element) return (Element) node;
+			return defaultValue;
+		}
+		try {
+			return XMLUtil.parse(new InputSource(new StringReader(Caster.toString(value))),null,false).getDocumentElement();
+		} catch (Throwable t) {
+			return defaultValue;
+		}
+	}
+
 }

@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,15 +34,20 @@ import com.intergral.fusiondebug.server.FDControllerFactory;
  * Factory to load CFML Engine
  */
 public class CFMLEngineFactory {
-
-    private static CFMLEngineFactory factory;
+	
+	 // set to false to disable patch loading, for example in major alpha releases
+    private static final boolean PATCH_ENABLED = true;
+    
+	private static CFMLEngineFactory factory;
     private static File railoServerRoot;
     private static CFMLEngineWrapper engineListener;
     private CFMLEngine engine;
     private ClassLoader mainClassLoader=new TP().getClass().getClassLoader();
     private int version;
-    private ArrayList listeners=new ArrayList();
+    private List<EngineChangeListener> listeners=new ArrayList<EngineChangeListener>();
     private File resourceRoot;
+
+	private PrintWriter out;
     
     
     /**
@@ -147,7 +153,7 @@ public class CFMLEngineFactory {
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-root");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server-dir");
         if(Util.isEmpty(initParam))initParam=config.getInitParameter("railo-server");
-        initParam=Util.parsePlaceHolder(initParam);
+        initParam=Util.parsePlaceHolder(Util.removeQuotes(initParam,true));
         
         try {
             if(!Util.isEmpty(initParam)) {
@@ -167,8 +173,8 @@ public class CFMLEngineFactory {
         catch(IOException ioe){}
     }
     
-    
-    /**
+
+	/**
      * adds a listener to the factory that will be informed when a new engine will be loaded.
      * @param listener
      */
@@ -201,13 +207,13 @@ public class CFMLEngineFactory {
         File patcheDir=null;
         try {
             patcheDir = getPatchDirectory();
-            System.out.println("railo-server-root:"+patcheDir.getParent());
+            log("railo-server-root:"+patcheDir.getParent());
         } 
         catch (IOException e) {
            throw new ServletException(e);
         }
         
-        File[] patches=patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()}));
+        File[] patches=PATCH_ENABLED?patcheDir.listFiles(new ExtensionFilter(new String[]{"."+getCoreExtension()})):null;
         File railo=null;
         if(patches!=null) {
             for(int i=0;i<patches.length;i++) {
@@ -229,18 +235,19 @@ public class CFMLEngineFactory {
         try {
             // Load core version when no patch available
             if(railo==null) {
-                
+            	tlog("Load Build in Core");
                 // 
                 String coreExt=getCoreExtension();
                 engine=getCore(coreExt);
             	
                 
                 railo=new File(patcheDir,engine.getVersion()+"."+coreExt);
-                
-                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
-                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
-                Util.copy(bis,bos);
-                Util.closeEL(bis,bos);
+               if(PATCH_ENABLED) {
+	                InputStream bis = new TP().getClass().getResourceAsStream("/core/core."+coreExt);
+	                OutputStream bos=new BufferedOutputStream(new FileOutputStream(railo));
+	                Util.copy(bis,bos);
+	                Util.closeEL(bis,bos);
+                }
             }
             else {
             	try {
@@ -382,7 +389,6 @@ public class CFMLEngineFactory {
         tlog("Found a newer Version \n - current Version "+Util.toStringVersion(version)+"\n - available Version "+availableVersion);
         
         URL updateUrl=new URL(hostUrl,"/railo/remote/version/update.cfm?ext="+getCoreExtension()+"&version="+availableVersion);
-        System.out.println("updateurl:"+updateUrl);
         File patchDir=getPatchDirectory();
         File newRailo=new File(patchDir,availableVersion+("."+getCoreExtension()));//isSecure?".rcs":".rc"
         
@@ -390,7 +396,7 @@ public class CFMLEngineFactory {
             Util.copy((InputStream)updateUrl.getContent(),new FileOutputStream(newRailo));  
         }
         else {
-            tlog("File for new Version already exists, dont copy new one");
+            tlog("File for new Version already exists, won't copy new one");
             return false;
         }
         try {
@@ -519,9 +525,9 @@ public class CFMLEngineFactory {
      * @param engine
      */
     private void callListeners(CFMLEngine engine) {
-        Iterator it = listeners.iterator();
+        Iterator<EngineChangeListener> it = listeners.iterator();
         while(it.hasNext()) {
-            ((EngineChangeListener)it.next()).onUpdate(engine);
+            it.next().onUpdate(engine);
         }
     }
     
@@ -564,7 +570,7 @@ public class CFMLEngineFactory {
         throw new IOException("can't create/write to directory ["+dir+"], set \"init-param\" \"railo-server-directory\" with path to writable directory");
     }
     /**
-     * returns the path where the classloader ist located
+     * returns the path where the classloader is located
      * @param cl ClassLoader
      * @return file of the classloader root
      */
@@ -629,7 +635,7 @@ public class CFMLEngineFactory {
      * @param obj Object to output
      */
     public void tlog(Object obj) {
-        System.out.println(new Date()+ " "+obj);   
+    	log(new Date()+ " "+obj);
     }
     
     /**
@@ -637,7 +643,30 @@ public class CFMLEngineFactory {
      * @param obj Object to output
      */
     public void log(Object obj) {
-        System.out.println(obj.toString());   
+    	if(out==null){
+    		boolean isCLI=false;
+    		String str=System.getProperty("railo.cli.call");
+    		if(!Util.isEmpty(str, true)) {
+    			str=str.trim();
+    			isCLI="true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str);
+    			
+    		}
+    		
+    		if(isCLI) {
+    			try{
+    				File dir = new File(getResourceRoot(),"logs");
+    				dir.mkdirs();
+    				File file = new File(dir,"out");
+        			
+    			file.createNewFile();
+    			out=new PrintWriter(file);
+    			}
+    			catch(Throwable t){t.printStackTrace();}
+    		}
+    		if(out==null)out=new PrintWriter(System.out);
+    	}
+    	out.write(""+obj+"\n");   
+    	out.flush();
     }
     
     private class UpdateChecker extends Thread {

@@ -669,10 +669,10 @@ private ValueDate date(ParserString raw) throws SQLParserException {
 		while(raw.hasNext()) {
 			raw.next();
 			if(raw.isCurrent('}'))break;
-			else {
-				str.append(raw.getCurrent());
-			}
-		}if(!raw.forwardIfCurrent('}'))
+			str.append(raw.getCurrent());
+			
+		}
+		if(!raw.forwardIfCurrent('}'))
 			throw new SQLParserException("Invalid Syntax Closing [}] not found");
 		
 		raw.removeSpace();

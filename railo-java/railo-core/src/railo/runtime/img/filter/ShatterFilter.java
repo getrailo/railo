@@ -28,8 +28,8 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 public class ShatterFilter extends AbstractBufferedImageOp  implements DynFiltering {
     private float centreX = 0.5f, centreY = 0.5f;
@@ -142,7 +142,7 @@ public class ShatterFilter extends AbstractBufferedImageOp  implements DynFilter
         float height = src.getHeight();
         float cx = src.getWidth() * centreX;
         float cy = src.getHeight() * centreY;
-        float imageRadius = (float)Math.sqrt( cx*cx + cy*cy );
+        //float imageRadius = (float)Math.sqrt( cx*cx + cy*cy );
 
 //        BufferedImage[] tiles = new BufferedImage[iterations];
 		int numTiles = iterations*iterations;
@@ -155,7 +155,7 @@ public class ShatterFilter extends AbstractBufferedImageOp  implements DynFilter
 //		g.drawImage( src, null, null );
 
         Random random = new Random( 0 );
-		float lastx = 0, lasty = 0;
+		//float lastx = 0, lasty = 0;
 /*
         for ( int i = 0; i <= numTiles; i++ ) {
             double angle = (double)i * 2*Math.PI / numTiles;
@@ -211,7 +211,8 @@ public class ShatterFilter extends AbstractBufferedImageOp  implements DynFilter
 			float y = transition * height*(float)Math.sin(angle);
 
 			Tile tile = shapes[i];
-			Rectangle r = tile.shape.getBounds();
+			//Rectangle r = 
+			tile.shape.getBounds();
 			AffineTransform t = g.getTransform();
 x = tile.x + transition * tile.vx;
 y = tile.y + transition * tile.vy;
@@ -251,7 +252,7 @@ y = tile.y + transition * tile.vy;
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Iterations, CentreX, CentreY, Centre, Transition, Distance, Rotation, Zoom, StartAlpha, EndAlpha, Tile]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Iterations, CentreX, CentreY, Centre, Transition, Distance, Rotation, Zoom, StartAlpha, EndAlpha, Tile]");
 		}
 
 		return filter(src, dst);

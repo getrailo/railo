@@ -4,10 +4,11 @@ import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.KeyConstants;
 
 
 /**
- * Exception throwed by Cold Fusion Code
+ * Exception throwed by CFML Code
  */
 public final class CustomTypeException extends PageExceptionImpl {
 	
@@ -25,10 +26,14 @@ public final class CustomTypeException extends PageExceptionImpl {
 		if(extendedinfo!=null)setExtendedInfo(extendedinfo);
 	}
 
+	/**
+	 *
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
+	 */
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock cb=super.getCatchBlock(config);
-		cb.setEL("code",cb.get("errorcode",null));
-		cb.setEL("type",getCustomTypeAsString());
+		cb.setEL(KeyConstants._code,cb.get("errorcode",null));
+		cb.setEL(KeyConstants._type,getCustomTypeAsString());
 		String ei=getExtendedInfo();
 		if(ei!=null)cb.setEL("extended_info",ei);
 		//cb.setEL("ErrorCode","");
@@ -40,7 +45,7 @@ public final class CustomTypeException extends PageExceptionImpl {
 	 */
 	public Struct getErrorBlock(PageContext pc, ErrorPage ep) {
 		Struct eb = super.getErrorBlock(pc, ep);
-		eb.setEL("type",getCustomTypeAsString());
+		eb.setEL(KeyConstants._type,getCustomTypeAsString());
 		return eb;
 	}
 

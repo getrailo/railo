@@ -1,21 +1,44 @@
 <cfdirectory directory="../factory/img" action="list" name="imgs">
-<cfset bins=struct()>
-<cfset mimetypes={png:'png',gif:'gif'}>
-<cfset base64types={png:'png',gif:'gif'}>
+<cfset mimetypes={png:'image/png',gif:'image/gif', jpg:"image/jpg", swf:"application/x-shockwave-flash"}>
+
 <cfloop query="imgs">
-	<cfif findnoCase(".png",imgs.name) or findnoCase(".gif",imgs.name) or findnoCase(".swf",imgs.name) >
+	<cfoutput>#imgs.name#</cfoutput>
+	<cfset ext=listLast(imgs.name,'.')>
+	<cfif structKeyExists(mimetypes, ext)>
 		<cffile action="readbinary" file="../factory/img/#imgs.name#" variable="data">
-		<cfset data=toBase64(data)>
-		<cfset ext=listLast(imgs.name,'.')>
+
+<cfsavecontent variable="imgFileCode">{{cfset c='<cfoutput>#toBase64(data)#</cfoutput>'>{{cfif getBaseTemplatePath() EQ getCurrentTemplatePath()>{{!---
 	
-	<cfdump eval="expandPath('../resources/img/#imgs.name#')">
+	--->{{cfsilent>
+	{{cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
+	{{cfif not structKeyExists(application, "oHTTPCaching")>
+		{{cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
+	{{/cfif>
+	
+	{{!--- the string to be used as an Etag - in the response header --->
+	{{cfset etag = "<cfoutput>#hash(createUUID())#</cfoutput>" />
+	{{cfset mimetype = "<cfoutput>#mimetypes[ext]#</cfoutput>" />
+	
+	{{!--- check if the content was cached on the browser, and set the ETag header. --->
+	{{cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype, expireDays=100)>
+		{{cfexit method="exittemplate" />
+	{{/cfif>
+{{/cfsilent>
+
+{{!--- file was not cached; send the data --->
+{{cfcontent reset="yes" type="#mimetype#"
+	variable="#toBinary(c)#" />
+{{cfelse>data:image/<cfoutput>#mimetypes[ext]#</cfoutput>;base64,{{cfoutput>#c#{{/cfoutput>{{/cfif>
+	
+</cfsavecontent>
+		<cfset imgFileCode = replace(imgFileCode, '{{', '<', 'all') />
+	
 		<cffile 
         	action="write" 
             addnewline="no" 
             file="../resources/img/#imgs.name#.cfm" 
-            output="#chr(60)#cfsavecontent variable=""c"">#data##chr(60)#/cfsavecontent>#chr(60)#cfoutput>#chr(60)#cfif getBaseTemplatePath() EQ getCurrentTemplatePath()>#chr(60)#cfcontent type=""image/#mimetypes[ext]#"" variable=""##toBinary(c)##"">#chr(60)#cfsetting showdebugoutput=""no"">#chr(60)#cfelse>data:image/#mimetypes[ext]#;base64,##c###chr(60)#/cfif>#chr(60)#/cfoutput>" 
+            output="#imgFileCode#"
             fixnewline="no">
-	</cfif>
+		<cfoutput> is done<br /></cfoutput>
+	<cfelse><cfoutput> Has invalid extension<br /></cfoutput></cfif>
 </cfloop>
-
-

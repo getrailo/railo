@@ -3,14 +3,15 @@ package railo.commons.lang;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import railo.commons.io.SystemUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.engine.ThreadLocalPageContext;
 
 public final class SystemOut {
 
-	public static int OUT=1;
-	public static int ERR=2;
+	public static int OUT=SystemUtil.OUT;
+	public static int ERR=SystemUtil.ERR;
 	
     /**
      * logs a value 
@@ -71,7 +72,7 @@ public final class SystemOut {
     		if(type==ERR) return config.getErrWriter();
     		return config.getOutWriter();
     	}
-    	return new PrintWriter((type==ERR)?System.err:System.out);
+    	return SystemUtil.getPrintWriter(type);
     }
     
     

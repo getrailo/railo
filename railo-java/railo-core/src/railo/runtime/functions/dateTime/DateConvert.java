@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function dateconvert
+ * Implements the CFML Function dateconvert
  */
 package railo.runtime.functions.dateTime;
 

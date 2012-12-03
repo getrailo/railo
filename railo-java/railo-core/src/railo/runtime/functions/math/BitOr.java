@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function bitor
+ * Implements the CFML Function bitor
  */
 package railo.runtime.functions.math;
 

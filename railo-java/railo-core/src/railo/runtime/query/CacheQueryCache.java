@@ -8,54 +8,39 @@ import java.util.List;
 import railo.commons.io.cache.Cache;
 import railo.commons.io.cache.CacheEntry;
 import railo.commons.lang.KeyGenerator;
+import railo.runtime.PageContext;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.cache.util.CacheKeyFilterAll;
-import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigWeb;
 import railo.runtime.db.SQL;
 import railo.runtime.functions.cache.Util;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryPro;
 
  class CacheQueryCache extends QueryCacheSupport {
 	
 	private static final long serialVersionUID = -2321532150542424070L;
 	
-	private Config config;
 	private final RamCache DEFAULT_CACHE=new RamCache();
 
-	public CacheQueryCache(Config config){
-		this.config=config;
-		
+	public CacheQueryCache(){
 	}
 
-	/**
-	 * @see railo.runtime.query.QueryCacheSupport#setConfigWeb(railo.runtime.config.ConfigWeb)
-	 */
-	public void setConfigWeb(ConfigWeb config) {
-		this.config=config;
-	}
 	
-	
-	/**
-	 * @see railo.runtime.query.QueryCache#clear()
-	 */
-	public void clear() {
-		getCache().remove(CacheKeyFilterAll.getInstance());
+	@Override
+	public void clear(PageContext pc) {
+		try {
+			getCache(pc).remove(CacheKeyFilterAll.getInstance());
+		} catch (IOException e) {}
 	}
 
-
-	/**
-	 * @see railo.runtime.query.QueryCache#clearUnused()
-	 */
-	public void clearUnused() {
+	@Override
+	public void clearUnused(PageContext pc) throws IOException {
 		
-		Cache c = getCache();
-		List entries = c.entries();
+		Cache c = getCache(pc);
+		List<CacheEntry> entries = c.entries();
 		if(entries.size()<100) return;
 		
-		Iterator it = entries.iterator();
+		Iterator<CacheEntry> it = entries.iterator();
 		while(it.hasNext()){
 			it.next(); // touch them to makes sure the cache remove them, not really good, cache must do this by itself
 			/*qce=(QueryCacheEntry) entry.getValue();
@@ -66,10 +51,10 @@ import railo.runtime.type.QueryPro;
 		}
 	}
 
-	
-	public Object get(SQL sql, String datasource, String username,String password, Date cacheAfter) {
+	@Override
+	public Object get(PageContext pc,SQL sql, String datasource, String username,String password, Date cacheAfter) {
 		String key=key(sql,datasource,username,password);
-		Object obj= getCache().getValue(key,null);
+		Object obj= getCache(pc).getValue(key,null);
 		if(obj instanceof QueryCacheEntry) {
 			QueryCacheEntry entry=(QueryCacheEntry) obj;
 			if(entry.isCachedAfter(cacheAfter)) {
@@ -80,30 +65,29 @@ import railo.runtime.type.QueryPro;
 		return null;
 	}
 
-	public Query getQuery(SQL sql, String datasource, String username,String password, Date cacheAfter) {
-		Object o=get(sql, datasource, username, password, cacheAfter);
+	@Override
+	public Query getQuery(PageContext pc,SQL sql, String datasource, String username,String password, Date cacheAfter) {
+		Object o=get(pc,sql, datasource, username, password, cacheAfter);
 		if(o instanceof Query) return (Query) o;
 		return null;
 	}
 
-	public void remove(SQL sql, String datasource, String username,String password) {
-		getCache().remove(key(sql, datasource, username, password));
-	}
-
-	public void set(SQL sql, String datasource, String username,String password, Object value, Date cacheBefore) {
-		long timeSpan = ((cacheBefore.getTime()-System.currentTimeMillis())+1);
-		getCache().put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), Long.valueOf(timeSpan), Long.valueOf(timeSpan));
-	}
-
-	private Cache getCache() {
+	@Override
+	public void remove(PageContext pc,SQL sql, String datasource, String username,String password) {
 		try {
-			Cache c = Util.getDefault(config,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
-			return c;
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+			getCache(pc).remove(key(sql, datasource, username, password));
+		} catch (IOException e) {}
+	}
+
+	@Override
+	public void set(PageContext pc,SQL sql, String datasource, String username,String password, Object value, Date cacheBefore) {
+		long timeSpan = ((cacheBefore.getTime()-System.currentTimeMillis())+1);
+		getCache(pc).put(key(sql, datasource, username, password), new QueryCacheEntry(cacheBefore,value), Long.valueOf(timeSpan), Long.valueOf(timeSpan));
+	}
+
+	private Cache getCache(PageContext pc) {
+		Cache c = Util.getDefault(pc,ConfigImpl.CACHE_DEFAULT_QUERY,DEFAULT_CACHE);	
+		return c;
 	}
 
     private String key(SQL sql, String datasource, String username,String password) {
@@ -116,21 +100,26 @@ import railo.runtime.type.QueryPro;
 		}
 	}
     
-	
+    @Override
+    public void clear(PageContext pc,QueryCacheFilter filter) {
+    	try {
+			_clear(pc,filter);
+		} catch (IOException e) {}
+    }
 
-	public void clear(QueryCacheFilter filter) {
-		Cache c = getCache();
+	private void _clear(PageContext pc,QueryCacheFilter filter) throws IOException {
+		Cache c = getCache(pc);
 		Iterator it = c.entries().iterator();
     	String key;
     	CacheEntry entry;
     	QueryCacheEntry ce;
-    	QueryPro q;
+    	Query q;
     	while(it.hasNext()){
 			entry=(CacheEntry) it.next();
 			if(!(entry.getValue() instanceof QueryCacheEntry)) continue;
 			ce=(QueryCacheEntry) entry.getValue();
-			if(!(ce.getValue() instanceof QueryPro)) continue;
-			q=(QueryPro) ce.getValue();
+			if(!(ce.getValue() instanceof Query)) continue;
+			q=(Query) ce.getValue();
 			key=entry.getKey();
     		if(filter.accept(q.getSql().toString())){
 				c.remove(key);
@@ -138,12 +127,13 @@ import railo.runtime.type.QueryPro;
     	}
 	}
 
-
-	/**
-	 * @see railo.runtime.query.QueryCacheSupport#size()
-	 */
-	public int size() {
-		return getCache().keys().size();
+	@Override
+	public int size(PageContext pc) {
+		try {
+			return getCache(pc).keys().size();
+		} catch (IOException e) {
+			return 0;
+		}
 	}
 
 

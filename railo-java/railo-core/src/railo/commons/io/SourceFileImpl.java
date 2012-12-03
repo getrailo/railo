@@ -112,7 +112,10 @@ public final class SourceFileImpl implements SourceFile {
 					String tmp="/"+list(arr,0,i);
 					if(strRoot.lastIndexOf(tmp)==rootLen-tmp.length()) {
 						StringBuilder rtn=new StringBuilder();
-						for(int y=0;i<count-i;y++) rtn.append("../");
+						while(i<count-i) {
+							count--;
+							rtn.append("../");
+						}
 						isOutSide=rtn.length()!=0;
 						return rtn.toString()+(rtn.length()==0?"/":"")+list(arr,i,arr.length);
 					}
@@ -159,10 +162,14 @@ public final class SourceFileImpl implements SourceFile {
 		return path.substring(0,path.lastIndexOf('/'));
 	}
 	
+	public Resource getFile() {
+		return getResource();
+	}
+	
 	/**
 	 * @see railo.runtime.SourceFile#getFile()
 	 */
-	public Resource getFile() {
+	public Resource getResource() {
 		if(file==null) {
 			if(isOutSide) {
 				try {

@@ -1,4 +1,3 @@
-
 <cfset detail=getDetailbyUid(url.uid)>
 
 
@@ -98,20 +97,3 @@
 </cftry>
 
 <cflocation url="#request.self#?action=#url.action#&action2=confirm">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

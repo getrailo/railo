@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function getauthuser
+ * Implements the CFML Function getauthuser
  */
 package railo.runtime.functions.other;
 

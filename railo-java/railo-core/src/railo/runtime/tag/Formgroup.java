@@ -34,7 +34,7 @@ public final class Formgroup extends BodyTagImpl {
 		query=null;
 		startrow=0;
 		maxrows=-1;
-		String label=null;
+		label=null;
 		style=null;
 		selectedIndex=-1;
 		width=-1;

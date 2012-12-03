@@ -1,20 +1,25 @@
-</TD></TD></TD></TH></TH></TH></TR></TR></TR></TABLE></TABLE></TABLE></A></ABBREV></ACRONYM></ADDRESS></APPLET></AU></B></BANNER></BIG></BLINK></BLOCKQUOTE></BQ></CAPTION></CENTER></CITE></CODE></COMMENT></DEL></DFN></DIR></DIV></DL></EM></FIG></FN></FONT></FORM></FRAME></FRAMESET></H1></H2></H3></H4></H5></H6></HEAD></I></INS></KBD></LISTING></MAP></MARQUEE></MENU></MULTICOL></NOBR></NOFRAMES></NOSCRIPT></NOTE></OL></P></PARAM></PERSON></PLAINTEXT></PRE></Q></S></SAMP></SCRIPT></SELECT></SMALL></STRIKE></STRONG></SUB></SUP></TABLE></TD></TEXTAREA></TH></TITLE></TR></TT></U></UL></VAR></WBR></XMP>
-<cfoutput>
-
+<cfsilent>
 <!--- Plus/minus Image --->
-<cfif structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
-	<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm">
-	<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm">
-<cfelse>
+<cfset doItTheClassicWay=structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
+<!---<cftry>
+<cfif not doItTheClassicWay>
     <cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
     <cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
-</cfif> 
+</cfif>
+	<cfcatch>
+    	<cfset doItTheClassicWay=true>
+    </cfcatch>
+</cftry>
+<cfif doItTheClassicWay>--->
+	<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm">
+	<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm">
+<!---</cfif>--->
 
-<script>
+</cfsilent></TD></TD></TD></TH></TH></TH></TR></TR></TR></TABLE></TABLE></TABLE></A></ABBREV></ACRONYM></ADDRESS></APPLET></AU></B></BANNER></BIG></BLINK></BLOCKQUOTE></BQ></CAPTION></CENTER></CITE></CODE></COMMENT></DEL></DFN></DIR></DIV></DL></EM></FIG></FN></FONT></FORM></FRAME></FRAMESET></H1></H2></H3></H4></H5></H6></HEAD></I></INS></KBD></LISTING></MAP></MARQUEE></MENU></MULTICOL></NOBR></NOFRAMES></NOSCRIPT></NOTE></OL></P></PARAM></PERSON></PLAINTEXT></PRE></Q></S></SAMP></SCRIPT></SELECT></SMALL></STRIKE></STRONG></SUB></SUP></TABLE></TD></TEXTAREA></TH></TITLE></TR></TT></U></UL></VAR></WBR></XMP>
 <cfoutput>
+<script>
 var plus='#plus#';
 var minus='#minus#';
-</cfoutput>
 function oc(id) {
 	var code=document.getElementById('__cp'+id);
 	var button=document.images['__btn'+id];
@@ -34,17 +39,17 @@ function oc(id) {
 </script>
 <cfscript>
 function convertST(st){
-	st=replace(HTMLEditFormat(st),"
+	arguments.st=replace(HTMLEditFormat(arguments.st),"
 ","<br>","all");
 
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"  ","&nbsp; ","all");
-	st=replace(st,"	","&nbsp;&nbsp;&nbsp;","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
+	arguments.st=replace(arguments.st,"	","&nbsp;&nbsp;&nbsp;","all");
 	
-return st;
+return arguments.st;
 
 }
 </cfscript>

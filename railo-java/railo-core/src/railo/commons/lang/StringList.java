@@ -61,8 +61,8 @@ public final class StringList {
 		curr=curr.next;
 		return curr.data;
 	}
-	public char delimeter() {
-		return curr.delimeter;
+	public char delimiter() {
+		return curr.delimiter;
 	}
 	
 	/**
@@ -98,8 +98,8 @@ public final class StringList {
 		curr=curr.next;
 		count++;
 	}
-	public void add(String str, char delimeter) {
-		curr.next=new Entry(str,delimeter);
+	public void add(String str, char delimiter) {
+		curr.next=new Entry(str,delimiter);
 		curr=curr.next;
 		count++;
 	}
@@ -108,10 +108,10 @@ public final class StringList {
 		private static final char NUL=(char)0;
 		private Entry next;
 		private String data;
-		private char delimeter;
-		private Entry(String data, char delimeter) {
+		private char delimiter;
+		private Entry(String data, char delimiter) {
 			this.data=data;
-			this.delimeter=delimeter;
+			this.delimiter=delimiter;
 		}
 	}
 

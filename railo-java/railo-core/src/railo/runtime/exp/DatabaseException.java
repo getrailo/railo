@@ -9,6 +9,8 @@ import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
 import railo.runtime.op.Caster;
+import railo.runtime.type.KeyImpl;
+import railo.runtime.type.util.KeyConstants;
 
 
 /**
@@ -53,19 +55,19 @@ public final class DatabaseException extends PageExceptionImpl {
 			this.setStackTrace(sqle.getStackTrace());
 		}
 		if(sql!=null) {
-			setAdditional("SQL",sql.toString());
+			setAdditional(KeyConstants._SQL,sql.toString());
 		}
 		if(dc!=null) {
 			try {
 				DatabaseMetaData md = dc.getConnection().getMetaData();
 				md.getDatabaseProductName();
-				setAdditional("DatabaseName",md.getDatabaseProductName());
-				setAdditional("DatabaseVersion",md.getDatabaseProductVersion());
-				setAdditional("DriverName",md.getDriverName());
-				setAdditional("DriverVersion",md.getDriverVersion());
+				setAdditional(KeyImpl.init("DatabaseName"),md.getDatabaseProductName());
+				setAdditional(KeyImpl.init("DatabaseVersion"),md.getDatabaseProductVersion());
+				setAdditional(KeyImpl.init("DriverName"),md.getDriverName());
+				setAdditional(KeyImpl.init("DriverVersion"),md.getDriverVersion());
 				//setAdditional("url",md.getURL());
 				
-				setAdditional("Datasource",dc.getDatasource().getName());
+				setAdditional(KeyConstants._Datasource,dc.getDatasource().getName());
 				
 				
 			} 
@@ -101,6 +103,9 @@ public final class DatabaseException extends PageExceptionImpl {
 		this(sqle!=null?sqle.getMessage():null,null,sqle,null,dc);
 	}
 
+	/**
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
+	 */
 	public CatchBlock getCatchBlock(Config config) {
 	    String strSQL=sql==null?"":sql.toString();
 	    if(StringUtil.isEmpty(strSQL))strSQL=Caster.toString(getAdditional().get("SQL", ""),"");

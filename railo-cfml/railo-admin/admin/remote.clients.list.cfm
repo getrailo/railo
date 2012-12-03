@@ -7,8 +7,8 @@
 <cfparam name="url.row" default="0">
 <cfif url.row GT 0 and url.row LTE clients.recordcount>
 	<cfset form.mainAction=stText.Buttons.verify>
-	<cfset form['url_'&row]=clients.url[row]>
-	<cfset form['row_'&row]=row>
+	<cfset form['url_'&url.row]=clients.url[url.row]>
+	<cfset form['row_'&url.row]=url.row>
 	
 </cfif>
 <cfadmin 
@@ -105,121 +105,89 @@ Error Output --->
 
 <!--- 
 list all mappings and display necessary edit fields --->
-<script>
-function checkTheBox(field) {
-	var apendix=field.name.split('_')[1];
-	var box=field.form['row_'+apendix];
-	box.checked=true;
-}
-</script>
 
-
-<cfif clients.recordcount>
-	<cfoutput>
-	#stText.remote.desc#
+<cfoutput>
+	<div class="pageintro">#stText.remote.desc#</div>
 	
-	<h2>#stText.remote.listClients#</h2>
-	<table class="tbl">
-	
-	
-	
-	<cfform action="#request.self#?action=#url.action#" method="post">
-		<tr>
-			<td width="20"></td>
-			<td width="#iif(request.adminType NEQ "web",400,320)#" class="tblHead" nowrap>#stText.remote.label#</td>
-			<cfloop query="usage">
-            <td width="80" class="tblHead">#usage.displayname#</td>
-			</cfloop>
-            <td width="50" class="tblHead" nowrap>#stText.Settings.DBCheck#</td>
-		</tr>
-		<cfloop query="clients">
-			<cfset css=iif(len(clients.usage),de('Green'),de('Red'))>
-			
-			<!--- and now display --->
-		<tr>
-			<td>
-			<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-<cfif hasAccess><input type="checkbox" class="checkbox" name="row_#clients.currentrow#" value="#clients.currentrow#">
-				<input type="hidden" name="url_#clients.currentrow#" value="#clients.url#"></cfif>
-				<!--- <input type="hidden" name="password_#clients.currentrow#" value="#clients.Password#">--->
-				</td>
-				<td>
-<cfif hasAccess><a href="#request.self#?action=#url.action#&action2=create&url=#hash(clients.url)#">
-			<cfmodule template="img.cfm" src="edit.png" hspace="2" border="0"></a></cfif></td>
-			</tr>
+	<cfif clients.recordcount>
+		<h2>#stText.remote.listClients#</h2>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
+			<table class="maintbl checkboxtbl">
+				<thead>
+					<tr>
+						<th width="3%">
+							<input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
+						</th>
+						<th>#stText.remote.label#</th>
+						<cfloop query="usage">
+							<th>#usage.displayname#</th>
+						</cfloop>
+						<th>#stText.Settings.DBCheck#</th>
+						<th width="3%"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<cfloop query="clients">
+						<cfset css=iif(len(clients.usage),de('Green'),de('Red'))>
+						<cfset isOK = not StructKeyExists(stVeritfyMessages, clients.url) or stVeritfyMessages[clients.url].label eq "OK" />
+						<!--- and now display --->
+						<tr<cfif not isOK> class="notOK"<cfelse> class="OK"</cfif>>
+							<td>
+								<cfif hasAccess>
+									<input type="checkbox" class="checkbox" name="row_#clients.currentrow#" value="#clients.currentrow#">
+									<input type="hidden" name="url_#clients.currentrow#" value="#clients.url#">
+								</cfif>
+								<!--- <input type="hidden" name="password_#clients.currentrow#" value="#clients.Password#">--->
+							</td>
+							
+							<td>#clients.label#</td>
+							
+							<cfloop query="variables.usage">
+								<cfset has=listFindNoCase(clients.usage,variables.usage.code)>
+								<td>#YesNoFormat(has)#</td>
+							</cfloop>
+							
+							<cfif StructKeyExists(stVeritfyMessages, clients.url)>
+								<td>
+									<cfif isOK>
+										#stVeritfyMessages[clients.url].label#
+									<cfelse>
+										<abbr title="#stVeritfyMessages[clients.url].message#">#stVeritfyMessages[clients.url].label#</abbr>
+									</cfif>
+								</td>
+							<cfelse>
+								<td>&nbsp;</td>			
+							</cfif>
+							<td>
+								<cfif hasAccess>
+									<a href="#request.self#?action=#url.action#&action2=create&url=#hash(clients.url)#" class="btn-mini edit"><span>edit</span></a>
+								</cfif>
+							</td>
+						</tr>
+					</cfloop>
+				</tbody>
+				<cfif hasAccess>
+					<tfoot>
+						<tr>
+							<td colspan="#4+usage.recordcount#">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Verify#">
+								<input type="reset" class="button reset" name="cancel" value="#stText.Buttons.Cancel#">
+								<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Delete#">
+							</td>	
+						</tr>
+					</tfoot>
+				</cfif>
 			</table>
-			</td>
-            <cfset css="">
-			<cfif StructKeyExists(stVeritfyMessages, clients.url)>
-				<cfset isOK=stVeritfyMessages[clients.url].label eq "OK">
-				<cfset css=iif(isOK ,de('Green'),de('Red'))>
-            </cfif>
-            
-			<td class="tblContent#css#" nowrap>#clients.label#</td>
-            
-			<cfloop query="variables.usage">
-				<cfset has=listFindNoCase(clients.usage,variables.usage.code)>
-                <td class="tblContent#css#" nowrap title="#variables.usage.displayname#">#YesNoFormat(has)#</td>
-            </cfloop>
-			
-				
-			<cfif StructKeyExists(stVeritfyMessages, clients.url)>
-			<td class="tblContent#css#" nowrap valign="middle" align="center">
-					<cfif isOK>
-						<span class="CheckOk">#stVeritfyMessages[clients.url].label#</span>
-					<cfelse>
-						<span class="CheckError" title="#stVeritfyMessages[clients.url].message##Chr(13)#">#stVeritfyMessages[clients.url].label#</span>
-						&nbsp;<cfmodule template="img.cfm" src="red-info.gif" 
-							width="9" 
-							height="9" 
-							border="0" 
-							alt="#stVeritfyMessages[clients.url].message##Chr(13)#">
-					</cfif>
-			</td>
-			<cfelse>
-			<td class="tblContent">&nbsp;</td>			
-			</cfif>
-		</tr>
-		</cfloop>
-
-<cfif hasAccess>
-		<tr>
-			<td colspan="#iif(request.adminType NEQ "web",5,6)#">
-			 <table border="0" cellpadding="0" cellspacing="0">
-			 <tr>
-				<td><cfmodule template="tp.cfm"  width="10" height="1"></td>		
-				<td><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="20"></td>
-				<td></td>
-			 </tr>
-			 <tr>
-				<td></td>
-				<td valign="top"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="1" height="14"><cfmodule template="img.cfm" src="#ad#-bgcolor.gif" width="36" height="1"></td>
-				<td>&nbsp;
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Verify#">
-				<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-				<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.Delete#">
-				</td>	
-			</tr>
-			 </table>
-			 </td>
-		</tr>
-</cfif>
-	</cfform>
-	</cfoutput>
-	</table>
-	<br><br>
-</cfif>
-
-
+		</cfform>
+	</cfif>
+</cfoutput>
 
 <cfif hasAccess>
 	<cfoutput>
-	<!--- 
-	Create Remote Client --->
-	<cfform action="#request.self#?action=#url.action#&action2=create" method="post">
-		<input type="submit" class="submit" name="run" value="#stText.remote.newClient#">
-	</cfform>
+		<!--- Create Remote Client --->
+		<h2>New remote client</h2>
+		<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
+			<input type="submit" class="button submit" name="run" value="#stText.remote.newClient#">
+		</cfform>
 	</cfoutput>
 </cfif>

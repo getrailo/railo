@@ -1,6 +1,8 @@
 package railo.runtime.db;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * a datasource and connection pair
@@ -34,4 +36,14 @@ public interface DatasourceConnection {
 	 */
 	public String getUsername() ;
 
+	public boolean supportsGetGeneratedKeys();
+	
+	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys, boolean allowCaching) throws SQLException;
+	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException;
+	
+	public void close() throws SQLException;
+	
+	
+
+	
 }

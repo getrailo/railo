@@ -1,7 +1,6 @@
 package railo.runtime.functions.other;
 
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.tag.Admin;
@@ -18,7 +17,7 @@ public final class SSLCertificateList implements Function {
     
     public static Query call(PageContext pc, String host, double port) throws PageException {
     	DeprecatedUtil.function(pc, "SSLCertificateList");
-    	return Admin.getSSLCertificate(((ConfigWebImpl)pc.getConfig()).getConfigServer(), host, (int)port);
+    	return Admin.getSSLCertificate(pc.getConfig(), host, (int)port);
     }
 
 }

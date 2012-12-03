@@ -17,8 +17,8 @@
         <table class="tbl" width="300">
         
         <tr>
-            <td class="tblHead">#stText.ext.provider#</td>
-            <td class="tblContent"><a href="#info.url#" target="_blank">#info.url#</a></td>
+            <th scope="row">#stText.ext.provider#</th>
+            <td><a href="#info.url#" target="_blank">#info.url#</a></td>
         </tr>
         </table>
     
@@ -62,23 +62,23 @@
                 	<table class="tbl" width="300">
                     <cfif isInstalled>
                     <tr>
-                        <td class="tblHead">#stText.ext.installedVersion#</td>
-                        <td class="tblContent">#app.version#</td>
+                        <th scope="row">#stText.ext.installedVersion#</th>
+                        <td>#app.version#</td>
                     </tr>
                     <cfelse>
                     <tr>
-                        <td class="tblHead">#stText.ext.availableVersion#</td>
-                        <td class="tblContent">#app.version#</td>
+                        <th scope="row">#stText.ext.availableVersion#</th>
+                        <td>#app.version#</td>
                     </tr>
                     </cfif>
                     <tr>
-                        <td class="tblHead">#stText.ext.category#</td>
-                        <td class="tblContent">#app.category#</td>
+                        <th scope="row">#stText.ext.category#</th>
+                        <td>#app.category#</td>
                     </tr>
                     
                     <tr>
-                        <td class="tblHead">#stText.ext.provider#</td>
-                        <td class="tblContent"><a href="#info.url#" target="_blank">#info.title#</a></td>
+                        <th scope="row">#stText.ext.provider#</th>
+                        <td><a href="#info.url#" target="_blank">#info.title#</a></td>
                     </tr>
                     </table>
                 
@@ -95,51 +95,51 @@
                 
                 <table class="tbl" width="600">
                 <tr>
-                    <td class="tblHead">#stText.ext.installedVersion#</td>
-                    <td class="tblContent" width="300">#detail.installed.version#</td>
+                    <th scope="row">#stText.ext.installedVersion#</th>
+                    <td width="300">#detail.installed.version#</td>
                 </tr>
                 <tr>
-                    <td class="tblHead">#stText.ext.availableVersion#</td>
-                    <td class="tblContent">#detail.app.version#</td>
+                    <th scope="row">#stText.ext.availableVersion#</th>
+                    <td>#detail.app.version#</td>
                 </tr>
                 <tr>
-                    <td class="tblContent" colspan="2">
+                    <td colspan="2">
                     <textarea cols="80" rows="20">TODO get Update info</textarea>
                     
                     </td>
                 </tr>
                 </table>
                 
-            	<cfform action="#request.self#?action=#url.action#" method="post">
+            	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
                 	<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.update#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             
             
             <!--- Install --->
             <cfelseif isInstalled and not hasUpdate>
-            	<cfform action="#request.self#?action=#url.action#" method="post">
+            	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
             		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.uninstall#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.uninstall#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             <cfelse>
             
-				<cfform action="#request.self#?action=#url.action#" method="post">
+				<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
             		<input type="hidden" name="hashProvider_1" value="#url.hashProvider#">
                 	<input type="hidden" name="id_1" value="#url.id#">
                 	<input type="hidden" name="row" value="1">
                     
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.install#">
-            		<input type="submit" class="submit" name="mainAction" value="#stText.Buttons.cancel#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.install#">
+            		<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.cancel#">
               	</cfform>
             </cfif>
             

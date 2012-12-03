@@ -5,12 +5,12 @@
 * @return File Object
 */
 function printError(error,boolean longversion=false) {
-	if(IsSimpleValue(error))error=struct(message:error);
-	if(not StructKeyExists(error,'detail'))error.detail="";
-	else if(error.message EQ error.detail)error.detail="";
+	if(IsSimpleValue(arguments.error))arguments.error=struct(message:arguments.error);
+	if(not StructKeyExists(arguments.error,'detail'))arguments.error.detail="";
+	else if(arguments.error.message EQ arguments.error.detail)arguments.error.detail="";
 	// if(!IsSimpleValue(error) && error.getClass().getName() EQ "railo.runtime.exp.CatchBlock")createObject("java","railo.print").e(error.getPageException())
 	if(StructKeyExists(arguments.error,'message') and arguments.error.message NEQ "") {
-		writeOutput('<span class="CheckError">');
+		writeOutput('<div class="error">');
 		writeOutput(br(arguments.error.message));
 		writeOutput('<br>');
 		writeOutput(br(arguments.error.detail));
@@ -27,7 +27,7 @@ function printError(error,boolean longversion=false) {
 			}
 		}
 		//ErrorCode,addional,TagContext,StackTrace,type,Detail,Message,ExtendedInfo
-		writeOutput('</span><br><br>');
+		writeOutput('</div>');
 	}
 }
 
@@ -53,8 +53,8 @@ function toInt(number obj) {
 }
 
 function two(number) {
-	if(number LT 10) return "0"&number;
-	return number;
+	if(arguments.number LT 10) return "0"&arguments.number;
+	return arguments.number;
 }
 
 /**
@@ -79,9 +79,9 @@ function toArrayFromForm(fieldName) {
 */
 function queryRow2Struct(query,row) {
 	var sct=struct();
-	var columns=listToArray(query.columnlist);
+	var columns=listToArray(arguments.query.columnlist);
 	for(var el in columns) {
-		sct[el]=query[el][row];
+		sct[el]=arguments.query[el][arguments.row];
 	}
 	return sct;
 }
@@ -106,14 +106,14 @@ function nullIfNoTime(fieldName) {
 }
 
 function toStructInterval(raw) {
-	var interval.raw=raw;
-	interval.second=raw;
+	var interval.raw=arguments.raw;
+	interval.second=arguments.raw;
 	interval.minute=0;
 	interval.hour=0;
 		
 	if(interval.second GTE 60*60) {
 		interval.hour=int(interval.second/(60*60));
-		_hour=interval.hour*60*60;
+		var _hour=interval.hour*60*60;
 		interval.second=interval.second-_hour;
 	}
 		
@@ -126,9 +126,9 @@ function toStructInterval(raw) {
 }
 
 function cut(_str,max) {
-	if(not isDefined('_str') or len(_str) EQ 0) return "&nbsp;";
-	if(len(_str) GT max) return left(_str,max)&"...";
-	return _str;
+	if(not isDefined('arguments._str') or len(arguments._str) EQ 0) return "&nbsp;";
+	if(len(arguments._str) GT arguments.max) return left(arguments._str,max)&"...";
+	return arguments._str;
 }
 
 function getForm(formKey, default) {
@@ -157,6 +157,89 @@ function go(action,action2='',others=struct()) {
 	
 	
 	return rtn;
+}
+function byteFormat(numeric raw){
+	if(raw EQ 0) return "0b";
+    
+	var b=raw;
+    var rtn="";
+   	var kb=int(b/1024);
+    var mb=0;
+    var gb=0;
+    var tb=0;
+    
+    if(kb GT 0) {
+    	b-=kb*1024;
+        mb=int(kb/1024);
+        if(mb GT 0){
+        	kb-=mb*1024;
+			gb=int(mb/1024);
+            if(gb GT 0) {
+                mb-=gb*1024;
+				tb=int(gb/1024);
+                if(tb GT 0) {
+                    gb-=tb*1024;
+                }
+            }
+        }
+    }
+    
+    if(tb) rtn&=tb&"tb ";
+    if(gb) rtn&=gb&"gb ";
+    if(mb) rtn&=mb&"mb ";
+    if(kb) rtn&=kb&"kb ";
+    if(b) rtn&=b&"b ";
+    return trim(rtn);
+}
+
+
+function byteFormatShort(numeric raw, string preference='' ){
+	if(raw EQ 0) return "0b";
+    
+	var b=raw;
+    var rtn="";
+   	var kb=int(b/1024);
+    var mb=0;
+    var gb=0;
+    var tb=0;
+    
+    if(kb GT 0) {
+    	b-=kb*1024;
+        mb=int(kb/1024);
+        if(mb GT 0){
+        	kb-=mb*1024;
+			gb=int(mb/1024);
+            if(gb GT 0) {
+                mb-=gb*1024;
+				tb=int(gb/1024);
+                if(tb GT 0) {
+                    gb-=tb*1024;
+                }
+            }
+        }
+    }
+	
+	if(preference EQ "tb") return _byteFormatShort(tb,gb,"tb");
+	if(preference EQ "gb") return _byteFormatShort(gb,mb,"gb");
+	if(preference EQ "mb") return _byteFormatShort(mb,kb,"mb");
+	if(preference EQ "kb") return _byteFormatShort(kb,b,"kb");
+    
+    if(tb) return _byteFormatShort(tb,gb,"tb");
+	if(gb) return _byteFormatShort(gb,mb,"gb");
+	if(mb) return _byteFormatShort(mb,kb,"mb");
+	if(kb) return _byteFormatShort(kb,b,"kb");
+	
+    return b&"b ";
+}
+
+function _byteFormatShort(numeric left,numeric right,string suffix){
+	var rtn=left&".";
+	right=int(right/1024*1000)&"";
+	while(stringlen(right) lt 3) right="0"&right;
+	
+	right=left(right,2);
+	
+	return rtn&right&suffix;
 }
 
 /*

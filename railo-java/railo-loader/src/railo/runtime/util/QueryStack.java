@@ -79,5 +79,7 @@ public interface QueryStack {
      * @return returns all queries in the stack
      */
     public Query[] getQueries();
+    
+    public QueryStack duplicate(boolean deepCopy);
 
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.oro.text.regex.MalformedPatternException;
 
@@ -16,23 +17,23 @@ import railo.runtime.converter.JavaConverter;
 
 public class MetaData implements Serializable {
 	
-	private static Map instances=new HashMap();
+	private static Map<String,MetaData> instances=new HashMap<String,MetaData>();
 	
-	private HashMap data=new HashMap();
+	private HashMap<String,String> data=new HashMap<String,String>();
 	private Resource file;
 	
 	private MetaData(Resource file) {
 		this.file=file;
-		data=new HashMap();
+		data=new HashMap<String,String>();
 	}
 	
-	public MetaData(Resource file,HashMap data) {
+	public MetaData(Resource file,HashMap<String,String> data) {
 		this.file=file;
 		this.data=data;
 	}
 
 	public static MetaData getInstance(Resource directory) {
-		MetaData instance=(MetaData) instances.get(directory.getAbsolutePath());
+		MetaData instance=instances.get(directory.getAbsolutePath());
 		
 		if(instance==null) {
 			Resource file = directory.getRealResource("meta");
@@ -55,16 +56,16 @@ public class MetaData implements Serializable {
 		}
 	}
 	
-	public synchronized List get(String wildcard) throws MalformedPatternException, IOException {
+	public synchronized List<String> get(String wildcard) throws MalformedPatternException, IOException {
 		synchronized (data) {
-			List list=new ArrayList();
-			Iterator it = data.entrySet().iterator();
+			List<String> list=new ArrayList<String>();
+			Iterator<Entry<String, String>> it = data.entrySet().iterator();
 			WildCardFilter filter=new WildCardFilter( wildcard);
-			Map.Entry entry;
+			Entry<String, String> entry;
 			String value;
 			while(it.hasNext()) {
-				entry=(Map.Entry)it.next();
-				value=(String) entry.getValue();
+				entry = it.next();
+				value= entry.getValue();
 				if(filter.accept(value)){
 					list.add(entry.getKey());
 					it.remove();

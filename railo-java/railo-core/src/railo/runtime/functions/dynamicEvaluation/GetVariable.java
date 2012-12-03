@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function setvariable
+ * Implements the CFML Function setvariable
  */
 package railo.runtime.functions.dynamicEvaluation;
 

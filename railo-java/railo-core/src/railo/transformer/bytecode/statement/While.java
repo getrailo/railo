@@ -7,12 +7,13 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
 
-public final class While extends StatementBase implements FlowControl,HasBody {
+public final class While extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
 	
 	private ExprBoolean expr;
 	private Body body;
@@ -29,8 +30,8 @@ public final class While extends StatementBase implements FlowControl,HasBody {
 	 * @param body
 	 * @param line
 	 */
-	public While(Expression expr,Body body,int startline,int endline) {
-		super(startline,endline);
+	public While(Expression expr,Body body,Position start,Position end) {
+		super(start,end);
 		this.expr=CastBoolean.toExprBoolean(expr);
 		this.body=body;
 		body.setParent(this);
@@ -43,8 +44,8 @@ public final class While extends StatementBase implements FlowControl,HasBody {
 	 * @param body
 	 * @param line
 	 */
-	public While(boolean b, Body body,int startline,int endline) {
-		this(LitBoolean.toExprBoolean(b, -1),body,startline, endline);
+	public While(boolean b, Body body,Position start,Position end) {
+		this(LitBoolean.toExprBoolean(b),body,start, end);
 	}
 
 

@@ -91,7 +91,7 @@ public final class Invoker {
 			if(i!=0) parameter+=", ";
 			parameter+=parameterClasses[i].getName();
 		}
-		throw new NoSuchMethodException("class constructor "+clazz.getName()+"("+parameter+") doesn't exists");
+		throw new NoSuchMethodException("class constructor "+clazz.getName()+"("+parameter+") doesn't exist");
 	}
 	
 	
@@ -190,7 +190,7 @@ public final class Invoker {
 				if(i!=0) parameter+=", ";
 				parameter+=parameterClasses[i].getName();
 			}
-			throw new NoSuchMethodException("method "+methodName+"("+parameter+") doesn't exists in class "+objectClass.getName());
+			throw new NoSuchMethodException("method "+methodName+"("+parameter+") doesn't exist in class "+objectClass.getName());
 		
 	}
 	
@@ -411,57 +411,5 @@ public final class Invoker {
 			throw Caster.toPageException(e);
 		}
 	}
-
-	
-	/*public static void main(String[] args) throws Exception {
-	    StringBuffer sb = new StringBuffer();
-	    
-
-	    
-
-	    long start;
-
-		
-		start=System.currentTimeMillis();
-		for(int i=0;i<1000000;i++) {
-		    String.valueOf(123);
-		}
-		print.ln("String.valueOf:"+(System.currentTimeMillis()-start));
-
-		start=System.currentTimeMillis();
-		for(int i=0;i<1000000;i++) {
-		    Caster.toString(123);
-		}
-		print.ln("Caster.toString:"+(System.currentTimeMillis()-start));
-
-		Double d=new Double(123d);
-		start=System.currentTimeMillis();
-		for(int i=0;i<1000000;i++) {
-		    String.valueOf(d);
-		}
-		print.ln("String.valueOf:"+(System.currentTimeMillis()-start));
-
-		start=System.currentTimeMillis();
-		for(int i=0;i<1000000;i++) {
-		    Caster.toString(d);
-		}
-		print.ln("Caster.toString:"+(System.currentTimeMillis()-start));
-
-
-		start=System.currentTimeMillis();
-		for(int i=0;i<1000000;i++) {
-		    Caster.toDoubleValue("123");
-		}
-		print.ln("Caster.toDoubleValue:"+(System.currentTimeMillis()-start));
-
-
-
-		start=System.currentTimeMillis();
-		for(int i=0;i<1000000;i++) {
-		    Caster.toLowerCase("1");
-		}
-		print.ln("Caster.toLowerCase:"+(System.currentTimeMillis()-start));
-
-    }*/
 }
 

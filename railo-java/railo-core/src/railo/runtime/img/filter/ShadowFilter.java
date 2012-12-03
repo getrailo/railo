@@ -29,8 +29,8 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.CollectionUtil;
 
 /**
  * A filter which draws a drop shadow based on the alpha channel of the image.
@@ -252,7 +252,7 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
 		Graphics2D g = dst.createGraphics();
 		g.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, opacity ) );
 		if ( addMargins ) {
-			float radius2 = radius/2;
+			//float radius2 = radius/2;
 			float topShadow = Math.max( 0, radius-yOffset );
 			float leftShadow = Math.max( 0, radius-xOffset );
 			g.translate( topShadow, leftShadow );
@@ -282,7 +282,7 @@ public class ShadowFilter extends AbstractBufferedImageOp  implements DynFilteri
 
 		// check for arguments not supported
 		if(parameters.size()>0) {
-			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+List.arrayToList(parameters.keysAsString(),", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Angle, Distance, Opacity, ShadowColor, AddMargins, ShadowOnly]");
+			throw new FunctionException(ThreadLocalPageContext.get(), "ImageFilter", 3, "parameters", "the parameter"+(parameters.size()>1?"s":"")+" ["+CollectionUtil.getKeyList(parameters,", ")+"] "+(parameters.size()>1?"are":"is")+" not allowed, only the following parameters are supported [Radius, Angle, Distance, Opacity, ShadowColor, AddMargins, ShadowOnly]");
 		}
 
 		return filter(src, dst);

@@ -1,5 +1,6 @@
 package railo.runtime.engine;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 	protected static final short UNIT_MILLI=4;
 	protected static final short UNIT_UNDEFINED=0;
 	
-	private Map<String,Pair> map=new HashMap<String,Pair>();
+	private Map<String,Pair> map=Collections.synchronizedMap(new HashMap<String,Pair>());
 	protected long min=Long.MIN_VALUE;
 	protected short unit=UNIT_UNDEFINED;
 	
@@ -83,20 +84,21 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 		_release();
 	}
 	
-	public final void start(int line,String id) {
+	public final void start(int pos,String id) {
 		long current = System.nanoTime();
-		map.put(id,new Pair(current,line));
+		map.put(id,new Pair(current,pos));
 	}
 
-	public final void end(int line,String id) {
+	public final void end(int pos,String id) {
 		long current = System.nanoTime();
 		Pair pair=map.remove(id);
 		if(pair!=null) {
-			if((current-pair.time)>=min)_log(pair.line,line,pair.time,current);
+			if((current-pair.time)>=min)
+				_log(pair.pos,pos,pair.time,current);
 		}
 	}
 	protected abstract void _init(PageContext pc, Map<String, String> arguments);
-	protected abstract void _log(int startLine, int endLine, long startTime, long endTime);
+	protected abstract void _log(int startPos, int endPos, long startTime, long endTime);
 	protected abstract void _release();
 
 
@@ -113,10 +115,10 @@ public abstract class ExecutionLogSupport implements ExecutionLog {
 	
 	private final static class Pair {
 		private final long time;
-		private final int line;
-		public Pair(long time, int line) {
+		private final int pos;
+		public Pair(long time, int pos) {
 			this.time=time;
-			this.line=line;
+			this.pos=pos;
 		}
 	}
 }

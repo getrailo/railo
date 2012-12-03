@@ -2,6 +2,7 @@ package railo.runtime.converter;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.Writer;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
@@ -47,12 +49,14 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * class to serialize and desirilize WDDX Packes
  */
-public final class WDDXConverter {
+public final class WDDXConverter extends ConverterSupport {
 	private static final Collection.Key REMOTING_FETCH = KeyImpl.intern("remotingFetch");
 	
 	private int deep=1;
@@ -178,14 +182,14 @@ public final class WDDXConverter {
 		try {
 			component=new ComponentWrap(Component.ACCESS_PRIVATE, ca=ComponentUtil.toComponentAccess(component));
 		} catch (ExpressionException e1) {
-			throw new ConverterException(e1);
+			throw toConverterException(e1);
 		}
 		boolean isPeristent=ca.isPersistent();
 		
 		
         deep++;
         Object member;
-        Iterator it=component.keyIterator();
+        Iterator<Key> it = component.keyIterator();
         Collection.Key key;
         while(it.hasNext()) {
         	key=Caster.toKey(it.next(),null);
@@ -215,7 +219,7 @@ public final class WDDXConverter {
     		}
         	
         	member = scope.get(key,null);
-        	if(member instanceof UDF || key.equals(KeyImpl.THIS)) continue;
+        	if(member instanceof UDF || key.equals(KeyConstants._this)) continue;
             sb.append(goIn()+"<var scope=\"variables\" name="+_+key.toString()+_+">");
             sb.append(_serialize(member,done));
             sb.append(goIn()+"</var>");
@@ -228,7 +232,7 @@ public final class WDDXConverter {
 			return goIn()+"<component md5=\""+ComponentUtil.md5(component)+"\" name=\""+component.getAbsName()+"\">"+sb+"</component>";
 		} 
 		catch (Exception e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 	}
 
@@ -242,11 +246,11 @@ public final class WDDXConverter {
 	private String _serializeStruct(Struct struct, Set<Object> done) throws ConverterException {
         StringBuffer sb=new StringBuffer(goIn()+"<struct>");
         
-        Iterator it=struct.keyIterator();
+        Iterator<Key> it = struct.keyIterator();
 
         deep++;
         while(it.hasNext()) {
-            String key=Caster.toString(it.next(),"");
+            Key key = it.next();
             sb.append(goIn()+"<var name="+_+key.toString()+_+">");
             sb.append(_serialize(struct.get(key,null),done));
             sb.append(goIn()+"</var>");
@@ -291,14 +295,14 @@ public final class WDDXConverter {
 	 */
 	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
-		String[] keys = query.keysAsString();
+		Collection.Key[] keys = CollectionUtil.keys(query);
 		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.List.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
 		
 	
 		deep++;
 		int len=query.getRecordcount();
 		for(int i=0;i<keys.length;i++) {
-			sb.append(goIn()+"<field name="+_+keys[i]+_+">");
+			sb.append(goIn()+"<field name="+_+keys[i].getString()+_+">");
 				for(int y=1;y<=len;y++) {
 					try {
 						sb.append(_serialize(query.getAt(keys[i],y),done));
@@ -361,14 +365,15 @@ public final class WDDXConverter {
 			deep--;
 			return rtn;
 		}
-		
-		if(done.contains(object)){
+
+		Object raw = LazyConverter.toRaw(object);
+		if(done.contains(raw)){
 			rtn= goIn()+"<null/>";
 			deep--;
 			return rtn;
 		}
 		
-		done.add(object);
+		done.add(raw);
 		try {
 			// Component
 			if(object instanceof Component) {
@@ -408,12 +413,18 @@ public final class WDDXConverter {
 			}
 		}
 		finally{
-			done.remove(object);
+			done.remove(raw);
 		}
 		// Others
 		rtn="<struct type="+_+"L"+object.getClass().getName()+";"+_+"></struct>";
 		deep--;
 		return rtn;
+	}
+	
+	@Override
+	public void writeOut(PageContext pc, Object source, Writer writer) throws ConverterException, IOException {
+		writer.write(serialize(source));
+		writer.flush();
 	}
 	
 	/**
@@ -527,7 +538,7 @@ public final class WDDXConverter {
 				if(data==null) return new Double(0);
 				return Caster.toDouble(data.getNodeValue());
 			} catch (Exception e) {
-				throw new ConverterException(e);
+				throw toConverterException(e);
 			}
 		}
 		// Boolean
@@ -535,7 +546,7 @@ public final class WDDXConverter {
 			try {
 				return Caster.toBoolean(element.getAttribute("value"));
 			} catch (PageException e) {
-				throw new ConverterException(e);
+				throw toConverterException(e);
 				
 			}
 		}
@@ -561,7 +572,7 @@ public final class WDDXConverter {
 				return DateCaster.toDateAdvanced(element.getFirstChild().getNodeValue(),timeZone);
 			} 
             catch (Exception e) {
-				throw new ConverterException(e);
+				throw toConverterException(e);
 			} 
 		}
 		else 
@@ -619,7 +630,7 @@ public final class WDDXConverter {
 			return query;
 		}
 		catch(PageException e) {
-			throw new ConverterException(e);
+			throw toConverterException(e);
 		}
 		
 	}
@@ -749,7 +760,7 @@ public final class WDDXConverter {
 				try {
 					array.append(_deserialize((Element)node));
 				} catch (PageException e) {
-					throw new ConverterException(e);
+					throw toConverterException(e);
 				}
 			
 		}

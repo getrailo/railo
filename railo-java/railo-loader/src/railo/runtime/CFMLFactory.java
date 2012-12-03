@@ -55,7 +55,7 @@ public abstract class CFMLFactory extends JspFactory {
 	/**
 	 * @return returns the query cache
 	 */
-	public abstract QueryCache getQueryCache();
+	public abstract QueryCache getDefaultQueryCache();
 
 	/**
 	 * @return returns count of pagecontext in use
@@ -73,7 +73,7 @@ public abstract class CFMLFactory extends JspFactory {
     public abstract Object getLabel();
 
     /**
-     * FUTURE deprecated
+     * @deprecated no replacement
      * @param label
      */
     public abstract void setLabel(String label);

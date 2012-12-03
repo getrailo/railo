@@ -134,7 +134,6 @@ public class FDUtil {
 			else {	
 			    doCorrect=false;
 				rtn.append('_');
-				//if(!(c=='.' && str.substring(i).equals(".cfm")))
 				changes+=(c*(i+1));
 			}
 		}

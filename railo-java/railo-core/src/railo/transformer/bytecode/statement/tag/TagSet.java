@@ -4,20 +4,14 @@ import org.objectweb.asm.Type;
 
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMUtil;
 
-public final class TagSet extends TagBase  {
+public final class TagSet extends TagBaseNoFinal  {
 
-	/**
-	 * Constructor of the class
-	 * @param tag
-	 */
-	public TagSet(int line) {
-		super(line);
-	}
-	public TagSet(int sl,int el) {
-		super(sl,el);
+	public TagSet(Position start,Position end) {
+		super(start,end);
 	}
 
 	/**

@@ -11,6 +11,8 @@ import railo.runtime.component.Property;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.PropertyFactory;
 
 public final class UDFAddProperty extends UDFGSProperty {
@@ -32,7 +34,7 @@ public final class UDFAddProperty extends UDFGSProperty {
 		String t = PropertyFactory.getType(prop);
 		FunctionArgument value = new FunctionArgumentImpl(KeyImpl.init(PropertyFactory.getSingularName(prop)),"any",CFTypes.TYPE_ANY,true);
 		if("struct".equalsIgnoreCase(t)){
-			FunctionArgument key = new FunctionArgumentImpl(KeyImpl.KEY,"string",CFTypes.TYPE_STRING,true);
+			FunctionArgument key = new FunctionArgumentImpl(KeyConstants._key,"string",CFTypes.TYPE_STRING,true);
 			return new FunctionArgument[]{key,value};
 		}
 		return new FunctionArgument[]{value};
@@ -97,7 +99,7 @@ public final class UDFAddProperty extends UDFGSProperty {
 			Key valueName = arguments[0].getName();
 			Object value = values.get(valueName,null);
 			if(value==null){
-				Key[] keys = values.keys();
+				Key[] keys = CollectionUtil.keys(values);
 				if(keys.length==1) {
 					value=values.get(keys[0]);
 				}
@@ -135,6 +137,12 @@ public final class UDFAddProperty extends UDFGSProperty {
 		else {
 			value=cast(arguments[0],value,1);
 			if(propValue==null){
+				/* jira2049
+				PageContext pc = ThreadLocalPageContext.get();
+				ORMSession sess = ORMUtil.getSession(pc);
+				SessionImpl s=(SessionImpl) sess.getRawSession();
+				propValue=new PersistentList(s);
+				component.getComponentScope().setEL(propName,propValue);*/
 				Array arr=new ArrayImpl();
 				component.getComponentScope().setEL(propName,arr);
 				propValue=arr;

@@ -1,13 +1,15 @@
 package railo.runtime.type.scope;
 
+import java.util.Set;
+
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
-import railo.runtime.type.Scope;
+import railo.runtime.type.Collection;
 
 /**
  * interface for Argument scope
  */
-public interface Argument extends Scope,Array {
+public interface Argument extends Scope,Array,BindScope {
 
     /** 
      * sets if scope is binded to a other variable for using outside of a udf 
@@ -30,5 +32,19 @@ public interface Argument extends Scope,Array {
      */
     public abstract boolean insert(int index, String key, Object value)
             throws PageException;
+    
+
+	
+	public Object setArgument(Object obj) throws PageException;
+
+	public static final Object NULL = null;
+	
+	public Object getFunctionArgument(String key, Object defaultValue);
+
+	public Object getFunctionArgument(Collection.Key key, Object defaultValue);
+	
+	public void setFunctionArgumentNames(Set functionArgumentNames);
+
+	public boolean containsFunctionArgumentKey(Key key);
 
 }

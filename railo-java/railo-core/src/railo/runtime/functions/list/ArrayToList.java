@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function arraytolist
+ * Implements the CFML Function arraytolist
  */
 package railo.runtime.functions.list;
 
@@ -13,8 +13,8 @@ public final class ArrayToList implements Function {
 	public static String call(PageContext pc , Array array) throws PageException {
 		return call(pc,array,',');
 	}
-	public static String call(PageContext pc , Array array, String delimeter) throws PageException {
-		if(delimeter.length()==1) return call(pc,array,delimeter.charAt(0));
+	public static String call(PageContext pc , Array array, String delimiter) throws PageException {
+		if(delimiter.length()==1) return call(pc,array,delimiter.charAt(0));
 		int len=array.size();
 		if(len==0) return "";
 		if(len==1)return Caster.toString(array.getE(1));
@@ -22,13 +22,13 @@ public final class ArrayToList implements Function {
 		Object o=array.get(1,null);
 		StringBuffer sb=new StringBuffer(o==null?"":Caster.toString(o));
 		for(int i=2;i<=len;i++) {
-			sb.append(delimeter);
+			sb.append(delimiter);
 			o=array.get(i,null);
 			sb.append(o==null?"":Caster.toString(o));
 		}
 		return sb.toString();
 	}
-	public static String call(PageContext pc , Array array, char delimeter) throws PageException {
+	public static String call(PageContext pc , Array array, char delimiter) throws PageException {
 		int len=array.size();
 		if(len==0) return "";
 		if(len==1)return Caster.toString(array.getE(1));
@@ -36,7 +36,7 @@ public final class ArrayToList implements Function {
 		Object o=array.get(1,null);
 		StringBuffer sb=new StringBuffer(o==null?"":Caster.toString(o));
 		for(int i=2;i<=len;i++) {
-			sb.append(delimeter);
+			sb.append(delimiter);
 			o=array.get(i,null);
 			sb.append(o==null?"":Caster.toString(o));
 		}

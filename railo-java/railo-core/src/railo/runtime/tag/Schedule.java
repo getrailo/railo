@@ -2,17 +2,18 @@ package railo.runtime.tag;
 
 import java.net.URL;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
+import railo.commons.security.Credentials;
+import railo.commons.security.CredentialsImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.schedule.ScheduleTask;
@@ -23,6 +24,7 @@ import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.Date;
 import railo.runtime.type.dt.DateImpl;
 import railo.runtime.type.dt.Time;
+import railo.runtime.type.util.KeyConstants;
 /**
 * Provides a programmatic interface to the Railo scheduling engine. You can run a specified 
 *   page at scheduled intervals with the option to write out static HTML pages. This lets you offer users 
@@ -111,7 +113,12 @@ public final class Schedule extends TagImpl {
 	private boolean readonly;
 	private String serverPassword=null;
 	private boolean paused;
+	private boolean autoDelete;
 
+	public void setAutodelete(boolean autoDelete) {
+		this.autoDelete=autoDelete;
+	}
+	
 	/**
 	 * @param readonly the readonly to set
 	 */
@@ -401,13 +408,7 @@ public final class Schedule extends TagImpl {
         
         // username/password
         Credentials cr=null;
-        if(username!=null) cr=new UsernamePasswordCredentials(username,password);
-        
-        // Proxy
-        Credentials pcr=null;
-        if(proxyserver!=null) {
-            if(proxyuser!=null) pcr=new UsernamePasswordCredentials(proxyuser,proxypassword);
-        }
+        if(username!=null) cr=CredentialsImpl.toCredentials(username,password);
         
        try {
            
@@ -423,14 +424,13 @@ public final class Schedule extends TagImpl {
                    interval,
                    requesttimeout,
                    cr,
-                   proxyserver,
-                   proxyport,
-                   pcr,
+                   ProxyDataImpl.getInstance(proxyserver,proxyport,proxyuser,proxypassword),
                    resolveurl,
                    publish,
                    hidden,
                    readonly,
-                   paused);
+                   paused,
+                   autoDelete);
         scheduler.addScheduleTask(st,true);
     } catch (Exception e) {
         throw Caster.toPageException(e);
@@ -475,51 +475,55 @@ public final class Schedule extends TagImpl {
         final String v="VARCHAR";
         String[] cols = new String[]{"task","path","file","startdate","starttime","enddate","endtime",
                 "url","port","interval","timeout","username","password","proxyserver",
-                "proxyport","proxyuser","proxypassword","resolveurl","publish","valid","paused"};
+                "proxyport","proxyuser","proxypassword","resolveurl","publish","valid","paused","autoDelete"};
         String[] types = new String[]{v,v,v,"DATE","OTHER","DATE","OTHER",
                 v,v,v,v,v,v,v,
-                v,v,v,v,"BOOLEAN",v,"BOOLEAN"};
+                v,v,v,v,"BOOLEAN",v,"BOOLEAN","BOOLEAN"};
         railo.runtime.type.Query query=new QueryImpl(cols,types,tasks.length,"query"
         );
         try {
 	        for(int i=0;i<tasks.length;i++) {
 	            int row=i+1;
 	            ScheduleTask task=tasks[i];
-	            query.setAt("task",row,task.getTask());
+	            query.setAt(KeyConstants._task,row,task.getTask());
 	            if(task.getResource()!=null) {
-	                query.setAt("path",row,task.getResource().getParent());
-	                query.setAt("file",row,task.getResource().getName());
+	                query.setAt(KeyConstants._path,row,task.getResource().getParent());
+	                query.setAt(KeyConstants._file,row,task.getResource().getName());
 	            }
 	            query.setAt("publish",row,Caster.toBoolean(task.isPublish()));
 	            query.setAt("startdate",row,task.getStartDate());
 	            query.setAt("starttime",row,task.getStartTime());
 	            query.setAt("enddate",row,task.getEndDate());
 	            query.setAt("endtime",row,task.getEndTime());
-	            query.setAt("url",row,printUrl(task.getUrl()));
-	            query.setAt("port",row,Caster.toString(HTTPUtil.getPort(task.getUrl())));
+	            query.setAt(KeyConstants._url,row,printUrl(task.getUrl()));
+	            query.setAt(KeyConstants._port,row,Caster.toString(HTTPUtil.getPort(task.getUrl())));
 	            query.setAt("interval",row,task.getStringInterval());
 	            query.setAt("timeout",row,Caster.toString(task.getTimeout()/1000));
 	            query.setAt("valid",row,Caster.toString(task.isValid()));
 	            if(task.hasCredentials()) {
-	                query.setAt("username",row,task.getUPCredentials().getUserName());
-	                query.setAt("password",row,task.getUPCredentials().getPassword());
+	                query.setAt("username",row,task.getCredentials().getUsername());
+	                query.setAt("password",row,task.getCredentials().getPassword());
 	            }
-	            query.setAt("proxyserver",row,task.getProxyHost());
-	            if(task.getProxyPort()>0)query.setAt("proxyport",row,Caster.toString(task.getProxyPort()));
-	            if(task.hasProxyCredentials()) {
-	                query.setAt("proxyuser",row,task.getUPProxyCredentials().getUserName());
-	                query.setAt("proxypassword",row,task.getUPProxyCredentials().getPassword());
+	            ProxyData pd = task.getProxyData();
+	            if(ProxyDataImpl.isValid(pd)){
+		            query.setAt("proxyserver",row,pd.getServer());
+		            if(pd.getPort()>0)query.setAt("proxyport",row,Caster.toString(pd.getPort()));
+		            if(ProxyDataImpl.hasCredentials(pd)) {
+		                query.setAt("proxyuser",row,pd.getUsername());
+		                query.setAt("proxypassword",row,pd.getPassword());
+		            }
 	            }
 	            query.setAt("resolveurl",row,Caster.toString(task.isResolveURL()));
 
 	            query.setAt("paused",row,Caster.toBoolean(task.isPaused()));
+	            query.setAt("autoDelete",row,Caster.toBoolean(((ScheduleTaskImpl)task).isAutoDelete()));
+	            
+	            
 	            
 	        }
 	        pageContext.setVariable(returnvariable,query);
         } 
-        catch (DatabaseException e) {
-           
-        }
+        catch (DatabaseException e) {}
         
         
     }
@@ -578,6 +582,7 @@ public final class Schedule extends TagImpl {
 		hidden=false;
 		serverPassword=null;
 		paused=false;
+		autoDelete=false;
 	}
 
 }

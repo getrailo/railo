@@ -6,10 +6,10 @@ import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
-import railo.runtime.type.scope.SessionPlus;
+import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.storage.StorageScopeDatasource;
 
-public class SessionDatasource extends StorageScopeDatasource implements SessionPlus {
+public class SessionDatasource extends StorageScopeDatasource implements Session {
 	
 	private SessionDatasource(PageContext pc,String datasourceName, Struct sct) { 
 		super(pc,datasourceName,"session",SCOPE_SESSION, sct);
@@ -32,7 +32,7 @@ public class SessionDatasource extends StorageScopeDatasource implements Session
 	 * @return client datasource scope
 	 * @throws PageException
 	 */
-	public static SessionPlus getInstance(String datasourceName, PageContext pc,Log log) throws PageException {
+	public static Session getInstance(String datasourceName, PageContext pc,Log log) throws PageException {
 			
 			Struct _sct = _loadData(pc, datasourceName,"session",SCOPE_SESSION, log,false);
 			if(_sct==null) _sct=new StructImpl();
@@ -40,7 +40,7 @@ public class SessionDatasource extends StorageScopeDatasource implements Session
 		return new SessionDatasource(pc,datasourceName,_sct);
 	}
 	
-	public static SessionPlus getInstance(String datasourceName, PageContext pc, Log log,SessionPlus defaultValue) {
+	public static Session getInstance(String datasourceName, PageContext pc, Log log,Session defaultValue) {
 		try {
 			return getInstance(datasourceName, pc,log);
 		}

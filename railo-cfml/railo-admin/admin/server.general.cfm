@@ -267,33 +267,33 @@ Create Datasource --->
 
 
 
-<cfform action="#request.self#?action=#url.action#" method="post">
+<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 
 <table class="tbl" width="700">
 <!---- data member default access --->
 
         <tr>
-        	<td class="tblContent" style="border-color:#colorCompatibility#;" width="10"><cfinput type="radio" name="mode" value="compatibility"></td>
-            <td class="tblContent" style="border-color:#colorCompatibility#;#style#"><b>#stText.setting.general.compatibility#</b><br />
-            <span class="comment">#stText.setting.general.compatibilityDesc#</span></td>
+        	<td style="border-color:#colorCompatibility#;" width="10"><cfinput type="radio" class="radio" name="mode" value="compatibility"></td>
+            <td style="border-color:#colorCompatibility#;#style#"><b>#stText.setting.general.compatibility#</b><br />
+            <div class="comment">#stText.setting.general.compatibilityDesc#</div></td>
         </tr>
         <tr>
-        	<td class="tblContent" style="border-color:#colorStrict#;" width="10"><cfinput type="radio" name="mode" value="strict"></td>
-            <td class="tblContent" style="border-color:#colorStrict#;#style#"><b>#stText.setting.general.strict#</b><br />
-            <span class="comment">#stText.setting.general.strictDesc#</span></td>
+        	<td style="border-color:#colorStrict#;" width="10"><cfinput type="radio" class="radio" name="mode" value="strict"></td>
+            <td style="border-color:#colorStrict#;#style#"><b>#stText.setting.general.strict#</b><br />
+            <div class="comment">#stText.setting.general.strictDesc#</div></td>
         </tr>
         <tr>
-        	<td class="tblContent" style="border-color:#colorSpeed#;" width="10"><cfinput type="radio" name="mode" value="speed"></td>
-            <td class="tblContent" style="border-color:#colorSpeed#;#style#"><b>#stText.setting.general.speed#</b>
-            <br /><span class="comment">#stText.setting.general.speedDesc#</span></td>
+        	<td style="border-color:#colorSpeed#;" width="10"><cfinput type="radio" class="radio" name="mode" value="speed"></td>
+            <td style="border-color:#colorSpeed#;#style#"><b>#stText.setting.general.speed#</b>
+            <br /><div class="comment">#stText.setting.general.speedDesc#</div></td>
         </tr>
         
         
 <tr>
 	<td colspan="2">
 		
-      <input class="submit" type="submit" class="submit" name="mainAction" value="#stText.Buttons.update#">
-		<input class="submit" type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
+      <input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.update#">
+		<input class="button reset" type="reset" name="cancel" value="#stText.Buttons.Cancel#">
 	</td>
 </tr>
 </table>
@@ -312,26 +312,26 @@ Create Datasource --->
 <!---- data member default access --->
 <cfset access=component.componentDataMemberDefaultAccess>
 <tr>
-	<td class="tblHead" width="150">#stText.Components.DataMemberAccessType#</td>
-	<td class="tblContent" style="#doStyle(access,'component','componentDataMemberDefaultAccess')#">
+	<th scope="row">#stText.Components.DataMemberAccessType#</th>
+	<td style="#doStyle(access,'component','componentDataMemberDefaultAccess')#">
     	<b>#stText.Components['DMAT'& access]#</b>
-        <br /><span class="comment">#stText.Components.DataMemberAccessTypeDescription#</span>
+        <br /><div class="comment">#stText.Components.DataMemberAccessTypeDescription#</div>
 	</td>
 </tr>
 <!--- Trigger Data Member --->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.triggerDataMember#</td>
-	<td class="tblContent"  style="#doStyle(component.triggerDataMember,'component','triggerDataMember')#">
+	<th scope="row">#stText.Components.triggerDataMember#</th>
+	<td  style="#doStyle(component.triggerDataMember,'component','triggerDataMember')#">
     	<b>#yesNoFormat(component.triggerDataMember)#</b>
-        <br /><span class="comment">#stText.Components.triggerDataMemberDescription#</span>
+        <br /><div class="comment">#stText.Components.triggerDataMemberDescription#</div>
 	</td>
 </tr>
 <!--- Use Shadow --->
 <tr>
-	<td class="tblHead" width="150">#stText.Components.useShadow#</td>
-	<td class="tblContent"  style="#doStyle(component.useShadow,'component','useShadow')#">
+	<th scope="row">#stText.Components.useShadow#</th>
+	<td  style="#doStyle(component.useShadow,'component','useShadow')#">
 		<b>#yesNoFormat(component.useShadow)#</b>
-		<br /><span class="comment">#stText.Components.useShadowDescription#</span><br>
+		<br /><div class="comment">#stText.Components.useShadowDescription#</div><br>
       	
 	</td>
 </tr>
@@ -350,28 +350,28 @@ Create Datasource --->
 <table class="tbl" width="700">
 <!--- Template --->
 <tr>
-	<td class="tblHead" width="150">#stText.charset.templateCharset#</td>
-	<td class="tblContent" style="#doStyle(charset.templateCharset,'charset','templateCharset')#">
+	<th scope="row">#stText.charset.templateCharset#</th>
+	<td style="#doStyle(charset.templateCharset,'charset','templateCharset')#">
     	<b>#charset.templateCharset#</b><br />
-		<span class="comment">#stText.charset.templateCharsetDescription#</span><br />
+		<div class="comment">#stText.charset.templateCharsetDescription#</div><br />
 	</td>
 </tr>
 
 <!--- Web --->
 <tr>
-	<td class="tblHead" width="150">#stText.charset.webCharset#</td>
-	<td class="tblContent" style="#doStyle(charset.webCharset,'charset','webCharset')#">
+	<th scope="row">#stText.charset.webCharset#</th>
+	<td style="#doStyle(charset.webCharset,'charset','webCharset')#">
 		<b>#charset.webCharset#</b><br />
-		<span class="comment">#stText.charset.webCharsetDescription#</span><br />
+		<div class="comment">#stText.charset.webCharsetDescription#</div><br />
 	</td>
 </tr>
 
 <!--- Resource --->
 <tr>
-	<td class="tblHead" width="150">#stText.charset.resourceCharset#</td>
-	<td class="tblContent" style="#doStyle(charset.resourceCharset,'charset','resourceCharset')#">
+	<th scope="row">#stText.charset.resourceCharset#</th>
+	<td style="#doStyle(charset.resourceCharset,'charset','resourceCharset')#">
 		<b>#charset.resourceCharset#</b><br />
-		<span class="comment">#stText.charset.resourceCharsetDescription#</span><br />
+		<div class="comment">#stText.charset.resourceCharsetDescription#</div><br />
 	</td>
 </tr>
 </table>
@@ -388,34 +388,34 @@ Create Datasource --->
 <table class="tbl" width="700">
 <!--- scope cascading --->
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.Cascading#</td>
-	<td class="tblContent" style="#doStyle(scope.scopeCascadingType,'scope','scopeCascadingType')#">
+	<th scope="row">#stText.Scopes.Cascading#</th>
+	<td style="#doStyle(scope.scopeCascadingType,'scope','scopeCascadingType')#">
 		<b>#ucFirst(stText.Scopes[scope.scopeCascadingType])#</b>
-        <br /><span class="comment">#stText.Scopes.CascadingDescription#</span>
+        <br /><div class="comment">#stText.Scopes.CascadingDescription#</div>
 	</td>
 </tr>
 <!--- cascade to result --->
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.CascadeToResultSet#</td>
-	<td class="tblContent" style="#doStyle(scope.allowImplicidQueryCall,'scope','allowImplicidQueryCall')#">
+	<th scope="row">#stText.Scopes.CascadeToResultSet#</th>
+	<td style="#doStyle(scope.allowImplicidQueryCall,'scope','allowImplicidQueryCall')#">
 		<b>#yesNoFormat(scope.allowImplicidQueryCall)#</b>
-		<br /><span class="comment">#stText.Scopes.CascadeToResultSetDescription#</span>
+		<br /><div class="comment">#stText.Scopes.CascadeToResultSetDescription#</div>
 	</td>
 </tr>
 <!--- Merge URL and Form --->
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.mergeUrlForm#</td>
-	<td class="tblContent" style="#doStyle(scope.mergeFormAndUrl,'scope','mergeFormAndUrl')#">
+	<th scope="row">#stText.Scopes.mergeUrlForm#</th>
+	<td style="#doStyle(scope.mergeFormAndUrl,'scope','mergeFormAndUrl')#">
 		<b>#yesNoFormat(scope.mergeFormAndUrl)#</b>
-		<br /><span class="comment">#stText.Scopes.mergeUrlFormDescription#</span>
+		<br /><div class="comment">#stText.Scopes.mergeUrlFormDescription#</div>
 	</td>
 </tr>
 <!--- Local Mode --->
 <tr>
-	<td class="tblHead" width="150">#stText.Scopes.LocalMode#</td>
-	<td class="tblContent" style="#doStyle(scope.localMode,'scope','localMode')#">
+	<th scope="row">#stText.Scopes.LocalMode#</th>
+	<td style="#doStyle(scope.localMode,'scope','localMode')#">
 		<b>#scope.localMode#</b>
-        <br /><span class="comment">#stText.Scopes.LocalModeDesc#</span>
+        <br /><div class="comment">#stText.Scopes.LocalModeDesc#</div>
 	</td>
 </tr>
 </table>
@@ -431,10 +431,10 @@ Create Datasource --->
 <table class="tbl" width="700">
 <!--- PSQ --->
 <tr>
-	<td class="tblHead" width="150">#stText.Settings.PreserveSingleQuotes#</td>
-	<td class="tblContent" style="#doStyle(dbSetting.psq,'datasource','psq')#">
+	<th scope="row">#stText.Settings.PreserveSingleQuotes#</th>
+	<td style="#doStyle(dbSetting.psq,'datasource','psq')#">
 	<b>#yesNoFormat(dbSetting.psq)#</b>
-	<br /><span class="comment">#stText.Settings.PreserveSingleQuotesDescription#</span></td>
+	<br /><div class="comment">#stText.Settings.PreserveSingleQuotesDescription#</div></td>
 	
 </tr>
 
@@ -451,26 +451,26 @@ Create Datasource --->
 <table class="tbl" width="700">
 <!--- Deep Search --->
 <tr>
-	<td class="tblHead" width="150">#stText.CustomTags.customTagDeepSearch#</td>
-	<td class="tblContent" style="#doStyle(customtag.deepsearch,'customtag','deepsearch')#">
+	<th scope="row">#stText.CustomTags.customTagDeepSearch#</th>
+	<td style="#doStyle(customtag.deepsearch,'customtag','deepsearch')#">
     <b>#yesNoFormat(customtag.deepsearch)#</b><br />
-	<span class="comment">#stText.CustomTags.customTagDeepSearchDesc#</span></td>
+	<div class="comment">#stText.CustomTags.customTagDeepSearchDesc#</div></td>
 </tr>
 <!--- Local Search --->
 <tr>
-	<td class="tblHead" width="150">#stText.CustomTags.customTagLocalSearch#</td>
-	<td class="tblContent" style="#doStyle(customtag.localsearch,'customtag','localsearch')#">
+	<th scope="row">#stText.CustomTags.customTagLocalSearch#</th>
+	<td style="#doStyle(customtag.localsearch,'customtag','localsearch')#">
 	<b>#yesNoFormat(customtag.localsearch)#</b><br />
-	<span class="comment">#stText.CustomTags.customTagLocalSearchDesc#</span></td>
+	<div class="comment">#stText.CustomTags.customTagLocalSearchDesc#</div></td>
 	
 </tr>
 <!--- Extension --->
 <cfset value=ArrayToList(customtag.extensions)>
 <tr>
-	<td class="tblHead" width="150">#stText.CustomTags.extensions#</td>
-	<td class="tblContent" style="#doStyle(value,'customtag','extensions')#">
+	<th scope="row">#stText.CustomTags.extensions#</th>
+	<td style="#doStyle(value,'customtag','extensions')#">
     	<b>#value#</b><br />
-        <span class="comment">#stText.CustomTags.extensionsDesc#</span>
+        <div class="comment">#stText.CustomTags.extensionsDesc#</div>
     
     
     </td>

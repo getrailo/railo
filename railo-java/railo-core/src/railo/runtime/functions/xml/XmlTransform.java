@@ -1,5 +1,5 @@
 /**
- * Implements the Cold Fusion Function xmltransform
+ * Implements the CFML Function xmltransform
  */
 package railo.runtime.functions.xml;
 
@@ -12,10 +12,16 @@ import railo.runtime.exp.XMLException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
-import railo.runtime.type.Array;
+import railo.runtime.type.Struct;
 
 public final class XmlTransform implements Function {
-	public static String call(PageContext pc , Object oXml, String xsl) throws PageException {
+
+
+	public static String call( PageContext pc , Object oXml, String xsl ) throws PageException {
+		return call( pc, oXml, xsl, null );
+	}
+	
+	public static String call( PageContext pc , Object oXml, String xsl, Struct parameters ) throws PageException {
 		try {
 			Document doc;
 			if(oXml instanceof String) {
@@ -23,16 +29,11 @@ public final class XmlTransform implements Function {
 			}
 			else if(oXml instanceof Node) doc=XMLUtil.getDocument((Node)oXml);
 			else throw new XMLException("XML Object is of invalid type, must be a XML String or a XML Object","now it is "+Caster.toClassName(oXml));
-		
-			return XMLUtil.transform(doc,XMLUtil.toInputSource(pc, xsl));
-		}   
+
+			return XMLUtil.transform( doc, XMLUtil.toInputSource( pc, xsl ), parameters );
+		}
 		catch (Exception e) {
 			throw Caster.toPageException(e);
-		} 
-	}
-	
-	public static String call(PageContext pc , Object oXml, String xsl,Array parameters) throws PageException {
-		// TODO impl. parameters support
-		return call(pc, oXml, xsl);
+		}
 	}
 }

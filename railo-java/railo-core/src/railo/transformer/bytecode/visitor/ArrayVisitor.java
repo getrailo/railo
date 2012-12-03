@@ -4,8 +4,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
-import railo.transformer.bytecode.BytecodeContext;
-
 public final class ArrayVisitor {
 
 	public void visitBegin(GeneratorAdapter adapter,Type type,int length) {
@@ -16,9 +14,9 @@ public final class ArrayVisitor {
 		adapter.dup();
         adapter.push(index);
 	}
-	public void visitEndItem(BytecodeContext bc) {
+	/*public void visitEndItem(BytecodeContext bc) {
 		bc.getAdapter().visitInsn(Opcodes.AASTORE);
-	}
+	}*/
 	
 	public void visitEndItem(GeneratorAdapter adapter) {
 		adapter.visitInsn(Opcodes.AASTORE);

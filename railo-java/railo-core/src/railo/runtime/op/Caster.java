@@ -19,7 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -50,7 +51,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.net.HTTPUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
-import railo.runtime.cfx.QueryWrap;
 import railo.runtime.coder.Base64Coder;
 import railo.runtime.coder.Coder;
 import railo.runtime.coder.CoderException;
@@ -90,7 +90,6 @@ import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
-import railo.runtime.type.QueryPro;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -111,7 +110,7 @@ import railo.runtime.util.IteratorWrapper;
 
 
 /**
- * This class can cast object of one type to a other by cold fusion rules
+ * This class can cast object of one type to a other by CFML rules
  */
 public final class Caster { 
     private Caster(){
@@ -307,6 +306,7 @@ public final class Caster {
     }
     
     public static Boolean toBoolean(String str, Boolean defaultValue) {
+    	if(str==null) return defaultValue;
     	int i=stringToBooleanValueEL(str);
     	if(i!=-1) return (i==1)?Boolean.TRUE:Boolean.FALSE;
     	
@@ -415,7 +415,7 @@ public final class Caster {
         throw new CasterException(o,"number");
     }
 
-    public static double toDoubleValue(Double d) throws PageException {
+    public static double toDoubleValue(Double d) {
         if(d == null) return 0;
         return d.doubleValue();
     }
@@ -1325,7 +1325,15 @@ public final class Caster {
         if(o instanceof Character) return (((Character)o).charValue());
         else if(o instanceof Boolean) return ((((Boolean)o).booleanValue())?1L:0L);
         else if(o instanceof Number) return (((Number)o).longValue());
-        else if(o instanceof String) return (long)toDoubleValue(o.toString());                                                                                                                                                      
+        else if(o instanceof String) {
+        	String str=(String)o;
+        	try{
+        		return Long.parseLong(str);
+        	}
+        	catch(NumberFormatException nfe){
+        		return (long)toDoubleValue(str);
+        	}                                                                                                                                                     
+        }
         else if(o instanceof Castable) return (long)((Castable)o).castToDoubleValue();    
         else if(o instanceof ObjectWrap) return toLongValue(((ObjectWrap)o).getEmbededObject());
 		
@@ -1610,7 +1618,7 @@ public final class Caster {
      * @throws PageException
      */
     public static short toShortValue(Object o) throws PageException {
-        if(o instanceof Short) return ((Byte)o).byteValue();
+        if(o instanceof Short) return ((Short)o).shortValue();
         if(o instanceof Character) return (short)(((Character)o).charValue());
         else if(o instanceof Boolean) return (short)((((Boolean)o).booleanValue())?1:0);
         else if(o instanceof Number) return (((Number)o).shortValue());
@@ -1638,7 +1646,7 @@ public final class Caster {
      * @return casted short value
      */
     public static short toShortValue(Object o, short defaultValue) {
-        if(o instanceof Short) return ((Byte)o).byteValue();
+        if(o instanceof Short) return ((Short)o).shortValue();
         if(o instanceof Character) return (short)(((Character)o).charValue());
         else if(o instanceof Boolean) return (short)((((Boolean)o).booleanValue())?1:0);
         else if(o instanceof Number) return (((Number)o).shortValue());
@@ -1962,6 +1970,24 @@ public final class Caster {
     public static String toString(boolean b) {
         return b?"true":"false";
     }
+
+    public static UDF toFunction(Object o) throws PageException {
+    	if(o instanceof UDF) return (UDF)o;
+    	
+        else if(o instanceof ObjectWrap) {
+            return toFunction(((ObjectWrap)o).getEmbededObject());
+        }
+        throw new CasterException(o,"function");
+    }
+
+    public static UDF toFunction(Object o, UDF defaultValue) {
+    	if(o instanceof UDF) return (UDF)o;
+    	
+        else if(o instanceof ObjectWrap) {
+            return toFunction(((ObjectWrap)o).getEmbededObject(defaultValue),defaultValue);
+        }
+        return defaultValue;
+    }
     
     /**
      * cast a Object to a Array Object
@@ -2047,16 +2073,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             ArrayList arr=new ArrayList();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    arr.add(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e = it.next();
+                    arr.add(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+(e!=null?e.getKey():"")+"] is not a number");
             }
             return arr;
         }
@@ -2112,16 +2138,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    arr.setE(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e = it.next();
+                    arr.setE(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key.getString()+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+e.getKey().getString()+"] is not a number");
             }
             return arr;
         }
@@ -2166,17 +2192,16 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
-            Collection.Key key=null;
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    key=keys[i];
-                    //print.ln(key);
-                    arr.setE(toIntValue(key.getString()),sct.get(key));
+                while(it.hasNext()) {
+                	e=it.next();
+                    arr.setE(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
-                throw new ExpressionException("can't cast struct to a array, key ["+key+"] is not a number");
+            catch (ExpressionException ee) {
+                throw new ExpressionException("can't cast struct to a array, key ["+e.getKey()+"] is not a number");
             }
             return toNativeArray(arr);
         }
@@ -2219,13 +2244,15 @@ public final class Caster {
             Struct sct=(Struct) o;
             Array arr=new ArrayImpl();
             
-            Collection.Key[] keys=sct.keys();
+            Iterator<Entry<Key, Object>> it = sct.entryIterator();
+            Entry<Key, Object> e=null;
             try {
-                for(int i=0;i<keys.length;i++) {
-                    arr.setEL(toIntValue(keys[i].toString()),sct.get(keys[i],null));
+                while(it.hasNext()) {
+                	e=it.next();
+                    arr.setEL(toIntValue(e.getKey().getString()),e.getValue());
                 }
             } 
-            catch (ExpressionException e) {
+            catch (ExpressionException ee) {
                 return defaultValue;
             }
             return arr;
@@ -2286,11 +2313,11 @@ public final class Caster {
      */
     public static Map toMap(Object o, boolean duplicate) throws PageException {
         if(o instanceof Struct) {
-            if(duplicate) return (Map) ((Struct)o).duplicate(false);
+            if(duplicate) return (Map) Duplicator.duplicate(o,false);
             return ((Struct)o);
         }
         else if(o instanceof Map){
-            if(duplicate) return Duplicator.duplicateMap((Map)o,false);
+            if(duplicate) return (Map)Duplicator.duplicate(o,false);
             return (Map)o;
         }
         else if(o instanceof Node) {
@@ -2631,7 +2658,6 @@ public final class Caster {
         
     	DateTime dt=toDateTime(locale, str, tz,null,useCommomDateParserAsWell);
         if(dt==null){
-        	if(useCommomDateParserAsWell)return toDateTime(str, tz);
         	throw new ExpressionException("can't cast ["+str+"] to date value");
         }
         return dt;
@@ -2654,52 +2680,62 @@ public final class Caster {
         //synchronized(c){
         	
 	        // datetime
+        	ParsePosition pp=new ParsePosition(0);
 	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
+	        Date d;
 	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	
-	            	synchronized(c) {
-		            	optimzeDate(c,tz,df[i].parse(str));
-		            	return new DateTimeImpl(c.getTime());
-	            	}
-	            }
-	            catch (ParseException e) {}
+	    		pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+            	d = df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+				
+            	synchronized(c) {
+	            	optimzeDate(c,tz,d);
+	            	return new DateTimeImpl(c.getTime());
+            	}
+	            //}catch (ParseException e) {}
 	        }
 	        // date
 	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
 	    	for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	optimzeDate(c,tz,df[i].parse(str));
-		            	return new DateTimeImpl(c.getTime());
-	            	}
-	        }
-	            catch (ParseException e) {}
+	    		pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+				d=df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+            	
+				synchronized(c) {
+	            	optimzeDate(c,tz,d);
+	            	return new DateTimeImpl(c.getTime());
+            	}
+				//}catch (ParseException e) {}
 	        }
 	    	
 	        // time
 	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
 	        for(int i=0;i<df.length;i++) {
-	            try {
-	            	df[i].setTimeZone(tz);
-	            	synchronized(c) {
-		            	c.setTimeZone(tz);
-		            	c.setTime(df[i].parse(str));
-		
-	        
-		            	c.set(Calendar.YEAR,1899);
-		                c.set(Calendar.MONTH,11);
-		                c.set(Calendar.DAY_OF_MONTH,30);
-		            	c.setTimeZone(tz);
-	            	}
-	                return new DateTimeImpl(c.getTime());
-	            } 
-	            catch (ParseException e) {}
+	        	pp.setErrorIndex(-1);
+				pp.setIndex(0);
+				//try {
+            	df[i].setTimeZone(tz);
+            	d=df[i].parse(str,pp);
+            	if (pp.getIndex() == 0 || d==null || pp.getIndex()<str.length()) continue;	
+            	synchronized(c) {
+	            	c.setTimeZone(tz);
+	            	c.setTime(d);
+	            	c.set(Calendar.YEAR,1899);
+	                c.set(Calendar.MONTH,11);
+	                c.set(Calendar.DAY_OF_MONTH,30);
+	            	c.setTimeZone(tz);
+            	}
+                return new DateTimeImpl(c.getTime());
+	            //}catch (ParseException e) {}
 	        }
         //}
-        if(useCommomDateParserAsWell)return toDate(str, false, tz, defaultValue);
+        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false, tz, defaultValue);
         return defaultValue;
     }
     
@@ -2719,28 +2755,16 @@ public final class Caster {
      */
     public static Query toQuery(Object o) throws PageException {
     	if(o instanceof Query) return (Query)o;
-    	if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
-        else if(o instanceof ObjectWrap) {
+    	if(o instanceof ObjectWrap) {
             return toQuery(((ObjectWrap)o).getEmbededObject());
         }
+        if(o instanceof ResultSet) return new QueryImpl((ResultSet)o,"query");
         throw new CasterException(o,"query");
     }
-    
-
-    public static QueryPro toQueryPro(Query q) throws CasterException {
-		QueryPro rtn = toQueryPro(q, null);
-    	if(rtn!=null) return rtn;
-		throw new CasterException(q,"QueryPro");
-	}
-
-    public static QueryPro toQueryPro(Query q, QueryPro defaultValue)  {
-		while(q instanceof QueryWrap){
-			q=((QueryWrap)q).getQuery();
-		}
-		
-		if(q instanceof QueryPro)return (QueryPro) q;
-		return defaultValue;
-	}
+    public static QueryColumn toQueryColumn(Object o) throws PageException {
+    	if(o instanceof QueryColumn) return (QueryColumn)o;
+    	throw new CasterException(o,"querycolumn");
+    }
 
     /**
      * cast a Object to a Query Object
@@ -2783,15 +2807,15 @@ public final class Caster {
         if(o instanceof Query) {
             if(duplicate) {
                 Query src = (Query)o;
-                Query trg=new QueryImpl(src.getColumns(),src.getRowCount(),"query");
+                Query trg=new QueryImpl(src.getColumnNames(),src.getRowCount(),"query");
 
-                String[] keys=src.getColumns();
+                Collection.Key[] keys=src.getColumnNames();
                 QueryColumn[] columnsSrc=new QueryColumn[keys.length];
                 for(int i=0;i<columnsSrc.length;i++) {
                     columnsSrc[i]=src.getColumn(keys[i]);
                 }
 
-                keys=trg.getColumns();
+                keys=trg.getColumnNames();
                 QueryColumn[] columnsTrg=new QueryColumn[keys.length];
                 for(int i=0;i<columnsTrg.length;i++) {
                     columnsTrg[i]=trg.getColumn(keys[i]);
@@ -3142,28 +3166,38 @@ public final class Caster {
         	clazz=ClassUtil.toArrayClass(clazz);
         	return clazz;
         }
-        
         // check for argument
-        Class<?> clazz=otherTypeToClass(type);
-        if(clazz!=null) return clazz;
-        throw new ExpressionException("invalid type ["+type+"]");
+        Class<?> clazz;
+		try {
+			clazz = otherTypeToClass(type);
+		} 
+		catch (ClassException e) {
+			throw Caster.toPageException(e);
+		}
+        return clazz;
     }
     
-    private static Class<?> otherTypeToClass(String type){
+    private static Class<?> otherTypeToClass(String type) throws PageException, ClassException{
     	PageContext pc = ThreadLocalPageContext.get();
-        if(pc!=null)	{
+    	PageException pe=null;
+        // try to load as cfc
+    	if(pc!=null)	{
         	try {
         		Component c = pc.loadComponent(type);
         		return ComponentUtil.getServerComponentPropertiesClass(c);
     		} 
-            catch (PageException pe) {}
+            catch (PageException e) {
+            	pe=e;
+            }
         }
+        // try to load as class
         try {
 			return ClassUtil.loadClass(type);
 		} 
-        catch (ClassException e) {}
-        
-        return null;
+        catch (ClassException ce) {
+        	if(pe!=null) throw pe;
+        	throw ce;
+        }
     }
     
 
@@ -3361,7 +3395,6 @@ public final class Caster {
             throw new ExpressionException("can't cast Component of Type ["+comp.getAbsName()+"] to ["+type+"]");
         }
         throw new CasterException(o,type);
-        //throw new ExpressionException("invalid type ["+type+"]");
     }
 
 	public static String toZip(Object o) throws PageException {
@@ -3458,6 +3491,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_DATETIME)       return DateCaster.toDateAdvanced(o,pc.getTimeZone());
         else if(type==CFTypes.TYPE_NUMERIC)        return toDouble(o);
         else if(type==CFTypes.TYPE_QUERY)          return toQuery(o);
+        else if(type==CFTypes.TYPE_QUERY_COLUMN)   return toQueryColumn(o);
         else if(type==CFTypes.TYPE_STRING)         return toString(o);
         else if(type==CFTypes.TYPE_STRUCT)         return toStruct(o);
         else if(type==CFTypes.TYPE_TIMESPAN)       return toTimespan(o);
@@ -3466,6 +3500,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_VARIABLE_NAME)  return toVariableName(o);
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
+        else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
 
         if(o instanceof Component) {
             Component comp=((Component)o);
@@ -3491,6 +3526,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_DATETIME)       return DateCaster.toDateAdvanced(o,pc.getTimeZone());
         else if(type==CFTypes.TYPE_NUMERIC)        return toDouble(o);
         else if(type==CFTypes.TYPE_QUERY)          return toQuery(o);
+        else if(type==CFTypes.TYPE_QUERY_COLUMN)   return toQueryColumn(o);
         else if(type==CFTypes.TYPE_STRING)         return toString(o);
         else if(type==CFTypes.TYPE_STRUCT)         return toStruct(o);
         else if(type==CFTypes.TYPE_TIMESPAN)       return toTimespan(o);
@@ -3498,6 +3534,7 @@ public final class Caster {
         else if(type==CFTypes.TYPE_UUID)           return toUUId(o);
         else if(type==CFTypes.TYPE_VARIABLE_NAME)  return toVariableName(o);
         else if(type==CFTypes.TYPE_VOID)           return toVoid(o);
+        else if(type==CFTypes.TYPE_FUNCTION)       return toFunction(o);
         else if(type==CFTypes.TYPE_XML)            return toXML(o);
 
         if(type==CFTypes.TYPE_UNDEFINED)
@@ -3643,7 +3680,7 @@ public final class Caster {
      */
     public static Iterator toIterator(Object o) throws PageException {
         if(o instanceof Iterator) return (Iterator)o;
-        else if(o instanceof Iteratorable) return ((Iteratorable)o).keyIterator();
+        else if(o instanceof Iteratorable) return ((Iteratorable)o).keysAsStringIterator();
         else if(o instanceof Enumeration) return new IteratorWrapper((Enumeration)o);
         else if(o instanceof JavaObject) {
         	String[] names = ClassUtil.getFieldNames(((JavaObject)o).getClazz());
@@ -3779,12 +3816,14 @@ public final class Caster {
     
     public static Object[] toFunctionValues(Struct args) {
     	// TODO nicht sehr optimal 
-    	Key[] keys = args.keys();
-        FunctionValue[] fvalues=new FunctionValue[args.size()];
-        for(int i=0;i<keys.length;i++) {
-        	fvalues[i]=new FunctionValueImpl(keys[i].getString(),args.get(keys[i],null));
+    	Iterator<Entry<Key, Object>> it = args.entryIterator();
+        Entry<Key, Object> e;
+        List<FunctionValue> fvalues=new ArrayList<FunctionValue>();
+        while(it.hasNext()) {
+        	e=it.next();
+        	fvalues.add(new FunctionValueImpl(e.getKey().getString(),e.getValue()));
         }
-        return fvalues;
+        return fvalues.toArray(new FunctionValue[fvalues.size()]);
     }
 
     /**
@@ -4175,7 +4214,7 @@ public final class Caster {
 		else if(trgClass==byte.class)return Caster.toByte(obj); 
 		else if(trgClass==short.class)return Caster.toShort(obj); 
 		else if(trgClass==int.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
-		else if(trgClass==long.class)return Long.valueOf(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==long.class)return Caster.toLong(obj);
 		else if(trgClass==float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==double.class)return Caster.toDouble(obj); 
 		else if(trgClass==char.class)return Caster.toCharacter(obj); 
@@ -4184,7 +4223,7 @@ public final class Caster {
 		else if(trgClass==Byte.class)return Caster.toByte(obj); 
 		else if(trgClass==Short.class)return Caster.toShort(obj); 
 		else if(trgClass==Integer.class)return Integer.valueOf(Caster.toDouble(obj).intValue()); 
-		else if(trgClass==Long.class)return Long.valueOf(Caster.toDouble(obj).longValue()); 
+		else if(trgClass==Long.class)return Caster.toLong(obj); 
 		else if(trgClass==Float.class)return new Float(Caster.toDouble(obj).floatValue()); 
 		else if(trgClass==Double.class)return Caster.toDouble(obj); 
 		else if(trgClass==Character.class)return Caster.toCharacter(obj); 

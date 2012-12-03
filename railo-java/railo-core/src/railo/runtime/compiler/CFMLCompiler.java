@@ -13,7 +13,7 @@ import railo.transformer.library.tag.TagLib;
 public interface CFMLCompiler {
 
     /**
-     * compiles a cold fusion source file
+     * compiles a CFML source file
      * @param source cfml source file
      * @param tld tag library deskriptor
      * @param fld function library deskriptor

@@ -4,11 +4,15 @@ import railo.commons.io.log.Log;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.PageContext;
 import railo.runtime.type.Collection;
-import railo.runtime.type.scope.SessionPlus;
+import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.storage.MemoryScope;
 import railo.runtime.type.scope.storage.StorageScopeMemory;
 
-public class SessionMemory extends StorageScopeMemory implements SessionPlus,MemoryScope {
+public class SessionMemory extends StorageScopeMemory implements Session,MemoryScope {
+	
+	private static final long serialVersionUID = 7703261878730061485L;
+
+
 	/**
 	 * Constructor of the class
 	 * @param pc
@@ -32,7 +36,7 @@ public class SessionMemory extends StorageScopeMemory implements SessionPlus,Mem
 	 * @param isNew 
 	 * @return
 	 */
-	public static SessionPlus getInstance(PageContext pc, RefBoolean isNew, Log log) {
+	public static Session getInstance(PageContext pc, RefBoolean isNew, Log log) {
 		isNew.setValue(true);
 		return new SessionMemory(pc,log);
 	}

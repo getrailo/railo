@@ -9,9 +9,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import railo.loader.util.Util;
+import railo.runtime.text.xml.XMLUtil;
 
 /**
  * Die Klasse TagLibFactory liest die XML Repräsentation einer TLD ein 
@@ -55,8 +55,7 @@ public abstract class S3Factory extends DefaultHandler {
 		Reader r=null;
 		try {
 			InputSource is=new InputSource(in);
-			
-			xmlReader=XMLReaderFactory.createXMLReader(DEFAULT_SAX_PARSER);
+			xmlReader=XMLUtil.createXMLReader(DEFAULT_SAX_PARSER);
 			xmlReader.setContentHandler(this);
 			xmlReader.setErrorHandler(this);
 			xmlReader.parse(is);

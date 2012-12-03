@@ -1,9 +1,11 @@
 package railo.runtime.type.trace;
 
+import java.util.Comparator;
 import java.util.List;
 
 import railo.runtime.debug.Debugger;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 
@@ -105,50 +107,44 @@ public class TOArray extends TOCollection implements Array {
 		//return TraceObjectSupport.toTraceObject(debugger,arr.prepend(o),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#resize(int)
-	 */
+	@Override
 	public void resize(int to) throws PageException {
 		log();
 		arr.resize(to);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#sort(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void sort(String sortType, String sortOrder) throws PageException {
 		log();
 		arr.sort(sortType, sortOrder);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#toArray()
-	 */
+	@Override
+	public void sort(Comparator comp) throws PageException {
+		log();
+		arr.sort(comp);
+	}
+
+	@Override
 	public Object[] toArray() {
 		log();
 		return arr.toArray();
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#toList()
-	 */
+	@Override
 	public List toList() {
 		log();
 		return arr.toList();
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#removeE(int)
-	 */
+	@Override
 	public Object removeE(int key) throws PageException {
 		log(""+key);
 		return arr.removeE(key);
 		//return TraceObjectSupport.toTraceObject(debugger,arr.removeE(key),type,category,text);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int key) {
 		log(""+key);
 		return arr.removeEL(key);
@@ -163,9 +159,15 @@ public class TOArray extends TOCollection implements Array {
 		return arr.containsKey(key);
 	}
 
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		log();
-		return new TOArray(debugger,(Array)arr.duplicate(deepCopy),type,category,text);
+		return new TOArray(debugger,(Array)Duplicator.duplicate(arr,deepCopy),type,category,text);
 	}
+
+	@Override
+	public java.util.Iterator<Object> getIterator() {
+    	return valueIterator();
+    } 
 
 }

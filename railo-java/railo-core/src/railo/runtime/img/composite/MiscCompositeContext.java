@@ -44,7 +44,7 @@ public class MiscCompositeContext implements CompositeContext {
 		this.dstColorModel = dstColorModel;
 		this.srcColorSpace = srcColorModel.getColorSpace();
 		this.dstColorSpace = dstColorModel.getColorSpace();
-		ColorModel srgbCM = ColorModel.getRGBdefault();
+		//ColorModel srgbCM = ColorModel.getRGBdefault();
 //		srcNeedsConverting = !srcColorModel.equals(srgbCM);
 //		dstNeedsConverting = !dstColorModel.equals(srgbCM);
 	}
@@ -103,7 +103,7 @@ public class MiscCompositeContext implements CompositeContext {
 				int dib = dstPix[i+2];
 				int sa = srcPix[i+3];
 				int dia = dstPix[i+3];
-				int dor, dog, dob, doa;
+				int dor, dog, dob;
 
 				switch ( rule ) {
 				case MiscComposite.ADD:

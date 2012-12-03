@@ -5,10 +5,11 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.text.xml.struct.XMLStruct;
 import railo.runtime.type.Array;
 import railo.runtime.type.Query;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.TimeSpan;
+import railo.runtime.type.scope.Scope;
 
 public final class Type {
 	
@@ -17,6 +18,7 @@ public final class Type {
         if(o instanceof UDF) return "user defined function ("+(((UDF)o).getFunctionName())+")";
         else if(o instanceof Boolean) return "Boolean";
         else if(o instanceof Number) return "Number";
+        else if(o instanceof TimeSpan) return "TimeSpan";
         else if(o instanceof Array) return "Array";
         else if(o instanceof Component) return "Component "+((Component)o).getAbsName();
         else if(o instanceof Scope) return ((Scope)o).getTypeAsString();

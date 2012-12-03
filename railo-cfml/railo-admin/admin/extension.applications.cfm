@@ -34,47 +34,7 @@
     returnVariable="extensions">
  
 <cfparam name="err" default="#struct(message:"",detail:"")#">
-
-<cfset data="">
-<cfloop query="providers">
-	<cftry>
-		<cfset provider=loadCFC(providers.url)>
-        <cfset _apps=provider.listApplications()>
-        <cfset _info=provider.getInfo()>
-        <cfset _url=providers.url>
-		<cfif IsSimpleValue(data)>
-        	<cfset data=queryNew(_apps.columnlist&",provider,info,uid")>
-        </cfif>
-        
-        <!--- check if all column exists --->
-        <cfloop list="#_apps.columnlist#" index="col">
-			<cfif not queryColumnExists(data,col)><cfset QueryAddColumn(data,col,array())></cfif>
-        </cfloop>
-		
-        <cfloop query="_apps">
-        	<cfset QueryAddRow(data)>
-            <cfloop list="#_apps.columnlist#" index="col">
-            	<cfset data[col][data.recordcount]=_apps[col]>
-            </cfloop>
-            <cfset data.provider[data.recordcount]=_url>
-            <cfset data.info[data.recordcount]=_info>
-            <cfset data.uid[data.recordcount]=createId(_url,_apps.id)>
-        </cfloop>
-        
-        
-    	<cfcatch>
-        	<cfif len(err.message)>
-        		<cfset err.message&="<br>can't load provider [#providers.url#]">
-            <cfelse>
-        		<cfset err.message="can't load provider [#providers.url#]">
-            </cfif>
-        </cfcatch>
-    </cftry>
-</cfloop>
-<cfif isQuery(data)><cfset querySort(query:data,names:"name,uid,category")></cfif>
-
-
-
+<cfset data=getData(providers,err)>
 
 
 <!--- Action --->

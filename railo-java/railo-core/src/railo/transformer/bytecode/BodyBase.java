@@ -13,6 +13,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.StatementBase;
+import railo.transformer.bytecode.statement.StatementBaseNoFinal;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
@@ -20,7 +21,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * Base Body implementation
  */
-public class BodyBase extends StatementBase implements Body {
+public class BodyBase extends StatementBaseNoFinal implements Body {
 
 	private static long counter=0;
 	private LinkedList statements=new LinkedList();
@@ -32,7 +33,7 @@ public class BodyBase extends StatementBase implements Body {
 	 * Constructor of the class
 	 */
 	public BodyBase() {
-    	super(-1,-1);
+    	super(null,null);
 	}
 
     
@@ -68,6 +69,10 @@ public class BodyBase extends StatementBase implements Body {
 	public List getStatements() {
 		return statements;
 	}
+	
+	public boolean hasStatements() {
+		return !statements.isEmpty();
+	}
 
 	/**
 	 *
@@ -83,10 +88,10 @@ public class BodyBase extends StatementBase implements Body {
 		statements.clear();
 	}
 
-	public void addPrintOut(String str, int line) {
+	public void addPrintOut(String str, Position start,Position end) {
 		if(concatPrintouts(str)) return;
 		
-		last=new PrintOut(new LitString(str,line),line);
+		last=new PrintOut(new LitString(str,start,end),start,end);
         last.setParent(this);
         this.statements.add(last);
 	}
@@ -98,7 +103,7 @@ public class BodyBase extends StatementBase implements Body {
 			if(expr instanceof LitString) {
 				LitString lit=(LitString)expr;
 				if(lit.getString().length()<1024) {
-					po.setExpr(LitString.toExprString(lit.getString().concat(str),lit.getLine()));
+					po.setExpr(LitString.toExprString(lit.getString().concat(str),lit.getStart(),lit.getEnd()));
 					return true;
 				}
 			}
@@ -109,9 +114,19 @@ public class BodyBase extends StatementBase implements Body {
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
         writeOut(bc.getStaticConstructor(),bc.getConstructor(),bc.getKeys(),statements, bc);
     }
-	
 
-	
+	public static void writeOut2(BytecodeContext statConstr,BytecodeContext constr,List keys,List statements,BytecodeContext bc) throws BytecodeException {
+		Iterator it = statements.iterator();
+		//int lastLine=-1;
+		//int count=0;
+		while(it.hasNext()) {
+			//count++;
+			Statement s = ((Statement)it.next());
+			
+	    	s.writeOut(bc);
+        }
+		//ExpressionUtil.writeLog(bc, lastLine);	
+    }
 	
 	public static void writeOut(BytecodeContext statConstr,BytecodeContext constr,List keys,List<Statement> statements,BytecodeContext bc) throws BytecodeException {
 		GeneratorAdapter adapter = bc.getAdapter();
@@ -125,18 +140,17 @@ public class BodyBase extends StatementBase implements Body {
 			isOutsideMethod=bc.getMethod().getReturnType().equals(Types.VOID);
 	    	Statement s = it.next();
 	    	if(_bc.incCount()>MAX_STATEMENTS && bc.doSubFunctions() && 
-					(isOutsideMethod || !s.hasFlowController()) && s.getLine()!=-1) {
+					(isOutsideMethod || !s.hasFlowController()) && s.getStart()!=null) {
         		if(a!=null){
         			a.returnValue();
     				a.endMethod();
 	        	}
         		//ExpressionUtil.visitLine(bc, s.getLine());
         		String method= ASMUtil.createOverfowMethod();
-        		ExpressionUtil.visitLine(bc, s.getLine());
+        		ExpressionUtil.visitLine(bc, s.getStart());
         		//ExpressionUtil.lastLine(bc);
         		m= new Method(method,Types.VOID,new Type[]{Types.PAGE_CONTEXT});
     			a = new GeneratorAdapter(Opcodes.ACC_PRIVATE+Opcodes.ACC_FINAL , m, null, new Type[]{Types.THROWABLE}, bc.getClassWriter());
-    			
     			
     			_bc=new BytecodeContext(statConstr,constr,keys,bc,a,m);
     			if(bc.getRoot()!=null)_bc.setRoot(bc.getRoot());
@@ -154,14 +168,7 @@ public class BodyBase extends StatementBase implements Body {
 				_bc=bc;
 				a=null;
 			}
-        	/*
-        	if(s instanceof TagBase){
-        		TagBase tb=(TagBase) s;
-        		print.e(tb.getFullname()+":"+s.getClass().getName()+":"+s.getLine()+":"+tb.getStartLine()+":"+tb.getEndLine());
-        	}
-        	else print.e(s.getClass().getName()+":"+s.getLine());
-        	*/
-        	
+        	        	
         	if(ExpressionUtil.doLog(bc)) {
         		String id=id();
         		ExpressionUtil.callStartLog(bc, s,id);
@@ -177,14 +184,12 @@ public class BodyBase extends StatementBase implements Body {
 			a.endMethod();
         } 
     }
-	
+    
 	private static synchronized String id() {
 		counter++;
 		if(counter<0) counter=1;
 		return Long.toString(counter, Character.MAX_RADIX);
 	}
-
-    
 
 	/**
 	 *

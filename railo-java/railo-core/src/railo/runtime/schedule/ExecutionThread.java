@@ -2,24 +2,22 @@ package railo.runtime.schedule;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.methods.GetMethod;
+import java.net.URL;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.log.LogAndSource;
+import railo.commons.io.res.ContentType;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.commons.net.http.HTTPEngine;
+import railo.commons.net.http.HTTPResponse;
+import railo.commons.net.http.Header;
+import railo.commons.security.Credentials;
 import railo.runtime.config.Config;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.other.CreateUUID;
-import railo.runtime.net.http.HttpClientUtil;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.util.URLResolver;
 
 class ExecutionThread extends Thread {
@@ -43,9 +41,9 @@ class ExecutionThread extends Thread {
 		boolean hasError=false;
         String logName="schedule task:"+task.getTask();
        // init
-        HttpClient client = new HttpClient();
-        client.setStrictMode(false);
-        HttpState state = client.getState();
+        //HttpClient client = new HttpClient();
+        //client.setStrictMode(false);
+        //HttpState state = client.getState();
         
         String url;
         if(task.getUrl().getQuery()==null)
@@ -59,54 +57,34 @@ class ExecutionThread extends Thread {
         		url=task.getUrl().toExternalForm()+"&RequestTimeout="+(task.getTimeout()/1000);
         }
         
-        HttpMethod method = new GetMethod(url);
-        HostConfiguration hostConfiguration = client.getHostConfiguration();
-
-		method.setRequestHeader("User-Agent","CFSCHEDULE");
+        //HttpMethod method = new GetMethod(url);
+        //HostConfiguration hostConfiguration = client.getHostConfiguration();
+        
+        Header[] headers=new Header[]{
+        	HTTPEngine.header("User-Agent","CFSCHEDULE")
+        };
+		//method.setRequestHeader("User-Agent","CFSCHEDULE");
         
        // Userame / Password
         Credentials credentials = task.getCredentials();
+        String user=null,pass=null;
         if(credentials!=null) {
-            state.setCredentials(null,null,credentials);
-            method.setDoAuthentication( true );
+        	user=credentials.getUsername();
+        	pass=credentials.getPassword();
             //get.addRequestHeader("Authorization","Basic admin:spwwn1p");
         }
         
         // Proxy
-        String proxyHost = task.getProxyHost();
-        int proxyPort = task.getProxyPort();
-        Credentials proxyCredentials =task.getProxyCredentials();
-        
-        if(StringUtil.isEmpty(proxyHost) && config.isProxyEnableFor(task.getUrl().getHost())) {
-        	proxyHost=config.getProxyServer();
-        	proxyPort=config.getProxyPort();
-        	
-        	if(!StringUtil.isEmpty(config.getProxyUsername())) {
-        		proxyCredentials=new UsernamePasswordCredentials(
-        				config.getProxyUsername(),
-        				config.getProxyPassword());
-        	}
-        	else proxyCredentials=null;
+        ProxyData proxy=task.getProxyData();
+        if(!ProxyDataImpl.isValid(proxy) && config.isProxyEnableFor(task.getUrl().getHost())) {
+        	proxy=config.getProxyData();
         }
         
-        if(!StringUtil.isEmpty(proxyHost)) {
-            if(proxyPort>0)hostConfiguration.setProxy(proxyHost,proxyPort);
-            else hostConfiguration.setProxy(proxyHost,80);
-            //Credentials proxyCredentials =task.getProxyCredentials();
-            if(proxyCredentials!=null) {
-                state.setProxyCredentials(null,null,credentials);
-            }
-        } 
-        
-        if(task.getTimeout()>0){
-        	client.getParams().setConnectionManagerTimeout(task.getTimeout());
-        	client.getParams().setSoTimeout((int)task.getTimeout());
-        	//client.setConnectionTimeout((int)task.getTimeout());
-        }
+        HTTPResponse rsp=null;
         
         // execute
         try {
-            method=HttpClientUtil.execute(client,method,true);
+        	rsp = HTTPEngine.get(new URL(url), user, pass, task.getTimeout(),HTTPEngine.MAX_REDIRECT, charset, null, proxy, headers);
         } catch (Exception e) {
             if(log!=null)log.error(logName,e.getMessage());
             hasError=true;
@@ -121,11 +99,11 @@ class ExecutionThread extends Thread {
         		file=file.getParentResource().getRealResource(n);
         	}
         	
-	        if(isText(method) && task.isResolveURL()) {
+	        if(isText(rsp) && task.isResolveURL()) {
 	        	
         	    String str;
                 try {
-                    InputStream stream = method.getResponseBodyAsStream();
+                    InputStream stream = rsp.getContentAsStream();
                     str = stream==null?"":IOUtil.toString(stream,null);
                     if(str==null)str="";
                 } 
@@ -151,7 +129,7 @@ class ExecutionThread extends Thread {
 	        	//print.out("1111111111111111111111111111111");
 	            try {
                     IOUtil.copy(
-                            method.getResponseBodyAsStream(),
+                            rsp.getContentAsStream(),
                             file,
                             true
                     );
@@ -166,10 +144,10 @@ class ExecutionThread extends Thread {
         if(!hasError && log!=null)log.info(logName,"executed");
 	}
 	
-    private static boolean isText(HttpMethod get) {
-        Header header = get.getResponseHeader("Content-Type");
-        if(header==null)return true;
-        String mimetype = header.getValue();
+    private static boolean isText(HTTPResponse rsp) {
+    	ContentType ct = rsp.getContentType();
+        if(ct==null)return true;
+        String mimetype = ct.getMimeType();
         return
         	mimetype == null ||  mimetype.startsWith("text") || mimetype.startsWith("application/octet-stream");
         

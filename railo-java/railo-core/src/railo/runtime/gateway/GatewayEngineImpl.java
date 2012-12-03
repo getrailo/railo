@@ -35,6 +35,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.KeyConstants;
 
 public class GatewayEngineImpl implements GatewayEngine {
 
@@ -62,7 +63,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 
 	public void addEntry(Config config,GatewayEntry ge) throws ClassException, PageException,GatewayException {
 		String id=ge.getId().toLowerCase().trim();
-		GatewayEntry existing=(GatewayEntry) entries.get(id);
+		GatewayEntry existing=entries.get(id);
 		Gateway g=null;
 		
 		// does not exist
@@ -91,9 +92,9 @@ public class GatewayEngineImpl implements GatewayEngine {
 		return entries;
 	}
 
-	public void remove(GatewayEntry ge) throws GatewayException {
+	public void remove(GatewayEntry ge) {
 		String id=ge.getId().toLowerCase().trim();
-		GatewayEntry existing=(GatewayEntry) entries.remove(id);
+		GatewayEntry existing=entries.remove(id);
 		Gateway g=null;
 		
 		// does not exist
@@ -147,7 +148,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void start(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.START);
 	}
-	private void start(Gateway gateway) throws PageException {
+	private void start(Gateway gateway) {
 		executeThread(gateway,GatewayThread.START);
 	}
 
@@ -159,14 +160,14 @@ public class GatewayEngineImpl implements GatewayEngine {
 	public void stop(String gatewayId) throws PageException {
 		executeThread(gatewayId,GatewayThread.STOP);
 	}
-	private void stop(Gateway gateway) throws PageException {
+	private void stop(Gateway gateway) {
 		executeThread(gateway,GatewayThread.STOP);
 	}
 	
 	
 
 
-	public void reset() throws PageException {
+	public void reset() {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		Entry<String, GatewayEntry> entry;
 		GatewayEntry ge;
@@ -188,7 +189,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 		}
 	}
 
-	public synchronized void clear() throws GatewayException, PageException {
+	public synchronized void clear() {
 		Iterator<Entry<String, GatewayEntry>> it = entries.entrySet().iterator();
 		Entry<String, GatewayEntry> entry;
 		while(it.hasNext()){
@@ -214,8 +215,7 @@ public class GatewayEngineImpl implements GatewayEngine {
 	
 	private GatewayEntry getGatewayEntry(String gatewayId) throws PageException {
 		String id=gatewayId.toLowerCase().trim();
-		
-		GatewayEntry ge=(GatewayEntry) entries.get(id);
+		GatewayEntry ge=entries.get(id);
 		if(ge!=null) return ge;
 		
 		// create list
@@ -231,14 +231,14 @@ public class GatewayEngineImpl implements GatewayEngine {
 	private GatewayEntry getGatewayEntry(Gateway gateway)  {
 		String gatewayId=gateway.getId();
 		// it must exist, because it only can come from here
-		return (GatewayEntry) entries.get(gatewayId);
+		return entries.get(gatewayId);
 	}
 	
 	private void executeThread(String gatewayId, int action) throws PageException {
 		new GatewayThread(this,getGateway(gatewayId),action).start();
 	}
 
-	private void executeThread(Gateway g, int action) throws PageException {
+	private void executeThread(Gateway g, int action) {
 		new GatewayThread(this,g,action).start();
 	}
 	
@@ -313,7 +313,6 @@ public class GatewayEngineImpl implements GatewayEngine {
 			return getCFC(pc,requestURI);
 		}
 		finally{
-			pc.setGatewayContext(false);
 			CFMLFactory f = config.getFactory();
 			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);
@@ -336,7 +335,6 @@ public class GatewayEngineImpl implements GatewayEngine {
 			}
 		}
 		finally{
-			pc.setGatewayContext(false);
 			CFMLFactory f = config.getFactory();
 			f.releasePageContext(pc);
 			ThreadLocalPageContext.register(oldPC);
@@ -373,13 +371,13 @@ public class GatewayEngineImpl implements GatewayEngine {
 				requestURI, 
 				"method="+functionName+(cfcPeristent?"&"+ComponentPage.REMOTE_PERSISTENT_ID+"="+remotePersisId:""), 
 				null, 
-				new Pair[]{new Pair("AMF-Forward","true")}, 
+				new Pair[]{new Pair<String,Object>("AMF-Forward","true")}, 
 				null, 
 				attrs);
 		
 		pc.setRequestTimeout(999999999999999999L); 
 		pc.setGatewayContext(true);
-		if(arguments!=null)attrs.setEL(KeyImpl.ARGUMENT_COLLECTION, arguments);
+		if(arguments!=null)attrs.setEL(KeyConstants._argumentCollection, arguments);
 		attrs.setEL("client", "railo-gateway-1-0");
 		return pc;
 	}

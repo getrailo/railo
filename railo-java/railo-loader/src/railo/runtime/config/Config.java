@@ -12,15 +12,22 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
 import railo.runtime.CFMLFactory;
 import railo.runtime.Mapping;
+import railo.runtime.PageContext;
 import railo.runtime.PageSource;
+import railo.runtime.cache.CacheConnection;
 import railo.runtime.cfx.CFXTagPool;
 import railo.runtime.db.DataSource;
 import railo.runtime.dump.DumpWriter;
+import railo.runtime.engine.ThreadQueue;
 import railo.runtime.exp.PageException;
 import railo.runtime.extension.Extension;
 import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.monitor.IntervallMonitor;
+import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.mail.Server;
+import railo.runtime.net.proxy.ProxyData;
+import railo.runtime.rest.RestSettings;
 import railo.runtime.schedule.Scheduler;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
@@ -88,13 +95,29 @@ public interface Config {
     public static final short RECOMPILE_ALWAYS = 2;
     
 
+	public static final short INSPECT_ALWAYS = 0;
+	public static final short INSPECT_ONCE = 1;
+	public static final short INSPECT_NEVER = 2;
+
     /*public static final int CUSTOM_TAG_MODE_NONE = 0;
     public static final int CUSTOM_TAG_MODE_CLASSIC = 1;
     public static final int CUSTOM_TAG_MODE_MODERN = 2;
     public static final int CUSTOM_TAG_MODE_CLASSIC_MODERN = 4;
     public static final int CUSTOM_TAG_MODE_MODERN_CLASSIC = 8;
     */
+	
+	public static final int CACHE_DEFAULT_NONE = 0;
+	public static final int CACHE_DEFAULT_OBJECT = 1;
+	public static final int CACHE_DEFAULT_TEMPLATE = 2;
+	public static final int CACHE_DEFAULT_QUERY = 4;
+	public static final int CACHE_DEFAULT_RESOURCE = 8;
+	public static final int CACHE_DEFAULT_FUNCTION = 16;
+
+	
+	
+	public short getInspectTemplate();
     
+	public String getDefaultDataSource();
 
     /**
      * return how railo cascade scopes
@@ -130,17 +153,22 @@ public interface Config {
     
 
     /**
-     * @return Returns the applicationTimeout.
+     * @return Returns the application Timeout.
      */
     public abstract TimeSpan getApplicationTimeout();
 
     /**
-     * @return Returns the sessionTimeout.
+     * @return Returns the session Timeout.
      */
     public abstract TimeSpan getSessionTimeout();
+    
+    /**
+     * @return Returns the client Timeout.
+     */
+    public TimeSpan getClientTimeout();
 
     /**
-     * @return Returns the requestTimeout.
+     * @return Returns the request Timeout.
      */
     public abstract TimeSpan getRequestTimeout();
 
@@ -232,20 +260,6 @@ public interface Config {
      */
     public abstract Mapping[] getMappings();
 
-    /* *
-     * return matching page Source, not relative to a other
-     * @param realPath 
-     * @return Returns matching mapping.
-     * /
-    //public abstract PageSource getPageSourceX(String realPath);
-
-    /* *
-     * return the physical path from a matching mapping given path
-     * @param realPath
-     * @return matching physical root path
-     */
-    //public Resource getPhysicalX(String realPath, boolean alsoDefaultMapping);
-
     /**
      * @return Returns the configDir.
      */
@@ -293,16 +307,13 @@ public interface Config {
 
     /**
      * @return Returns the debug Template.
+     * @deprecated use instead <code>getDebugEntry(ip, defaultValue)</code>
      */
     public abstract String getDebugTemplate();
 
     /**
-     * @return Returns the error Template.
-     * @deprecated replaced with getErrorTemplate(int status)
+     * @return Returns the error Template for given status code.
      */
-    public abstract String getErrorTemplate();
-    
-    
     public abstract String getErrorTemplate(int statusCode);
 
     /**
@@ -383,13 +394,6 @@ public interface Config {
      */ 
     public abstract ConfigServer getConfigServer(String password) throws PageException;
     
-
-    /**
-     * @deprecated replaced with <code>getConfigServer(String password)</code>
-     * @return
-     */
-    public abstract ConfigServer getConfigServer();
-    
     /**
      * @return Returns the mailLogger.
      */
@@ -465,25 +469,7 @@ public interface Config {
 	 * return default proxy setting password
 	 * @return the password for proxy
 	 */
-	public String getProxyPassword();
-
-	/**
-	 * return default proxy setting port (default 80)
-	 * @return the port for proxy
-	 */
-	public int getProxyPort();
-
-	/**
-	 * return default proxy setting server
-	 * @return the server for proxy
-	 */
-	public String getProxyServer();
-
-	/**
-	 * return default proxy setting username
-	 * @return the username for proxy
-	 */
-	public String getProxyUsername();
+	public ProxyData getProxyData();
 	
 	/**
 	 * return if proxy is enabled or not
@@ -496,7 +482,8 @@ public interface Config {
 	 */
 	public boolean getTriggerComponentDataMember();
 	
-
+	public RestSettings getRestSetting();
+	
 	public abstract Resource getClientScopeDir();
 
 	public abstract long getClientScopeDirSize();
@@ -506,15 +493,23 @@ public interface Config {
 	public Resource getCacheDir();
 
 	public long getCacheDirSize();
+	
+	public Map<String,CacheConnection> getCacheConnections();
+	
+	/**
+	 * get default cache connection for a specific type
+	 * @param type default type, one of the following (CACHE_DEFAULT_NONE, CACHE_DEFAULT_OBJECT, CACHE_DEFAULT_TEMPLATE, CACHE_DEFAULT_QUERY, CACHE_DEFAULT_RESOURCE)
+	 * @return matching Cache Connection
+	 */
+	public CacheConnection getCacheDefaultConnection(int type);
 
 	/**
-	 * returns the default DumpWriter  
-	 * @param defaultType
-	 * @return default DumpWriter
-	 * @deprecated use instead <code>getDefaultDumpWriter(int defaultType)</code>
+	 * get name of a default cache connection for a specific type
+	 * @param type default type, one of the following (CACHE_DEFAULT_NONE, CACHE_DEFAULT_OBJECT, CACHE_DEFAULT_TEMPLATE, CACHE_DEFAULT_QUERY, CACHE_DEFAULT_RESOURCE)
+	 * @return name of matching Cache Connection
 	 */
-	public abstract DumpWriter getDefaultDumpWriter();
-
+	public String getCacheDefaultConnectionName(int type);
+	
 	/**
 	 * returns the default DumpWriter  
 	 * @param defaultType
@@ -562,22 +557,10 @@ public interface Config {
      * @return returns the ConnectionPool
      */
 
-	
-	/**
-	 * FUTURE deprecated use <code>public Mapping[] getComponentMappings()</code> instead  
-	 */
-	public Mapping getComponentMapping();
-
-	// FUTURE public Mapping[] getComponentMappings();
+	public Mapping[] getComponentMappings();
 
 	public abstract boolean doCustomTagDeepSearch();
 
-	/* *
-	 * return mapping that match Resource
-	 * @param res
-	 * @return
-	 * /
-	//public abstract PageSource toPageSourceX(Resource res, PageSource defaultValue);
 
 	/**
 	 * @return returns the error print writer stream
@@ -615,6 +598,8 @@ public interface Config {
 	 */
 	public ClassLoader getClassLoader();
 	
+	public ClassLoader getClassLoader(Resource[] reses) throws IOException;
+	
 	public Resource getExtensionDirectory();
 	
 	public ExtensionProvider[] getExtensionProviders();
@@ -628,6 +613,8 @@ public interface Config {
 	public Struct getConstants();
 	
 	public DataSource getDataSource(String datasource) throws PageException;
+	
+	public DataSource getDataSource(String datasource, DataSource defaultValue);
 	
 	public Map getDataSourcesAsMap();
 	
@@ -646,21 +633,68 @@ public interface Config {
 	 */
 	public Resource getTldFile();
 	
-	
-	// FUTURE set as deprecated
+	/**
+	 * get PageSource of the first Mapping that match the given criteria
+	 * @param mappings per application mappings
+	 * @param realPath path to get PageSource for
+	 * @param onlyTopLevel checks only toplevel mappings
+	 * @deprecated use instead getPageSources or getPageSourceExisting
+	 */
 	public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel);
 	
-	// FUTURE
-	//public PageSource getPageSource(Mapping[] mappings, String realPath,boolean onlyTopLevel, boolean useSpecialMappings, boolean useDefaultMappings);
-	
+	/**
+	 * return existing PageSource that match the given criteria, if there is no PageSource null is returned.
+	 * @param pc current PageContext
+	 * @param mappings per application mappings
+	 * @param realPath path to get PageSource for
+	 * @param onlyTopLevel checks only toplevel mappings
+	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
+	 * @param useDefaultMapping also invoke the always existing default mapping "/"
+	 */
+	public PageSource getPageSourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping, boolean onlyPhysicalExisting);
 	
 	/**
-     * @param mappings2 
-     * @param realPath
-     * @param alsoDefaultMapping ignore default mapping (/) or not
-     * @return physical path from mapping
-     */
-    public Resource getPhysical(Mapping[] mappings, String realPath, boolean alsoDefaultMapping);
+	 * get all PageSources that match the given criteria
+	 * @param pc current PageContext
+	 * @param mappings per application mappings
+	 * @param realPath path to get PageSource for
+	 * @param onlyTopLevel checks only toplevel mappings
+	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
+	 * @param useDefaultMapping also invoke the always existing default mapping "/"
+	 */
+	public PageSource[] getPageSources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
+	
+	/**
+	 * get Resource of the first Mapping that match the given criteria
+	 * @param mappings per application mappings
+	 * @param realPath path to get PageSource for
+	 * @param onlyTopLevel checks only toplevel mappings
+	 * @deprecated use instead getPhysicalResources or getPhysicalResourceExisting
+	 */
+	public Resource getPhysical(Mapping[] mappings, String realPath, boolean alsoDefaultMapping);
+    
+	/**
+	 * get all Resources that match the given criteria
+	 * @param pc current PageContext
+	 * @param mappings per application mappings
+	 * @param realPath path to get PageSource for
+	 * @param onlyTopLevel checks only toplevel mappings
+	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
+	 * @param useDefaultMapping also invoke the always existing default mapping "/"
+	 */
+	public Resource[] getPhysicalResources(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
+	
+	/**
+	 * return existing Resource that match the given criteria, if there is no Resource null is returned.
+	 * @param pc current PageContext
+	 * @param mappings per application mappings
+	 * @param realPath path to get Resource for
+	 * @param onlyTopLevel checks only toplevel mappings
+	 * @param useSpecialMappings invoke special mappings like "mapping-tag" or "mapping-customtag"
+	 * @param useDefaultMapping also invoke the always existing default mapping "/"
+	 */
+	public Resource getPhysicalResourceExisting(PageContext pc,Mapping[] mappings, String realPath,boolean onlyTopLevel,boolean useSpecialMappings, boolean useDefaultMapping);
+	    
     
     public Resource getRemoteClientDirectory();
     
@@ -690,6 +724,29 @@ public interface Config {
 	
 	public Class getVideoExecuterClass();
 	
+	public ThreadQueue getThreadQueue();
 	
+	public boolean getSessionCluster();
+
+	public boolean getClientCluster();
 	
+	public Resource getSecurityDirectory();
+	
+	public boolean isMonitoringEnabled();
+	
+	public RequestMonitor[] getRequestMonitors();
+	
+	public RequestMonitor getRequestMonitor(String name) throws PageException;
+	
+	public IntervallMonitor[] getIntervallMonitors();
+
+	public IntervallMonitor getIntervallMonitor(String name) throws PageException;
+	
+	/**
+	 * if free permspace gen is lower than 10000000 bytes, railo shrinks all classloaders 
+	 * @param cs
+	 */
+    public void checkPermGenSpace(boolean check);
+    
+    public boolean allowRequestTimeout();
 }

@@ -1,14 +1,15 @@
 package railo.runtime;
  
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.Tag;
 
@@ -18,6 +19,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.debug.Debugger;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.exp.PageException;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.query.QueryCache;
 import railo.runtime.security.Credential;
@@ -25,7 +27,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Iterator;
 import railo.runtime.type.Query;
-import railo.runtime.type.Scope;
 import railo.runtime.type.UDF;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.scope.Application;
@@ -35,7 +36,9 @@ import railo.runtime.type.scope.Client;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.Form;
+import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.Request;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
 import railo.runtime.type.scope.Threads;
@@ -43,12 +46,11 @@ import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.URLForm;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
-import railo.runtime.util.ApplicationContext;
 import railo.runtime.util.VariableUtil;
 
 /**
  * page context for every page object. 
- * the PageContext is a jsp page context expanded by cold fusion functionality.
+ * the PageContext is a jsp page context expanded by CFML functionality.
  * for example you have the method getSession to get jsp combatible session object (HTTPSession)
  *  and with sessionScope() you get CFML combatible session object (Struct,Scope).
  */
@@ -59,7 +61,6 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @return scope matching to defined scope definition
      * @param type type of scope (Scope.xx)
      * @throws PageException
-     * FUTURE set to deprecated
      */
 	public abstract Scope scope(int type) throws PageException;
 
@@ -119,13 +120,25 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     /**
      * @return arguments scope
      */
-    public abstract Scope localScope();
+    public abstract Local localScope();
+    
+    public abstract Local localScope(boolean bind);
+    
+    public abstract Object localGet() throws PageException;
+    
+    public abstract Object localGet(boolean bind) throws PageException;
+
+    public abstract Object localTouch() throws PageException;
+    
+    public abstract Object localTouch(boolean bind) throws PageException;
 
     /**
      * @return session scope
      * @throws PageException
      */
     public abstract Session sessionScope() throws PageException;
+    
+    public abstract void setFunctionScopes(Local local,Argument argument);
 
     /**
      * @return server scope
@@ -143,6 +156,10 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      */
     public abstract Client clientScope() throws PageException;
+    
+
+    public abstract Client clientScopeEL();
+    
     /**
      * @return cluster scope
      * @throws PageException
@@ -151,7 +168,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 
     /**
      * cluster scope
-     * @param create return null when false and scope does not exists
+     * @param create return null when false and scope does not exist
      * @return cluster scope or null
      * @throws PageException
      */
@@ -414,7 +431,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * 
      * @param coll Collection to get value
      * @param key key of the value
-     * @return return value of a Collection, return null if value not exists
+     * @return return value of a Collection, return null if value not exist
      * @deprecated use instead <code>{@link #get(Object, railo.runtime.type.Collection.Key, Object)}</code>
 	 */
     public abstract Object get(Object coll, String key, Object defaultValue);
@@ -423,7 +440,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * 
      * @param coll Collection to get value
      * @param key key of the value
-     * @return return value of a Collection, return null if value not exists
+     * @return return value of a Collection, return null if value not exist
      */
     public abstract Object get(Object coll, Collection.Key key, Object defaultValue);
 
@@ -452,7 +469,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @throws PageException
      **/
     public abstract Object evaluate(String expression) throws PageException;
-    // FUTURE public abstract String serialize(Object expression) throws PageException;
+    
+    public abstract String serialize(Object expression) throws PageException;
 
     /**
      * 
@@ -463,13 +481,16 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract Object removeVariable(String var) throws PageException;
 
     /**
-     * get variable from string definition and cast ist to a Query Object
+     * get variable from string definition and cast it to a Query Object
      * @param key Variable Name to get
      * @return Query
      * @throws PageException
      */
     public abstract Query getQuery(String key) throws PageException;
 
+
+    public abstract Query getQuery(Object value) throws PageException;
+    
     /**
      * write a value to the header of the response
      * @param name name of the value to set
@@ -502,6 +523,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @return returns the page context id
      */
     public abstract int getId();
+    
+    public abstract JspWriter getRootWriter();
 
     /**
      * @return Returns the locale.
@@ -537,8 +560,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract HttpServletResponse getHttpServletResponse();
     
-    public abstract ServletOutputStream getServletOutputStream() throws IOException; /// FUTURE remove
-    // public OutputStream getResponseStream() throws IOException; FUTURE add
+    public abstract OutputStream getResponseStream() throws IOException;
     
     /**
      * returns the tag that is in use
@@ -662,18 +684,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract void setApplicationContext(ApplicationContext applicationContext);
     
-
-    /**
-     * creates a PageSource from Realpath
-     * @param realPath
-     * @return Page Source
-     */
-    public abstract PageSource getRelativePageSource(String realPath);
     
-    public abstract PageSource getPageSource(String realPath);
-    
-    public abstract Resource getPhysical(String realPath, boolean alsoDefaultMapping);
-
 	public abstract PageSource toPageSource(Resource res, PageSource defaultValue);
 
     /**
@@ -683,28 +694,38 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract void setVariablesScope(Variables scope);
     
 
-    /** 
+    /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
-     * @deprecated replaced with <code>{@link #doInclude(PageSource)}</code>
+     * @deprecated use other doInclude methods
      */
-    public abstract void include(PageSource source) throws  ServletException;
+    public abstract void doInclude(PageSource source) throws  PageException;
 
     /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
+     * @param runOnce include only once per request
      * @throws ServletException
      */
-    public abstract void doInclude(PageSource source) throws  PageException;
-    
+    public abstract void doInclude(PageSource[] source, boolean runOnce) throws  PageException;
     
     /**  
      * includes a path from a absolute path
      * @param source absolute path as file object
      * @throws ServletException
+     * @Deprecated used <code> doInclude(String source, boolean runOnce)</code> instead.
      */
     public abstract void doInclude(String source) throws  PageException;
+    
+    
+    /**  
+     * includes a path from a absolute path
+     * @param source absolute path as file object
+     * @param runOnce include only once per request
+     * @throws ServletException
+     */
+    public abstract void doInclude(String source, boolean runOnce) throws  PageException;
     
     
     /**
@@ -769,6 +790,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract void execute(String realPath, boolean throwException) throws PageException;
     
+    public abstract void executeRest(String realPath, boolean throwException) throws PageException;
+    
     /**
      * Flush Content of buffer to the response stream of the Socket.
      */
@@ -817,7 +840,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
     public abstract Object getFunctionWithNamedValues(Object coll, Collection.Key key, Object[] args) throws PageException;
 
     /**
-     * get variable from string definition and cast ist to a Iterator Object
+     * get variable from string definition and cast it to a Iterator Object
      * @param key Variable Name to get
      * @return Iterator
      * @throws PageException
@@ -883,8 +906,13 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      */
     public abstract PageException setCatch(Throwable t);
     
-    // FUTURE
-    //public abstract PageException getCatch();
+    public abstract PageException getCatch();
+
+    public abstract void setCatch(PageException pe);
+    public abstract void setCatch(PageException pe,boolean caught, boolean store);
+    
+    public abstract void exeLogStart(int position,String id);
+	public abstract void exeLogEnd(int position,String id);
     
     
     /**
@@ -937,6 +965,7 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * compile a CFML Template
      * @param templatePath 
      * @throws PageException 
+     * @deprecated use instead <code>compile(PageSource pageSource)</code>
      */
     public abstract void compile(String templatePath)throws PageException;
     
@@ -976,6 +1005,17 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
      * @param type
      * @param name
      * @param defaultValue
+     * @param maxLength
+     * @throws PageException 
+     */
+    public abstract void param(String type, String name, Object defaultValue, int maxLength) throws PageException;
+    
+    
+
+    /**
+     * @param type
+     * @param name
+     * @param defaultValue
      * @throws PageException 
      */
     public abstract void param(String type, String name, Object defaultValue, String pattern) throws PageException;
@@ -998,16 +1038,24 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 	
 	public abstract PageContext getParentPageContext();
 
+	/**
+	 * @param name
+	 * @return
+	 * @deprecated use instead <code>setThreadScope(Collection.Key name,Threads t)</code>
+	 */
 	public abstract Threads getThreadScope(String name);
-	//FUTURE public abstract Threads getThreadScope(Collection.Key name,Threads defaultValue);
+	
+	public abstract Threads getThreadScope(Collection.Key name);
 	
 	/**
 	 * set a thread to the context
 	 * @param name
 	 * @param t
+	 * @deprecated use instead <code>setThreadScope(Collection.Key name,Threads t)</code>
 	 */
 	public abstract void setThreadScope(String name,Threads t);
-	//FUTURE public abstract void setThreadScope(Collection.Key name,Threads t);
+	
+	public abstract void setThreadScope(Collection.Key name,Threads t);
 
 	/**
 	 * @return return a Array with names off all threads running.
@@ -1030,6 +1078,8 @@ public abstract class PageContext extends javax.servlet.jsp.PageContext {
 	public abstract TimeZone getTimeZone();
 
 	public abstract void setTimeZone(TimeZone timeZone);
+
+	public abstract short getSessionType();
 
 
 }

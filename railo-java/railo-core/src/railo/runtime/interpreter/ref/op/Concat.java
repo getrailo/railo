@@ -13,29 +13,23 @@ public final class Concat extends RefSupport implements Ref {
     
     private Ref right;
     private Ref left;
-	private PageContext pc;
 
     /**
      * constructor of the class
      * @param left
      * @param right
      */
-    public Concat(PageContext pc,Ref left, Ref right) {
-    	this.pc=pc;
-        this.left=left;
+    public Concat(Ref left, Ref right) {
+    	this.left=left;
         this.right=right;
     }
     
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() throws PageException {
-        return Caster.toString(left.getValue())+Caster.toString(right.getValue());
+    @Override
+    public Object getValue(PageContext pc) throws PageException {
+        return Caster.toString(left.getValue(pc))+Caster.toString(right.getValue(pc));
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-     */
+    @Override
     public String getTypeName() {
         return "operation";
     }

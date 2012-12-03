@@ -1,5 +1,7 @@
 package railo.runtime.video;
 
+import railo.runtime.type.Struct;
+
 public interface VideoInfo {
 	
 	public long getAudioBitrate();
@@ -52,4 +54,10 @@ public interface VideoInfo {
 	 * @return the width
 	 */
 	public int getWidth();
+	
+	/**
+	 * returns the information as Struct
+	 * @return
+	 */
+	public Struct toStruct();
 }

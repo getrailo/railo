@@ -2,7 +2,9 @@ package railo.runtime.type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
@@ -10,7 +12,6 @@ import railo.runtime.converter.LazyConverter;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.ExpressionException;
@@ -18,15 +19,16 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
-import railo.runtime.type.comparator.NumberComparator;
-import railo.runtime.type.comparator.TextComparator;
+import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.util.ArraySupport;
+import railo.runtime.type.util.ArrayUtil;
 
 
 
 /**
- * cold fusion array object
+ * CFML array object
  */
 public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	
@@ -274,7 +276,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		if(dimension>1)	{
 			if(value instanceof Array)	{
 				if(((Array)value).getDimension()!=dimension-1)
-					throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","aray has wron dimension, now is "+(((Array)value).getDimension())+ " but it must be "+(dimension-1));
+					throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","array has wrong dimension, now is "+(((Array)value).getDimension())+ " but it must be "+(dimension-1));
 			}
 			else 
 				throw new ExpressionException("You can only Append an Array with "+(dimension-1)+" Dimension","now is a object of type "+Caster.toClassName(value));
@@ -313,36 +315,21 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	 */
 	public Collection.Key[] keys() {
 		
-		ArrayList lst=new ArrayList();
+		ArrayList<Collection.Key> lst=new ArrayList<Collection.Key>();
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
 			count++;
 			if(o!=null) lst.add(KeyImpl.getInstance(count+""));
 		}
-		return (Collection.Key[]) lst.toArray(new Collection.Key[lst.size()]);
-	}
-	
-	/**
-	 * @see railo.runtime.type.Collection#keysAsString()
-	 */
-	public String[] keysAsString() {
-		
-		ArrayList lst=new ArrayList();
-		int count=0;
-		for(int i=offset;i<offset+size;i++) {
-			Object o=arr[i];
-			count++;
-			if(o!=null) lst.add(count+"");
-		}
-		return (String[]) lst.toArray(new String[lst.size()]);
+		return  lst.toArray(new Collection.Key[lst.size()]);
 	}
 	
 	/**
 	 * @see railo.runtime.type.Array#intKeys()
 	 */
 	public int[] intKeys() {
-		ArrayList lst=new ArrayList();		
+		ArrayList<Integer> lst=new ArrayList<Integer>();		
 		int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
@@ -353,7 +340,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 		int[] ints=new int[lst.size()];
 		
 		for(int i=0;i<ints.length;i++){
-			ints[i]=((Integer)lst.get(i)).intValue();
+			ints[i]=lst.get(i).intValue();
 		}
 		return ints;
 	}
@@ -506,54 +493,17 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 			size=to;
 		}
 	}
-
-	/**
-	 * sort values of a array
-	 * @param sortType search type (text,textnocase,numeric)
-	 * @param sortOrder (asc,desc)
-	 * @throws PageException
-	 */
+	
+	@Override
 	public void sort(String sortType, String sortOrder) throws PageException {
+		sort(ArrayUtil.toComparator(null, sortType, sortOrder, false));
+	}
+
+	@Override
+	public synchronized void sort(Comparator comp) throws PageException {
 		if(getDimension()>1)
 			throw new ExpressionException("only 1 dimensional arrays can be sorted");
-		
-		// check sortorder
-		boolean isAsc=true;
-		PageException ee=null;
-		if(sortOrder.equalsIgnoreCase("asc"))isAsc=true;
-		else if(sortOrder.equalsIgnoreCase("desc"))isAsc=false;
-		else throw new ExpressionException("invalid sort order type ["+sortOrder+"], sort order types are [asc and desc]");
-		
-		// text
-		if(sortType.equalsIgnoreCase("text")) {
-			TextComparator comp=new TextComparator(isAsc,false);
-			//Collections.sort(list,comp);
-			Arrays.sort(arr,offset,offset+size,comp);
-			ee=comp.getPageException();
-		}
-		// text no case
-		else if(sortType.equalsIgnoreCase("textnocase")) {
-			TextComparator comp=new TextComparator(isAsc,true);
-			//Collections.sort(list,comp);
-			Arrays.sort(arr,offset,offset+size,comp);
-			ee=comp.getPageException();
-			
-		}
-		// numeric
-		else if(sortType.equalsIgnoreCase("numeric")) {
-			NumberComparator comp=new NumberComparator(isAsc);
-			//Collections.sort(list,comp);
-			Arrays.sort(arr,offset,offset+size,comp);
-			ee=comp.getPageException();
-			
-		}
-		else {
-			throw new ExpressionException("invalid sort type ["+sortType+"], sort types are [text, textNoCase, numeric]");
-		}
-		if(ee!=null) {
-			throw new ExpressionException("can only sort arrays with simple values",ee.getMessage());
-		}
-			
+		Arrays.sort(arr,offset,offset+size,comp);	
 	}
 	
 	/**
@@ -584,7 +534,7 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
 	 */
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		DumpTable table = new DumpTablePro("array","#ff9900","#ffcc00","#000000");
+		DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
 		table.setTitle("Array");
 		
 		int length=size();
@@ -630,39 +580,45 @@ public final class ArrayImplNS extends ArraySupport implements Array,Sizeable {
 	public Collection duplicate(boolean deepCopy) {
 		ArrayImplNS arr=new ArrayImplNS();
 		arr.dimension=dimension;
-		String[] keys=this.keysAsString();
+		Collection.Key[] keys=this.keys();
 		
 		ThreadLocalDuplication.set(this, arr);
 		try {
+			Collection.Key k;
 			for(int i=0;i<keys.length;i++) {
-				String key=keys[i];
-				arr.set(key,Duplicator.duplicate(this.get(key,null),deepCopy));
+				k=keys[i];
+				arr.set(k,Duplicator.duplicate(this.get(k,null),deepCopy));
 			}
 		} 
 		catch (ExpressionException e) {}
 		finally{
-			ThreadLocalDuplication.remove(this);
+			// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
 		}
 		
 		return arr;
 	}
 	
-
-	
-
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
-	public Iterator keyIterator() {
+	@Override
+	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
+	}
+    
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+    	return new StringIterator(keys());
+    }
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new EntryIterator(this, keys());
 	}
 	
 	public Iterator iterator() {
 		ArrayList lst=new ArrayList();
-		int count=0;
+		//int count=0;
 		for(int i=offset;i<offset+size;i++) {
 			Object o=arr[i];
-			count++;
+			//count++;
 			if(o!=null) lst.add(o);
 		}
 		return lst.iterator();

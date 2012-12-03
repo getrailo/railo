@@ -219,9 +219,7 @@ public abstract class MailClient {
 			folder.setFlags(amessage, new Flags(javax.mail.Flags.Flag.DELETED), true);
 		}
 		finally {
-			if(folder != null) {
-				folder.close(true);
-			}
+			folder.close(true);
 		}
 	}
 
@@ -466,7 +464,7 @@ public abstract class MailClient {
 				String[] ids = bodypart.getHeader("Content-ID");
 				String cid=ids[0].substring(1, ids[0].length() - 1);
 				String filename = "cid:" + cid;
-				if(filename != null) {
+				
 					attachments.appendEL(filename);
 					if(attachmentDirectory != null) {
 						filename = "_" + Md5.getDigestAsString(filename);
@@ -481,7 +479,7 @@ public abstract class MailClient {
 						IOUtil.copy(bodypart.getInputStream(), file, true);
 						attachmentFiles.appendEL(file.getAbsolutePath());
 					}
-				}
+				
 				cids.setEL(KeyImpl.init(filename), cid);
 			}
 		}

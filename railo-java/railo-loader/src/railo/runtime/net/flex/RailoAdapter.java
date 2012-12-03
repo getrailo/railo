@@ -6,13 +6,12 @@ import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.loader.engine.EngineChangeListener;
 import railo.runtime.util.BlazeDS;
-import flex.messaging.FactoryInstance;
 import flex.messaging.FlexContext;
 import flex.messaging.config.ConfigMap;
 import flex.messaging.messages.Message;
-import flex.messaging.messages.RemotingMessage;
 import flex.messaging.services.ServiceAdapter;
-import flex.messaging.services.remoting.RemotingDestination;
+
+// FUTURE make this class independent from flex.messaging... so that the loader no longer need the flex jar
 
 /**
  * Railo implementation of the ServiceAdapter, forward all BlazeDS Request to the CFMLEngine. 
@@ -32,7 +31,7 @@ public class RailoAdapter extends ServiceAdapter implements EngineChangeListener
 		super.initialize(id, properties);
         this.properties=properties;
         try{
-	        // we call this because otherwse they does not exists (bug in BlazeDS)
+	        // we call this because otherwse they does not exist (bug in BlazeDS)
 	        ConfigMap propertyCases = properties.getPropertyAsMap("property-case", null);
 	        if(propertyCases!=null){
 	            propertyCases.getPropertyAsBoolean("force-cfc-lowercase", false);
@@ -63,9 +62,8 @@ public class RailoAdapter extends ServiceAdapter implements EngineChangeListener
 			}
 			
 			
-			RemotingDestination remotingDestination = (RemotingDestination)getDestination();
-	        RemotingMessage remotingMessage = (RemotingMessage)message;
-	        FactoryInstance factoryInstance = remotingDestination.getFactoryInstance();
+			//RemotingDestination remotingDestination = (RemotingDestination)getDestination();
+	        //FactoryInstance factoryInstance = remotingDestination.getFactoryInstance();
 
 			
 			/*

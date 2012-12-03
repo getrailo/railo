@@ -1,9 +1,9 @@
 package railo.runtime.exp;
 
-import org.apache.commons.httpclient.HttpMethod;
+import java.net.URL;
 
-import railo.commons.net.HTTPUtil;
 import railo.runtime.config.Config;
+import railo.runtime.type.util.KeyConstants;
 
 /**
  * Exception class for the HTTP Handling
@@ -11,6 +11,8 @@ import railo.runtime.config.Config;
 public final class HTTPException extends ApplicationException {
 
     private int statusCode;
+    private String statusText;
+	private URL url;
 
     
     /**
@@ -19,29 +21,16 @@ public final class HTTPException extends ApplicationException {
      * @param detail
      * @param statusCode
      */
-    public HTTPException(String message, String detail, int statusCode) {
+    public HTTPException(String message, String detail, int statusCode,String statusText,URL url) {
         super(message,detail);
         this.statusCode=statusCode;
+        this.statusText=statusText;
+        this.url=url;
+
+        setAdditional(KeyConstants._statuscode, new Double(statusCode));
+		setAdditional(KeyConstants._statustext, statusText);
+		if(url!=null)setAdditional(KeyConstants._url, url.toExternalForm());
     }
-    
-
-    
-    /**
-     * Constructor of the class
-     * @param httpMethod
-     */
-    public HTTPException(HttpMethod httpMethod) {
-		super(httpMethod.getStatusCode()+" "+httpMethod.getStatusText());
-		setAdditional(httpMethod);
-	}
-    
-
-	private void setAdditional(HttpMethod httpMethod) {
-		this.statusCode=httpMethod.getStatusCode();
-		setAdditional("statuscode", new Double(httpMethod.getStatusCode()));
-		setAdditional("url", HTTPUtil.toURL(httpMethod).toExternalForm());
-	}
-
 
 	/**
      * @return Returns the statusCode.
@@ -49,11 +38,26 @@ public final class HTTPException extends ApplicationException {
     public int getStatusCode() {
         return statusCode;
     }
-    
 
+	/**
+     * @return Returns the status text.
+     */
+    public String getStatusText() {
+        return statusText;
+    }
+    
+    public URL getURL(){
+    	return url;
+    }
+
+    /**
+	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
+	 */
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock sct = super.getCatchBlock(config);
         sct.setEL("statusCode",statusCode+"");
+        sct.setEL("statusText",statusText);
+        if(url!=null)sct.setEL("url",url.toExternalForm());
         return sct;
     }
 }

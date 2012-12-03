@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -24,8 +25,7 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.configuration.EngineConfigurationFactoryFinder;
 import org.apache.axis.configuration.SimpleProvider;
-import org.apache.axis.encoding.ser.BeanDeserializerFactory;
-import org.apache.axis.encoding.ser.BeanSerializerFactory;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.axis.transport.http.CommonsHTTPSender;
 import org.apache.axis.wsdl.gen.Parser;
 import org.apache.axis.wsdl.symbolTable.BindingEntry;
@@ -42,13 +42,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.config.Config;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
-import railo.runtime.dump.DumpTablePro;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -57,24 +57,28 @@ import railo.runtime.net.proxy.Proxy;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.net.rpc.Pojo;
-import railo.runtime.net.rpc.RPCConstants;
 import railo.runtime.net.rpc.RPCException;
+import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.Iteratorable;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.it.KeyAsStringIterator;
+import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.ObjectsEntryIterator;
 import railo.runtime.type.it.ObjectsIterator;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
-import railo.runtime.util.ArrayIterator;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMPropertyImpl;
-import coldfusion.xml.rpc.QueryBean;
 
 /**
  * Wrapper for a Webservice
@@ -91,6 +95,8 @@ public final class RPCClient implements Objects, Iteratorable{
 	private ProxyData proxyData;
 	private String username;
 	private String password;
+	private Call last;
+	private List<SOAPHeaderElement> headers;
 	
 	static {
 		EngineConfiguration engine = EngineConfigurationFactoryFinder.newFactory().getClientEngineConfig();
@@ -202,13 +208,10 @@ public final class RPCClient implements Objects, Iteratorable{
         
 		javax.wsdl.Service service = getWSDLService();
 		
-		
 		Service axisService = null;
 		axisService = new Service(parser, service.getQName());
-		axisService.getTypeMappingRegistry().getDefaultTypeMapping().register(QueryBean.class, 
-                RPCConstants.QUERY_QNAME,
-                new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
-                new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
+		TypeMappingUtil.registerDefaults(axisService.getTypeMappingRegistry());
+		
 		
 		
 		
@@ -238,72 +241,23 @@ public final class RPCClient implements Objects, Iteratorable{
 			throw new RPCException("Cannot locate method " + methodName + " in webservice " + wsdlUrl);
 		
         org.apache.axis.client.Call call = (Call)axisService.createCall(QName.valueOf(port.getName()), QName.valueOf(tmpOp.getName()));
+        
         if(!StringUtil.isEmpty(username,true)){
         	call.setUsername(username);
 	        call.setPassword(password);
         }
-        /*/ Array
-        call.registerTypeMapping(
-                ArrayBean.class, 
-                XMLType.SOAP_ARRAY,
-                new BeanSerializerFactory(ArrayBean.class,XMLType.SOAP_ARRAY),
-                new BeanDeserializerFactory(ArrayBean.class,XMLType.SOAP_ARRAY));
-*/
-        /*/ Struct
-        call.registerTypeMapping(
-                StructBean.class, 
-                XMLType.SOAP_MAP,
-                new BeanSerializerFactory(StructBean.class,XMLType.SOAP_MAP),
-                new BeanDeserializerFactory(StructBean.class,XMLType.SOAP_MAP),true);
-
-        // Query
-        call.registerTypeMapping(
-                QueryBean.class, 
-                RPCConstants.QUERY_QNAME,
-                new BeanSerializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME),
-                new BeanDeserializerFactory(QueryBean.class,RPCConstants.QUERY_QNAME));
-        
-        org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
-        axisService.getTypeMappingRegistry().getDefaultTypeMapping();
-        Class[] classes = tm.getAllClasses();
-        for(int i=0;i<classes.length;i++){
-        	if(classes[i].getName().equals("jm.addr")){
-        		print.ln(":::	"+classes[i].getName());
-        		print.ln(":::	"+tm.getTypeQName(classes[i]));
-            	//tm.removeDeserializer(classes[i], tm.getTypeQName(classes[i]));
-        	}
-            
-        }*/
-        
-        /* DateTime
-        call.registerTypeMapping(
-                QueryBean.class, 
-                XMLType.XSD_DATETIME,
-                new BeanSerializerFactory(QueryBean.class,XMLType.XSD_DATETIME),
-                new BeanDeserializerFactory(QueryBean.class,XMLType.XSD_DATETIME));
-        */
-        /* Component
-        call.registerTypeMapping(
-                ComponentBean.class, 
-                XMLType.XSD_ANY,
-                new BeanSerializerFactory(ComponentBean.class,qName),
-                new BeanDeserializerFactory(ComponentBean.class,qName));
-        */
-        
-		/*
-        call.registerTypeMapping(
-                org.w3c.dom.Element.class, 
-                parameters.returnParam.getType().getQName(),
-                new ElementSerializerFactory(),
-                new ElementDeserializerFactory());
-        */
         
         org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping) 
         	axisService.getTypeMappingRegistry().getDefaultTypeMapping();
-        Vector inNames = new Vector();
-		Vector inTypes = new Vector();
-		Vector outNames = new Vector();
-		Vector outTypes = new Vector();
+        //TypeMappingRegistry reg=(TypeMappingRegistry) axisService.getTypeMappingRegistry();
+        
+        //tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
+        tm=call.getMessageContext().getTypeMapping();
+        
+        Vector<String> inNames = new Vector<String>();
+		Vector<Parameter> inTypes = new Vector<Parameter>();
+		Vector<String> outNames = new Vector<String>();
+		Vector<Parameter> outTypes = new Vector<Parameter>();
 		for(int j = 0; j < parameters.list.size(); j++) {
 			p = (Parameter)parameters.list.get(j);
 			map(config,call,tm,p.getType());
@@ -346,8 +300,8 @@ public final class RPCClient implements Objects, Iteratorable{
     			throw new RPCException("Invalid arguments count for operation " + methodName+" ("+arguments.length+" instead of "+inNames.size()+")");
     		
             for(int pos = 0; pos < inNames.size(); pos++) {
-    			p = (Parameter)inTypes.get(pos);
-                inputs[pos]=getArgumentData(axisService.getTypeMappingRegistry().getDefaultTypeMapping(),ThreadLocalPageContext.getTimeZone(config), p, arguments[pos]);
+    			p = inTypes.get(pos);
+                inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arguments[pos]);
     		}
         }
         else {
@@ -357,26 +311,33 @@ public final class RPCClient implements Objects, Iteratorable{
             
             
             Object arg;
-            String name;
             for(int pos = 0; pos < inNames.size(); pos++) {
-                p = (Parameter)inTypes.get(pos);
-                name=p.getName();
-                arg=namedArguments.get(name,null);
+                p = inTypes.get(pos);
+                arg=namedArguments.get(KeyImpl.init(p.getName()),null);
                 
                 if(arg==null) {
                     throw new RPCException("Invalid arguments for operation " + methodName,
-                            getErrorDetailForArguments((String[])inNames.toArray(new String[inNames.size()]),namedArguments.keysAsString()));
+                            getErrorDetailForArguments(inNames.toArray(new String[inNames.size()]),CollectionUtil.keysAsString(namedArguments)));
                 }
-                inputs[pos]=getArgumentData(axisService.getTypeMappingRegistry().getDefaultTypeMapping(),ThreadLocalPageContext.getTimeZone(config), p, arg);
+                inputs[pos]=getArgumentData(tm,ThreadLocalPageContext.getTimeZone(config), p, arg);
             }
         }
         
         Object ret=null;
+        
+     // add header
+        if(headers!=null && !headers.isEmpty()) {
+        	Iterator<SOAPHeaderElement> it = headers.iterator();
+        	while(it.hasNext()){
+        		call.addHeader(it.next());
+        	}
+        }
+        
         if(proxyData!=null && !StringUtil.isEmpty(proxyData.getServer(),true)) {
         	try {
 	        	Proxy.start(proxyData);
-	    		//print.out("err:"+call.getSOAPActionURI());
 	    		ret = call.invoke(inputs);
+	    		//ret = invoke(call,inputs);
 	        	
 	        }
 	        finally {
@@ -384,10 +345,9 @@ public final class RPCClient implements Objects, Iteratorable{
 	        }
         }
         else {
-        	//print.out(call.getUsername());
         	ret = call.invoke(inputs);
-        	
         }
+		last=call;
 		
 		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
@@ -395,7 +355,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		
 		Struct sct = new StructImpl();
 		for(int pos = 0; pos < outNames.size(); pos++) {
-			String name = (String)outNames.get(pos);
+			String name = outNames.get(pos);
             //print.ln(name);
 			Object value = outputs.get(name);
 			if(value == null && pos == 0) {
@@ -410,76 +370,93 @@ public final class RPCClient implements Objects, Iteratorable{
     
 	private void map(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
 		Vector els = type.getContainedElements();
+		
 		if(els==null) mapSimple(tm, type);
         else {
+        	// class is already registed
         	Class rtnClass=tm.getClassForQName(type.getQName());
         	if(rtnClass!=null && rtnClass.getName().equals(getClientClassName(type))) return;
-        	ClassLoader clb=null;
+        	
+        	
+        	ClassLoader cl=null;
 			try {
-				clb = config.getRPCClassLoader(false);
+				cl = config.getRPCClassLoader(false);
 			} catch (IOException e) {}
 			
-        	Class cls = mapComplex(config,call,tm, type,els);   
+        	Class cls = mapComplex(config,call,tm, type);   
         	// TODO make a better impl; this is not the fastest way to make sure all pojos use the same classloader
-    		if(cls!=null && clb!=cls.getClassLoader()){
-    			mapComplex(config,call,tm, type,els);  
-        		//print.out("loader1:"+clb);
-        		//print.out("loader2:"+cls.getClassLoader());
+    		if(cls!=null && cl!=cls.getClassLoader()){
+    			mapComplex(config,call,tm, type); 
         	}
     		
         }
 	}
-
-
-	private Class mapComplex(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type, Vector children) throws PageException {
-		Iterator it = children.iterator();
-		ElementDecl el;
-		ArrayList properties=new ArrayList();
-		Class clazz;
-		TypeEntry t;
-		String name;
-		while(it.hasNext()){
-			clazz=null;
-        	el=(ElementDecl) it.next();
-        	t=el.getType();
-        	Vector els = t.getContainedElements();
-            if(els!=null) {
-            	clazz=mapComplex(config, call, tm, t, els);
-            }
-        	name=railo.runtime.type.List.last(el.getQName().getLocalPart(), '>');
-        	
-        	if(clazz==null)clazz=tm.getClassForQName(t.getQName());
-        	if(clazz==null)clazz=Object.class;
-        	
-        	properties.add(new ASMPropertyImpl(clazz,name));
-        }
+	
+	private Class mapComplex(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+		Vector children = type.getContainedElements();
+		TypeEntry ref=type.getRefType();
+		if(ref==null) return _mapComplex(config, call, tm, type);
+		children = ref.getContainedElements();
 		
-		String clientClassName=getClientClassName(type);
-    	Pojo obj = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,(ASMProperty[])properties.toArray(new ASMProperty[properties.size()]));
-    	
-    	
-    	// TODO not alwys register
-    	call.registerTypeMapping(
-        		obj.getClass(), 
-        		type.getQName(), 
-    			new BeanSerializerFactory(obj.getClass(), type.getQName()), 
-    			new BeanDeserializerFactory(obj.getClass(), type.getQName()),false);
-    	return obj.getClass();
+		if(children==null) {
+			mapSimple(tm, ref);
+			return null;
+		}
+		Class clazz = mapComplex(config, call, tm, ref);
+		if(clazz==null) return null;
+		Class arr = ClassUtil.toArrayClass(clazz);
+		TypeMappingUtil.registerBeanTypeMapping(tm, arr, type.getQName());
+		return arr;
 	}
 
+	private Class _mapComplex(Config config,Call call, org.apache.axis.encoding.TypeMapping tm, TypeEntry type) throws PageException {
+		Vector children = type.getContainedElements();
+		ArrayList<ASMPropertyImpl> properties=new ArrayList<ASMPropertyImpl>();
+		if(children!=null) {
+			Iterator it = children.iterator();
+			ElementDecl el;
+			Class clazz;
+			TypeEntry t;
+			String name;
+			while(it.hasNext()){
+				clazz=null;
+	        	el=(ElementDecl) it.next();
+	        	t=el.getType();
+	        	Vector els = t.getContainedElements();
+	            if(els!=null) {
+	            	clazz=mapComplex(config, call, tm, t);
+	            }
+	        	name=railo.runtime.type.List.last(el.getQName().getLocalPart(), '>');
+	        	
+	        	if(clazz==null)clazz=tm.getClassForQName(t.getQName());
+	        	if(clazz==null)clazz=Object.class;
+	        	
+	        	properties.add(new ASMPropertyImpl(clazz,name));
+	        }
+		}
+		ASMProperty[] props = properties.toArray(new ASMProperty[properties.size()]);
+		String clientClassName=getClientClassName(type);
+		Pojo pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,props);
+		
+		TypeMappingUtil.registerBeanTypeMapping(tm,
+    			pojo.getClass(), 
+        		type.getQName());
+		
+    	return pojo.getClass();
+	}
+	
 	private String getClientClassName(TypeEntry type) {
+		String className=StringUtil.toVariableName(type.getQName().getLocalPart());
 		
 		String url=urlToClass(wsdlUrl);
-		
-		String className=StringUtil.toVariableName(type.getQName().getLocalPart());
 		String ns = type.getQName().getNamespaceURI();
-		//print.out("ns:"+ns);
-		if(ns!=null){
+		//if(props!=null){String p = ASMUtil.createMD5(props);
+		//print.e("p:"+p);}
+		// has namespace 
+		if(ns!=null && !"http://DefaultNamespace".equalsIgnoreCase(ns)){
 			ns=StringUtil.replace(ns, "http://", "", true);
 			ns=toClassName(ns,true);
-			if(!StringUtil.isEmpty(ns)){
-				return url+"."+ns+"."+className;
-			}
+			if(!StringUtil.isEmpty(ns)) return ns+"."+className;
 		}
 		return url+"."+className;
 	} 
@@ -490,32 +467,38 @@ public final class RPCClient implements Objects, Iteratorable{
 		try {
 			URL url = new URL(wsdlUrl);
 			
-			sb.append(toClassName(url.getHost(), true));
-			if(!StringUtil.isEmpty(url.getPath())){
-				sb.append('.');
-				sb.append(toClassName(url.getPath(), false));
-			}
-			if(!StringUtil.isEmpty(url.getQuery()) && !"wsdl".equals(url.getQuery())){
-				sb.append('.');
-				sb.append(toClassName(url.getQuery(), false));
-			}
+			// protocol
 			if("http".equalsIgnoreCase(url.getProtocol())){}
-			else if("https".equalsIgnoreCase(url.getProtocol())){
-				sb.append(".secure");
-			}
 			else{
-				sb.append('.');
 				sb.append(toClassName(url.getProtocol(), false));
+				sb.append('.');
 			}
 			
-			if(url.getPort()>0){
+			// host
+			sb.append(toClassName(url.getHost(), true));
+			
+			// port
+			if(url.getPort()>0 && url.getPort()!=80){
 				sb.append(".p");
 				sb.append(url.getPort());
 			}
 			
+			// path
+			if(!StringUtil.isEmpty(url.getPath())){
+				sb.append('.');
+				sb.append(toClassName(url.getPath(), false));
+			}
+			
+			// query
+			if(!StringUtil.isEmpty(url.getQuery()) && !"wsdl".equals(url.getQuery())){
+				sb.append('.');
+				sb.append(toClassName(url.getQuery(), false));
+			}
+			
+			
 			return sb.toString();
 		} 
-		catch (MalformedURLException e) {e.printStackTrace();
+		catch (MalformedURLException e) {
 			return StringUtil.toVariableName(wsdlUrl);
 		}
 	}
@@ -534,12 +517,12 @@ public final class RPCClient implements Objects, Iteratorable{
 			if(el.length()==0)continue;
 			if(reverse){
 				if(sb.length()>0)sb.insert(0,'.');
-				sb.insert(0,StringUtil.toVariableName(arr[i]));
+				sb.insert(0,StringUtil.lcFirst(StringUtil.toVariableName(arr[i])));
 				
 			}
 			else {
 				if(sb.length()>0)sb.append('.');
-				sb.append(StringUtil.toVariableName(arr[i]));
+				sb.append(StringUtil.lcFirst(StringUtil.toVariableName(arr[i])));
 			}
 		}
 		return sb.toString();
@@ -707,14 +690,14 @@ public final class RPCClient implements Objects, Iteratorable{
     	try {
             return _toDumpData(pageContext,maxlevel,dp);
         } catch (Exception e) {
-            DumpTable table = new DumpTablePro("webservice","#ccccff","#cccc00","#000000");
+            DumpTable table = new DumpTable("webservice","#ccccff","#cccc00","#000000");
             table.appendRow(1,new SimpleDumpData("webservice"),new SimpleDumpData(wsdlUrl));
             return table;
         }
     }
     private DumpData _toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) throws RPCException {
                 
-    	DumpTable box = new DumpTablePro("webservice","#ccccff","#cccc00","#000000");
+    	DumpTable box = new DumpTable("webservice","#ccccff","#cccc00","#000000");
         box.setTitle("Web Service");
         if(dp.getMetainfo())box.appendRow(1,new SimpleDumpData("url"),new SimpleDumpData(wsdlUrl));
         DumpTable functions = new DumpTable("#ccccff","#cccc00","#000000");
@@ -893,8 +876,8 @@ public final class RPCClient implements Objects, Iteratorable{
     /**
      * @see railo.runtime.type.Iteratorable#keyIterator()
      */
-    public Iterator keyIterator() {
-    	List list=new ArrayList();
+    public Iterator<Collection.Key> keyIterator() {
+    	List<Collection.Key> list=new ArrayList<Collection.Key>();
     	javax.wsdl.Service service = null;
         Port port = null;
     	try {
@@ -902,7 +885,7 @@ public final class RPCClient implements Objects, Iteratorable{
             port = getWSDLPort(service);
     	}
     	catch(Exception e) {
-    		return new ArrayIterator(ArrayUtil.OBJECT_EMPTY);
+    		return new KeyIterator(new Collection.Key[0]);
     	}
     	
         Binding binding = port.getBinding();
@@ -915,23 +898,36 @@ public final class RPCClient implements Objects, Iteratorable{
         while(itr.hasNext())  {
             tmpOp = (Operation)itr.next();
             //Parameters p = (Parameters)bEntry.getParameters().get(tmpOp);
-            list.add(tmpOp.getName());
+            list.add(KeyImpl.init(tmpOp.getName()));
             
         }
-        return new ArrayIterator(list.toArray());
+        return new KeyIterator(list.toArray(new Collection.Key[list.size()]));
     }
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
-	public Iterator iterator() {
-		return keyIterator();
+
+	@Override
+	public Iterator<String> keysAsStringIterator() {
+		return new KeyAsStringIterator(keyIterator());
 	}
 
 	/**
 	 * @see railo.runtime.type.Iteratorable#valueIterator()
 	 */
-	public Iterator valueIterator() {
+	public Iterator<Object> valueIterator() {
 		return new ObjectsIterator(keyIterator(),this);
+	}
+	
+	@Override
+	public Iterator<Entry<Key, Object>> entryIterator() {
+		return new ObjectsEntryIterator(keyIterator(), this);
+	}
+	
+
+	public Call getLastCall() {
+		return last;
+	}
+
+	public void addHeader(SOAPHeaderElement header) {
+		if(headers==null)headers=new ArrayList<SOAPHeaderElement>();
+		headers.add(header);
 	}
 }

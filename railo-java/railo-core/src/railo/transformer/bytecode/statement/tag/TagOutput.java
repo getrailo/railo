@@ -1,27 +1,14 @@
 package railo.transformer.bytecode.statement.tag;
 
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.GeneratorAdapter;
-import org.objectweb.asm.commons.Method;
-
 import railo.runtime.exp.TemplateException;
-import railo.runtime.type.scope.Undefined;
-import railo.runtime.util.NumberIterator;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.util.Types;
-import railo.transformer.bytecode.visitor.DecisionIntVisitor;
-import railo.transformer.bytecode.visitor.NotVisitor;
+import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
-import railo.transformer.bytecode.visitor.TryFinallyVisitor;
-import railo.transformer.bytecode.visitor.WhileVisitor;
 
-public final class TagOutput extends TagBase {
-
+public final class TagOutput extends TagGroup {
 
 	public static final int TYPE_QUERY = 0;
 	public static final int TYPE_GROUP = 1;
@@ -29,135 +16,18 @@ public final class TagOutput extends TagBase {
 	public static final int TYPE_INNER_QUERY = 3;
 	public static final int TYPE_NORMAL= 4;
 	
-	// int getCurrentrow()
-	public static final Method GET_CURRENTROW = new Method(
-			"getCurrentrow",
-			Types.INT_VALUE,
-			new Type[]{});
-
-	// Undefined us()
-	public static final Type UNDEFINED = Type.getType(Undefined.class);
-	public static final Method US = new Method(
-			"us",
-			UNDEFINED,
-			new Type[]{});
-
-	// void addCollection(Query coll)
-	public static final Method ADD_COLLECTION = new Method(
-			"addCollection",
-			Types.VOID,
-			new Type[]{Types.QUERY});
-
-	// void removeCollection()
-	public static final Method REMOVE_COLLECTION = new Method(
-			"removeCollection",
-			Types.VOID,
-			new Type[]{});
-
 	
-
-	// Query getQuery(String key)
-	public static final Method GET_QUERY = new Method(
-			"getQuery",
-			Types.QUERY,
-			new Type[]{Types.STRING});
-	
-	// int getRecordcount()
-	public static final Method GET_RECORDCOUNT = new Method(
-			"getRecordcount",
-			Types.INT_VALUE,
-			new Type[]{});
-
-	// double range(double number, double from)
-	public static final Method RANGE = new Method(
-			"range",
-			Types.DOUBLE_VALUE,
-			new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
-
-	public static final Type NUMBER_ITERATOR = Type.getType(NumberIterator.class);
-
-	// NumberIterator load(double from, double to, double max) 
-	public static final Method LOAD_3 = new Method(
-			"load",
-			NUMBER_ITERATOR,
-			new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
-
-
-	// NumberIterator load(double from, double to, double max) 
-	public static final Method LOAD_2 = new Method(
-			"load",
-			NUMBER_ITERATOR,
-			new Type[]{Types.DOUBLE_VALUE,Types.DOUBLE_VALUE});
-	
-
-	// NumberIterator load(NumberIterator ni, Query query, String groupName, boolean caseSensitive)
-	public static final Method LOAD_5 = new Method(
-			"load",
-			NUMBER_ITERATOR,
-			new Type[]{Types.PAGE_CONTEXT, NUMBER_ITERATOR,Types.QUERY,Types.STRING,Types.BOOLEAN_VALUE});
-
-	// boolean isValid()
-	public static final Method IS_VALID = new Method(
-			"isValid",
-			Types.BOOLEAN_VALUE,
-			new Type[]{});
-
-	// int current()
-	public static final Method CURRENT = new Method(
-			"current",
-			Types.INT_VALUE,
-			new Type[]{});
-
-	// void release(NumberIterator ni)
-	public static final Method REALEASE = new Method(
-			"release",
-			Types.VOID,
-			new Type[]{NUMBER_ITERATOR});
-
-	// void setCurrent(int current)
-	public static final Method SET_CURRENT = new Method(
-			"setCurrent",
-			Types.VOID,
-			new Type[]{Types.INT_VALUE});
-	
-
-	// void reset()
-	public static final Method RESET = new Method(
-			"reset",
-			Types.VOID,
-			new Type[]{Types.INT_VALUE});
-
-	// int first()
-	public static final Method FIRST = new Method(
-			"first",
-			Types.INT_VALUE,
-			new Type[]{});
-	private static final Method GET_ID = new Method(
-			"getId",
-			Types.INT_VALUE,
-			new Type[]{});
-
-
 	private int type;
 	
-	private int numberIterator=-1;
-	private int query=-1;
-	//private int queryImpl=-1;
-	private int group=-1;
 
-
-
-	public TagOutput(int line) {
-		super(line);
-	}
-	public TagOutput(int sl,int el) {
-		super(sl,el);
+	public TagOutput(Position start,Position end) {
+		super(start,end);
 	}
 
 
 	public static TagOutput getParentTagOutputQuery(Statement stat) throws BytecodeException {
 		Statement parent=stat.getParent();
-		if(parent==null) throw new BytecodeException("there is no parent output with query",-1);
+		if(parent==null) throw new BytecodeException("there is no parent output with query",null);
 		else if(parent instanceof TagOutput) {
 			if(((TagOutput)parent).hasQuery())
 				return ((TagOutput)parent);
@@ -179,17 +49,17 @@ public final class TagOutput extends TagBase {
 		switch(type) {
 		case TYPE_GROUP:
 			old = bc.changeDoSubFunctions(false);
-			writeOutTypeGroup(bc);
+			TagGroupUtil.writeOutTypeGroup(this,bc);
 			bc.changeDoSubFunctions(old);
 		break;
 		case TYPE_INNER_GROUP:
 			old = bc.changeDoSubFunctions(false);
-			writeOutTypeInnerGroup(bc);
+			TagGroupUtil.writeOutTypeInnerGroup(this,bc);
 			bc.changeDoSubFunctions(old);
 		break;
 		case TYPE_INNER_QUERY:
 			old = bc.changeDoSubFunctions(false);
-			writeOutTypeInnerQuery(bc);
+			TagGroupUtil.writeOutTypeInnerQuery(this,bc);
 			bc.changeDoSubFunctions(old);
 		break;
 		case TYPE_NORMAL:
@@ -197,284 +67,21 @@ public final class TagOutput extends TagBase {
 		break;
 		case TYPE_QUERY:
 			old = bc.changeDoSubFunctions(false);
-			writeOutTypeQuery(bc);
+			TagGroupUtil.writeOutTypeQuery(this,bc);
 			bc.changeDoSubFunctions(old);
 		break;
 		
 		default:
-			throw new BytecodeException("invalid type",getLine());
+			throw new BytecodeException("invalid type",getStart());
 		}
 	}
 
 
-	private void writeOutTypeGroup(BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
-		ParseBodyVisitor pbv=new ParseBodyVisitor();
-		pbv.visitBegin(bc);
-		
-		// Group
-		Attribute attrGroup = getAttribute("group");
-		group=adapter.newLocal(Types.STRING);
-		attrGroup.getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.storeLocal(group);
-		
-		// Group Case Sensitve
-		Attribute attrGroupCS = getAttribute("groupcasesensitive");
-		int groupCaseSensitive=adapter.newLocal(Types.BOOLEAN_VALUE);
-		if(attrGroupCS!=null)	attrGroupCS.getValue().writeOut(bc, Expression.MODE_VALUE);
-		else 					adapter.push(true);
-		adapter.storeLocal(groupCaseSensitive);
-		
-		TagOutput parent = TagOutput.getParentTagOutputQuery(this);
-		numberIterator = parent.getNumberIterator();
-		query = parent.getQuery();
-		//queryImpl = parent.getQueryImpl();
-		
-		// current
-		int current=adapter.newLocal(Types.INT_VALUE);
-		adapter.loadLocal(numberIterator);
-		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-		adapter.storeLocal(current);
-		
-		
-		// current
-		int icurrent=adapter.newLocal(Types.INT_VALUE);
-		WhileVisitor wv = new WhileVisitor();
-		wv.visitBeforeExpression(bc);
-			
-			//while(ni.isValid()) {
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.IS_VALID);
-			
-		wv.visitAfterExpressionBeforeBody(bc);
-		
-			// if(!query.go(ni.current()))break; 
-			adapter.loadLocal(query);
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			/* FUTURE
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-			*/
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-			
-			NotVisitor.visitNot(bc);
-			Label _if=new Label();
-			adapter.ifZCmp(Opcodes.IFEQ, _if);
-				wv.visitBreak(bc);
-			adapter.visitLabel(_if);
-		
-			// NumberIterator oldNi=numberIterator;
-			int oldNi=adapter.newLocal(TagOutput.NUMBER_ITERATOR);
-			
-			adapter.loadLocal(numberIterator);
-			adapter.storeLocal(oldNi);
-			
-			// numberIterator=NumberIterator.load(ni,query,group,grp_case);
-			adapter.loadArg(0);
-			adapter.loadLocal(numberIterator);
-			adapter.loadLocal(query);
-			adapter.loadLocal(group);
-			adapter.loadLocal(groupCaseSensitive);
-			adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.LOAD_5);
-			adapter.storeLocal(numberIterator);
-			
-			// current=oldNi.current();
-			adapter.loadLocal(oldNi);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			adapter.storeLocal(icurrent);
-			
-			getBody().writeOut(bc);
-			
-			//tmp(adapter,current);
-			
-			
-			// NumberIterator.release(ni);
-			adapter.loadLocal(numberIterator);
-			adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.REALEASE);
-			
-			// numberIterator=oldNi;
-			adapter.loadLocal(oldNi);
-			adapter.storeLocal(numberIterator);
-		
-			// ni.setCurrent(current+1);
-			adapter.loadLocal(numberIterator);
-			adapter.loadLocal(icurrent);
-			adapter.push(1);
-			adapter.visitInsn(Opcodes.IADD);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 	
-		wv.visitAfterBody(bc,getEndLine());
 	
 
-		//query.go(ni.current(),pc.getId())
-		resetCurrentrow(adapter,current);
-		
-		// ni.first();
-		adapter.loadLocal(numberIterator);
-		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.FIRST);
-		adapter.pop();
-		
 
-		pbv.visitEnd(bc);
-	}
-
-
-	private void resetCurrentrow(GeneratorAdapter adapter, int current) {
-		//query.go(ni.current(),pc.getId())
-		adapter.loadLocal(query);
-		adapter.loadLocal(current);
-		/* FUTURE
-		adapter.loadArg(0);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-		adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-		*/
-		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-		
-		adapter.pop();
-		
-	}
-	private void writeOutTypeInnerGroup(BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
-
-		TagOutput parent = TagOutput.getParentTagOutputQuery(this);
-		numberIterator = parent.getNumberIterator();
-		query = parent.getQuery();
-		//queryImpl = parent.getQueryImpl();
-		
-		int current=adapter.newLocal(Types.INT_VALUE);
-		adapter.loadLocal(numberIterator);
-		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-		adapter.storeLocal(current);
-		
-		
-		// inner current
-		int icurrent=adapter.newLocal(Types.INT_VALUE);
-		WhileVisitor wv = new WhileVisitor();
-		wv.visitBeforeExpression(bc);
-			
-			//while(ni.isValid()) {
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.IS_VALID);
-			
-		wv.visitAfterExpressionBeforeBody(bc);
-		
-			// if(!query.go(ni.current()))break; 
-			
-			adapter.loadLocal(query);
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			/*FUTURE
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-			*/
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-			
-			NotVisitor.visitNot(bc);
-			Label _if=new Label();
-			adapter.ifZCmp(Opcodes.IFEQ, _if);
-				wv.visitBreak(bc);
-			adapter.visitLabel(_if);
-		
-			// current=ni.current();
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			adapter.storeLocal(icurrent);
-			
-			getBody().writeOut(bc);
-			
-			// ni.setCurrent(current+1);
-			adapter.loadLocal(numberIterator);
-			adapter.loadLocal(icurrent);
-			adapter.push(1);
-			adapter.visitInsn(Opcodes.IADD);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
 	
-		wv.visitAfterBody(bc,getEndLine());
-	
-		resetCurrentrow(adapter,current);
-		
-		
-		// ni.first();
-		adapter.loadLocal(numberIterator);
-		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.FIRST);
-		adapter.pop();
-	}
-
-
-	private void writeOutTypeInnerQuery(BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
-		//if(tr ue)return ;
-		TagOutput parent = TagOutput.getParentTagOutputQuery(this);
-		numberIterator = parent.getNumberIterator();
-		query = parent.getQuery();
-		//queryImpl = parent.getQueryImpl();
-		
-		//int currentOuter=ni.current();
-		int currentOuter=adapter.newLocal(Types.INT_VALUE);
-		adapter.loadLocal(numberIterator);
-		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-		adapter.storeLocal(currentOuter);
-		
-		// current
-		int current=adapter.newLocal(Types.INT_VALUE);
-		
-		WhileVisitor wv = new WhileVisitor();
-		wv.visitBeforeExpression(bc);
-			
-			//while(ni.isValid()) {
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.IS_VALID);
-			
-		wv.visitAfterExpressionBeforeBody(bc);
-		
-			// if(!query.go(ni.current()))break; 
-			adapter.loadLocal(query);
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			/* FUTURE
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-			*/
-			adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-			
-			NotVisitor.visitNot(bc);
-			Label _if=new Label();
-			adapter.ifZCmp(Opcodes.IFEQ, _if);
-				wv.visitBreak(bc);
-			adapter.visitLabel(_if);
-		
-			// current=ni.current();
-			adapter.loadLocal(numberIterator);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-			adapter.storeLocal(current);
-			
-			getBody().writeOut(bc);
-			
-			// ni.setCurrent(current+1);
-			adapter.loadLocal(numberIterator);
-			adapter.loadLocal(current);
-			adapter.push(1);
-			adapter.visitInsn(Opcodes.IADD);
-			adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
-	
-		wv.visitAfterBody(bc,getEndLine());
-	
-		
-		// ni.setCurrent(currentOuter);
-		adapter.loadLocal(numberIterator);
-		adapter.loadLocal(currentOuter);
-		adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
-		
-		adapter.loadLocal(query);
-		adapter.loadLocal(currentOuter);
-		adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-		adapter.pop();
-		//adapter.pop();
-	}
 
 
 	/**
@@ -490,282 +97,15 @@ public final class TagOutput extends TagBase {
 	}
 
 
-	private void writeOutTypeQuery(BytecodeContext bc) throws BytecodeException {
-		GeneratorAdapter adapter = bc.getAdapter();
-
-		numberIterator = adapter.newLocal(TagOutput.NUMBER_ITERATOR);
-		ParseBodyVisitor pbv=new ParseBodyVisitor();
-		pbv.visitBegin(bc);
-			
-		
-		// Query query=pc.getQuery(@query);
-		query =adapter.newLocal(Types.QUERY);
-		adapter.loadArg(0);
-		getAttribute("query").getValue().writeOut(bc, Expression.MODE_REF);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.GET_QUERY);
-		//adapter.dup();
-		adapter.storeLocal(query);
-		
-		//queryImpl = adapter.newLocal(Types.QUERY_IMPL);
-		//adapter.checkCast(Types.QUERY_IMPL);
-		//adapter.storeLocal(queryImpl);
-		
-
-		
-		// int startAt=query.getCurrentrow();
-		int startAt=adapter.newLocal(Types.INT_VALUE);
-		adapter.loadLocal(query);
-		
-		/* FUTURE
-		adapter.loadArg(0);
-		adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
-		adapter.invokeInterface(Types.QUERY_IMPL, TagLoop.GET_CURRENTROW_1);
-		*/
-		adapter.invokeInterface(Types.QUERY, TagLoop.GET_CURRENTROW_0);
-		
-		adapter.storeLocal(startAt);
-		
-		
-		
-		// if(query.getRecordcount()>0) {
-		DecisionIntVisitor div=new DecisionIntVisitor();
-		div.visitBegin();
-			adapter.loadLocal(query);
-			adapter.invokeInterface(Types.QUERY, TagOutput.GET_RECORDCOUNT);
-		div.visitGT();
-			adapter.push(0);
-		div.visitEnd(bc);
-		Label ifRecCount=new Label();
-		adapter.ifZCmp(Opcodes.IFEQ, ifRecCount);
-			
-			// startrow
-			int from = adapter.newLocal(Types.DOUBLE_VALUE);
-			Attribute attrStartRow = getAttribute("startrow");
-			if(attrStartRow!=null){
-				// NumberRange.range(@startrow,1)
-				attrStartRow.getValue().writeOut(bc, Expression.MODE_VALUE);
-				adapter.push(1d);
-				adapter.invokeStatic(Types.NUMBER_RANGE, TagOutput.RANGE);
-				//adapter.visitInsn(Opcodes.D2I);
-			}
-			else {
-				adapter.push(1d);
-			}
-			adapter.storeLocal(from);
-			
-			// numberIterator
-			
-			Attribute attrMaxRow = getAttribute("maxrows");
-			
-			adapter.loadLocal(from);
-			adapter.loadLocal(query);
-			adapter.invokeInterface(Types.QUERY, TagOutput.GET_RECORDCOUNT);
-			adapter.visitInsn(Opcodes.I2D);
-			if(attrMaxRow!=null) {
-				attrMaxRow.getValue().writeOut(bc, Expression.MODE_VALUE);
-				adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.LOAD_3);
-			}
-			else {
-				adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.LOAD_2);
-			}
-			adapter.storeLocal(numberIterator);
-			
-			// Group
-			Attribute attrGroup = getAttribute("group");
-			Attribute attrGroupCS = getAttribute("groupcasesensitive");
-			group=adapter.newLocal(Types.STRING);
-			int groupCaseSensitive=adapter.newLocal(Types.BOOLEAN_VALUE);
-			if(attrGroup!=null)	{
-				attrGroup.getValue().writeOut(bc, Expression.MODE_REF);
-				adapter.storeLocal(group);
-				
-				if(attrGroupCS!=null)	attrGroupCS.getValue().writeOut(bc, Expression.MODE_VALUE);
-				else 					adapter.push(true);
-				adapter.storeLocal(groupCaseSensitive);
-			}
-			
-			// pc.us().addCollection(query);
-			adapter.loadArg(0);
-			adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.US);
-			adapter.loadLocal(query);
-			adapter.invokeInterface(TagOutput.UNDEFINED, TagOutput.ADD_COLLECTION);
-			
-			// current
-			int current=adapter.newLocal(Types.INT_VALUE);
-			
-			// Try
-			TryFinallyVisitor tfv=new TryFinallyVisitor();
-			tfv.visitTryBegin(bc);
-				WhileVisitor wv = new WhileVisitor();
-				wv.visitBeforeExpression(bc);
-					
-					//while(ni.isValid()) {
-					adapter.loadLocal(numberIterator);
-					adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.IS_VALID);
-					
-				wv.visitAfterExpressionBeforeBody(bc);
-				
-					// if(!query.go(ni.current()))break; 
-					adapter.loadLocal(query);
-					adapter.loadLocal(numberIterator);
-					adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-					/* FUTURE
-					adapter.loadArg(0);
-					adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-					adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-					*/
-					adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-					
-					NotVisitor.visitNot(bc);
-					Label _if=new Label();
-					adapter.ifZCmp(Opcodes.IFEQ, _if);
-						wv.visitBreak(bc);
-					adapter.visitLabel(_if);
-					
-					if(attrGroup!=null) {
-						// NumberIterator oldNi=numberIterator;
-						int oldNi=adapter.newLocal(TagOutput.NUMBER_ITERATOR);
-						adapter.loadLocal(numberIterator);
-						adapter.storeLocal(oldNi);
-						
-						// numberIterator=NumberIterator.load(ni,query,group,grp_case);
-						adapter.loadArg(0);
-						adapter.loadLocal(numberIterator);
-						adapter.loadLocal(query);
-						adapter.loadLocal(group);
-						adapter.loadLocal(groupCaseSensitive);
-						adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.LOAD_5);
-						adapter.storeLocal(numberIterator);
-						
-						// current=oldNi.current();
-						adapter.loadLocal(oldNi);
-						adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-						adapter.storeLocal(current);
-						
-						getBody().writeOut(bc);
-						
-						//tmp(adapter,current);
-						
-						// NumberIterator.release(ni);
-						adapter.loadLocal(numberIterator);
-						adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.REALEASE);
-						
-						// numberIterator=oldNi;
-						adapter.loadLocal(oldNi);
-						adapter.storeLocal(numberIterator);
-					}
-					else {
-						// current=ni.current();
-						adapter.loadLocal(numberIterator);
-						adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.CURRENT);
-						adapter.storeLocal(current);
-						
-						getBody().writeOut(bc);
-					}
-
-					// ni.setCurrent(current+1);
-					adapter.loadLocal(numberIterator);
-					adapter.loadLocal(current);
-					adapter.push(1);
-					adapter.visitInsn(Opcodes.IADD);
-					adapter.invokeVirtual(TagOutput.NUMBER_ITERATOR, TagOutput.SET_CURRENT);
-			
-				wv.visitAfterBody(bc,getEndLine());
-			
-			tfv.visitTryEndFinallyBegin(bc);
-
-	    		// query.reset();
-				/*adapter.loadLocal(queryImpl);
-				adapter.loadArg(0);
-				adapter.invokeVirtual(Types.PAGE_CONTEXT, GET_ID);
-				adapter.invokeVirtual(Types.QUERY_IMPL, TagOutput.RESET);*/
-	    		
-				// query.go(startAt);
-				adapter.loadLocal(query);
-				adapter.loadLocal(startAt);
-				/* FUTURE
-				adapter.loadArg(0);
-				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagLoop.GET_ID);
-				adapter.invokeInterface(Types.QUERY, TagLoop.GO_2);
-				*/
-				adapter.invokeInterface(Types.QUERY, TagLoop.GO_1);
-				
-				adapter.pop();
-				
-				
-				
-				
-				// pc.us().removeCollection();
-				adapter.loadArg(0);
-				adapter.invokeVirtual(Types.PAGE_CONTEXT, TagOutput.US);
-				adapter.invokeInterface(TagOutput.UNDEFINED, TagOutput.REMOVE_COLLECTION);
-				
-	        	// NumberIterator.release(ni);
-				adapter.loadLocal(numberIterator);
-				adapter.invokeStatic(TagOutput.NUMBER_ITERATOR, TagOutput.REALEASE);
-				
-				
-			tfv.visitFinallyEnd(bc);
-
-		adapter.visitLabel(ifRecCount);
-		
-
-		pbv.visitEnd(bc);
-	}
-	
-
-	
-	/**
-	 * returns numberiterator of output
-	 * @return numberiterator
-	 */
-	public int getNumberIterator()	{
-		return numberIterator;
+	@Override
+	public short getType() {
+		return TAG_OUTPUT;
 	}
 
-	/**
-	 * returns query of output
-	 * @return query
-	 */
-	public int getQuery()	{
-		return query;
-	}
-	
-	/*public int getQueryImpl()	{
-		return queryImpl;
-	}*/
-	
-	/**
-	 * returns query of output
-	 * @return query
-	 */
-	public int getGroup()	{
-		return group;
-	}
 
-	/**
-	 * returns if output has numberiterator
-	 * @return has numberiterator
-	 */
-	public boolean hasNumberIterator()	{
-		return numberIterator!=-1;
+	@Override
+	public FlowControlFinal getFlowControlFinal() {
+		return null;
 	}
-
-	/**
-	 * returns if output has query
-	 * @return has query
-	 */
-	public boolean hasQuery()	{
-		return getAttribute("query")!=null;
-	}
-
-	/**
-	 * returns if output has query
-	 * @return has query
-	 */
-	public boolean hasGroup()	{
-		return getAttribute("group")!=null;
-	}
-
 
 }

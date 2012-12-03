@@ -19,7 +19,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
@@ -46,6 +45,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.SystemOut;
+import railo.commons.lang.mimetype.MimeType;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
 import railo.commons.lock.KeyLock;
@@ -55,19 +55,21 @@ import railo.intergral.fusiondebug.server.FDSignal;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
-import railo.runtime.debug.DebugEntry;
+import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
 import railo.runtime.dump.DumpUtil;
+import railo.runtime.dump.DumpWriter;
 import railo.runtime.engine.ExecutionLog;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.err.ErrorPage;
 import railo.runtime.err.ErrorPageImpl;
 import railo.runtime.err.ErrorPagePool;
@@ -80,10 +82,11 @@ import railo.runtime.exp.MissingIncludeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageExceptionBox;
 import railo.runtime.exp.PageServletException;
+import railo.runtime.functions.dynamicEvaluation.Serialize;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.listener.AppListenerSupport;
-import railo.runtime.listener.ApplicationContextPro;
+import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
 import railo.runtime.listener.ClassicApplicationContext;
 import railo.runtime.listener.ModernAppListenerException;
@@ -91,12 +94,15 @@ import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.net.ftp.FTPPoolImpl;
 import railo.runtime.net.http.HTTPServletRequestWrap;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.orm.ORMConfiguration;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.ORMSession;
 import railo.runtime.query.QueryCache;
+import railo.runtime.rest.RestRequestListener;
+import railo.runtime.rest.RestUtil;
 import railo.runtime.security.Credential;
 import railo.runtime.security.CredentialImpl;
 import railo.runtime.tag.Login;
@@ -108,12 +114,11 @@ import railo.runtime.type.Iterator;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.SVArray;
-import railo.runtime.type.Scope;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
-import railo.runtime.type.it.KeyIterator;
+import railo.runtime.type.it.ItAsEnum;
 import railo.runtime.type.ref.Reference;
 import railo.runtime.type.ref.VariableReference;
 import railo.runtime.type.scope.Application;
@@ -122,22 +127,21 @@ import railo.runtime.type.scope.ArgumentImpl;
 import railo.runtime.type.scope.CGI;
 import railo.runtime.type.scope.CGIImpl;
 import railo.runtime.type.scope.Client;
-import railo.runtime.type.scope.ClientPlus;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.Cookie;
 import railo.runtime.type.scope.CookieImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormImpl;
+import railo.runtime.type.scope.Local;
 import railo.runtime.type.scope.LocalNotSupportedScope;
-import railo.runtime.type.scope.LocalPro;
 import railo.runtime.type.scope.Request;
 import railo.runtime.type.scope.RequestImpl;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.scope.ScopeFactory;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.runtime.type.scope.Server;
 import railo.runtime.type.scope.Session;
-import railo.runtime.type.scope.SessionPlus;
 import railo.runtime.type.scope.Threads;
 import railo.runtime.type.scope.URL;
 import railo.runtime.type.scope.URLForm;
@@ -147,7 +151,7 @@ import railo.runtime.type.scope.UndefinedImpl;
 import railo.runtime.type.scope.UrlFormImpl;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.scope.VariablesImpl;
-import railo.runtime.util.ApplicationContext;
+import railo.runtime.type.util.KeyConstants;
 import railo.runtime.util.VariableUtil;
 import railo.runtime.util.VariableUtilImpl;
 import railo.runtime.writer.CFMLWriter;
@@ -155,26 +159,23 @@ import railo.runtime.writer.DevNullBodyContent;
 
 /**
  * page context for every page object. 
- * the PageContext is a jsp page context expanded by cold fusion functionality.
+ * the PageContext is a jsp page context expanded by CFML functionality.
  * for example you have the method getSession to get jsp combatible session object (HTTPSession)
  *  and with sessionScope() you get CFML combatible session object (Struct,Scope).
  */
 public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	private static final RefBoolean DUMMY_BOOL = new RefBooleanImpl(false);
-	private static final Key CFCATCH = KeyImpl.intern("cfcatch");
-	private static final Key CATCH = KeyImpl.intern("catch");
-	private static final Key CFTHREAD = KeyImpl.intern("cfthread");
-	private static final Key ERROR = KeyImpl.intern("error");
-	private static final Key CFERROR = KeyImpl.intern("cferror");
 	
 	private static int counter=0;
 	
 	/** 
 	 * Field <code>pathList</code>
 	 */
+    private LinkedList<UDF> udfs=new LinkedList<UDF>();
     private LinkedList<PageSource> pathList=new LinkedList<PageSource>();
     private LinkedList<PageSource> includePathList=new LinkedList<PageSource>();
+    private Set<PageSource> includeOnce=new HashSet<PageSource>();
 	
 	/**
 	 * Field <code>executionTime</code>
@@ -198,7 +199,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private ScopeContext scopeContext;
     private Variables variablesRoot=new VariablesImpl();//ScopeSupport(false,"variables",Scope.SCOPE_VARIABLES);
     private Variables variables=variablesRoot;//new ScopeSupport("variables",Scope.SCOPE_VARIABLES);
-    private UndefinedImpl undefined;
+    private Undefined undefined;
 	
     private URLImpl _url=new URLImpl();
 	private FormImpl _form=new FormImpl();
@@ -212,12 +213,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private CGIImpl cgi=new CGIImpl();	
 	private Argument argument=new ArgumentImpl();
     private static LocalNotSupportedScope localUnsupportedScope=LocalNotSupportedScope.getInstance();
-	private LocalPro local=localUnsupportedScope;
-	private SessionPlus session;
+	private Local local=localUnsupportedScope;
+	private Session session;
 	private Server server;
 	private Cluster cluster;
 	private CookieImpl cookie=new CookieImpl();
-	private ClientPlus client;
+	private Client client;
 	private Application application;
 
     private DebuggerImpl debugger=new DebuggerImpl();
@@ -252,8 +253,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private PageException exception;
     private PageSource base;
 
-    ApplicationContextPro applicationContext;
-    ApplicationContextPro defaultApplicationContext;
+    ApplicationContext applicationContext;
+    ApplicationContext defaultApplicationContext;
 
     private ScopeFactory scopeFactory=new ScopeFactory();
 
@@ -332,7 +333,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * default Constructor
 	 * @param factoryImpl 
 	 * @param scopeContext
-	 * @param config Configuration of the Cold Fusion Container
+	 * @param config Configuration of the CFML Container
 	 * @param compiler CFML Compiler
 	 * @param queryCache Query Cache Object
 	 * @param id identity of the pageContext
@@ -360,8 +361,29 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		this.queryCache=queryCache;
 		server=ScopeContext.getServerScope(this);
 		
-		defaultApplicationContext=new ClassicApplicationContext(config,"",true);
+		defaultApplicationContext=new ClassicApplicationContext(config,"",true,null);
 		
+	}
+
+	/**
+	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
+	 */
+	public void initialize(
+			Servlet servlet, 
+			ServletRequest req, 
+			ServletResponse rsp, 
+			String errorPageURL, 
+			boolean needsSession, 
+			int bufferSize, 
+			boolean autoFlush) throws IOException, IllegalStateException, IllegalArgumentException {
+	   initialize(
+			   (HttpServlet)servlet,
+			   (HttpServletRequest)req,
+			   (HttpServletResponse)rsp,
+			   errorPageURL,
+			   needsSession,
+			   bufferSize,
+			   autoFlush,false);
 	}
 	
 	/**
@@ -381,7 +403,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			 String errorPageURL, 
 			 boolean needsSession, 
 			 int bufferSize, 
-			 boolean autoFlush,boolean isChild) {
+			 boolean autoFlush,
+			 boolean isChild) {
 		requestId=counter++;
 		rsp.setContentType("text/html; charset=UTF-8");
 		
@@ -393,7 +416,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         startTime=System.currentTimeMillis();
         thread=Thread.currentThread();
         
-        isCFCRequest = StringUtil.endsWithIgnoreCase(req.getServletPath(),".cfc");
+        isCFCRequest = StringUtil.endsWithIgnoreCase(req.getServletPath(),"."+config.getCFCExtension());
         
         this.req=new HTTPServletRequestWrap(req);
         this.rsp=rsp;
@@ -418,6 +441,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         	 
         	 hasFamily=false;
          }
+         else if(variables==null) {
+        	 variablesRoot=new VariablesImpl();
+        	 variables=variablesRoot;
+         }
          request.initialize(this);
          
 		 if(config.mergeFormAndURL()) {
@@ -435,19 +462,28 @@ public final class PageContextImpl extends PageContext implements Sizeable {
          
         psq=config.getPSQL();
 		
-		fdEnabled=!config.getCFMLEngineImpl().allowRequestTimeout();
+		fdEnabled=!config.allowRequestTimeout();
 		
 		if(config.getExecutionLogEnabled())
 			this.execLog=config.getExecutionLogFactory().getInstance(this);
-		
+		if(config.debug())
+			debugger.init(config);
+			
         return this;
 	 }
 	
 	/**
 	 * @see javax.servlet.jsp.PageContext#release()
 	 */
-	public void release() {//KeyImpl.dump();
+	public void release() {
+		
+		if(config.debug()) {
+    		if(!gatewayContext)config.getDebuggerPool().store(this, debugger);
+    		debugger.reset();
+    	}
+	
 		this.serverPassword=null;
+
 		boolean isChild=parent!=null;
 		parent=null;
 		// Attention have to be before close
@@ -509,8 +545,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             
         }
         else {
-            variables=variablesRoot;
-            variables.release();
+            if(variables.isBind()) {
+            	variables=null;
+            	variablesRoot=null;
+            }
+            else {
+            	variables=variablesRoot;
+            	variables.release();
+            }
             undefined.release();
             urlForm.release();
         	request.release();
@@ -540,7 +582,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         timeZone=null;
         url=null;
         form=null;
-        if(config.debug()) debugger.reset();
+        
         
         // Pools
         errorPagePool.clear();
@@ -595,43 +637,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	gatewayContext=false;
     	
     	manager.release();
+    	includeOnce.clear();
 	}
-
-	/**
-	 * @see javax.servlet.jsp.PageContext#initialize(javax.servlet.Servlet, javax.servlet.ServletRequest, javax.servlet.ServletResponse, java.lang.String, boolean, int, boolean)
-	 */
-	public void initialize(
-			Servlet servlet, 
-			ServletRequest req, 
-			ServletResponse rsp, 
-			String errorPageURL, 
-			boolean needsSession, 
-			int bufferSize, 
-			boolean autoFlush) throws IOException, IllegalStateException, IllegalArgumentException {
-	   initialize((HttpServlet)servlet,(HttpServletRequest)req,(HttpServletResponse)rsp,errorPageURL,needsSession,bufferSize,autoFlush);
-	}
-	
-	// FUTURE add to abstract class
-	
-	/* *
-	 * called when parent thread end
-	 * /
-	public void unlink() {
-		
-		//print.o(request.keysAsString());
-		// unlink request scope
-		HttpServletRequest org = req.getOriginalRequest();
-		if(org instanceof HttpServletRequestDummy) {
-			((HttpServletRequestDummy)org).setAttributes(new StructImpl());
-		}
-		
-		RequestImpl r = new RequestImpl();
-		r.initialize(this);
-		StructImpl.copy(request,r,false);
-		//print.o(request.keysAsString());
-		//print.o(r.keysAsString());
-		this.request=r;
-	}*/
 
     /**
      * @see railo.runtime.PageContext#write(java.lang.String)
@@ -679,13 +686,37 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#getRelativePageSource(java.lang.String)
      */
     public PageSource getRelativePageSource(String realPath) {
-    	if(StringUtil.startsWith(realPath,'/')) return getPageSource(realPath);
+    	SystemOut.print(config.getOutWriter(),"method getRelativePageSource is deprecated");
+    	if(StringUtil.startsWith(realPath,'/')) return PageSourceImpl.best(getPageSources(realPath));
     	if(pathList.size()==0) return null;
-		return ((PageSource) pathList.getLast()).getRealPage(realPath);
+		return pathList.getLast().getRealPage(realPath);
+	}
+    
+    public PageSource getRelativePageSourceExisting(String realPath) {
+    	if(StringUtil.startsWith(realPath,'/')) return getPageSourceExisting(realPath);
+    	if(pathList.size()==0) return null;
+		PageSource ps = pathList.getLast().getRealPage(realPath);
+		if(PageSourceImpl.pageExist(ps)) return ps;
+		return null;
+	}
+    
+    public PageSource[] getRelativePageSources(String realPath) {
+    	if(StringUtil.startsWith(realPath,'/')) return getPageSources(realPath);
+    	if(pathList.size()==0) return null;
+		return new PageSource[]{ pathList.getLast().getRealPage(realPath)};
 	}
     
     public PageSource getPageSource(String realPath) {
-    	return config.getPageSource(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true);
+    	SystemOut.print(config.getOutWriter(),"method getPageSource is deprecated");
+    	return PageSourceImpl.best(config.getPageSources(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true));
+	}
+    
+    public PageSource[] getPageSources(String realPath) {
+    	return config.getPageSources(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true);
+	}
+    
+    public PageSource getPageSourceExisting(String realPath) {
+    	return config.getPageSourceExisting(this,applicationContext.getMappings(),realPath,false,useSpecialMappings,true,false);
 	}
 
     public boolean useSpecialMappings(boolean useTagMappings) {
@@ -707,36 +738,43 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return config.toPageSource(applicationContext.getMappings(),res, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.PageContext#doInclude(java.lang.String)
-	 */
+	@Override
 	public void doInclude(String realPath) throws PageException {
-		doInclude(getRelativePageSource(realPath));
+		doInclude(getRelativePageSources(realPath),false);
+	}
+	
+	@Override
+	public void doInclude(String realPath, boolean runOnce) throws PageException {
+		doInclude(getRelativePageSources(realPath),runOnce);
 	}
 
-	/**
-	 * @see railo.runtime.PageContext#doInclude(railo.runtime.PageSource)
-	 */
+	@Override
 	public void doInclude(PageSource source) throws PageException {
+		doInclude(new PageSource[]{source},false);
+	}
+
+	@Override
+	public void doInclude(PageSource[] sources, boolean runOnce) throws PageException {
     	// debug
-		if(config.debug()) {
-			DebugEntry debugEntry=debugger.getEntry(this,source);
+		if(!gatewayContext && config.debug()) {
 			int currTime=executionTime;
             long exeTime=0;
-            long time=System.currentTimeMillis();
+            long time=System.nanoTime();
             
-            Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
+            Page currentPage = PageSourceImpl.loadPage(this, sources);
+			if(runOnce && includeOnce.contains(currentPage.getPageSource())) return;
+            DebugEntryTemplate debugEntry=debugger.getEntry(this,currentPage.getPageSource());
             try {
-                addPageSource(source,true);
-                debugEntry.updateFileLoadTime((int)(System.currentTimeMillis()-time));
-                exeTime=System.currentTimeMillis();
+                addPageSource(currentPage.getPageSource(),true);
+                debugEntry.updateFileLoadTime((int)(System.nanoTime()-time));
+                exeTime=System.nanoTime();
+
                 currentPage.call(this);
 			}
 			catch(Throwable t){
 				PageException pe = Caster.toPageException(t);
-				if(pe instanceof Abort) {
-                    if(((Abort) pe).getScope()==Abort.SCOPE_REQUEST)
-                        throw pe;
+				if(Abort.isAbort(pe)) {
+                    if(Abort.isAbort(pe,Abort.SCOPE_REQUEST))throw pe;
                 }
                 else {
                 	if(fdEnabled){
@@ -747,24 +785,25 @@ public final class PageContextImpl extends PageContext implements Sizeable {
                 }
 			}
 			finally {
-				int diff= ((int)(System.currentTimeMillis()-exeTime)-(executionTime-currTime));
-			    executionTime+=(int)(System.currentTimeMillis()-time);
+				includeOnce.add(currentPage.getPageSource());
+				int diff= ((int)(System.nanoTime()-exeTime)-(executionTime-currTime));
+			    executionTime+=(int)(System.nanoTime()-time);
 				debugEntry.updateExeTime(diff);
 				removeLastPageSource(true);
 			}	
 		}
 	// no debug
 		else {
-            Page currentPage = ((PageSourceImpl)source).loadPage(this,config);
-		    try {
-				addPageSource(source,true);
+			Page currentPage = PageSourceImpl.loadPage(this, sources);
+			if(runOnce && includeOnce.contains(currentPage.getPageSource())) return;
+	    	try {
+				addPageSource(currentPage.getPageSource(),true);
                 currentPage.call(this);
 			}
 			catch(Throwable t){
 				PageException pe = Caster.toPageException(t);
-				if(pe instanceof Abort) {
-                    if(((Abort) pe).getScope()==Abort.SCOPE_REQUEST)
-                        throw pe;
+				if(Abort.isAbort(pe)) {
+					if(Abort.isAbort(pe,Abort.SCOPE_REQUEST))throw pe;
                 }
                 else    {
                 	pe.addContext(currentPage.getPageSource(),-187,-187, null);
@@ -772,6 +811,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
                 }
 			}
 			finally {
+				includeOnce.add(currentPage.getPageSource());
 				removeLastPageSource(true);
 			}	
 		}
@@ -780,12 +820,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	/**
      * @see railo.runtime.PageContext#getTemplatePath()
      */
-    public Array getTemplatePath() throws ExpressionException {
+    public Array getTemplatePath() throws PageException {
         int len=includePathList.size();
         SVArray sva = new SVArray();
         PageSource ps;
         for(int i=0;i<len;i++) {
-        	ps=(PageSource)includePathList.get(i);
+        	ps=includePathList.get(i);
         	if(i==0) {
         		if(!ps.equals(getBasePageSource()))
         			sva.append(ResourceUtil.getResource(this,getBasePageSource()).getAbsolutePath());
@@ -798,13 +838,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
   
     public List<PageSource> getPageSourceList() {
         return (List<PageSource>) pathList.clone();
-        
     }
     
     
     
     protected PageSource getPageSource(int index) {
-        return (PageSource) includePathList.get(index-1);
+        return includePathList.get(index-1);
     }
     public synchronized void copyStateTo(PageContextImpl other) {
     	
@@ -826,7 +865,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		other.applicationContext=applicationContext;
 		other.thread=Thread.currentThread();
 		other.startTime=System.currentTimeMillis();
-        other.isCFCRequest = isCFCRequest;
+		other.isCFCRequest = isCFCRequest;
         
         
         
@@ -871,11 +910,11 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         if(threads!=null){
         	synchronized (threads) {
 				
-	        	java.util.Iterator it2 = threads.entrySet().iterator();
-	        	Map.Entry entry;
+	        	java.util.Iterator<Entry<Key, Object>> it2 = threads.entryIterator();
+	        	Entry<Key, Object> entry;
 	        	while(it2.hasNext()) {
-	        		entry=(Entry) it2.next();
-	        		other.setThreadScope((String)entry.getKey(), (Threads)entry.getValue());
+	        		entry = it2.next();
+	        		other.setThreadScope(entry.getKey(), (Threads)entry.getValue());
 	        	}
 			}
         }
@@ -925,14 +964,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @return the current template SourceFile
      */
     public PageSource getCurrentPageSource() {
-    	return (PageSource) pathList.getLast();
+    	return pathList.getLast();
     }
     
     /**
      * @return the current template SourceFile
      */
     public PageSource getCurrentTemplatePageSource() {
-        return (PageSource) includePathList.getLast();
+        return includePathList.getLast();
     }
 	
     /**
@@ -1059,7 +1098,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public Application applicationScope() throws PageException {
 		if(application==null) {
 			if(!applicationContext.hasName())
-				throw new ExpressionException("there is no application context defined for this application","you can define a application context with the tag cfapplication");
+				throw new ExpressionException("there is no application context defined for this application","you can define a application context with the tag "+railo.runtime.config.Constants.CFAPP_NAME+"/"+railo.runtime.config.Constants.APP_CFC);
 			application=scopeContext.getApplicationScope(this,DUMMY_BOOL);
 		}
 		return application; 
@@ -1081,16 +1120,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     } 
     
     /**
-     * @see PageContext#localScope()
-     */// FUTURE remove class from type Local
-    public Scope localScope() { 
+     * @see railo.runtime.PageContext#localScope()
+     */
+    public Local localScope() { 
     	//if(local==localUnsupportedScope) 
     	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
     	return local;
     }
     
-// FUTURE remove class from type Local
-    public Scope localScope(boolean bind) { 
+    /**
+     * @see railo.runtime.PageContext#localScope(boolean)
+     */
+    public Local localScope(boolean bind) { 
     	if(bind)local.setBind(true); 
     	//if(local==localUnsupportedScope) 
     	//	throw new PageRuntimeException(new ExpressionException("Unsupported Context for Local Scope"));
@@ -1107,7 +1148,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return undefinedScope().get(KeyImpl.LOCAL);
+    	return undefinedScope().get(KeyConstants._local);
     }
 
     public Object localTouch() throws PageException { 
@@ -1119,7 +1160,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	if(undefined.getCheckArguments()){
     		return localScope(bind);
     	}
-    	return touch(undefinedScope(), KeyImpl.LOCAL);
+    	return touch(undefinedScope(), KeyConstants._local);
     	//return undefinedScope().get(LOCAL);
     }
     
@@ -1128,10 +1169,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @param local sets the current local scope
      * @param argument sets the current argument scope
      */
-    public void setFunctionScopes(Scope local,Argument argument) {
-    	// FUTURE setFunctionScopes(Local local,Argument argument)
-		this.argument=argument;
-		this.local=(LocalPro) local;
+    public void setFunctionScopes(Local local,Argument argument) {
+    	this.argument=argument;
+		this.local=local;
 		undefined.setFunctionScopes(local,argument);
 	}
 	
@@ -1143,13 +1183,22 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
     public Session sessionScope(boolean checkExpires) throws PageException {
 		if(session==null)	{
-			if(!applicationContext.hasName())
-				throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag cfapplication/Application.cfc");
-			if(!applicationContext.isSetSessionManagement())
-				throw new ExpressionException("session scope is not enabled","you can enable session scope with tag cfapplication");
+			checkSessionContext();
 			session=scopeContext.getSessionScope(this,DUMMY_BOOL);
 		}
 		return session;
+	}
+
+
+	public void invalidateUserScopes(boolean migrateSessionData,boolean migrateClientData) throws PageException {
+		scopeContext.invalidateUserScope(this, migrateSessionData, migrateClientData);
+	}
+    
+    private void checkSessionContext() throws ExpressionException {
+    	if(!applicationContext.hasName())
+			throw new ExpressionException("there is no session context defined for this application","you can define a session context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
+		if(!applicationContext.isSetSessionManagement())
+			throw new ExpressionException("session scope is not enabled","you can enable session scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 	}
 
     /**
@@ -1169,7 +1218,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
     public Cluster clusterScope(boolean create) throws PageException { 
     	if(cluster==null && create) {
-    		cluster=ScopeContext.getClusterScope(config.getConfigServerImpl(),create);
+    		cluster=ScopeContext.getClusterScope(config,create);
     		//cluster.initialize(this);
     	}
     	//else if(!cluster.isInitalized()) cluster.initialize(this);
@@ -1191,21 +1240,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		if(client==null) {
 			if(!applicationContext.hasName())
 				throw new ExpressionException("there is no client context defined for this application",
-						"you can define a client context with the tag cfapplication/Application.cfc");
+						"you can define a client context with the tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 			if(!applicationContext.isSetClientManagement())
 				throw new ExpressionException("client scope is not enabled",
-						"you can enable client scope with tag cfapplication/Application.cfc");
+						"you can enable client scope with tag "+Constants.CFAPP_NAME+"/"+Constants.APP_CFC);
 			
-			client=(ClientPlus) scopeContext.getClientScope(this);
+			client= scopeContext.getClientScope(this);
 		}
 		return client;
 	}
     
     public Client clientScopeEL() { 
 		if(client==null) {
-			if(!applicationContext.hasName()) 				return null;
+			if(applicationContext==null || !applicationContext.hasName()) 				return null;
 			if(!applicationContext.isSetClientManagement())	return null;
-			client=(ClientPlus) scopeContext.getClientScopeEL(this);
+			client= scopeContext.getClientScopeEL(this);
 		}
 		return client;
 	}
@@ -1337,17 +1386,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     
 
     public void param(String type, String name, Object defaultValue,String regex) throws PageException {
-    	param(type, name, defaultValue,Double.NaN,Double.NaN,regex);
+    	param(type, name, defaultValue,Double.NaN,Double.NaN,regex,-1);
     }
 	public void param(String type, String name, Object defaultValue,double min, double max) throws PageException {
-    	param(type, name, defaultValue,min,max,null);
+    	param(type, name, defaultValue,min,max,null,-1);
+    }
+
+    public void param(String type, String name, Object defaultValue,int maxLength) throws PageException {
+    	param(type, name, defaultValue,Double.NaN,Double.NaN,null,maxLength);
     }
 
     public void param(String type, String name, Object defaultValue) throws PageException {
-    	param(type, name, defaultValue,Double.NaN,Double.NaN,null);
+    	param(type, name, defaultValue,Double.NaN,Double.NaN,null,-1);
     }
 	
-    private void param(String type, String name, Object defaultValue, double min,double max, String strPattern) throws PageException {
+    private void param(String type, String name, Object defaultValue, double min,double max, String strPattern, int maxLength) throws PageException {
 		
     	
     	// check attributes type
@@ -1360,16 +1413,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	Object value=null;
 		boolean isNew=false;
+		
 		// get value
-		try {
-			value=getVariable(name);
-		} 
-		catch (PageException e) {
+		value=VariableInterpreter.getVariableEL(this,name,null);// NULL Support 
+		if(value==null) {
 			if(defaultValue==null)
 				throw new ExpressionException("The required parameter ["+name+"] was not provided.");
 			value=defaultValue;
 			isNew=true;
 		}
+		
 		// cast and set value
 		if(!"any".equals(type)) {
 			// range
@@ -1399,7 +1452,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				setVariable(name,str);
 			}
 			else {
-				if(!Decision.isCastableTo(type,value,true)) throw new CasterException(value,type);	
+				if(!Decision.isCastableTo(type,value,true,maxLength)) {
+					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
+						StringBuilder msg=new StringBuilder(CasterException.createMessage(value, type));
+						msg.append(" with a maximal length of "+maxLength+" characters");
+						throw new CasterException(msg.toString());	
+					}
+					throw new CasterException(value,type);	
+				}
+				
+				
+				
 				setVariable(name,value);
 				//REALCAST setVariable(name,Caster.castTo(this,type,value,true));
 			}
@@ -1478,9 +1541,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see PageContext#getQuery(java.lang.String)
      */
     public Query getQuery(String key) throws PageException {
-		Object o=VariableInterpreter.getVariable(this,key);
-		if(o instanceof Query) return (Query) o;
-		throw new CasterException(o,Query.class);///("["+key+"] is not a query object, object is from type ");
+		Object value=VariableInterpreter.getVariable(this,key);
+		if(Decision.isQuery(value)) return Caster.toQuery(value);
+    	throw new CasterException(value,Query.class);///("["+key+"] is not a query object, object is from type ");
+	}
+    
+    @Override
+    public Query getQuery(Object value) throws PageException {
+    	if(Decision.isQuery(value)) return Caster.toQuery(value);
+    	value=VariableInterpreter.getVariable(this,Caster.toString(value));
+    	if(Decision.isQuery(value)) return Caster.toQuery(value);
+    	throw new CasterException(value,Query.class);
 	}
 
 	/**
@@ -1609,7 +1680,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		case javax.servlet.jsp.PageContext.APPLICATION_SCOPE:
 			return getServletContext().getAttributeNames();
 		case javax.servlet.jsp.PageContext.PAGE_SCOPE:
-			return new KeyIterator(variablesScope().keys());
+			return ItAsEnum.toStringEnumeration(variablesScope().keyIterator());
 		case javax.servlet.jsp.PageContext.REQUEST_SCOPE:
 			return req.getAttributeNames();
 		case javax.servlet.jsp.PageContext.SESSION_SCOPE:
@@ -1667,11 +1738,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return rsp;
 	}
     
-    public ServletOutputStream getServletOutputStream() throws IOException {// FUTURE remove from interface
-    	throw new RuntimeException("not supported");
-	}
-    
-    public OutputStream getResponseStream() throws IOException {// FUTURE add to  interface
+    public OutputStream getResponseStream() throws IOException {
     	return getRootOut().getResponseStream();
 	}
 
@@ -1730,7 +1797,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see railo.runtime.PageContext#handlePageException(railo.runtime.exp.PageException)
 	 */
 	public void handlePageException(PageException pe) {
-		if(!(pe instanceof Abort)) {
+		if(!Abort.isSilentAbort(pe)) {
 			
 			String charEnc = rsp.getCharacterEncoding();
 	        if(StringUtil.isEmpty(charEnc,true)) {
@@ -1752,13 +1819,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			if(ep!=null) {
 				try {
 					Struct sct=pe.getErrorBlock(this,ep);
-					variablesScope().setEL(ERROR,sct);
-					variablesScope().setEL(CFERROR,sct);
+					variablesScope().setEL(KeyConstants._error,sct);
+					variablesScope().setEL(KeyConstants._cferror,sct);
 					
 					doInclude(ep.getTemplate());
 					return;
 				} catch (Throwable t) {
-					if(t instanceof Abort) return;
+					if(Abort.isSilentAbort(t)) return;
 					pe=Caster.toPageException(t);
 				}
 				
@@ -1770,15 +1837,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 			if(ep!=null) {
 				PageSource ps = ep.getTemplate();
 				if(ps.physcalExists()){
-					Resource res = ps.getFile();
+					Resource res = ps.getResource();
 					try {
 						String content = IOUtil.toString(res, getConfig().getTemplateCharset());
 						Struct sct=pe.getErrorBlock(this,ep);
-						Key[] keys = sct.keys();
+						java.util.Iterator<Entry<Key, Object>> it = sct.entryIterator();
+						Entry<Key, Object> e;
 						String v;
-						for(int i=0;i<keys.length;i++){
-							v=Caster.toString(sct.get(keys[i],null),null);
-							if(v!=null)content=repl(content, keys[i].getString(), v);
+						while(it.hasNext()){
+							e = it.next();
+							v=Caster.toString(e.getValue(),null);
+							if(v!=null)content=repl(content, e.getKey().getString(), v);
 						}
 						
 						write(content);
@@ -1801,16 +1870,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				if(!StringUtil.isEmpty(template)) {
 					try {
 						Struct catchBlock=pe.getCatchBlock(this);
-						variablesScope().setEL(CFCATCH,catchBlock);
-						variablesScope().setEL(CATCH,catchBlock);
-						doInclude(getRelativePageSource(template));
+						variablesScope().setEL(KeyConstants._cfcatch,catchBlock);
+						variablesScope().setEL(KeyConstants._catch,catchBlock);
+						doInclude(template);
 					    return;
 			        } 
 					catch (PageException e) {
 						pe=e;
 					}
 				}
-				if(!(pe instanceof Abort))forceWrite(getConfig().getDefaultDumpWriter().toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
+				if(!Abort.isSilentAbort(pe))forceWrite(getConfig().getDefaultDumpWriter(DumpWriter.DEFAULT_RICH).toString(this,pe.toDumpData(this, 9999,DumpUtil.toDumpProperties()),true));
 			} 
 			catch (Exception e) { 
 			}
@@ -1949,23 +2018,211 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         return before;
 	}
     
-    /**
-     * @see railo.runtime.PageContext#getDebugger()
-     */
+
+    @Override
     public Debugger getDebugger() {
 		return debugger;
 	}
-	
-    /**
+    
+    @Override
+    public void executeRest(String realPath, boolean throwExcpetion) throws PageException  {
+    	ApplicationListener listener=config.getApplicationListener();
+	    try{
+    	String pathInfo = req.getPathInfo();
+    	
+    	// charset
+    	try{
+    	String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType())[1];
+    	if(StringUtil.isEmpty(charset))charset=ThreadLocalPageContext.getConfig().getWebCharset();
+	    	java.net.URL reqURL = new java.net.URL(req.getRequestURL().toString());
+	    	String path=ReqRspUtil.decode(reqURL.getPath(),charset,true);
+	    	String srvPath=req.getServletPath();
+	    	if(path.startsWith(srvPath)) {
+	    		pathInfo=path.substring(srvPath.length());
+	    	}
+    	}
+    	catch (Exception e){}
+    	
+    	
+    	// Service mapping
+    	if(StringUtil.isEmpty(pathInfo) || pathInfo.equals("/")) {// ToDo
+    		// list available services (if enabled in admin)
+    		if(config.getRestList()) {
+	    		try {
+					HttpServletRequest _req = getHttpServletRequest();
+	    			write("Available sevice mappings are:<ul>");
+					railo.runtime.rest.Mapping[] mappings = config.getRestMappings();
+					String path;
+					for(int i=0;i<mappings.length;i++){
+						path=_req.getContextPath()+ReqRspUtil.getScriptName(_req)+mappings[i].getVirtual();
+						write("<li>"+path+"</li>");
+						
+						
+					}
+					write("</ul>");
+					
+				} catch (IOException e) {
+					throw Caster.toPageException(e);
+				}
+    		}
+    		else 
+    			RestUtil.setStatus(this, 404, null);
+			return;
+    	}	
+    	
+    	// check for matrix
+    	int index;
+    	String entry;
+    	Struct matrix=new StructImpl();
+    	while((index=pathInfo.lastIndexOf(';'))!=-1){
+    		entry=pathInfo.substring(index+1);
+    		pathInfo=pathInfo.substring(0,index);
+    		if(StringUtil.isEmpty(entry,true)) continue;
+    		
+    		index=entry.indexOf('=');
+    		if(index!=-1)matrix.setEL(entry.substring(0,index).trim(), entry.substring(index+1).trim());
+    		else matrix.setEL(entry.trim(), "");
+    	}
+    	
+    	// get accept
+    	List<MimeType> accept = ReqRspUtil.getAccept(this);
+    	MimeType contentType = ReqRspUtil.getContentType(this);
+    	
+    	// check for format extension
+    	//int format = getApplicationContext().getRestSettings().getReturnFormat();
+    	int format;
+    	boolean hasFormatExtension=false;
+    	if(StringUtil.endsWithIgnoreCase(pathInfo, ".json")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
+    		format = UDF.RETURN_FORMAT_JSON;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_JSON);
+    		hasFormatExtension=true;
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".wddx")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
+    		format = UDF.RETURN_FORMAT_WDDX;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_WDDX);
+    		hasFormatExtension=true;
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".cfml")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-5);
+    		format = UDF.RETURN_FORMAT_SERIALIZE;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_CFML);
+    		hasFormatExtension=true;
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".serialize")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-10);
+    		format = UDF.RETURN_FORMAT_SERIALIZE;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_CFML);
+    		hasFormatExtension=true;
+    	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".xml")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-4);
+    		format = UDF.RETURN_FORMAT_XML;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_XML);
+    		hasFormatExtension=true;
+    	}
+    	else {
+    		format = getApplicationContext().getRestSettings().getReturnFormat();
+    		//MimeType mt=MimeType.toMimetype(format);
+    		//if(mt!=null)accept.add(mt);
+    	}
+    	
+    	if(accept.size()==0) accept.add(MimeType.ALL);
+    	
+    	// loop all mappings
+    	//railo.runtime.rest.Result result = null;//config.getRestSource(pathInfo, null);
+    	RestRequestListener rl=null;
+    	railo.runtime.rest.Mapping[] restMappings = config.getRestMappings();
+    	railo.runtime.rest.Mapping m,mapping=null,defaultMapping=null;
+    	//String callerPath=null;
+    	if(restMappings!=null)for(int i=0;i<restMappings.length;i++) {
+            m = restMappings[i];
+            if(m.isDefault())defaultMapping=m;
+            if(pathInfo.startsWith(m.getVirtualWithSlash(),0)) {
+            	mapping=m;
+            	//result = m.getResult(this,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
+            	rl=new RestRequestListener(m,pathInfo.substring(m.getVirtual().length()),matrix,format,hasFormatExtension,accept,contentType,null);
+            	break;
+            }
+        }
+    	
+    	// default mapping
+    	if(mapping==null && defaultMapping!=null) {
+    		mapping=defaultMapping;
+            //result = mapping.getResult(this,callerPath=pathInfo,format,matrix,null);
+        	rl=new RestRequestListener(mapping,pathInfo,matrix,format,hasFormatExtension,accept,contentType,null);
+    	}
+    	
+    	
+    	//base = PageSourceImpl.best(config.getPageSources(this,null,realPath,true,false,true));
+    	
+    	
+    	if(mapping==null){
+    		RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
+    	}
+    	else {
+    		base=config.toPageSource(null, mapping.getPhysical(), null);
+    		listener.onRequest(this, base,rl);
+    	}
+    	
+    	
+    	
+    	//RestRequestListener rl = new RestRequestListener(mapping,callerPath=pathInfo.substring(m.getVirtual().length()),format,matrix,null);
+    	
+    	/*if(result!=null){
+    		//railo.runtime.rest.Source source=result.getSource();
+    		//print.e(source.getPageSource());
+
+    		//base=source.getPageSource();
+    		//req.setAttribute("client", "railo-rest-1-0");
+    		//req.setAttribute("rest-path", callerPath);
+    		//req.setAttribute("rest-result", result);
+    		listener.onRequest(this, base);
+    		//doInclude(source.getPageSource());
+    	}
+    	else {
+    		if(mapping==null)RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found");
+    		else RestUtil.setStatus(this,404,"no rest service for ["+pathInfo+"] found in mapping ["+mapping.getVirtual()+"]");
+    	}*/
+    	
+    	
+    	}
+	    catch(Throwable t) {
+	    	PageException pe = Caster.toPageException(t);
+	    	if(!Abort.isSilentAbort(pe)){
+	    		log(true);
+	    		if(fdEnabled){
+	        		FDSignal.signal(pe, false);
+	        	}
+	    		listener.onError(this,pe);	
+	    	}
+	    	else log(false);
+
+	    	if(throwExcpetion) throw pe;
+	    }
+	    finally {
+	    	if(enablecfoutputonly>0){
+            	setCFOutputOnly((short)0);
+            }
+            base=null;
+	    }
+    }
+
+	/**
      * @throws PageException 
      * @see railo.runtime.PageContext#execute(java.lang.String)
      */
-
     public void execute(String realPath, boolean throwExcpetion) throws PageException  {
     	execute(realPath, throwExcpetion, true);
     }
     public void execute(String realPath, boolean throwExcpetion, boolean onlyTopLevel) throws PageException  {
-    	SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" ("+getId()+")");
+    	//SystemOut.printDate(config.getOutWriter(),"Call:"+realPath+" (id:"+getId()+";running-requests:"+config.getThreadQueue().size()+";)");
 	    ApplicationListener listener=config.getApplicationListener();
 	    if(realPath.startsWith("/mapping-")){
 	    	base=null;
@@ -1989,18 +2246,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    			if(!base.exists())base=getPageSource(realPath.substring(index));
 	    		}*/
 	    	}
-	    	if(base==null) base=config.getPageSource(this,null,realPath,onlyTopLevel,false,true);
+	    	if(base==null) base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
 	    	
 	    }
-	    else base=config.getPageSource(this,null,realPath,onlyTopLevel,false,true);
+	    else base=PageSourceImpl.best(config.getPageSources(this,null,realPath,onlyTopLevel,false,true));
 	    
 	    try {
-	    	listener.onRequest(this,base);
+	    	listener.onRequest(this,base,null);
 	    	log(false);
 	    }
 	    catch(Throwable t) {
 	    	PageException pe = Caster.toPageException(t);
-	    	if(!(pe instanceof Abort)){
+	    	if(!Abort.isSilentAbort(pe)){
 	    		log(true);
 	    		if(fdEnabled){
 	        		FDSignal.signal(pe, false);
@@ -2008,28 +2265,30 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    		listener.onError(this,pe);	
 	    	}
 	    	else log(false);
+
 	    	if(throwExcpetion) throw pe;
 	    }
 	    finally {
+	    	
+	    	
             if(enablecfoutputonly>0){
             	setCFOutputOnly((short)0);
             }
-            if(getConfig().debug()) {
+            if(!gatewayContext && getConfig().debug()) {
             	try {
 					listener.onDebug(this);
 				} 
             	catch (PageException pe) {
-            		if(!(pe instanceof Abort))listener.onError(this,pe);
+            		if(!Abort.isSilentAbort(pe))listener.onError(this,pe);
 				}
             }
             base=null;
 	    }
 	}
-	
+
 	private void log(boolean error) {
-		ConfigServerImpl cs = config.getConfigServerImpl();
-		if(!isGatewayContext() && cs.isMonitoringEnabled()) {
-            RequestMonitor[] monitors = cs.getRequestMonitors();
+		if(!isGatewayContext() && config.isMonitoringEnabled()) {
+            RequestMonitor[] monitors = config.getRequestMonitors();
             if(monitors!=null)for(int i=0;i<monitors.length;i++){
             	if(monitors[i].isLogEnabled()){
 	            	try {
@@ -2040,8 +2299,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
             }
 		}
 	}
-
-
 
 	private PageSource getPageSource(Mapping[] mappings, String realPath) {
 		PageSource ps;
@@ -2152,13 +2409,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private void initIdAndToken() {
         boolean setCookie=true;
         // From URL
-        Object oCfid = urlScope().get(KeyImpl.CFID,null);
-        Object oCftoken = urlScope().get(KeyImpl.CFTOKEN,null);
+        Object oCfid = urlScope().get(KeyConstants._cfid,null);
+        Object oCftoken = urlScope().get(KeyConstants._cftoken,null);
         // Cookie
         if((oCfid==null || !Decision.isGUIdSimple(oCfid)) || oCftoken==null) {
             setCookie=false;
-            oCfid = cookieScope().get(KeyImpl.CFID,null);
-            oCftoken = cookieScope().get(KeyImpl.CFTOKEN,null);
+            oCfid = cookieScope().get(KeyConstants._cfid,null);
+            oCftoken = cookieScope().get(KeyConstants._cftoken,null);
         }
         if(oCfid!=null && !Decision.isGUIdSimple(oCfid) ) {
         	oCfid=null;
@@ -2175,10 +2432,21 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
         
         if(setCookie && applicationContext.isSetClientCookies()) {
-            cookieScope().setCookieEL(KeyImpl.CFID,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
-            cookieScope().setCookieEL(KeyImpl.CFTOKEN,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(CGIImpl.SERVER_NAME,null):null);
+            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
         }
     }
+    
+
+    public void resetIdAndToken() {
+        cfid=ScopeContext.getNewCFId();
+        cftoken=ScopeContext.getNewCFToken();
+        if(applicationContext.isSetClientCookies()) {
+            cookieScope().setCookieEL(KeyConstants._cfid,cfid,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+            cookieScope().setCookieEL(KeyConstants._cftoken,cftoken,CookieImpl.NEVER,false,"/",applicationContext.isSetDomainCookies()?(String) cgiScope().get(KeyConstants._server_name,null):null);
+        }
+    }
+    
 
     /**
      * @see PageContext#getId()
@@ -2192,6 +2460,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * 
      */
     public CFMLWriter getRootOut() {
+		return bodyContentStack.getBase();
+	}
+    public JspWriter getRootWriter() {
 		return bodyContentStack.getBase();
 	}
 
@@ -2328,7 +2599,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     }*/
     
     /**
-     * @see railo.runtime.PageContext#setVariablesScope(railo.runtime.type.Scope)
+     * @see railo.runtime.PageContext#setVariablesScope(railo.runtime.type.scope.Scope)
      */
     public void setVariablesScope(Variables variables) {
     	this.variables=variables;
@@ -2345,8 +2616,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         }
     }
 
-    
-
     /**
      * @see railo.runtime.PageContext#getActiveComponent()
      */
@@ -2354,15 +2623,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         return activeComponent;
     }
     
-    
-    
-    
     /**
      * @see railo.runtime.PageContext#getRemoteUser()
      */
     public Credential getRemoteUser() throws PageException {
         if(remoteUser==null) {
-        	String name=Login.getApplicationName(applicationContext);
+        	Key name = KeyImpl.init(Login.getApplicationName(applicationContext));
 		    Resource roles = config.getConfigDir().getRealResource("roles");
 		    
         	if(applicationContext.getLoginStorage()==Scope.SCOPE_SESSION) {
@@ -2414,7 +2680,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void throwCatch() throws PageException {
         if(exception!=null) throw exception;
-        else throw new ApplicationException("invalid context for tag/script expression rethow");
+        throw new ApplicationException("invalid context for tag/script expression rethow");
     }
 
     /**
@@ -2423,12 +2689,12 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public PageException setCatch(Throwable t) {
     	if(t==null) {
     		exception=null;
-    		undefinedScope().removeEL(CFCATCH);
+    		undefinedScope().removeEL(KeyConstants._cfcatch);
     	}
     	else {
     		exception = Caster.toPageException(t);
-    		undefinedScope().setEL(CFCATCH,exception.getCatchBlock(this));
-    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
+    		undefinedScope().setEL(KeyConstants._cfcatch,exception.getCatchBlock(config));
+    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
     	}
     	return exception;
     }
@@ -2436,27 +2702,26 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     public void setCatch(PageException pe) {
     	exception = pe;
     	if(pe==null) {
-    		undefinedScope().removeEL(CFCATCH);
+    		undefinedScope().removeEL(KeyConstants._cfcatch);
     	}
     	else {
-    		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(this));
-    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
+    		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
+    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
     	}
     }
     
     public void setCatch(PageException pe,boolean caught, boolean store) {
-		//print.err("fdEnabled:"+fdEnabled+"; caught:"+caught+"; type:"+pe.getTypeAsString()+"; message:"+pe.getMessage()+";");
-    	if(fdEnabled){
+		if(fdEnabled){
     		FDSignal.signal(pe, caught);
     	}
     	exception = pe;
     	if(store){
 	    	if(pe==null) {
-	    		undefinedScope().removeEL(CFCATCH);
+	    		undefinedScope().removeEL(KeyConstants._cfcatch);
 	    	}
 	    	else {
-	    		undefinedScope().setEL(CFCATCH,pe.getCatchBlock(this));
-	    		if(config.debug()) ((DebuggerImpl)debugger).addException(config,exception);
+	    		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
+	    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
 	    	}
     	}
     }
@@ -2473,7 +2738,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public void clearCatch() {
         exception = null;
-    	undefinedScope().removeEL(CFCATCH);
+    	undefinedScope().removeEL(KeyConstants._cfcatch);
     }
 
     /**
@@ -2496,9 +2761,25 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#removeLastPageSource(boolean)
      */
     public void removeLastPageSource(boolean alsoInclude) {
-    	pathList.removeLast();
-        if(alsoInclude) 
+    	if(!pathList.isEmpty())pathList.removeLast();
+        if(alsoInclude && !includePathList.isEmpty()) 
             includePathList.removeLast();
+    }
+
+
+    public UDF[] getUDFs() {
+    	return udfs.toArray(new UDF[udfs.size()]);
+    }
+    
+    public void addUDF(UDF udf) {
+    	udfs.add(udf);
+    }
+
+    /**
+     * @see railo.runtime.PageContext#removeLastPageSource(boolean)
+     */
+    public void removeUDF() {
+    	if(!udfs.isEmpty())udfs.pop();
     }
 
     /**
@@ -2530,23 +2811,23 @@ public final class PageContextImpl extends PageContext implements Sizeable {
         session=null;
         application=null;
         client=null;
-        this.applicationContext = (ApplicationContextPro) applicationContext;
+        this.applicationContext = applicationContext;
         
         int scriptProtect = applicationContext.getScriptProtect();
         
         // ScriptProtecting
         if(config.mergeFormAndURL()) {
-        	form.setScriptProtecting(
+        	form.setScriptProtecting(applicationContext,
         			(scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0 
         			|| 
         			(scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0);
         }
         else {
-            form.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0);
-            url.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0);
+            form.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_FORM)>0);
+            url.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_URL)>0);
         }
-        cookie.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0);
-        cgi.setScriptProtecting((scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0);
+        cookie.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_COOKIE)>0);
+        cgi.setScriptProtecting(applicationContext,(scriptProtect&ApplicationContext.SCRIPT_PROTECT_CGI)>0);
         undefined.reinitialize(this);
     }
     
@@ -2680,7 +2961,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#compile(java.lang.String)
      */
     public void compile(String realPath) throws PageException {
-        compile(getRelativePageSource(realPath));
+    	SystemOut.printDate("method PageContext.compile(String) should no longer be used!");
+    	compile(PageSourceImpl.best(getRelativePageSources(realPath)));
     }
     
     public HttpServlet getServlet() {
@@ -2722,9 +3004,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return manager;
 	}
 
+	/**
+	 * @see railo.runtime.PageContext#evaluate(java.lang.String)
+	 */
 	public Object evaluate(String expression) throws PageException {
-		// TODO kann das objekt nicht variable von object sein
 		return new CFMLExpressionInterpreter().interpret(this,expression);
+	}
+	
+	/**
+	 * @see railo.runtime.PageContext#serialize(java.lang.Object)
+	 */
+	public String serialize(Object expression) throws PageException {
+		return Serialize.call(this, expression);
 	}
 
 	/**
@@ -2770,6 +3061,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	 * @see railo.runtime.PageContext#getThreadScope(java.lang.String)
 	 */
 	public Threads getThreadScope(String name) {
+		return getThreadScope(KeyImpl.init(name));
+	}
+	
+	public Threads getThreadScope(Collection.Key name) {
 		if(threads==null)threads=new StructImpl();
 		Object obj = threads.get(name,null);
 		if(obj instanceof Threads)return (Threads) obj;
@@ -2778,14 +3073,14 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	
 	public Object getThreadScope(Collection.Key name,Object defaultValue) {
 		if(threads==null)threads=new StructImpl();
-		if(name.equalsIgnoreCase(CFTHREAD)) return threads;
+		if(name.equalsIgnoreCase(KeyConstants._cfthread)) return threads;
 		return threads.get(name,defaultValue);
 	}
 	
 	public Object getThreadScope(String name,Object defaultValue) {
 		if(threads==null)threads=new StructImpl();
-		if(name.equalsIgnoreCase(CFTHREAD.getLowerString())) return threads;
-		return threads.get(name,defaultValue);
+		if(name.equalsIgnoreCase(KeyConstants._cfthread.getLowerString())) return threads;
+		return threads.get(KeyImpl.init(name),defaultValue);
 	}
 
 	/**
@@ -2794,7 +3089,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public void setThreadScope(String name,Threads ct) {
 		hasFamily=true;
 		if(threads==null)	threads=new StructImpl();
-		threads.setEL(name, ct);
+		threads.setEL(KeyImpl.init(name), ct);
 	}
 	
 	public void setThreadScope(Collection.Key name,Threads ct) {
@@ -2818,7 +3113,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public DatasourceConnection _getConnection(DataSource ds, String user,String pass) throws PageException {
 		
 		String id=DatasourceConnectionPool.createId(ds,user,pass);
-		DatasourceConnection dc=(DatasourceConnection) conns.get(id);
+		DatasourceConnection dc=conns.get(id);
 		if(dc!=null && DatasourceConnectionPool.isValid(dc,null)){
 			return dc;
 		}
@@ -2869,17 +3164,17 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	/**
-	 * @param line
-	 * @deprecated no longer supported and ignored
+	 * @see railo.runtime.PageContext#exeLogStart(int, java.lang.String)
 	 */
-	public void exeLogEndline(int line){
-		//execLog.line(line);
+	public void exeLogStart(int position,String id){
+		if(execLog!=null)execLog.start(position, id);
 	}
-	public void exeLogStart(int line,String id){
-		if(execLog!=null)execLog.start(line, id);
-	}
-	public void exeLogEnd(int line,String id){
-		if(execLog!=null)execLog.end(line, id);
+	
+	/**
+	 * @see railo.runtime.PageContext#exeLogEnd(int, java.lang.String)
+	 */
+	public void exeLogEnd(int position,String id){
+		if(execLog!=null)execLog.end(position, id);
 	}
 
 	
@@ -2932,5 +3227,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public short getSessionType() {
 		if(isGatewayContext())return Config.SESSION_TYPE_CFML;
 		return applicationContext.getSessionType();
+	}
+	
+	// this is just a wrapper method for ACF
+	public Scope SymTab_findBuiltinScope(String name) throws PageException {
+		return scope(name, null);
 	}
 }

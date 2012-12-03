@@ -17,7 +17,6 @@ public final class Variable extends RefSupport implements Set {
 	
 	private String key;
 	private Ref parent;
-	private PageContext pc;
     private Ref refKey;
 
     /**
@@ -25,8 +24,7 @@ public final class Variable extends RefSupport implements Set {
      * @param parent
      * @param key
      */
-    public Variable(PageContext pc, Ref parent,String key) {
-        this.pc=pc;
+    public Variable( Ref parent,String key) {
         this.parent=parent;
         this.key=key;
     }
@@ -36,75 +34,61 @@ public final class Variable extends RefSupport implements Set {
      * @param parent
      * @param refKey
      */
-    public Variable(PageContext pc, Ref parent,Ref refKey) {
-        this.pc=pc;
+    public Variable(Ref parent,Ref refKey) {
         this.parent=parent;
         this.refKey=refKey;
     }
-
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getValue()
-     */
-    public Object getValue() throws PageException {
-        return pc.get(parent.getCollection(),getKeyAsString());
+    
+    @Override
+    public Object getValue(PageContext pc) throws PageException {
+        return pc.get(parent.getCollection(pc),getKeyAsString(pc));
     }
     
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#touchValue()
-     */
-    public Object touchValue() throws PageException {
-        Object p = parent.touchValue();
+    @Override
+    public Object touchValue(PageContext pc) throws PageException {
+        Object p = parent.touchValue(pc);
         if(p instanceof Query) {
-            Object o= ((Query)p).getColumn(getKeyAsString(),null);
+            Object o= ((Query)p).getColumn(getKeyAsString(pc),null);
             if(o!=null) return o;
-            return setValue(new StructImpl());
+            return setValue(pc,new StructImpl());
         }
         
-        return pc.touch(p,getKeyAsString());
+        return pc.touch(p,getKeyAsString(pc));
     }
     
-    /**
-     * @see railo.runtime.interpreter.ref.Ref#getCollection()
-     */
-    public Object getCollection() throws PageException {
-        Object p = parent.getValue();
+    @Override
+    public Object getCollection(PageContext pc) throws PageException {
+        Object p = parent.getValue(pc);
         if(p instanceof Query) {
-            return ((Query)p).getColumn(getKeyAsString());
+            return ((Query)p).getColumn(getKeyAsString(pc));
         }
-        return pc.get(p,getKeyAsString());
+        return pc.get(p,getKeyAsString(pc));
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Set#setValue(java.lang.Object)
-     */
-    public Object setValue(Object obj) throws PageException {
-        return pc.set(parent.touchValue(),getKeyAsString(),obj);
+    @Override
+    public Object setValue(PageContext pc,Object obj) throws PageException {
+        return pc.set(parent.touchValue(pc),getKeyAsString(pc),obj);
     }
 
-	/**
-	 * @see railo.runtime.interpreter.ref.Ref#getTypeName()
-	 */
-	public String getTypeName() {
+    @Override
+    public String getTypeName() {
 		return "variable";
 	}
 
-    /**
-     * @see railo.runtime.interpreter.ref.Set#getKey()
-     */
-    public Ref getKey() throws PageException {
+    @Override
+    public Ref getKey(PageContext pc) throws PageException {
         if(key==null)return refKey;
         return new LString(key);
     }
     
-    public String getKeyAsString() throws PageException {
-        if(key==null)key=Caster.toString(refKey.getValue());
+    @Override
+    public String getKeyAsString(PageContext pc) throws PageException {
+        if(key==null)key=Caster.toString(refKey.getValue(pc));
         return key;
     }
 
-    /**
-     * @see railo.runtime.interpreter.ref.Set#getParent()
-     */
-    public Ref getParent() throws PageException {
+    @Override
+    public Ref getParent(PageContext pc) throws PageException {
         return parent;
     }
 }

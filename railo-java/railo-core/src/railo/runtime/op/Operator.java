@@ -4,17 +4,25 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import railo.commons.date.DateTimeUtil;
+import railo.runtime.Component;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
-import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.wrap.ListAsArray;
+import railo.runtime.type.wrap.MapAsStruct;
 
 /**
  * class to compare objects and primitive value types
@@ -22,6 +30,7 @@ import railo.runtime.type.util.CollectionUtil;
  * 
  */
 public final class Operator {
+	private static final Object NULL = new Object();
 
 
 	/** 
@@ -266,7 +275,7 @@ public final class Operator {
 	 * @param left 
 	 * @param right 
 	 * @return difference as int
-	 */ 
+	 */
 	public static int compare(String left, String right) { 
 		if(Decision.isNumeric(left)) {
 			if(Decision.isNumeric(right)){
@@ -279,13 +288,14 @@ public final class Operator {
 				}
 				return compare(Caster.toDoubleValue(left,Double.NaN),Caster.toDoubleValue(right,Double.NaN));
 			}
+			
+			return compare(Caster.toDoubleValue(left,Double.NaN),right);
 		}
-		else if(Decision.isBoolean(left)) {
+		if(Decision.isBoolean(left))
 			return compare(Caster.toBooleanValue(left,false)?1D:0D,right);
-		}
 //		 NICE Date compare, perhaps datetime to double
 		return left.compareToIgnoreCase(right); 
-	} 
+	}
 
     /** 
      * compares a String with a double 
@@ -296,7 +306,10 @@ public final class Operator {
     public static int compare(String left, double right) { 
     	if(Decision.isNumeric(left)) {
             if(left.length()>9) {
-            	return new BigDecimal(left).compareTo(new BigDecimal(right));
+            	try{
+            		return new BigDecimal(left).compareTo(new BigDecimal(right));
+            	}
+            	catch(Throwable t){}
             }
     		return compare(Caster.toDoubleValue(left,Double.NaN),right); 
     	}
@@ -471,9 +484,6 @@ public final class Operator {
 			return compare(left.getTime()/1000,right.getTime()/1000); 
 	}        
 
-	private static int error(boolean leftIsOk, boolean rightIsOk, Object left, Object right) throws ExpressionException { 
-		throw new ExpressionException("can't compare complex object types ("+Caster.toClassName(left)+" - "+Caster.toClassName(right)+") as simple value");
-	}
 	private static int error(boolean leftIsOk, boolean rightIsOk) throws ExpressionException { 
 		// TODO remove this method
 		throw new ExpressionException("can't compare complex object types as simple value");
@@ -497,12 +507,7 @@ public final class Operator {
 		}
 		return compare(left,right)==0;
 	}
-
-	public static boolean equals(Object left, Object right, boolean caseSensitive, boolean allowComplexValues) throws PageException {
-		if(!allowComplexValues || (Decision.isSimpleValue(left) && Decision.isSimpleValue(right)))
-			return equals(left, right, caseSensitive);
-		return left.equals(right);
-	}
+	
 	public static boolean equalsEL(Object left, Object right, boolean caseSensitive, boolean allowComplexValues) {
 		if(!allowComplexValues || (Decision.isSimpleValue(left) && Decision.isSimpleValue(right))){
 			try {
@@ -511,15 +516,117 @@ public final class Operator {
 				return false;
 			}
 		}
-		if(left instanceof Collection && right instanceof Collection)
-			return CollectionUtil.equals((Collection)left, (Collection)right);
-		
+		return equalsComplexEL(left, right, caseSensitive);
+	}
+	
+	public static boolean equalsComplexEL(Object left, Object right, boolean caseSensitive) {
+		return _equalsComplexEL(null,left, right, caseSensitive);
+	}
+	
+	public static boolean _equalsComplexEL(Set<Object> done,Object left, Object right, boolean caseSensitive) {
+		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
+			try {
+				return equals(left, right, caseSensitive);
+			} catch (PageException e) {
+				return false;
+			}
+		}
 		if(left==null) return right==null;
+		
+		if(done==null)done=new HashSet<Object>();
+		else if(done.contains(left) && done.contains(right)) return true;
+		done.add(left);
+		done.add(right);
+		
+		if(left instanceof Component && right instanceof Component)
+			return __equalsComplexEL(done,(Component)left, (Component)right,caseSensitive);
+		
+		if(left instanceof Collection && right instanceof Collection)
+			return __equalsComplexEL(done,(Collection)left, (Collection)right,caseSensitive);
+		
+		if(left instanceof List && right instanceof List)
+			return __equalsComplexEL(done,ListAsArray.toArray((List)left), ListAsArray.toArray((List)right),caseSensitive);
+		
+		if(left instanceof Map && right instanceof Map)
+			return __equalsComplexEL(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive);
+		
 		return left.equals(right);
 	}
 	
+	private static boolean __equalsComplexEL(Set<Object> done,Component left, Component right,boolean caseSensitive) {
+		if(left==null || right==null) return false;
+		if(!left.getPageSource().equals(right.getPageSource())) return false;
+		
+		if(!__equalsComplexEL(done,left.getComponentScope(),right.getComponentScope(), caseSensitive)) return false;
+		if(!__equalsComplexEL(done,(Collection)left,(Collection)right, caseSensitive)) return false;
+
+		return true;
+	}
+	
+	private static boolean __equalsComplexEL(Set<Object> done,Collection left, Collection right,boolean caseSensitive) {
+		if(left.size()!=right.size()) return false;
+		Iterator<Key> it = left.keyIterator();
+		Key k;
+		Object l,r;
+		while(it.hasNext()){
+			k=it.next();
+			r=right.get(k,NULL);
+			if(r==NULL) return false;
+			l=left.get(k,NULL);
+			if(!_equalsComplexEL(done,r, l, caseSensitive)) return false;
+		}
+		return true;
+	}
+	
+	
+	public static boolean equals(Object left, Object right, boolean caseSensitive, boolean allowComplexValues) throws PageException {
+		if(!allowComplexValues || (Decision.isSimpleValue(left) && Decision.isSimpleValue(right)))
+			return equals(left, right, caseSensitive);
+		return equalsComplex(left, right, caseSensitive);
+	}
+
+	public static boolean equalsComplex(Object left, Object right, boolean caseSensitive) throws PageException {
+		return _equalsComplex(null,left, right, caseSensitive);
+	}
 	
 
+	public static boolean _equalsComplex(Set<Object> done,Object left, Object right, boolean caseSensitive) throws PageException {
+		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
+			return equals(left, right, caseSensitive);
+		}
+		if(left==null) return right==null;
+		if(done==null)done=new HashSet<Object>();
+		else if(done.contains(left) && done.contains(right)) return true;
+		done.add(left);
+		done.add(right);
+		
+		if(left instanceof Collection && right instanceof Collection)
+			return __equalsComplex(done,(Collection)left, (Collection)right,caseSensitive);
+		
+		if(left instanceof List && right instanceof List)
+			return __equalsComplex(done,ListAsArray.toArray((List)left), ListAsArray.toArray((List)right),caseSensitive);
+		
+		if(left instanceof Map && right instanceof Map)
+			return __equalsComplex(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive);
+		
+		return left.equals(right);
+	}
+	
+	private static boolean __equalsComplex(Set<Object> done,Collection left, Collection right,boolean caseSensitive) throws PageException {
+		if(left.size()!=right.size()) return false;
+		Iterator<Key> it = left.keyIterator();
+		Key k;
+		Object l,r;
+		while(it.hasNext()){
+			k=it.next();
+			r=right.get(k,NULL);
+			if(r==NULL) return false;
+			l=left.get(k,NULL);
+			if(!_equalsComplex(done,r, l, caseSensitive)) return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * check if left is inside right (String-> ignore case)
 	 * @param left string to check

@@ -1,26 +1,19 @@
 package railo.transformer.bytecode.statement.tag;
 
-public class TagImport extends TagBase {
+import railo.transformer.bytecode.Position;
+
+public class TagImport extends TagBaseNoFinal {
 
 
 	private String path;
 
-
-	/**
-	 * Constructor of the class
-	 * @param startLine
-	 */
-	public TagImport(int startLine) {
-		super(startLine);
-	}
-	
 	/**
 	 * Constructor of the class
 	 * @param startLine
 	 * @param endLine
 	 */
-	public TagImport(int startLine, int endLine) {
-		super(startLine, endLine);
+	public TagImport(Position start,Position end) {
+		super(start, end);
 	}
 
 	/**
@@ -36,7 +29,6 @@ public class TagImport extends TagBase {
 	public void setPath(String path) {
 		this.path = path;
 	}
-
 
 
 }

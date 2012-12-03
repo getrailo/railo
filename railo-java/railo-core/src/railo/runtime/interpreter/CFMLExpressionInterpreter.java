@@ -1,11 +1,15 @@
 package railo.runtime.interpreter;
 
 import java.util.ArrayList;
+import java.util.Map;
+
+import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.lang.CFTypes;
 import railo.commons.lang.ParserString;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.ref.Ref;
@@ -55,7 +59,7 @@ import railo.runtime.interpreter.ref.var.Assign;
 import railo.runtime.interpreter.ref.var.Bind;
 import railo.runtime.interpreter.ref.var.DynAssign;
 import railo.runtime.interpreter.ref.var.Variable;
-import railo.runtime.type.Scope;
+import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.ScopeSupport;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibFunction;
@@ -152,42 +156,36 @@ public class CFMLExpressionInterpreter {
     private FunctionLib fld;
 	protected boolean allowNullConstant=false;
 	private boolean preciseMath;
-    //private Null nulls=Null.getInstance();
-    
-    
-    /**
-     * Wird aufgerufen um aus dem ￼bergebenen CFMLString einen Ausdruck auszulesen 
-     * und diese zu interpretieren.
-     * <br />
-     * Beispiel eines ￼bergebenen String:<br />
-     * <code>session.firstName</code> oder <code>trim(left('test'&var1,3))</code>
-     * <br />
-     * EBNF:<br />
-     * <code>spaces impOp;</code>
-     * 
-     * @param pc
-     * @param cfml
-     * @return
-     * @throws PageException
-     */
-    public Object interpret(PageContext pc,ParserString cfml) throws PageException { 
-    	return interpret(pc, cfml, false);
+	
+    private final static Map<String,Ref> data=new ReferenceMap(ReferenceMap.SOFT,ReferenceMap.SOFT);
+	
+
+	 
+    public Object interpret(PageContext pc,String str) throws PageException {
+    	return interpret(pc,str,false);
     }
-    public Object interpret(PageContext pc,ParserString cfml, boolean preciseMath) throws PageException {    
+    
+
+    public Object interpret(PageContext pc,String str, boolean preciseMath) throws PageException { 
+
+    	//Ref ref = data.get(str+":"+preciseMath);
+    	//if(ref!=null)return ref.getValue();
+    	
+    	this.cfml=new ParserString(str);
     	this.preciseMath = preciseMath;
-    	this.cfml = cfml;
-        this.pc=pc;
+    	this.pc=ThreadLocalPageContext.get(pc);
         if(pc!=null)fld=((ConfigImpl)pc.getConfig()).getCombinedFLDs();
         
         if(JSON_ARRAY==null)JSON_ARRAY=fld.getFunction("_jsonArray");
 		if(JSON_STRUCT==null)JSON_STRUCT=fld.getFunction("_jsonStruct");
         
         cfml.removeSpace();
-        Ref ref=assignOp();
+        Ref ref = assignOp();
         cfml.removeSpace();
         
         if(cfml.isAfterLast()) {
-            return ref.getValue();
+        	//data.put(str+":"+preciseMath,ref);
+            return ref.getValue(pc);
         }
         throw new ExpressionException("Syntax Error, invalid Expression ["+cfml.toString()+"]");
     }
@@ -206,36 +204,13 @@ public class CFMLExpressionInterpreter {
     
     protected Object interpretPart(PageContext pc,ParserString cfml) throws PageException { 
         this.cfml = cfml;
-        this.pc=pc;
+        this.pc=ThreadLocalPageContext.get(pc);
         if(pc!=null)fld=((ConfigImpl)pc.getConfig()).getCombinedFLDs();
         
         cfml.removeSpace();
-        return assignOp().getValue();
+        return assignOp().getValue(pc);
     }
-    
-    /**
-     * Wird aufgerufen um aus dem ￼bergebenen String einen Ausdruck auszulesen 
-     * und diesen zu interpretieren.
-     * <br />
-     * Beispiel eines ￼bergebenen String:<br />
-     * <code>session.firstName</code> oder <code>trim(left('test'&var1,3))</code>
-     * <br />
-     * EBNF:<br />
-     * <code>spaces impOp;</code>
-     * 
-     * @param pc
-     * @param str
-     * @return
-     * @throws PageException
-     */
-    public Object interpret(PageContext pc,String str) throws PageException {
-    	return interpret(pc,new ParserString(str));
-    }
-    
-    public Object interpret(PageContext pc,String str, boolean preciseMath) throws PageException {
-    	return interpret(pc,new ParserString(str),preciseMath);
-    }
-    
+
     /**
     * Liest einen gelableten  Funktionsparamter ein
     * <br />
@@ -294,7 +269,7 @@ public class CFMLExpressionInterpreter {
         if (cfml.forwardIfCurrent('=')) {
             cfml.removeSpace();
             if(mode==STATIC || ref instanceof Literal) {
-                ref=new DynAssign(pc,ref,assignOp());
+                ref=new DynAssign(ref,assignOp());
             }
             else {
                 ref=new Assign(ref,assignOp());
@@ -778,12 +753,12 @@ public class CFMLExpressionInterpreter {
 		if (cfml.forwardIfCurrent('=')) {
 			cfml.removeSpace();
 			Ref right = assignOp();
-			Ref res = new  Concat(pc,ref,right);
+			Ref res = new  Concat(ref,right);
 			ref=new Assign(ref,res);
 		}
 		else {	
             cfml.removeSpace();
-            ref=new Concat(pc,ref,plusMinusOp());
+            ref=new Concat(ref,plusMinusOp());
 		}
 		return ref;
 	}
@@ -932,7 +907,7 @@ public class CFMLExpressionInterpreter {
 				return new Assign(expr,res);
 			}
         	cfml.removeSpace();
-	        return new Casting(pc,"numeric",CFTypes.TYPE_NUMERIC,clip());
+	        return new Casting("numeric",CFTypes.TYPE_NUMERIC,clip());
         	
         }
         return clip();
@@ -996,7 +971,22 @@ public class CFMLExpressionInterpreter {
 				return new LString("");
             
         // else Error
-			throw new ExpressionException("Syntax Error, Invalid Construct","at position "+cfml.getPos()+" in ["+cfml.toString()+"]");  
+			String str=cfml.toString();
+			int pos=cfml.getPos();
+			if(str.length()>100) {
+				// Failure is in the beginning
+				if(pos<=10) {
+					str=str.substring(0,20)+" ...";
+				}
+				// Failure is in the end
+				else if((str.length()-pos)<=10) {
+					str="... "+str.substring(str.length()-20,str.length());
+				}
+				else {
+					str="... "+str.substring(pos-10,pos+10)+" ...";
+				}
+			}
+			throw new ExpressionException("Syntax Error, Invalid Construct","at position "+(pos+1)+" in ["+str+"]");  
     }
     
     
@@ -1009,7 +999,7 @@ public class CFMLExpressionInterpreter {
 		//if (!cfml.forwardIfCurrent(end))
 		//	throw new ExpressionException("Invalid Syntax Closing ["+end+"] not found");
 		
-		return new BIFCall(pc,flf,args);
+		return new BIFCall(flf,args);
 	}
     
     /**
@@ -1067,7 +1057,7 @@ public class CFMLExpressionInterpreter {
         mode=STATIC;
         if(value!=null) {
             if(str.isEmpty()) return value;
-            return new Concat(pc,value,str);
+            return new Concat(value,str);
         }
         return str;
     }
@@ -1226,12 +1216,12 @@ public class CFMLExpressionInterpreter {
                 name = identifier(true);
                 if(name==null) throw new ExpressionException("Invalid identifier");
                 cfml.removeSpace();
-                ref=new Variable(pc,ref,name);
+                ref=new Variable(ref,name);
             }
             // []
             else if (cfml.forwardIfCurrent('[')) {
             	cfml.removeSpace();
-                ref=new Variable(pc,ref,assignOp());
+                ref=new Variable(ref,assignOp());
                 cfml.removeSpace();
                 if (!cfml.forwardIfCurrent(']'))
                     throw new ExpressionException("Invalid Syntax Closing []] not found");
@@ -1246,7 +1236,7 @@ public class CFMLExpressionInterpreter {
             if (cfml.isCurrent('(')) {
                 if(!(ref instanceof Set)) throw new ExpressionException("invalid syntax "+ref.getTypeName()+" can't called as function");
                 Set set=(Set) ref;
-                ref=new UDFCall(pc,set.getParent(),set.getKey(),functionArg(name,false, null,')'));
+                ref=new UDFCall(set.getParent(pc),set.getKey(pc),functionArg(name,false, null,')'));
             }
         }
         if(ref instanceof railo.runtime.interpreter.ref.var.Scope) { 
@@ -1275,10 +1265,10 @@ public class CFMLExpressionInterpreter {
             FunctionLibFunction function = fld.getFunction(name);
             Ref[] arguments = functionArg(name,true, function,')');
         	//print.out(name+":"+(function!=null));
-            if(function!=null) return new BIFCall(pc,function,arguments);
+            if(function!=null) return new BIFCall(function,arguments);
 
-            Ref ref = new railo.runtime.interpreter.ref.var.Scope(pc,Scope.SCOPE_UNDEFINED);
-            return new UDFCall(pc,ref,name,arguments);
+            Ref ref = new railo.runtime.interpreter.ref.var.Scope(Scope.SCOPE_UNDEFINED);
+            return new UDFCall(ref,name,arguments);
         }
         //check scope
         return scope(name);
@@ -1327,7 +1317,7 @@ public class CFMLExpressionInterpreter {
             	args[i]=arguments[i];
             }
             args[args.length-1]=refName;
-            BIFCall bif = new BIFCall(pc,function,args);
+            BIFCall bif = new BIFCall(function,args);
         	cfml.removeSpace();
         	return bif;
         	
@@ -1357,14 +1347,14 @@ public class CFMLExpressionInterpreter {
             String name=identifier(false);
             if(name!=null){
                 cfml.removeSpace();
-                return new Variable(pc,new railo.runtime.interpreter.ref.var.Scope(pc,ScopeSupport.SCOPE_VAR),name);
+                return new Variable(new railo.runtime.interpreter.ref.var.Scope(ScopeSupport.SCOPE_VAR),name);
             }
         }
         int scope = VariableInterpreter.scopeString2Int(idStr);
         if(scope==Scope.SCOPE_UNDEFINED) {
-            return new Variable(pc,new railo.runtime.interpreter.ref.var.Scope(pc,Scope.SCOPE_UNDEFINED),idStr);
+            return new Variable(new railo.runtime.interpreter.ref.var.Scope(Scope.SCOPE_UNDEFINED),idStr);
         }
-        return new railo.runtime.interpreter.ref.var.Scope(pc,scope);
+        return new railo.runtime.interpreter.ref.var.Scope(scope);
         
     }
     
@@ -1411,20 +1401,20 @@ public class CFMLExpressionInterpreter {
         return sb.toString();//cfml.substringLower(start,cfml.getPos()-start);
     }
 
-    /**
+    /* *
     * Transfomiert ein Collection Element das in eckigen Klammern aufgerufen wird. 
     * <br />
     * EBNF:<br />
     * <code>"[" impOp "]"</code>
     * @return CFXD Element
     * @throws PageException 
-    */
+    * /
     private Ref structElement() throws PageException {
         cfml.removeSpace();
         Ref ref = new Casting(pc,"string",CFTypes.TYPE_STRING,assignOp());
         cfml.removeSpace();
         return ref;
-    }
+    }*/
 
     /**
     * Liest die Argumente eines Funktonsaufruf ein und pr￼ft ob die Funktion 
@@ -1487,13 +1477,13 @@ public class CFMLExpressionInterpreter {
             if (checkLibrary && !isDynamic) {
                 // current attribues from library
                 FunctionLibFunctionArg funcLibAtt = (FunctionLibFunctionArg) arrFuncLibAtt.get(count);
-                short type=CFTypes.toShort(funcLibAtt.getType(),CFTypes.TYPE_UNKNOW);
+                short type=CFTypes.toShort(funcLibAtt.getTypeAsString(),CFTypes.TYPE_UNKNOW);
                 if(type==CFTypes.TYPE_VARIABLE_STRING) {
                     arr.add(functionArgDeclarationVarString());
                 }
                 else {
                 	ref = functionArgDeclaration();
-                	arr.add(new Casting(pc,funcLibAtt.getTypeAsString(),type,ref));
+                	arr.add(new Casting(funcLibAtt.getTypeAsString(),type,ref));
                 }
             } 
             else {

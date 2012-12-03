@@ -6,6 +6,7 @@ import railo.runtime.PageContext;
 
 public interface ExecutionLog {
 	public void init(PageContext pc,Map<String,String> arguments);
-	public void start();
-	public void endline(int line);
+	public void release();
+	public void start(int pos,String id);
+	public void end(int pos,String id);
 }

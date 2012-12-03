@@ -59,7 +59,7 @@ public class PieSectionLegendLabelGeneratorImpl implements
 		String item;
 		while(list.hasNext()) {
 			item=list.next();
-			rest.append(list.delimeter());
+			rest.append(list.delimiter());
 			rest.append(item);
 		}
 		
@@ -77,7 +77,7 @@ public class PieSectionLegendLabelGeneratorImpl implements
 			}
 			else {
 				//item=words.next();
-				if(line.length()>0)line.append(words.delimeter()==0?' ':words.delimeter());
+				if(line.length()>0)line.append(words.delimiter()==0?' ':words.delimiter());
 				line.append(item);
 			}
 		}

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import railo.runtime.debug.Debugger;
+import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Struct;
 
@@ -69,7 +70,18 @@ public class TOStruct extends TOCollection implements Struct {
 
 	public Collection duplicate(boolean deepCopy) {
 		log(null);
-		return new TOStruct(debugger,(Struct)sct.duplicate(deepCopy), type, category, text);
+		return new TOStruct(debugger,(Struct)Duplicator.duplicate(sct,deepCopy), type, category, text);
 	}
+
+	@Override
+	public long sizeOf() {
+		log(null);
+		return sct.sizeOf();
+	}
+
+	@Override
+	public java.util.Iterator<String> getIterator() {
+    	return keysAsStringIterator();
+    } 
 
 }
