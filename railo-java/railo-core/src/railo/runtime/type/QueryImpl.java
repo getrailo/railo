@@ -2475,6 +2475,16 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new SQLException("method is not implemented");
 	}
 
+	// used only with java 7, do not set @Override
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnIndex, type);
+	}
+
+	// used only with java 7, do not set @Override
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnLabel, type);
+	}
+
 	/**
 	 * @see java.sql.ResultSet#getRef(int)
 	 */

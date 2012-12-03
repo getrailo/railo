@@ -3,6 +3,7 @@ package railo.runtime.cfx;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -1258,10 +1259,25 @@ public class QueryWrap implements Query {
 	}
 	
 	
+
+
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+    	try {
+    		Method m = rst.getClass().getMethod("getObject", new Class[]{int.class,Class.class});
+    		return (T) m.invoke(rst, new Object[]{columnIndex,type});
+		} 
+    	catch (Throwable t) {}
+    	throw notSupported();
+	}
 	
-	
-	
-	
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+    	try {
+    		Method m = rst.getClass().getMethod("getObject", new Class[]{String.class,Class.class});
+    		return (T) m.invoke(rst, new Object[]{columnLabel,type});
+		} 
+    	catch (Throwable t) {}
+    	throw notSupported();
+	}
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
