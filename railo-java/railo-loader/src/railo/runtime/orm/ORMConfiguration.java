@@ -84,7 +84,7 @@ public interface ORMConfiguration {
 	/**
 	 * @return the cacheConfig
 	 */
-	public String getCacheConfig();
+	public Resource getCacheConfig();
 
 	/**
 	 * @return the cacheProvider

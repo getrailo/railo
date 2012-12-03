@@ -68,7 +68,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	private boolean secondaryCacheEnabled;
 	private Resource sqlScript;
 	private boolean useDBForMapping=true;
-	private String cacheConfig;
+	private Resource cacheConfig;
 	private String cacheProvider;
 	private Resource ormConfig;
 	private String eventHandler;
@@ -187,7 +187,11 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		// cacheconfig
 		obj = settings.get(CACHE_CONFIG,null);
 		if(!StringUtil.isEmpty(obj)){
-			c.cacheConfig=(String)obj;
+			try {
+				c.cacheConfig=toRes(config, obj, true);
+			} catch (ExpressionException e) {
+				//print.printST(e);
+			}
 		}
 		
 		// cacheprovider
@@ -335,7 +339,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		+":"+dbCreate+":"+dialect+":"+eventHandling+":"+namingStrategy+":"+eventHandler+":"+flushAtRequestEnd+":"+logSQL+":"+autoManageSession+":"+skipCFCWithError+":"+saveMapping+":"+schema+":"+secondaryCacheEnabled+":"+
 		useDBForMapping+":"+cacheProvider
 		
-		+":"+toStr(cfcLocations)+":"+toStr(sqlScript)+":"+cacheConfig+":"+toStr(ormConfig)
+		+":"+toStr(cfcLocations)+":"+toStr(sqlScript)+":"+toStr(cacheConfig)+":"+toStr(ormConfig)
 		;
 		
 		try {
@@ -474,7 +478,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 	/**
 	 * @return the cacheConfig
 	 */
-	public String getCacheConfig() {
+	public Resource getCacheConfig() {
 		return cacheConfig;
 	}
 
@@ -526,7 +530,7 @@ public class ORMConfigurationImpl implements ORMConfiguration {
 		sct.setEL(SECONDARY_CACHE_ENABLED,secondaryCacheEnabled());
 		sct.setEL(SQL_SCRIPT,StringUtil.toStringEmptyIfNull(getSqlScript()));
 		sct.setEL(USE_DB_FOR_MAPPING,useDBForMapping());
-		sct.setEL(CACHE_CONFIG,getCacheConfig());
+		sct.setEL(CACHE_CONFIG,getAbsolutePath(getCacheConfig()));
 		sct.setEL(CACHE_PROVIDER,StringUtil.emptyIfNull(getCacheProvider()));
 		sct.setEL(ORM_CONFIG,getAbsolutePath(getOrmConfig()));
 		

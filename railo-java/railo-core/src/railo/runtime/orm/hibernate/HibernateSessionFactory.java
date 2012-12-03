@@ -91,13 +91,13 @@ public class HibernateSessionFactory {
 		// Cache Provider
 		String cacheProvider = ormConf.getCacheProvider();
 		if(StringUtil.isEmpty(cacheProvider) || "EHCache".equalsIgnoreCase(cacheProvider)) 			
-																cacheProvider="net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory";
+																cacheProvider="org.hibernate.cache.EhCacheProvider";
 		else if("JBossCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.TreeCacheProvider";
 		else if("HashTable".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.HashtableCacheProvider";
 		else if("SwarmCache".equalsIgnoreCase(cacheProvider)) 	cacheProvider="org.hibernate.cache.SwarmCacheProvider";
 		else if("OSCache".equalsIgnoreCase(cacheProvider)) 		cacheProvider="org.hibernate.cache.OSCacheProvider";
 	
-		String cacheConfig = ormConf.getCacheConfig();
+		Resource cacheConfig = ormConf.getCacheConfig();
 		Configuration configuration = new Configuration();
 		
 		// ormConfig
@@ -156,16 +156,9 @@ public class HibernateSessionFactory {
 			configuration.setProperty("hibernate.default_schema",ormConf.getSchema());
 		
 		if(ormConf.secondaryCacheEnabled()){
-			if(cacheConfig!=null) {
-				//http://forum.springsource.org/showthread.php?80048-spring-hibernate-ecache-setup-trouble
-				configuration.setProperty("net.sf.ehcache.configurationResourceName",cacheConfig);
-				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig);
-			}
-			if(cacheProvider.equals("net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory")) {
-				configuration.setProperty("hibernate.cache.region.factory_class", cacheProvider);
-			} else {
-				configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
-			}
+			if(cacheConfig!=null && cacheConfig.isFile()) 
+				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
+			configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
 	    	
 	    	configuration.setProperty("hibernate.cache.use_query_cache", "true");
 		}
