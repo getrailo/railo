@@ -179,8 +179,6 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object other) {//call++;
-		
-		
 		if(other instanceof KeyImpl)	{
 			/*if(intern && ((KeyImpl)other).intern) {//eq++;
 				return lcKey==(((KeyImpl)other).lcKey);
@@ -197,12 +195,18 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return false;
 	}
 
+
 	/**
 	 * @see railo.runtime.type.Collection.Key#equalsIgnoreCase(railo.runtime.type.Collection.Key)
 	 */
-	public boolean equalsIgnoreCase(Key key) {
-		return equals(key);
+	public boolean equalsIgnoreCase(Key other) {
+		if(other instanceof KeyImpl)	{
+			return lcKey.equals((((KeyImpl)other).lcKey));
+		}
+		return lcKey.equalsIgnoreCase(other.getLowerString());
 	}
+	
+	
 
 	/**
 	 * @see java.lang.Object#hashCode()
