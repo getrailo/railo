@@ -123,7 +123,7 @@ public class Variable extends ExpressionBase implements Invoker {
     
     
 	int scope=Scope.SCOPE_UNDEFINED;
-	List members=new ArrayList();
+	List<Member> members=new ArrayList<Member>();
 	int countDM=0;
 	int countFM=0;
 	private boolean ignoredFirstMember;
@@ -184,11 +184,11 @@ public class Variable extends ExpressionBase implements Invoker {
 			adapter.loadArg(0);
     	}
     	
-		rtn=_writeOutFirst(bc, ((Member)members.get(0)),mode,count==1,doOnlyScope);
+		rtn=_writeOutFirst(bc, (members.get(0)),mode,count==1,doOnlyScope);
 		
 		// pc.get(
 		for(int i=doOnlyScope?0:1;i<count;i++) {
-			Member member=((Member)members.get(i));
+			Member member=(members.get(i));
 			boolean last=(i+1)==count;
 			
 			// Data Member
@@ -452,7 +452,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	/**
 	 * @return the members
 	 */
-	public List getMembers() {
+	public List<Member> getMembers() {
 		return members;
 	}
 
@@ -461,7 +461,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	 */
 	public Member getFirstMember() {
 		if(members.isEmpty()) return null;
-		return (Member) members.get(0);
+		return members.get(0);
 	}
 
 	/**
@@ -469,7 +469,7 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 	 */
 	public Member getLastMember() {
 		if(members.isEmpty()) return null;
-		return (Member) members.get(members.size()-1);
+		return members.get(members.size()-1);
 	}
 
 	public void ignoredFirstMember(boolean b) {
