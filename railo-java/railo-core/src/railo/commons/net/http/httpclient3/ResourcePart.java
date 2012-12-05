@@ -37,9 +37,7 @@ public class ResourcePart extends FilePart {
 		return resource;
 	}
 
-	/**
-	 * @see org.apache.commons.httpclient.methods.multipart.PartBase#getCharSet()
-	 */
+	@Override
 	public String getCharSet() {
 		String cs = super.getCharSet();
 		if(StringUtil.isEmpty(cs)) return null;
@@ -47,12 +45,7 @@ public class ResourcePart extends FilePart {
 	}
 	
 
-    /**
-     * Write the disposition header to the output stream
-     * @param out The output stream
-     * @throws IOException If an IO problem occurs
-     * @see Part#sendDispositionHeader(OutputStream)
-     */
+    @Override
 	protected void sendDispositionHeader(OutputStream out)  throws IOException {
 		sendDispositionHeader(getName(),getSource().getFileName(),headerCharset,out);
 	}

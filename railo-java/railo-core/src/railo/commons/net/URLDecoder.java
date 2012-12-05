@@ -22,28 +22,6 @@ public class URLDecoder {
 		}
 	}
 
-    /**
-     * Decodes a <code>application/x-www-form-urlencoded</code> string using a specific 
-     * encoding scheme.
-     * The supplied encoding is used to determine
-     * what characters are represented by any consecutive sequences of the
-     * form "<code>%<i>xy</i></code>".
-     * <p>
-     * <em><strong>Note:</strong> The <a href=
-     * "http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
-     * World Wide Web Consortium Recommendation</a> states that
-     * UTF-8 should be used. Not doing so may introduce
-     * incompatibilites.</em>
-     *
-     * @param s the <code>String</code> to decode
-     * @param enc   The name of a supported 
-     *    <a href="../lang/package-summary.html#charenc">character
-     *    encoding</a>. 
-     * @param force if set to false Railo only encodes when there is at least one  "%<2-digit-hex-value>" in string, means string with only + inside are not encoded
-     * @return the newly decoded <code>String</code>
-     * @throws UnsupportedEncodingException 
-     * @see URLEncoder#encode(java.lang.String, java.lang.String)
-     */
     public static String decode(String s, String enc, boolean force) throws UnsupportedEncodingException {
     	if(!force && !ReqRspUtil.needDecoding(s)) return s;
     	//if(true) return java.net.URLDecoder.decode(s, enc);

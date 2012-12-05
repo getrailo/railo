@@ -37,23 +37,17 @@ public class ResourceBody extends AbstractContentBody {
     	return (fileName == null) ? "noname" : fileName;
     }
 
-	/**
-	 * @see org.apache.http.entity.mime.content.ContentBody#writeTo(java.io.OutputStream)
-	 */
+	@Override
 	public void writeTo(OutputStream os) throws IOException {
 		IOUtil.copy(res, os, false);
 	}
 
-	/**
-	 * @see org.apache.http.entity.mime.content.ContentDescriptor#getCharset()
-	 */
+	@Override
 	public String getCharset() {
 		return charset;
 	}
 
-	/**
-	 * @see org.apache.http.entity.mime.content.ContentDescriptor#getContentLength()
-	 */
+	@Override
 	public long getContentLength() {
 		if (this.res != null) {
             return this.res.length();
@@ -61,9 +55,7 @@ public class ResourceBody extends AbstractContentBody {
         return 0;
 	}
 
-	/**
-	 * @see org.apache.http.entity.mime.content.ContentDescriptor#getTransferEncoding()
-	 */
+	@Override
 	public String getTransferEncoding() {
 		return MIME.ENC_BINARY;
 	}

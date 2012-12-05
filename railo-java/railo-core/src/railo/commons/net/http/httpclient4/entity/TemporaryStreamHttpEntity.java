@@ -21,37 +21,27 @@ public class TemporaryStreamHttpEntity extends AbstractHttpEntity implements Ent
 		this.ct=contentType;
 	}
 	
-	/**
-	 * @see org.apache.http.HttpEntity#getContentLength()
-	 */
+	@Override
 	public long getContentLength() {
 		return ts.length();
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#isRepeatable()
-	 */
+	@Override
 	public boolean isRepeatable() {
 		return false;
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#writeTo(java.io.OutputStream)
-	 */
+	@Override
 	public void writeTo(OutputStream os) throws IOException {
 		IOUtil.copy(ts.getInputStream(), os,true,false);
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#getContent()
-	 */
+	@Override
 	public InputStream getContent() throws IOException, IllegalStateException {
 		return ts.getInputStream();
 	}
 
-	/**
-	 * @see org.apache.http.HttpEntity#isStreaming()
-	 */
+	@Override
 	public boolean isStreaming() {
 		return false;
 	}

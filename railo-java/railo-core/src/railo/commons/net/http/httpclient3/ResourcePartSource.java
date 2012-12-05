@@ -52,11 +52,7 @@ public final class ResourcePartSource implements PartSource {
         }
     }
     
-    /**
-     * Return the length of the file
-     * @return the length of the file.
-     * @see PartSource#getLength()
-     */
+    @Override
     public long getLength() {
         if (this.res != null) {
             return this.res.length();
@@ -64,21 +60,12 @@ public final class ResourcePartSource implements PartSource {
         return 0;
     }
 
-    /**
-     * Return the current filename
-     * @return the filename.
-     * @see PartSource#getFileName()
-     */
+    @Override
     public String getFileName() {
     	return (fileName == null) ? "noname" : fileName;
     }
 
-    /**
-     * Return a new {@link FileInputStream} for the current filename.
-     * @return the new input stream.
-     * @throws IOException If an IO problem occurs.
-     * @see PartSource#createInputStream()
-     */
+    @Override
     public InputStream createInputStream() throws IOException {
     	return res.getInputStream();
     }

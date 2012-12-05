@@ -219,7 +219,6 @@ public final class PCLBlock extends ClassLoader implements Sizeable  {
         return null;
     }
 
-    @Override
     public boolean hasClass(String className) {
         return hasResource(className.replace('.','/').concat(".class"));
     }
@@ -229,7 +228,6 @@ public final class PCLBlock extends ClassLoader implements Sizeable  {
         return findLoadedClass(className)!=null;
     }
 
-    @Override
     public boolean hasResource(String name) {
         return _getResource(name)!=null;
     }

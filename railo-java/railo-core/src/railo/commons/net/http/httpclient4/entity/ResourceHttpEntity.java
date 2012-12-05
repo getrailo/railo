@@ -24,37 +24,27 @@ public class ResourceHttpEntity extends AbstractHttpEntity implements Entity4 {
         strContentType = contentType;
     }
    
-    /**
-     * @see org.apache.http.HttpEntity#getContentLength()
-     */
+    @Override
     public long getContentLength() {
         return this.res.length();
     }
 
-    /**
-     * @see org.apache.http.HttpEntity#isRepeatable()
-     */
+    @Override
     public boolean isRepeatable() {
         return true;
     }
     
-    /**
-     * @see org.apache.http.HttpEntity#getContent()
-     */
+    @Override
     public InputStream getContent() throws IOException {
     	return res.getInputStream();
     }
 
-    /**
-     * @see org.apache.http.HttpEntity#writeTo(java.io.OutputStream)
-     */
+    @Override
     public void writeTo(final OutputStream out) throws IOException {
        IOUtil.copy(res.getInputStream(), out,true,false);
     }
 
-	/**
-	 * @see org.apache.http.HttpEntity#isStreaming()
-	 */
+	@Override
 	public boolean isStreaming() {
 		return false;
 	}
