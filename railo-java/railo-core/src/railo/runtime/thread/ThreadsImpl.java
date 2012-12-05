@@ -19,6 +19,7 @@ import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.tag.Http3;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -121,7 +122,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 	}
 	
 
-	private Object getMeta(Key key) {
+	private Object getMeta(Key key, Object defaultValue) {
 		if(KEY_ELAPSEDTIME.equalsIgnoreCase(key)) return new Double(System.currentTimeMillis()-ct.getStartTime());
 		if(KeyConstants._NAME.equalsIgnoreCase(key)) return ct.getTagName();
 		if(KEY_OUTPUT.equalsIgnoreCase(key)) return getOutput();
@@ -130,7 +131,7 @@ public class ThreadsImpl extends StructSupport implements railo.runtime.type.sco
 		if(KEY_STATUS.equalsIgnoreCase(key)) return getState();
 		if(KEY_ERROR.equalsIgnoreCase(key)) return ct.catchBlock;
 		if(KEY_STACKTRACE.equalsIgnoreCase(key)) return getStackTrace();
-		return null;
+		return defaultValue;
 	}
 
 	private String getStackTrace() {
@@ -191,8 +192,8 @@ The current status of the thread; one of the following values:
 	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Key key, Object defaultValue) {
-		Object meta = getMeta(key);
-		if(meta!=null) return meta;
+		Object meta = getMeta(key,Null.NULL);
+		if(meta!=Null.NULL) return meta;
 		return ct.content.get(key,defaultValue);
 	}
 
@@ -200,8 +201,8 @@ The current status of the thread; one of the following values:
 	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key)
 	 */
 	public Object get(Key key) throws PageException {
-		Object meta = getMeta(key);
-		if(meta!=null) return meta;
+		Object meta = getMeta(key,Null.NULL);
+		if(meta!=Null.NULL) return meta;
 		return ct.content.get(key);
 	}
 
@@ -235,8 +236,8 @@ The current status of the thread; one of the following values:
 	 */
 	public Object remove(Key key) throws PageException {
 		if(isReadonly())throw errorOutside();
-		Object meta = getMeta(key);
-		if(meta!=null) throw errorMeta(key);
+		Object meta = getMeta(key,Null.NULL);
+		if(meta!=Null.NULL) throw errorMeta(key);
 		return ct.content.remove(key);
 	}
 
@@ -258,8 +259,8 @@ The current status of the thread; one of the following values:
 		
 		
 		if(isReadonly())throw errorOutside();
-		Object meta = getMeta(key);
-		if(meta!=null) throw errorMeta(key);
+		Object meta = getMeta(key,Null.NULL);
+		if(meta!=Null.NULL) throw errorMeta(key);
 		return ct.content.set(key, value);
 	}
 
@@ -268,8 +269,8 @@ The current status of the thread; one of the following values:
 	 */
 	public Object setEL(Key key, Object value) {
 		if(isReadonly()) return null;
-		Object meta = getMeta(key);
-		if(meta!=null) return null;
+		Object meta = getMeta(key,Null.NULL);
+		if(meta!=Null.NULL) return null;
 		return ct.content.setEL(key, value);
 	}
 
@@ -426,5 +427,4 @@ The current status of the thread; one of the following values:
 	private ApplicationException errorMeta(Key key) {
 		return new ApplicationException("the metadata "+key.getString()+" of the thread scope are readonly");
 	}
-
 }

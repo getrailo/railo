@@ -166,7 +166,7 @@ public abstract class FileStreamWrapper extends StructSupport implements Struct 
 	 * @see railo.runtime.type.Collection#keys()
 	 */
 	public Key[] keys() {
-		return info.keys();
+		return info().keys();
 	}
 
 	public Object remove(Key key) throws PageException {

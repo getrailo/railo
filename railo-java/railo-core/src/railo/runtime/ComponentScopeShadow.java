@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import railo.commons.util.mod.HashMapPro;
+import railo.commons.util.mod.MapPro;
 import railo.runtime.component.Member;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -13,6 +15,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -32,7 +35,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 
 	private final ComponentImpl component;
 	private static final int access=Component.ACCESS_PRIVATE;
-	private final Map<Key,Object> shadow;
+	private final MapPro<Key,Object> shadow;
 
 
 	/**
@@ -40,7 +43,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @param component
 	 * @param shadow
 	 */
-	public ComponentScopeShadow(ComponentImpl component, Map<Key,Object> shadow) {
+	public ComponentScopeShadow(ComponentImpl component, MapPro<Key,Object> shadow) {
         this.component=component;
         this.shadow=shadow;
         
@@ -53,7 +56,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 */
 	public ComponentScopeShadow(ComponentImpl component, ComponentScopeShadow scope,boolean cloneShadow) {
         this.component=component;
-        this.shadow=cloneShadow?Duplicator.duplicateMap(scope.shadow,new HashMap<Key,Object>(), false):scope.shadow;
+        this.shadow=cloneShadow?(MapPro)Duplicator.duplicateMap(scope.shadow,new HashMapPro<Key,Object>(), false):scope.shadow;
 	}
 
 
@@ -118,8 +121,8 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
 	 */
 	public Object get(Key key) throws PageException {
-		Object o = get(key,null);
-		if(o!=null) return o;
+		Object o = get(key,Null.NULL);
+		if(o!=Null.NULL) return o;
         throw new ExpressionException("Component ["+component.getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
 	
@@ -132,9 +135,12 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		}
 		if(key.equalsIgnoreCase(KeyConstants._this)) return component;
 		
+		return shadow.g(key,defaultValue); // NULL Support
+		/* NULL old behavior
 		Object o=shadow.get(key);
 		if(o!=null) return o;
 		return defaultValue;
+		*/
 	}
 
 	@Override
@@ -177,10 +183,11 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Object remove(Collection.Key key) throws PageException {
 		if(key.equalsIgnoreCase(KeyConstants._this) || key.equalsIgnoreCase(KeyConstants._super))
 			throw new ExpressionException("key ["+key.getString()+"] is part of the component and can't be removed");
-		
+		return shadow.r(key); // NULL Support
+		/* Null old behavior
 		Object o=shadow.remove(key);
 		if(o!=null) return o;
-		throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exist");
+		throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exist");*/
 	}
 
 
@@ -416,7 +423,7 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		return get(key);
 	}
 
-	public Map<Key,Object> getShadow() {
+	public MapPro<Key,Object> getShadow() {
 		return shadow;
 	}
 

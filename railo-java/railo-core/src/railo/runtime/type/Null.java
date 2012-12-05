@@ -14,27 +14,21 @@ import railo.runtime.type.dt.DateTime;
  * Custom Null Type
  */
 public final class Null implements Castable,Dumpable {
-    private static final Null nulls=new Null();
+    public static final Null NULL=new Null();
     private Null() {}
-    /**
-     * @return returns custom null Type
-     */
-    public static Null getInstance() {
-        return nulls;
-    }
-
+    
     /**
      * @see railo.runtime.op.Castable#castToString()
      */
     public String castToString() throws ExpressionException {
-        throw new ExpressionException("can't convert null to a String");
+        return "";
     }
 
 	/**
 	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
 	 */
 	public String castToString(String defaultValue) {
-		return defaultValue;
+		return "";
 	}
 	
     /**
@@ -93,7 +87,8 @@ public final class Null implements Castable,Dumpable {
         return null;
     }
 	public int compareTo(String str) throws PageException {
-        throw new ExpressionException("can't compare null with a string value");
+		return "".compareTo(str);
+        //throw new ExpressionException("can't compare null with a string value");
 	}
 	public int compareTo(boolean b) throws PageException {
         throw new ExpressionException("can't compare null with a boolean value");

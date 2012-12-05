@@ -9,6 +9,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Null;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -69,17 +70,17 @@ public final class CallerImpl extends StructSupport implements Caller  {
         Object o;
         
         if(checkArgs) {
-            o=localScope.get(key,null);
-            if(o!=null) return o;
-            o=argumentsScope.get(key,null);
-            if(o!=null) return o;
+            o=localScope.get(key,Null.NULL);
+            if(o!=Null.NULL) return o;
+            o=argumentsScope.get(key,Null.NULL);
+            if(o!=Null.NULL) return o;
         }
-        o=variablesScope.get(key,null);
-        if(o!=null) return o;
+        o=variablesScope.get(key,Null.NULL);
+        if(o!=Null.NULL) return o;
         
         // get from cascaded scopes
-        o=pc.undefinedScope().getCascading(key);
-        if(o!=null) return o;
+        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key,Null.NULL);
+        if(o!=Null.NULL) return o;
         
         /*
         // get scopes
@@ -160,17 +161,17 @@ public final class CallerImpl extends StructSupport implements Caller  {
     	
     	Object o;
         if(checkArgs) {
-            o=localScope.get(key,null);
-            if(o!=null) return o;
-            o=argumentsScope.get(key,null);
-            if(o!=null) return o;
+            o=localScope.get(key,Null.NULL);
+            if(o!=Null.NULL) return o;
+            o=argumentsScope.get(key,Null.NULL);
+            if(o!=Null.NULL) return o;
         }
-        o=variablesScope.get(key,null);
-        if(o!=null) return o;
+        o=variablesScope.get(key,Null.NULL);
+        if(o!=Null.NULL) return o;
         
         
         // get from cascaded scopes
-        o=pc.undefinedScope().getCascading(key);
+        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key);
         if(o!=null) return o;
         
         return defaultValue;

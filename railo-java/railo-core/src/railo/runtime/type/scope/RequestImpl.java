@@ -16,6 +16,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.it.EntryIterator;
@@ -138,8 +139,8 @@ public final class RequestImpl extends StructSupport implements Request {
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Key key) throws PageException {
-		Object value = removeEL(key);
-		if(value!=null)return value;
+		Object value = remove(key,Null.NULL);
+		if(value!=Null.NULL)return value;
 		throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 	}
 
@@ -156,14 +157,18 @@ public final class RequestImpl extends StructSupport implements Request {
 	}
 
 	public Object get(Key key) throws PageException {
-		Object value = get(key,null);
-		if(value==null) throw invalidKey(this,key);
+		Object value = get(key,Null.NULL);
+		if(value==Null.NULL) throw invalidKey(this,key);
 		return value;
 	}
 	
 
 
 	public Object removeEL(Key key) {
+		return remove(key,null);
+	}
+
+	private Object remove(Key key, Object defaultValue) {
 		synchronized (_req) {
 			Object value = _req.getAttribute(key.getLowerString()); 
 			if(value!=null) {
@@ -171,6 +176,7 @@ public final class RequestImpl extends StructSupport implements Request {
 				return value;
 			}
 			
+			value=defaultValue;
 			Enumeration<String> names = _req.getAttributeNames();
 			String k;
 			while(names.hasMoreElements()){
@@ -181,10 +187,10 @@ public final class RequestImpl extends StructSupport implements Request {
 					return value;
 				}
 			}
-			return value;
+			return defaultValue;
 		}
 	}
-
+	
 	/**
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
@@ -239,5 +245,4 @@ public final class RequestImpl extends StructSupport implements Request {
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return ScopeSupport.toDumpData(pageContext, maxlevel, dp, this, getTypeAsString());
 	}
-
 }

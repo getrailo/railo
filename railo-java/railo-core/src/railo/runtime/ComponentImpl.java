@@ -26,6 +26,8 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
+import railo.commons.util.mod.HashMapPro;
+import railo.commons.util.mod.MapPro;
 import railo.runtime.component.ComponentLoader;
 import railo.runtime.component.DataMember;
 import railo.runtime.component.InterfaceCollection;
@@ -58,6 +60,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
+import railo.runtime.type.Null;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -229,7 +232,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    		
 	    		if(useShadow) {
 	    			ComponentScopeShadow css = (ComponentScopeShadow)scope;
-	    			trg.scope=new ComponentScopeShadow(trg,duplicateDataMember(trg,css.getShadow(),new HashMap(),deepCopy));
+	    			trg.scope=new ComponentScopeShadow(trg,(MapPro)duplicateDataMember(trg,css.getShadow(),new HashMapPro(),deepCopy));
 	    		}
 	    	}
 	    	
@@ -373,7 +376,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    	this.dataMemberDefaultAccess=pageContext.getConfig().getComponentDataMemberDefaultAccess();
 	    	// TODO get per CFC setting this._triggerDataMember=pageContext.getConfig().getTriggerComponentDataMember();
 		    _udfs=new HashMap<Key,UDF>();
-		    _data=new HashMap<Key,Member>();
+		    _data=new HashMapPro<Key,Member>();
 	    }
 	    
 	    // implements
@@ -383,7 +386,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	    
 	    // scope
 	    if(useShadow=pageContext.getConfig().useComponentShadow()) {
-	        if(base==null) scope=new ComponentScopeShadow(this,new HashMap<Key,Object>());
+	        if(base==null) scope=new ComponentScopeShadow(this,new HashMapPro<Key,Object>());
 		    else scope=new ComponentScopeShadow(this,(ComponentScopeShadow)base.scope,false);
 	    }
 	    else {
@@ -1809,7 +1812,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     public boolean contains(PageContext pc,String name) {
-       	return get(getAccess(pc),name,null)!=null;
+       	return get(getAccess(pc),name,Null.NULL)!=Null.NULL;
     }
 
 	/**
@@ -1818,7 +1821,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	 * @return
 	 */
 	public boolean contains(PageContext pc,Key key) {
-	   	return get(getAccess(pc),key,null)!=null;
+	   	return get(getAccess(pc),key,Null.NULL)!=Null.NULL;
 	}
 	
 	/**
@@ -1829,11 +1832,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
     
     public boolean contains(int access,String name) {
-    	return get(access,name,null)!=null;
+    	return get(access,name,Null.NULL)!=Null.NULL;
    }
     
     public boolean contains(int access,Key name) {
-    	return get(access,name,null)!=null;
+    	return get(access,name,Null.NULL)!=Null.NULL;
     }
 
     @Override

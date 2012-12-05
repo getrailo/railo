@@ -38,6 +38,7 @@ import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
+import railo.transformer.bytecode.literal.Null;
 import railo.transformer.bytecode.op.OPDecision;
 import railo.transformer.bytecode.op.OpBool;
 import railo.transformer.bytecode.op.OpContional;
@@ -1171,6 +1172,11 @@ public abstract class AbstrCFMLExprTransformer {
 		else if(id.getString().equalsIgnoreCase("FALSE"))	{// || name.equals("NO"))	{
 			comments(data);
 			return new LitBoolean(false,line,data.cfml.getPosition());
+		}
+		// NULL Support
+		else if(id.getString().equalsIgnoreCase("NULL"))	{
+			comments(data);
+			return new Null(line,data.cfml.getPosition());
 		}
 		
 		// Extract Scope from the Variable

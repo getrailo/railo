@@ -134,7 +134,7 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 				ai.dimension=dimension-1;
 				return setEL(key,ai);
 			}
-			return defaultValue;
+			// NULL Support return defaultValue;
 		}
 		return o;
 	}
@@ -153,11 +153,14 @@ public class ArrayImpl extends ArraySupport implements Sizeable {
 		
 		Object o=arr[(offset+key)-1];
 		
-		if(o==null) {
+		// NULL Support
+		if(o==null && dimension>1) return setE(key,new ArrayImpl(dimension-1));
+		return o;
+		/*if(o==null) {
 			if(dimension>1) return setE(key,new ArrayImpl(dimension-1));
 			throw invalidPosition(key);
 		}
-		return o;
+		return o;*/
 	}
 	
 	/**

@@ -24,7 +24,7 @@ import railo.runtime.type.util.StructSupport;
 /**
  * 
  */
-public  class MapAsStruct extends StructSupport implements Struct {
+public class MapAsStruct extends StructSupport implements Struct {
     
     Map map;
 	private boolean caseSensitive;
@@ -86,6 +86,7 @@ public  class MapAsStruct extends StructSupport implements Struct {
     public synchronized Object remove(Collection.Key key) throws ExpressionException {
         Object obj= map.remove(key.getString());
         if(obj==null) {
+        	if(map.containsKey(key.getString())) return null;
         	if(!caseSensitive){
         		String csKey = getCaseSensitiveKey(map,key.getString());
         		if(csKey!=null)obj= map.remove(csKey);
@@ -121,10 +122,11 @@ public  class MapAsStruct extends StructSupport implements Struct {
     public synchronized Object get(Collection.Key key) throws ExpressionException {
         Object o=map.get(key.getString());
         if(o==null) {
+        	if(map.containsKey(key.getString())) return null;
         	if(!caseSensitive){
         		String csKey = getCaseSensitiveKey(map,key.getString());
         		if(csKey!=null)o= map.get(csKey);
-        		if(o!=null) return o;
+        		if(o!=null || map.containsKey(csKey)) return o;
         	}
         	throw new ExpressionException("key "+key.getString()+" doesn't exist in "+Caster.toClassName(map));
         }
@@ -137,10 +139,11 @@ public  class MapAsStruct extends StructSupport implements Struct {
     public synchronized Object get(Collection.Key key, Object defaultValue) {
         Object obj=map.get(key.getString());
         if(obj==null) {
+        	if(map.containsKey(key.getString())) return null;
         	if(!caseSensitive){
         		String csKey = getCaseSensitiveKey(map,key.getString());
         		if(csKey!=null)obj= map.get(csKey);
-        		if(obj!=null) return obj; 
+        		if(obj!=null || map.containsKey(csKey)) return obj; 
         	}
             return defaultValue;
         }
@@ -313,9 +316,3 @@ public  class MapAsStruct extends StructSupport implements Struct {
 		return map.values();
 	}
 }
-
-
-
-
-
-

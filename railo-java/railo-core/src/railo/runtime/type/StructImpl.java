@@ -1,16 +1,16 @@
 package railo.runtime.type;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 
-import railo.commons.collections.HashTable;
-import railo.runtime.exp.ExpressionException;
+import railo.commons.util.mod.HashMapPro;
+import railo.commons.util.mod.LinkedHashMapPro;
+import railo.commons.util.mod.MapPro;
+import railo.commons.util.mod.MapProWrapper;
+import railo.commons.util.mod.SyncMap;
+import railo.commons.util.mod.WeakHashMapPro;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
@@ -25,7 +25,7 @@ public class StructImpl extends StructSupport {
 
 	// NULL Support private static final Object NULL=new Object();
 	
-	private Map<Collection.Key,Object> map;
+	private MapPro<Collection.Key,Object> map;
 	
 	/**
 	 * default constructor
@@ -42,18 +42,18 @@ public class StructImpl extends StructSupport {
      * @param doubleLinked
      */
     public StructImpl(int type) {
-    	if(type==TYPE_LINKED)		map=new LinkedHashMap<Collection.Key,Object>();
-    	else if(type==TYPE_WEAKED)	map=new java.util.WeakHashMap<Collection.Key,Object>(); 
-    	else if(type==TYPE_SOFT)	map=new ReferenceMap();
-        else if(type==TYPE_SYNC)	map=Collections.synchronizedMap(new HashMap<Collection.Key,Object>());
-        else 						map=new HashMap<Collection.Key,Object>();
+    	if(type==TYPE_LINKED)		map=new LinkedHashMapPro<Collection.Key,Object>();
+    	else if(type==TYPE_WEAKED)	map=new WeakHashMapPro<Collection.Key,Object>();
+    	else if(type==TYPE_SOFT)	map=new MapProWrapper<Collection.Key, Object>(new ReferenceMap(),new Object());
+        else if(type==TYPE_SYNC)	map=new SyncMap<Collection.Key, Object>(new HashMapPro<Collection.Key,Object>());
+        else 						map=new HashMapPro<Collection.Key,Object>();
     }
     
     private int getType(){
-    	if(map instanceof LinkedHashMap) return TYPE_LINKED;
-    	if(map instanceof java.util.WeakHashMap) return TYPE_WEAKED;
-    	if(map instanceof ReferenceMap) return TYPE_SOFT;
-    	if(map instanceof HashTable) return TYPE_SYNC;
+    	if(map instanceof LinkedHashMapPro) return TYPE_LINKED;
+    	if(map instanceof WeakHashMapPro) return TYPE_WEAKED;
+    	if(map instanceof SyncMap) return TYPE_SYNC;
+    	if(map instanceof MapProWrapper) return TYPE_SOFT;
     	return TYPE_REGULAR;
     }
     
@@ -62,12 +62,14 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object get(Collection.Key key, Object defaultValue) {
-		Object rtn=map.get(key);
+		return map.g(key, defaultValue); // NULL Support
+		/* NULL old behavior
+		 Object rtn=map.get(key);
 		if(rtn!=null) {
 			// NULL Support if(rtn==NULL) return null;
 			return rtn;
 		}
-		return defaultValue;
+		return defaultValue;*/
 	}
 
 	/**
@@ -75,12 +77,14 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
 	 */
 	public Object get(Collection.Key key) throws PageException {//print.out("k:"+(kcount++));
-		Object rtn=map.get(key);
+		return map.g(key); // NULL Support
+		/* NULL Old behavior
+		 Object rtn=map.get(key);
 		if(rtn!=null) {
 			// NULL Support if(rtn==NULL) return null;
 			return rtn;
 		}
-		throw invalidKey(this,key);
+		throw invalidKey(this,key);*/
 	}
 	
 	/**
@@ -96,7 +100,6 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
 	 */
 	public Object setEL(Collection.Key key, Object value) {
-		// NULL Support map.put(key,value==null?NULL:value);
 		map.put(key,value);
 		return value;
 	}
@@ -113,9 +116,9 @@ public class StructImpl extends StructSupport {
 			return map.keySet().toArray(new Key[map.size()]);
 		}
 		catch(Throwable t) {
-			Map<Key, Object> old = map;
+			MapPro<Key, Object> old = map;
 			try{	
-				map=Collections.synchronizedMap(map);
+				map = new railo.commons.util.mod.SyncMap(map);
 				Set<Key> set = map.keySet();
 				Collection.Key[] keys = new Collection.Key[size()];
 				synchronized(map){
@@ -146,9 +149,11 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
 	 */
 	public Object remove(Collection.Key key) throws PageException {
+		return map.r(key); // NULL Support
+		/* NULL old behavior
 		Object obj= map.remove(key);
 		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
-		return obj;
+		return obj;*/
 	}
 	
 	/**

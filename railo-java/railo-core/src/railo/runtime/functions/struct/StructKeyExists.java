@@ -26,6 +26,6 @@ public final class StructKeyExists implements Function {
 				return QueryColumnExists.call(pc, (Query)c, key);
 			}
 		}
-		return struct.containsKey(key) && struct.get(key,null)!=null;// do not change, this has do be this way
+		return struct.containsKey(key); // NULL && struct.get(key,null)!=null;// do not change, this has do be this way
 	}
 }
