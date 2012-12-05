@@ -43,6 +43,7 @@ import railo.transformer.bytecode.op.OPDecision;
 import railo.transformer.bytecode.op.OpBool;
 import railo.transformer.bytecode.op.OpContional;
 import railo.transformer.bytecode.op.OpDouble;
+import railo.transformer.bytecode.op.OpElvis;
 import railo.transformer.bytecode.op.OpNegate;
 import railo.transformer.bytecode.op.OpNegateNumber;
 import railo.transformer.bytecode.op.OpString;
@@ -343,6 +344,17 @@ public abstract class AbstrCFMLExprTransformer {
 		Expression expr = impOp(data);
         if (data.cfml.forwardIfCurrent('?')) {
         	comments(data);
+        	// Elvis
+        	if(data.cfml.forwardIfCurrent(':')) {
+        		comments(data);
+            	Expression right = assignOp(data);
+        		
+        		if(!(expr instanceof Variable) || !hasOnlyDataMembers((Variable)expr))
+        			throw new TemplateException(data.cfml,"left operant of the Elvis operator has to be a variable declaration");
+        		
+        		return OpElvis.toExpr((Variable)expr, right);
+        	}
+        	
         	Expression left = assignOp(data);
         	comments(data);
         	if(!data.cfml.forwardIfCurrent(':'))throw new TemplateException("invalid conditional operator");
@@ -353,6 +365,18 @@ public abstract class AbstrCFMLExprTransformer {
 		}
 		return expr;
 	}
+
+	private boolean hasOnlyDataMembers(Variable var) {
+		Iterator<Member> it = var.getMembers().iterator();
+		Member m;
+		while(it.hasNext()){
+			m = it.next();
+			if(!(m instanceof DataMember)) return false;
+		}
+		return true;
+	}
+
+
 
 	/**
 	* Transfomiert eine Implication (imp) Operation.

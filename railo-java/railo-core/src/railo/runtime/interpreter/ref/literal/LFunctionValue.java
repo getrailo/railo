@@ -73,7 +73,7 @@ public final class LFunctionValue extends RefSupport implements Ref {
         //return new FunctionValueImpl(key,value.getValue());
     }
 
-    private String[] toStringArray(PageContext pc,Set set) throws PageException {
+    public static String[] toStringArray(PageContext pc,Set set) throws PageException {
     	Ref ref=set;
     	String str;
     	List<String> arr=new ArrayList<String>();

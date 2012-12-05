@@ -37,6 +37,7 @@ import railo.runtime.interpreter.ref.op.Div;
 import railo.runtime.interpreter.ref.op.EEQ;
 import railo.runtime.interpreter.ref.op.EQ;
 import railo.runtime.interpreter.ref.op.EQV;
+import railo.runtime.interpreter.ref.op.Elvis;
 import railo.runtime.interpreter.ref.op.Exp;
 import railo.runtime.interpreter.ref.op.GT;
 import railo.runtime.interpreter.ref.op.GTE;
@@ -283,17 +284,29 @@ public class CFMLExpressionInterpreter {
         Ref ref = impOp();
         while(cfml.forwardIfCurrent('?')) {
             cfml.removeSpace();
-            Ref left = assignOp();            
-            if(!cfml.forwardIfCurrent(':'))
-            	throw new ExpressionException("Syntax Error, invalid conditional operator ["+cfml.toString()+"]");
-            cfml.removeSpace();
-            Ref right = assignOp();
-            ref=new Cont(ref,left,right);
+            if(cfml.forwardIfCurrent(':')){
+            	cfml.removeSpace();
+            	Ref right = assignOp();    
+            	if(!(ref instanceof Variable))
+        			throw new ExpressionException("left operant of the Elvis operator has to be a variable declaration "+ref.getClass().getName());
+        		
+        		ref=new Elvis((Variable)ref,right);
+            	
+            }
+            else {
+	            Ref left = assignOp();            
+	            if(!cfml.forwardIfCurrent(':'))
+	            	throw new ExpressionException("Syntax Error, invalid conditional operator ["+cfml.toString()+"]");
+	            cfml.removeSpace();
+	            Ref right = assignOp();
+	            ref=new Cont(ref,left,right);
+            }
         }
         return ref;
     }
 
-    /**
+
+	/**
     * Transfomiert eine Implication (imp) Operation.
     * <br />
     * EBNF:<br />
