@@ -117,11 +117,11 @@ public class Assign extends ExpressionBase {
     	for(int i=doOnlyScope?0:1;i<count;i++) {
 			adapter.loadArg(0);
     	}
-		rtn=_writeOutFirst(bc, ((Member)variable.members.get(0)),mode,count==1,doOnlyScope);
+		rtn=_writeOutFirst(bc, (variable.members.get(0)),mode,count==1,doOnlyScope);
     	
 		// pc.get(
 		for(int i=doOnlyScope?0:1;i<count;i++) {
-			Member member=((Member)variable.members.get(i));
+			Member member=(variable.members.get(i));
 			boolean last=(i+1)==count;
 			
 			
