@@ -61,9 +61,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 		this.ps=ps;
 	} 
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#evaluate(java.lang.String)
-	 */
+	@Override
 	public IFDVariable evaluate(String expression) throws FDLanguageException {
 		try {
 			return new FDVariable(this,expression,FDCaster.toFDValue(this,pc.evaluate(expression)));
@@ -73,38 +71,28 @@ public class FDStackFrameImpl implements IFDStackFrame {
 		}
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getExecutionUnitName()
-	 */
+	@Override
 	public String getExecutionUnitName() {
 		return ps.getClassName();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getExecutionUnitPackage()
-	 */
+	@Override
 	public String getExecutionUnitPackage() {
 		return ps.getPackageName();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getLineNumber()
-	 */
+	@Override
 	public int getLineNumber() {
 		return line;
 		
 	}
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getSourceFileName()
-	 */
+	@Override
 	public String getSourceFileName() {
 		return ps.getFileName();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getSourceFilePath()
-	 */
+	@Override
 	public String getSourceFilePath() {
 		String name = getSourceFileName();
 		String path=ps.getDisplayPath();
@@ -113,16 +101,12 @@ public class FDStackFrameImpl implements IFDStackFrame {
 		return path;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getThread()
-	 */
+	@Override
 	public IFDThread getThread() {
 		return thread;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getScopeNames()
-	 */
+	@Override
 	public List<String> getScopeNames() {
 		List<String> implScopes = pc.undefinedScope().getScopeNames();
 		for(int i=0;i<SCOPES_AS_INT.length;i++){
@@ -156,9 +140,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 		return true;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getVariables()
-	 */
+	@Override
 	public List getVariables() {
 		Iterator it = getScopeNames().iterator();
 		List list=new ArrayList();
@@ -177,9 +159,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 	}
 	
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getVariables(java.lang.String)
-	 */
+	@Override
 	public List getVariables(String strScope) throws FDLanguageException {
 		return sort(getVariables(this,pc,new ArrayList(), strScope));
 	}
@@ -228,9 +208,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 		return list;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDStackFrame#getFrameInformation()
-	 */
+	@Override
 	public String getFrameInformation() {
 		return ps.getFullRealpath();
 	}
@@ -244,9 +222,7 @@ public class FDStackFrameImpl implements IFDStackFrame {
 
 class FDVariableComparator implements Comparator {
 
-	/**
-	 * @see java.util.Comparator#compare(T, T)
-	 */
+	@Override
 	public int compare(Object o1, Object o2) {
 		return ((FDVariable)o1).getName().compareToIgnoreCase(((FDVariable)o2).getName());
 	}

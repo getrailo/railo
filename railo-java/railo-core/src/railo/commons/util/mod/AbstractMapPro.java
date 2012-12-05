@@ -34,45 +34,6 @@ import java.util.Map.Entry;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 
-/**
- * This class provides a skeletal implementation of the <tt>Map</tt>
- * interface, to minimize the effort required to implement this interface.
- *
- * <p>To implement an unmodifiable map, the programmer needs only to extend this
- * class and provide an implementation for the <tt>entrySet</tt> method, which
- * returns a set-view of the map's mappings.  Typically, the returned set
- * will, in turn, be implemented atop <tt>AbstractSet</tt>.  This set should
- * not support the <tt>add</tt> or <tt>remove</tt> methods, and its iterator
- * should not support the <tt>remove</tt> method.
- *
- * <p>To implement a modifiable map, the programmer must additionally override
- * this class's <tt>put</tt> method (which otherwise throws an
- * <tt>UnsupportedOperationException</tt>), and the iterator returned by
- * <tt>entrySet().iterator()</tt> must additionally implement its
- * <tt>remove</tt> method.
- *
- * <p>The programmer should generally provide a void (no argument) and map
- * constructor, as per the recommendation in the <tt>Map</tt> interface
- * specification.
- *
- * <p>The documentation for each non-abstract method in this class describes its
- * implementation in detail.  Each of these methods may be overridden if the
- * map being implemented admits a more efficient implementation.
- *
- * <p>This class is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
- *
- * @author  Josh Bloch
- * @author  Neal Gafter
- * @see Map
- * @see Collection
- * @since 1.2
- */
-
 public abstract class AbstractMapPro<K,V> implements MapPro<K,V> {
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically
@@ -478,23 +439,7 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V> {
         return true;
     }
 
-    /**
-     * Returns the hash code value for this map.  The hash code of a map is
-     * defined to be the sum of the hash codes of each entry in the map's
-     * <tt>entrySet()</tt> view.  This ensures that <tt>m1.equals(m2)</tt>
-     * implies that <tt>m1.hashCode()==m2.hashCode()</tt> for any two maps
-     * <tt>m1</tt> and <tt>m2</tt>, as required by the general contract of
-     * {@link Object#hashCode}.
-     *
-     * <p>This implementation iterates over <tt>entrySet()</tt>, calling
-     * {@link Map.Entry#hashCode hashCode()} on each element (entry) in the
-     * set, and adding up the results.
-     *
-     * @return the hash code value for this map
-     * @see Map.Entry#hashCode()
-     * @see Object#equals(Object)
-     * @see Set#equals(Object)
-     */
+    @Override
     public int hashCode() {
         int h = 0;
         Iterator<Entry<K,V>> i = entrySet().iterator();
@@ -636,27 +581,7 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V> {
             return oldValue;
         }
 
-        /**
-         * Compares the specified object with this entry for equality.
-         * Returns {@code true} if the given object is also a map entry and
-         * the two entries represent the same mapping.  More formally, two
-         * entries {@code e1} and {@code e2} represent the same mapping
-         * if<pre>
-         *   (e1.getKey()==null ?
-         *    e2.getKey()==null :
-         *    e1.getKey().equals(e2.getKey()))
-         *   &amp;&amp;
-         *   (e1.getValue()==null ?
-         *    e2.getValue()==null :
-         *    e1.getValue().equals(e2.getValue()))</pre>
-         * This ensures that the {@code equals} method works properly across
-         * different implementations of the {@code Map.Entry} interface.
-         *
-         * @param o object to be compared for equality with this map entry
-         * @return {@code true} if the specified object is equal to this map
-         *         entry
-         * @see    #hashCode
-         */
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
@@ -664,19 +589,7 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V> {
             return eq(key, e.getKey()) && eq(value, e.getValue());
         }
 
-        /**
-         * Returns the hash code value for this map entry.  The hash code
-         * of a map entry {@code e} is defined to be: <pre>
-         *   (e.getKey()==null   ? 0 : e.getKey().hashCode()) ^
-         *   (e.getValue()==null ? 0 : e.getValue().hashCode())</pre>
-         * This ensures that {@code e1.equals(e2)} implies that
-         * {@code e1.hashCode()==e2.hashCode()} for any two Entries
-         * {@code e1} and {@code e2}, as required by the general
-         * contract of {@link Object#hashCode}.
-         *
-         * @return the hash code value for this map entry
-         * @see    #equals
-         */
+        @Override
         public int hashCode() {
             return (key   == null ? 0 :   key.hashCode()) ^
                    (value == null ? 0 : value.hashCode());
@@ -767,27 +680,7 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V> {
             throw new UnsupportedOperationException();
         }
 
-        /**
-         * Compares the specified object with this entry for equality.
-         * Returns {@code true} if the given object is also a map entry and
-         * the two entries represent the same mapping.  More formally, two
-         * entries {@code e1} and {@code e2} represent the same mapping
-         * if<pre>
-         *   (e1.getKey()==null ?
-         *    e2.getKey()==null :
-         *    e1.getKey().equals(e2.getKey()))
-         *   &amp;&amp;
-         *   (e1.getValue()==null ?
-         *    e2.getValue()==null :
-         *    e1.getValue().equals(e2.getValue()))</pre>
-         * This ensures that the {@code equals} method works properly across
-         * different implementations of the {@code Map.Entry} interface.
-         *
-         * @param o object to be compared for equality with this map entry
-         * @return {@code true} if the specified object is equal to this map
-         *         entry
-         * @see    #hashCode
-         */
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
@@ -795,19 +688,7 @@ public abstract class AbstractMapPro<K,V> implements MapPro<K,V> {
             return eq(key, e.getKey()) && eq(value, e.getValue());
         }
 
-        /**
-         * Returns the hash code value for this map entry.  The hash code
-         * of a map entry {@code e} is defined to be: <pre>
-         *   (e.getKey()==null   ? 0 : e.getKey().hashCode()) ^
-         *   (e.getValue()==null ? 0 : e.getValue().hashCode())</pre>
-         * This ensures that {@code e1.equals(e2)} implies that
-         * {@code e1.hashCode()==e2.hashCode()} for any two Entries
-         * {@code e1} and {@code e2}, as required by the general
-         * contract of {@link Object#hashCode}.
-         *
-         * @return the hash code value for this map entry
-         * @see    #equals
-         */
+        @Override
         public int hashCode() {
             return (key   == null ? 0 :   key.hashCode()) ^
                    (value == null ? 0 : value.hashCode());

@@ -29,39 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-/**
- * This class provides a skeletal implementation of the <tt>Collection</tt>
- * interface, to minimize the effort required to implement this interface. <p>
- *
- * To implement an unmodifiable collection, the programmer needs only to
- * extend this class and provide implementations for the <tt>iterator</tt> and
- * <tt>size</tt> methods.  (The iterator returned by the <tt>iterator</tt>
- * method must implement <tt>hasNext</tt> and <tt>next</tt>.)<p>
- *
- * To implement a modifiable collection, the programmer must additionally
- * override this class's <tt>add</tt> method (which otherwise throws an
- * <tt>UnsupportedOperationException</tt>), and the iterator returned by the
- * <tt>iterator</tt> method must additionally implement its <tt>remove</tt>
- * method.<p>
- *
- * The programmer should generally provide a void (no argument) and
- * <tt>Collection</tt> constructor, as per the recommendation in the
- * <tt>Collection</tt> interface specification.<p>
- *
- * The documentation for each non-abstract method in this class describes its
- * implementation in detail.  Each of these methods may be overridden if
- * the collection being implemented admits a more efficient implementation.<p>
- *
- * This class is a member of the
- * <a href="{@docRoot}/../technotes/guides/collections/index.html">
- * Java Collections Framework</a>.
- *
- * @author  Josh Bloch
- * @author  Neal Gafter
- * @see Collection
- * @since 1.2
- */
-
 public abstract class AbstractCollection<E> implements Collection<E> {
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically
@@ -295,18 +262,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
 
     // Bulk Operations
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation iterates over the specified collection,
-     * checking each element returned by the iterator in turn to see
-     * if it's contained in this collection.  If all elements are so
-     * contained <tt>true</tt> is returned, otherwise <tt>false</tt>.
-     *
-     * @throws ClassCastException            {@inheritDoc}
-     * @throws NullPointerException          {@inheritDoc}
-     * @see #contains(Object)
-     */
+    @Override
     public boolean containsAll(Collection<?> c) {
         for (Object e : c)
             if (!contains(e))
@@ -314,24 +270,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation iterates over the specified collection, and adds
-     * each object returned by the iterator to this collection, in turn.
-     *
-     * <p>Note that this implementation will throw an
-     * <tt>UnsupportedOperationException</tt> unless <tt>add</tt> is
-     * overridden (assuming the specified collection is non-empty).
-     *
-     * @throws UnsupportedOperationException {@inheritDoc}
-     * @throws ClassCastException            {@inheritDoc}
-     * @throws NullPointerException          {@inheritDoc}
-     * @throws IllegalArgumentException      {@inheritDoc}
-     * @throws IllegalStateException         {@inheritDoc}
-     *
-     * @see #add(Object)
-     */
+    @Override
     public boolean addAll(Collection<? extends E> c) {
         boolean modified = false;
         for (E e : c)
@@ -340,27 +279,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
         return modified;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation iterates over this collection, checking each
-     * element returned by the iterator in turn to see if it's contained
-     * in the specified collection.  If it's so contained, it's removed from
-     * this collection with the iterator's <tt>remove</tt> method.
-     *
-     * <p>Note that this implementation will throw an
-     * <tt>UnsupportedOperationException</tt> if the iterator returned by the
-     * <tt>iterator</tt> method does not implement the <tt>remove</tt> method
-     * and this collection contains one or more elements in common with the
-     * specified collection.
-     *
-     * @throws UnsupportedOperationException {@inheritDoc}
-     * @throws ClassCastException            {@inheritDoc}
-     * @throws NullPointerException          {@inheritDoc}
-     *
-     * @see #remove(Object)
-     * @see #contains(Object)
-     */
+    @Override
     public boolean removeAll(Collection<?> c) {
         boolean modified = false;
         Iterator<?> it = iterator();
@@ -373,27 +292,7 @@ public abstract class AbstractCollection<E> implements Collection<E> {
         return modified;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation iterates over this collection, checking each
-     * element returned by the iterator in turn to see if it's contained
-     * in the specified collection.  If it's not so contained, it's removed
-     * from this collection with the iterator's <tt>remove</tt> method.
-     *
-     * <p>Note that this implementation will throw an
-     * <tt>UnsupportedOperationException</tt> if the iterator returned by the
-     * <tt>iterator</tt> method does not implement the <tt>remove</tt> method
-     * and this collection contains one or more elements not present in the
-     * specified collection.
-     *
-     * @throws UnsupportedOperationException {@inheritDoc}
-     * @throws ClassCastException            {@inheritDoc}
-     * @throws NullPointerException          {@inheritDoc}
-     *
-     * @see #remove(Object)
-     * @see #contains(Object)
-     */
+    @Override
     public boolean retainAll(Collection<?> c) {
         boolean modified = false;
         Iterator<E> it = iterator();

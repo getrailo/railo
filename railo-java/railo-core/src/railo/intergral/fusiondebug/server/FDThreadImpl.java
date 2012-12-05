@@ -31,16 +31,12 @@ public class FDThreadImpl implements IFDThread {
 		this.pc=pc;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getName()
-	 */
+	@Override
 	public String getName() {
 		return name+":"+pc.getCFID();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#id()
-	 */
+	@Override
 	public int id() {
 		return pc.getId();
 	}
@@ -49,31 +45,22 @@ public class FDThreadImpl implements IFDThread {
 		return pc.getId();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#stop()
-	 */
+	@Override
 	public void stop() {
 		pc.getThread().stop();
 	}
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getThread()
-	 */
+	@Override
 	public Thread getThread() {
 		return pc.getThread();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getOutputBuffer()
-	 */
+	@Override
 	public String getOutputBuffer() {
 		return pc.getRootOut().toString();
 	}
 
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getStack()
-	 */
 	public List getStackFrames() {
 		return getStack();
 	}
@@ -108,13 +95,12 @@ public class FDThreadImpl implements IFDThread {
 		return list;
 	}
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDThread#getTopStackFrame()
-	 */
 	public IFDStackFrame getTopStack(){
 		return getTopStackFrame();
 	}
-	public IFDStackFrame getTopStackFrame(){
+	
+	@Override
+    public IFDStackFrame getTopStackFrame(){
 		PageSource ps = pc.getCurrentPageSource();
 		
 		StackTraceElement[] traces = pc.getThread().getStackTrace();

@@ -86,9 +86,7 @@ public class FDCollection extends FDValueSupport {
 		return keys;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getChildren()
-	 */
+	@Override
 	public List getChildren() {
 		return children;
 	}
@@ -99,9 +97,7 @@ public class FDCollection extends FDValueSupport {
 		return null;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#isMutable()
-	 */
+	@Override
 	public boolean isMutable() {
 		return false;
 	}
@@ -110,25 +106,13 @@ public class FDCollection extends FDValueSupport {
 		throw new FDMutabilityException();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#hasChildren()
-	 */
+	@Override
 	public boolean hasChildren() {
 		return true;
 	}
 	
 
-	/* *
-	 * @see java.lang.Object#toString()
-	 * /
-	public String toString() {
-		return "<CFML "+StringUtil.ucFirst(Caster.toTypeName(coll))+">";
-	}*/
-	
-
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		if(coll instanceof Array)
 			return "["+fromto()+"]";
@@ -152,9 +136,7 @@ public class FDCollection extends FDValueSupport {
 	}
 
 
-	/**
-	 * @see railo.intergral.fusiondebug.server.type.FDValueSupport#getName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}
