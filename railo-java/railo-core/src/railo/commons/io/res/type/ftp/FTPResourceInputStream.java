@@ -20,9 +20,7 @@ public final class FTPResourceInputStream extends ResourceInputStream {
 		this.client=client;
 	}
 
-	/**
-	 * @see railo.commons.io.res.util.ResourceInputStream#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		try {
 			super.close();

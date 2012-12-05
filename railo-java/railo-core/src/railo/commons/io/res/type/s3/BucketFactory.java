@@ -42,12 +42,7 @@ public final class BucketFactory extends S3Factory {
 		init(in);
 	}
 
-	/**
-	 * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, beim Auftreten eines Start-Tag aufgerufen.
-	 *  
-	 * @see org.xml.sax.ContentHandler#startElement(String, String, String, Attributes)
-	 */
+	@Override
 	public void doStartElement(String uri, String name, String qName, Attributes atts) {
 		if(qName.equals("Owner")) insideOwners=true;
 		if(qName.equals("Buckets")) insideBuckets=true;
@@ -55,12 +50,7 @@ public final class BucketFactory extends S3Factory {
 		
 	}
     
-	/**
-	 * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, beim auftreten eines End-Tag aufgerufen.
-	 *  
-	 * @see org.xml.sax.ContentHandler#endElement(String, String, String)
-	 */
+	@Override
 	public void doEndElement(String uri, String name, String qName) throws SAXException {
 		if(qName.equals("Owner")) insideOwners=false;
 		if(qName.equals("Buckets")) insideBuckets=false;

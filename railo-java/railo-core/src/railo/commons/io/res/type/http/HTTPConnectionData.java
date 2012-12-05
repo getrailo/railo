@@ -84,9 +84,7 @@ public final class HTTPConnectionData {
 
 
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "username:"+username+";password:"+password+";hostname:"+host+";port:"+port+";path:"+path;
 	}
@@ -113,10 +111,7 @@ public final class HTTPConnectionData {
 
 
 	
-	/**
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		if(this==obj)return true;
 		if(!(obj instanceof HTTPConnectionData)) return false;

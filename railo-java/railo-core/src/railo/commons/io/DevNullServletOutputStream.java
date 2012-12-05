@@ -7,104 +7,64 @@ import javax.servlet.ServletOutputStream;
  */
 public final class DevNullServletOutputStream extends ServletOutputStream {
     
-    /**
-     * @see java.io.OutputStream#close()
-     */
+    @Override
     public void close() {}
 
-    /**
-     * @see java.io.OutputStream#flush()
-     */
+    @Override
     public void flush() {}
 
-    /**
-     * @see java.io.OutputStream#write(byte[], int, int)
-     */
+    @Override
     public void write(byte[] b, int off, int len) {}
 
-    /**
-     * @see java.io.OutputStream#write(byte[])
-     */
+    @Override
     public void write(byte[] b) {}
 
-    /**
-     * @see java.io.OutputStream#write(int)
-     */
+    @Override
     public void write(int b) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#print(boolean)
-     */
+    @Override
     public void print(boolean b) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#print(char)
-     */
+    @Override
     public void print(char c) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#print(double)
-     */
+    @Override
     public void print(double d) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#print(float)
-     */
+    @Override
     public void print(float f) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#print(int)
-     */
+    @Override
     public void print(int i) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#print(long)
-     */
+    @Override
     public void print(long l) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#print(java.lang.String)
-     */
+    @Override
     public void print(String str) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println()
-     */
+    @Override
     public void println() {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println(boolean)
-     */
+    @Override
     public void println(boolean b) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println(char)
-     */
+    @Override
     public void println(char c) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println(double)
-     */
+    @Override
     public void println(double d) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println(float)
-     */
+    @Override
     public void println(float f) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println(int)
-     */
+    @Override
     public void println(int i) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println(long)
-     */
+    @Override
     public void println(long l) {}
 
-    /**
-     * @see javax.servlet.ServletOutputStream#println(java.lang.String)
-     */
+    @Override
     public void println(String str) {}
 
 }

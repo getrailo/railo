@@ -29,10 +29,7 @@ public final class S3ResourceOutputStream extends OutputStream {
 		ts = new TemporaryStream();
 	}
 	
-	/**
-	 *
-	 * @see java.io.OutputStream#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		ts.close();
 		
@@ -51,34 +48,22 @@ public final class S3ResourceOutputStream extends OutputStream {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#flush()
-	 */
+	@Override
 	public void flush() throws IOException {
 		ts.flush();
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(byte[], int, int)
-	 */
+	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		ts.write(b, off, len);
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(byte[])
-	 */
+	@Override
 	public void write(byte[] b) throws IOException {
 		ts.write(b);
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(int)
-	 */
+	@Override
 	public void write(int b) throws IOException {
 		ts.write(b);
 	}

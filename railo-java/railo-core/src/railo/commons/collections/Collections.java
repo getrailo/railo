@@ -50,38 +50,6 @@ public final class Collections {
     private static final int REPLACEALL_THRESHOLD     =   11;
     private static final int INDEXOFSUBLIST_THRESHOLD =   35;
 
-    /**
-     * Sorts the specified list into ascending order, according to the
-     * <i>natural ordering</i> of its elements.  All elements in the list must
-     * implement the <tt>Comparable</tt> interface.  Furthermore, all elements
-     * in the list must be <i>mutually comparable</i> (that is,
-     * <tt>e1.compareTo(e2)</tt> must not throw a <tt>ClassCastException</tt>
-     * for any elements <tt>e1</tt> and <tt>e2</tt> in the list).<p>
-     *
-     * This sort is guaranteed to be <i>stable</i>:  equal elements will
-     * not be reordered as a result of the sort.<p>
-     *
-     * The specified list must be modifiable, but need not be resizable.<p>
-     *
-     * The sorting algorithm is a modified mergesort (in which the merge is
-     * omitted if the highest element in the low sublist is less than the
-     * lowest element in the high sublist).  This algorithm offers guaranteed
-     * n log(n) performance, and can approach linear performance on nearly
-     * sorted lists.<p>
-     *
-     * This implementation dumps the specified list into an array, sorts
-     * the array, and iterates over the list resetting each element
-     * from the corresponding position in the array.  This avoids the
-     * n<sup>2</sup> log(n) performance that would result from attempting
-     * to sort a linked list in place.
-     *
-     * @param  list the list to be sorted.
-     * @throws ClassCastException if the list contains elements that are not
-     *	       <i>mutually comparable</i> (for example, strings and integers).
-     * @throws UnsupportedOperationException if the specified list's
-     *	       list-iterator does not support the <tt>set</tt> operation.
-     * @see Comparable
-     */
     public static void sort(List list) {
 	Object a[] = list.toArray();
 	Arrays.sort(a);
@@ -92,39 +60,6 @@ public final class Collections {
 	}
     }
 
-    /**
-     * Sorts the specified list according to the order induced by the
-     * specified comparator.  All elements in the list must be <i>mutually
-     * comparable</i> using the specified comparator (that is,
-     * <tt>c.compare(e1, e2)</tt> must not throw a <tt>ClassCastException</tt>
-     * for any elements <tt>e1</tt> and <tt>e2</tt> in the list).<p>
-     *
-     * This sort is guaranteed to be <i>stable</i>:  equal elements will
-     * not be reordered as a result of the sort.<p>
-     *
-     * The sorting algorithm is a modified mergesort (in which the merge is
-     * omitted if the highest element in the low sublist is less than the
-     * lowest element in the high sublist).  This algorithm offers guaranteed
-     * n log(n) performance, and can approach linear performance on nearly
-     * sorted lists.<p>
-     *
-     * The specified list must be modifiable, but need not be resizable.
-     * This implementation dumps the specified list into an array, sorts
-     * the array, and iterates over the list resetting each element
-     * from the corresponding position in the array.  This avoids the
-     * n<sup>2</sup> log(n) performance that would result from attempting
-     * to sort a linked list in place.
-     *
-     * @param  list the list to be sorted.
-     * @param  c the comparator to determine the order of the list.  A
-     *        <tt>null</tt> value indicates that the elements' <i>natural
-     *        ordering</i> should be used.
-     * @throws ClassCastException if the list contains elements that are not
-     *	       <i>mutually comparable</i> using the specified comparator.
-     * @throws UnsupportedOperationException if the specified list's
-     *	       list-iterator does not support the <tt>set</tt> operation.
-     * @see Comparator
-     */
     public static void sort(List list, Comparator c) {
 	Object a[] = list.toArray();
 	Arrays.sort(a, c);
@@ -136,38 +71,6 @@ public final class Collections {
     }
 
 
-    /**
-     * Searches the specified list for the specified object using the binary
-     * search algorithm.  The list must be sorted into ascending order
-     * according to the <i>natural ordering</i> of its elements (as by the
-     * <tt>sort(List)</tt> method, above) prior to making this call.  If it is
-     * not sorted, the results are undefined.  If the list contains multiple
-     * elements equal to the specified object, there is no guarantee which one
-     * will be found.<p>
-     *
-     * This method runs in log(n) time for a "random access" list (which
-     * provides near-constant-time positional access).  If the specified list
-     * does not implement the {@link RandomAccess} and is large, this method
-     * will do an iterator-based binary search that performs O(n) link
-     * traversals and O(log n) element comparisons.
-     *
-     * @param  list the list to be searched.
-     * @param  key the key to be searched for.
-     * @return index of the search key, if it is contained in the list;
-     *	       otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>.  The
-     *	       <i>insertion point</i> is defined as the point at which the
-     *	       key would be inserted into the list: the index of the first
-     *	       element greater than the key, or <tt>list.size()</tt>, if all
-     *	       elements in the list are less than the specified key.  Note
-     *	       that this guarantees that the return value will be &gt;= 0 if
-     *	       and only if the key is found.
-     * @throws ClassCastException if the list contains elements that are not
-     *	       <i>mutually comparable</i> (for example, strings and
-     *	       integers), or the search key in not mutually comparable
-     *	       with the elements of the list.
-     * @see    Comparable
-     * @see #sort(List)
-     */
     public static int binarySearch(List list, Object key) {
         if (list instanceof RandomAccess || list.size()<BINARYSEARCH_THRESHOLD)
             return indexedBinarySearch(list, key);
@@ -235,41 +138,6 @@ public final class Collections {
         return obj;
     }
 
-    /**
-     * Searches the specified list for the specified object using the binary
-     * search algorithm.  The list must be sorted into ascending order
-     * according to the specified comparator (as by the <tt>Sort(List,
-     * Comparator)</tt> method, above), prior to making this call.  If it is
-     * not sorted, the results are undefined.  If the list contains multiple
-     * elements equal to the specified object, there is no guarantee which one
-     * will be found.<p>
-     *
-     * This method runs in log(n) time for a "random access" list (which
-     * provides near-constant-time positional access).  If the specified list
-     * does not implement the {@link RandomAccess} and is large, this
-     * this method will do an iterator-based binary search that performs
-     * O(n) link traversals and O(log n) element comparisons.
-     *
-     * @param  list the list to be searched.
-     * @param  key the key to be searched for.
-     * @param  c the comparator by which the list is ordered.  A
-     *        <tt>null</tt> value indicates that the elements' <i>natural
-     *        ordering</i> should be used.
-     * @return index of the search key, if it is contained in the list;
-     *	       otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>.  The
-     *	       <i>insertion point</i> is defined as the point at which the
-     *	       key would be inserted into the list: the index of the first
-     *	       element greater than the key, or <tt>list.size()</tt>, if all
-     *	       elements in the list are less than the specified key.  Note
-     *	       that this guarantees that the return value will be &gt;= 0 if
-     *	       and only if the key is found.
-     * @throws ClassCastException if the list contains elements that are not
-     *	       <i>mutually comparable</i> using the specified comparator,
-     *	       or the search key in not mutually comparable with the
-     *	       elements of the list using this comparator.
-     * @see    Comparable
-     * @see #sort(List, Comparator)
-     */
     public static int binarySearch(List list, Object key, Comparator c) {
         if (c==null)
             return binarySearch(list, key);
@@ -508,27 +376,6 @@ public final class Collections {
         }
     }
 
-    /**
-     * Returns the minimum element of the given collection, according to the
-     * <i>natural ordering</i> of its elements.  All elements in the
-     * collection must implement the <tt>Comparable</tt> interface.
-     * Furthermore, all elements in the collection must be <i>mutually
-     * comparable</i> (that is, <tt>e1.compareTo(e2)</tt> must not throw a
-     * <tt>ClassCastException</tt> for any elements <tt>e1</tt> and
-     * <tt>e2</tt> in the collection).<p>
-     *
-     * This method iterates over the entire collection, hence it requires
-     * time proportional to the size of the collection.
-     *
-     * @param  coll the collection whose minimum element is to be determined.
-     * @return the minimum element of the given collection, according
-     *         to the <i>natural ordering</i> of its elements.
-     * @throws ClassCastException if the collection contains elements that are
-     *	       not <i>mutually comparable</i> (for example, strings and
-     *	       integers).
-     * @throws NoSuchElementException if the collection is empty.
-     * @see Comparable
-     */
     public static Object min(Collection coll) {
 	Iterator i = coll.iterator();
 	Comparable candidate = (Comparable)(i.next());
@@ -541,28 +388,6 @@ public final class Collections {
 	return candidate;
     }
 
-    /**
-     * Returns the minimum element of the given collection, according to the
-     * order induced by the specified comparator.  All elements in the
-     * collection must be <i>mutually comparable</i> by the specified
-     * comparator (that is, <tt>comp.compare(e1, e2)</tt> must not throw a
-     * <tt>ClassCastException</tt> for any elements <tt>e1</tt> and
-     * <tt>e2</tt> in the collection).<p>
-     *
-     * This method iterates over the entire collection, hence it requires
-     * time proportional to the size of the collection.
-     *
-     * @param  coll the collection whose minimum element is to be determined.
-     * @param  comp the comparator with which to determine the minimum element.
-     *         A <tt>null</tt> value indicates that the elements' <i>natural
-     *         ordering</i> should be used.
-     * @return the minimum element of the given collection, according
-     *         to the specified comparator.
-     * @throws ClassCastException if the collection contains elements that are
-     *	       not <i>mutually comparable</i> using the specified comparator.
-     * @throws NoSuchElementException if the collection is empty.
-     * @see Comparable
-     */
     public static Object min(Collection coll, Comparator comp) {
         if (comp==null)
             return min(coll);
@@ -578,27 +403,6 @@ public final class Collections {
 	return candidate;
     }
 
-    /**
-     * Returns the maximum element of the given collection, according to the
-     * <i>natural ordering</i> of its elements.  All elements in the
-     * collection must implement the <tt>Comparable</tt> interface.
-     * Furthermore, all elements in the collection must be <i>mutually
-     * comparable</i> (that is, <tt>e1.compareTo(e2)</tt> must not throw a
-     * <tt>ClassCastException</tt> for any elements <tt>e1</tt> and
-     * <tt>e2</tt> in the collection).<p>
-     *
-     * This method iterates over the entire collection, hence it requires
-     * time proportional to the size of the collection.
-     *
-     * @param  coll the collection whose maximum element is to be determined.
-     * @return the maximum element of the given collection, according
-     *         to the <i>natural ordering</i> of its elements.
-     * @throws ClassCastException if the collection contains elements that are
-     *	       not <i>mutually comparable</i> (for example, strings and
-     *         integers).
-     * @throws NoSuchElementException if the collection is empty.
-     * @see Comparable
-     */
     public static Object max(Collection coll) {
 	Iterator i = coll.iterator();
 	Comparable candidate = (Comparable)(i.next());
@@ -611,28 +415,6 @@ public final class Collections {
 	return candidate;
     }
 
-    /**
-     * Returns the maximum element of the given collection, according to the
-     * order induced by the specified comparator.  All elements in the
-     * collection must be <i>mutually comparable</i> by the specified
-     * comparator (that is, <tt>comp.compare(e1, e2)</tt> must not throw a
-     * <tt>ClassCastException</tt> for any elements <tt>e1</tt> and
-     * <tt>e2</tt> in the collection).<p>
-     *
-     * This method iterates over the entire collection, hence it requires
-     * time proportional to the size of the collection.
-     *
-     * @param  coll the collection whose maximum element is to be determined.
-     * @param  comp the comparator with which to determine the maximum element.
-     *         A <tt>null</tt> value indicates that the elements' <i>natural
-     *        ordering</i> should be used.
-     * @return the maximum element of the given collection, according
-     *         to the specified comparator.
-     * @throws ClassCastException if the collection contains elements that are
-     *	       not <i>mutually comparable</i> using the specified comparator.
-     * @throws NoSuchElementException if the collection is empty.
-     * @see Comparable
-     */
     public static Object max(Collection coll, Comparator comp) {
         if (comp==null)
             return max(coll);
@@ -955,34 +737,20 @@ public final class Collections {
             this.c = c;
         }
 
-	/**
-	 * @see java.util.Collection#size()
-	 */
+	@Override
 	public int size() 		    {return c.size();}
-	/**
-	 * @see java.util.Collection#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() 	    {return c.isEmpty();}
-	/**
-	 * @see java.util.Collection#contains(java.lang.Object)
-	 */
+	@Override
 	public boolean contains(Object o)   {return c.contains(o);}
-	/**
-	 * @see java.util.Collection#toArray()
-	 */
+	@Override
 	public Object[] toArray() 	    {return c.toArray();}
-	/**
-	 * @see java.util.Collection#toArray(java.lang.Object[])
-	 */
+	@Override
 	public Object[] toArray(Object[] a) {return c.toArray(a);}
-        /**
-         * @see java.lang.Object#toString()
-         */
+        @Override
         public String toString()            {return c.toString();}
 
-	/**
-	 * @see java.util.Collection#iterator()
-	 */
+	@Override
 	public Iterator iterator() {
 	    return new Iterator() {
 		Iterator i = c.iterator();
@@ -995,46 +763,32 @@ public final class Collections {
 	    };
         }
 
-	/**
-	 * @see java.util.Collection#add(java.lang.Object)
-	 */
+	@Override
 	public boolean add(Object o){
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.Collection#remove(java.lang.Object)
-	 */
+	@Override
 	public boolean remove(Object o) {
 	    throw new UnsupportedOperationException();
         }
 
-	/**
-	 * @see java.util.Collection#containsAll(java.util.Collection)
-	 */
+	@Override
 	public boolean containsAll(Collection coll) {
 	    return c.containsAll(coll);
         }
-	/**
-	 * @see java.util.Collection#addAll(java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(Collection coll) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.Collection#removeAll(java.util.Collection)
-	 */
+	@Override
 	public boolean removeAll(Collection coll) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.Collection#retainAll(java.util.Collection)
-	 */
+	@Override
 	public boolean retainAll(Collection coll) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 	    throw new UnsupportedOperationException();
         }
@@ -1065,13 +819,9 @@ public final class Collections {
     				 implements Set, Serializable {
 	UnmodifiableSet(Set s) 		{super(s);}
 
-	/**
-	 * @see java.util.Set#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object o) {return c.equals(o);}
-	/**
-	 * @see java.util.Set#hashCode()
-	 */
+	@Override
 	public int hashCode() 		{return c.hashCode();}
     }
 
@@ -1104,37 +854,25 @@ public final class Collections {
 
 	UnmodifiableSortedSet(SortedSet s) {super(s); ss = s;}
 
-        /**
-         * @see java.util.SortedSet#comparator()
-         */
+        @Override
         public Comparator comparator()     {return ss.comparator();}
 
-        /**
-         * @see java.util.SortedSet#subSet(java.lang.Object, java.lang.Object)
-         */
+        @Override
         public SortedSet subSet(Object fromElement, Object toElement) {
             return new UnmodifiableSortedSet(ss.subSet(fromElement,toElement));
         }
-        /**
-         * @see java.util.SortedSet#headSet(java.lang.Object)
-         */
+        @Override
         public SortedSet headSet(Object toElement) {
             return new UnmodifiableSortedSet(ss.headSet(toElement));
         }
-        /**
-         * @see java.util.SortedSet#tailSet(java.lang.Object)
-         */
+        @Override
         public SortedSet tailSet(Object fromElement) {
             return new UnmodifiableSortedSet(ss.tailSet(fromElement));
         }
 
-        /**
-         * @see java.util.SortedSet#first()
-         */
+        @Override
         public Object first() 	           {return ss.first();}
-        /**
-         * @see java.util.SortedSet#last()
-         */
+        @Override
         public Object last()  	           {return ss.last();}
     }
 
@@ -1173,59 +911,37 @@ public final class Collections {
 	    this.list = list;
 	}
 
-	/**
-	 * @see java.util.List#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object o) {return list.equals(o);}
-	/**
-	 * @see java.util.List#hashCode()
-	 */
+	@Override
 	public int hashCode() 		{return list.hashCode();}
 
-	/**
-	 * @see java.util.List#get(int)
-	 */
+	@Override
 	public Object get(int index) {return list.get(index);}
-	/**
-	 * @see java.util.List#set(int, java.lang.Object)
-	 */
+	@Override
 	public Object set(int index, Object element) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.List#add(int, java.lang.Object)
-	 */
+	@Override
 	public void add(int index, Object element) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.List#remove(int)
-	 */
+	@Override
 	public Object remove(int index) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
+	@Override
 	public int indexOf(Object o)            {return list.indexOf(o);}
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
+	@Override
 	public int lastIndexOf(Object o)        {return list.lastIndexOf(o);}
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(int index, Collection c) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.List#listIterator()
-	 */
+	@Override
 	public ListIterator listIterator() 	{return listIterator(0);}
 
-	/**
-	 * @see java.util.List#listIterator(int)
-	 */
+	@Override
 	public ListIterator listIterator(final int index) {
 	    return new ListIterator() {
 		ListIterator i = list.listIterator(index);
@@ -1249,9 +965,7 @@ public final class Collections {
 	    };
 	}
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
+	@Override
 	public List subList(int fromIndex, int toIndex) {
             return new UnmodifiableList(list.subList(fromIndex, toIndex));
         }
@@ -1267,9 +981,7 @@ public final class Collections {
             super(list);
         }
 
-	/**
-	 * @see railo.commons.collections.Collections.UnmodifiableList#subList(int, int)
-	 */
+	@Override
 	public List subList(int fromIndex, int toIndex) {
             return new UnmodifiableRandomAccessList(
                 list.subList(fromIndex, toIndex));
@@ -1309,48 +1021,30 @@ public final class Collections {
             this.m = m;
         }
 
-	/**
-	 * @see java.util.Map#size()
-	 */
+	@Override
 	public int size() 		         {return m.size();}
-	/**
-	 * @see java.util.Map#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() 	         {return m.isEmpty();}
-	/**
-	 * @see java.util.Map#containsKey(java.lang.Object)
-	 */
+	@Override
 	public boolean containsKey(Object key)   {return m.containsKey(key);}
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object val) {return m.containsValue(val);}
-	/**
-	 * @see java.util.Map#get(java.lang.Object)
-	 */
+	@Override
 	public Object get(Object key) 	         {return m.get(key);}
 
-	/**
-	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
-	 */
+	@Override
 	public Object put(Object key, Object value) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.Map#remove(java.lang.Object)
-	 */
+	@Override
 	public Object remove(Object key) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.Map#putAll(java.util.Map)
-	 */
+	@Override
 	public void putAll(Map t) {
 	    throw new UnsupportedOperationException();
         }
-	/**
-	 * @see java.util.Map#clear()
-	 */
+	@Override
 	public void clear() {
 	    throw new UnsupportedOperationException();
         }
@@ -1359,44 +1053,32 @@ public final class Collections {
 	private transient Set entrySet = null;
 	private transient Collection values = null;
 
-	/**
-	 * @see java.util.Map#keySet()
-	 */
+	@Override
 	public Set keySet() {
 	    if (keySet==null)
 		keySet = unmodifiableSet(m.keySet());
 	    return keySet;
 	}
 
-	/**
-	 * @see java.util.Map#entrySet()
-	 */
+	@Override
 	public Set entrySet() {
 	    if (entrySet==null)
 		entrySet = new UnmodifiableEntrySet(m.entrySet());
 	    return entrySet;
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public Collection values() {
 	    if (values==null)
 		values = unmodifiableCollection(m.values());
 	    return values;
 	}
 
-	/**
-	 * @see java.util.Map#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object o) {return m.equals(o);}
-	/**
-	 * @see java.util.Map#hashCode()
-	 */
+	@Override
 	public int hashCode()           {return m.hashCode();}
-        /**
-         * @see java.lang.Object#toString()
-         */
+        @Override
         public String toString()        {return m.toString();}
 
         /**
@@ -1412,9 +1094,7 @@ public final class Collections {
                 super(s);
             }
 
-            /**
-             * @see java.util.Set#iterator()
-             */
+            @Override
             public Iterator iterator() {
                 return new Iterator() {
                     Iterator i = c.iterator();
@@ -1431,9 +1111,7 @@ public final class Collections {
                 };
             }
 
-            /**
-             * @see java.util.Set#toArray()
-             */
+            @Override
             public Object[] toArray() {
                 Object[] a = c.toArray();
                 for (int i=0; i<a.length; i++)
@@ -1441,9 +1119,7 @@ public final class Collections {
                 return a;
             }
 
-            /**
-             * @see java.util.Set#toArray(java.lang.Object[])
-             */
+            @Override
             public Object[] toArray(Object a[]) {
                 // We don't pass a to c.toArray, to avoid window of
                 // vulnerability wherein an unscrupulous multithreaded client
@@ -1491,9 +1167,7 @@ public final class Collections {
                         return false;
                 return true;
             }
-            /**
-             * @see railo.commons.collections.Collections.UnmodifiableSet#equals(java.lang.Object)
-             */
+            @Override
             public boolean equals(Object o) {
                 if (o == this)
                     return true;
@@ -1518,27 +1192,17 @@ public final class Collections {
 
                 UnmodifiableEntry(Map.Entry e) {this.e = e;}
 
-                /**
-                 * @see java.util.Map.Entry#getKey()
-                 */
+                @Override
                 public Object getKey()	  {return e.getKey();}
-                /**
-                 * @see java.util.Map.Entry#getValue()
-                 */
+                @Override
                 public Object getValue()  {return e.getValue();}
-                /**
-                 * @see java.util.Map.Entry#setValue(java.lang.Object)
-                 */
+                @Override
                 public Object setValue(Object value) {
                     throw new UnsupportedOperationException();
                 }
-                /**
-                 * @see java.util.Map.Entry#hashCode()
-                 */
+                @Override
                 public int hashCode()	  {return e.hashCode();}
-                /**
-                 * @see java.util.Map.Entry#equals(java.lang.Object)
-                 */
+                @Override
                 public boolean equals(Object o) {
                     if (!(o instanceof Map.Entry))
                         return false;
@@ -1546,9 +1210,7 @@ public final class Collections {
                     return eq(e.getKey(),   t.getKey()) &&
                            eq(e.getValue(), t.getValue());
                 }
-                /**
-                 * @see java.lang.Object#toString()
-                 */
+                @Override
                 public String toString()  {return e.toString();}
             }
         }
@@ -1583,37 +1245,25 @@ public final class Collections {
 
 	UnmodifiableSortedMap(SortedMap m) {super(m); sm = m;}
 
-        /**
-         * @see java.util.SortedMap#comparator()
-         */
+        @Override
         public Comparator comparator()     {return sm.comparator();}
 
-        /**
-         * @see java.util.SortedMap#subMap(java.lang.Object, java.lang.Object)
-         */
+        @Override
         public SortedMap subMap(Object fromKey, Object toKey) {
             return new UnmodifiableSortedMap(sm.subMap(fromKey, toKey));
         }
-        /**
-         * @see java.util.SortedMap#headMap(java.lang.Object)
-         */
+        @Override
         public SortedMap headMap(Object toKey) {
             return new UnmodifiableSortedMap(sm.headMap(toKey));
         }
-        /**
-         * @see java.util.SortedMap#tailMap(java.lang.Object)
-         */
+        @Override
         public SortedMap tailMap(Object fromKey) {
             return new UnmodifiableSortedMap(sm.tailMap(fromKey));
         }
 
-        /**
-         * @see java.util.SortedMap#firstKey()
-         */
+        @Override
         public Object firstKey()           {return sm.firstKey();}
-        /**
-         * @see java.util.SortedMap#lastKey()
-         */
+        @Override
         public Object lastKey()            {return sm.lastKey();}
     }
 
@@ -1680,90 +1330,62 @@ public final class Collections {
             this.mutex = mutex;
         }
 
-	/**
-	 * @see java.util.Collection#size()
-	 */
+	@Override
 	public int size() {
 	    synchronized(mutex) {return c.size();}
         }
-	/**
-	 * @see java.util.Collection#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() {
 	    synchronized(mutex) {return c.isEmpty();}
         }
-	/**
-	 * @see java.util.Collection#contains(java.lang.Object)
-	 */
+	@Override
 	public boolean contains(Object o) {
 	    synchronized(mutex) {return c.contains(o);}
         }
-	/**
-	 * @see java.util.Collection#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 	    synchronized(mutex) {return c.toArray();}
         }
-	/**
-	 * @see java.util.Collection#toArray(java.lang.Object[])
-	 */
+	@Override
 	public Object[] toArray(Object[] a) {
 	    synchronized(mutex) {return c.toArray(a);}
         }
 
-	/**
-	 * @see java.util.Collection#iterator()
-	 */
+	@Override
 	public Iterator iterator() {
             return c.iterator(); // Must be manually synched by user!
         }
 
-	/**
-	 * @see java.util.Collection#add(java.lang.Object)
-	 */
+	@Override
 	public boolean add(Object o) {
 	    synchronized(mutex) {return c.add(o);}
         }
-	/**
-	 * @see java.util.Collection#remove(java.lang.Object)
-	 */
+	@Override
 	public boolean remove(Object o) {
 	    synchronized(mutex) {return c.remove(o);}
         }
 
-	/**
-	 * @see java.util.Collection#containsAll(java.util.Collection)
-	 */
+	@Override
 	public boolean containsAll(Collection coll) {
 	    synchronized(mutex) {return c.containsAll(coll);}
         }
-	/**
-	 * @see java.util.Collection#addAll(java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(Collection coll) {
 	    synchronized(mutex) {return c.addAll(coll);}
         }
-	/**
-	 * @see java.util.Collection#removeAll(java.util.Collection)
-	 */
+	@Override
 	public boolean removeAll(Collection coll) {
 	    synchronized(mutex) {return c.removeAll(coll);}
         }
-	/**
-	 * @see java.util.Collection#retainAll(java.util.Collection)
-	 */
+	@Override
 	public boolean retainAll(Collection coll) {
 	    synchronized(mutex) {return c.retainAll(coll);}
         }
-	/**
-	 * @see java.util.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 	    synchronized(mutex) {c.clear();}
         }
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 	    synchronized(mutex) {return c.toString();}
         }
@@ -1814,15 +1436,11 @@ public final class Collections {
             super(s, mutex);
         }
 
-	/**
-	 * @see java.util.Set#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object o) {
 	    synchronized(mutex) {return c.equals(o);}
         }
-	/**
-	 * @see java.util.Set#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 	    synchronized(mutex) {return c.hashCode();}
         }
@@ -1886,48 +1504,36 @@ public final class Collections {
             ss = s;
         }
 
-	/**
-	 * @see java.util.SortedSet#comparator()
-	 */
+	@Override
 	public Comparator comparator() {
 	    synchronized(mutex) {return ss.comparator();}
         }
 
-        /**
-         * @see java.util.SortedSet#subSet(java.lang.Object, java.lang.Object)
-         */
+        @Override
         public SortedSet subSet(Object fromElement, Object toElement) {
 	    synchronized(mutex) {
                 return new SynchronizedSortedSet(
                     ss.subSet(fromElement, toElement), mutex);
             }
         }
-        /**
-         * @see java.util.SortedSet#headSet(java.lang.Object)
-         */
+        @Override
         public SortedSet headSet(Object toElement) {
 	    synchronized(mutex) {
                 return new SynchronizedSortedSet(ss.headSet(toElement), mutex);
             }
         }
-        /**
-         * @see java.util.SortedSet#tailSet(java.lang.Object)
-         */
+        @Override
         public SortedSet tailSet(Object fromElement) {
 	    synchronized(mutex) {
                return new SynchronizedSortedSet(ss.tailSet(fromElement),mutex);
             }
         }
 
-        /**
-         * @see java.util.SortedSet#first()
-         */
+        @Override
         public Object first() {
 	    synchronized(mutex) {return ss.first();}
         }
-        /**
-         * @see java.util.SortedSet#last()
-         */
+        @Override
         public Object last() {
 	    synchronized(mutex) {return ss.last();}
         }
@@ -1988,81 +1594,57 @@ public final class Collections {
 	    this.list = list;
         }
 
-	/**
-	 * @see java.util.List#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object o) {
 	    synchronized(mutex) {return list.equals(o);}
         }
-	/**
-	 * @see java.util.List#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 	    synchronized(mutex) {return list.hashCode();}
         }
 
-	/**
-	 * @see java.util.List#get(int)
-	 */
+	@Override
 	public Object get(int index) {
 	    synchronized(mutex) {return list.get(index);}
         }
-	/**
-	 * @see java.util.List#set(int, java.lang.Object)
-	 */
+	@Override
 	public Object set(int index, Object element) {
 	    synchronized(mutex) {return list.set(index, element);}
         }
-	/**
-	 * @see java.util.List#add(int, java.lang.Object)
-	 */
+	@Override
 	public void add(int index, Object element) {
 	    synchronized(mutex) {list.add(index, element);}
         }
-	/**
-	 * @see java.util.List#remove(int)
-	 */
+	@Override
 	public Object remove(int index) {
 	    synchronized(mutex) {return list.remove(index);}
         }
 
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
+	@Override
 	public int indexOf(Object o) {
 	    synchronized(mutex) {return list.indexOf(o);}
         }
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
+	@Override
 	public int lastIndexOf(Object o) {
 	    synchronized(mutex) {return list.lastIndexOf(o);}
         }
 
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(int index, Collection c) {
 	    synchronized(mutex) {return list.addAll(index, c);}
         }
 
-	/**
-	 * @see java.util.List#listIterator()
-	 */
+	@Override
 	public ListIterator listIterator() {
 	    return list.listIterator(); // Must be manually synched by user
         }
 
-	/**
-	 * @see java.util.List#listIterator(int)
-	 */
+	@Override
 	public ListIterator listIterator(int index) {
 	    return list.listIterator(index); // Must be manually synched by usr
         }
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
+	@Override
 	public List subList(int fromIndex, int toIndex) {
 	    synchronized(mutex) {
                 return new SynchronizedList(list.subList(fromIndex, toIndex),
@@ -2085,9 +1667,7 @@ public final class Collections {
             super(list, mutex);
         }
 
-	/**
-	 * @see railo.commons.collections.Collections.SynchronizedList#subList(int, int)
-	 */
+	@Override
 	public List subList(int fromIndex, int toIndex) {
 	    synchronized(mutex) {
                 return new SynchronizedRandomAccessList(
@@ -2149,58 +1729,40 @@ public final class Collections {
             this.mutex = mutex;
         }
 
-	/**
-	 * @see java.util.Map#size()
-	 */
+	@Override
 	public int size() {
 	    synchronized(mutex) {return m.size();}
         }
-	/**
-	 * @see java.util.Map#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty(){
 	    synchronized(mutex) {return m.isEmpty();}
         }
-	/**
-	 * @see java.util.Map#containsKey(java.lang.Object)
-	 */
+	@Override
 	public boolean containsKey(Object key) {
 	    synchronized(mutex) {return m.containsKey(key);}
         }
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value){
 	    synchronized(mutex) {return m.containsValue(value);}
         }
-	/**
-	 * @see java.util.Map#get(java.lang.Object)
-	 */
+	@Override
 	public Object get(Object key) {
 	    synchronized(mutex) {return m.get(key);}
         }
 
-	/**
-	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
-	 */
+	@Override
 	public Object put(Object key, Object value) {
 	    synchronized(mutex) {return m.put(key, value);}
         }
-	/**
-	 * @see java.util.Map#remove(java.lang.Object)
-	 */
+	@Override
 	public Object remove(Object key) {
 	    synchronized(mutex) {return m.remove(key);}
         }
-	/**
-	 * @see java.util.Map#putAll(java.util.Map)
-	 */
+	@Override
 	public void putAll(Map map) {
 	    synchronized(mutex) {m.putAll(map);}
         }
-	/**
-	 * @see java.util.Map#clear()
-	 */
+	@Override
 	public void clear() {
 	    synchronized(mutex) {m.clear();}
         }
@@ -2209,9 +1771,7 @@ public final class Collections {
 	private transient Set entrySet = null;
 	private transient Collection values = null;
 
-	/**
-	 * @see java.util.Map#keySet()
-	 */
+	@Override
 	public Set keySet() {
             synchronized(mutex) {
                 if (keySet==null)
@@ -2220,9 +1780,7 @@ public final class Collections {
             }
 	}
 
-	/**
-	 * @see java.util.Map#entrySet()
-	 */
+	@Override
 	public Set entrySet() {
             synchronized(mutex) {
                 if (entrySet==null)
@@ -2231,9 +1789,7 @@ public final class Collections {
             }
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public Collection values() {
             synchronized(mutex) {
                 if (values==null)
@@ -2242,21 +1798,15 @@ public final class Collections {
             }
         }
 
-	/**
-	 * @see java.util.Map#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object o) {
             synchronized(mutex) {return m.equals(o);}
         }
-	/**
-	 * @see java.util.Map#hashCode()
-	 */
+	@Override
 	public int hashCode() {
             synchronized(mutex) {return m.hashCode();}
         }
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 	    synchronized(mutex) {return m.toString();}
         }
@@ -2326,48 +1876,36 @@ public final class Collections {
             sm = m;
         }
 
-	/**
-	 * @see java.util.SortedMap#comparator()
-	 */
+	@Override
 	public Comparator comparator() {
 	    synchronized(mutex) {return sm.comparator();}
         }
 
-        /**
-         * @see java.util.SortedMap#subMap(java.lang.Object, java.lang.Object)
-         */
+        @Override
         public SortedMap subMap(Object fromKey, Object toKey) {
 	    synchronized(mutex) {
                 return new SynchronizedSortedMap(
                     sm.subMap(fromKey, toKey), mutex);
             }
         }
-        /**
-         * @see java.util.SortedMap#headMap(java.lang.Object)
-         */
+        @Override
         public SortedMap headMap(Object toKey) {
 	    synchronized(mutex) {
                 return new SynchronizedSortedMap(sm.headMap(toKey), mutex);
             }
         }
-        /**
-         * @see java.util.SortedMap#tailMap(java.lang.Object)
-         */
+        @Override
         public SortedMap tailMap(Object fromKey) {
 	    synchronized(mutex) {
                return new SynchronizedSortedMap(sm.tailMap(fromKey),mutex);
             }
         }
 
-        /**
-         * @see java.util.SortedMap#firstKey()
-         */
+        @Override
         public Object firstKey() {
 	    synchronized(mutex) {return sm.firstKey();}
         }
-        /**
-         * @see java.util.SortedMap#lastKey()
-         */
+        @Override
         public Object lastKey() {
 	    synchronized(mutex) {return sm.lastKey();}
         }
@@ -2388,9 +1926,7 @@ public final class Collections {
 	// use serialVersionUID from JDK 1.2.2 for interoperability
 	private static final long serialVersionUID = 1582296315990362920L;
 
-        /**
-         * @see java.util.Set#iterator()
-         */
+        @Override
         public Iterator iterator() {
             return new Iterator() {
                 public boolean hasNext() {
@@ -2405,14 +1941,10 @@ public final class Collections {
             };
         }
 
-        /**
-         * @see java.util.Set#size()
-         */
+        @Override
         public int size() {return 0;}
 
-        /**
-         * @see java.util.Set#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object obj) {return false;}
     }
 
@@ -2429,19 +1961,13 @@ public final class Collections {
 	// use serialVersionUID from JDK 1.2.2 for interoperability
 	private static final long serialVersionUID = 8842843931221139166L;
 
-        /**
-         * @see java.util.List#size()
-         */
+        @Override
         public int size() {return 0;}
 
-        /**
-         * @see java.util.List#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object obj) {return false;}
 
-        /**
-         * @see java.util.AbstractList#get(int)
-         */
+        @Override
         public Object get(int index) {
             throw new IndexOutOfBoundsException("Index: "+index);
         }
@@ -2453,56 +1979,36 @@ public final class Collections {
     public static final Map EMPTY_MAP = new EmptyMap();
 
     private static class EmptyMap extends AbstractMap implements Serializable {
-        /**
-         * @see java.util.AbstractMap#size()
-         */
+        @Override
         public int size()                          {return 0;}
 
-        /**
-         * @see java.util.AbstractMap#isEmpty()
-         */
+        @Override
         public boolean isEmpty()                   {return true;}
 
-        /**
-         * @see java.util.AbstractMap#containsKey(java.lang.Object)
-         */
+        @Override
         public boolean containsKey(Object key)     {return false;}
 
-        /**
-         * @see java.util.AbstractMap#containsValue(java.lang.Object)
-         */
+        @Override
         public boolean containsValue(Object value) {return false;}
 
-        /**
-         * @see java.util.AbstractMap#get(java.lang.Object)
-         */
+        @Override
         public Object get(Object key)              {return null;}
 
-        /**
-         * @see java.util.AbstractMap#keySet()
-         */
+        @Override
         public Set keySet()                        {return EMPTY_SET;}
 
-        /**
-         * @see java.util.AbstractMap#values()
-         */
+        @Override
         public Collection values()                 {return EMPTY_SET;}
 
-        /**
-         * @see java.util.AbstractMap#entrySet()
-         */
+        @Override
         public Set entrySet()                      {return EMPTY_SET;}
 
-        /**
-         * @see java.util.AbstractMap#equals(java.lang.Object)
-         */
+        @Override
         public boolean equals(Object o) {
             return (o instanceof Map) && ((Map)o).size()==0;
         }
 
-        /**
-         * @see java.util.AbstractMap#hashCode()
-         */
+        @Override
         public int hashCode()                      {return 0;}
     }
 
@@ -2530,9 +2036,7 @@ public final class Collections {
 
         SingletonSet(Object o) {element = o;}
 
-        /**
-         * @see java.util.Set#iterator()
-         */
+        @Override
         public Iterator iterator() {
             return new Iterator() {
                 private boolean hasNext = true;
@@ -2552,14 +2056,10 @@ public final class Collections {
             };
         }
 
-        /**
-         * @see java.util.Set#size()
-         */
+        @Override
         public int size() {return 1;}
 
-        /**
-         * @see java.util.Set#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object o) {return eq(o, element);}
     }
 
@@ -2582,19 +2082,13 @@ public final class Collections {
 
         SingletonList(Object obj)           {element = obj;}
 
-        /**
-         * @see java.util.List#size()
-         */
+        @Override
         public int size()                   {return 1;}
 
-        /**
-         * @see java.util.List#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object obj) {return eq(obj, element);}
 
-        /**
-         * @see java.util.AbstractList#get(int)
-         */
+        @Override
         public Object get(int index) {
             if (index != 0)
               throw new IndexOutOfBoundsException("Index: "+index+", Size: 1");
@@ -2624,56 +2118,40 @@ public final class Collections {
             v = value;
         }
 
-        /**
-         * @see java.util.AbstractMap#size()
-         */
+        @Override
         public int size()                          {return 1;}
 
-        /**
-         * @see java.util.AbstractMap#isEmpty()
-         */
+        @Override
         public boolean isEmpty()                   {return false;}
 
-        /**
-         * @see java.util.AbstractMap#containsKey(java.lang.Object)
-         */
+        @Override
         public boolean containsKey(Object key)     {return eq(key, k);}
 
-        /**
-         * @see java.util.AbstractMap#containsValue(java.lang.Object)
-         */
+        @Override
         public boolean containsValue(Object value) {return eq(value, v);}
 
-        /**
-         * @see java.util.AbstractMap#get(java.lang.Object)
-         */
+        @Override
         public Object get(Object key)        {return (eq(key, k) ? v : null);}
 
         private transient Set keySet = null;
         private transient Set entrySet = null;
         private transient Collection values = null;
 
-	/**
-	 * @see java.util.AbstractMap#keySet()
-	 */
+	@Override
 	public Set keySet() {
 	    if (keySet==null)
 		keySet = singleton(k);
 	    return keySet;
 	}
 
-	/**
-	 * @see java.util.AbstractMap#entrySet()
-	 */
+	@Override
 	public Set entrySet() {
 	    if (entrySet==null)
 		entrySet = singleton(new ImmutableEntry(k, v));
 	    return entrySet;
 	}
 
-	/**
-	 * @see java.util.AbstractMap#values()
-	 */
+	@Override
 	public Collection values() {
 	    if (values==null)
 		values = singleton(v);
@@ -2689,26 +2167,18 @@ public final class Collections {
                 v = value;
             }
 
-            /**
-             * @see java.util.Map.Entry#getKey()
-             */
+            @Override
             public Object getKey()   {return k;}
 
-            /**
-             * @see java.util.Map.Entry#getValue()
-             */
+            @Override
             public Object getValue() {return v;}
 
-            /**
-             * @see java.util.Map.Entry#setValue(java.lang.Object)
-             */
+            @Override
             public Object setValue(Object value) {
                 throw new UnsupportedOperationException();
             }
 
-            /**
-             * @see java.util.Map.Entry#equals(java.lang.Object)
-             */
+            @Override
             public boolean equals(Object o) {
                 if (!(o instanceof Map.Entry))
                     return false;
@@ -2716,38 +2186,19 @@ public final class Collections {
                 return eq(e.getKey(), k) && eq(e.getValue(), v);
             }
 
-            /**
-             * @see java.util.Map.Entry#hashCode()
-             */
+            @Override
             public int hashCode() {
                 return ((k==null ? 0 : k.hashCode()) ^
                         (v==null ? 0 : v.hashCode()));
             }
 
-            /**
-             * @see java.lang.Object#toString()
-             */
+            @Override
             public String toString() {
                 return k+"="+v;
             }
         }
     }
 
-    /**
-     * Returns an immutable list consisting of <tt>n</tt> copies of the
-     * specified object.  The newly allocated data object is tiny (it contains
-     * a single reference to the data object).  This method is useful in
-     * combination with the <tt>List.addAll</tt> method to grow lists.
-     * The returned list is serializable.
-     *
-     * @param  n the number of elements in the returned list.
-     * @param  o the element to appear repeatedly in the returned list.
-     * @return an immutable list consisting of <tt>n</tt> copies of the
-     * 	       specified object.
-     * @throws IllegalArgumentException if n &lt; 0.
-     * @see    List#addAll(Collection)
-     * @see    List#addAll(int, Collection)
-     */
     public static List nCopies(int n, Object o) {
         return new CopiesList(n, o);
     }
@@ -2770,23 +2221,17 @@ public final class Collections {
             element = o;
         }
 
-        /**
-         * @see java.util.List#size()
-         */
+        @Override
         public int size() {
             return n;
         }
 
-        /**
-         * @see java.util.List#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object obj) {
             return n != 0 && eq(obj, element);
         }
 
-        /**
-         * @see java.util.AbstractList#get(int)
-         */
+        @Override
         public Object get(int index) {
             if (index<0 || index>=n)
                 throw new IndexOutOfBoundsException("Index: "+index+
@@ -2795,25 +2240,6 @@ public final class Collections {
         }
     }
 
-    /**
-     * Returns a comparator that imposes the reverse of the <i>natural
-     * ordering</i> on a collection of objects that implement the
-     * <tt>Comparable</tt> interface.  (The natural ordering is the ordering
-     * imposed by the objects' own <tt>compareTo</tt> method.)  This enables a
-     * simple idiom for sorting (or maintaining) collections (or arrays) of
-     * objects that implement the <tt>Comparable</tt> interface in
-     * reverse-natural-order.  For example, suppose a is an array of
-     * strings. Then: <pre>
-     * 		Arrays.sort(a, Collections.reverseOrder());
-     * </pre> sorts the array in reverse-lexicographic (alphabetical) order.<p>
-     *
-     * The returned comparator is serializable.
-     *
-     * @return a comparator that imposes the reverse of the <i>natural
-     * 	       ordering</i> on a collection of objects that implement
-     *	       the <tt>Comparable</tt> interface.
-     * @see Comparable
-     */
     public static Comparator reverseOrder() {
         return REVERSE_ORDER;
     }
@@ -2827,9 +2253,7 @@ public final class Collections {
 	// use serialVersionUID from JDK 1.2.2 for interoperability
 	private static final long serialVersionUID = 7207038068494060240L;
 
-        /**
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
+        @Override
         public int compare(Object o1, Object o2) {
             Comparable c1 = (Comparable)o1;
             Comparable c2 = (Comparable)o2;
@@ -2837,15 +2261,6 @@ public final class Collections {
         }
     }
 
-    /**
-     * Returns an enumeration over the specified collection.  This provides
-     * interoperatbility with legacy APIs that require an enumeration
-     * as input.
-     *
-     * @param c the collection for which an enumeration is to be returned.
-     * @return an enumeration over the specified collection.
-     * @see Enumeration
-     */
     public static Enumeration enumeration(final Collection c) {
 	return new Enumeration() {
 	    Iterator i = c.iterator();
@@ -2860,20 +2275,6 @@ public final class Collections {
         };
     }
 
-    /**
-     * Returns an array list containing the elements returned by the
-     * specified enumeration in the order they are returned by the
-     * enumeration.  This method provides interoperatbility between
-     * legacy APIs that return enumerations and new APIs that require
-     * collections.
-     *
-     * @param e enumeration providing elements for the returned
-     *          array list
-     * @return an array list containing the elements returned
-     *         by the specified enumeration.
-     * @see Enumeration
-     * @see ArrayList
-     */
     public static ArrayList list(Enumeration e) {
         ArrayList l = new ArrayList();
         while (e.hasMoreElements())

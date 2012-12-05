@@ -190,52 +190,14 @@ public final class KeyImplMap  implements  Cloneable,
     return count == 0;
     }
 
-    /**
-     * Returns an enumeration of the keys in this hashtable.
-     *
-     * @return  an enumeration of the keys in this hashtable.
-     * @see     Enumeration
-     * @see     #elements()
-     * @see #keySet()
-     * @see Map
-     */
     public Enumeration keys() {
     return getEnumeration(KEYS);
     }
 
-    /**
-     * Returns an enumeration of the values in this hashtable.
-     * Use the Enumeration methods on the returned object to fetch the elements
-     * sequentially.
-     *
-     * @return  an enumeration of the values in this hashtable.
-     * @see     java.util.Enumeration
-     * @see     #keys()
-     * @see #values()
-     * @see Map
-     */
     public Enumeration elements() {
     return getEnumeration(VALUES);
     }
 
-    /**
-     * Tests if some key maps into the specified value in this hashtable.
-     * This operation is more expensive than the <code>containsKey</code>
-     * method.<p>
-     *
-     * Note that this method is identical in functionality to containsValue,
-     * (which is part of the Map interface in the collections framework).
-     * 
-     * @param      value   a value to search for.
-     * @return     <code>true</code> if and only if some key maps to the
-     *             <code>value</code> argument in this hashtable as 
-     *             determined by the <tt>equals</tt> method;
-     *             <code>false</code> otherwise.
-     * @exception  NullPointerException  if the value is <code>null</code>.
-     * @see        #containsKey(Object)
-     * @see        #containsValue(Object)
-     * @see    Map
-     */
     public boolean contains(Object value) {
 	    if (value == null) {
 	        throw new NullPointerException();
@@ -252,31 +214,10 @@ public final class KeyImplMap  implements  Cloneable,
 	    return false;
     }
 
-    /**
-     * Returns true if this Hashtable maps one or more keys to this value.<p>
-     *
-     * Note that this method is identical in functionality to contains
-     * (which predates the Map interface).
-     *
-     * @param value value whose presence in this Hashtable is to be tested.
-     * @return <tt>true</tt> if this map maps one or more keys to the
-     *         specified value.
-     * @see    Map
-*
-     */
     public boolean containsValue(Object value) {
     return contains(value);
     }
 
-    /**
-     * Tests if the specified object is a key in this hashtable.
-     * 
-     * @param   key   possible key.
-     * @return  <code>true</code> if and only if the specified object 
-     *          is a key in this hashtable, as determined by the 
-     *          <tt>equals</tt> method; <code>false</code> otherwise.
-     * @see     #contains(Object)
-     */
     public boolean containsKey(Object key) {
     Entry tab[] = table;
     int hash = key.hashCode();
@@ -289,15 +230,6 @@ public final class KeyImplMap  implements  Cloneable,
     return false;
     }
 
-    /**
-     * Returns the value to which the specified key is mapped in this hashtable.
-     *
-     * @param   key   a key in the hashtable.
-     * @return  the value to which the key is mapped in this hashtable;
-     *          <code>null</code> if the key is not mapped to any value in
-     *          this hashtable.
-     * @see     #put(Object, Object)
-     */
     public Key get(Object key) {
 	    Entry tab[] = table;
 	    int hash = key.hashCode();
@@ -340,23 +272,6 @@ public final class KeyImplMap  implements  Cloneable,
     }
     }
 
-    /**
-     * Maps the specified <code>key</code> to the specified 
-     * <code>value</code> in this hashtable. Neither the key nor the 
-     * value can be <code>null</code>. <p>
-     *
-     * The value can be retrieved by calling the <code>get</code> method 
-     * with a key that is equal to the original key. 
-     *
-     * @param      key     the hashtable key.
-     * @param      value   the value.
-     * @return     the previous value of the specified key in this hashtable,
-     *             or <code>null</code> if it did not have one.
-     * @exception  NullPointerException  if the key or value is
-     *               <code>null</code>.
-     * @see     Object#equals(Object)
-     * @see     #get(Object)
-     */
     public Object put(Object key, Key value) {
 	    // Makes sure the key is not already in the hashtable.
 	    Entry tab[] = table;
@@ -527,50 +442,28 @@ public final class KeyImplMap  implements  Cloneable,
     }
 
     private class KeySet extends AbstractSet {
-        /**
-         * @see java.util.Set#iterator()
-         */
+        @Override
         public Iterator iterator() {
         return getIterator(KEYS);
         }
-        /**
-         * @see java.util.Set#size()
-         */
+        @Override
         public int size() {
             return count;
         }
-        /**
-         * @see java.util.Set#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object o) {
             return containsKey(o);
         }
-        /**
-         * @see java.util.Set#remove(java.lang.Object)
-         */
+        @Override
         public boolean remove(Object o) {
             return KeyImplMap.this.remove(o) != null;
         }
-        /**
-         * @see java.util.Set#clear()
-         */
+        @Override
         public void clear() {
             KeyImplMap.this.clear();
         }
     }
 
-    /**
-     * Returns a Set view of the entries contained in this Hashtable.
-     * Each element in this collection is a Map.Entry.  The Set is
-     * backed by the Hashtable, so changes to the Hashtable are reflected in
-     * the Set, and vice-versa.  The Set supports element removal
-     * (which removes the corresponding entry from the Hashtable),
-     * but not element addition.
-     *
-     * @return a set view of the mappings contained in this map.
-     * @see   Map.Entry
-*
-     */
     public Set entrySet() {
     if (entrySet==null)
         entrySet = Collections.synchronizedSet(new EntrySet(), this);
@@ -578,16 +471,12 @@ public final class KeyImplMap  implements  Cloneable,
     }
 
     private class EntrySet extends AbstractSet {
-        /**
-         * @see java.util.Set#iterator()
-         */
+        @Override
         public Iterator iterator() {
         return getIterator(ENTRIES);
         }
 
-        /**
-         * @see java.util.Set#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object o) {
             if (!(o instanceof Entry))
                 return false;
@@ -603,9 +492,7 @@ public final class KeyImplMap  implements  Cloneable,
             return false;
         }
 
-        /**
-         * @see java.util.Set#remove(java.lang.Object)
-         */
+        @Override
         public boolean remove(Object o) {
             if (!(o instanceof Entry))
                 return false;
@@ -632,16 +519,12 @@ public final class KeyImplMap  implements  Cloneable,
             return false;
         }
 
-        /**
-         * @see java.util.Set#size()
-         */
+        @Override
         public int size() {
             return count;
         }
 
-        /**
-         * @see java.util.Set#clear()
-         */
+        @Override
         public void clear() {
             KeyImplMap.this.clear();
         }
@@ -665,39 +548,25 @@ public final class KeyImplMap  implements  Cloneable,
     }
 
     private class ValueCollection extends AbstractCollection {
-        /**
-         * @see java.util.AbstractCollection#iterator()
-         */
+        @Override
         public Iterator iterator() {
         return getIterator(VALUES);
         }
-        /**
-         * @see java.util.AbstractCollection#size()
-         */
+        @Override
         public int size() {
             return count;
         }
-        /**
-         * @see java.util.AbstractCollection#contains(java.lang.Object)
-         */
+        @Override
         public boolean contains(Object o) {
             return containsValue(o);
         }
-        /**
-         * @see java.util.AbstractCollection#clear()
-         */
+        @Override
         public void clear() {
             KeyImplMap.this.clear();
         }
     }
 
-    /**
-     * Returns the hash code value for this Map as per the definition in the
-     * Map interface.
-     *
-     * @see Map#hashCode()
-*
-     */
+    @Override
     public int hashCode() {
         /*
          * This code detects the recursion caused by computing the hash code
@@ -745,9 +614,7 @@ public final class KeyImplMap  implements  Cloneable,
         this.next = next;
     }
 
-    /**
-     * @see java.lang.Object#clone()
-     */
+    @Override
     protected Object clone() {
         return new Entry(hash, key, value,
                  (next==null ? null : (Entry)next.clone()));
@@ -755,23 +622,14 @@ public final class KeyImplMap  implements  Cloneable,
 
     // Map.Entry Ops 
 
-    /**
-     * @see java.util.Map.Entry#getKey()
-     */
     public Object getKey() {
         return key;
     }
 
-    /**
-     * @see java.util.Map.Entry#getValue()
-     */
     public Key getValue() {
         return value;
     }
 
-    /**
-     * @see java.util.Map.Entry#setValue(java.lang.Object)
-     */
     public Object setValue(Key value) {
         if (value == null)
         throw new NullPointerException();
@@ -781,9 +639,7 @@ public final class KeyImplMap  implements  Cloneable,
         return oldValue;
     }
 
-    /**
-     * @see java.util.Map.Entry#equals(java.lang.Object)
-     */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Entry))
         return false;
@@ -793,16 +649,12 @@ public final class KeyImplMap  implements  Cloneable,
            (value==null ? e.getValue()==null : value.equals(e.getValue()));
     }
 
-    /**
-     * @see java.util.Map.Entry#hashCode()
-     */
+    @Override
     public int hashCode() {
         return hash ^ (value==null ? 0 : value.hashCode());
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return key.toString()+"="+value.toString();
     }
@@ -845,9 +697,7 @@ public final class KeyImplMap  implements  Cloneable,
         this.iterator = iterator;
     }
 
-    /**
-     * @see java.util.Enumeration#hasMoreElements()
-     */
+    @Override
     public boolean hasMoreElements() {
         Entry e = entry;
         int i = index;
@@ -861,34 +711,26 @@ public final class KeyImplMap  implements  Cloneable,
         return e != null;
     }
 
-    /**
-     * @see java.util.Enumeration#nextElement()
-     */
+    @Override
     public Object nextElement() {
         
         throw new NoSuchElementException("not impl");
     }
 
-    /**
-     * @see java.util.Iterator#hasNext()
-     */
+    @Override
     // Iterator methods
     public boolean hasNext() {
         return hasMoreElements();
     }
 
-    /**
-     * @see java.util.Iterator#next()
-     */
+    @Override
     public Object next() {
         if (modCount != expectedModCount)
         throw new ConcurrentModificationException();
         return nextElement();
     }
 
-    /**
-     * @see java.util.Iterator#remove()
-     */
+    @Override
     public void remove() {
         if (!iterator)
         throw new UnsupportedOperationException();
@@ -933,16 +775,12 @@ public final class KeyImplMap  implements  Cloneable,
     EmptyEnumerator() {
     }
 
-    /**
-     * @see java.util.Enumeration#hasMoreElements()
-     */
+    @Override
     public boolean hasMoreElements() {
         return false;
     }
 
-    /**
-     * @see java.util.Enumeration#nextElement()
-     */
+    @Override
     public Object nextElement() {
         throw new NoSuchElementException("Hashtable Enumerator");
     }
@@ -957,23 +795,17 @@ public final class KeyImplMap  implements  Cloneable,
     EmptyIterator() {
     }
 
-    /**
-     * @see java.util.Iterator#hasNext()
-     */
+    @Override
     public boolean hasNext() {
         return false;
     }
 
-    /**
-     * @see java.util.Iterator#next()
-     */
+    @Override
     public Object next() {
         throw new NoSuchElementException("Hashtable Iterator");
     }
 
-    /**
-     * @see java.util.Iterator#remove()
-     */
+    @Override
     public void remove() {
         throw new IllegalStateException("Hashtable Iterator");
     }

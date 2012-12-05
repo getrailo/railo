@@ -106,9 +106,7 @@ public final class ResourcesImpl implements Resources {
 		return frp;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resources#createResourceLock(long, boolean)
-	 */
+	@Override
 	public ResourceLock createResourceLock(long timeout,boolean caseSensitive) {
 		return new ResourceLockImpl(timeout,caseSensitive);
 	}

@@ -50,46 +50,34 @@ public final class FileResource extends File implements Resource {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.Resource#copyFrom(railo.commons.io.res.Resource,boolean)
-	 */
+	@Override
 	public void copyFrom(Resource res,boolean append) throws IOException {
 		IOUtil.copy(res, this.getOutputStream(append),true);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#copyTo(railo.commons.io.res.Resource,boolean)
-	 */
+	@Override
 	public void copyTo(Resource res,boolean append) throws IOException {
 		IOUtil.copy(this, res.getOutputStream(append),true);
 	}
 	
-	/**
-	 * @see Resource#getAbsoluteResource()
-	 */
+	@Override
 	public Resource getAbsoluteResource() {
 		return new FileResource(provider,getAbsolutePath());
 	}
 
-	/**
-	 * @see Resource#getCanonicalResource()
-	 */
+	@Override
 	public Resource getCanonicalResource() throws IOException {
 		return new FileResource(provider,getCanonicalPath());
 	}
 
-	/**
-	 * @see Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		String p = getParent();
 		if(p==null) return null;
 		return new FileResource(provider,p);
 	}
 
-	/**
-	 * @see Resource#listResources()
-	 */
+	@Override
 	public Resource[] listResources() {
 		String[] files = list();
 		if(files==null) return null;
@@ -101,9 +89,7 @@ public final class FileResource extends File implements Resource {
 		return resources;
 	}
 	
-	/**
-	 * @see res.Resource#list(res.filter.ResourceFilter)
-	 */
+	@Override
 	public String[] list(ResourceFilter filter) {
 		String[] files = list();
 		if(files==null) return null;
@@ -117,9 +103,7 @@ public final class FileResource extends File implements Resource {
 		return (String[]) list.toArray(new String[list.size()]);
 	}
 
-	/**
-	 * @see res.Resource#listResources(res.filter.ResourceFilter)
-	 */
+	@Override
 	public Resource[] listResources(ResourceFilter filter) {
 		String[] files = list();
 		if(files==null) return null;
@@ -134,9 +118,7 @@ public final class FileResource extends File implements Resource {
 	}
 	
 
-	/**
-	 * @see res.Resource#list(res.filter.ResourceNameFilter)
-	 */
+	@Override
 	public String[] list(ResourceNameFilter filter) {
 		String[] files = list();
 		if(files==null) return null;
@@ -147,9 +129,7 @@ public final class FileResource extends File implements Resource {
 		return (String[]) list.toArray(new String[list.size()]);
 	}
 
-	/**
-	 * @see res.Resource#listResources(res.filter.ResourceNameFilter)
-	 */
+	@Override
 	public Resource[] listResources(ResourceNameFilter filter) {
 		String[] files = list();
 		if(files==null) return null;
@@ -161,9 +141,7 @@ public final class FileResource extends File implements Resource {
 		return (Resource[]) list.toArray(new Resource[list.size()]);
 	}
 
-	/**
-	 * @see res.Resource#moveTo(res.Resource)
-	 */
+	@Override
 	public void moveTo(Resource dest) throws IOException {
 		if(this.equals(dest)) return;
 		if(dest instanceof File) {
@@ -189,9 +167,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
-	/**
-	 * @see res.Resource#getInputStream()
-	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		//provider.lock(this);
 		provider.read(this);
@@ -205,18 +181,12 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
-	/**
-	 * @see res.Resource#getOutputStream()
-	 */
+	@Override
 	public OutputStream getOutputStream() throws IOException {
 		return getOutputStream(false);
 	}
 
-	/**
-	 *
-	 * @throws FileNotFoundException 
-	 * @see railo.commons.io.res.Resource#getOutputStream(boolean)
-	 */
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		provider.lock(this);
 		try {
@@ -231,10 +201,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 	
-	/**
-	 * @throws IOException 
-	 * @see res.Resource#createFile(boolean)
-	 */
+	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
 		provider.lock(this);
 		try {
@@ -252,9 +219,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 	
-	/**
-	 * @see res.Resource#removeE(boolean)
-	 */
+	@Override
 	public void remove(boolean alsoRemoveChildren) throws IOException {
 		if(alsoRemoveChildren && isDirectory()) {
 			Resource[] children = listResources();
@@ -275,9 +240,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
-	/**
-	 * @see res.Resource#getReal(java.lang.String)
-	 */
+	@Override
 	public String getReal(String realpath) {
 		if(realpath.length()<=2) {
 			if(realpath.length()==0) return getPath();
@@ -287,9 +250,7 @@ public final class FileResource extends File implements Resource {
 		return new FileResource(provider,this,realpath).getPath();
 	}
 
-	/**
-	 * @see res.Resource#getRealResource(java.lang.String)
-	 */
+	@Override
 	public Resource getRealResource(String realpath) {
 		if(realpath.length()<=2) {
 			if(realpath.length()==0) return this;
@@ -299,16 +260,11 @@ public final class FileResource extends File implements Resource {
 		return new FileResource(provider,this,realpath);
 	}
 
-	/**
-	 * @see res.Resource#getContentType()
-	 */
 	public ContentType getContentType() {
 		return ResourceUtil.getContentType(this);
 	}
 
-	/**
-	 * @see res.Resource#createDirectory(boolean)
-	 */
+	@Override
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
 		provider.lock(this);
 		try {
@@ -322,30 +278,22 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
-	/**
-	 * @see res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return provider;
 	}
 
-	/**
-	 * @see res.Resource#isReadable()
-	 */
+	@Override
 	public boolean isReadable() {
 		return canRead();
 	}
 
-	/**
-	 * @see res.Resource#isWriteable()
-	 */
+	@Override
 	public boolean isWriteable() {
 		return canWrite();
 	}
 
-	/**
-	 * @see res.Resource#renameTo(res.Resource)
-	 */
+	@Override
 	public boolean renameTo(Resource dest) {
 		try {
 			moveTo(dest);
@@ -355,25 +303,17 @@ public final class FileResource extends File implements Resource {
 		return false;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#isArchive()
-	 */
+	@Override
 	public boolean isArchive() {
 		return getAttribute(ATTRIBUTE_ARCHIVE);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#isSystem()
-	 */
+	@Override
 	public boolean isSystem() {
 		return getAttribute(ATTRIBUTE_SYSTEM);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getMode()
-	 */
+	@Override
 	public int getMode() {
 		if(!exists()) return 0;
 		if(SystemUtil.isUnix()) {
@@ -413,33 +353,22 @@ public final class FileResource extends File implements Resource {
     	}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#setArchive(boolean)
-	 */
+	@Override
 	public void setArchive(boolean value) throws IOException {
 		setAttribute(ATTRIBUTE_ARCHIVE, value);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setHidden(boolean)
-	 */
+	@Override
 	public void setHidden(boolean value) throws IOException {
 		setAttribute(ATTRIBUTE_HIDDEN, value);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setSystem(boolean)
-	 */
+	@Override
 	public void setSystem(boolean value) throws IOException {
 		setAttribute(ATTRIBUTE_SYSTEM, value);
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.Resource#setWritable(boolean)
-	 */
+	@Override
 
 	public boolean setReadable(boolean value)  {
 		if(!SystemUtil.isUnix()) return false;
@@ -498,10 +427,7 @@ public final class FileResource extends File implements Resource {
 	
 	
 	
-	/**
-	 *
-	 * @see java.io.File#createNewFile()
-	 */
+	@Override
 	public boolean createNewFile() {
 		try {
 			provider.lock(this);
@@ -515,9 +441,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 	
-	/**
-	 * @see java.io.File#canRead()
-	 */
+	@Override
 	public boolean canRead() {
 		try {
 			provider.read(this);
@@ -527,9 +451,7 @@ public final class FileResource extends File implements Resource {
 		return super.canRead();
 	}
 
-	/**
-	 * @see java.io.File#canWrite()
-	 */
+	@Override
 	public boolean canWrite() {
 		try {
 			provider.read(this);
@@ -539,9 +461,7 @@ public final class FileResource extends File implements Resource {
 		return super.canWrite();
 	}
 
-	/**
-	 * @see java.io.File#delete()
-	 */
+	@Override
 	public boolean delete() {
 		try {
 			provider.lock(this);
@@ -555,9 +475,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
-	/**
-	 * @see java.io.File#exists()
-	 */
+	@Override
 	public boolean exists() {
 		try {
 			provider.read(this);
@@ -568,9 +486,7 @@ public final class FileResource extends File implements Resource {
 
 	
 
-	/**
-	 * @see java.io.File#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		try {
 			provider.read(this);
@@ -581,9 +497,7 @@ public final class FileResource extends File implements Resource {
 		return super.isAbsolute();
 	}
 
-	/**
-	 * @see java.io.File#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		try {
 			provider.read(this);
@@ -593,9 +507,7 @@ public final class FileResource extends File implements Resource {
 		return super.isDirectory();
 	}
 
-	/**
-	 * @see java.io.File#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		try {
 			provider.read(this);
@@ -605,9 +517,7 @@ public final class FileResource extends File implements Resource {
 		return super.isFile();
 	}
 
-	/**
-	 * @see java.io.File#isHidden()
-	 */
+	@Override
 	public boolean isHidden() {
 		try {
 			provider.read(this);
@@ -617,9 +527,7 @@ public final class FileResource extends File implements Resource {
 		return super.isHidden();
 	}
 
-	/**
-	 * @see java.io.File#lastModified()
-	 */
+	@Override
 	public long lastModified() {
 		try {
 			provider.read(this);
@@ -629,9 +537,7 @@ public final class FileResource extends File implements Resource {
 		return super.lastModified();
 	}
 
-	/**
-	 * @see java.io.File#length()
-	 */
+	@Override
 	public long length() {
 		try {
 			provider.read(this);
@@ -641,9 +547,7 @@ public final class FileResource extends File implements Resource {
 		return super.length();
 	}
 
-	/**
-	 * @see java.io.File#list()
-	 */
+	@Override
 	public String[] list() {
 		try {
 			provider.read(this);
@@ -653,9 +557,7 @@ public final class FileResource extends File implements Resource {
 		return super.list();
 	}
 
-	/**
-	 * @see java.io.File#mkdir()
-	 */
+	@Override
 	public boolean mkdir() {
 		try {
 			provider.lock(this);
@@ -669,9 +571,7 @@ public final class FileResource extends File implements Resource {
 		}
 	}
 
-	/**
-	 * @see java.io.File#mkdirs()
-	 */
+	@Override
 	public boolean mkdirs() {
 		try {
 			provider.lock(this);
@@ -694,9 +594,7 @@ public final class FileResource extends File implements Resource {
 		return (parent != null) && (parent.mkdirs() && super.mkdir());
 	}
 
-	/**
-	 * @see java.io.File#setLastModified(long)
-	 */
+	@Override
 	public boolean setLastModified(long time) {
 		try {
 			provider.lock(this);
@@ -711,10 +609,7 @@ public final class FileResource extends File implements Resource {
 		
 	}
 
-	/**
-	 *
-	 * @see java.io.File#setReadOnly()
-	 */
+	@Override
 	public boolean setReadOnly() {
 		try {
 			provider.lock(this);

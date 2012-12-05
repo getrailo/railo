@@ -69,26 +69,20 @@ public final class DatasourceResource extends ResourceSupport {
 		return parent==null;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.Resource#createDirectory(boolean)
-	 */
+	@Override
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateDirectoryOK(this,createParentWhenNotExists);
 		provider.create(data,fullPathHash(),pathHash(),parent,name,Attr.TYPE_DIRECTORY);
 		
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#createFile(boolean)
-	 */
+	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateFileOK(this,createParentWhenNotExists);
 		provider.create(data,fullPathHash(),pathHash(),parent,name,Attr.TYPE_FILE);
 	}
 	
-	/**
-	 * @see railo.commons.io.res.Resource#remove(boolean)
-	 */
+	@Override
 	public void remove(boolean force) throws IOException {
 		ResourceUtil.checkRemoveOK(this);
 		if(isRoot()) 
@@ -107,38 +101,28 @@ public final class DatasourceResource extends ResourceSupport {
 		provider.delete(data,fullPathHash(),parent,name);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#exists()
-	 */
+	@Override
 	public boolean exists() {
 		return attr().exists();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getInputStream()
-	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		ResourceUtil.checkGetInputStreamOK(this);
 		return provider.getInputStream(data,fullPathHash(),parent,name);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getMode()
-	 */
+	@Override
 	public int getMode() {
 		return attr().getMode();
 	}
 
-	/**
-	 * @see res.Resource#getFullName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getOutputStream(boolean)
-	 */
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		ResourceUtil.checkGetOutputStreamOK(this);
 		byte[] barr=null;
@@ -159,9 +143,7 @@ public final class DatasourceResource extends ResourceSupport {
 		return os;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParent()
-	 */
+	@Override
 	public String getParent() {
 		if(isRoot()) return null;
 		String p = (StringUtil.isEmpty(parent))?"/":parent;
@@ -169,9 +151,7 @@ public final class DatasourceResource extends ResourceSupport {
 		
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		return getParentDatasourceResource();
 	}
@@ -180,9 +160,7 @@ public final class DatasourceResource extends ResourceSupport {
 		return new DatasourceResource(provider,data,parent);
 	}
 
-	/**
-	 * @see res.Resource#getPath()
-	 */
+	@Override
 	public String getPath() {
 		return provider.getScheme().concat("://").concat(data.key()).concat(getInnerPath());
 	}
@@ -191,9 +169,7 @@ public final class DatasourceResource extends ResourceSupport {
 		return parent.concat(name);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
-	 */
+	@Override
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
@@ -201,65 +177,47 @@ public final class DatasourceResource extends ResourceSupport {
 		return new DatasourceResource(provider,data,realpath);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return provider;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		return true;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return attr().isDirectory();
 	}
 	
-	/**
-	 * @see railo.commons.io.res.Resource#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return attr().isFile();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isReadable()
-	 */
+	@Override
 	public boolean isReadable() {
 		return ModeUtil.isReadable(getMode());
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isWriteable()
-	 */
+	@Override
 	public boolean isWriteable() {
 		return ModeUtil.isWritable(getMode());
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#lastModified()
-	 */
+	@Override
 	public long lastModified() {
 		return attr().getLastModified();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#length()
-	 */
+	@Override
 	public long length() {
 		return attr().size();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#listResources()
-	 */
+	@Override
 	public Resource[] listResources() {
 		if(!attr().isDirectory())return null;
 		
@@ -283,34 +241,26 @@ public final class DatasourceResource extends ResourceSupport {
 		return attrs;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#setLastModified(long)
-	 */
+	@Override
 	public boolean setLastModified(long time) {
 		if(!exists()) return false;
 		return provider.setLastModified(data,fullPathHash(),parent,name,time);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#setMode(int)
-	 */
+	@Override
 	public void setMode(int mode) throws IOException {
 		if(!exists())throw new IOException("can't set mode on resource ["+this+"], resource does not exist");
 		provider.setMode(data,fullPathHash(),parent,name,mode);
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.util.ResourceSupport#moveTo(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void moveTo(Resource dest) throws IOException {
 		super.moveTo(dest);// TODO
 	}
 	
 	
-	/**
-	 * @see railo.commons.io.res.Resource#setReadable(boolean)
-	 */
+	@Override
 	public boolean setReadable(boolean readable) {
 		if(!exists())return false;
 		try {
@@ -321,9 +271,7 @@ public final class DatasourceResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#setWritable(boolean)
-	 */
+	@Override
 	public boolean setWritable(boolean writable) {
 		if(!exists())return false;
 		try {
@@ -334,9 +282,7 @@ public final class DatasourceResource extends ResourceSupport {
 		}
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return getPath();
 	}

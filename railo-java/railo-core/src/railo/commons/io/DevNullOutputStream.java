@@ -15,29 +15,19 @@ public final class DevNullOutputStream extends OutputStream implements Serializa
 	 */
 	private DevNullOutputStream() {}
 	
-    /**
-     * @see java.io.OutputStream#close()
-     */
+    @Override
     public void close(){}
 
-    /**
-     * @see java.io.OutputStream#flush()
-     */
+    @Override
     public void flush() {}
 
-    /**
-     * @see java.io.OutputStream#write(byte[], int, int)
-     */
+    @Override
     public void write(byte[] b, int off, int len) {}
 
-    /**
-     * @see java.io.OutputStream#write(byte[])
-     */
+    @Override
     public void write(byte[] b) {}
 
-    /**
-     * @see java.io.OutputStream#write(int)
-     */
+    @Override
     public void write(int b) {}
 
 }

@@ -12,68 +12,46 @@ public final class CountingReader extends Reader {
     public CountingReader(Reader reader) {
         this.reader=reader;
     }
-	/**
-	 * @see java.io.Reader#mark(int)
-	 */
+	@Override
 	public void mark(int readAheadLimit) throws IOException {
 		reader.mark(readAheadLimit);
 	}
 
-	/**
-	 * @see java.io.Reader#markSupported()
-	 */
+	@Override
 	public boolean markSupported() {
 		return reader.markSupported();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#read()
-	 */
+	@Override
 	public int read() throws IOException {
 		count++;
 		return reader.read();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#read(char[])
-	 */
+	@Override
 	public int read(char[] cbuf) throws IOException {
 		
 		return reader.read(cbuf);
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#read(java.nio.CharBuffer)
-	 */
+	@Override
 	public int read(CharBuffer arg0) throws IOException {
 		return super.read(arg0.array());
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#ready()
-	 */
+	@Override
 	public boolean ready() throws IOException {
 		// TODO Auto-generated method stub
 		return super.ready();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#reset()
-	 */
+	@Override
 	public void reset() throws IOException {
 		// TODO Auto-generated method stub
 		super.reset();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#skip(long)
-	 */
+	@Override
 	public long skip(long n) throws IOException {
 		// TODO Auto-generated method stub
 		return super.skip(n);

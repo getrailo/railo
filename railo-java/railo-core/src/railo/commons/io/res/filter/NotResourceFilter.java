@@ -18,9 +18,7 @@ public final class NotResourceFilter implements ResourceFilter {
         this.filter=filter;
     }
 
-    /**
-     * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-     */
+    @Override
     public boolean accept(Resource f) {
         return !filter.accept(f);
     }

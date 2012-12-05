@@ -106,9 +106,7 @@ public class AccessControl {
 	}
 	
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(){
 		return "displayName:"+displayName+";email:"+email+";id:"+id+";permission:"+permission+";type:"+type+";uri:"+uri;
 	}
@@ -120,9 +118,7 @@ public class AccessControl {
 			return null;
 		}
 	}
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return hash().hashCode();
 	}

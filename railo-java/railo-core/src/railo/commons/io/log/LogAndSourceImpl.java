@@ -17,37 +17,27 @@ public final class LogAndSourceImpl implements LogAndSource {
         this.source=source;
     }
  
-    /**
-     * @see railo.commons.io.log.Log#log(int, java.lang.String, java.lang.String)
-     */
+    @Override
     public void log(int level, String application, String message) {
         log.log(level,application,message);
     }
 
-    /**
-     * @see railo.commons.io.log.Log#info(java.lang.String, java.lang.String)
-     */
+    @Override
     public void info(String application, String message) {
         log.info(application,message);
     }
 
-    /**
-     * @see railo.commons.io.log.Log#debug(java.lang.String, java.lang.String)
-     */
+    @Override
     public void debug(String application, String message) {
         log.debug(application,message);
     }
 
-    /**
-     * @see railo.commons.io.log.Log#warn(java.lang.String, java.lang.String)
-     */
+    @Override
     public void warn(String application, String message) {
         log.warn(application,message);
     }
 
-    /**
-     * @see railo.commons.io.log.Log#error(java.lang.String, java.lang.String)
-     */
+    @Override
     public void error(String application, String message) {
         log.error(application,message);
     }
@@ -56,37 +46,27 @@ public final class LogAndSourceImpl implements LogAndSource {
         log.fatal(application,message);
     }
 
-    /**
-     * @see railo.commons.io.log.LogAndSource#getLog()
-     */
+    @Override
     public Log getLog() {
         return log;
     }
 
-    /**
-     * @see railo.commons.io.log.LogAndSource#getSource()
-     */
+    @Override
     public String getSource() {
         return source;
     }
 
-    /**
-     * @see railo.commons.io.log.Log#getLogLevel()
-     */
+    @Override
     public int getLogLevel() {
         return log.getLogLevel();
     }
 
-    /**
-     * @see railo.commons.io.log.Log#setLogLevel(int)
-     */
+    @Override
     public void setLogLevel(int level) {
         log.setLogLevel(level);    
     }
     
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString(){
     	return log+":"+source;
     }

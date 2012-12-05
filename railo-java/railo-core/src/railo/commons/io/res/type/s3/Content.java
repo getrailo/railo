@@ -136,31 +136,22 @@ public final class Content implements S3Info {
 	}
 	
 	
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "eTag:"+eTag+";key:"+key+";ownerDisplayName:"+ownerDisplayName+";ownerIdKey:"+ownerIdKey+";size:"+size+";storageClass:"+storageClass+";";
 	}
 	
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#exists()
-	 */
+	@Override
 	public boolean exists() {
 		return true;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return getSize()==0 && getKey().endsWith("/");
 	}
 	
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return getSize()>0 || !getKey().endsWith("/");
 	}

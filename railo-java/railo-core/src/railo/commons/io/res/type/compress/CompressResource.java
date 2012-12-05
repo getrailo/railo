@@ -44,9 +44,7 @@ public final class CompressResource extends ResourceSupport {
 		return zip.getRamProviderResource(path);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#exists()
-	 */
+	@Override
 	public boolean exists() {
 		try {
 			provider.read(this);
@@ -57,113 +55,82 @@ public final class CompressResource extends ResourceSupport {
 		return getRamResource().exists();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getInputStream()
-	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		ResourceUtil.checkGetInputStreamOK(this);
 		return getRamResource().getInputStream();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParent()
-	 */
+	@Override
 	public String getParent() {
 		if(StringUtil.isEmpty(parent))return null;
 		return provider.getScheme().concat("://").concat(zip.getCompressFile().getPath()).concat("!").concat(parent);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		if(StringUtil.isEmpty(parent))return null;
 		return new CompressResource(provider,zip,parent,caseSensitive);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getPath()
-	 */
+	@Override
 	public String getPath() {
 		return provider.getScheme().concat("://").concat(zip.getCompressFile().getPath()).concat("!").concat(path);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
-	 */
+	@Override
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(path, realpath);
 		if(realpath.startsWith("../"))return null;
 		return new CompressResource(provider,zip,realpath,caseSensitive);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return provider;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		return getRamResource().isAbsolute();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return getRamResource().isDirectory();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return getRamResource().isFile();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isReadable()
-	 */
+	@Override
 	public boolean isReadable() {
 		return getRamResource().isReadable();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isWriteable()
-	 */
+	@Override
 	public boolean isWriteable() {
 		return getRamResource().isWriteable();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#lastModified()
-	 */
+	@Override
 	public long lastModified() {
 		return getRamResource().lastModified();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#length()
-	 */
+	@Override
 	public long length() {
 		return getRamResource().length();
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#listResources()
-	 */
+	@Override
 	public Resource[] listResources() {
 		String[] names = list();
 		if(names==null) return null;
@@ -174,16 +141,12 @@ public final class CompressResource extends ResourceSupport {
 		return children;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.util.ResourceSupport#list()
-	 */
+	@Override
 	public String[] list() {
 		return getRamResource().list();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#remove(boolean)
-	 */
+	@Override
 	public void remove(boolean force) throws IOException {
 		Resource rr = getRamResource();
 		if(rr.getParent()==null) 
@@ -204,36 +167,28 @@ public final class CompressResource extends ResourceSupport {
 		rr.remove(force);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#setLastModified(long)
-	 */
+	@Override
 	public boolean setLastModified(long time) {
 		boolean lm = getRamResource().setLastModified(time);
 		zip.synchronize(provider.async);
 		return lm;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.Resource#createDirectory(boolean)
-	 */
+	@Override
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateDirectoryOK(this,createParentWhenNotExists);
 		getRamResource().createDirectory(createParentWhenNotExists);
 		zip.synchronize(provider.async);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#createFile(boolean)
-	 */
+	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateFileOK(this,createParentWhenNotExists);
 		getRamResource().createFile(createParentWhenNotExists);
 		zip.synchronize(provider.async);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getOutputStream()
-	 */
+	@Override
 	public OutputStream getOutputStream() throws IOException {
 		ResourceUtil.checkGetOutputStreamOK(this);
 		//Resource res = getRamResource();
@@ -242,35 +197,24 @@ public final class CompressResource extends ResourceSupport {
 		return new CompressOutputStreamSynchronizer(getRamResource().getOutputStream(),zip,provider.async);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getOutputStream(boolean)
-	 */
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		return new CompressOutputStreamSynchronizer(getRamResource().getOutputStream(append),zip,provider.async);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#getMode()
-	 */
+	@Override
 	public int getMode() {
 		return getRamResource().getMode();
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setMode(int)
-	 */
+	@Override
 	public void setMode(int mode) throws IOException {
 		getRamResource().setMode(mode);
 		zip.synchronize(provider.async);
 		
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setReadable(boolean)
-	 */
+	@Override
 	public boolean setReadable(boolean value) {
 		if(!isFile())return false;
 		getRamResource().setReadable(value);
@@ -278,10 +222,7 @@ public final class CompressResource extends ResourceSupport {
 		return true;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setWritable(boolean)
-	 */
+	@Override
 	public boolean setWritable(boolean value) {
 		if(!isFile())return false;
 		getRamResource().setWritable(value);

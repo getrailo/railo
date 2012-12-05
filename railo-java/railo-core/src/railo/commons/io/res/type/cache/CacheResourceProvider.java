@@ -75,9 +75,7 @@ public final class CacheResourceProvider implements ResourceProvider {
 	
 	
 	
-	/**
-	 * @see res.ResourceProvider#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		path=ResourceUtil.removeScheme(scheme,path);
 		if(!StringUtil.startsWith(path,'/'))path="/"+path;
@@ -160,68 +158,46 @@ public final class CacheResourceProvider implements ResourceProvider {
 	}
 
 
-	/**
-	 * @see res.ResourceProvider#getScheme()
-	 */
+	@Override
 	public String getScheme() {
 		return scheme;
 	}
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#setResources(railo.commons.io.res.Resources)
-	 */
+	@Override
 	public void setResources(Resources resources) {
 		//this.resources=resources;
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) throws IOException {
 		lock.lock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		lock.unlock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) throws IOException {
 		lock.read(res);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#isAttributesSupported()
-	 */
+	@Override
 	public boolean isAttributesSupported() {
 		return true;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#isCaseSensitive()
-	 */
+	@Override
 	public boolean isCaseSensitive() {
 		return caseSensitive;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#isModeSupported()
-	 */
+	@Override
 	public boolean isModeSupported() {
 		return true;
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getArguments()
-	 */
+	@Override
 	public Map getArguments() {
 		return arguments;
 	}

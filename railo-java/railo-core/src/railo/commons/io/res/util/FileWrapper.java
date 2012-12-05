@@ -28,28 +28,19 @@ public final class FileWrapper extends File implements Resource {
 		this.res=res;
 	}
 	
-	/**
-	 *
-	 * @see java.io.File#canRead()
-	 */
+	@Override
 	public boolean canRead() {
 		return res.canRead();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#canWrite()
-	 */
+	@Override
 	public boolean canWrite() {
 		return res.canWrite();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#compareTo(java.io.File)
-	 */
+	@Override
 	public int compareTo(File pathname) {
 		if(res instanceof File) ((File)res).compareTo(pathname);
 		return res.getPath().compareTo(pathname.getPath());
@@ -57,210 +48,141 @@ public final class FileWrapper extends File implements Resource {
 
 
 
-	/**
-	 *
-	 * @see java.io.File#createNewFile()
-	 */
+	@Override
 	public boolean createNewFile() {
 		return res.createNewFile();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#delete()
-	 */
+	@Override
 	public boolean delete() {
 		return res.delete();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#deleteOnExit()
-	 */
+	@Override
 	public void deleteOnExit() {
 		if(res instanceof File) ((File)res).deleteOnExit();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		return res.equals(obj);
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#exists()
-	 */
+	@Override
 	public boolean exists() {
 		return res.exists();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getAbsoluteFile()
-	 */
+	@Override
 	public File getAbsoluteFile() {
 		if(res.isAbsolute()) return this;
 		return new FileWrapper(res.getAbsoluteResource());
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getAbsolutePath()
-	 */
+	@Override
 	public String getAbsolutePath() {
 		return res.getAbsolutePath();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getCanonicalFile()
-	 */
+	@Override
 	public File getCanonicalFile() throws IOException {
 		return new FileWrapper(res.getCanonicalResource());
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getCanonicalPath()
-	 */
+	@Override
 	public String getCanonicalPath() throws IOException {
 		return res.getCanonicalPath();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getName()
-	 */
+	@Override
 	public String getName() {
 		return res.getName();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getParent()
-	 */
+	@Override
 	public String getParent() {
 		return res.getParent();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getParentFile()
-	 */
+	@Override
 	public File getParentFile() {
 		return new FileWrapper(this.getParentResource());
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#getPath()
-	 */
+	@Override
 	public String getPath() {
 		return res.getPath();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return res.hashCode();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		return res.isAbsolute();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return res.isDirectory();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return res.isFile();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#isHidden()
-	 */
+	@Override
 	public boolean isHidden() {
 		return res.isHidden();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#lastModified()
-	 */
+	@Override
 	public long lastModified() {
 		return res.lastModified();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#length()
-	 */
+	@Override
 	public long length() {
 		return res.length();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#list()
-	 */
+	@Override
 	public String[] list() {
 		return res.list();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#list(java.io.FilenameFilter)
-	 */
+	@Override
 	public String[] list(FilenameFilter filter) {
 		if(res instanceof File) ((File)res).list(filter);
 		return list((ResourceNameFilter)new FileNameFilterWrapper(filter));
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#listFiles()
-	 */
+	@Override
 	public File[] listFiles() {
 		//if(res instanceof File) return ((File)res).listFiles();
 		return toFiles(listResources());
@@ -275,49 +197,33 @@ public final class FileWrapper extends File implements Resource {
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#listFiles(java.io.FileFilter)
-	 */
+	@Override
 	public File[] listFiles(FileFilter filter) {
 		//if(res instanceof File) return ((File)res).listFiles(filter);
 		return toFiles(listResources(new FileFilterWrapper(filter)));
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#listFiles(java.io.FilenameFilter)
-	 */
+	@Override
 	public File[] listFiles(FilenameFilter filter) {
 		//if(res instanceof File) return ((File)res).listFiles(filter);
 		return toFiles(listResources(new FileNameFilterWrapper(filter)));
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#mkdir()
-	 */
+	@Override
 	public boolean mkdir() {
 		return res.mkdir();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#mkdirs()
-	 */
+	@Override
 	public boolean mkdirs() {
 		return res.mkdirs();
 	}
 
 
-	/**
-	 *
-	 * @throws IOException 
-	 * @see java.io.File#renameTo(java.io.File)
-	 */
+	@Override
 	public boolean renameTo(File dest) {
 		try {
 			if(res instanceof File) return ((File)res).renameTo(dest);
@@ -331,224 +237,158 @@ public final class FileWrapper extends File implements Resource {
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#setLastModified(long)
-	 */
+	@Override
 	public boolean setLastModified(long time) {
 		return res.setLastModified(time);
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#setReadOnly()
-	 */
+	@Override
 	public boolean setReadOnly() {
 		return res.setReadOnly();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#toString()
-	 */
+	@Override
 	public String toString() {
 		return res.toString();
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#toURI()
-	 */
+	@Override
 	public URI toURI() {
 		if(res instanceof File) return ((File)res).toURI();
 		return null;
 	}
 
 
-	/**
-	 *
-	 * @see java.io.File#toURL()
-	 */
+	@Override
 	public URL toURL() throws MalformedURLException {
 		if(res instanceof File) return ((File)res).toURL();
 		return null;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#createDirectory(boolean)
-	 */
+	@Override
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
 		res.createDirectory(createParentWhenNotExists);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#createFile(boolean)
-	 */
+	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
 		res.createFile(createParentWhenNotExists);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getAbsoluteResource()
-	 */
+	@Override
 	public Resource getAbsoluteResource() {
 		return res.getAbsoluteResource();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getCanonicalResource()
-	 */
+	@Override
 	public Resource getCanonicalResource() throws IOException {
 		return res.getCanonicalResource();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getInputStream()
-	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		return res.getInputStream();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getMode()
-	 */
+	@Override
 	public int getMode() {
 		return res.getMode();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getOutputStream()
-	 */
+	@Override
 	public OutputStream getOutputStream() throws IOException {
 		return res.getOutputStream();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getOutputStream(boolean)
-	 */
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		return res.getOutputStream(append);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		return res.getParentResource();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getReal(java.lang.String)
-	 */
+	@Override
 	public String getReal(String realpath) {
 		return res.getReal(realpath);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
-	 */
+	@Override
 	public Resource getRealResource(String realpath) {
 		return res.getRealResource(realpath);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return res.getResourceProvider();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isArchive()
-	 */
+	@Override
 	public boolean isArchive() {
 		return res.isArchive();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isReadable()
-	 */
+	@Override
 	public boolean isReadable() {
 		return res.isReadable();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isSystem()
-	 */
+	@Override
 	public boolean isSystem() {
 		return res.isSystem();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isWriteable()
-	 */
+	@Override
 	public boolean isWriteable() {
 		return res.isWriteable();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#list(railo.commons.io.res.filter.ResourceNameFilter)
-	 */
+	@Override
 	public String[] list(ResourceNameFilter filter) {
 		return res.list(filter);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#list(railo.commons.io.res.filter.ResourceFilter)
-	 */
+	@Override
 	public String[] list(ResourceFilter filter) {
 		return res.list(filter);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#listResources()
-	 */
+	@Override
 	public Resource[] listResources() {
 		return res.listResources();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#listResources(railo.commons.io.res.filter.ResourceFilter)
-	 */
+	@Override
 	public Resource[] listResources(ResourceFilter filter) {
 		return res.listResources(filter);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#listResources(railo.commons.io.res.filter.ResourceNameFilter)
-	 */
+	@Override
 	public Resource[] listResources(ResourceNameFilter filter) {
 		return res.listResources(filter);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#moveTo(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void moveTo(Resource dest) throws IOException {
 		res.moveTo(dest);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#remove(boolean)
-	 */
+	@Override
 	public void remove(boolean force) throws IOException {
 		res.remove(force);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#renameTo(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public boolean renameTo(Resource dest) {
 		return res.renameTo(dest);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setMode(int)
-	 */
+	@Override
 	public void setMode(int mode) throws IOException {
 		res.setMode(mode);
 	}
@@ -564,60 +404,41 @@ public final class FileWrapper extends File implements Resource {
 	}
 
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setArchive(boolean)
-	 */
+	@Override
 	public void setArchive(boolean value) throws IOException {
 		res.setArchive(value);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setHidden(boolean)
-	 */
+	@Override
 	public void setHidden(boolean value) throws IOException {
 		res.setHidden(value);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setSystem(boolean)
-	 */
+	@Override
 	public void setSystem(boolean value) throws IOException {
 		res.setSystem(value);
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.Resource#getAttribute(short)
-	 */
+	@Override
 	public boolean getAttribute(short attribute) {
 		return res.getAttribute(attribute);
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.Resource#setAttribute(short, boolean)
-	 */
+	@Override
 	public void setAttribute(short attribute, boolean value) throws IOException {
 		res.setAttribute(attribute, value);
 	}
 
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setReadable(boolean)
-	 */
+	@Override
 	public boolean setReadable(boolean value) {
 		return res.setReadable(value);
 	}
 
 
-	/**
-	 *
-	 * @see railo.commons.io.res.Resource#setWritable(boolean)
-	 */
+	@Override
 	public boolean setWritable(boolean value) {
 		return res.setWritable(value);
 	}

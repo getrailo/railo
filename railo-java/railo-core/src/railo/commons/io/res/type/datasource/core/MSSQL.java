@@ -115,9 +115,7 @@ public class MSSQL extends CoreSupport {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#getAttr(railo.runtime.db.DatasourceConnection, java.lang.String, int, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Attr getAttr(DatasourceConnection dc, String prefix, int fullPathHash,String path, String name) throws SQLException {
 		// ROOT
 		if(StringUtil.isEmpty(path))
@@ -152,9 +150,7 @@ public class MSSQL extends CoreSupport {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#getAttrs(railo.runtime.db.DatasourceConnection, java.lang.String, int, java.lang.String)
-	 */
+	@Override
 	public List getAttrs(DatasourceConnection dc, String prefix, int pathHash,String path) throws SQLException {
 		String sql="select rdr_id,rdr_name,rdr_type,rdr_length,rdr_last_modified,rdr_mode,rdr_attributes,rdr_data from "+prefix+"attrs where rdr_path_hash=? and rdr_path=? order by rdr_name";
 		PreparedStatement stat =  prepareStatement(dc, sql);//dc.getConnection().prepareStatement(sql);
@@ -189,9 +185,7 @@ public class MSSQL extends CoreSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#create(railo.runtime.db.DatasourceConnection, java.lang.String, int, int, java.lang.String, java.lang.String, int)
-	 */
+	@Override
 	public void create(DatasourceConnection dc, String prefix, int fullPatHash,int pathHash,String path, String name, int type) throws SQLException {
 		String sql="insert into "+prefix+"attrs(rdr_type,rdr_path,rdr_name,rdr_full_path_hash,rdr_path_hash,rdr_last_modified,rdr_mode,rdr_attributes,rdr_data,rdr_length) " +
 				"values(?,?,?,?,?,?,?,?,?,?)";
@@ -215,9 +209,7 @@ public class MSSQL extends CoreSupport {
 		}*/
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#delete(railo.runtime.db.DatasourceConnection, java.lang.String, railo.commons.io.res.type.datasource.Attr)
-	 */
+	@Override
 	public boolean delete(DatasourceConnection dc, String prefix, Attr attr) throws SQLException {
 		boolean rst=false;
 		if(attr!=null){
@@ -249,9 +241,7 @@ public class MSSQL extends CoreSupport {
 		return rst;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#getInputStream(railo.runtime.db.DatasourceConnection, java.lang.String, railo.commons.io.res.type.datasource.Attr)
-	 */
+	@Override
 	public InputStream getInputStream(DatasourceConnection dc, String prefix, Attr attr) throws SQLException, IOException {
 		if(attr==null || attr.getData()==0) return new ByteArrayInputStream(new byte[0]);
 		
@@ -274,9 +264,7 @@ public class MSSQL extends CoreSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#write(railo.runtime.db.DatasourceConnection, java.lang.String, railo.commons.io.res.type.datasource.Attr, java.io.InputStream, boolean)
-	 */
+	@Override
 	public void write(DatasourceConnection dc, String prefix, Attr attr, InputStream is, boolean append) throws SQLException {
 		if(attr.getData()==0) {
 			writeInsert(dc, prefix, attr, is);
@@ -386,9 +374,7 @@ public class MSSQL extends CoreSupport {
 
 
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#setLastModified(railo.runtime.db.DatasourceConnection, java.lang.String, railo.commons.io.res.type.datasource.Attr, long)
-	 */
+	@Override
 	public void setLastModified(DatasourceConnection dc, String prefix, Attr attr, long time) throws SQLException {
 		String sql="update "+prefix+"attrs set rdr_last_modified=? where rdr_id=?";
 		log(sql);
@@ -405,9 +391,7 @@ public class MSSQL extends CoreSupport {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#setMode(railo.runtime.db.DatasourceConnection, java.lang.String, railo.commons.io.res.type.datasource.Attr, int)
-	 */
+	@Override
 	public void setMode(DatasourceConnection dc,String prefix, Attr attr, int mode) throws SQLException {
 		String sql="update "+prefix+"attrs set rdr_mode=? where rdr_id=?";
 		log(sql);
@@ -424,9 +408,7 @@ public class MSSQL extends CoreSupport {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#setAttributes(railo.runtime.db.DatasourceConnection, java.lang.String, railo.commons.io.res.type.datasource.Attr, int)
-	 */
+	@Override
 	public void setAttributes(DatasourceConnection dc,String prefix, Attr attr, int attributes) throws SQLException {
 		String sql="update "+prefix+"attrs set rdr_attributes=? where rdr_id=?";
 		log(sql);
@@ -442,9 +424,7 @@ public class MSSQL extends CoreSupport {
 		}*/
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.datasource.core.Core#concatSupported()
-	 */
+	@Override
 	public boolean concatSupported() {
 		return true;
 	}

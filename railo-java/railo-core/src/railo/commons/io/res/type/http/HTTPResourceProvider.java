@@ -59,9 +59,7 @@ public class HTTPResourceProvider implements ResourceProvider {
 	}
 	
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		
 		int indexQ=path.indexOf('?');
@@ -92,25 +90,17 @@ public class HTTPResourceProvider implements ResourceProvider {
 	public void setResources(Resources resources) {
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) throws IOException {
 		lock.lock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		lock.unlock(res);
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) throws IOException {
 		lock.read(res);
 	}
@@ -137,9 +127,7 @@ public class HTTPResourceProvider implements ResourceProvider {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getArguments()
-	 */
+	@Override
 	public Map getArguments() {
 		return arguments;
 	}

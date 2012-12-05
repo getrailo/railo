@@ -166,9 +166,7 @@ public final class SourceFileImpl implements SourceFile {
 		return getResource();
 	}
 	
-	/**
-	 * @see railo.runtime.SourceFile#getFile()
-	 */
+	@Override
 	public Resource getResource() {
 		if(file==null) {
 			if(isOutSide) {
@@ -277,23 +275,17 @@ public final class SourceFileImpl implements SourceFile {
         return trusted;
     }
 
-    /**
-     * @see railo.runtime.SourceFile#getPhyscalFile()
-     */
+    @Override
     public Resource getPhyscalFile() {
         return getFile();
     }
 
-    /**
-     * @see railo.runtime.SourceFile#getDisplayPath()
-     */
+    @Override
     public String getDisplayPath() {
         return getFile().getAbsolutePath();
     }
 
-	/**
-	 * @see railo.runtime.SourceFile#getFullClassName()
-	 */
+	@Override
 	public String getFullClassName() {
 		String p=getPackageName();
 		if(p.length()==0) return getClassName();

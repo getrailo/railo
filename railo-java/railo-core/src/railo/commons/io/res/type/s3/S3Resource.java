@@ -148,26 +148,20 @@ public final class S3Resource extends ResourceSupport {
 		return 777;
 	}
 
-	/**
-	 * @see res.Resource#getFullName()
-	 */
+	@Override
 	public String getName() {
 		if(isRoot()) return "";
 		if(isBucket()) return bucketName;
 		return objectName.substring(objectName.lastIndexOf('/')+1);
 	}
 
-	/**
-	 * @see res.Resource#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		return true;
 	}
 	
 
-	/**
-	 * @see railo.commons.io.res.Resource#getPath()
-	 */
+	@Override
 	public String getPath() {
 		return getPrefix().concat(getInnerPath());
 	}
@@ -196,9 +190,7 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 
-	/**
-	 * @see res.Resource#getParent()
-	 */
+	@Override
 	public String getParent() {
 		if(isRoot()) return null;
 		return getPrefix().concat(getInnerParent());
@@ -217,9 +209,7 @@ public final class S3Resource extends ResourceSupport {
 		return ResourceUtil.translatePath(bucketName+"/"+tmp, true, false);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		if(isRoot()) return null;
 		return new S3Resource(s3,isBucket()?S3.STORAGE_UNKNOW:storage,provider,getInnerParent(),newPattern);// MUST direkter machen
@@ -233,9 +223,7 @@ public final class S3Resource extends ResourceSupport {
 		return bucketName!=null && Util.isEmpty(objectName);
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return getPath();
 	}
@@ -280,32 +268,24 @@ public final class S3Resource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
-	 */
+	@Override
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
 		return new S3Resource(s3,S3.STORAGE_UNKNOW,provider,realpath,newPattern);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return provider;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return getInfo().isDirectory();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return getInfo().isFile();
 	}
@@ -318,9 +298,7 @@ public final class S3Resource extends ResourceSupport {
 		return exists();
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#lastModified()
-	 */
+	@Override
 	public long lastModified() {
 		return getInfo().getLastModified();
 	}
@@ -414,9 +392,7 @@ public final class S3Resource extends ResourceSupport {
 		return info;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#length()
-	 */
+	@Override
 	public long length() {
 		return getInfo().getSize();
 	}
@@ -488,9 +464,7 @@ public final class S3Resource extends ResourceSupport {
 		return children;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#remove(boolean)
-	 */
+	@Override
 	public void remove(boolean force) throws IOException {
 		if(isRoot()) throw new IOException("can not remove root of S3 Service");
 
@@ -624,24 +598,17 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#getLastModified()
-	 */
+	@Override
 	public long getLastModified() {
 		return lastModified;
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#getSize()
-	 */
+	@Override
 	public long getSize() {
 		return size;
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "Dummy:"+getLabel();
 	}
@@ -655,23 +622,17 @@ public final class S3Resource extends ResourceSupport {
 	}
 
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#exists()
-	 */
+	@Override
 	public boolean exists() {
 		return exists;
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		return directory;
 	}
 
-	/**
-	 * @see railo.commons.io.res.type.s3.S3Info#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		return file;
 	}

@@ -21,17 +21,12 @@ public class DatasourceResourceOutputStream extends OutputStream {
 		this.os=os;
 	}
 	
-	/**
-	 * @see java.io.OutputStream#write(int)
-	 */
+	@Override
 	public void write(int b) throws IOException {
 		os.write(b);
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		os.close();
 		try {
@@ -47,26 +42,17 @@ public class DatasourceResourceOutputStream extends OutputStream {
 		}
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#flush()
-	 */
+	@Override
 	public void flush() throws IOException {
 		os.flush();
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(byte[], int, int)
-	 */
+	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
 		os.write(b, off, len);
 	}
 
-	/**
-	 *
-	 * @see java.io.OutputStream#write(byte[])
-	 */
+	@Override
 	public void write(byte[] b) throws IOException {
 		os.write(b);
 	}

@@ -62,11 +62,7 @@ public final class FTPResourceProvider implements ResourceProvider,Sizeable {
 		return this;
 	}
 	
-	/**
-	 * path must have the following format:<BR>
-	 * ftp://[ username[: password]@] hostname[: port][ absolute-path]
-	 * @see res.ResourceProvider#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		path=ResourceUtil.removeScheme(scheme,path);
 		FTPConnectionData data=new FTPConnectionData();
@@ -132,47 +128,31 @@ public final class FTPResourceProvider implements ResourceProvider,Sizeable {
 		clients.put(client.getFtpConnectionData().key(), client);
 	}
 
-	/**
-	 * @see res.ResourceProvider#getScheme()
-	 */
+	@Override
 	public String getScheme() {
 		return scheme;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#setScheme(java.lang.String)
-	 */
 	public void setScheme(String scheme) {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#setResources(railo.commons.io.res.Resources)
-	 */
+	@Override
 	public void setResources(Resources resources) {
 		//this.resources=resources;
 	}
 	
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) throws IOException {
 		lock.lock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		lock.unlock(res);
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) throws IOException {
 		lock.read(res);
 	}
@@ -227,9 +207,7 @@ public final class FTPResourceProvider implements ResourceProvider,Sizeable {
 		return cache;
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isAttributesSupported()
-	 */
+	@Override
 	public boolean isAttributesSupported() {
 		return false;
 	}
@@ -238,24 +216,17 @@ public final class FTPResourceProvider implements ResourceProvider,Sizeable {
 		return true;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#isModeSupported()
-	 */
+	@Override
 	public boolean isModeSupported() {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(lock)+SizeOf.size(clients);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getArguments()
-	 */
+	@Override
 	public Map getArguments() {
 		return arguments;
 	}

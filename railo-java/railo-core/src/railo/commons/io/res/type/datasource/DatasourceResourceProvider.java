@@ -66,9 +66,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	private Map arguments;
 
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(cores)+SizeOf.size(attrCache)+SizeOf.size(attrsCache)+SizeOf.size(lock);
 	}
@@ -110,9 +108,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 		return this;
 	}
 	
-	/**
-	 * @see res.ResourceProvider#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		StringBuilder sb=new StringBuilder();
 		return new DatasourceResource(this,parse(sb,path),sb.toString());
@@ -160,61 +156,41 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 	}
 	
 
-	/**
-	 * @see res.ResourceProvider#getScheme()
-	 */
+	@Override
 	public String getScheme() {
 		return scheme;
 	}
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#setResources(railo.commons.io.res.Resources)
-	 */
+	@Override
 	public void setResources(Resources resources) {
 		//this.resources=resources;
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) throws IOException {
 		lock.lock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		lock.unlock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) throws IOException {
 		lock.read(res);
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#isAttributesSupported()
-	 */
+	@Override
 	public boolean isAttributesSupported() {
 		return false;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#isCaseSensitive()
-	 */
+	@Override
 	public boolean isCaseSensitive() {
 		return caseSensitive;
 	}
 
-	/**
-	 *
-	 * @see railo.commons.io.res.ResourceProvider#isModeSupported()
-	 */
+	@Override
 	public boolean isModeSupported() {
 		return true;
 	}
@@ -624,9 +600,7 @@ public final class DatasourceResourceProvider implements ResourceProvider,Sizeab
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getArguments()
-	 */
+	@Override
 	public Map getArguments() {
 		return arguments;
 	}

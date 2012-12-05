@@ -47,9 +47,7 @@ public final class FTPResourceClient extends FTPClient {
 		return token;
 	}
 	
-	/**
-	 * @see org.apache.commons.net.ftp.FTPClient#changeWorkingDirectory(java.lang.String)
-	 */
+	@Override
 	public boolean changeWorkingDirectory(String pathname) throws IOException {
 		if(StringUtil.endsWith(pathname,'/') && pathname.length()!=1)pathname=pathname.substring(0,pathname.length()-1);
 		
@@ -58,18 +56,11 @@ public final class FTPResourceClient extends FTPClient {
 		return super.changeWorkingDirectory(pathname);
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	public String id() {
 		return ftpConnectionData.key();
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		
 		return ((FTPResourceClient)obj).id().equals(id());
@@ -126,10 +117,7 @@ public final class FTPResourceClient extends FTPClient {
 		return null;
 	}
 	
-	/**
-	 *
-	 * @see org.apache.commons.net.ftp.FTPClient#deleteFile(java.lang.String)
-	 */
+	@Override
 	public boolean deleteFile(String pathname) throws IOException {
 		files.remove(pathname);
 		return super.deleteFile(pathname);

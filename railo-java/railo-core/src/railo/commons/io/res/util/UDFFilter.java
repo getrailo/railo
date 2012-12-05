@@ -18,9 +18,6 @@ public class UDFFilter extends UDFFilterSupport implements ResourceAndResourceNa
 		super(udf);
 	}
 	
-    /**
-     * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-     */
     public boolean accept(String path) {
     	args[0]=path;
     	try {
@@ -37,9 +34,7 @@ public class UDFFilter extends UDFFilterSupport implements ResourceAndResourceNa
     	return accept(file.getAbsolutePath());
     }
 
-	/**
-	 * @see railo.commons.io.res.filter.ResourceNameFilter#accept(railo.commons.io.res.Resource, java.lang.String)
-	 */
+	@Override
 	public boolean accept(Resource parent, String name) {
 		String path=parent.getAbsolutePath();
 		if(path.endsWith(File.separator)) path+=name;
@@ -47,10 +42,7 @@ public class UDFFilter extends UDFFilterSupport implements ResourceAndResourceNa
 		return accept(path);
 	}
 	
-    /**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+    @Override
 	public String toString() {
 		return "UDFFilter:"+udf;
 	}

@@ -25,9 +25,7 @@ public final class ResourceLockImpl implements ResourceLock {
 	private Object token=new SerializableObject();
 	private Map<String,Thread> resources=new HashMap<String,Thread>();
 	
-	/**
-	 * @see railo.commons.io.res.ResourceLock#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) {
 		String path=getPath(res);
 		
@@ -41,9 +39,7 @@ public final class ResourceLockImpl implements ResourceLock {
 		return caseSensitive?res.getPath():res.getPath().toLowerCase();
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceLock#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		String path=getPath(res);
 		//if(path.endsWith(".dmg"))print.err("unlock:"+path);
@@ -53,9 +49,7 @@ public final class ResourceLockImpl implements ResourceLock {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceLock#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) {
 		String path=getPath(res);
 		synchronized(token)  {
@@ -104,9 +98,7 @@ public final class ResourceLockImpl implements ResourceLock {
 		while(true);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceLock#getLockTimeout()
-	 */
+	@Override
 	public long getLockTimeout() {
 		return lockTimeout;
 	}

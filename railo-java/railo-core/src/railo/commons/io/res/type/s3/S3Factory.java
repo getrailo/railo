@@ -66,12 +66,7 @@ public abstract class S3Factory extends DefaultHandler {
 		}
     }
 
-	/**
-	 * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, beim Auftreten eines Start-Tag aufgerufen.
-	 *  
-	 * @see org.xml.sax.ContentHandler#startElement(String, String, String, Attributes)
-	 */
+	@Override
 	public final void startElement(String uri, String name, String qName, Attributes atts) {
 		inside=qName;
 
@@ -81,12 +76,7 @@ public abstract class S3Factory extends DefaultHandler {
 	}
 	protected abstract void doStartElement(String uri, String name, String qName, Attributes atts);
     
-	/**
-	 * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, beim auftreten eines End-Tag aufgerufen.
-	 *  
-	 * @see org.xml.sax.ContentHandler#endElement(String, String, String)
-	 */
+	@Override
 	public final void endElement(String uri, String name, String qName) throws SAXException {
 		_setContent(content.toString().trim());
 		content=new StringBuffer();
@@ -124,12 +114,7 @@ public abstract class S3Factory extends DefaultHandler {
 
 	protected abstract void setContent(String value) throws SAXException;
 
-	/** 
-     * Geerbte Methode von org.xml.sax.ContentHandler, 
-	 * wird bei durchparsen des XML, zum einlesen des Content eines Body Element aufgerufen.
-	 * 
-	 * @see org.xml.sax.ContentHandler#characters(char[], int, int)
-	 */
+	@Override
 	public void characters (char ch[], int start, int length)	{
 		content.append(new String(ch,start,length));
 	}

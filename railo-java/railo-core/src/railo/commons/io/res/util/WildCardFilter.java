@@ -48,9 +48,7 @@ public class WildCardFilter implements ResourceAndResourceNameFilter {
         pattern=new Perl5Compiler().compile(ignoreCase?StringUtil.toLowerCase(sb.toString()):sb.toString());
     }
 
-    /**
-     * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-     */
+    @Override
     public boolean accept(Resource file) {
         return matcher.matches(ignoreCase?StringUtil.toLowerCase(file.getName()):file.getName(), pattern);
     }
@@ -63,10 +61,7 @@ public class WildCardFilter implements ResourceAndResourceNameFilter {
 		return matcher.matches(ignoreCase?StringUtil.toLowerCase(name):name, pattern);
 	}
 
-    /**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+    @Override
 	public String toString() {
 		return "Wildcardfilter:"+wildcard;
 	}

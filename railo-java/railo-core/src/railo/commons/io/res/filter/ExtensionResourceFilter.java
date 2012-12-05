@@ -53,9 +53,7 @@ public final class ExtensionResourceFilter implements ResourceFilter {
     	this.ignoreCase=ignoreCase;
 	}
 
-	/**
-	 * @see railo.commons.io.res.filter.ResourceFilter#accept(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public boolean accept(Resource res) {
 		if(res.isDirectory()) return allowDir;
 		if(res.exists()) {

@@ -27,9 +27,7 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 	private final ResourceLockImpl lock=new ResourceLockImpl(lockTimeout,caseSensitive);
 	private Map arguments;
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#init(java.lang.String, java.util.Map)
-	 */
+	@Override
 	public ResourceProvider init(String scheme, Map arguments) {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		if(arguments!=null) {
@@ -66,9 +64,7 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 		return this;
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) { 
 		path=ResourceUtil.removeScheme(scheme,path);
 		int index=path.lastIndexOf('!');
@@ -91,9 +87,7 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 
 	public abstract Compress getCompress(Resource file);
 
-	/** 
-	 * @see railo.commons.io.res.ResourceProvider#getScheme()
-	 */
+	@Override
 	public String getScheme() {
 		return scheme;
 	}
@@ -104,31 +98,22 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 		this.resources=resources;
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) throws IOException {
 		lock.lock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		lock.unlock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) throws IOException {
 		lock.read(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getArguments()
-	 */
+	@Override
 	public Map getArguments() {
 		return arguments;
 	}
@@ -206,9 +191,7 @@ public abstract class CompressResourceProvider implements ResourceProvider,Sizea
 	}*/
 
 	
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(lock);
 	}

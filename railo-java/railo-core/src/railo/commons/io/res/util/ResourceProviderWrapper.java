@@ -15,79 +15,57 @@ public class ResourceProviderWrapper  implements ResourceProvider {
 		this.provider=provider;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getArguments()
-	 */
+	@Override
 	public Map getArguments() {
 		return provider.getArguments();
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		return provider.getResource(path);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#getScheme()
-	 */
+	@Override
 	public String getScheme() {
 		return provider.getScheme();
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#init(java.lang.String, java.util.Map)
-	 */
+	@Override
 	public ResourceProvider init(String scheme, Map arguments) {
 		return provider.init(scheme, arguments);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isAttributesSupported()
-	 */
+	@Override
 	public boolean isAttributesSupported() {
 		return provider.isAttributesSupported();
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isCaseSensitive()
-	 */
+	@Override
 	public boolean isCaseSensitive() {
 		return provider.isCaseSensitive();
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isModeSupported()
-	 */
+	@Override
 	public boolean isModeSupported() {
 		return provider.isModeSupported();
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) throws IOException {
 		provider.lock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) throws IOException {
 		provider.read(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#setResources(railo.commons.io.res.Resources)
-	 */
+	@Override
 	public void setResources(Resources resources) {
 		provider.setResources(resources);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		provider.unlock(res);
 	}

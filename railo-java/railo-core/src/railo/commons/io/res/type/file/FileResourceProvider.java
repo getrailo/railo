@@ -23,9 +23,7 @@ public final class FileResourceProvider implements ResourceProvider,Sizeable {
 	private final ResourceLockImpl lock=new ResourceLockImpl(lockTimeout,caseSensitive);
 	private Map arguments;
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#init(java.lang.String, java.util.Map)
-	 */
+	@Override
 	public ResourceProvider init(String scheme, Map arguments) {
 		if(!StringUtil.isEmpty(scheme))this.scheme=scheme;
 		this.arguments=arguments;
@@ -45,74 +43,52 @@ public final class FileResourceProvider implements ResourceProvider,Sizeable {
 	 */
 	public FileResourceProvider() {}
 	
-	/**
-	 * @see res.ResourceProvider#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		return new FileResource(this,ResourceUtil.removeScheme("file",path));
 	}
 
-	/**
-	 * @see res.ResourceProvider#getScheme()
-	 */
+	@Override
 	public String getScheme() {
 		return scheme;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#setResources(railo.commons.io.res.Resources)
-	 */
+	@Override
 	public void setResources(Resources resources) {
 		//this.resources=resources;
 	}
 	
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#lock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void lock(Resource res) throws IOException {
 		lock.lock(res);
 	}
 
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#unlock(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void unlock(Resource res) {
 		lock.unlock(res);
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.res.ResourceProvider#read(railo.commons.io.res.Resource)
-	 */
+	@Override
 	public void read(Resource res) throws IOException {
 		lock.read(res);
 	}
 	
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isAttributesSupported()
-	 */
+	@Override
 	public boolean isAttributesSupported() {
 		return SystemUtil.isWindows();
 	}
 	
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isCaseSensitive()
-	 */
+	@Override
 	public boolean isCaseSensitive() {
 		return caseSensitive;
 	}
 	
-	/**
-	 * @see railo.commons.io.res.ResourceProvider#isModeSupported()
-	 */
+	@Override
 	public boolean isModeSupported() {
 		return false;//SystemUtil.isUnix(); FUTURE add again
 	}
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(lock);
 	}

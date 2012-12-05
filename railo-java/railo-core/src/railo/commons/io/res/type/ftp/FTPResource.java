@@ -62,9 +62,7 @@ public final class FTPResource extends ResourceSupport {
 		this.name=name;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isReadable()
-	 */
+	@Override
 	public boolean isReadable() {
 		Boolean rtn = hasPermission(FTPFile.READ_PERMISSION);
 		if(rtn==null) return false;
@@ -96,9 +94,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 	
-	/**
-	 * @see railo.commons.io.res.Resource#remove(boolean)
-	 */
+	@Override
 	public void remove(boolean alsoRemoveChildren) throws IOException {
 		if(isRoot()) throw new FTPResoucreException("can't delete root of ftp server");
 		
@@ -116,9 +112,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.util.ResourceSupport#delete()
-	 */
+	@Override
 	public boolean delete() {
 		if(isRoot()) return false;
 		FTPResourceClient client = null;
@@ -136,9 +130,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see res.Resource#exists()
-	 */
+	@Override
 	public boolean exists() {
 		try {
 			provider.read(this);
@@ -172,16 +164,12 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see res.Resource#getFullName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see res.Resource#getParent()
-	 */
+	@Override
 	public String getParent() {
 		if(isRoot()) return null;
 		return provider.getScheme().concat("://").concat(data.key()).concat(path.substring(0,path.length()-1));
@@ -191,26 +179,20 @@ public final class FTPResource extends ResourceSupport {
 		return path;
 	}
 
-	/**
-	 * @see res.Resource#getParentResource()
-	 */
+	@Override
 	public Resource getParentResource() {
 		if(isRoot()) return null;
 		return new FTPResource(provider,data,path);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getRealResource(java.lang.String)
-	 */
+	@Override
 	public Resource getRealResource(String realpath) {
 		realpath=ResourceUtil.merge(getInnerPath(), realpath);
 		if(realpath.startsWith("../"))return null;
 		return new FTPResource(provider,data,realpath);
 	}
 
-	/**
-	 * @see res.Resource#getPath()
-	 */
+	@Override
 	public String getPath() {	
 		return provider.getScheme().concat("://").concat(data.key()).concat(path).concat(name);
 	}
@@ -221,17 +203,13 @@ public final class FTPResource extends ResourceSupport {
 		return path.concat(name);
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isAbsolute()
-	 */
+	@Override
 	public boolean isAbsolute() {
 		// TODO impl isAbolute
 		return true;
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#isDirectory()
-	 */
+	@Override
 	public boolean isDirectory() {
 		try {
 			provider.read(this);
@@ -265,9 +243,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see res.Resource#isFile()
-	 */
+	@Override
 	public boolean isFile() {
 		if(isRoot()) return false;
 		try {
@@ -300,9 +276,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#lastModified()
-	 */
+	@Override
 	public long lastModified() {
 		//if(isRoot()) return 0;
 		
@@ -322,9 +296,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#length()
-	 */
+	@Override
 	public long length() {
 		if(isRoot()) return 0;
 		FTPResourceClient client=null;
@@ -343,9 +315,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see res.Resource#listResources()
-	 */
+	@Override
 	public Resource[] listResources() {
 		if(isFile()) return null;//new Resource[0];
 		
@@ -380,9 +350,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#setLastModified(long)
-	 */
+	@Override
 	public boolean setLastModified(long time) {
 		//if(isRoot()) return false;
 		
@@ -420,18 +388,14 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see res.Resource#createFile(boolean)
-	 */
+	@Override
 	public void createFile(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateFileOK(this, createParentWhenNotExists);
 		//client.unregisterFTPFile(this);
 		IOUtil.copy(new ByteArrayInputStream(new byte[0]), getOutputStream(), true, true);
 	}
 	
-	/**
-	 * @see res.Resource#moveTo(res.Resource)
-	 */
+	@Override
 	public void moveTo(Resource dest) throws IOException {
 		FTPResourceClient client=null;
 		ResourceUtil.checkMoveToOK(this, dest);
@@ -464,9 +428,7 @@ public final class FTPResource extends ResourceSupport {
 		
 	}
 
-	/**
-	 * @see res.Resource#createDirectory(boolean)
-	 */
+	@Override
 	public void createDirectory(boolean createParentWhenNotExists) throws IOException {
 		ResourceUtil.checkCreateDirectoryOK(this, createParentWhenNotExists);
 		
@@ -485,10 +447,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @throws IOException 
-	 * @see res.Resource#getInputStream()
-	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		ResourceUtil.checkGetInputStreamOK(this);
 		provider.lock(this);
@@ -504,9 +463,7 @@ public final class FTPResource extends ResourceSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.res.Resource#getOutputStream(boolean)
-	 */
+	@Override
 	public OutputStream getOutputStream(boolean append) throws IOException {
 		ResourceUtil.checkGetOutputStreamOK(this);
 		FTPResourceClient client=null;
@@ -528,9 +485,7 @@ public final class FTPResource extends ResourceSupport {
 	}
 
 
-	/**
-	 * @see res.util.ResourceSupport#list()
-	 */
+	@Override
 	public String[] list() {
 		if(isFile()) return new String[0];
 		
@@ -562,9 +517,7 @@ public final class FTPResource extends ResourceSupport {
 		return path.substring(index+1);
 	}
 
-	/**
-	 * @see res.Resource#getResourceProvider()
-	 */
+	@Override
 	public ResourceProvider getResourceProvider() {
 		return provider;
 	}

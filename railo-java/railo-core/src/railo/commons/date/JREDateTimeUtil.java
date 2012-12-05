@@ -57,65 +57,49 @@ public class JREDateTimeUtil extends DateTimeUtil {
         //}
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getYear(TimeZone tz, DateTime dt) {
 		if(year==null)year=newInstance();
 		return get(year,tz,dt,Calendar.YEAR);
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getMonth(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getMonth(TimeZone tz, DateTime dt) {
 		if(month==null)month=newInstance();
 		return get(month,tz,dt,Calendar.MONTH)+1;
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getDay(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getDay(TimeZone tz, DateTime dt) {
 		if(day==null)day=newInstance();
 		return get(day,tz,dt,Calendar.DAY_OF_MONTH);
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getHour(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getHour(TimeZone tz, DateTime dt) {
 		if(hour==null)hour=newInstance();
 		return get(hour,tz,dt,Calendar.HOUR_OF_DAY);
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getMinute(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getMinute(TimeZone tz, DateTime dt) {
 		if(minute==null)minute=newInstance();
 		return get(minute,tz,dt,Calendar.MINUTE);
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getSecond(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getSecond(TimeZone tz, DateTime dt) {
 		if(second==null)second=newInstance();
 		return get(second,tz,dt,Calendar.SECOND);
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getMilliSecond(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getMilliSecond(TimeZone tz, DateTime dt) {
 		if(milliSecond==null)milliSecond=newInstance();
 		return get(milliSecond,tz,dt,Calendar.MILLISECOND);
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getWeek(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getWeekOfYear(Locale locale,TimeZone tz, DateTime dt) {
 		Calendar c=getCalendar(locale);
 		synchronized (c) {
@@ -133,9 +117,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		}
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getDayOfYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getDayOfYear(Locale locale,TimeZone tz, DateTime dt) {
 		Calendar c=getCalendar(locale);
 		synchronized (c) {
@@ -143,9 +125,7 @@ public class JREDateTimeUtil extends DateTimeUtil {
 		}
 	}
 
-	/**
-	 * @see railo.commons.date.DateTimeUtil#getDayOfYear(java.util.TimeZone, railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public synchronized int getDayOfWeek(Locale locale,TimeZone tz, DateTime dt) {
 		Calendar c=getCalendar(locale);
 		synchronized (c) {

@@ -17,10 +17,7 @@ public final class FileNameFilterWrapper implements FileNameResourceFilter {
 		return accept(FileWrapper.toFile(dir),name);
 	}
 
-	/**
-	 *
-	 * @see java.io.FileFilter#accept(java.io.File)
-	 */
+	@Override
 	public boolean accept(File dir,String name) {
 		return filter.accept(dir,name);
 	}

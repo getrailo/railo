@@ -30,90 +30,57 @@ public final class ByteArrayInputStreamReader extends InputStreamReader {
 		this(new ByteArrayInputStream(str.getBytes(charsetName)), charsetName);
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		br.close();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#getEncoding()
-	 */
+	@Override
 	public String getEncoding() {
 		return charsetName;
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#read()
-	 */
+	@Override
 	public int read() throws IOException {
 		return br.read();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#read(char[], int, int)
-	 */
+	@Override
 	public int read(char[] cbuf, int offset, int length) throws IOException {
 		return br.read(cbuf, offset, length);
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStreamReader#ready()
-	 */
+	@Override
 	public boolean ready() throws IOException {
 		return br.ready();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#mark(int)
-	 */
+	@Override
 	public void mark(int readAheadLimit) throws IOException {
 		br.mark(readAheadLimit);
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#markSupported()
-	 */
+	@Override
 	public boolean markSupported() {
 		return br.markSupported();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#read(java.nio.CharBuffer)
-	 */
+	@Override
 	public int read(CharBuffer target) throws IOException {
 		return br.read(target.array());
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#read(char[])
-	 */
+	@Override
 	public int read(char[] cbuf) throws IOException {
 		return br.read(cbuf);
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#reset()
-	 */
+	@Override
 	public void reset() throws IOException {
 		br.reset();
 	}
 
-	/**
-	 *
-	 * @see java.io.Reader#skip(long)
-	 */
+	@Override
 	public long skip(long n) throws IOException {
 		return br.skip(n);
 	}
