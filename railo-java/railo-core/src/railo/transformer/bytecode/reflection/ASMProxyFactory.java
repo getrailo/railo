@@ -207,7 +207,6 @@ public class ASMProxyFactory {
 		
 		className=className.replace('.',File.separatorChar);
 		Resource classFile=classRoot.getRealResource(className+".class");
-		print.e(classFile);
 		ClassWriter cw = ASMUtil.getClassWriter();
 	    cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, ASM_METHOD.getInternalName(), null);
 		
