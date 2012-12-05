@@ -893,7 +893,6 @@ public final class CFMLTransformer {
 				data.cfml.setPos(start);
 				// if the tag supports a non name attribute try this
 				TagLibTagAttr sa = tag.getSingleAttr();
-				print.e(sa);
 				if(sa!=null) attrNoName(parent,tag,data,sa);
 				else throw te;
 			}
