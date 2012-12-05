@@ -101,9 +101,7 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
         return c;
    }
     
-    /**
-     * @see java.lang.ClassLoader#findClass(java.lang.String)
-     */
+    @Override
     protected Class findClass(String name) throws ClassNotFoundException {
         Class clazz=findClassEL(name);
         if(clazz!=null) return clazz;
@@ -122,9 +120,7 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
         return null;
     }
 
-    /**
-     * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
-     */
+    @Override
     public InputStream getResourceAsStream(String name) {
         InputStream is = super.getResourceAsStream(name);
         if(is!=null) return is;
@@ -136,9 +132,7 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
         return null;
     }
     
-    /** 
-     * @see java.lang.ClassLoader#getResource(java.lang.String) 
-     */ 
+    @Override 
     public URL getResource(String name) { 
     	return null; 
     } 
@@ -169,9 +163,7 @@ public final class ArchiveClassLoader extends ClassLoader implements Sizeable,Cl
         return null;
     }
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(zip);
 	}

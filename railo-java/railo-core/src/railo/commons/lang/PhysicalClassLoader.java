@@ -130,9 +130,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         
     }
     
-    /**
-     * @see java.lang.ClassLoader#findClass(java.lang.String)
-     */
+    @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
     	//if(!name.endsWith("$cf")) return super.findClass(name); this break Webervices
     	//File f = getFile(name.replace('.',File.separatorChar).concat(".class"));
@@ -175,9 +173,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
     	return loadClass(name,false);
     }
     
-    /**
-     * @see java.lang.ClassLoader#getResource(java.lang.String)
-     */
+    @Override
     public URL getResource(String name) {
         /*URL url=super.getResource(name);
         if(url!=null) return url;
@@ -192,9 +188,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         return null;
     }
 
-    /**
-     * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
-     */
+    @Override
     public InputStream getResourceAsStream(String name) {
         InputStream is = super.getResourceAsStream(name);
         if(is!=null) return is;
@@ -220,9 +214,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         return null;
     }
 
-    /**
-     * @see railo.commons.lang.ClassLoaderControl#hasClass(java.lang.String)
-     */
+    @Override
     public boolean hasClass(String className) {
         return hasResource(className.replace('.','/').concat(".class"));
     }
@@ -232,9 +224,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
         return findLoadedClass(className)!=null;
     }
 
-    /**
-     * @see railo.commons.lang.ClassLoaderControl#hasResource(java.lang.String)
-     */
+    @Override
     public boolean hasResource(String name) {
         return _getResource(name)!=null;
     }
@@ -246,9 +236,7 @@ public final class PhysicalClassLoader extends ClassLoader implements Sizeable  
 		return directory;
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return 0;
 	}

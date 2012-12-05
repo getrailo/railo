@@ -18,23 +18,17 @@ public class EmptyRequestEntity implements RequestEntity,Entity3 {
 		this.contentType=contentType;
 	}
 	
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#getContentLength()
-	 */
+	@Override
 	public long getContentLength() {
 		return 0;
 	}
 
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#getContentType()
-	 */
+	@Override
 	public String getContentType() {
 		return contentType;
 	}
 
-	/**
-	 * @see org.apache.commons.httpclient.methods.RequestEntity#isRepeatable()
-	 */
+	@Override
 	public boolean isRepeatable() {
 		return true;
 	}

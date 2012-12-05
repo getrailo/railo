@@ -708,9 +708,7 @@ public final class ParserString {
 		*/
    }
 	
-	/** Gibt den CFMLString als String zurueck.
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return new String(this.text);
 	}

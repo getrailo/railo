@@ -34,33 +34,24 @@ public class CharSequenceImpl implements CharSequence {
 		this(str.toCharArray());
 	}
 
-	/**
-	 * @see java.lang.CharSequence#charAt(int)
-	 */
+	@Override
 	public char charAt(int index) {
 		return chars[index];
 	}
 
-	/**
-	 * @see java.lang.CharSequence#length()
-	 */
+	@Override
 	public int length() {
 		return chars.length;
 	}
 
-	/**
-	 * @see java.lang.CharSequence#subSequence(int, int)
-	 */
+	@Override
 	public CharSequence subSequence(int start, int end) {
 		char[] dest = new char[end-start];
 		System.arraycopy(chars, start, dest, 0, end-start);
 		return new CharSequenceImpl(dest);
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return str;
 	} 

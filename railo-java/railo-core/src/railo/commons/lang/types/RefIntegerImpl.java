@@ -53,24 +53,18 @@ public class RefIntegerImpl implements RefInteger {
     }
     
 
-	/**
-	 * @see railo.commons.lang.types.RefInteger#toDoubleValue()
-	 */
+	@Override
 	public double toDoubleValue() {
 		return value;
 	}
 	
-	/**
-	 * @see railo.commons.lang.types.RefInteger#toInt()
-	 */
+	@Override
 	public int toInt() {
 		return value;
 	}
     
     
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return String.valueOf(value);
     }

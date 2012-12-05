@@ -34,9 +34,6 @@ public final class Pair<K,V> implements Serializable {
 		this.name = name;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return name+":"+value;

@@ -117,10 +117,7 @@ public class ByteBuffer {
 		os.write(buffer,0,pos);
 	}
 	
-	/** 
-	* return the content of the buffer as string
-	* @see java.lang.Object#toString()
-	*/
+	@Override
 	public String toString() {
 		try {
 			return new String(getBytes(),charset);

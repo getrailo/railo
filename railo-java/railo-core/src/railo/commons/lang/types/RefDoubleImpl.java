@@ -17,44 +17,32 @@ public final class RefDoubleImpl implements RefDouble {
     public RefDoubleImpl() {
     }
     
-    /**
-     * @see railo.commons.lang.types.RefDouble#setValue(double)
-     */
+    @Override
     public void setValue(double value) {
         this.value = value;
     }
     
-    /**
-     * @see railo.commons.lang.types.RefDouble#plus(double)
-     */
+    @Override
     public void plus(double value) {
         this.value+=value;
     }
     
-    /**
-     * @see railo.commons.lang.types.RefDouble#minus(double)
-     */
+    @Override
     public void minus(double value) {
         this.value-=value;
     }
 
-    /**
-     * @see railo.commons.lang.types.RefDouble#toDouble()
-     */
+    @Override
     public Double toDouble() {
         return new Double(value);
     }
     
-	/**
-	 * @see railo.commons.lang.types.RefDouble#toDoubleValue()
-	 */
+	@Override
 	public double toDoubleValue() {
 		return value;
 	}
 	
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return String.valueOf(value);
     }

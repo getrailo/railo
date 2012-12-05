@@ -38,9 +38,7 @@ public final class RefBooleanImpl implements RefBoolean {//MUST add interface Ca
         return value;
     }
     
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return value?"true":"false";
     }
