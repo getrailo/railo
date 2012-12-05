@@ -966,14 +966,12 @@ public final class ConfigWebFactory {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 	    
-	    if(!SystemUtil.isWindows()) {
+	    if(SystemUtil.isWindows()) {
 	    	Resource systemDir=SystemUtil.getSystemDirectory();
 	        if(systemDir!=null) {
-	        	boolean is64=SystemUtil.getJREArch()==SystemUtil.ARCH_64;
-	        	String name;
-	        	if(is64) name="jacob-x64.dll";
-	        	else name="jacob-x86.dll";
-	            
+	        	
+	        	String name = ( SystemUtil.getJREArch()==SystemUtil.ARCH_64 ) ? "jacob-x64.dll" : "jacob-x86.dll";
+	        	
 	        	Resource jacob=systemDir.getRealResource(name);
 	            if(!jacob.exists()) {
 	            	createFileFromResourceEL("/resource/bin/"+name,jacob);
