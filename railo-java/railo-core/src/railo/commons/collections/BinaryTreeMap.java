@@ -64,32 +64,24 @@ public final class BinaryTreeMap {
 			this.value=value;
 		}
 
-		/**
-		 * @see java.util.Map$Entry#getKey()
-		 */
+		@Override
 		public Object getKey() {
 			return key.getString();
 		}
 
-		/**
-		 * @see java.util.Map$Entry#getString()
-		 */
+		@Override
 		public Object getValue() {
 			return value;
 		}
 
-		/**
-		 * @see java.util.Map$Entry#setValue(V)
-		 */
+		@Override
 		public Object setValue(Object value) {
 			Object old=value;
 			this.value=value;
 			return old;
 		}
 		
-		/**
-		 * @see java.lang.Object#toString()
-		 */
+		@Override
 		public String toString() {
 			return key+"="+value;
 		}

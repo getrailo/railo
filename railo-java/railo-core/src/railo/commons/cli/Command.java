@@ -140,9 +140,7 @@ class StreamGobbler extends Thread {
         this.is = is;
     }
     
-    /**
-     * @see java.lang.Thread#run()
-     */
+    @Override
     public void run() {
         try {
 			str=IOUtil.toString(is,SystemUtil.getCharset());
