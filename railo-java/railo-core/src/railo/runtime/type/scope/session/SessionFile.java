@@ -54,10 +54,7 @@ public class SessionFile extends StorageScopeFile implements Session {
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new SessionFile(this,deepCopy);
 	}

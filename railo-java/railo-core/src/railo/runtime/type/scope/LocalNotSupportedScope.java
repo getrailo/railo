@@ -45,8 +45,6 @@ public final class LocalNotSupportedScope extends StructSupport implements Scope
 	}
 	
 	@Override
-	
-	@Override
 	public Object remove(Key key) throws PageException {
 	    throw new ExpressionException("Unsupported Context for Local Scope","Can't invoke key "+key+", Local Scope can only invoked inside a Function");
 	}

@@ -26,10 +26,7 @@ public final class SessionCookie extends StorageScopeCookie implements Session {
 		super(other,deepCopy);
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new SessionCookie(this,deepCopy);
 	}

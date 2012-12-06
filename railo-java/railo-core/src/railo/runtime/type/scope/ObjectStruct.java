@@ -37,18 +37,8 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	}
 
 	@Override
-	public Object call(PageContext pc, String methodName, Object[] arguments) throws PageException {
-		return jo.call(pc, methodName, arguments);
-	}
-
-	@Override
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
 		return jo.call(pc, methodName, arguments);
-	}
-
-	@Override
-	public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
-		return jo.callWithNamedValues(pc, methodName, args);
 	}
 
 	@Override
@@ -57,18 +47,8 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 	}
 
 	@Override
-	public Object get(PageContext pc, String propertyName) throws PageException {
-		return jo.get(pc, propertyName);
-	}
-
-	@Override
 	public Object get(PageContext pc, Key key) throws PageException {
 		return jo.get(pc, key);
-	}
-
-	@Override
-	public Object get(PageContext pc, String propertyName, Object defaultValue) {
-		return jo.get(pc, propertyName, defaultValue);
 	}
 
 	@Override
@@ -76,19 +56,14 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 		return jo.get(pc, key, defaultValue);
 	}
 
-	@Override
 	public boolean isInitalized() {
 		return jo.isInitalized();
 	}
 
 	@Override
-
-	@Override
 	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
 		return jo.set(pc, propertyName, value);
 	}
-
-	@Override
 
 	@Override
 	public Object setEL(PageContext pc, Key propertyName, Object value) {

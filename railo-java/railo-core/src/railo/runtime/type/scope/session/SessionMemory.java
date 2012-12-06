@@ -42,10 +42,7 @@ public class SessionMemory extends StorageScopeMemory implements Session,MemoryS
 	}
 	
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new SessionMemory(this,deepCopy);
 	}

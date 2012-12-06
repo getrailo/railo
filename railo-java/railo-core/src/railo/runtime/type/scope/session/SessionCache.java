@@ -25,9 +25,7 @@ public final class SessionCache extends StorageScopeCache implements Session {
 		super(other,deepCopy);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new SessionCache(this,deepCopy);
 	}

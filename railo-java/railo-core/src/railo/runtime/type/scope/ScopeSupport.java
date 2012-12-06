@@ -84,7 +84,6 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 		
 	}
 		
-	@Override
 	protected ExpressionException invalidKey(String key) {
 		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+List.arrayToList(keys(), ",")+")");
 	}
