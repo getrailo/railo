@@ -71,9 +71,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
         id=++_id;
     }
 	
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return toDumpData(pageContext, maxlevel, dp, this, dspName);
@@ -86,9 +84,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 		
 	}
 		
-	/**
-	 * @see railo.runtime.type.StructImpl#invalidKey(java.lang.String)
-	 */
+	@Override
 	protected ExpressionException invalidKey(String key) {
 		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+List.arrayToList(keys(), ",")+")");
 	}
@@ -250,23 +246,17 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
         return URLDecoder.decode(new String(Caster.toString(value,"").getBytes("ISO-8859-1"),encoding),encoding);
     }*/
     
-    /**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+    @Override
 	public boolean isInitalized() {
 		return isInit;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
         isInit=true;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#release()
-	 */
+	@Override
 	public void release() {
 		clear();
 		isInit=false;
@@ -294,16 +284,12 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
         this.dspName=dspName;
     }
     
-    /**
-     * @see railo.runtime.type.scope.Scope#getType()
-     */
+    @Override
     public int getType() {
         return type;
     }
     
-    /**
-     * @see railo.runtime.type.scope.Scope#getTypeAsString()
-     */
+    @Override
     public String getTypeAsString() {
         return name;
     }

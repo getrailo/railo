@@ -69,16 +69,12 @@ public final class RequestImpl extends StructSupport implements Request {
 		return SCOPE_REQUEST;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
-	 */
+	@Override
 	public String getTypeAsString() {
 		return "request";
 	}
 
-	/**
-	 * @see java.util.Map#size()
-	 */
+	@Override
 	public int size() {
 		int size=0;
 		synchronized (_req) {
@@ -127,26 +123,20 @@ public final class RequestImpl extends StructSupport implements Request {
 	}
 	
 	
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		List<Key> list = keyList();
 		return list.toArray(new Key[list.size()]);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		Object value = remove(key,Null.NULL);
 		if(value!=Null.NULL)return value;
 		throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 	}
 
-	/**
-	 * @see java.util.Map#clear()
-	 */
+	@Override
 	public void clear() {
 		synchronized (_req) {
 			Enumeration<String> names = _req.getAttributeNames();
@@ -191,9 +181,7 @@ public final class RequestImpl extends StructSupport implements Request {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		synchronized (_req) {
 			Object value = _req.getAttribute(key.getLowerString()); 
@@ -209,9 +197,7 @@ public final class RequestImpl extends StructSupport implements Request {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		synchronized (_req) {
 			_req.setAttribute(key.getLowerString(), value);
@@ -219,25 +205,19 @@ public final class RequestImpl extends StructSupport implements Request {
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		return setEL(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		Struct trg=new StructImpl();
 		StructImpl.copy(this, trg,deepCopy);
 		return trg;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return get(key,null)!=null;
 	}
