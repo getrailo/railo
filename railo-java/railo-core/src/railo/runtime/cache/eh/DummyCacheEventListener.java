@@ -58,9 +58,7 @@ public class DummyCacheEventListener implements CacheEventListener, Serializable
 	
 
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone(){
 		return new DummyCacheEventListener(); 
 	}

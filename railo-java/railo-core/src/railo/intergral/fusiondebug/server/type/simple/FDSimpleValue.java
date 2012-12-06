@@ -15,23 +15,17 @@ public class FDSimpleValue extends FDValueNotMutability {
 		
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return str;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#getChildren()
-	 */
+	@Override
 	public List getChildren() {
 		return children;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#hasChildren()
-	 */
+	@Override
 	public boolean hasChildren() {
 		return children!=null;
 	}

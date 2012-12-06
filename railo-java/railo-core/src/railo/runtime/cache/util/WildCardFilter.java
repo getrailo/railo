@@ -42,24 +42,17 @@ public class WildCardFilter implements CacheKeyFilter {
         pattern=new Perl5Compiler().compile(ignoreCase?sb.toString().toLowerCase():sb.toString());
     }
 
-	/**
-	 * @see railo.commons.io.cache.CacheKeyFilter#accept(java.lang.String)
-	 */
+	@Override
 	public boolean accept(String key) {
 		return matcher.matches(ignoreCase?key.toLowerCase():key, pattern);
 	}
 
-    /**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+    @Override
 	public String toString() {
 		return "Wildcardfilter:"+wildcard;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheFilter#toPattern()
-	 */
+	@Override
 	public String toPattern() {
 		return wildcard;
 	}

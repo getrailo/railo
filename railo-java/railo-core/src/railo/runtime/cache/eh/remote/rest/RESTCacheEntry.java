@@ -15,16 +15,12 @@ public class RESTCacheEntry implements CacheEntry {
 		this.value=value;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getKey()
-	 */
+	@Override
 	public String getKey() {
 		return key;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheEntry#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return value;
 	}

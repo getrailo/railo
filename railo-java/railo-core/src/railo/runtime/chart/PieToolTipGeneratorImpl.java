@@ -17,9 +17,7 @@ public class PieToolTipGeneratorImpl implements PieToolTipGenerator {
 		this.labelFormat=labelFormat;
 	}
 
-	/**
-	 * @see org.jfree.chart.labels.PieToolTipGenerator#generateToolTip(org.jfree.data.general.PieDataset, java.lang.Comparable)
-	 */
+	@Override
 	public String generateToolTip(PieDataset dataset, Comparable key) {
 		
 		String result = null;    

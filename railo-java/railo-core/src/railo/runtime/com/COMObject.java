@@ -56,9 +56,7 @@ public final class COMObject implements Objects, Iteratorable {
 		this.dispatch=dispatch;
 	}
 
-    /**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
-     */
+    @Override
     public Object get(PageContext pc, String propertyName) throws PageException {
         return COMUtil.toObject(this,Dispatch.call(dispatch,propertyName),propertyName);
     }
@@ -67,9 +65,7 @@ public final class COMObject implements Objects, Iteratorable {
 		return get(pc, key.getString());
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, String propertyName, Object defaultValue) {
         return COMUtil.toObject(this,Dispatch.call(dispatch,propertyName),propertyName,defaultValue);
     }
@@ -78,9 +74,7 @@ public final class COMObject implements Objects, Iteratorable {
 		return get(pc, key.getString(), defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc, String propertyName, Object value) {
         return setEL(pc,propertyName,value);
     }
@@ -89,25 +83,18 @@ public final class COMObject implements Objects, Iteratorable {
 		return setEL(pc,propertyName.toString(),value);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
+    @Override
     public Object setEL(PageContext pc, String propertyName, Object value) {
 		Dispatch.put(dispatch,propertyName,value);
 		return value;
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(PageContext pc, Collection.Key propertyName, Object value) {
 		return setEL(pc, propertyName.toString(), value);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-     */
+    @Override
     public Object call(PageContext pc, String methodName, Object[] args) throws PageException {
         Object[] arr=new Object[args.length];
 		for(int i=0;i<args.length;i++) {
@@ -121,9 +108,7 @@ public final class COMObject implements Objects, Iteratorable {
 		return call(pc, methodName.getString(), arguments) ;
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
+    @Override
     public Object callWithNamedValues(PageContext pc, String methodName, Struct args) throws PageException {
 //      TODO gibt es hier eine bessere moeglichkeit?
         Iterator<Object> it = args.valueIterator();
@@ -134,96 +119,63 @@ public final class COMObject implements Objects, Iteratorable {
         return call(pc,methodName,values.toArray(new Object[values.size()]));
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pc, Collection.Key methodName, Struct args) throws PageException {
 		return callWithNamedValues(pc, methodName.getString(), args);
 	}
 
-    /* *
-     * @see railo.runtime.reflection.wrapper.ObjectWrapper#getEmbededObject()
-     * /
-    public Object getEmbededObject() throws PageException {
-        return dispatch;
-    }*/
+    @Override
 
-    /* *
-     * @see railo.runtime.reflection.wrapper.ObjectWrapper#getEmbededObjectEL()
-     * /
-    public Object getEmbededObjectEL() {
-        return dispatch;
-    }*/
+    @Override
 
-    /**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
+    @Override
     public boolean isInitalized() {
         return true;
     }
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table = new DumpTable("com","#ff3300","#ff9966","#660000");
 		table.appendRow(1,new SimpleDumpData("COM Object"),new SimpleDumpData(name));
 		return table;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a String");
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString(java.lang.String)
-     */
+    @Override
     public String castToString(String defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a number");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("can't cast Com Object to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
@@ -254,37 +206,27 @@ public final class COMObject implements Objects, Iteratorable {
         dispatch.safeRelease();
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare Com Object with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Com Object with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Com Object with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Com Object with a String");
 	}
     
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
+	@Override
 	public Iterator iterator() {
 		return valueIterator();
 	}

@@ -25,17 +25,13 @@ public class FDCollectionNode extends FDNodeValueSupport {
 		this.key=key;
 	}
 
-	/**
-	 * @see railo.intergral.fusiondebug.server.type.FDValueSupport#getName()
-	 */
+	@Override
 	public String getName() {
 		if(coll instanceof Array) return "["+key.getString()+"]";
 		return key.getString();
 	}
 
-	/**
-	 * @see railo.intergral.fusiondebug.server.type.FDNodeVariableSupport#getRawValue()
-	 */
+	@Override
 	protected Object getRawValue() {
 		return coll.get(key,null);
 	}

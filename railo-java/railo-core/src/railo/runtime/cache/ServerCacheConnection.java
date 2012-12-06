@@ -22,30 +22,22 @@ public class ServerCacheConnection implements CacheConnection {
 		this.cc=cc;
 	}
 
-	/**
-	 * @see railo.runtime.cache.CacheConnection#duplicate(railo.runtime.config.Config)
-	 */
+	@Override
 	public CacheConnection duplicate(Config config) throws IOException {
 		return new ServerCacheConnection(cs,cc.duplicate(config));
 	}
 
-	/**
-	 * @see railo.runtime.cache.CacheConnection#getClazz()
-	 */
+	@Override
 	public Class getClazz() {
 		return cc.getClazz();
 	}
 
-	/**
-	 * @see railo.runtime.cache.CacheConnection#getCustom()
-	 */
+	@Override
 	public Struct getCustom() {
 		return cc.getCustom();
 	}
 
-	/**
-	 * @see railo.runtime.cache.CacheConnection#getInstance(railo.runtime.config.Config)
-	 */
+	@Override
 	public Cache getInstance(Config config) throws IOException {
 		return cc.getInstance(cs);
 	}
@@ -54,16 +46,12 @@ public class ServerCacheConnection implements CacheConnection {
 		return cc.getName();
 	}
 
-	/**
-	 * @see railo.runtime.cache.CacheConnection#isReadOnly()
-	 */
+	@Override
 	public boolean isReadOnly() {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.cache.CacheConnection#isStorage()
-	 */
+	@Override
 	public boolean isStorage() {
 		return cc.isStorage();
 	}

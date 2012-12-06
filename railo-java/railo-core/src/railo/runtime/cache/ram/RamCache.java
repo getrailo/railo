@@ -39,9 +39,7 @@ public class RamCache extends CacheSupport {
 		new Controler(this).start();
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#contains(java.lang.String)
-	 */
+	@Override
 	public boolean contains(String key) {
 		return getQuiet(key,null)!=null;
 	}
@@ -61,9 +59,7 @@ public class RamCache extends CacheSupport {
 		return entry;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getCacheEntry(java.lang.String, railo.commons.io.cache.CacheEntry)
-	 */
+	@Override
 	public CacheEntry getCacheEntry(String key, CacheEntry defaultValue) {
 		RamCacheEntry ce = (RamCacheEntry) getQuiet(key, null);
 		if(ce!=null) {
@@ -74,16 +70,12 @@ public class RamCache extends CacheSupport {
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#hitCount()
-	 */
+	@Override
 	public long hitCount() {
 		return hitCount;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#missCount()
-	 */
+	@Override
 	public long missCount() {
 		return missCount;
 	}

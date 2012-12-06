@@ -29,23 +29,17 @@ public class FDVariable implements IFDVariable {
 		this.frame=frame;
 	}
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getName()
-	 */
+	@Override
 	public String getName() {
 		return name.getString();
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getStackFrame()
-	 */
+	@Override
 	public IFDStackFrame getStackFrame() {
 		return frame;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getValue()
-	 */
+	@Override
 	public IFDValue getValue() {
 		return value;
 	}

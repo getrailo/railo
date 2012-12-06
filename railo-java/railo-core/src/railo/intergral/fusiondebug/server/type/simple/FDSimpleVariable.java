@@ -36,23 +36,17 @@ public class FDSimpleVariable implements IFDVariable {
 		this(frame,name,new FDSimpleValue(children,value));
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getName()
-	 */
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getValue()
-	 */
+	@Override
 	public IFDValue getValue() {
 		return value;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getStackFrame()
-	 */
+	@Override
 	public IFDStackFrame getStackFrame() {
 		return frame;
 	}

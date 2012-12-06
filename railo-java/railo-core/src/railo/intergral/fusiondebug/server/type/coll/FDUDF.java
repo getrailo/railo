@@ -66,30 +66,21 @@ public class FDUDF extends FDValueNotMutability {
 		children.add(new FDSimpleVariable(frame,"return",udf.getReturnTypeAsString(),null));	
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getChildren()
-	 */
+	@Override
 	public List getChildren() {
 		return children;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#getName()
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#hasChildren()
-	 */
+	@Override
 	public boolean hasChildren() {
 		return true;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return toString(udf);
 	}

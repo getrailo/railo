@@ -9,16 +9,12 @@ public class CacheKeyFilterAll implements CacheKeyFilter {
 
 	private static CacheKeyFilterAll instance=new CacheKeyFilterAll();
 
-	/**
-	 * @see railo.commons.io.cache.CacheKeyFilter#accept(java.lang.String)
-	 */
+	@Override
 	public boolean accept(String key) {
 		return true;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.CacheFilter#toPattern()
-	 */
+	@Override
 	public String toPattern() {
 		return "*";
 	}

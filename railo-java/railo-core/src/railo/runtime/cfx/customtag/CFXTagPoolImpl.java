@@ -29,15 +29,11 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 		this.classes=classes;
 	}
 
-    /**
-     * @see railo.runtime.cfx.CFXTagPool#getClasses()
-     */
+    @Override
     public Map getClasses() {
         return classes;
     }
-	/**
-     * @see railo.runtime.cfx.CFXTagPool#getCustomTag(java.lang.String)
-     */
+	@Override
 	public synchronized CustomTag getCustomTag(String name) throws CFXTagException {
 		name=name.toLowerCase();
 		
@@ -54,9 +50,7 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 		return ct;
 	}
 	
-	/**
-	 * @see railo.runtime.cfx.CFXTagPool#getCFXTagClass(java.lang.String)
-	 */
+	@Override
 	public synchronized CFXTagClass getCFXTagClass(String name) throws CFXTagException {
 		name=name.toLowerCase();
 		CFXTagClass ctc=(CFXTagClass) classes.get(name);
@@ -64,9 +58,7 @@ public final class CFXTagPoolImpl implements CFXTagPool {
 		return ctc;
 	}
 
-	/**
-     * @see railo.runtime.cfx.CFXTagPool#releaseCustomTag(com.allaire.cfx.CustomTag)
-     */
+	@Override
 	public synchronized void releaseCustomTag(CustomTag ct) {
 		//table.put(ct.getClass().toString(),ct);
 	}

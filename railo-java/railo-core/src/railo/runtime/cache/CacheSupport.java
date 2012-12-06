@@ -14,9 +14,7 @@ import railo.runtime.type.Struct;
 
 public abstract class CacheSupport implements Cache {
 
-	/**
-	 * @see railo.commons.io.cache.Cache#keys(railo.commons.io.cache.CacheKeyFilter)
-	 */
+	@Override
 	public List keys(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -29,10 +27,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @throws IOException 
-	 * @see railo.commons.io.cache.Cache#keys(railo.commons.io.cache.CacheEntryFilter)
-	 */
+	@Override
 	public List keys(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -47,9 +42,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#entries()
-	 */
+	@Override
 	public List entries() throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -62,9 +55,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#entries(railo.commons.io.cache.CacheKeyFilter)
-	 */
+	@Override
 	public List entries(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -77,9 +68,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#entries(railo.commons.io.cache.CacheEntryFilter)
-	 */
+	@Override
 	public List entries(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -94,9 +83,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#values()
-	 */
+	@Override
 	public List values() throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -110,9 +97,7 @@ public abstract class CacheSupport implements Cache {
 	}
 	
 
-	/**
-	 * @see railo.commons.io.cache.Cache#values(railo.commons.io.cache.CacheEntryFilter)
-	 */
+	@Override
 	public List values(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -127,9 +112,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#values(railo.commons.io.cache.CacheKeyFilter)
-	 */
+	@Override
 	public List values(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		List list=new ArrayList();
@@ -142,9 +125,7 @@ public abstract class CacheSupport implements Cache {
 		return list;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#remove(railo.commons.io.cache.CacheEntryFilter)
-	 */
+	@Override
 	public int remove(CacheEntryFilter filter) throws IOException {
 		List keys = keys();
 		int count=0;
@@ -163,9 +144,7 @@ public abstract class CacheSupport implements Cache {
 	}
 	
 
-	/**
-	 * @see railo.commons.io.cache.Cache#remove(railo.commons.io.cache.CacheKeyFilter)
-	 */
+	@Override
 	public int remove(CacheKeyFilter filter) throws IOException {
 		List keys = keys();
 		int count=0;
@@ -186,16 +165,12 @@ public abstract class CacheSupport implements Cache {
 	}
 	
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(java.lang.String)
-	 */
+	@Override
 	public Object getValue(String key) throws IOException {
 		return getCacheEntry(key).getValue();
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object getValue(String key, Object defaultValue) {
 		CacheEntry entry = getCacheEntry(key,null);
 		if(entry==null) return defaultValue;
@@ -213,9 +188,7 @@ public abstract class CacheSupport implements Cache {
 		return true;
 	}
 	
-	/**
-	 * @see railo.commons.io.cache.Cache#getCacheEntry(java.lang.String)
-	 */
+	@Override
 	public CacheEntry getCacheEntry(String key) throws IOException {
 		CacheEntry entry = getCacheEntry(key, null);
 		if(entry==null) throw new CacheException("there is no valid cache entry with key ["+key+"]");

@@ -28,9 +28,7 @@ public final class ResponseImpl implements Response {
 		this.debug=debug;
 	}
 	
-	/**
-	 * @see com.allaire.cfx.Response#addQuery(java.lang.String, java.lang.String[])
-	 */
+	@Override
 	public Query addQuery(String name, String[] column) {
 		railo.runtime.type.Query query=new railo.runtime.type.QueryImpl(column,0,name);
 		
@@ -42,9 +40,7 @@ public final class ResponseImpl implements Response {
 		return new QueryWrap(query);
 	}
 
-	/**
-	 * @see com.allaire.cfx.Response#setVariable(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void setVariable(String key, String value) {
 		try {
 			pc.setVariable(key,value);
@@ -53,9 +49,7 @@ public final class ResponseImpl implements Response {
 		}
 	}
 
-	/**
-	 * @see com.allaire.cfx.Response#write(java.lang.String)
-	 */
+	@Override
 	public void write(String str) {
 		try {
 			pc.write(str);
@@ -64,9 +58,7 @@ public final class ResponseImpl implements Response {
 		}
 	}
 
-	/**
-	 * @see com.allaire.cfx.Response#writeDebug(java.lang.String)
-	 */
+	@Override
 	public void writeDebug(String str) {
 		if(debug)write(str);
 	}

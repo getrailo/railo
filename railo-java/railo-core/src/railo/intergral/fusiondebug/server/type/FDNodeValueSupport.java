@@ -28,18 +28,14 @@ public abstract class FDNodeValueSupport extends FDValueSupport {
 		return FDCaster.toFDVariable(getName(), value).getValue();
 	}*/
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		Object raw = getRawValue();
 		if(raw instanceof UDF)return FDUDF.toString((UDF)raw);
 		return FDCaster.serialize(raw);
 	}
 	
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDVariable#hasChildren()
-	 */
+	@Override
 	public boolean hasChildren() {
 		return hasChildren(getRawValue());
 	}

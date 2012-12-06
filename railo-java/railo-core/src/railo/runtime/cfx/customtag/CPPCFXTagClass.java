@@ -63,45 +63,33 @@ public final class CPPCFXTagClass implements CFXTagClass {
 		return procedure;
 	}
 
-	/**
-	 * @see railo.runtime.cfx.customtag.CFXTagClass#newInstance()
-	 */
+	@Override
 	public CustomTag newInstance() throws CFXTagException {
 		return new CPPCustomTag(serverLibrary,procedure,keepAlive);
 		
 	}
 
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#isReadOnly()
-     */
+    @Override
     public boolean isReadOnly() {
         return readonly;
     }
 
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#cloneReadOnly()
-     */
+    @Override
     public CFXTagClass cloneReadOnly() {
         return new CPPCFXTagClass(name,true,serverLibrary,procedure,keepAlive);
     }
 
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#getDisplayType()
-     */
+    @Override
     public String getDisplayType() {
         return "cpp";
     }
 
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#getSourceName()
-     */
+    @Override
     public String getSourceName() {
         return serverLibrary;
     }
 
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#isValid()
-     */
+    @Override
     public boolean isValid() {
         return false;
     }

@@ -474,15 +474,11 @@ public class EHCache extends EHCacheSupport {
 
 
 
-	/**
-	 * @param cacheName 
-	 * @throws IOException 
-	 * @see railo.commons.io.cache.Cache#init(railo.runtime.type.Struct)
-	 */
-	public void init(String cacheName, Struct arguments) throws IOException {
+	public void init(String cacheName, Struct arguments) {
 		init(ThreadLocalPageContext.getConfig(),cacheName, arguments);
 		
 	}
+	@Override
 	public void init(Config config,String cacheName, Struct arguments) {
 		
 		this.classLoader=config.getClassLoader();
@@ -505,9 +501,7 @@ public class EHCache extends EHCacheSupport {
 		return manager.getCache(cacheName);
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#remove(String)
-	 */
+	@Override
 	public boolean remove(String key) {
 		try	{
 			return getCache().remove(key);
@@ -548,9 +542,7 @@ public class EHCache extends EHCacheSupport {
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(String)
-	 */
+	@Override
 	public Object getValue(String key) throws CacheException {
 		try {
 			misses++;
@@ -568,9 +560,7 @@ public class EHCache extends EHCacheSupport {
 		}
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#getValue(String, java.lang.Object)
-	 */
+	@Override
 	public Object getValue(String key, Object defaultValue) {
 		try {
 			Element el = getCache().get(key);
@@ -585,16 +575,12 @@ public class EHCache extends EHCacheSupport {
 		return defaultValue;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#hitCount()
-	 */
+	@Override
 	public long hitCount() {
 		return hits;
 	}
 
-	/**
-	 * @see railo.commons.io.cache.Cache#missCount()
-	 */
+	@Override
 	public long missCount() {
 		return misses;
 	}
@@ -662,9 +648,7 @@ public class EHCache extends EHCacheSupport {
 
 class DataFiter implements ResourceNameFilter {
 
-	/**
-	 * @see railo.commons.io.res.filter.ResourceNameFilter#accept(railo.commons.io.res.Resource, java.lang.String)
-	 */
+	@Override
 	public boolean accept(Resource parent, String name) {
 		return name.endsWith(".data");
 	}

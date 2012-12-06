@@ -34,9 +34,7 @@ public class CacheConnectionImpl implements CacheConnection  {
 			this.storage=storage;
 		}
 
-		/**
-		 * @see railo.runtime.cache.X#getInstance(railo.runtime.config.ConfigWeb)
-		 */
+		@Override
 		public Cache getInstance(Config config) throws IOException  {
 			if(cache==null){
 				try{
@@ -58,23 +56,17 @@ public class CacheConnectionImpl implements CacheConnection  {
 		}
 
 
-		/**
-		 * @see railo.runtime.cache.X#getName()
-		 */
+		@Override
 		public String getName() {
 			return name;
 		}
 
-		/**
-		 * @see railo.runtime.cache.X#getClazz()
-		 */
+		@Override
 		public Class getClazz() {
 			return clazz;
 		}
 
-		/**
-		 * @see railo.runtime.cache.X#getCustom()
-		 */
+		@Override
 		public Struct getCustom() {
 			return custom;
 		}
@@ -85,17 +77,13 @@ public class CacheConnectionImpl implements CacheConnection  {
 		}
 
 
-		/**
-		 * @see railo.runtime.cache.X#duplicate(railo.runtime.config.Config, boolean)
-		 */
+		@Override
 		public CacheConnection duplicate(Config config) throws IOException {
 			return new CacheConnectionImpl(config,name,clazz,custom,readOnly,storage);
 		}
 
 
-			/**
-			 * @see railo.runtime.cache.X#isReadOnly()
-			 */
+			@Override
 			public boolean isReadOnly() {
 				return readOnly;
 			}

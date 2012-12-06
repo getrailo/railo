@@ -25,9 +25,7 @@ public class FDQueryNode extends FDNodeValueSupport {
 		return column;
 	}
 
-	/**
-	 * @see railo.intergral.fusiondebug.server.type.FDNodeVariableSupport#getRawValue()
-	 */
+	@Override
 	protected Object getRawValue() {
 		return qry.getAt(column, row,null);
 	}

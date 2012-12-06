@@ -65,23 +65,17 @@ public class FDQuery extends FDValueNotMutability {
 	}
 
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#getChildren()
-	 */
+	@Override
 	public List getChildren() {
 		return children;
 	}
 
-	/**
-	 * @see com.intergral.fusiondebug.server.IFDValue#hasChildren()
-	 */
+	@Override
 	public boolean hasChildren() {
 		return true;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "Query(Columns:"+qry.getColumns().length+", Rows:"+qry.getRecordcount()+")";
 	}

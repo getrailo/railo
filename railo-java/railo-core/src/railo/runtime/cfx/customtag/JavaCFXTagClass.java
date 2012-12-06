@@ -30,9 +30,7 @@ public final class JavaCFXTagClass implements CFXTagClass {
 		this.readOnly=readOnly;
 	}
 	
-	/**
-	 * @see railo.runtime.cfx.customtag.CFXTagClass#newInstance()
-	 */
+	@Override
 	public CustomTag newInstance() throws CFXTagException {
 		try {
 			return _newInstance();
@@ -41,11 +39,6 @@ public final class JavaCFXTagClass implements CFXTagClass {
 		}
 	}
 
-	/**
-	 * create and return an new CustomTag Object
-	 * @throws ClassNotFoundException
-	 * @see railo.runtime.cfx.customtag.CFXTagClass#newInstance()
-	 */
 	public CustomTag _newInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException  {
 		
 		Object o=getClazz().newInstance();
@@ -75,35 +68,25 @@ public final class JavaCFXTagClass implements CFXTagClass {
         return strClass;
     }
 
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#isReadOnly()
-     */
+    @Override
     public boolean isReadOnly() {
         return readOnly;
     }
 
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#cloneReadOnly()
-     */
+    @Override
     public CFXTagClass cloneReadOnly() {
         return new JavaCFXTagClass(name,strClass,clazz,true);
     }
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#getDisplayType()
-     */
+    @Override
     public String getDisplayType() {
         return "Java";
     }
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#getSourceName()
-     */
+    @Override
     public String getSourceName() {
         return strClass;
     }
     
-    /**
-     * @see railo.runtime.cfx.customtag.CFXTagClass#isValid()
-     */
+    @Override
     public boolean isValid() {
         try {
             return Reflector.isInstaneOf(getClazz(),CustomTag.class);

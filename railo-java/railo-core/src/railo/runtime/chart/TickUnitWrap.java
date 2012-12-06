@@ -14,40 +14,27 @@ public class TickUnitWrap extends NumberTickUnit {
 		this.labelFormat=labelFormat;
 	}
 
-	/**
-	 *
-	 * @see org.jfree.chart.axis.TickUnit#compareTo(java.lang.Object)
-	 */
+	@Override
 	public int compareTo(Object object) {
 		return tickUnit.compareTo(object);
 	}
 
-	/**
-	 *
-	 * @see org.jfree.chart.axis.TickUnit#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		return tickUnit.equals(obj);
 	}
 
-	/**
-	 *
-	 * @see org.jfree.chart.axis.TickUnit#getSize()
-	 */
+	@Override
 	public double getSize() {
 		return tickUnit.getSize();
 	}
 
-	/**
-	 * @see org.jfree.chart.axis.TickUnit#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return tickUnit.hashCode();
 	}
 
-	/**
-	 * @see org.jfree.chart.axis.TickUnit#valueToString(double)
-	 */
+	@Override
 	public String valueToString(double value) {
 		return LabelFormatUtil.format(labelFormat, value);
 	}
