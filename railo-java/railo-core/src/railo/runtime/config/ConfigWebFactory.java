@@ -2361,6 +2361,7 @@ public final class ConfigWebFactory {
 	           String primary=ctMapping.getAttribute("primary");
 	           
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
+	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
 	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
 	           //print.out(mappings[i].isPhysicalFirst());
@@ -3943,8 +3944,10 @@ public final class ConfigWebFactory {
 	           String primary=cMapping.getAttribute("primary");
 	           
 	           boolean physicalFirst=archive==null || !primary.equalsIgnoreCase("archive");
+	           //print.out("xxx:"+physicalFirst);
 	           hasSet=true;
 	           mappings[i]= new MappingImpl(config,"/"+i+"/",physical,archive,trusted,physicalFirst,hidden,readonly,true,false,true,clMaxEl);
+	           //print.out(mappings[i].isPhysicalFirst());
 	        }
 	        
 	        config.setComponentMappings(mappings);

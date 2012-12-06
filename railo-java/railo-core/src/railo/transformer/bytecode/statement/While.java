@@ -13,7 +13,7 @@ import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
 
-public final class While extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
+public final class While extends StatementBase implements FlowControl,HasBody {
 	
 	private ExprBoolean expr;
 	private Body body;

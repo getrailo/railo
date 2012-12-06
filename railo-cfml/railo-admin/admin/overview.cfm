@@ -123,16 +123,6 @@ Error Output --->
 		password="#session["password"&request.adminType]#"
 		returnVariable="info">
 	
-	<cfif request.adminType EQ "server">
-		<cfset names=StructKeyArray(info.servlets)>
-		<cfif !ArrayContainsNoCase(names,"Rest")>
-			<div class="warning nofocus">
-				There is no REST Servlet defined in your enviroment.
-				Follow this <a href="" target="_blank">description</a> to enable REST.
-			</div>
-		</cfif>	
-	</cfif>
-	
 	<table>
 		<tr>
 			<td valign="top" width="65%">

@@ -6,17 +6,17 @@ import railo.runtime.type.Query;
 /**
  * 
  */
-public final class QueryEntryImpl implements QueryEntryPro {
+public final class QueryEntryImpl implements QueryEntry {
 
 	private static final long serialVersionUID = 8655915268130645466L;
 	
-	private final String src;
-	private final SQL sql;
-	private final long exe;
-    private final String name;
-    private final int recordcount;
-    private final String datasource;
-	private final Query qry;
+	private String src;
+	private SQL sql;
+	private int exe;
+    private String name;
+    private int recordcount;
+    private String datasource;
+	private Query qry;
 	
 	/**
 	 * constructor of the class
@@ -25,7 +25,7 @@ public final class QueryEntryImpl implements QueryEntryPro {
 	 * @param src
 	 * @param exe
 	 */
-	public QueryEntryImpl(Query qry,String datasource, String name,SQL sql,int recordcount, String src, long exe) {
+	public QueryEntryImpl(Query qry,String datasource, String name,SQL sql,int recordcount, String src, int exe) {
         this.datasource=datasource;
         this.recordcount=recordcount;
         this.name=name;
@@ -42,15 +42,8 @@ public final class QueryEntryImpl implements QueryEntryPro {
 	
 	@Override
 	public int getExe() {
-		return (int)getExecutionTime();
-	}
-	
-	@Override
-	public long getExecutionTime() {
 		return exe;
 	}
-	
-	
 	@Override
 	public SQL getSQL() {
 		return sql;

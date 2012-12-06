@@ -15,10 +15,9 @@ import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
-public final class TagIf extends TagBaseNoFinal {
+public final class TagIf extends TagBase {
 
 	
 	public TagIf(Position start,Position end) {
@@ -76,4 +75,6 @@ public final class TagIf extends TagBaseNoFinal {
         adapter.visitJumpInsn(Opcodes.GOTO, end);
         adapter.visitLabel(endIf);
 	}
+
+
 }

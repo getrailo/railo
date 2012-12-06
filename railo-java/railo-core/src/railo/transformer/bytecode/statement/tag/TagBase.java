@@ -4,15 +4,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.objectweb.asm.Label;
-
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.statement.FlowControlFinal;
-import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
 import railo.transformer.library.tag.TagLibTag;
@@ -20,7 +16,7 @@ import railo.transformer.library.tag.TagLibTag;
 /**
  * 
  */
-public abstract class TagBase extends StatementBase implements Tag {
+public class TagBase extends StatementBase implements Tag {
 
 	private Body body=null;
 	private String appendix;
@@ -31,7 +27,6 @@ public abstract class TagBase extends StatementBase implements Tag {
 	private boolean scriptBase=false;
 	
 	private Map<String, Attribute> metadata;
-	//private Label finallyLabel;
 
 
 	public TagBase(Position start, Position end) {
@@ -46,121 +41,162 @@ public abstract class TagBase extends StatementBase implements Tag {
 		return appendix;
 	}
 
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#getAttributes()
+	 */
 	public Map getAttributes() {
 		return attributes;
 	}
 
-	@Override
+	/**
+	 *
+	 * @see railo.transformer.bytecode.statement.tag.Tag#getFullname()
+	 */
 	public String getFullname() {
 		return fullname;
 	}
 
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#getTagLibTag()
+	 */
 	public TagLibTag getTagLibTag() {
 		return tagLibTag;
 	}
 
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#setAppendix(java.lang.String)
+	 */
 	public void setAppendix(String appendix) {
 		this.appendix=appendix;
 	}
 
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#setFullname(java.lang.String)
+	 */
 	public void setFullname(String fullname) {
 		this.fullname=fullname;
 	}
 
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#setTagLibTag(railo.transformer.library.tag.TagLibTag)
+	 */
 	public void setTagLibTag(TagLibTag tagLibTag) {
 		this.tagLibTag=tagLibTag;
 	}
 
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#addAttribute(railo.transformer.bytecode.statement.tag.Attribute)
+	 */
 	public void addAttribute(Attribute attribute) {
 		attributes.put(attribute.getName().toLowerCase(), attribute);
 	}
 
-	@Override
+	/**
+	 *
+	 * @see railo.transformer.bytecode.statement.tag.Tag#containsAttribute(java.lang.String)
+	 */
 	public boolean containsAttribute(String name) {
 		return attributes.containsKey(name.toLowerCase());
 	}
 
-	@Override
+	/**
+	 *
+	 * @see railo.transformer.bytecode.statement.tag.Tag#getBody()
+	 */
 	public Body getBody() {
 		return body;
 	}
 
-	@Override
+	/**
+	 *
+	 * @see railo.transformer.bytecode.statement.tag.Tag#setBody(railo.transformer.bytecode.Body)
+	 */
 	public void setBody(Body body) {
 		this.body = body;
 		body.setParent(this);
 	}
 
-	@Override
+
+	/**
+	 * @see railo.transformer.bytecode.statement.StatementBase#_writeOut(org.objectweb.asm.commons.GeneratorAdapter)
+	 */
 	public void _writeOut(BytecodeContext bc) throws BytecodeException {
-		_writeOut(bc,true,null);
+		_writeOut(bc, true);
 	}
 	
 	public void _writeOut(BytecodeContext bc, boolean doReuse) throws BytecodeException {
-		_writeOut(bc,doReuse,null);
-	}
-	
-	protected void _writeOut(BytecodeContext bc, boolean doReuse, final FlowControlFinal fcf) throws BytecodeException {
-		//_writeOut(bc, true);
 		boolean output=tagLibTag.getParseBody() || Caster.toBooleanValue(getAttribute("output"), false);
 		
 		if(output) {
 			ParseBodyVisitor pbv=new ParseBodyVisitor();
 			pbv.visitBegin(bc);
-				TagHelper.writeOut(this,bc, doReuse,fcf);
+				_writeOutTag(bc,doReuse);
 			pbv.visitEnd(bc);
+			
+			
 		}
-		else TagHelper.writeOut(this,bc, doReuse,fcf);
+		else _writeOutTag(bc,doReuse);
 	}
-	
-	@Override
+
+	private void _writeOutTag(BytecodeContext bc, boolean doReuse) throws BytecodeException {
+		TagOther.writeOut(this,bc, doReuse);
+		
+	}
+
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#getAttribute(java.lang.String)
+	 */
 	public Attribute getAttribute(String name) {
 		return attributes.get(name.toLowerCase());
 	}
 
-	@Override
+	/**
+	 *
+	 * @see railo.transformer.bytecode.statement.tag.Tag#removeAttribute(java.lang.String)
+	 */
 	public Attribute removeAttribute(String name) {
 		return attributes.remove(name);
 	}
 
-	@Override
+	/**
+	 *
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return appendix+":"+fullname+":"+super.toString();
 	}
 	
-	@Override
+	/**
+	 * @return the scriptBase
+	 */
 	public boolean isScriptBase() {
 		return scriptBase;
 	}
-	
-	@Override
+	/**
+	 * @param scriptBase the scriptBase to set
+	 */
 	public void setScriptBase(boolean scriptBase) {
 		this.scriptBase = scriptBase;
 	}
-	
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#addMissingAttribute(java.lang.String, java.lang.String)
+	 */
 	public void addMissingAttribute(String name, String type) {
 		missingAttributes.put(name, type);
 	}
 	
-	@Override
+	/**
+	 * @see railo.transformer.bytecode.statement.tag.Tag#getMissingAttributes()
+	 */
 	public Map getMissingAttributes() {
 		return missingAttributes;
 	}
 	
-	@Override
 	public void addMetaData(Attribute metadata) {
 		if(this.metadata==null) this.metadata=new HashMap<String, Attribute>();
 		this.metadata.put(metadata.getName(), metadata);
 	}
 	
-	@Override
 	public Map<String, Attribute> getMetaData() {
 		return metadata;
 	}

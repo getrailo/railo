@@ -2,7 +2,7 @@ package railo.transformer.bytecode.statement.tag;
 
 import railo.transformer.bytecode.Position;
 
-public class TagImport extends TagBaseNoFinal {
+public class TagImport extends TagBase {
 
 
 	private String path;
@@ -29,6 +29,7 @@ public class TagImport extends TagBaseNoFinal {
 	public void setPath(String path) {
 		this.path = path;
 	}
+
 
 
 }

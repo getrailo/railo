@@ -7,7 +7,7 @@ import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.statement.Return;
 
-public final class TagReturn extends TagBaseNoFinal {
+public final class TagReturn extends TagBase {
 
 	public TagReturn(Position start,Position end) {
 		super(start,end);

@@ -2,10 +2,9 @@ package railo.transformer.bytecode;
 
 import org.objectweb.asm.Label;
 
-import railo.transformer.bytecode.statement.FlowControlBreak;
-import railo.transformer.bytecode.statement.FlowControlContinue;
+import railo.transformer.bytecode.statement.FlowControl;
 
-public abstract class FlowControlBody extends BodyBase implements FlowControlBreak,FlowControlContinue {
+public abstract class FlowControlBody extends BodyBase implements FlowControl {
 
 	private Label end = new Label();
 	

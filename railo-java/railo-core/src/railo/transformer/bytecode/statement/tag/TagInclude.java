@@ -13,7 +13,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.Types;
 
-public final class TagInclude extends TagBaseNoFinal {
+public final class TagInclude extends TagBase {
 
 	private final static Method DO_INCLUDE_RUN_ONCE = new Method(
 			"doInclude",

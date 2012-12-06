@@ -2,7 +2,6 @@ package railo.transformer.bytecode.statement;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -14,7 +13,7 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
 import railo.transformer.bytecode.util.ExpressionUtil;
 
-public final class NativeSwitch extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBodies {
+public final class NativeSwitch extends StatementBase implements FlowControl,HasBodies {
 
 	public static final short LOCAL_REF=0;
 	public static final short ARG_REF=1;
@@ -24,7 +23,7 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 	private int value;
 	private Label end;
 	private Statement defaultCase;
-	List<Case> cases=new ArrayList<Case>();
+	ArrayList cases=new ArrayList();
 	private Label[] labels=new Label[0];
 	private int[] values=new int[0];
 	private short type;
@@ -46,10 +45,10 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 		Label beforeDefault = new Label();
 		adapter.visitLookupSwitchInsn(beforeDefault, values, labels);
 		
-		Iterator<Case> it = cases.iterator();
+		Iterator it = cases.iterator();
 		Case c;
 		while(it.hasNext()) {
-			c= it.next();
+			c=((Case) it.next());
 			adapter.visitLabel(c.label);
 			ExpressionUtil.visitLine(bc, c.startPos);
 			c.body.writeOut(bc);
@@ -149,9 +148,9 @@ public final class NativeSwitch extends StatementBaseNoFinal implements FlowCont
 		if(defaultCase!=null)len++;
 		Body[] bodies=new Body[len];
 		Case c;
-		Iterator<Case> it = cases.iterator();
+		Iterator it = cases.iterator();
 		while(it.hasNext()) {
-			c=it.next();
+			c=(Case) it.next();
 			bodies[count++]=(Body) c.body;
 		}
 		if(defaultCase!=null)bodies[count++]=(Body) defaultCase;

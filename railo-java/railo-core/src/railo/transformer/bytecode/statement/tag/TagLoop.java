@@ -14,9 +14,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.Expression;
-import railo.transformer.bytecode.statement.FlowControlBreak;
-import railo.transformer.bytecode.statement.FlowControlContinue;
-import railo.transformer.bytecode.statement.FlowControlFinal;
+import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.ForEach;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ExpressionUtil;
@@ -34,7 +32,7 @@ import railo.transformer.bytecode.visitor.OnFinally;
 import railo.transformer.bytecode.visitor.TryFinallyVisitor;
 import railo.transformer.bytecode.visitor.WhileVisitor;
 
-public final class TagLoop extends TagGroup implements FlowControlBreak,FlowControlContinue {
+public final class TagLoop extends TagGroup implements FlowControl {
 
 
 	public static final int TYPE_FILE = 1;
@@ -1031,11 +1029,6 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 
 	public void setLoopVisitor(LoopVisitor loopVisitor) {
 		this.loopVisitor=loopVisitor;
-	}
-
-	@Override
-	public FlowControlFinal getFlowControlFinal() {
-		return null;
 	}
 
 

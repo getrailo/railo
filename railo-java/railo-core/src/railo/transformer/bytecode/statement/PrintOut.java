@@ -12,7 +12,7 @@ import railo.transformer.bytecode.expression.ExprString;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 
-public final class PrintOut extends StatementBaseNoFinal {
+public final class PrintOut extends StatementBase {
 
 	// void write (String)
     private final static Method METHOD_WRITE =  new Method("write",

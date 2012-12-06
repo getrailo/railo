@@ -16,7 +16,6 @@ import railo.runtime.db.SQL;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.debug.DebuggerImpl;
-import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
@@ -427,7 +426,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		SQL sql=items.size()>0?new SQLImpl(strSQL,items.toArray(new SQLItem[items.size()])):new SQLImpl(strSQL);
 		
 		railo.runtime.type.Query query=null;
-		long exe=0;
+		int exe=0;
 		boolean hasCached=cachedWithin!=null || cachedafter!=null;
 		
 		
@@ -481,13 +480,13 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
                 
                 
 			}
-			exe=query.getExecutionTime();
+			exe=query.executionTime();
 		}
         else query.setCached(hasCached);
 		
 		if(pageContext.getConfig().debug() && debug) {
 			boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-			((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
+			pageContext.getDebugger().addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 		}
 		
 		if(!query.isEmpty() && !StringUtil.isEmpty(name)) {
@@ -503,7 +502,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			int rc=query.getRecordcount();
 			if(rc==0)rc=query.getUpdateCount();
 			sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(rc));
-			sct.setEL(KeyConstants._executionTime, Caster.toDouble(query.getExecutionTime()));
+			sct.setEL(KeyConstants._executionTime, Caster.toDouble(query.executionTime()));
 			sct.setEL(KeyConstants._SQL, sql.getSQLString());
 			
 			// GENERATED KEYS

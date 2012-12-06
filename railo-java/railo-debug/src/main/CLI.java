@@ -47,6 +47,8 @@ public class CLI {
         Class cli = cl.loadClass("railo.cli.CLI");
         Method main = cli.getMethod("main",new Class[]{String[].class});
         main.invoke(null, new Object[]{args});
+        
+        print.e("overall:"+(System.currentTimeMillis()-start));
 	}
 	
 

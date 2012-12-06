@@ -20,7 +20,6 @@ import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagBase;
-import railo.transformer.bytecode.statement.tag.TagOther;
 import railo.transformer.cfml.attributes.AttributeEvaluator;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;
 import railo.transformer.cfml.evaluator.Evaluator;
@@ -637,7 +636,7 @@ public final class TagLibTag {
 
 	 */
 	public Tag getTag(Position start,Position end) throws TagLibException {
-		if(StringUtil.isEmpty(tttClass)) return new TagOther(start,end);
+		if(StringUtil.isEmpty(tttClass)) return new TagBase(start,end);
 		try {
 			return _getTag(start,end);
 		} 

@@ -6240,8 +6240,8 @@ Default list delimiter: comma character.</description>
         the hash result back to the source string.)
         32-byte, hexadecimal string</description>
 		<argument>
-			<name>input</name>
-			<type>any</type>
+			<name>string</name>
+			<type>string</type>
 			<required>Yes</required>
 		<description>String to hash.</description>
     </argument>
@@ -6261,15 +6261,9 @@ Default list delimiter: comma character.</description>
 			<name>encoding</name>
 			<type>string</type>
 			<required>No</required>
-			<description>A string specifying the encoding to use when converting
+		<description>A string specifying the encoding to use when converting
             the string to byte data used by the hash algorithm.</description>
-		</argument>
-		<argument>
-			<name>numIterations</name>
-			<type>int</type>
-			<required>No</required>
-			<description>number of iterations; default is 1.</description>
-		</argument>
+    </argument>
 		<return>
 			<type>string</type>
 		</return>

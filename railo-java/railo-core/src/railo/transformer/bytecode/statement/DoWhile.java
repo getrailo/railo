@@ -12,7 +12,7 @@ import railo.transformer.bytecode.cast.CastBoolean;
 import railo.transformer.bytecode.expression.ExprBoolean;
 import railo.transformer.bytecode.expression.Expression;
 
-public final class DoWhile extends StatementBaseNoFinal implements FlowControlBreak,FlowControlContinue,HasBody {
+public final class DoWhile extends StatementBase implements FlowControl,HasBody {
 
 	private ExprBoolean expr;
 	private Body body;

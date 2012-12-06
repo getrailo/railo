@@ -9,7 +9,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 
-public final class Abort extends StatementBaseNoFinal {
+public final class Abort extends StatementBase {
 
 	private static final Type ABORT = Type.getType(railo.runtime.exp.Abort.class);
 	

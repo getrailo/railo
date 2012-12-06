@@ -14,7 +14,7 @@ import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.visitor.ConditionVisitor;
 
-public final class Condition extends StatementBaseNoFinal implements HasBodies {
+public final class Condition extends StatementBase implements HasBodies {
     
     private ArrayList<Pair> ifs=new ArrayList<Pair>();
     private Pair _else;
@@ -85,13 +85,13 @@ public final class Condition extends StatementBaseNoFinal implements HasBodies {
     
 
     public void _writeOut(BytecodeContext bc) throws BytecodeException {
-    	Iterator<Pair> it = ifs.iterator();
+    	Iterator it = ifs.iterator();
         Pair pair;
         ConditionVisitor cv=new ConditionVisitor();
         cv.visitBefore();
         	// ifs
         	while(it.hasNext()) {
-        		pair=it.next();
+        		pair=(Pair) it.next();
         		ExpressionUtil.visitLine(bc, pair.start);
         		cv.visitWhenBeforeExpr();
         			pair. condition.writeOut(bc,Expression.MODE_VALUE);
@@ -118,9 +118,9 @@ public final class Condition extends StatementBaseNoFinal implements HasBodies {
 		if(_else!=null)len++;
 		Body[] bodies=new Body[len];
 		Pair p;
-		Iterator<Pair> it = ifs.iterator();
+		Iterator it = ifs.iterator();
 		while(it.hasNext()) {
-			p=it.next();
+			p=(Pair) it.next();
 			bodies[count++]=(Body) p.body;
 		}
 		if(_else!=null)bodies[count++]=(Body) _else.body;

@@ -34,7 +34,6 @@ public final class SMTPSender extends Thread {
 		Transport transport = null;
         try {
         	transport = mmas.session.transport;//SMTPConnectionPool.getTransport(session,host,port,user,pass);
-        	if(user==null)pass=null;
         	// connect
     		if(!transport.isConnected())
     			transport.connect(host,port,user,pass);

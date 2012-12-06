@@ -1,7 +1,6 @@
 package railo.transformer.bytecode.statement.tag;
 
 import railo.transformer.bytecode.Position;
-import railo.transformer.bytecode.statement.FlowControlFinal;
 
 public class TagComponent extends TagBase{
 
@@ -14,10 +13,5 @@ public class TagComponent extends TagBase{
 		super(start, end);
 	}
 
-	
-	@Override
-	public FlowControlFinal getFlowControlFinal() {
-		return null;
-	}
 
 }

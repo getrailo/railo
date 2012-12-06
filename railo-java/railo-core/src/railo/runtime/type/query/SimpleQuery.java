@@ -79,7 +79,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	private String name;
 	private String template;
 	private SQL sql;
-	private long exeTime;
+	private int exeTime;
 	private int recordcount;
 	private ArrayInt arrCurrentRow=new ArrayInt();
 	
@@ -96,9 +96,8 @@ public class SimpleQuery implements Query, ResultSet, Objects {
             QueryUtil.checkSQLRestriction(dc,sql);
         }
 		
-		//Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
-		//stopwatch.start();
-		long start=System.nanoTime();
+		Stopwatch stopwatch=new Stopwatch();
+		stopwatch.start();
 		boolean hasResult=false;
 		try {	
 			SQLItem[] items=sql.getItems();
@@ -134,7 +133,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		catch (Throwable e) {
 			throw Caster.toPageException(e);
 		}
-		exeTime= System.nanoTime()-start;
+		exeTime=(int) stopwatch.time();
 	}
 	
 	private void setAttributes(Statement stat,int maxrow, int fetchsize,int timeout) throws SQLException {
@@ -195,9 +194,12 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#executionTime()
+	 */
+	
 	public int executionTime() {
-		return (int)exeTime;
+		return exeTime;
 	}
 
 	/**
@@ -771,31 +773,49 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		// TODO implement
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#toString()
+	 */
 	public String toString() {
 		return res.toString();
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#setExecutionTime(long)
+	 */
+	
 	public void setExecutionTime(long exeTime) {
 		throw notSupported();
 	}
 
+	/**
+	 * @see railo.runtime.type.QueryImpl#cutRowsTo(int)
+	 */
+	
 	public synchronized boolean cutRowsTo(int maxrows) {
 		throw notSupported();
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#setCached(boolean)
+	 */
+	
 	public void setCached(boolean isCached) {
 		throw notSupported();
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#isCached()
+	 */
+	
 	public boolean isCached() {
 		return false;
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#addRow()
+	 */
+	
 	public int addRow() {
 		throw notSupported();
 	}

@@ -250,7 +250,9 @@ public class QueryCacheQuery extends QueryImpl {
 		return query.duplicate(deepCopy);
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#executionTime()
+	 */
 	public int executionTime() {
 		return query.executionTime();
 	}
@@ -434,9 +436,12 @@ public class QueryCacheQuery extends QueryImpl {
 		return query.getData(row, col);
 	}
 	
-	/*public synchronized Struct _getMetaData() {
+	/**
+	 * @see railo.runtime.type.QueryImpl#_getMetaData()
+	 */
+	public synchronized Struct _getMetaData() {
 		return query._getMetaData();
-	}*/
+	}
 
 	/**
 	 * @see railo.runtime.type.QueryImpl#getMetaDataSimple()
@@ -793,7 +798,9 @@ public class QueryCacheQuery extends QueryImpl {
 		return query.setEL(pc, propertyName, value);
 	}
 
-	@Override
+	/**
+	 * @see railo.runtime.type.QueryImpl#setExecutionTime(long)
+	 */
 	public void setExecutionTime(long exeTime) {
 		disconnectCache();
 		query.setExecutionTime(exeTime);

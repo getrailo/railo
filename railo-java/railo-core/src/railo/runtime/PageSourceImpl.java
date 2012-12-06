@@ -279,21 +279,12 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
 	}
 
-	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws IOException, SecurityException, IllegalArgumentException, PageException {
+	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws TemplateException, IOException, SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
         ConfigWebImpl cwi=(ConfigWebImpl) config;
-        
-        
         byte[] barr = cwi.getCompiler().
         	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
         Class<?> clazz = mapping.touchPCLCollection().loadClass(getClazz(), barr,isComponent());
-        try{
-        	return  newInstance(clazz);
-        }
-        catch(Throwable t){
-        	PageException pe = Caster.toPageException(t);
-        	pe.setExtendedInfo("failed to load template "+getDisplayPath());
-        	throw pe;
-        }
+        return  newInstance(clazz);
     }
 
     private Page newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {

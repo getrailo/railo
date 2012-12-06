@@ -8,7 +8,7 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.util.Types;
 
-public final class TagReThrow extends TagBaseNoFinal {
+public final class TagReThrow extends TagBase {
 
 	public TagReThrow(Position start,Position end) {
 		super(start,end);

@@ -230,7 +230,7 @@ public final class HSQLDBHandler {
      * @throws PageException
      */
     public Query execute(PageContext pc, SQL sql, int maxrows, int fetchsize, int timeout) throws PageException {
-        Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
+        Stopwatch stopwatch=new Stopwatch();
 		stopwatch.start();
 		String prettySQL =null;
 		Selects selects=null;

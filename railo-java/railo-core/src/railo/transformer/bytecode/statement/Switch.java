@@ -2,7 +2,6 @@ package railo.transformer.bytecode.statement;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
@@ -16,7 +15,7 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 
-public final class Switch extends StatementBaseNoFinal implements FlowControlBreak,HasBodies {
+public final class Switch extends StatementBase implements FlowControlBreak,HasBodies {
     
 	private static final Type ARRAY_IMPL=Type.getType(railo.runtime.type.ArrayImpl.class);
 
@@ -40,7 +39,7 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 			new Type[]{Types.ARRAY,Types.OBJECT}
     		);	
 	
-	private List<Case> cases=new ArrayList<Case>();
+	private ArrayList cases=new ArrayList();
     private Body defaultCase;
 	private Expression expr;
 
@@ -95,10 +94,10 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 		adapter.storeLocal(array);
 		
 	// cases.append(case.value);
-		Iterator<Case> it = cases.iterator();
+		Iterator it = cases.iterator();
 		Case c;
 		while(it.hasNext()) {
-			c=it.next();
+			c=(Case) it.next();
 			
 
 			adapter.loadLocal(array);
@@ -119,7 +118,7 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 		it = cases.iterator();
 		int count=1;
 		while(it.hasNext()) {
-			c=it.next();
+			c=(Case) it.next();
 			ns.addCase(count++, c.body,c.startPos,c.endPos,false);
 		}
 		if(defaultCase!=null)ns.addDefaultCase(defaultCase);
@@ -158,9 +157,9 @@ public final class Switch extends StatementBaseNoFinal implements FlowControlBre
 		if(defaultCase!=null)len++;
 		Body[] bodies=new Body[len];
 		Case c;
-		Iterator<Case> it = cases.iterator();
+		Iterator it = cases.iterator();
 		while(it.hasNext()) {
-			c=it.next();
+			c=(Case) it.next();
 			bodies[count++]=c.body;
 		}
 		if(defaultCase!=null)bodies[count++]=defaultCase;

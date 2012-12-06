@@ -1413,16 +1413,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	Object value=null;
 		boolean isNew=false;
-		
 		// get value
-		value=VariableInterpreter.getVariableEL(this,name,null);// NULL Support 
-		if(value==null) {
+		try {
+			value=getVariable(name);
+		} 
+		catch (PageException e) {
 			if(defaultValue==null)
 				throw new ExpressionException("The required parameter ["+name+"] was not provided.");
 			value=defaultValue;
 			isNew=true;
 		}
-		
 		// cast and set value
 		if(!"any".equals(type)) {
 			// range

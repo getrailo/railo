@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
-import railo.commons.lang.FormatUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
@@ -126,7 +125,7 @@ public class QueryUtil {
 			comment.append("Template:").append(template).append("\n");
 		//table.appendRow(1, new SimpleDumpData("Template"), new SimpleDumpData(template));
 		
-		comment.append("Execution Time (ms):").append(Caster.toString(FormatUtil.formatNSAsMSDouble(query.getExecutionTime()))).append("\n");
+		comment.append("Execution Time (ms):").append(Caster.toString(query.getExecutionTime())).append("\n");
 		comment.append("Recordcount:").append(Caster.toString(query.getRecordcount())).append("\n");
 		comment.append("Cached:").append(query.isCached()?"Yes\n":"No\n");
 		comment.append("Lazy:").append(query instanceof SimpleQuery?"Yes\n":"No\n");

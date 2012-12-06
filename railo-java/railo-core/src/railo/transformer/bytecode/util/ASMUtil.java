@@ -1,7 +1,6 @@
 package railo.transformer.bytecode.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,10 +44,8 @@ import railo.transformer.bytecode.literal.Identifier;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.FlowControl;
 import railo.transformer.bytecode.statement.FlowControlBreak;
 import railo.transformer.bytecode.statement.FlowControlContinue;
-import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.tag.Attribute;
@@ -118,11 +115,11 @@ public final class ASMUtil {
 	}
 	
 	public static boolean hasAncestorBreakFCStatement(Statement stat) {
-		return getAncestorBreakFCStatement(stat,null)!=null;
+		return getAncestorBreakFCStatement(stat)!=null;
 	}
 	
 	public static boolean hasAncestorContinueFCStatement(Statement stat) {
-		return getAncestorContinueFCStatement(stat,null)!=null;
+		return getAncestorContinueFCStatement(stat)!=null;
 	}
 	
 	
@@ -148,88 +145,37 @@ public final class ASMUtil {
 		}
 	}*/
 	
-	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
-		return (FlowControlBreak) getAncestorFCStatement(stat, finallyLabels, FlowControl.BREAK);
-	}
-	
-	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat, List<FlowControlFinal> finallyLabels) {
-		return (FlowControlContinue) getAncestorFCStatement(stat, finallyLabels, FlowControl.CONTINUE);
-	}
-
-	private static FlowControl getAncestorFCStatement(Statement stat, List<FlowControlFinal> finallyLabels, int flowType) {
+	public static FlowControlBreak getAncestorBreakFCStatement(Statement stat) {
 		Statement parent = stat;
-		FlowControlFinal fcf;
 		while(true)	{
 			parent=parent.getParent();
 			if(parent==null)return null;
-			if(
-			   (flowType==FlowControl.CONTINUE && parent instanceof FlowControlContinue) || 
-			   (flowType==FlowControl.BREAK && parent instanceof FlowControlBreak))	{
+			if(parent instanceof FlowControlBreak)	{
 				if(parent instanceof ScriptBody){
-					List<FlowControlFinal> _finallyLabels=finallyLabels==null?null:new ArrayList<FlowControlFinal>();
-					
-					FlowControl scriptBodyParent = getAncestorFCStatement(parent,_finallyLabels,flowType);
-					if(scriptBodyParent!=null) {
-						if(finallyLabels!=null){
-							Iterator<FlowControlFinal> it = _finallyLabels.iterator();
-							while(it.hasNext()){
-								finallyLabels.add(it.next());
-							}
-						}
-						return scriptBodyParent;
-					}
-					return (FlowControl)parent;
+					FlowControlBreak scriptBodyParent = getAncestorBreakFCStatement(parent);
+					if(scriptBodyParent!=null) return scriptBodyParent;
+					return (FlowControlBreak)parent;
 				}
-				return (FlowControl) parent;
+				return (FlowControlBreak) parent;
 			}
-			
-			// only if not last
-			if(finallyLabels!=null){
-				fcf = parent.getFlowControlFinal();
-				if(fcf!=null){
-					finallyLabels.add(fcf);
-				}
-			}
-			
 		}
 	}
 	
-	public static void leadFlow(BytecodeContext bc,Statement stat, int flowType) throws BytecodeException {
-		List<FlowControlFinal> finallyLabels=new ArrayList<FlowControlFinal>();
-		
-		FlowControl fc = flowType==FlowControl.BREAK?
-				ASMUtil.getAncestorBreakFCStatement(stat,finallyLabels):
-				ASMUtil.getAncestorContinueFCStatement(stat,finallyLabels);
-				
-		if(fc==null)
-			throw new BytecodeException("break must be inside a loop (for,while,do-while,<cfloop>,<cfwhile> ...)",stat.getStart());
-		
-		GeneratorAdapter adapter = bc.getAdapter();
-		
-		Label end=flowType==FlowControl.BREAK?((FlowControlBreak)fc).getBreakLabel():((FlowControlContinue)fc).getContinueLabel();
-		
-		// first jump to all final labels
-		FlowControlFinal[] arr = finallyLabels.toArray(new FlowControlFinal[finallyLabels.size()]);
-		if(arr.length>0) {
-			FlowControlFinal fcf;
-			for(int i=0;i<arr.length;i++){
-				fcf=arr[i];
-				
-				// first
-				if(i==0) {
-					adapter.visitJumpInsn(Opcodes.GOTO, fcf.getFinalEntryLabel());
+	public static FlowControlContinue getAncestorContinueFCStatement(Statement stat) {
+		Statement parent = stat;
+		while(true)	{
+			parent=parent.getParent();
+			if(parent==null)return null;
+			if(parent instanceof FlowControlContinue)	{
+				if(parent instanceof ScriptBody){
+					FlowControlContinue scriptBodyParent = getAncestorContinueFCStatement(parent);
+					if(scriptBodyParent!=null) return scriptBodyParent;
+					return (FlowControlContinue)parent;
 				}
-				
-				// last
-				if(arr.length==i+1) fcf.setAfterFinalGOTOLabel(end);
-				else fcf.setAfterFinalGOTOLabel(arr[i+1].getFinalEntryLabel());
+				return (FlowControlContinue) parent;
 			}
-			
 		}
-		else bc.getAdapter().visitJumpInsn(Opcodes.GOTO, end);
 	}
-	
-	
 	
 	public static boolean hasAncestorTryStatement(Statement stat) {
 		return getAncestorTryStatement(stat)!=null;
@@ -363,13 +309,13 @@ public final class ASMUtil {
 	 */
 	public static boolean hasSisterTagAfter(Tag tag, String nameToFind) {
 		Body body=(Body) tag.getParent();
-		List<Statement> stats = body.getStatements();
-		Iterator<Statement> it = stats.iterator();
+		List stats = body.getStatements();
+		Iterator it = stats.iterator();
 		Statement other;
 		
 		boolean isAfter=false;
 		while(it.hasNext()) {
-			other=it.next();
+			other=(Statement) it.next();
 			
 			if(other instanceof Tag) {
 				if(isAfter) {
@@ -377,26 +323,31 @@ public final class ASMUtil {
 					return true;
 				}
 				else if(other == tag) isAfter=true;
+				
 			}
+			
 		}
 		return false;
 	}
 	
+	
+	
 	/**
-	 * Prueft ob das angegebene Tag innerhalb seiner Ebene einmalig ist oder nicht.
+	 * Prüft ob das angegebene Tag innerhalb seiner Ebene einmalig ist oder nicht.
 	 * @param tag Ausgangspunkt, nach diesem tag darf das angegebene nicht vorkommen.
 	 * @return kommt das Tag vor.
 	 */
 	public static boolean hasSisterTagWithSameName(Tag tag) {
 		
 		Body body=(Body) tag.getParent();
-		List<Statement> stats = body.getStatements();
-		Iterator<Statement> it = stats.iterator();
+		List stats = body.getStatements();
+		Iterator it = stats.iterator();
 		Statement other;
 		String name=tag.getTagLibTag().getName();
 		
 		while(it.hasNext()) {
-			other=it.next();
+			other=(Statement) it.next();
+			
 			if(other != tag && other instanceof Tag && ((Tag) other).getTagLibTag().getName().equals(name))
 					return true;
 			
@@ -422,13 +373,13 @@ public final class ASMUtil {
 		trg.setParent(src.getParent());
 		
 		Body p=(Body) src.getParent();
-		List<Statement> stats = p.getStatements();
-		Iterator<Statement> it = stats.iterator();
+		List stats = p.getStatements();
+		Iterator it = stats.iterator();
 		Statement stat;
 		int count=0;
 		
 		while(it.hasNext()) {
-			stat=it.next();
+			stat=(Statement) it.next();
 			if(stat==src) {
 				if(moveBody && src.getBody()!=null)src.getBody().setParent(trg);
 				stats.set(count, trg);
@@ -694,8 +645,8 @@ public final class ASMUtil {
 	public static void removeLiterlChildren(Tag tag, boolean recursive) {
 		Body body=tag.getBody();
 		if(body!=null) {
-        	List<Statement> list = body.getStatements();
-        	Statement[] stats = list.toArray(new Statement[list.size()]);
+        	List list = body.getStatements();
+        	Statement[] stats = (Statement[]) list.toArray(new Statement[list.size()]);
         	PrintOut po;
         	Tag t;
         	for(int i=0;i<stats.length;i++) {
@@ -978,7 +929,7 @@ public final class ASMUtil {
 	public static boolean containsComponent(Body body) {
 		if(body==null) return false;
 		
-		Iterator<Statement> it = body.getStatements().iterator();
+		Iterator it = body.getStatements().iterator();
 		while(it.hasNext()){
 			if(it.next() instanceof TagComponent)return true;
 		}
@@ -1070,10 +1021,6 @@ public final class ASMUtil {
 			throw new EvaluatorException("Paremeters of the function createTimeSpan have to be literal numeric values in this context");
 		
 		return d.doubleValue();
-	}
-
-	public static void visitLabel(GeneratorAdapter ga, Label label) {
-		if(label!=null) ga.visitLabel(label);
 	}
 	
 }

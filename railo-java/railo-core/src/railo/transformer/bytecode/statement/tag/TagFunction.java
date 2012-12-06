@@ -20,7 +20,6 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitLong;
 import railo.transformer.bytecode.literal.LitString;
-import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.IFunction;
 import railo.transformer.bytecode.statement.PrintOut;
 import railo.transformer.bytecode.statement.udf.Function;
@@ -267,11 +266,6 @@ public final class TagFunction extends TagBase implements IFunction {
 		}
 		func.setMetaData(metadatas);
 		return func;
-	}
-	
-	@Override
-	public FlowControlFinal getFlowControlFinal() {
-		return null;
 	}
 
 }

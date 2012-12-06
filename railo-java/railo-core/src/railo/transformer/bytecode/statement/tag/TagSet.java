@@ -8,7 +8,7 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.ASMUtil;
 
-public final class TagSet extends TagBaseNoFinal  {
+public final class TagSet extends TagBase  {
 
 	public TagSet(Position start,Position end) {
 		super(start,end);

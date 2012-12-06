@@ -65,16 +65,6 @@
 		<cfargument name="debugging" required="true" type="struct" />
 		<cfargument name="context" type="string" default="web" />
 		<cfsilent>
-			<cfif !structKeyExists(arguments.custom,'minimal')><cfset arguments.custom.minimal="0"></cfif>
-			<cfif !structKeyExists(arguments.custom,'highlight')><cfset arguments.custom.highlight="250000"></cfif>
-			<cfif !structKeyExists(arguments.custom,'scopes')><cfset arguments.custom.scopes=false></cfif>
-			<cfif !structKeyExists(arguments.custom,'tracing')><cfset arguments.custom.tracing="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'timer')><cfset arguments.custom.timer="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'implicitAccess')><cfset arguments.custom.implicitAccess="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'exception')><cfset arguments.custom.exception="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'database')><cfset arguments.custom.database="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'general')><cfset arguments.custom.general="Enabled"></cfif>
-			
 			<cfset var time=getTickCount() />
 			<cfset var _cgi=structKeyExists(arguments.debugging,'cgi')?arguments.debugging.cgi:cgi />
 			<cfset var pages=arguments.debugging.pages />

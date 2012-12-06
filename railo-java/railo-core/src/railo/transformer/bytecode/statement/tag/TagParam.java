@@ -13,7 +13,7 @@ import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.cfml.evaluator.impl.Argument;
 
-public final class TagParam extends TagBaseNoFinal {
+public final class TagParam extends TagBase {
 
 	// void param(String type, String name, Object defaultValue)
 	private static final Method PARAM_TYPE_NAME_DEFAULTVALUE = new Method(
