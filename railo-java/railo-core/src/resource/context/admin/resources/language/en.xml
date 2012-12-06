@@ -640,6 +640,10 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.showversiondescription">Return the Railo version in the response header</data>
 	<data key="setting.allowCompression">Compression</data>
 	<data key="setting.allowCompressionDescription">Enable compression (Gzip) for the Railo Response stream, if supported by the client (Browser)</data>
+	
+	<data key="setting.cfmlWriterReg">No white space management</data>
+	<data key="setting.cfmlWriterWS">Simple white space management, every whitespace following a whitespace is removed</data>
+	<data key="setting.cfmlWriterWSPref">Smart whitespace management, same as the simple one, but ignore spaces inside the tags: code, pre and textarea</data>
 	<data key="setting.server">Railo output control</data>
 	<data key="setting.inspecttemplatealwaysdesc">When checked, any requested files found to currently reside in the template cache will always be inspected for potential updates. For sites where templates are updated during the life of the server or within request.</data>
 	<data key="setting.querycacheclearcount">Clear query cache ( {count} element(s) )</data>
@@ -853,6 +857,8 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.dbdatabasedesc">Name of the database to connect</data>
 	<data key="settings.dbuserdesc">The username for the database</data>
 	<data key="settings.datasourcedescriptionupdate">Update datasource connection</data>
+	
+	<data key="settings.dbdriverselectorchoose">Choose a Database Driver</data>
 	
 	<data key="settings.dbtimezone">Timezone</data>
 	

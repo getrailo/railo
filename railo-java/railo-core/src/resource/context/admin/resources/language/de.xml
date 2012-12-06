@@ -576,6 +576,10 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="setting.showversiondescription">Railo Version im Response Header zurückgeben</data>
 	<data key="setting.allowCompression">Kompression</data>
 	<data key="setting.allowCompressionDescription">Kompression (GZip) für den Response Stream einschalten, sofern dies vom Client (Browser) unterstützt ist</data>
+	<data key="setting.cfmlWriterReg">Kein white space management</data>
+	<data key="setting.cfmlWriterWS">Einfaches white space management, jeder white space welcher einem white space folgt witd ignoriert</data>
+	<data key="setting.cfmlWriterWSPref">Schlaues whitespace management, analog zu einfachem whitespace management, aber ignoriert zusätzlich white spaces in den folgenden Tags: code, pre and textarea</data>
+						
 	<data key="setting.componentcache">Komponentenpfad Cache</data>
 	<data key="setting.ctcache">Custom Tag Pfad Cache</data>
 	<data key="setting.inspecttemplateneverShort">Nie</data>
