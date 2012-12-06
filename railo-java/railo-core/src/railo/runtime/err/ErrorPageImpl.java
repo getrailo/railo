@@ -35,6 +35,8 @@ public final class ErrorPageImpl implements ErrorPage {
 	public void setTypeAsString(String exception) {
 		setException(exception);
 	}	
+	
+	@Override
 	public void setException(String exception) {
 		this.exception = exception;
 	}	
