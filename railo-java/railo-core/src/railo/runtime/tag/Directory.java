@@ -680,8 +680,7 @@ public final class Directory extends TagImpl  {
 		Resource newdirectory=toDestination(pc,strDestination,directory);
 		
 	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
-		if(newdirectory.exists())
-			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
+
 		try {
 			// has already a filter
 			if(filter!=null) {
