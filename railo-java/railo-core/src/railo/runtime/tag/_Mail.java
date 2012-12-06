@@ -30,9 +30,7 @@ public abstract class _Mail extends TagImpl {
     private boolean generateUniqueFilenames=false;
     //private boolean debug=false;
     
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#release()
-     */
+    @Override
     public void release() {
         port=-1;
         username=null;
@@ -167,9 +165,7 @@ public abstract class _Mail extends TagImpl {
         //this.debug = debug;
     }
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException {
     	
     	// check attrs

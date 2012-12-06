@@ -35,9 +35,7 @@ public class MailSpoolerTask extends SpoolerTaskSupport {
 	}
 	
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#getType()
-	 */
+	@Override
 	public String getType() {
 		return "mail";
 	}

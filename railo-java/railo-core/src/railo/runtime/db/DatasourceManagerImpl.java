@@ -106,9 +106,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.db.DataSourceManager#releaseConnection(railo.runtime.db.DatasourceConnection)
-	 */
+	@Override
 	public void releaseConnection(PageContext pc,DatasourceConnection dc) {
 		if(autoCommit) config.getDatasourceConnectionPool().releaseDatasourceConnection(dc);
 	}
@@ -117,19 +115,13 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		config.getDatasourceConnectionPool().releaseDatasourceConnection(pid,dc);
 	}*/
 	
-	/**
-	 *
-	 * @see DataSourceManager#begin()
-	 */
+	@Override
 	public void begin() {
 		this.autoCommit=false;
 		this.isolation=Connection.TRANSACTION_NONE;		
 	}
 	
-	/**
-	 *
-	 * @see DataSourceManager#begin(java.lang.String)
-	 */
+	@Override
 	public void begin(String isolation) {
 		this.autoCommit=false;
     	
@@ -145,20 +137,14 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		    this.isolation=Connection.TRANSACTION_NONE;
         
 	}
-    /**
-	 *
-	 * @see DataSourceManager#begin(int)
-	 */
+    @Override
     public void begin(int isolation) {
     	//print.out("begin:"+autoCommit);
     	this.autoCommit=false;
         this.isolation=isolation;
     }
 
-	/**
-	 *
-	 * @see DataSourceManager#rollback()
-	 */
+	@Override
 	public void rollback() throws DatabaseException {
 		if(autoCommit)return;
         //autoCommit=true;
@@ -174,9 +160,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.db.DataSourceManager#savepoint()
-	 */
+	@Override
 	public void savepoint() throws DatabaseException {
 		if(autoCommit)return;
         //autoCommit=true;
@@ -190,10 +174,7 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 
-	/**
-	 *
-	 * @see DataSourceManager#commit()
-	 */
+	@Override
 	public void commit() throws DatabaseException {
         //print.out("commit:"+autoCommit);
         if(autoCommit)return ;
@@ -210,18 +191,12 @@ public final class DatasourceManagerImpl implements DataSourceManager {
 		}
 	}
 	
-    /**
-	 *
-	 * @see DataSourceManager#isAutoCommit()
-	 */
+    @Override
     public boolean isAutoCommit() {
         return autoCommit;
     }
 
-    /**
-	 *
-	 * @see DataSourceManager#end()
-	 */
+    @Override
     public void end() {
         autoCommit=true;
         if(transConn!=null) {

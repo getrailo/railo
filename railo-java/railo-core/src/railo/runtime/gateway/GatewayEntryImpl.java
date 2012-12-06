@@ -79,37 +79,22 @@ public class GatewayEntryImpl implements GatewayEntry {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getGateway()
-	 */
+	@Override
 	public Gateway getGateway() {
 		return gateway;
 	}
 	
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getId()
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getClazz()
-	 */
-	/*public Class getClazz() {
-		return clazz;
-	}*/
-
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getCustom()
-	 */
+	@Override
 	public Struct getCustom() {
 		return (Struct) Duplicator.duplicate(custom,true);
 	}
 
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#isReadOnly()
-	 */
+	@Override
 	public boolean isReadOnly() {
 		return readOnly;
 	}
@@ -122,9 +107,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 		return listenerCfcPath;
 	}
 	
-	/**
-	 * @see railo.runtime.gateway.GatewayEntry#getCfcPath()
-	 */
+	@Override
 	public String getCfcPath() {
 		return cfcPath;
 	}
@@ -159,9 +142,7 @@ public class GatewayEntryImpl implements GatewayEntry {
 		return defaultValue;
 	}
 	
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj){
 		if(obj==this) return true;
 		if(!(obj instanceof GatewayEntryImpl))return false;

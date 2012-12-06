@@ -11,9 +11,7 @@ import railo.runtime.type.List;
  * 
  */
 public final class MailPart implements Serializable {
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return "railo.runtime.mail.MailPart(wraptext:"+wraptext+";type:"+type+";charset:"+charset+";body:"+body+";)";
     }

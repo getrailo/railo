@@ -103,9 +103,7 @@ public final class HTMLParser extends Parser {
     
     
     
-    /**
-     * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-     */
+    @Override
     public void startElement(String uri, String name, String qName, Attributes atts)throws SAXException {
         if(name.equalsIgnoreCase("script")) {
             silent=new Silent(silent,true);
@@ -180,12 +178,7 @@ public final class HTMLParser extends Parser {
     }
     
     
-    /** 
-     * Geerbte Methode von org.xml.sax.ContentHandler, 
-     * wird bei durchparsen des XML, zum einlesen des Content eines Body Element aufgerufen.
-     * 
-     * @see org.xml.sax.ContentHandler#characters(char[], int, int)
-     */
+    @Override
     public void characters (char ch[], int start, int length)   {
        if(!silent.value)
         	current.append(ch,start,length);

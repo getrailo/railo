@@ -795,9 +795,7 @@ public final class WDDXConverter extends ConverterSupport {
 		return "";
 	}
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    @Override
     public boolean equals(Object obj) {
         return timeZone.equals(obj);
     }

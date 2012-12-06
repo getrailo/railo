@@ -50,11 +50,6 @@ public final class AMFEngine {
         serializeAMFMessage(rsp, responseMessage);
     }
 
-    /**
-     * Uses the AMFDeserializer to deserialize the request
-     * 
-     * @see org.openamf.io.AMFDeserializer
-     */
     private AMFMessage deserializeAMFMessage(HttpServletRequest req) throws IOException {
         DataInputStream dis = null;
        	try {
@@ -68,11 +63,6 @@ public final class AMFEngine {
        	}
     }
 
-    /**
-     * Uses the AMFSerializer to serialize the request
-     *
-     * @see org.openamf.io.AMFSerializer
-     */
     private void serializeAMFMessage(HttpServletResponse resp, AMFMessage message) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);

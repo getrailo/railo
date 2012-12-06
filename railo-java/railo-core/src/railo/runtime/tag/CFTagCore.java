@@ -51,31 +51,4 @@ public class CFTagCore extends CFTag {
     			filename.endsWith('.'+config.getCFCExtension()));
      
     }
-
-	/* *
-	 * @see railo.runtime.tag.CFTag#doEndTag()
-	 * /
-	public int doEndTag() {
-		PageContextImpl pci=(PageContextImpl) pageContext;
-		boolean old=pci.useSpecialMappings(true);
-		try{
-			return super.doEndTag();
-		}
-		finally{
-			pci.useSpecialMappings(old);
-		}
-	}*/
-	/* *
-	 * @see railo.runtime.tag.CFTag#doStartTag()
-	 * /
-	public int doStartTag() throws PageException {
-		PageContextImpl pci=(PageContextImpl) pageContext;
-		boolean old=pci.useSpecialMappings(true);
-		try{
-			return super.doStartTag();
-		}
-		finally{
-			pci.useSpecialMappings(old);
-		}
-	}*/
 }

@@ -24,9 +24,7 @@ public final class GridRow extends TagImpl {
 	** 	it must be escaped with a second comma character. */
 	private String[] data;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		data=null;
@@ -42,9 +40,7 @@ public final class GridRow extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		// provide to parent
 		Tag parent=this;
@@ -60,9 +56,7 @@ public final class GridRow extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

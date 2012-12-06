@@ -76,9 +76,7 @@ public abstract class ComponentPage extends Page  {
 	public abstract ComponentImpl newInstance(PageContext pc,String callPath,boolean isRealPath)
 		throws railo.runtime.exp.PageException; 
 	
-	/**
-	 * @see railo.runtime.Page#call(railo.runtime.PageContext)
-	 */
+	@Override
 	public void call(PageContext pc) throws PageException {
 		// remote persistent (only type server is supported)
 		String strRemotePersisId = Caster.toString(getURLorForm(pc,REMOTE_PERSISTENT_ID,null),null);//Caster.toString(pc.urlFormScope().get(REMOTE_PERSISTENT_ID,null),null);

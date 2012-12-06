@@ -43,9 +43,7 @@ public final class HttpSessionBindingListenerStruct extends StructImpl implement
         catch (IOException e) {}
     }
 
-	/**
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		HttpSessionBindingListenerStruct trg=new HttpSessionBindingListenerStruct(url);
 		copy(this, trg, deepCopy);

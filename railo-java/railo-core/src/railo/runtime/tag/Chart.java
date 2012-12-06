@@ -427,10 +427,7 @@ public final class Chart extends BodyTagImpl implements Serializable {
 		return EVAL_BODY_INCLUDE;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 		if(_series.size()==0) throw new ApplicationException("at least one cfchartseries tag required inside cfchart"); 
 		//if(_series.size()>1) throw new ApplicationException("only one cfchartseries tag allowed inside cfchart"); 

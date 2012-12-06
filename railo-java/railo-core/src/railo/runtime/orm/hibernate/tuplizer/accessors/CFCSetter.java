@@ -34,16 +34,12 @@ public final class CFCSetter implements Setter {
 		this.key=key;
 	}
 
-	/**
-	 * @see org.hibernate.property.Setter#getMethodName()
-	 */
+	@Override
 	public String getMethodName() {
 		return null;
 	}
 
-	/**
-	 * @see org.hibernate.property.Setter#getMethod()
-	 */
+	@Override
 	public Method getMethod() {
 		return null;
 	}

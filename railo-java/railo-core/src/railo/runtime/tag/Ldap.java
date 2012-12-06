@@ -54,9 +54,7 @@ public final class Ldap extends TagImpl {
     private boolean rebind;
 
 
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#release()
-     */
+    @Override
     public void release() {
         action="query";
         delimiter=";";
@@ -330,9 +328,7 @@ public final class Ldap extends TagImpl {
 
     
     
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException {
         try {
             return _doStartTag();

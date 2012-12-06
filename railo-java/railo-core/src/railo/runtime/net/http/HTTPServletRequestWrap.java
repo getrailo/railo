@@ -106,23 +106,17 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return req;
 	}
 
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getContextPath()
-	 */
+	@Override
 	public String getContextPath() {
 		return context_path;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getPathInfo()
-	 */
+	@Override
 	public String getPathInfo() {
 		return path_info;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURL()
-	 */
+	@Override
 	public StringBuffer getRequestURL() {
 		return new StringBuffer(isSecure()?"https":"http").
 			append("://").
@@ -132,29 +126,21 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 			append(request_uri.startsWith("/")?request_uri:"/"+request_uri);
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getQueryString()
-	 */
+	@Override
 	public String getQueryString() {
 		return query_string;
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getRequestURI()
-	 */
+	@Override
 	public String getRequestURI() {
 		return request_uri;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletRequestWrapper#getServletPath()
-	 */
+	@Override
 	public String getServletPath() {
 		return servlet_path;
 	}
 	
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#getRequestDispatcher(java.lang.String)
-	 */
+	@Override
 	public RequestDispatcher getRequestDispatcher(String realpath) {
 		return new RequestDispatcherWrap(this,realpath);
 	}
@@ -164,17 +150,13 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return req.getRequestDispatcher(realpath);
 	}
 
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#removeAttribute(java.lang.String)
-	 */
+	@Override
 	public void removeAttribute(String name) {
 		if(disconnected) disconnectedData.remove(name); 
 		else req.removeAttribute(name);
 	}
 
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#setAttribute(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public void setAttribute(String name, Object value) {
 		if(disconnected) disconnectedData.put(name, value);
 		else req.setAttribute(name, value);
@@ -185,9 +167,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 	}*/
 
 
-	/**
-	 * @see javax.servlet.ServletRequestWrapper#getAttribute(java.lang.String)
-	 */
+	@Override
 	public Object getAttribute(String name) {
 		if(disconnected) return disconnectedData.get(name);
 		return req.getAttribute(name);
@@ -201,11 +181,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		
 	}
 
-	/**
-	 * this method still throws a error if want read input stream a second time
-	 * this is done to be compatibility with servletRequest class
-	 * @see javax.servlet.ServletRequestWrapper#getInputStream()
-	 */
+	@Override
 	public ServletInputStream getInputStream() throws IOException {
 		//if(ba rr!=null) throw new IllegalStateException();
 		if(barr==null) {
@@ -259,10 +235,7 @@ public final class HTTPServletRequestWrap extends HttpServletRequestWrapper impl
 		return new ServletInputStreamDummy(new byte[]{});	 
 	}*/
 
-	/**
-	 *
-	 * @see javax.servlet.ServletRequestWrapper#getReader()
-	 */
+	@Override
 	public BufferedReader getReader() throws IOException {
 		String enc = getCharacterEncoding();
 		if(StringUtil.isEmpty(enc))enc="iso-8859-1";

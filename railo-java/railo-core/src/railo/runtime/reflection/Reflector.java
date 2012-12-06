@@ -842,14 +842,14 @@ public final class Reflector {
     
     
     
-    /**
+    /*
      * to invoke a setter Method of a Object
      * @param obj Object to invoke method from
      * @param prop Name of the Method without get
      * @param value Value to set to the Method
      * @return MethodInstance
      * @deprecated use instead <code>getSetter(Object obj, String prop,Object value, MethodInstance defaultValue)</code>
-     */
+     
     public static MethodInstance getSetterEL(Object obj, String prop,Object value)  {
         prop="set"+StringUtil.ucFirst(prop);
         MethodInstance mi = getMethodInstanceEL(obj.getClass(),KeyImpl.getInstance(prop),new Object[]{value});
@@ -858,7 +858,7 @@ public final class Reflector {
         
         if(m.getReturnType()!=void.class) return null;
         return mi;
-    }
+    }*/
     
     /**
      * to invoke a setter Method of a Object
@@ -907,7 +907,7 @@ public final class Reflector {
 	 */
 	public static void callSetterEL(Object obj, String prop,Object value) throws PageException {
 	    try {
-		    MethodInstance setter = getSetterEL(obj, prop, value);
+		    MethodInstance setter = getSetter(obj, prop, value,null);
 		    if(setter!=null)setter.invoke(obj);
 		}
 		catch (InvocationTargetException e) {

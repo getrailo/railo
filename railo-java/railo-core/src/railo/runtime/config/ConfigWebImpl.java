@@ -128,44 +128,31 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
     
     
 
-    /**
-     * @see javax.servlet.ServletConfig#getServletName()
-     */
+    @Override
     public String getServletName() {
         return config.getServletName();
     }
 
-    /**
-     * @see javax.servlet.ServletConfig#getServletContext()
-     */
+    @Override
     public ServletContext getServletContext() {
         return config.getServletContext();
     }
 
-    /**
-     * @see javax.servlet.ServletConfig#getInitParameter(java.lang.String)
-     */
+    @Override
     public String getInitParameter(String name) {
         return config.getInitParameter(name);
     }
 
-    /**
-     * @see javax.servlet.ServletConfig#getInitParameterNames()
-     */
+    @Override
     public Enumeration getInitParameterNames() {
         return config.getInitParameterNames();
     }
 
-    /**
-     * @see railo.runtime.config.ConfigImpl#getConfigServerImpl()
-     */
     protected ConfigServerImpl getConfigServerImpl() {
         return configServer;
     }
     
-    /**
-     * @see railo.runtime.config.ConfigImpl#getConfigServer(java.lang.String)
-     */
+    @Override
     public ConfigServer getConfigServer(String password) throws ExpressionException {
         if(!configServer.hasPassword())
             throw new ExpressionException("Cannot access, no password is defined");
@@ -202,10 +189,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         this.securityManager = securityManager;
     }
     
-    /**
-     * @throws SecurityException 
-     * @see railo.runtime.config.ConfigImpl#getCFXTagPool()
-     */
+    @Override
     public CFXTagPool getCFXTagPool() throws SecurityException {
         if(securityManager.getAccess(SecurityManager.TYPE_CFX_USAGE)==SecurityManager.VALUE_YES) return super.getCFXTagPool();
         throw new SecurityException("no access to cfx functionality", "disabled by security settings");
@@ -218,23 +202,17 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
         return rootDir;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateType()
-     */
+    @Override
     public String getUpdateType() {
         return configServer.getUpdateType();
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateLocation()
-     */
+    @Override
     public URL getUpdateLocation() {
         return configServer.getUpdateLocation();
     }
 
-    /**
-     * @see railo.runtime.config.ConfigWeb#getLockManager()
-     */
+    @Override
     public LockManager getLockManager() {
         return lockManager;
     }
@@ -331,9 +309,6 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			this.gatewayEngine=gatewayEngine;
 		}
 
-	    /**
-	     * @see railo.runtime.config.Config#getMailLogger()
-	     */
 	    public LogAndSource getGatewayLogger() {
 	    	if(gatewayLogger==null)gatewayLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 			return gatewayLogger;

@@ -66,9 +66,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	private LockManager manager;
     private LockData data=null;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release() {
 		super.release();
 		type = LockManager.TYPE_EXCLUSIVE;
@@ -165,10 +163,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 		if(name.length()==0)throw new ApplicationException("invalid attribute definition","attribute [name] can't be a empty string");
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException {
 		//if(timeoutInMillis==0)timeoutInMillis=30000;
 		//print.out("doStartTag");
@@ -248,9 +243,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 		return EVAL_BODY_INCLUDE;
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.TryCatchFinally#doFinally()
-	 */
+	@Override
 	public void doFinally() {
 		//print.out("unlock:"+data.getName()+":"+pageContext.getId());
         if(name!=null)manager.unlock(data);

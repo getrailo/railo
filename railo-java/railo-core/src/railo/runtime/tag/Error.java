@@ -20,9 +20,7 @@ public final class Error extends TagImpl {
 
 
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		errorPage=new ErrorPageImpl();
@@ -81,18 +79,14 @@ public final class Error extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		if(errorPage.getType()==ErrorPageImpl.TYPE_REQUEST) errorPage.setException("any");
 		pageContext.setErrorPage(errorPage);
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

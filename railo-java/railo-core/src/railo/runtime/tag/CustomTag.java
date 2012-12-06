@@ -33,16 +33,12 @@ public abstract class CustomTag extends BodyTagTryCatchFinallyImpl implements Dy
     protected StructImpl attributesScope;
     protected Caller callerScope;
 	
-    /**
-    * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-    */
+    @Override
     public void doInitBody()    {}
     
     
 
-    /**
-     * @see railo.runtime.ext.tag.DynamicAttributes#setDynamicAttribute(java.lang.String, java.lang.String, java.lang.Object)
-     */
+    @Override
     public final void setDynamicAttribute(String uri, String name, Object value) {
     	TagUtil.setDynamicAttribute(attributesScope,KeyImpl.init(name),value,TagUtil.UPPER_CASE);
     }

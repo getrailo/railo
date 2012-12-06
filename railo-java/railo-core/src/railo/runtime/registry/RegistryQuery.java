@@ -184,9 +184,7 @@ static class StreamReader extends Thread {
       sw = new StringWriter();
     }
 
-    /**
-     * @see java.lang.Thread#run()
-     */
+    @Override
     public void run() {
       try {
         int c;

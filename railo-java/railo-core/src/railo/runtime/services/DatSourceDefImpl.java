@@ -38,23 +38,17 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return allow;
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getClassName()
-	 */
+	@Override
 	public String getClassName() {
 		return ds.getClazz().getName();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getDatabase()
-	 */
+	@Override
 	public String getDatabase() {
 		return ds.getDatabase();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getDesc()
-	 */
+	@Override
 	public String getDesc() {
 		return "";
 	}
@@ -98,10 +92,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return rtn;
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#getHost()
-	 */
+	@Override
 	public String getHost() {
 		return ds.getHost();
 	}
@@ -118,9 +109,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return "";
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getJndiName()
-	 */
+	@Override
 	public String getJndiName() {
 		return getJNDIName();
 	}
@@ -133,9 +122,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return ds.getConnectionTimeout();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getLogintimeout()
-	 */
+	@Override
 	public int getLogintimeout() {
 		return getLoginTimeout();
 	}
@@ -160,9 +147,7 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return getMaxConnections();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getPort()
-	 */
+	@Override
 	public int getPort() {
 		return ds.getPort();
 	}
@@ -187,40 +172,27 @@ public class DatSourceDefImpl implements DataSourceDef {
 		return 0;
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#getUrl()
-	 */
+	@Override
 	public String getUrl() {
 		return ds.getDsnTranslated();
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#getUsername()
-	 */
+	@Override
 	public String getUsername() {
 		return ds.getUsername();
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#getVendor()
-	 */
+	@Override
 	public String getVendor() {
 		return "";
 	}
 
-	/**
-	 *
-	 * @see coldfusion.sql.DataSourceDef#isBlobEnabled()
-	 */
+	@Override
 	public boolean isBlobEnabled() {
 		return ds.isBlob();
 	}
 
-	/**
-	 * @see coldfusion.sql.DataSourceDef#isClobEnabled()
-	 */
+	@Override
 	public boolean isClobEnabled() {
 		return ds.isClob();
 	}

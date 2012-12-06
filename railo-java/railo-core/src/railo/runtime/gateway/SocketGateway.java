@@ -40,9 +40,7 @@ public class SocketGateway implements Gateway {
 	private String cfcPath;
 
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#init(org.opencfml.eventgateway.GatewayEngine, java.lang.String, java.lang.String, java.util.Map)
-	 */
+	@Override
 	public void init(GatewayEngine engine, String id, String cfcPath, Map config)throws GatewayException {
 		this.engine=engine;
 		cfmlEngine=CFMLEngineFactory.getInstance();
@@ -244,9 +242,7 @@ public class SocketGateway implements Gateway {
     }
 	
 	
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doRestart()
-	 */
+	@Override
 	public void doRestart() {
 		doStop();
 		doStart();
@@ -254,25 +250,19 @@ public class SocketGateway implements Gateway {
 	
 	
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getId()
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 	
-	 /**
-	 * @see org.opencfml.eventgateway.Gateway#getState()
-	 */
+	 @Override
 	public int getState() {
 		return state;
 	 }
 	
 	
 
-    /**
-     * @see org.opencfml.eventgateway.Gateway#getHelper()
-     */
+    @Override
     public Object getHelper() {
     	return null;
     }

@@ -32,9 +32,7 @@ public final class DocumentSection extends BodyTagImpl {
 		return _document;
 	}
 	
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		_document=null;
@@ -177,34 +175,23 @@ public final class DocumentSection extends BodyTagImpl {
 		getPDFDocument().setUserAgent(userAgent);
 	}
 
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+    @Override
 	public int doStartTag()	{
 		return EVAL_BODY_BUFFERED;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 	
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		getPDFDocument().setBody(bodyContent.getString());
 		return SKIP_BODY;
 	}
 	
-	/**
-	 *
-	 * @throws IOException 
-	 * @throws InvalidParameterException 
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+	@Override
 	public int doEndTag() {
 		Document doc = getDocument();// TODO write evaluator for documentitem and section
 		if(doc!=null)doc.addPDFDocument(getPDFDocument());

@@ -231,9 +231,7 @@ public final class SchedulerImpl implements Scheduler {
         return el;
     }
 
-	/**
-     * @see railo.runtime.schedule.Scheduler#getScheduleTask(java.lang.String)
-     */
+	@Override
 	public ScheduleTask getScheduleTask(String name) throws ScheduleException {
 	    for(int i=0;i<tasks.length;i++) {
 	        if(tasks[i].getTask().equalsIgnoreCase(name)) return tasks[i];
@@ -241,9 +239,7 @@ public final class SchedulerImpl implements Scheduler {
 	    throw new ScheduleException("schedule task with name "+name+" doesn't exist");
 	}
 	
-	/**
-     * @see railo.runtime.schedule.Scheduler#getScheduleTask(java.lang.String, railo.runtime.schedule.ScheduleTask)
-     */
+	@Override
 	public ScheduleTask getScheduleTask(String name, ScheduleTask defaultValue) {
 	    for(int i=0;i<tasks.length;i++) {
 	        if(tasks[i]!=null && tasks[i].getTask().equalsIgnoreCase(name)) return tasks[i];
@@ -251,9 +247,7 @@ public final class SchedulerImpl implements Scheduler {
 	    return defaultValue;
 	}
 
-	/**
-     * @see railo.runtime.schedule.Scheduler#getAllScheduleTasks()
-     */
+	@Override
 	public ScheduleTask[] getAllScheduleTasks() {
 		ArrayList<ScheduleTask> list=new ArrayList<ScheduleTask>();
 		for(int i=0;i<tasks.length;i++) {
@@ -262,9 +256,7 @@ public final class SchedulerImpl implements Scheduler {
 	    return list.toArray(new ScheduleTask[list.size()]);
 	}
 	
-	/**
-     * @see railo.runtime.schedule.Scheduler#addScheduleTask(railo.runtime.schedule.ScheduleTask, boolean)
-     */
+	@Override
 	public void addScheduleTask(ScheduleTask task, boolean allowOverwrite) throws ScheduleException, IOException {
 	    //ScheduleTask exTask = getScheduleTask(task.getTask(),null);
 	    NodeList list = doc.getDocumentElement().getChildNodes();
@@ -309,9 +301,7 @@ public final class SchedulerImpl implements Scheduler {
 	    su.store(doc,schedulerFile);
 	}
 
-	/**
-     * @see railo.runtime.schedule.Scheduler#removeScheduleTask(java.lang.String, boolean)
-     */
+	@Override
 	public synchronized void removeScheduleTask(String name, boolean throwWhenNotExist) throws IOException, ScheduleException {
 	    
 	    int pos=-1;
@@ -354,9 +344,7 @@ public final class SchedulerImpl implements Scheduler {
 	}
 	
 
-	/**
-     * @see railo.runtime.schedule.Scheduler#runScheduleTask(java.lang.String, boolean)
-     */
+	@Override
 	public synchronized void runScheduleTask(String name, boolean throwWhenNotExist) throws IOException, ScheduleException {
 	    ScheduleTask task = getScheduleTask(name);
 	    
@@ -369,17 +357,11 @@ public final class SchedulerImpl implements Scheduler {
 	    su.store(doc,schedulerFile);
 	}
     
-    /**
-     * @param task 
-     * @see railo.runtime.schedule.Scheduler#execute()
-     */
     public void execute(ScheduleTask task) {
     	new ExecutionThread(config,log,task,charset).start();
     } 
 
-    /**
-     * @see railo.runtime.schedule.Scheduler#getLogger()
-     */
+    @Override
     public LogAndSource getLogger() {
         return log;
     }

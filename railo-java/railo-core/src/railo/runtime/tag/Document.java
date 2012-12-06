@@ -75,9 +75,7 @@ public final class Document extends BodyTagImpl {
 		this._document=null;
 	}
 	
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		filename=null;
@@ -452,10 +450,7 @@ public final class Document extends BodyTagImpl {
 		documents.add(document);
 	}
 
-    /**
-	* @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+    @Override
 	public int doStartTag() throws PageException	{
 		// SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -473,28 +468,19 @@ public final class Document extends BodyTagImpl {
 	    return EVAL_BODY_BUFFERED;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 	
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		getDocument().setBody(bodyContent.getString());
 		
 		return SKIP_BODY;
 	}
 	
-	/**
-	 *
-	 * @throws IOException 
-	 * @throws InvalidParameterException 
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 		try {
 			_doEndTag();

@@ -20,10 +20,7 @@ public class ValueDate extends ValueSupport implements Literal {
 		this.value=Caster.toDate(strValue,false,null);
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(boolean noAlias) {
 		if(noAlias || getIndex()==0)return getString();
 		return getString()+" as "+getAlias();

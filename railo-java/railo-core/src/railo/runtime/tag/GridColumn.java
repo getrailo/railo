@@ -29,9 +29,7 @@ public final class GridColumn extends TagImpl {
 	private String valuesdisplay;
 	private String values;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		column=new GridColumnBean();
 		valuesdelimiter=",";
@@ -279,10 +277,7 @@ public final class GridColumn extends TagImpl {
 	}
 
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		if(!StringUtil.isEmpty(values))
@@ -304,9 +299,7 @@ public final class GridColumn extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -66,9 +66,7 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 		this.out=out;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#addCookie(javax.servlet.http.Cookie)
-	 */
+	@Override
 	public void addCookie(Cookie cookie) {
 		Cookie[] tmp = new Cookie[cookies.length+1];
 		for(int i=0;i<cookies.length;i++) {
@@ -78,115 +76,81 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 		cookies=tmp;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#containsHeader(java.lang.String)
-	 */
+	@Override
 	public boolean containsHeader(String key) {
 		return ReqRspUtil.get(headers, key)!=null;
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#encodeURL(java.lang.String)
-	 */
+	@Override
 	public String encodeURL(String value) {
 		return URLEncoder.encode(value);
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#encodeRedirectURL(java.lang.String)
-	 */
+	@Override
 	public String encodeRedirectURL(String url) {
 		return URLEncoder.encode(url);
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#encodeUrl(java.lang.String)
-	 */
+	@Override
 	public String encodeUrl(String value) {
 		return URLEncoder.encode(value);
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#encodeRedirectUrl(java.lang.String)
-	 */
+	@Override
 	public String encodeRedirectUrl(String value) {
 		return URLEncoder.encode(value);
 	}
 	
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServletResponse#sendError(int, java.lang.String)
-	 */
+	@Override
 	public void sendError(int code, String codeText) throws IOException {
 		// TODO impl
 	}
-	/* (non-Javadoc)
-	 * @see javax.servlet.http.HttpServletResponse#sendError(int)
-	 */
+	@Override
 	public void sendError(int code) throws IOException {
 		// TODO impl
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#sendRedirect(java.lang.String)
-	 */
+	@Override
 	public void sendRedirect(String location) throws IOException {
 		addHeader("location",location);
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#setDateHeader(java.lang.String, long)
-	 */
+	@Override
 	public void setDateHeader(String key, long value) {
 		setHeader(key, new DateTimeImpl(value,false).castToString());
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#addDateHeader(java.lang.String, long)
-	 */
+	@Override
 	public void addDateHeader(String key, long value) {
 		addHeader(key, new DateTimeImpl(value,false).castToString());
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#setHeader(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void setHeader(String key, String value) {
 		headers=ReqRspUtil.set(headers, key, value);
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#addHeader(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void addHeader(String key, String value) {
 		headers=ReqRspUtil.add(headers, key, value);
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#setIntHeader(java.lang.String, int)
-	 */
+	@Override
 	public void setIntHeader(String key, int value) {
 		setHeader(key, String.valueOf(value));
 	}
 	
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#addIntHeader(java.lang.String, int)
-	 */
+	@Override
 	public void addIntHeader(String key, int value) {
 		addHeader(key, String.valueOf(value));
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#setStatus(int)
-	 */
+	@Override
 	public void setStatus(int status) {
 		this.status=status; 
 	}
-	/**
-	 * @see javax.servlet.http.HttpServletResponse#setStatus(int, java.lang.String)
-	 */
+	@Override
 	public void setStatus(int status, String statusCode) {
 		setStatus(status);
 		this.statusCode=statusCode;  
 	}
 	
-	/**
-	 * @see javax.servlet.ServletResponse#getCharacterEncoding()
-	 */
+	@Override
 	public String getCharacterEncoding() {
 		return charset;
 	}
@@ -195,9 +159,7 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 		this.charset = charset;
 	}
 	
-	/* (non-Javadoc)
-	 * @see javax.servlet.ServletResponse#getOutputStream()
-	 */
+	@Override
 	public ServletOutputStream getOutputStream() throws IOException {
 		//if(writer!=null) throw new IOException("output already initallised as Writer");
 		if(outputStream!=null) return outputStream;
@@ -208,9 +170,7 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 		return outputStream;
 	}
 	
-	/* (non-Javadoc)
-	 * @see javax.servlet.ServletResponse#getWriter()
-	 */
+	@Override
 	public PrintWriter getWriter() throws IOException {
 		//if(outputStream!=null) throw new IOException("output already initallised as OutputStream");
 		if(writer!=null) return writer;
@@ -225,65 +185,45 @@ public final class HttpServletResponseWrap extends HttpServletResponseWrapper im
 	
 	
 	
-	/* (non-Javadoc)
-	 * @see javax.servlet.ServletResponse#setContentLength(int)
-	 */
+	@Override
 	public void setContentLength(int contentLength) {
 		this.contentLength=contentLength;
 	}
-	/* (non-Javadoc)
-	 * @see javax.servlet.ServletResponse#setContentType(java.lang.String)
-	 */
+	@Override
 	public void setContentType(String contentType) {
 		this.contentType=contentType;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#setBufferSize(int)
-	 */
+	@Override
 	public void setBufferSize(int size) {
 		this.bufferSize=size;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#getBufferSize()
-	 */
+	@Override
 	public int getBufferSize() {
 		return bufferSize;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#flushBuffer()
-	 */
+	@Override
 	public void flushBuffer() throws IOException {
 		if(writer!=null)writer.flush();
 		else if(outputStream!=null)outputStream.flush();
 		commited = true;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#resetBuffer()
-	 */
+	@Override
 	public void resetBuffer() {
 		commited = true;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#isCommitted()
-	 */
+	@Override
 	public boolean isCommitted() {
 		return commited;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#reset()
-	 */
+	@Override
 	public void reset() {
 		commited = true;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#setLocale(java.util.Locale)
-	 */
+	@Override
 	public void setLocale(Locale locale) {
 		this.locale=locale;
 	}
-	/**
-	 * @see javax.servlet.ServletResponse#getLocale()
-	 */
+	@Override
 	public Locale getLocale() {
 		return locale;
 	}

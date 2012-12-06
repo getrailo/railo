@@ -119,9 +119,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	TagUtil.setDynamicAttribute(attributesScope,name,value,TagUtil.ORIGINAL_CASE);
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
 
@@ -149,9 +147,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
         //filename = appendix+'.'+pageContext.getConfig().getCFMLExtension();
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-    */
+    @Override
     public int doStartTag() throws PageException    {
     	PageContextImpl pci=(PageContextImpl) pageContext;
 		boolean old=pci.useSpecialMappings(true);
@@ -166,9 +162,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		}
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-    */
+    @Override
     public int doEndTag()   {
     	PageContextImpl pci=(PageContextImpl) pageContext;
 		boolean old=pci.useSpecialMappings(true);
@@ -181,25 +175,19 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 		}
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-    */
+    @Override
     public void doInitBody()    {
         
     }
 
-    /**
-    * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-    */
+    @Override
     public int doAfterBody() throws PageException   {
     	if(source.isCFC())return cfcEndTag();
         return cfmlEndTag();
     }
     
 
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doCatch(java.lang.Throwable)
-	 */
+	@Override
     public void doCatch(Throwable t) throws Throwable {
     	if(source.isCFC()){
 	    	String source=isEndTag?"end":"body";

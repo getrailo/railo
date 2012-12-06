@@ -73,7 +73,7 @@ public class TagUtil {
 			it = attrs.entryIterator();
 			while(it.hasNext()) {
 				e = it.next();
-				setter = Reflector.getSetterEL(tag, e.getKey().getString(),e.getValue());
+				setter = Reflector.getSetter(tag, e.getKey().getString(),e.getValue(),null);
 				if(setter!=null) {
 					try {
 						setter.invoke(tag);

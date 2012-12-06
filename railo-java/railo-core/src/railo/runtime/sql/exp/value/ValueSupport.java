@@ -16,19 +16,8 @@ public abstract class ValueSupport extends ExpressionSupport implements Value {
 	}
 	
 	
-	/**
-	 *
-	 * @see sql.exp.Expression#getString()
-	 */
+	@Override
 	public String getString() {
 		return value;
 	}
-	
-	/* *
-	 *
-	 * @see sql.exp.Expression#setValue(java.lang.String)
-	 * /
-	public void setValue(String value) {
-		this.value = value;
-	}*/
 }

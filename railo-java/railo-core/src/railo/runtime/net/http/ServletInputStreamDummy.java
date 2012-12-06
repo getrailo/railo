@@ -27,80 +27,52 @@ public final class ServletInputStreamDummy extends ServletInputStream
         stream = is;
     }
         
-    /**
-     * @see java.io.InputStream#read()
-     */
+    @Override
     public int read() throws IOException {
         return stream.read();
     }
 
-	/**
-	 * @see javax.servlet.ServletInputStream#readLine(byte[], int, int)
-	 */
+	@Override
 	public int readLine(byte[] barr, int arg1, int arg2) throws IOException {
 		return stream.read(barr, arg1, arg2);
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#available()
-	 */
+	@Override
 	public int available() throws IOException {
 		return stream.available();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#close()
-	 */
+	@Override
 	public void close() throws IOException {
 		stream.close();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#mark(int)
-	 */
+	@Override
 	public synchronized void mark(int readlimit) {
 		stream.mark(readlimit);
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#markSupported()
-	 */
+	@Override
 	public boolean markSupported() {
 		return stream.markSupported();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#read(byte[], int, int)
-	 */
+	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		return stream.read(b, off, len);
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#read(byte[])
-	 */
+	@Override
 	public int read(byte[] b) throws IOException {
 		return stream.read(b);
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#reset()
-	 */
+	@Override
 	public synchronized void reset() throws IOException {
 		stream.reset();
 	}
 
-	/**
-	 *
-	 * @see java.io.InputStream#skip(long)
-	 */
+	@Override
 	public long skip(long n) throws IOException {
 		return stream.skip(n);
 	}

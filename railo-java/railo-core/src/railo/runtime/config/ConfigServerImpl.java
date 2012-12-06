@@ -96,16 +96,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 		this.configListener = configListener;
 	}
 
-    /**
-     * @see railo.runtime.config.ConfigImpl#getConfigServer(java.lang.String)
-     */
+    @Override
     public ConfigServer getConfigServer(String password) {
         return this;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#getConfigWebs()
-     */
+    @Override
     public ConfigWeb[] getConfigWebs() {
     
         Iterator<String> it = initContextes.keySet().iterator();
@@ -117,9 +113,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return webs;
     }
     
-    /**
-     * @see railo.runtime.config.ConfigServer#getConfigWeb(java.lang.String)
-     */
+    @Override
     public ConfigWeb getConfigWeb(String realpath) {
         return getConfigWebImpl(realpath);
     }
@@ -162,16 +156,12 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         }
         return factories;
     }
-    /**
-     * @see railo.runtime.config.ConfigServer#getJSPFactoriesAsMap()
-     */
+    @Override
     public Map<String,CFMLFactory> getJSPFactoriesAsMap() {
         return initContextes;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#getSecurityManager(java.lang.String)
-     */
+    @Override
     public SecurityManager getSecurityManager(String id) {
         Object o=managers.get(id);
         if(o!=null) return (SecurityManager) o;
@@ -181,9 +171,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return defaultSecurityManager.cloneSecurityManager();
     }
     
-    /**
-     * @see railo.runtime.config.ConfigServer#hasIndividualSecurityManager(java.lang.String)
-     */
+    @Override
     public boolean hasIndividualSecurityManager(String id) {
         return managers.containsKey(id);
     }
@@ -210,9 +198,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         managers.remove(id);
     }
     
-    /**
-     * @see railo.runtime.config.ConfigServer#getDefaultSecurityManager()
-     */
+    @Override
     public SecurityManager getDefaultSecurityManager() {
         return defaultSecurityManager;
     }
@@ -229,9 +215,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         this.defaultPassword = defaultPassword;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#getCFMLEngine()
-     */
+    @Override
     public CFMLEngine getCFMLEngine() {
         return engine;
     }
@@ -244,45 +228,33 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         return rootDir;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateType()
-     */
+    @Override
     public String getUpdateType() {
         return updateType;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateType(java.lang.String)
-     */
+    @Override
     public void setUpdateType(String updateType) {
         if(!StringUtil.isEmpty(updateType))
             this.updateType = updateType;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateLocation()
-     */
+    @Override
     public URL getUpdateLocation() {
         return updateLocation;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateLocation(java.net.URL)
-     */
+    @Override
     public void setUpdateLocation(URL updateLocation) {
         this.updateLocation = updateLocation;
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateLocation(java.lang.String)
-     */
+    @Override
     public void setUpdateLocation(String strUpdateLocation) throws MalformedURLException {
         setUpdateLocation(new URL(strUpdateLocation));
     }
 
-    /**
-     * @see railo.runtime.config.ConfigServer#setUpdateLocation(java.lang.String, java.net.URL)
-     */
+    @Override
     public void setUpdateLocation(String strUpdateLocation, URL defaultValue) {
         try {
             setUpdateLocation(strUpdateLocation);
@@ -291,9 +263,7 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
         }
     }
 
-    /**
-     * @see railo.runtime.config.Config#getSecurityManager()
-     */
+    @Override
     public SecurityManager getSecurityManager() {
         SecurityManagerImpl sm = (SecurityManagerImpl) getDefaultSecurityManager();//.cloneSecurityManager();
         //sm.setAccess(SecurityManager.TYPE_ACCESS_READ,SecurityManager.ACCESS_PROTECTED);

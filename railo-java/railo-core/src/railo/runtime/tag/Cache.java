@@ -114,9 +114,7 @@ public final class Cache extends BodyTagImpl {
     private static final int GET=5;
     private static final int PUT=6;
     
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
         directory=null;
@@ -268,10 +266,7 @@ public final class Cache extends BodyTagImpl {
     }
     
     
-    /**
-	* @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+    @Override
 	public int doStartTag() throws PageException	{
 		now = new DateTimeImpl(pageContext.getConfig());
 		try {
@@ -293,32 +288,19 @@ public final class Cache extends BodyTagImpl {
 		}
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		//print.out("doAfterBody");
 		if(bodyContent!=null)body=bodyContent.getString();
 		return SKIP_BODY;
 	}
-    
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
-	
 
-    /**
-     * @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag() throws PageException	{//print.out("doEndTag"+doCaching+"-"+body);
 		if(doCaching && body!=null) {
     		try {

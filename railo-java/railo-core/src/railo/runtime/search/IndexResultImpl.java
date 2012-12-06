@@ -17,26 +17,17 @@ public final class IndexResultImpl implements IndexResult {
 	public IndexResultImpl() {
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.search.IndexResult#getCountDeleted()
-	 */
+	@Override
 	public int getCountDeleted() {
 		return countDeleted;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.search.IndexResult#getCountInserted()
-	 */
+	@Override
 	public int getCountInserted() {
 		return countInserted;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.search.IndexResult#getCountUpdated()
-	 */
+	@Override
 	public int getCountUpdated() {
 		return countUpdated;
 	}

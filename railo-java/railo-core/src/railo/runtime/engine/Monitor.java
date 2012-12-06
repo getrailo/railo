@@ -26,9 +26,7 @@ public final class Monitor extends Thread {
         
 	}
 	
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
+	@Override
 	public void run() {
 		short tries=0;
 		while(run.toBooleanValue()) {

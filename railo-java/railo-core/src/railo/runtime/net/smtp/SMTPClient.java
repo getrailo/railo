@@ -7,6 +7,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -29,7 +30,6 @@ import javax.mail.internet.MimePart;
 import org.apache.commons.collections.ReferenceMap;
 
 import railo.commons.activation.ResourceDataSource;
-import railo.commons.collections.HashTable;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
@@ -111,7 +111,7 @@ public final class SMTPClient implements Serializable  {
 	private InternetAddress[] fts;
 	private String subject="";
 	private String xmailer="Railo Mail";
-	private Map headers=new HashTable();
+	private Map<String,String> headers=new HashMap<String,String>();
 	private int port=-1;
 
 	private String username;
@@ -192,12 +192,6 @@ public final class SMTPClient implements Serializable  {
 		return srv;
 	}
 	
-	
-	/**
-	 * @throws PageException 
-	 * @throws MailException 
-	 * @see mail.Mail#setHost(java.lang.String)
-	 */
 	public void setHost(String host) throws PageException {
 		if(!StringUtil.isEmpty(host,true))this.host = List.toStringArray(List.listToArrayRemoveEmpty(host, ','));
 	} 
@@ -221,20 +215,10 @@ public final class SMTPClient implements Serializable  {
 		headers.put(name, value);
 	}
 
-	/**
-	 * @see mail.Mail#addTo(javax.mail.internet.InternetAddress)
-	 */
 	public void addTo(InternetAddress to) {
 		tos=add(tos,to);
 	}
 
-	/** 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @throws MailException 
-	 * @see mail.Mail#addTo(java.lang.String)
-	 */
 	public void addTo(Object to) throws AddressException, UnsupportedEncodingException, PageException, MailException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(to);
 		for(int i=0;i<tmp.length;i++) {
@@ -242,39 +226,20 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 
-	/**
-	 * @see mail.Mail#setFrom(javax.mail.internet.InternetAddress)
-	 */
 	public void setFrom(InternetAddress from) {
 		this.from=from;
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#setFrom(java.lang.String)
-	 */
 	public void setFrom(Object from) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] addrs = EmailNamePair.toInternetAddresses(from);
 		if(addrs.length==0) return;
 		setFrom(addrs[0]);
 	}
-	/**
-	 * @see mail.Mail#addBCC(javax.mail.internet.InternetAddress)
-	 */
+	
 	public void addBCC(InternetAddress bcc) {
 		bccs=add(bccs,bcc);
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addBCC(java.lang.String)
-	 */
 	public void addBCC(Object bcc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(bcc);
 		for(int i=0;i<tmp.length;i++) {
@@ -282,20 +247,10 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 
-	/**
-	 * @see mail.Mail#addCC(javax.mail.internet.InternetAddress)
-	 */
 	public void addCC(InternetAddress cc) {
 		ccs=add(ccs,cc);
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addCC(java.lang.String)
-	 */
 	public void addCC(Object cc) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(cc);
 		for(int i=0;i<tmp.length;i++) {
@@ -303,20 +258,10 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 	
-	/**
-	 * @see mail.Mail#addReplyTo(javax.mail.internet.InternetAddress)
-	 */
 	public void addReplyTo(InternetAddress rt) {
 		rts=add(rts,rt);
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addReplyTo(java.lang.String)
-	 */
 	public void addReplyTo(Object rt) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(rt);
 		for(int i=0;i<tmp.length;i++) {
@@ -324,9 +269,6 @@ public final class SMTPClient implements Serializable  {
 		}
 	}
 	
-	/**
-	 * @see mail.Mail#addFailTo(javax.mail.internet.InternetAddress)
-	 */
 	public void addFailTo(InternetAddress ft) {
 		fts=add(fts,ft);
 	}
@@ -338,13 +280,6 @@ public final class SMTPClient implements Serializable  {
 		return plainText;
 	}
 
-	/**
-	 * @throws MailException 
-	 * @throws UnsupportedEncodingException 
-	 * @throws AddressException 
-	 * @throws PageException 
-	 * @see mail.Mail#addFailTo(java.lang.String)
-	 */
 	public void addFailTo(Object ft) throws AddressException, UnsupportedEncodingException, MailException, PageException {
 		InternetAddress[] tmp = EmailNamePair.toInternetAddresses(ft);
 		for(int i=0;i<tmp.length;i++) {
@@ -359,16 +294,10 @@ public final class SMTPClient implements Serializable  {
 		this.timeout = timeout;
 	}
 	
-	/**
-	 * @see mail.Mail#setSubject(java.lang.String)
-	 */
 	public void setSubject(String subject) {
 		this.subject=subject;
 	}
 	
-	/**
-	 * @see mail.Mail#setXMailer(java.lang.String)
-	 */
 	public void setXMailer(String xmailer) {
 		this.xmailer=xmailer;
 	}
@@ -556,12 +485,12 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 
-	private static void setHeaders(SMTPMessage msg, Map headers) throws MessagingException {
-		Iterator it = headers.keySet().iterator();
+	private static void setHeaders(SMTPMessage msg, Map<String,String> headers) throws MessagingException {
+		Iterator<String> it = headers.keySet().iterator();
 	    String key;
 	    while(it.hasNext()) {
-	    	key = (String)it.next();
-	    	msg.setHeader(key, (String)headers.get(key));
+	    	key = it.next();
+	    	msg.setHeader(key, headers.get(key));
 	    }
 	}
 

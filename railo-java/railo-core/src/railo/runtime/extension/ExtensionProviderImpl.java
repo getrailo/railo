@@ -41,9 +41,7 @@ public class ExtensionProviderImpl implements ExtensionProvider {
 		return readOnly;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "url:"+getUrlAsString()+";";
 	}

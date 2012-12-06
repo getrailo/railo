@@ -35,9 +35,7 @@ public final class ModernAMFCaster extends ClassicAMFCaster {
 	private boolean doGetters=true;
 	private boolean doRemoteValues=true;
 	
-	/**
-	 * @see railo.runtime.net.amf.ClassicAMFCaster#init(java.util.Map)
-	 */
+	@Override
 	public void init(Map arguments){
 		super.init(arguments);
 		

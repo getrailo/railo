@@ -23,9 +23,7 @@ public final class Div extends BodyTagImpl {
 	private String onBindError;
 	private String tagName;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 	    this.bind=null;
@@ -88,32 +86,22 @@ public final class Div extends BodyTagImpl {
 
 
 
-	/**
-	 * @throws TagNotSupported 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws TagNotSupported	{
 		throw new TagNotSupported("Div");
 		//return EVAL_BODY_INCLUDE;
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 		return EVAL_PAGE;
 	}
 
-    /**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+    @Override
 	public void doInitBody()	{
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}

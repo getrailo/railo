@@ -76,9 +76,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 		this.log = searchEngine.getLogger();
 	}
 
-	/**
-     * @see railo.runtime.search.SearchCollection#create()
-     */
+	@Override
 	public final void create() throws SearchException {
 		Lock l = lock();
 		try {
@@ -95,9 +93,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 	 */
 	protected abstract void _create() throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#optimize()
-     */
+    @Override
     public final void optimize() throws SearchException  {
     	Lock l = lock();
          try {
@@ -115,9 +111,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      */
     protected abstract void _optimize() throws SearchException ;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#map(railo.commons.io.res.Resource)
-     */
+    @Override
     public final void map(Resource path) throws SearchException  {
     	Lock l = lock();
     	try {
@@ -136,9 +130,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      */ 
     protected abstract void _map(Resource path) throws SearchException ;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#repair()
-     */
+    @Override
     public final void repair() throws SearchException  {
     	Lock l = lock();
     	try {
@@ -156,10 +148,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      */
     protected abstract void _repair() throws SearchException ;
     
-    /**
-     * @return 
-     * @see railo.runtime.search.SearchCollection#index(railo.runtime.PageContext, java.lang.String, short, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String[], java.lang.String, boolean, java.lang.String, java.lang.String[], java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
+    @Override
     public IndexResult index(PageContext pc, String key, short type, String urlpath, String title, String body, String language, 
             String[] extensions, String query, boolean recurse,String categoryTree, String[] categories,
             String custom1, String custom2, String custom3, String custom4) throws PageException, MalformedURLException, SearchException {
@@ -290,9 +279,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         return c;
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexFile(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String)
-     */
+    @Override
     public final IndexResult indexFile(String id,String title, Resource res, String language) throws SearchException {
     	IndexResult ir=_indexFile(id,title,res,language);
         changeLastUpdate();
@@ -309,9 +296,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      */
     protected abstract IndexResult _indexFile(String id, String title, Resource file, String language)  throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexPath(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String[], boolean, java.lang.String)
-     */
+    @Override
     public final IndexResult indexPath(String id, String title, Resource dir, String[] extensions, boolean recurse, String language) throws SearchException {
     	IndexResult ir=_indexPath(id,title,dir,extensions,recurse,language);
         changeLastUpdate();
@@ -331,9 +316,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      */
     protected abstract IndexResult _indexPath(String id,String title, Resource dir, String[] extensions, boolean recurse, String language) throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexURL(java.lang.String, java.lang.String, java.net.URL, java.lang.String[], boolean, java.lang.String)
-     */
+    @Override
     public final IndexResult indexURL(String id,String title, URL url, String[] extensions, boolean recurse, String language) throws SearchException {
     	return indexURL(id, title, url, extensions, recurse, language, 10000);
     }
@@ -358,9 +341,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
     
     protected abstract IndexResult _indexURL(String id,String title, URL url, String[] extensions, boolean recurse, String language) throws SearchException ;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#indexCustom(java.lang.String, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn[], java.lang.String, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn, railo.runtime.type.QueryColumn)
-     */
+    @Override
     public final IndexResult indexCustom(String id, QueryColumn title, QueryColumn keyColumn, QueryColumn[] bodyColumns, String language, 
     		QueryColumn custom1, QueryColumn custom2, QueryColumn custom3, QueryColumn custom4) throws SearchException {
     	IndexResult ir=_indexCustom(id,title,keyColumn,bodyColumns,language,null,custom1,custom2,custom3,custom4);
@@ -446,16 +427,12 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         indexes.put(index.getId(),index);
     }
 
-	/**
-     * @see railo.runtime.search.SearchCollection#getLanguage()
-     */
+	@Override
 	public final String getLanguage() {
 		return language;
 	}
     
-	/**
-     * @see railo.runtime.search.SearchCollection#purge()
-     */
+	@Override
 	public final IndexResult purge() throws SearchException {
 		Lock l = lock();
 	try {
@@ -476,9 +453,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
 	 */
 	protected abstract IndexResult _purge() throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#delete()
-     */
+    @Override
     public final IndexResult delete() throws SearchException {
     	Lock l = lock();
     	try {
@@ -497,9 +472,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      */
     protected abstract IndexResult _delete() throws SearchException;
 
-    /**
-     * @see railo.runtime.search.SearchCollection#deleteIndex(railo.runtime.PageContext, java.lang.String, short, java.lang.String)
-     */
+    @Override
     public final IndexResult deleteIndex(PageContext pc,String key,short type,String queryName) throws SearchException {
         //if(queryName==null) queryName="";
     	Key k;
@@ -562,44 +535,32 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
      */ 
     protected abstract IndexResult _deleteIndex(String id) throws SearchException;
     
-	/**
-     * @see railo.runtime.search.SearchCollection#getPath()
-     */
+	@Override
 	public final Resource getPath() {
 		return path;
 	}
 
-    /**
-     * @see railo.runtime.search.SearchCollection#getCreated()
-     */
+    @Override
     public DateTime getCreated() {
         return created;
     }
     
-	/**
-     * @see railo.runtime.search.SearchCollection#getLastUpdate()
-     */
+	@Override
 	public final DateTime getLastUpdate() {
 		return lastUpdate;
 	}
 
-	/**
-     * @see railo.runtime.search.SearchCollection#getName()
-     */
+	@Override
 	public final String getName() {
 		return name;
 	} 
 	
-    /**
-     * @see railo.runtime.search.SearchCollection#getLogger()
-     */
+    @Override
     public final Log getLogger() {
         return log;
     }
     
-    /**
-     * @see railo.runtime.search.SearchCollection#getSearchEngine()
-     */
+    @Override
     public final SearchEngine getSearchEngine() {
         return searchEngine;
     }
@@ -613,16 +574,12 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         searchEngine.store();
     }
     
-    /**
-     * @see railo.runtime.search.SearchCollection#created()
-     */
+    @Override
     public Object created() {
         return created;
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#search(railo.runtime.search.SearchData, railo.runtime.type.Query, java.lang.String, java.lang.String, short, int, int, java.lang.String, java.lang.String[])
-     */
+    @Override
     public final int search(SearchData data, Query qry,String criteria, String language, short type,int startrow,int maxrow,String categoryTree, String[] categories) throws SearchException, PageException {
         int len=qry.getRecordcount();
         SearchResulItem[] records;

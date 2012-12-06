@@ -3623,9 +3623,7 @@ public final class ConfigWebAdmin {
 			this.name=name;
 		}
 		
-		/**
-		 * @see railo.commons.io.res.filter.ResourceNameFilter#accept(railo.commons.io.res.Resource, java.lang.String)
-		 */
+		@Override
 		public boolean accept(Resource parent, String name) {
 			return name.equals(this.name);
 		}

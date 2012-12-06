@@ -41,6 +41,7 @@ public final class DanishAnalyzer extends Analyzer {
         analyzer = new SnowballAnalyzer("Danish", stopWords);
     }
 
+    @Override
     public TokenStream tokenStream(String fieldName, Reader reader) {
         return analyzer.tokenStream(fieldName, reader);
     }

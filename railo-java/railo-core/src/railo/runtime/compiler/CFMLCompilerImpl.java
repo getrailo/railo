@@ -35,9 +35,7 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 		cfmlTransformer=new CFMLTransformer();
 	}
 	
-	/**
-	 * @see railo.runtime.compiler.CFMLCompiler#compile(railo.runtime.config.ConfigImpl, railo.runtime.PageSource, railo.transformer.library.tag.TagLib[], railo.transformer.library.function.FunctionLib[], railo.commons.io.res.Resource, java.lang.String)
-	 */
+	@Override
 	public byte[] compile(ConfigImpl config,PageSource source, TagLib[] tld, FunctionLib[] fld, 
         Resource classRootDir, String className) throws TemplateException, IOException {
 		//synchronized(source){

@@ -12,9 +12,7 @@ public final class Concator implements Op {
 		this.right=right;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		if(left instanceof Literal && right instanceof Literal) {
 			String str=((Literal)left).literal+" "+((Literal)right).literal;

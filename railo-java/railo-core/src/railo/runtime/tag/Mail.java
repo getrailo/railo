@@ -62,9 +62,7 @@ public final class Mail extends BodyTagImpl {
 	
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 //       do not clear because spooler
@@ -476,10 +474,7 @@ public final class Mail extends BodyTagImpl {
     }
 
 
-    /**
-	* @throws ApplicationException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+    @Override
 	public int doStartTag() throws ApplicationException	{
 		if(isEmpty(smtp.getTos()) && isEmpty(smtp.getCcs()) && isEmpty(smtp.getBccs())) 
 			throw new ApplicationException("One of the following attribtues must be defined [to, cc, bcc]");
@@ -492,16 +487,12 @@ public final class Mail extends BodyTagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		getPart().setBody(bodyContent.getString());
 		smtp.setCharset(getCharset());
@@ -510,9 +501,7 @@ public final class Mail extends BodyTagImpl {
 		return SKIP_BODY;
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		smtp.setTimeZone(pageContext.getTimeZone());
 		try {

@@ -382,9 +382,6 @@ public class GatewayEngineImpl implements GatewayEngine {
 		return pc;
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.GatewayEngine#toRequestURI(java.lang.String)
-	 */
 	public String toRequestURI(String cfcPath) {
 		return GatewayUtil.toRequestURI(cfcPath);
 	}

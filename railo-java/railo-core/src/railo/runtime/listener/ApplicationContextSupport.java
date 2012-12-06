@@ -13,9 +13,7 @@ public abstract class ApplicationContextSupport implements ApplicationContextPro
 	protected String cookiedomain;
 	protected String applicationtoken;
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#setSecuritySettings(java.lang.String, java.lang.String, int)
-	 */
+	@Override
 	public void setSecuritySettings(String applicationtoken, String cookiedomain, int idletimeout) {
 		this.applicationtoken=applicationtoken;
 		this.cookiedomain=cookiedomain;
@@ -23,25 +21,19 @@ public abstract class ApplicationContextSupport implements ApplicationContextPro
 		
 	}
 	
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSecurityApplicationToken()
-	 */
+	@Override
 	public String getSecurityApplicationToken() {
 		if(StringUtil.isEmpty(applicationtoken,true)) return getName();
 		return applicationtoken;
 	}
 	
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSecurityCookieDomain()
-	 */
+	@Override
 	public String getSecurityCookieDomain() {
 		if(StringUtil.isEmpty(applicationtoken,true)) return null;
 		return cookiedomain;
 	}
 	
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSecurityIdleTimeout()
-	 */
+	@Override
 	public int getSecurityIdleTimeout() {
 		if(idletimeout<1) return 1800;
 		return idletimeout;

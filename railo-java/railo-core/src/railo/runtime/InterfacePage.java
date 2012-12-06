@@ -20,9 +20,7 @@ public abstract class InterfacePage extends Page  {
 	private static final railo.runtime.type.Collection.Key COMPONENT = KeyImpl.intern("component");
 	
 	
-	/**
-	 * @see railo.runtime.Page#call(railo.runtime.PageContext)
-	 */
+	@Override
 	public void call(PageContext pc) throws PageException {
         try {
             pc.setSilent();

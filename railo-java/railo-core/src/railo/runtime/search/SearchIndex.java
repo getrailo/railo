@@ -161,9 +161,7 @@ public final class SearchIndex {
         
     }
     
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    @Override
     public boolean equals(Object o) {
         if(!(o instanceof SearchIndex)) return false;
         SearchIndex other=(SearchIndex) o;
@@ -257,9 +255,7 @@ public final class SearchIndex {
         return query;
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return "railo.runtime.search.SearchIndex(id:"+id+";title:"+title+";key:"+key+";type:"+toStringTypeEL(type)+
         ";language:"+language+";urlpath:"+urlpath+";query:"+query+";categoryTree:"+categoryTree+";categories:"+List.arrayToList(categories,",")+";custom1:"+custom1+";custom2:"+custom2+";custom3:"+custom3+";custom4:"+custom4+";)";

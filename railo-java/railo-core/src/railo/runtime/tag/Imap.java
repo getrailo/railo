@@ -4,23 +4,17 @@ import railo.runtime.net.mail.MailClient;
 
 public class Imap extends _Mail {
 
-	/**
-	 * @see railo.runtime.tag._Mail#getDefaultPort()
-	 */
+	@Override
 	protected int getDefaultPort() {
 		return 143;
 	}
 
-	/**
-	 * @see railo.runtime.tag._Mail#getTagName()
-	 */
+	@Override
 	protected String getTagName() {
 		return "Imap";
 	}
 
-	/**
-	 * @see railo.runtime.tag._Mail#getType()
-	 */
+	@Override
 	protected int getType() {
 		return MailClient.TYPE_IMAP;
 	}

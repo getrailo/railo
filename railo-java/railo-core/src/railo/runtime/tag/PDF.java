@@ -128,9 +128,7 @@ public class PDF extends BodyTagImpl  {
 	private String imagePrefix=null;
 	private int type=TYPE_XML;
 	
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		action=ACTION_PROCESSDDX;
@@ -543,10 +541,7 @@ public class PDF extends BodyTagImpl  {
 				"[1.1, 1.2, 1.3, 1.4, 1.5, 1.6]");
 	}
 	
-	/**
-	* @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		// RR SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -555,26 +550,17 @@ public class PDF extends BodyTagImpl  {
 	    return EVAL_BODY_BUFFERED;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 	
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
 	
-	/**
-	 *
-	 * @throws IOException 
-	 * @throws InvalidParameterException 
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 		try {
 

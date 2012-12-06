@@ -47,10 +47,7 @@ public class ChartDataBean implements Serializable,Comparable {
 		this.value = value;
 	}
 	
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "item:"+item+";"+"value;"+value+";";
 	}

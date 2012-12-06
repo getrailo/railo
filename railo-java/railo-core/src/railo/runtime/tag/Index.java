@@ -104,9 +104,7 @@ public final class Index extends TagImpl {
 
 	private boolean throwontimeout=false;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		action=null;
@@ -355,10 +353,7 @@ public final class Index extends TagImpl {
 	}
 
 
-	/**
-	* @throws SecurityException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    // SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -471,9 +466,7 @@ public final class Index extends TagImpl {
     }
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

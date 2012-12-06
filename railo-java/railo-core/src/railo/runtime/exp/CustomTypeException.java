@@ -26,10 +26,7 @@ public final class CustomTypeException extends PageExceptionImpl {
 		if(extendedinfo!=null)setExtendedInfo(extendedinfo);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.PageContext)
-	 */
+	@Override
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock cb=super.getCatchBlock(config);
 		cb.setEL(KeyConstants._code,cb.get("errorcode",null));
@@ -40,18 +37,14 @@ public final class CustomTypeException extends PageExceptionImpl {
 		return cb;
 	}
 
-	/**
-	 * @see railo.runtime.exp.IPageException#getErrorBlock(railo.runtime.PageContext, railo.runtime.err.ErrorPage)
-	 */
+	@Override
 	public Struct getErrorBlock(PageContext pc, ErrorPage ep) {
 		Struct eb = super.getErrorBlock(pc, ep);
 		eb.setEL(KeyConstants._type,getCustomTypeAsString());
 		return eb;
 	}
 
-    /**
-     * @see railo.runtime.exp.IPageException#typeEqual(java.lang.String)
-     */
+    @Override
     public boolean typeEqual(String type) {
     	if(type==null) return true;
         type=type.toLowerCase().trim();

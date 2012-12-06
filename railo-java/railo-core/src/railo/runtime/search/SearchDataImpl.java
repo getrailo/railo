@@ -34,17 +34,13 @@ public class SearchDataImpl implements SearchData  {
 		return suggestionQuery;
 	}
 	
-	/**
-	 * @see railo.runtime.search.SearchData#addRecordsSearched(int)
-	 */
+	@Override
 	public int addRecordsSearched(int count) {
 		recordsSearched+=count;
 		return recordsSearched;
 	}
 	
-	/**
-	 * @see railo.runtime.search.SearchData#getRecordsSearched()
-	 */
+	@Override
 	public int getRecordsSearched() {
 		return recordsSearched;
 	}

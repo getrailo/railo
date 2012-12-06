@@ -45,9 +45,7 @@ public class CFCGetter implements Getter {
 		this.key=key;
 	}
 	
-	/**
-	 * @see org.hibernate.property.Getter#get(java.lang.Object)
-	 */
+	@Override
 	public Object get(Object trg) throws HibernateException {
 		try {
 			// MUST cache this, perhaps when building xml
@@ -80,23 +78,17 @@ public class CFCGetter implements Getter {
 	}
 	
 
-	/**
-	 * @see org.hibernate.property.Getter#getForInsert(java.lang.Object, java.util.Map, org.hibernate.engine.SessionImplementor)
-	 */
+	@Override
 	public Object getForInsert(Object trg, Map arg1, SessionImplementor arg2)throws HibernateException {
 		return get(trg);// MUST better solution? this is from MapGetter
 	}
 
-	/**
-	 * @see org.hibernate.property.Getter#getMember()
-	 */
+	@Override
 	public Member getMember() {
 		return null;
 	}
 
-	/**
-	 * @see org.hibernate.property.Getter#getMethod()
-	 */
+	@Override
 	public Method getMethod() {
 		return null;
 	}

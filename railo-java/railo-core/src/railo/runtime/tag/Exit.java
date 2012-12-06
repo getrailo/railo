@@ -20,9 +20,7 @@ public final class Exit extends TagImpl {
 	/**  */
 	private short method=MODE_EXIT_TAG;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		method=MODE_EXIT_TAG;
@@ -41,16 +39,12 @@ public final class Exit extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws TemplateException	{
 		Scope variables = pageContext.variablesScope();
 		Object thistagObj=variables.get("thistag",null);

@@ -57,9 +57,7 @@ public final class Content extends BodyTagImpl {
     private byte[] content;
 
 
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
         type=null;
@@ -125,9 +123,7 @@ public final class Content extends BodyTagImpl {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
     public int doStartTag() throws PageException   {
         //try {
             return _doStartTag();
@@ -239,9 +235,7 @@ public final class Content extends BodyTagImpl {
         }
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag()	{
 		return strFile == null ? EVAL_PAGE : SKIP_PAGE;
 	}

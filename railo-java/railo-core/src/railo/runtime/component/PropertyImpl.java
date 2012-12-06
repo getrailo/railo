@@ -127,19 +127,12 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		this.type = type;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.component.Member#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return _default;
 	}
 
-	/**
-	 *
-	 * @throws PageException 
-	 * @see railo.transformer.bytecode.util.ASMProperty#getASMType()
-	 */
+	@Override
 	public Type getASMType() throws PageException {
 		return ASMUtil.toType(getType(), true);
 	}
@@ -201,9 +194,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 		return metadata;
 	}
 
-	/**
-	 * @see railo.transformer.bytecode.util.ASMProperty#getClazz()
-	 */
+	@Override
 	public Class getClazz() {
 		return null;
 	}
@@ -221,10 +212,7 @@ public final class PropertyImpl extends MemberSupport implements Property,ASMPro
 
 	
 	
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		String strDynAttrs="";
 		try{

@@ -76,9 +76,7 @@ public final class Application extends TagImpl {
 	private Struct datasources;
 	
      
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
+    @Override
     public void release() {
         super.release();
         setClientCookies=null;
@@ -342,10 +340,7 @@ public final class Application extends TagImpl {
 	}
 
 
-	/**
-	 * @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
         
         ApplicationContextPro ac;
@@ -430,9 +425,7 @@ public final class Application extends TagImpl {
 		return initORM;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

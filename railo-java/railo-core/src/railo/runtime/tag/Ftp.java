@@ -84,9 +84,7 @@ public final class Ftp extends TagImpl {
 	
 	//private Struct cfftp=new StructImpl();
 
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+    @Override
 	public void release()	{
 		super.release();
 		this.pool=null;
@@ -127,17 +125,12 @@ public final class Ftp extends TagImpl {
 		this.action=action.trim().toLowerCase();
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return SKIP_BODY;
 	}
 
-	/**
-	* @throws ApplicationException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 	    pool=pageContext.getFTPPool();
 	    FTPClient client = null; 

@@ -13,9 +13,7 @@ public class RequestTimeoutException extends Abort {
 		this.stacktrace=pc.getThread().getStackTrace();
 	}
 	
-	/**
-	 * @see java.lang.Throwable#getStackTrace()
-	 */
+	@Override
 	public StackTraceElement[] getStackTrace() {
 		return stacktrace;
 	}

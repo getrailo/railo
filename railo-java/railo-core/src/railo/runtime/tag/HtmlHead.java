@@ -27,9 +27,7 @@ public final class HtmlHead extends TagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		text="";
@@ -66,9 +64,7 @@ public final class HtmlHead extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	throws PageException {
 		try {
 			if(StringUtil.isEmpty(action,true) || action.equals("append")) actionAppend();
@@ -103,9 +99,7 @@ public final class HtmlHead extends TagImpl {
 	}
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

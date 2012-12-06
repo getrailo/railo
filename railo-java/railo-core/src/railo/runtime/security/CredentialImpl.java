@@ -75,21 +75,15 @@ public final class CredentialImpl implements Credential {
         this.rolesDir=rolesDir;
     }
 
-    /**
-     * @see railo.runtime.security.Credential#getPassword()
-     */
+    @Override
     public String getPassword() {
         return password;
     }
-    /**
-     * @see railo.runtime.security.Credential#getRoles()
-     */
+    @Override
     public String[] getRoles() {
         return roles;
     }
-    /**
-     * @see railo.runtime.security.Credential#getUsername()
-     */
+    @Override
     public String getUsername() {
         return username;
     }
@@ -125,9 +119,7 @@ public final class CredentialImpl implements Credential {
     } 
     
     
-    /**
-     * @see railo.runtime.security.Credential#encode()
-     */
+    @Override
     public String encode() throws PageException{
     	String raw=List.arrayToList(roles,",");
 		if(raw.length()>100){
@@ -183,9 +175,7 @@ public final class CredentialImpl implements Credential {
         return null;
     }
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "username:"+username+";password:"+password+";roles:"+roles;
 	} 

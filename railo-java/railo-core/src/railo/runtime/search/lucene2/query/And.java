@@ -10,9 +10,7 @@ public final class And implements Op {
 		this.right=right;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return left+" AND "+right;
 	}

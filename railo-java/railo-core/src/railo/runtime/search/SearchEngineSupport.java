@@ -49,9 +49,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
     private Document doc;
     Struct collections=new StructImpl();
 	
-	/**
-	 * @see railo.runtime.search.SearchEngine#init(railo.runtime.config.Config, railo.commons.io.res.Resource, railo.commons.io.log.LogAndSource)
-	 */
+	@Override
 	public void init(railo.runtime.config.Config config,Resource searchDir, LogAndSource log) throws SAXException, IOException, SearchException {
 		this.searchDir=searchDir;
 		this.searchFile=searchDir.getRealResource("search.xml");
@@ -74,18 +72,14 @@ public abstract class SearchEngineSupport implements SearchEngine {
     	readCollections(config);
 	} 
 	
-	/**
-     * @see railo.runtime.search.SearchEngine#getCollectionByName(java.lang.String)
-     */
+	@Override
 	public final SearchCollection getCollectionByName(String name) throws SearchException {
 		Object o=collections.get(name.toLowerCase(),null);
 		if(o!=null)return (SearchCollection) o; 
 		throw new SearchException("collection "+name+" is undefined");
 	}
 	
-	/**
-     * @see railo.runtime.search.SearchEngine#getCollectionsAsQuery()
-     */
+	@Override
 	public final Query getCollectionsAsQuery() {
         final String v="VARCHAR";
         Query query=null;
@@ -125,10 +119,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
 		return query;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.search.SearchEngine#createCollection(java.lang.String, railo.commons.io.res.Resource, java.lang.String, boolean)
-	 */
+	@Override
 	public final SearchCollection createCollection(String name,Resource path, String language, boolean allowOverwrite) throws SearchException {
 	    SearchCollection coll = _createCollection(name,path,language);
 	    coll.create();
@@ -234,16 +225,12 @@ public abstract class SearchEngineSupport implements SearchEngine {
         
     }
 
-	/**
-     * @see railo.runtime.search.SearchEngine#getDirectory()
-     */
+	@Override
 	public Resource getDirectory() {
 		return searchDir;
 	}
 
-	/**
-     * @see railo.runtime.search.SearchEngine#getLogger()
-     */
+	@Override
 	public LogAndSource getLogger() {
 		return log;
 	}
@@ -267,9 +254,7 @@ public abstract class SearchEngineSupport implements SearchEngine {
         return null;
     }
 
-    /**
-     * @see railo.runtime.search.SearchEngine#getIndexElement(org.w3c.dom.Element, java.lang.String)
-     */
+    @Override
     public Element getIndexElement(Element collElement, String id) {
         
         NodeList children = collElement.getChildNodes();
@@ -501,8 +486,6 @@ public abstract class SearchEngineSupport implements SearchEngine {
     	
 	}
     
-    /**
-     * @see railo.runtime.search.SearchEngine#getDisplayName()
-     */
+    @Override
     public abstract String getDisplayName();
 }

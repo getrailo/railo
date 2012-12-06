@@ -128,9 +128,7 @@ public class Input extends TagImpl {
 	String mask;
 	
     
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
+    @Override
     public void release() {
         super.release();
         input=new InputBean();
@@ -588,10 +586,7 @@ public class Input extends TagImpl {
         if(!StringUtil.isEmpty(message))input.setMessage(message);
     }
 
-    /**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+    @Override
 	public int doEndTag() throws PageException {
 		try {
             _doEndTag();

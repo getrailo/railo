@@ -26,9 +26,7 @@ public final class Login extends BodyTagImpl {
     private String applicationtoken;
     private String cookiedomain;
     
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
+    @Override
     public void release() {
         super.release();
         idletimeout=1800;
@@ -56,10 +54,7 @@ public final class Login extends BodyTagImpl {
     }
     
 
-    /**
-     * @throws PageException
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException  {
     	
     	ApplicationContext ac=pageContext.getApplicationContext();
@@ -120,9 +115,7 @@ public final class Login extends BodyTagImpl {
         pageContext.undefinedScope().setEL(CFLOGIN,sct);
     }
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-     */
+    @Override
     public int doEndTag() {
         pageContext.undefinedScope().removeEL(CFLOGIN);
         return EVAL_PAGE;

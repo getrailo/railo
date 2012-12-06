@@ -95,9 +95,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return ResourceUtil.directrySize(res,FILTER);
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#add(railo.runtime.spooler.SpoolerTask)
-	 */
+	@Override
 	public synchronized void add(SpoolerTask task) {
 		//openTasks.add(task);
 		add++;
@@ -120,9 +118,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		//else print.out("- existing");
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#getLabel()
-	 */
+	@Override
 	public String getLabel() {
 		return label;
 	}
@@ -192,11 +188,7 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		}while(dir.getRealResource(id+".tsk").exists());
 		return id;
 	}
-	
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#calculateNextExecution(railo.runtime.spooler.SpoolerTask)
-	 */
 	public long calculateNextExecution(SpoolerTask task) {
 		int _tries=0;
 		ExecutionPlan plan=null;
@@ -314,32 +306,6 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return exp;
 	}
 
-
-	/* *
-	 * @see railo.runtime.spooler.SpoolerEngine#getOpenTasks()
-	
-	public SpoolerTask[] getOpenTasks() {
-		if(openTasks.size()==0) return new SpoolerTask[0];
-		return (SpoolerTask[]) openTasks.toArray(new SpoolerTask[openTasks.size()]);
-	} */
-	
-	/* *
-	 * @see railo.runtime.spooler.SpoolerEngine#getClosedTasks()
-	 
-	public SpoolerTask[] getClosedTasks() {
-		if(closedTasks.size()==0) return new SpoolerTask[0];
-		return (SpoolerTask[]) closedTasks.toArray(new SpoolerTask[closedTasks.size()]);
-	}*/
-	
-
-	/*public static void list(SpoolerTask[] tasks) {
-		for(int i=0;i<tasks.length;i++) {
-			aprint.out(tasks[i].subject());
-			aprint.out("- last exe:"+tasks[i].lastExecution());
-			aprint.out("- tries:"+tasks[i].tries());
-		}
-	}*/
-	
 	class SpoolerThread extends Thread {
 
 		private SpoolerEngineImpl engine;
@@ -481,25 +447,12 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		ResourceUtil.removeChildrenEL(closedDirectory);
 	}
 	
-
-	/* *
-	 * @see railo.runtime.spooler.SpoolerEngine#hasAdds()
-	 */
 	public int adds() {
 		//return openTasks.size()>0;
 		return add;
 	}    
-	
-	/* *
-	 * @see railo.runtime.spooler.SpoolerEngine#resetAdds()
-	 * /
-	public void resetAdds() {
-		add=false;
-	}*/
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#remove(java.lang.String)
-	 */
+	@Override
 	public void remove(String id) {
 		SpoolerTask task = getTaskById(openDirectory,id);
 		if(task==null)task=getTaskById(closedDirectory,id);
@@ -564,30 +517,18 @@ public class SpoolerEngineImpl implements SpoolerEngine {
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#setLabel(java.lang.String)
-	 */
 	public void setLabel(String label) {
 		this.label = label;
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#setPersisDirectory(railo.commons.io.res.Resource)
-	 */
 	public void setPersisDirectory(Resource persisDirectory) {
 		this.persisDirectory = persisDirectory;
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#setLog(railo.commons.io.log.Log)
-	 */
 	public void setLog(Log log) {
 		this.log = log;
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerEngine#setConfig(railo.runtime.config.Config)
-	 */
 	public void setConfig(Config config) {
 		this.config = config;
 	}

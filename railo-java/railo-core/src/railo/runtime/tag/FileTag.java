@@ -122,9 +122,7 @@ public final class FileTag extends BodyTagImpl {
 	private String serverPassword=null;
 	private Object acl=null;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		acl=null;
@@ -333,9 +331,7 @@ public final class FileTag extends BodyTagImpl {
     }
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		if(StringUtil.isEmpty(charset)) charset=pageContext.getConfig().getResourceCharset();
@@ -369,9 +365,7 @@ public final class FileTag extends BodyTagImpl {
 		return SKIP_BODY;
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody() throws ApplicationException	{
 		if(action==ACTION_APPEND || action==ACTION_WRITE) {
 			String body = bodyContent.getString();
@@ -384,9 +378,7 @@ public final class FileTag extends BodyTagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		switch(action){
 		case ACTION_APPEND: actionAppend();

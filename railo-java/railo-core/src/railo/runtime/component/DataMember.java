@@ -11,9 +11,7 @@ public final class DataMember extends MemberSupport {
 		this.value=value;
 	}
 
-	/**
-	 * @see railo.runtime.component.Member#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return value;
 	}

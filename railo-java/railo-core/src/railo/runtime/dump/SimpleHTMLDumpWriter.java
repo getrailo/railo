@@ -98,9 +98,7 @@ public class SimpleHTMLDumpWriter implements DumpWriter {
 		writer.write("</table>");
 	}
 
-	/**
-	 * @see railo.runtime.dump.DumpWriter#toString(railo.runtime.dump.DumpData)
-	 */
+	@Override
 	public String toString(PageContext pc,DumpData data, boolean expand) {
 		StringWriter sw=new StringWriter();
 		try {

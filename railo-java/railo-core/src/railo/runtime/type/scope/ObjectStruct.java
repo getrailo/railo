@@ -108,13 +108,13 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 		return jo.isInitalized();
 	}
 
-	/**
+	/* *
 	 *
 	 * @see railo.runtime.java.JavaObject#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
+	 
 	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
 		return jo.set(pc, propertyName, value);
-	}
+	}*/
 
 	/**
 	 *
@@ -124,13 +124,13 @@ public final class ObjectStruct extends StructSupport implements Struct,Objects 
 		return jo.set(pc, propertyName, value);
 	}
 
-	/**
+	/* *
 	 *
 	 * @see railo.runtime.java.JavaObject#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
+	 
 	public Object setEL(PageContext pc, String propertyName, Object value) {
 		return jo.setEL(pc, propertyName, value);
-	}
+	}*/
 
 	/**
 	 *

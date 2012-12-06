@@ -103,9 +103,7 @@ public final class DatabaseException extends PageExceptionImpl {
 		this(sqle!=null?sqle.getMessage():null,null,sqle,null,dc);
 	}
 
-	/**
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
-	 */
+	@Override
 	public CatchBlock getCatchBlock(Config config) {
 	    String strSQL=sql==null?"":sql.toString();
 	    if(StringUtil.isEmpty(strSQL))strSQL=Caster.toString(getAdditional().get("SQL", ""),"");

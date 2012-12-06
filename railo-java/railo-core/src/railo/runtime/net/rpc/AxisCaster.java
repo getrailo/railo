@@ -53,6 +53,7 @@ import railo.runtime.reflection.Reflector;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
@@ -582,7 +583,7 @@ public final class AxisCaster {
         		for(int i=0;i<props.length;i++){
         			prop=props[i];
         			try{
-        				cw.set(pc, prop.getName(), toRailoType(pc,Reflector.callGetter(value, prop.getName())));
+        				cw.set(pc, KeyImpl.init(prop.getName()), toRailoType(pc,Reflector.callGetter(value, prop.getName())));
         			}
         			catch(PageException pe){
         				pe.printStackTrace();

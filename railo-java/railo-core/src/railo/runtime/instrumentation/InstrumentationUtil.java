@@ -74,9 +74,7 @@ public class InstrumentationUtil {
 		    super(Opcodes.ASM4,cv);
 		}  
 
-			/**
-			 * @see org.objectweb.asm.ClassAdapter#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
-			 */
+			@Override
 			public MethodVisitor visitMethod(int access, String name, String desc,String signature, String[] exceptions) {
 				MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);  
 				if(name.startsWith("<")) return mv;

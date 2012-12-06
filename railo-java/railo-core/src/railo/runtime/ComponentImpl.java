@@ -181,13 +181,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
     
 
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     
-    public synchronized Collection duplicatex(boolean deepCopy) {
-        ComponentImpl c=new ClonedComponent(this,deepCopy);
-        return c;
-    }*/
+    @Override
 
     public Collection duplicate(boolean deepCopy) {
     	ComponentImpl top= _duplicate(deepCopy,true);
@@ -882,9 +876,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return ACCESS_PUBLIC;
     }
 	
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return toDumpData(pageContext,maxlevel,dp,getAccess(pageContext));
     }
@@ -1006,16 +998,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         }
 	}
 
-    /**
-     * @see railo.runtime.Component#getDisplayName()
-     */
+    @Override
     public String getDisplayName() {
 		return top.properties.dspName;
 	}
 	
-    /**
-     * @see railo.runtime.Component#getExtends()
-     */
+    @Override
     public String getExtends() {
 		return top.properties.extend;
 	}
@@ -1028,23 +1016,17 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 	
 	
-    /**
-     * @see railo.runtime.Component#getHint()
-     */
+    @Override
     public String getHint() {
 		return top.properties.hint;
 	}
     
-    /**
-     * @see railo.runtime.Component#getWSDLFile()
-     */
+    @Override
     public String getWSDLFile() {
 		return top.properties.getWsdlFile();
 	}
 
-    /**
-     * @see railo.runtime.Component#getName()
-     */
+    @Override
     public String getName() {
 	    if(top.properties.callPath==null) return "";
 	    return List.last(top.properties.callPath,"./",true);
@@ -1057,32 +1039,24 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return pageSource;
 	}
 	
-    /**
-     * @see railo.runtime.Component#getCallName()
-     */
+    @Override
     public String getCallName() {
 	    return top.properties.callPath;
 	}
     
-    /**
-     * @see railo.runtime.Component#getAbsName()
-     */
+    @Override
     public String getAbsName() {
     	return top.pageSource.getComponentName();
 	}
     
 
-    /**
-     * @see railo.runtime.Component#getOutput()
-     */
+    @Override
     public boolean getOutput() {
     	if(top.properties.output==null) return true;
         return top.properties.output.booleanValue();
     }
 
-    /**
-     * @see railo.runtime.Component#instanceOf(java.lang.String)
-     */
+    @Override
     public boolean instanceOf(String type) {
     	
     	ComponentImpl c=top;
@@ -1133,31 +1107,23 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
     
 
-    /**
-     * @see railo.runtime.Component#isValidAccess(int)
-     */
+    @Override
     public boolean isValidAccess(int access) {
 		return !(access <0 || access>ACCESS_COUNT);
 	}
     
-    /**
-     * @see railo.runtime.Component#getPageSource()
-     */
+    @Override
     public PageSource getPageSource() {
         return top.pageSource;
     }
     
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
     	return castToString(false);
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return castToString(false,defaultValue);
 	}
@@ -1204,16 +1170,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
     	return castToBooleanValue(false);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return castToBoolean(false, defaultValue);
     }
@@ -1256,16 +1218,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
     	return castToDoubleValue(false);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return castToDoubleValue(false, defaultValue);
     }
@@ -1308,16 +1266,12 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
     	return castToDateTime(false);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return castToDateTime(false, defaultValue);
     }
@@ -1361,9 +1315,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		return defaultValue;
     }
 
-    /**
-     * @see railo.runtime.Component#getMetaData(railo.runtime.PageContext)
-     */
+    @Override
     public synchronized Struct getMetaData(PageContext pc) throws PageException {
     	return getMetaData(ACCESS_PRIVATE,pc,top);
     }
@@ -1488,14 +1440,8 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         }
         if(arr.size()!=0)sct.set(KeyConstants._functions,arr);
 	}
-    
-    
-    
 
-	/**
-     * @see railo.runtime.type.Objects#isInitalized()
-     */
-    public boolean isInitalized() {
+	public boolean isInitalized() {
         return isInit;
     }
     
@@ -1565,10 +1511,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	if(useShadow)scope.setEL(key, udf);
     }
     
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
     	return _data.remove(key);
 	}
@@ -1578,16 +1521,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return _data.remove(key);
     }
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object set(PageContext pc, String name, Object value) throws PageException {
+    /*public Object set(PageContext pc, String name, Object value) throws PageException {
     	return set(pc, KeyImpl.init(name), value);
-    }
+    }*/
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc, Collection.Key key, Object value) throws PageException {
     	if(pc==null)pc=ThreadLocalPageContext.get();
     	if(triggerDataMember(pc) && isInit) {
@@ -1598,43 +1536,30 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return _set(pc,key,value);
     }
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
         return set(null,key,value);
 	}
 
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object setEL(PageContext pc, String name, Object value) {
+    /*public Object setEL(PageContext pc, String name, Object value) {
     	try {return set(pc, name, value);} 
     	catch (PageException e) {return null;}
-    }
+    }*/
     
-    /**
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object setEL(PageContext pc, Collection.Key name, Object value) {
     	try {return set(pc, name, value);} 
     	catch (PageException e) {return null;}
     }
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
     	return setEL(null, key, value);
 	}
     
-
-    /**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
-     */
-    public Object get(PageContext pc, String name) throws PageException {
+    /*public Object get(PageContext pc, String name) throws PageException {
         return get(pc, KeyImpl.init(name));
-    }
+    }*/
     
     public Object get(PageContext pc, Collection.Key key) throws PageException {
         Member member=getMember(pc,key,true,false);
@@ -1709,16 +1634,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         throw new ExpressionException("Component ["+getCallName()+"] has no accessible Member with name ["+key+"]");
     }
 
-    /**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object get(PageContext pc, String name, Object defaultValue) {
+    /*public Object get(PageContext pc, String name, Object defaultValue) {
         return get(pc, KeyImpl.init(name), defaultValue);
-    }
+    }*/
 
-    /**
-     * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
         Member member=getMember(pc,key,true,false);
         if(member!=null) return member.getValue();
@@ -1758,24 +1678,17 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return defaultValue;
     }
     
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {
     	return get(ThreadLocalPageContext.get(),key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
     	return get(ThreadLocalPageContext.get(),key,defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.Component#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-     */
+    @Override
     public Object call(PageContext pc, String name, Object[] args) throws PageException {
         return _call(pc,KeyImpl.init(name),null,args,false);
     }
@@ -1792,9 +1705,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         return _call(pc,access,name,null,args,false);
     }
 
-    /**
-     * @see railo.runtime.Component#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
+    @Override
     public Object callWithNamedValues(PageContext pc, String name, Struct args) throws PageException {
         return _call(pc,KeyImpl.init(name),args,null,false);
     }
@@ -1824,9 +1735,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	   	return get(getAccess(pc),key,Null.NULL)!=Null.NULL;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 	   	return contains(ThreadLocalPageContext.get(),key);
 	}
@@ -1858,9 +1767,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     	return keys(getAccess(ThreadLocalPageContext.get()));
     }
 
-    /**
-     * @see railo.runtime.type.Collection#size()
-     */
+    @Override
     public int size() {
     	return size(getAccess(ThreadLocalPageContext.get()));
     }
@@ -1964,30 +1871,22 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
 
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((Date)castToDateTime(), (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToString(), str);
 	}
@@ -2063,9 +1962,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 		
 	}
 
-	/**
-	 * @see railo.runtime.type.cfc.ComponentAccess#_base()
-	 */
+	@Override
 	public ComponentAccess _base() {
 		return base;
 	}	

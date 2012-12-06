@@ -126,9 +126,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 	
 	
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		items.clear();
@@ -382,10 +380,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
     }
 
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		// default datasource
 		if(datasource==null && (dbtype==null || !dbtype.equals("query"))){
@@ -409,9 +404,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		return EVAL_BODY_BUFFERED;
 	}
 	
-	/**
-	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
-	 */
+	@Override
 	public void doFinally() {
 		if(tmpTZ!=null) {
 			pageContext.setTimeZone(tmpTZ);
@@ -419,10 +412,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		super.doFinally();
 	}
 
-	/**
-	* @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{		
 		if(hasChangedPSQ)pageContext.setPsq(orgPSQ);
 		String strSQL=bodyContent.getString();
@@ -628,16 +618,12 @@ cachename: Name of the cache in secondary cache.
 	}
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}

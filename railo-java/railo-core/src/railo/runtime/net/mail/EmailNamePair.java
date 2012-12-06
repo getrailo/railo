@@ -218,9 +218,7 @@ public final class EmailNamePair {
 		return email;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		if(name.length()==0) return email;
 		return email+"("+name+")";

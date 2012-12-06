@@ -133,9 +133,7 @@ public final class MappingImpl implements Mapping {
        //if(!hasArchive && !hasPhysical) throw new IOException("missing physical and archive path, one of them must be defined");
     }
     
-    /**
-     * @see railo.runtime.Mapping#getClassLoaderForArchive()
-     */
+    @Override
     public ClassLoader getClassLoaderForArchive() {
         return archiveClassLoader;
     }
@@ -163,51 +161,37 @@ public final class MappingImpl implements Mapping {
 		pageSourcePool.clearPages(cl);
 	}
 	
-    /**
-     * @see railo.runtime.Mapping#getPhysical()
-     */
+    @Override
     public Resource getPhysical() {
     	return physical;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getVirtualLowerCase()
-     */
+    @Override
     public String getVirtualLowerCase() {
         return lcVirtual;
     }
-    /**
-     * @see railo.runtime.Mapping#getVirtualLowerCaseWithSlash()
-     */
+    @Override
     public String getVirtualLowerCaseWithSlash() {
         return lcVirtualWithSlash;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getArchive()
-     */
+    @Override
     public Resource getArchive() {
         //initArchive();
         return archive;
     }
 
-    /**
-     * @see railo.runtime.Mapping#hasArchive()
-     */
+    @Override
     public boolean hasArchive() {
         return hasArchive;
     }
     
-    /**
-     * @see railo.runtime.Mapping#hasPhysical()
-     */
+    @Override
     public boolean hasPhysical() {
         return physical!=null;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getClassRootDirectory()
-     */
+    @Override
     public Resource getClassRootDirectory() {
         if(classRootDirectory==null) {
         	String path=getPhysical()!=null?
@@ -232,9 +216,7 @@ public final class MappingImpl implements Mapping {
     	return new MappingImpl(config,virtual,strPhysical,strArchive,trusted,physicalFirst,hidden,true,topLevel,appMapping,ignoreVirtual,classLoaderMaxElements);
     }
     
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
         
@@ -253,9 +235,7 @@ public final class MappingImpl implements Mapping {
 		return htmlBox;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getPageSource(java.lang.String)
-     */
+    @Override
     public PageSource getPageSource(String realPath) {
     	boolean isOutSide = false;
 		realPath=realPath.replace('\\','/');
@@ -273,9 +253,7 @@ public final class MappingImpl implements Mapping {
 		return getPageSource(realPath,isOutSide);
     }
     
-    /**
-     * @see railo.runtime.Mapping#getPageSource(java.lang.String, boolean)
-     */
+    @Override
     public PageSource getPageSource(String path, boolean isOut) {
         PageSource source=pageSourcePool.getPageSource(path,true);
         if(source!=null) return source;
@@ -293,9 +271,7 @@ public final class MappingImpl implements Mapping {
         return pageSourcePool;
     }
 
-    /**
-     * @see railo.runtime.Mapping#check()
-     */
+    @Override
     public void check() {
         if(config instanceof ConfigServer) return;
         ConfigWebImpl cw=(ConfigWebImpl) config;
@@ -323,9 +299,7 @@ public final class MappingImpl implements Mapping {
         }
     }
 
-    /**
-     * @see railo.runtime.Mapping#getConfig()
-     */
+    @Override
     public Config getConfig() {
         return config;
     }
@@ -334,51 +308,37 @@ public final class MappingImpl implements Mapping {
         return config;
     }
 
-    /**
-     * @see railo.runtime.Mapping#isHidden()
-     */
+    @Override
     public boolean isHidden() {
         return hidden;
     }
 
-    /**
-     * @see railo.runtime.Mapping#isPhysicalFirst()
-     */
+    @Override
     public boolean isPhysicalFirst() {
         return physicalFirst || archive==null;
     }
 
-    /**
-     * @see railo.runtime.Mapping#isReadonly()
-     */
+    @Override
     public boolean isReadonly() {
         return readonly;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getStrArchive()
-     */
+    @Override
     public String getStrArchive() {
         return strArchive;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getStrPhysical()
-     */
+    @Override
     public String getStrPhysical() {
         return strPhysical;
     }
 
-    /**
-     * @see railo.runtime.Mapping#isTrusted()
-     */
+    @Override
     public boolean isTrusted() {
         return trusted;
     }
 
-    /**
-     * @see railo.runtime.Mapping#getVirtual()
-     */
+    @Override
     public String getVirtual() {
         return virtual;
     }
@@ -473,17 +433,12 @@ public final class MappingImpl implements Mapping {
     	return null;    	
 	}
 	
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return toString().hashCode();
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "StrPhysical:"+getStrPhysical()+";"+
 		 "StrArchive:"+getStrArchive()+";"+

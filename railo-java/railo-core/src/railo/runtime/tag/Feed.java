@@ -64,9 +64,7 @@ public final class Feed extends TagImpl	{
 	private String proxyUser=null;
 	private String charset=null;
 	
-	/**
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
+	@Override
 	public void release() {
 		charset=null;
 		action=ACTION_READ;
@@ -234,9 +232,7 @@ public final class Feed extends TagImpl	{
 	
 
 	
-	/**
-	 * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException {
 		if(source instanceof HTTPResource) {
 			HTTPResource httpSource = (HTTPResource)source;

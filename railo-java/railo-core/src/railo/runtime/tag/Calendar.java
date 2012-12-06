@@ -39,9 +39,7 @@ public final class Calendar extends TagImpl {
 		throw new TagNotSupported("Calendar");
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		name=null;
@@ -64,10 +62,7 @@ public final class Calendar extends TagImpl {
 		onFocus=null;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws JspException {
 		return super.doStartTag();
 	}

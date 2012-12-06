@@ -83,24 +83,18 @@ public class HibernateORMSession implements ORMSession{
 
 	
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#getDatasourceConnection()
-	 */
+	@Override
 	public DatasourceConnection getDatasourceConnection() {
 		return dc;
 	}
 	
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#getEngine()
-	 */
+	@Override
 	public ORMEngine getEngine() {
 		return engine;
 	}
 	
-	/** 
-	 * @see railo.runtime.orm.ORMSession#flush(railo.runtime.PageContext)
-	 */
+	@Override
 	public void flush(PageContext pc) throws PageException {
 		try {
 			session().flush();
@@ -116,9 +110,7 @@ public class HibernateORMSession implements ORMSession{
 		
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#delete(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public void delete(PageContext pc, Object obj) throws PageException {
 		if(Decision.isArray(obj)){
 			Transaction trans = session().getTransaction();
@@ -154,10 +146,7 @@ public class HibernateORMSession implements ORMSession{
 	
 	
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#save(railo.runtime.PageContext, java.lang.Object, boolean)
-	 * TODO also supports array like delete does
-	 */
+	@Override
 	public void save(PageContext pc, Object obj,boolean forceInsert) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
 		//Session session = getSession(pc, cfc);
@@ -173,9 +162,7 @@ public class HibernateORMSession implements ORMSession{
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#reload(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public void reload(PageContext pc,Object obj) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
 		engine.checkExistent(pc,cfc);
@@ -184,46 +171,34 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 
-	/**
-	 * @see railo.runtime.orm.ORMEngine#create(railo.runtime.PageContext, java.lang.String)
-	 */
+	@Override
 	public Component create(PageContext pc, String entityName)throws PageException {
 		return engine.create(pc,this, entityName,true);
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#clear(railo.runtime.PageContext)
-	 */
+	@Override
 	public void clear(PageContext pc) throws PageException {
 		session().clear();
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#evictQueries(railo.runtime.PageContext)
-	 */
+	@Override
 	public void evictQueries(PageContext pc) throws PageException {
 		evictQueries(pc, null);
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#evictQueries(railo.runtime.PageContext, java.lang.String)
-	 */
+	@Override
 	public void evictQueries(PageContext pc,String cacheName) throws PageException {
 		SessionFactory f = getSessionFactory(pc);
 		if(StringUtil.isEmpty(cacheName))f.evictQueries();
 		else f.evictQueries(cacheName);
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#evictEntity(railo.runtime.PageContext, java.lang.String)
-	 */
+	@Override
 	public void evictEntity(PageContext pc, String entityName) throws PageException {
 		evictEntity(pc, entityName, null);
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#evictEntity(railo.runtime.PageContext, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void evictEntity(PageContext pc, String entityName, String id) throws PageException {
 		SessionFactory f = getSessionFactory(pc);
 		
@@ -235,16 +210,12 @@ public class HibernateORMSession implements ORMSession{
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#evictCollection(railo.runtime.PageContext, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void evictCollection(PageContext pc, String entityName, String collectionName) throws PageException {
 		evictCollection(pc, entityName, collectionName, null);
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#evictCollection(railo.runtime.PageContext, java.lang.String, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void evictCollection(PageContext pc, String entityName, String collectionName, String id) throws PageException {
 		SessionFactory f = getSessionFactory(pc);
 		String role=entityName+"."+collectionName;
@@ -263,16 +234,12 @@ public class HibernateORMSession implements ORMSession{
 	
 	
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#executeQuery(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Array, boolean, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Object executeQuery(PageContext pc,String hql, Array params, boolean unique,Struct queryOptions) throws PageException {
 		return _executeQuery(pc, hql, params, unique, queryOptions);
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#executeQuery(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct, boolean, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Object executeQuery(PageContext pc,String hql, Struct params, boolean unique,Struct queryOptions) throws PageException {
 		return _executeQuery(pc, hql, params, unique, queryOptions);
 	}
@@ -436,24 +403,18 @@ public class HibernateORMSession implements ORMSession{
 		}
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#toQuery(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-	 */
+	@Override
 	public railo.runtime.type.Query toQuery(PageContext pc, Object obj, String name) throws PageException {
 		return HibernateCaster.toQuery(pc,this,obj,name);
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#close(railo.runtime.PageContext)
-	 */
+	@Override
 	public void close(PageContext pc) throws PageException {
 		session().close();
 		((ConfigWebImpl)pc.getConfig()).getDatasourceConnectionPool().releaseDatasourceConnection(dc);
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#merge(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public Component merge(PageContext pc, Object obj) throws PageException {
 		Component cfc = HibernateCaster.toComponent(obj);
 		
@@ -471,30 +432,22 @@ public class HibernateORMSession implements ORMSession{
 	}
 	
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#load(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Component load(PageContext pc, String name, Struct filter) throws PageException {
 		return (Component) load(pc, name, filter, null, null, true);
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#loadAsArray(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Array loadAsArray(PageContext pc, String name, Struct filter) throws PageException {
 		return loadAsArray(pc, name, filter,null,null);
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#loadAsArray(railo.runtime.PageContext, java.lang.String, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Array loadAsArray(PageContext pc, String name, String id, String order) throws PageException{
 		return loadAsArray(pc, name, id);// order is ignored in this case ACF compatibility
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#loadAsArray(railo.runtime.PageContext, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Array loadAsArray(PageContext pc, String name, String id) throws PageException {
 		Array arr=new ArrayImpl();
 		Component c = load(pc, name, id);
@@ -502,23 +455,17 @@ public class HibernateORMSession implements ORMSession{
 		return arr;
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#loadAsArray(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Array loadAsArray(PageContext pc, String name, Struct filter, Struct options) throws PageException {
 		return loadAsArray(pc, name, filter,options,null);
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#loadAsArray(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct, railo.runtime.type.Struct, java.lang.String)
-	 */
+	@Override
 	public Array loadAsArray(PageContext pc, String name, Struct filter, Struct options, String order) throws PageException {
 		return Caster.toArray(load(pc, name, filter, options, order, false));
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#load(railo.runtime.PageContext, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Component load(PageContext pc, String cfcName, String id) throws PageException {
 		//Component cfc = create(pc,cfcName);
 		
@@ -545,16 +492,12 @@ public class HibernateORMSession implements ORMSession{
 		return (Component) obj;
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#loadByExample(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public Component loadByExample(PageContext pc, Object obj) throws PageException {
 		return Caster.toComponent(loadByExample(pc,obj, true));
 	}
 	
-	/**
-	 * @see railo.runtime.orm.ORMSession#loadByExampleAsArray(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public Array loadByExampleAsArray(PageContext pc, Object obj) throws PageException {
 		return Caster.toArray(loadByExample(pc,obj, false));
 	}
@@ -719,23 +662,17 @@ public class HibernateORMSession implements ORMSession{
 	
 	
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#getRawSession()
-	 */
+	@Override
 	public Session getRawSession() {
 		return session();
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#isValid()
-	 */
+	@Override
 	public boolean isValid() {
 		return session()!=null && session().isOpen();
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMSession#getTransaction(boolean)
-	 */
+	@Override
 	public ORMTransaction getTransaction(boolean autoManage) {
 		return new HibernateORMTransaction(session(),autoManage);
 	}

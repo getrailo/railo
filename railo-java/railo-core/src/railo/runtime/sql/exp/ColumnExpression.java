@@ -31,19 +31,13 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 		return getFullName();
 	}
 
-	/**
-	 *
-	 * @see sql.exp.Column#getFullName()
-	 */
+	@Override
 	public String getFullName() {
 		if(table==null) return column;
 		return table+"."+column;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.sql.exp.ExpressionSupport#getAlias()
-	 */
+	@Override
 	public String getAlias() {
 		if(!hasAlias()) return getColumn();
 		return super.getAlias();

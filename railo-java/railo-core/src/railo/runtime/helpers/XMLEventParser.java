@@ -103,28 +103,20 @@ public final class XMLEventParser extends DefaultHandler {
 		
 	}
 
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
-	 */
+	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		sbBody.append(ch,start,length);
 	}
 
-	/**
-	 * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
-	 */
+	@Override
 	public void error(SAXParseException e) throws SAXException {
 		error(Caster.toPageException(e));
 	}
-	/**
-	 * @see org.xml.sax.ErrorHandler#fatalError(org.xml.sax.SAXParseException)
-	 */
+	@Override
 	public void fatalError(SAXParseException e) throws SAXException {
 		error(Caster.toPageException(e));
 	}
-	/**
-	 * @see org.xml.sax.ContentHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-	 */
+	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
 		sbBody=new StringBuffer();
@@ -132,24 +124,18 @@ public final class XMLEventParser extends DefaultHandler {
 		call(startElement,new Object[]{uri,localName,qName,att});
 	}
 
-	/**
-	 * @see org.xml.sax.ContentHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		call(body,new Object[]{sbBody.toString()});
 		call(endElement,new Object[]{uri,localName,qName,att});
 	}
 	
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#startDocument()
-	 */
+	@Override
 	public void startDocument() throws SAXException {
 		call(startDocument,ArrayUtil.OBJECT_EMPTY);
 	}
 	
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#endDocument()
-	 */
+	@Override
 	public void endDocument() throws SAXException {
 		call(endDocument,ArrayUtil.OBJECT_EMPTY);
 	}

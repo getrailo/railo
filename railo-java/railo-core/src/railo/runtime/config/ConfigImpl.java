@@ -392,16 +392,12 @@ public abstract class ConfigImpl implements Config {
 	}
 
 
-    /**
-     * @see railo.runtime.config.Config#getCompileType()
-     */
+    @Override
     public short getCompileType() {
         return compileType;
     }
 
-    /**
-     * @see railo.runtime.config.Config#reset()
-     */
+    @Override
     public void reset() {
     	timeServer="";
         componentDumpTemplate="";
@@ -415,9 +411,7 @@ public abstract class ConfigImpl implements Config {
         //clearComponentMetadata();
     }
     
-    /**
-     * @see railo.runtime.config.Config#reloadTimeServerOffset()
-     */
+    @Override
     public void reloadTimeServerOffset() {
     	timeOffset=0;
         if(useTimeServer && !StringUtil.isEmpty(timeServer,true)) {
@@ -488,22 +482,16 @@ public abstract class ConfigImpl implements Config {
 		return rst;
 	}
 
-	/**
-     * @see railo.runtime.config.Config#getScopeCascadingType()
-     */
+	@Override
     public short getScopeCascadingType() {
         return type;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getCFMLExtension()
-     */
+    @Override
     public String[] getCFMLExtensions() {
         return Constants.CFML_EXTENSION;
     }
-    /**
-     * @see railo.runtime.config.Config#getCFCExtension()
-     */
+    @Override
     public String getCFCExtension() {
         return Constants.CFC_EXTENSION;
     }
@@ -530,118 +518,86 @@ public abstract class ConfigImpl implements Config {
         return tlds;
     }
     
-    /**
-     * @see railo.runtime.config.Config#allowImplicidQueryCall()
-     */
+    @Override
     public boolean allowImplicidQueryCall() {
         return _allowImplicidQueryCall;
     }
 
-    /**
-     * @see railo.runtime.config.Config#mergeFormAndURL()
-     */
+    @Override
     public boolean mergeFormAndURL() {
         return _mergeFormAndURL;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getApplicationTimeout()
-     */
+    @Override
     public TimeSpan getApplicationTimeout() {
         return applicationTimeout;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getSessionTimeout()
-     */
+    @Override
     public TimeSpan getSessionTimeout() {
         return sessionTimeout;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getSessionTimeout()
-     */
+    @Override
     public TimeSpan getClientTimeout() {
         return clientTimeout;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getRequestTimeout()
-     */
+    @Override
     public TimeSpan getRequestTimeout() {
         return requestTimeout;
     }   
     
-    /**
-     * @see railo.runtime.config.Config#isClientCookies()
-     */
+    @Override
     public boolean isClientCookies() {
         return clientCookies;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isClientManagement()
-     */
+    @Override
     public boolean isClientManagement() {
         return clientManagement;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isDomainCookies()
-     */
+    @Override
     public boolean isDomainCookies() {
         return domainCookies;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isSessionManagement()
-     */
+    @Override
     public boolean isSessionManagement() {
         return sessionManagement;
     }
     
-    /**
-     * @see railo.runtime.config.Config#isMailSpoolEnable()
-     */
+    @Override
     public boolean isMailSpoolEnable() {
         //print.ln("isMailSpoolEnable:"+spoolEnable);
         return spoolEnable;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getMailServers()
-     */
+    @Override
     public Server[] getMailServers() {
     	if(mailServers==null) mailServers=new Server[0];
         return mailServers;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getMailTimeout()
-     */
+    @Override
     public int getMailTimeout() {
         return mailTimeout;
     }   
     
-    /**
-     * @see railo.runtime.config.Config#getPSQL()
-     */
+    @Override
     public boolean getPSQL() {
         return psq;   
     }
 
-    /**
-     * @see railo.runtime.config.Config#getClassLoader()
-     */
+    @Override
     public ClassLoader getClassLoader() {
     	if(classLoaderFactory==null)
     		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
     	return classLoaderFactory.getResourceClassLoader();   
     }
 
-    /**
-     * @see railo.runtime.config.Config#getClassLoader(railo.commons.io.res.Resource[])
-     */
+    @Override
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
     	if(classLoaderFactory==null)
     		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
@@ -665,16 +621,12 @@ public abstract class ConfigImpl implements Config {
 		this.classLoaderFactory = classLoaderFactory;
 	}
 
-    /**
-     * @see railo.runtime.config.Config#getLocale()
-     */
+    @Override
     public Locale getLocale() {
         return locale;
     }
 
-    /**
-     * @see railo.runtime.config.Config#debug()
-     */
+    @Override
     public boolean debug() {
     	return _debug==CLIENT_BOOLEAN_TRUE || _debug==SERVER_BOOLEAN_TRUE;
     }
@@ -691,24 +643,18 @@ public abstract class ConfigImpl implements Config {
         return debugLogOutput;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getTempDirectory()
-     */
+    @Override
     public Resource getTempDirectory() {
     	if(tempDirectory==null) return SystemUtil.getTempDirectory();
         return tempDirectory;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getMailSpoolInterval()
-     */
+    @Override
     public int getMailSpoolInterval() {
         return spoolInterval;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getMailLogger()
-     */
+    @Override
     public LogAndSource getMailLogger() {
     	if(mailLogger==null)mailLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return mailLogger;
@@ -720,9 +666,6 @@ public abstract class ConfigImpl implements Config {
 		return restLogger;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getMailLogger()
-     */
     public LogAndSource getThreadLogger() {
     	if(threadLogger==null)threadLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return threadLogger;
@@ -733,31 +676,23 @@ public abstract class ConfigImpl implements Config {
     	this.threadLogger=threadLogger;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getRequestTimeoutLogger()
-     */
+    @Override
     public LogAndSource getRequestTimeoutLogger() {
     	if(requestTimeoutLogger==null)requestTimeoutLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return requestTimeoutLogger;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getTimeZone()
-     */
+    @Override
     public TimeZone getTimeZone() {
         return timeZone;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getTimeServerOffset()
-     */
+    @Override
     public long getTimeServerOffset() {
         return timeOffset;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getSearchEngine()
-     */
+    @Override
     public SearchEngine getSearchEngine() {
         return searchEngine;
     }
@@ -776,23 +711,17 @@ public abstract class ConfigImpl implements Config {
         return password;
     }
     
-    /**
-     * @see railo.runtime.config.Config#hasPassword()
-     */
+    @Override
     public boolean hasPassword() {
         return password!=null && password.length()>0;
     }
     
-    /**
-     * @see railo.runtime.config.Config#passwordEqual(java.lang.String)
-     */
+    @Override
     public boolean passwordEqual(String password) {
         return this.password.equals(password);
     }
 
-    /**
-     * @see railo.runtime.config.Config#getMappings()
-     */
+    @Override
     public Mapping[] getMappings() {
         return mappings;
     }
@@ -1014,10 +943,6 @@ public abstract class ConfigImpl implements Config {
     	return ps.getPhyscalFile();
     }
 
-    /**
-     * @param mappings2 
-     * @see railo.runtime.config.Config#toPageSource(railo.commons.io.res.Resource, railo.runtime.PageSource)
-     */
     public PageSource toPageSource(Mapping[] mappings, Resource res,PageSource defaultValue) {
         Mapping mapping;
         Resource root;
@@ -1066,30 +991,22 @@ public abstract class ConfigImpl implements Config {
         return defaultValue;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getConfigDir()
-     */
+    @Override
     public Resource getConfigDir() {
         return configDir;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getConfigFile()
-     */
+    @Override
     public Resource getConfigFile() {
         return configFile;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getScheduleLogger()
-     */
+    @Override
     public LogAndSource getScheduleLogger() {
     	return scheduler.getLogger();
     }
     
-    /**
-     * @see railo.runtime.config.Config#getApplicationLogger()
-     */
+    @Override
     public LogAndSource getApplicationLogger() {
     	if(applicationLogger==null)applicationLogger=new LogAndSourceImpl(LogConsole.getInstance(this,Log.LEVEL_ERROR),"");
 		return applicationLogger;
@@ -1716,9 +1633,7 @@ public abstract class ConfigImpl implements Config {
     }
     
 
-    /**
-     * @see railo.runtime.config.Config#getCustomTagMappings()
-     */
+    @Override
     public Mapping[] getCustomTagMappings() {
     	return customTagMappings;
     }
@@ -1746,9 +1661,7 @@ public abstract class ConfigImpl implements Config {
         return false;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getLoadTime()
-     */
+    @Override
     public long getLoadTime() {
         return loadTime;
     }
@@ -1765,9 +1678,7 @@ public abstract class ConfigImpl implements Config {
         return configLogger;
     }*/
 
-    /**
-     * @see railo.runtime.config.Config#getCFXTagPool()
-     */
+    @Override
     public CFXTagPool getCFXTagPool() throws SecurityException {
         return cfxTagPool;
     }
@@ -1785,9 +1696,7 @@ public abstract class ConfigImpl implements Config {
         this.cfxTagPool = new CFXTagPoolImpl(cfxTagPool);
     }
 
-    /**
-     * @see railo.runtime.config.Config#getBaseComponentTemplate()
-     */
+    @Override
     public String getBaseComponentTemplate() {
         return baseComponentTemplate;
     }
@@ -1877,9 +1786,7 @@ public abstract class ConfigImpl implements Config {
         else clientType=Config.CLIENT_SCOPE_TYPE_COOKIE;
     }
     
-    /**
-     * @see railo.runtime.config.Config#getClientType()
-     */
+    @Override
     public short getClientType() {
         return this.clientType;
     }
@@ -1891,9 +1798,7 @@ public abstract class ConfigImpl implements Config {
         this.searchEngine = searchEngine;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getComponentDataMemberDefaultAccess()
-     */
+    @Override
     public int getComponentDataMemberDefaultAccess() {
         return componentDataMemberDefaultAccess;
     }
@@ -1906,16 +1811,12 @@ public abstract class ConfigImpl implements Config {
     }
 
     
-    /**
-     * @see railo.runtime.config.Config#getTimeServer()
-     */
+    @Override
     public String getTimeServer() {
         return timeServer;
     }
 
-    /**
-     * @see railo.runtime.config.Config#getComponentDumpTemplate()
-     */
+    @Override
     public String getComponentDumpTemplate() {
         return componentDumpTemplate;
     }
@@ -1962,9 +1863,7 @@ public abstract class ConfigImpl implements Config {
     	return securityKey;//getServletContext().getRealPath("/");
     }
 
-    /**
-     * @see railo.runtime.config.Config#getDebugTemplate()
-     */
+    @Override
     public String getDebugTemplate() {
     	throw new PageRuntimeException(new DeprecatedException("no longer supported, use instead getDebugEntry(ip, defaultValue)"));
     }
@@ -1990,9 +1889,7 @@ public abstract class ConfigImpl implements Config {
 		this.errorTemplates.put(Caster.toString(statusCode), errorTemplate);
 	}
 
-    /**
-     * @see railo.runtime.config.Config#getSessionType()
-     */
+    @Override
     public short getSessionType() {
         return sessionType;
     }
@@ -2012,19 +1909,13 @@ public abstract class ConfigImpl implements Config {
         else setSessionType(SESSION_TYPE_CFML);
     }
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateType()
-     */
+    @Override
     public abstract String getUpdateType() ;
 
-    /**
-     * @see railo.runtime.config.Config#getUpdateLocation()
-     */
+    @Override
     public abstract URL getUpdateLocation();
 
-    /**
-     * @see railo.runtime.config.Config#getDeployDirectory()
-     */
+    @Override
     public Resource getDeployDirectory() {
     	return deployDirectory;
     }
@@ -2052,9 +1943,7 @@ public abstract class ConfigImpl implements Config {
     }
     
 
-    /**
-     * @see railo.runtime.config.Config#getRootDirectory()
-     */
+    @Override
     public abstract Resource getRootDirectory();
 
     /**
@@ -2091,17 +1980,12 @@ public abstract class ConfigImpl implements Config {
     }
     
 
-	/**
-	 * @see railo.runtime.config.Config#getDefaultEncoding()
-	 */
+	@Override
 	public String getDefaultEncoding() {
 		return webCharset;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getTemplateCharset()
-	 */
+	@Override
 	public String getTemplateCharset() {
 		return templateCharset;
 	}
@@ -2114,10 +1998,7 @@ public abstract class ConfigImpl implements Config {
 		this.templateCharset = templateCharset;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getWebCharset()
-	 */
+	@Override
 	public String getWebCharset() {
 		return webCharset;
 	}
@@ -2130,10 +2011,7 @@ public abstract class ConfigImpl implements Config {
 		this.resourceCharset = resourceCharset;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getResourceCharset()
-	 */
+	@Override
 	public String getResourceCharset() {
 		return resourceCharset;
 	}
@@ -2164,9 +2042,7 @@ public abstract class ConfigImpl implements Config {
 		return tldFile;
 	}
     
-    /**
-	 * @see railo.runtime.config.Config#getDataSources()
-	 */
+    @Override
 	public DataSource[] getDataSources() {
 		Map map = getDataSourcesAsMap();
 		Iterator it = map.keySet().iterator();
@@ -2271,18 +2147,12 @@ public abstract class ConfigImpl implements Config {
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getResource(java.lang.String)
-	 */
+	@Override
 	public Resource getResource(String path) {
 		return resources.getResource(path);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getApplicationListener()
-	 */
+	@Override
 	public ApplicationListener getApplicationListener() {
 		return applicationListener;//new ModernAppListener();//new ClassicAppListener();
 	}
@@ -2352,9 +2222,7 @@ public abstract class ConfigImpl implements Config {
 		this.proxy = proxy;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#isProxyEnableFor(java.lang.String)
-	 */
+	@Override
 	public boolean isProxyEnableFor(String host) {
 		return false;// TODO proxyEnable;
 	}
@@ -2373,10 +2241,7 @@ public abstract class ConfigImpl implements Config {
 		this.triggerComponentDataMember = triggerComponentDataMember;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getClientScopeDir()
-	 */
+	@Override
 	public Resource getClientScopeDir() {
 		if(clientScopeDir==null) clientScopeDir=getConfigDir().getRealResource("client-scope");
 		return clientScopeDir;
@@ -2399,10 +2264,7 @@ public abstract class ConfigImpl implements Config {
 	
 	
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getClientScopeDirSize()
-	 */
+	@Override
 	public long getClientScopeDirSize() {
 		return clientScopeDirSize;
 	}
@@ -2427,10 +2289,7 @@ public abstract class ConfigImpl implements Config {
 	protected void setClientScopeDirSize(long clientScopeDirSize) {
 		this.clientScopeDirSize = clientScopeDirSize;
 	}
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getRPCClassLoader()
-	 */
+	@Override
 	public ClassLoader getRPCClassLoader(boolean reload) throws IOException {
 		
 		if(rpcClassLoader!=null && !reload) return rpcClassLoader;
@@ -2483,10 +2342,7 @@ public abstract class ConfigImpl implements Config {
 		return new HTMLDumpWriter();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getDumpWriter(java.lang.String)
-	 */
+	@Override
 	public DumpWriter getDumpWriter(String name) throws DeprecatedException {
 		throw new DeprecatedException("this method is no longer supported");
 	}
@@ -2510,9 +2366,7 @@ public abstract class ConfigImpl implements Config {
 		throw new ExpressionException("invalid format definition ["+name+"], valid definitions are ["+sb+"]");
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#useComponentShadow()
-	 */
+	@Override
 	public boolean useComponentShadow() {
 		return useComponentShadow;
 	}
@@ -2548,9 +2402,7 @@ public abstract class ConfigImpl implements Config {
 		this.useComponentShadow = useComponentShadow;
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#getDataSource(java.lang.String)
-	 */
+	@Override
 	public DataSource getDataSource(String datasource) throws DatabaseException {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
@@ -2559,19 +2411,14 @@ public abstract class ConfigImpl implements Config {
 		throw de;
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#getDataSource(java.lang.String, railo.runtime.db.DataSource)
-	 */
+	@Override
 	public DataSource getDataSource(String datasource, DataSource defaultValue) {
 		DataSource ds=(datasource==null)?null:(DataSource) datasources.get(datasource.toLowerCase());
 		if(ds!=null) return ds;
 		return defaultValue;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getErrWriter()
-	 */
+	@Override
 	public PrintWriter getErrWriter() {
 		return err;
 	}
@@ -2583,10 +2430,7 @@ public abstract class ConfigImpl implements Config {
 		this.err = err;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getOutWriter()
-	 */
+	@Override
 	public PrintWriter getOutWriter() {
 		return out;
 	}
@@ -2608,9 +2452,7 @@ public abstract class ConfigImpl implements Config {
 		return doLocalCustomTag;
 	}	
 	
-	/**
-	 * @see railo.runtime.config.Config#getCustomTagExtensions()
-	 */
+	@Override
 	public String[] getCustomTagExtensions() {
 		return customTagExtensions;
 	}
@@ -2632,10 +2474,7 @@ public abstract class ConfigImpl implements Config {
 		this.doComponentTagDeepSearch = doComponentTagDeepSearch;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.config.Config#doCustomTagDeepSearch()
-	 */
+	@Override
 	public boolean doCustomTagDeepSearch() {
 		return doCustomTagDeepSearch;
 	}
@@ -2796,9 +2635,7 @@ public abstract class ConfigImpl implements Config {
 		this.errorStatusCode = errorStatusCode;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#getLocalMode()
-	 */
+	@Override
 	public int getLocalMode() {
 		return localMode;
 	}
@@ -2878,9 +2715,7 @@ public abstract class ConfigImpl implements Config {
 		this.clusterClass = clusterClass;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#getRemoteClientUsage()
-	 */
+	@Override
 	public Struct getRemoteClientUsage() {
 		if(remoteClientUsage==null)remoteClientUsage=new StructImpl();
 		return remoteClientUsage;
@@ -2890,9 +2725,7 @@ public abstract class ConfigImpl implements Config {
 		this.remoteClientUsage=remoteClientUsage;
 	}
 
-	/**
-	 * @see railo.runtime.config.Config#getAdminSyncClass()
-	 */
+	@Override
 	public Class getAdminSyncClass() {
 		return adminSyncClass;
 	}
@@ -2910,9 +2743,7 @@ public abstract class ConfigImpl implements Config {
 		return this.adminSync;
 	}
 	
-	/**
-	 * @see railo.runtime.config.Config#getVideoExecuterClass()
-	 */
+	@Override
 	public Class getVideoExecuterClass() {
 		return videoExecuterClass;
 	}

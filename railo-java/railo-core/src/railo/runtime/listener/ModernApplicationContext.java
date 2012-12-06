@@ -252,16 +252,12 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 
 
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#hasName()
-	 */
+	@Override
 	public boolean hasName() {
 		return true;//!StringUtil.isEmpty(getName());
 	}
 	
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getName()
-	 */
+	@Override
 	public String getName() {
 		if(this.name==null) {
 			this.name=Caster.toString(get(component,KeyConstants._name,""),"");
@@ -269,9 +265,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return name;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getLoginStorage()
-	 */
+	@Override
 	public int getLoginStorage() {
 		if(!initLoginStorage) {
 			String str=null;
@@ -285,9 +279,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return loginStorage;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getApplicationTimeout()
-	 */
+	@Override
 	public TimeSpan getApplicationTimeout() {
 		if(!initApplicationTimeout) {
 			Object o=get(component,APPLICATION_TIMEOUT,null);
@@ -297,9 +289,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return applicationTimeout;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getSessionTimeout()
-	 */
+	@Override
 	public TimeSpan getSessionTimeout() {
 		if(!initSessionTimeout) {
 			Object o=get(component,SESSION_TIMEOUT,null);
@@ -309,9 +299,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return sessionTimeout;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getClientTimeout()
-	 */
+	@Override
 	public TimeSpan getClientTimeout() {
 		if(!initClientTimeout) {
 			Object o=get(component,CLIENT_TIMEOUT,null);
@@ -321,9 +309,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return clientTimeout;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetClientCookies()
-	 */
+	@Override
 	public boolean isSetClientCookies() {
 		if(!initSetClientCookies) {
 			Object o = get(component,SET_CLIENT_COOKIES,null);
@@ -333,9 +319,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setClientCookies;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetClientManagement()
-	 */
+	@Override
 	public boolean isSetClientManagement() {
 		if(!initSetClientManagement) {
 			Object o = get(component,CLIENT_MANAGEMENT,null);
@@ -345,9 +329,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setClientManagement;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetDomainCookies()
-	 */
+	@Override
 	public boolean isSetDomainCookies() {
 		if(!initSetDomainCookies) {
 			Object o = get(component,SET_DOMAIN_COOKIES,null);
@@ -357,9 +339,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setDomainCookies;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#isSetSessionManagement()
-	 */
+	@Override
 	public boolean isSetSessionManagement() {
 		if(!initSetSessionManagement) {
 			Object o = get(component,SESSION_MANAGEMENT,null);
@@ -369,9 +349,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return setSessionManagement;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getClientstorage()
-	 */
+	@Override
 	public String getClientstorage() {
 		if(!initClientStorage) {
 			Object o=get(component,CLIENT_STORAGE,null);
@@ -381,9 +359,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return clientStorage;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getScriptProtect()
-	 */
+	@Override
 	public int getScriptProtect() {
 		if(!initScriptProtect) {
 			String str=null;
@@ -397,9 +373,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return scriptProtect;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getSecureJsonPrefix()
-	 */
+	@Override
 	public String getSecureJsonPrefix() {
 		if(!initSecureJsonPrefix) {
 			Object o=get(component,SECURE_JSON_PREFIX,null);
@@ -409,9 +383,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return secureJsonPrefix;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getSecureJson()
-	 */
+	@Override
 	public boolean getSecureJson() {
 		if(!initSecureJson) {
 			Object o = get(component,SECURE_JSON,null);
@@ -421,9 +393,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return secureJson;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSessionstorage()
-	 */
+	@Override
 	public String getSessionstorage() {
 		if(!initSessionStorage) {
 			Object o=get(component,SESSION_STORAGE,null);
@@ -433,9 +403,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return sessionStorage;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSessionCluster()
-	 */
+	@Override
 	public boolean getSessionCluster() {
 		if(!initSessionCluster) {
 			Object o = get(component,SESSION_CLUSTER,null);
@@ -445,9 +413,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return sessionCluster;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getClientCluster()
-	 */
+	@Override
 	public boolean getClientCluster() {
 		if(!initClientCluster) {
 			Object o = get(component,CLIENT_CLUSTER,null);
@@ -457,9 +423,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return clientCluster;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getSessionType()
-	 */
+	@Override
 	public short getSessionType() {
 		if(!initSessionType) {
 			String str=null;
@@ -584,9 +548,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 	
 	
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getMappings()
-	 */
+	@Override
 	public Mapping[] getMappings() {
 		if(!initMappings) {
 			Object o = get(component,KeyConstants._mappings,null);
@@ -596,9 +558,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return mappings;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getCustomTagMappings()
-	 */
+	@Override
 	public Mapping[] getCustomTagMappings() {
 		if(!initCTMappings) {
 			Object o = get(component,CUSTOM_TAG_PATHS,null);
@@ -608,9 +568,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return ctmappings;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getComponentMappings()
-	 */
+	@Override
 	public Mapping[] getComponentMappings() {
 		if(!initCMappings) {
 			Object o = get(component,COMPONENT_PATHS,null);
@@ -620,9 +578,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return cmappings;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getLocalMode()
-	 */
+	@Override
 	public int getLocalMode() {
 		if(!initLocalMode) {
 			Object o = get(component,LOCAL_MODE,null);
@@ -647,9 +603,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return bufferOutput;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getS3()
-	 */
+	@Override
 	public Properties getS3() {
 		if(!initS3) {
 			Object o = get(component,KeyConstants._s3,null);
@@ -705,16 +659,10 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 		return ormConfig;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getComponent()
-	 */
 	public ComponentAccess getComponent() {
 		return component;
 	}
 
-	/**
-	 * @see railo.runtime.listener.ApplicationContext#getCustom(railo.runtime.type.Collection.Key)
-	 */
 	public Object getCustom(Key key) {
 		try {
 			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE, component); 

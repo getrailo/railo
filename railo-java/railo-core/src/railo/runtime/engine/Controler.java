@@ -57,9 +57,7 @@ public final class Controler extends Thread {
         
 	}
 	
-	/**
-	 * @see java.lang.Runnable#run()
-	 */
+	@Override
 	public void run() {
 		//scheduleThread.start();
 		boolean firstRun=true;

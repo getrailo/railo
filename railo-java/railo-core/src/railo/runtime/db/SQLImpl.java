@@ -36,9 +36,6 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
         this.items=items;
     }
     
-    /**
-     * @see railo.runtime.db.SQL#getItems()
-     */
     public void addItems(SQLItem item) {
     	SQLItem[] tmp=new SQLItem[items.length+1];
     	for(int i=0;i<items.length;i++) {
@@ -48,45 +45,33 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
     	items=tmp;
     }
     
-    /**
-     * @see railo.runtime.db.SQL#getItems()
-     */
+    @Override
     public SQLItem[] getItems() {
         return items;
     }
 
-    /**
-     * @see railo.runtime.db.SQL#getPosition()
-     */
+    @Override
     public int getPosition() {
         return position;
     }
     
-    /**
-     * @see railo.runtime.db.SQL#setPosition(int)
-     */
+    @Override
     public void setPosition(int position) {
         this.position = position;
     }    
     
 
-    /**
-     * @see railo.runtime.db.SQL#getSQLString()
-     */
+    @Override
     public String getSQLString() {
         return strSQL;
     }
     
-    /**
-     * @see railo.runtime.db.SQL#setSQLString(java.lang.String)
-     */
+    @Override
     public void setSQLString(String strSQL) {
         this.strSQL= strSQL;
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         if(items.length==0) return strSQL;
         StringBuffer sb=new StringBuffer();
@@ -107,9 +92,7 @@ public final class SQLImpl implements SQL,Serializable,Sizeable {
         return sb.toString();
     }    
     
-    /**
-     * @see railo.runtime.db.SQL#toHashString()
-     */
+    @Override
     public String toHashString() {
         if(items.length==0) return strSQL;
         StringBuffer sb=new StringBuffer(strSQL);

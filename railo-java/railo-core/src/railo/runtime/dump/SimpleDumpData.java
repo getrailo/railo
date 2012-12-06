@@ -24,97 +24,67 @@ public class SimpleDumpData implements DumpData,Castable {
 	public SimpleDumpData(boolean data) {
 		this.data=Caster.toString(data);
 	}
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return data;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return Caster.toBooleanValue(data);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return Caster.toBoolean(data,defaultValue);
     }
 	
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return Caster.toDatetime(data, null);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return DateCaster.toDateAdvanced(data,true,null,defaultValue);
     }
 	
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return Caster.toDoubleValue(data);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return Caster.toDoubleValue(data,defaultValue);
     }
 	
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return Caster.toString(data);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return Caster.toString(data,defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		return Operator.compare(data, b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare(data, (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(data, d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(data, str);
 	}

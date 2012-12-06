@@ -64,9 +64,7 @@ public final class Insert extends TagImpl {
 	** 	qualifier refers to the directory where the DBF files are located. */
 	private String tablequalifier="";
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		password=null;
@@ -139,17 +137,12 @@ public final class Insert extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		Object ds=getDatasource(pageContext,datasource);
 		
@@ -319,9 +312,7 @@ class    ColumnInfo {
 		this.nullable=nullable;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(){
 		return name+"-"+type+"-"+nullable;
 	}

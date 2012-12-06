@@ -18,10 +18,7 @@ public abstract class SpoolerTaskWS extends SpoolerTaskSupport {
 		this.client=client;
 	}
 
-	/**
-	 * @return 
-	 * @see railo.runtime.spooler.SpoolerTask#execute()
-	 */
+	@Override
 	public final Object execute(Config config) throws PageException {
 		try {
 			RPCClient rpc = getRPCClient(client);
@@ -32,16 +29,12 @@ public abstract class SpoolerTaskWS extends SpoolerTaskSupport {
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#subject()
-	 */
+	@Override
 	public String subject() {
 		return client.getLabel();
 	}
 
-	/**
-	 * @see railo.runtime.spooler.SpoolerTask#detail()
-	 */
+	@Override
 	public Struct detail() {
 		Struct sct=new StructImpl();
 		sct.setEL("label", client.getLabel());

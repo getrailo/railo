@@ -71,10 +71,7 @@ public final class Image extends TagImpl {
 
 
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		action=ACTION_READ;
@@ -311,10 +308,7 @@ public final class Image extends TagImpl {
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws JspException {
 		try {
 			if(this.oSource!=null){

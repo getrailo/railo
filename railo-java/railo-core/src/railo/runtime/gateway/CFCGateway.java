@@ -28,9 +28,7 @@ public class CFCGateway implements Gateway {
 		this.cfcPath=cfcPath;
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#init(java.lang.String, java.lang.String, railo.runtime.type.Struct)
-	 */
+	@Override
 	public void init(GatewayEngine engine,String id, String cfcPath, Map config) throws GatewayException {
 		this.engine=(GatewayEngineImpl) engine;
 		this.id=id;
@@ -57,9 +55,7 @@ public class CFCGateway implements Gateway {
 		
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doRestart()
-	 */
+	@Override
 	public void doRestart() throws GatewayException {
 
 		engine.log(this,GatewayEngine.LOGLEVEL_INFO,"restart");
@@ -79,9 +75,7 @@ public class CFCGateway implements Gateway {
 		
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doStart()
-	 */
+	@Override
 	public void doStart() throws GatewayException {
 		engine.log(this,GatewayEngine.LOGLEVEL_INFO,"start");
 		Struct args=new StructImpl();
@@ -97,9 +91,7 @@ public class CFCGateway implements Gateway {
 		}
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#doStop()
-	 */
+	@Override
 	public void doStop() throws GatewayException {
 
 		engine.log(this,GatewayEngine.LOGLEVEL_INFO,"stop");
@@ -117,24 +109,18 @@ public class CFCGateway implements Gateway {
 		}
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getHelper()
-	 */
+	@Override
 	public Object getHelper() {
 		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
 		return callEL("getHelper",args,null);
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getId()
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#getState()
-	 */
+	@Override
 	public int getState() {
 		Struct args=new StructImpl();
 		Integer state=Integer.valueOf(this.state);
@@ -149,9 +135,7 @@ public class CFCGateway implements Gateway {
 
 
 
-	/**
-	 * @see org.opencfml.eventgateway.Gateway#sendMessage(railo.runtime.type.Struct)
-	 */
+	@Override
 	public String sendMessage(Map data) throws GatewayException {
 		Struct args=new StructImpl(StructImpl.TYPE_LINKED);
 		args.setEL("data", Caster.toStruct(data, null, false));

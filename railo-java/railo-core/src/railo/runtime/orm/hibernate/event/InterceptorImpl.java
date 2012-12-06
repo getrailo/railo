@@ -37,9 +37,7 @@ public class InterceptorImpl extends EmptyInterceptor {
 		}
 	}
 
-	/**
-	 * @see org.hibernate.EmptyInterceptor#onSave(java.lang.Object, java.io.Serializable, java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
-	 */
+	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state,
 			String[] propertyNames, Type[] types) {
 		
@@ -47,9 +45,7 @@ public class InterceptorImpl extends EmptyInterceptor {
 		//return super.onSave(entity, id, state, propertyNames, types);
 	}
 
-	/**
-	 * @see org.hibernate.EmptyInterceptor#onFlushDirty(java.lang.Object, java.io.Serializable, java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
-	 */
+	@Override
 	public boolean onFlushDirty(Object entity, Serializable id,
 			Object[] currentState, Object[] previousState,
 			String[] propertyNames, Type[] types) {

@@ -100,9 +100,7 @@ public final class DBInfo extends TagImpl {
 	private String strType;
 	
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		datasource=null;
@@ -232,9 +230,7 @@ public final class DBInfo extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		Object ds=getDatasource(pageContext, datasource);
 		DataSourceManager manager = pageContext.getDataSourceManager();
@@ -670,9 +666,7 @@ public final class DBInfo extends TagImpl {
 		return SQLUtil.match(pattern, value);
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

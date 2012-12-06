@@ -32,9 +32,7 @@ public class ExpressionException extends PageExceptionImpl {
 		setDetail(detail);
 	}
 	
-	/**
-	 * @see railo.runtime.exp.PageExceptionImpl#getCatchBlock(railo.runtime.config.Config)
-	 */
+	@Override
 	public CatchBlock getCatchBlock(Config config) {
 		CatchBlock sct=super.getCatchBlock(config);
 		sct.setEL(ERR_NUMBER,new Double(0));

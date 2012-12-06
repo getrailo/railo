@@ -217,9 +217,7 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 		
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		if(pageContext.variablesScope() instanceof ComponentScope) {
 			Component comp = ((ComponentScope)pageContext.variablesScope()).getComponent();
@@ -230,9 +228,7 @@ public final class Property extends TagImpl  implements DynamicAttributes{
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -44,9 +44,7 @@ public final class MailParam extends TagImpl {
     private Boolean remove=false;
     private byte[] content=null;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		value="";
@@ -136,10 +134,7 @@ public final class MailParam extends TagImpl {
     }
 
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		if(content!=null){
@@ -194,9 +189,7 @@ public final class MailParam extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

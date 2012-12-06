@@ -8,33 +8,23 @@ import java.io.OutputStream;
  */
 public final class EncryptOutputStream extends OutputStream {
 
-    /**
-     * @see java.io.OutputStream#close()
-     */
+    @Override
     public void close() throws IOException {
         super.close();
     }
-    /**
-     * @see java.io.OutputStream#flush()
-     */
+    @Override
     public void flush() throws IOException {
         super.flush();
     }
-    /**
-     * @see java.io.OutputStream#write(byte[], int, int)
-     */
+    @Override
     public void write(byte[] b, int off, int len) throws IOException {
         super.write(b, off, len);
     }
-    /**
-     * @see java.io.OutputStream#write(byte[])
-     */
+    @Override
     public void write(byte[] b) throws IOException {
         super.write(b);
     }
-    /**
-     * @see java.io.OutputStream#write(int)
-     */
+    @Override
     public void write(int b) throws IOException {
         
     }

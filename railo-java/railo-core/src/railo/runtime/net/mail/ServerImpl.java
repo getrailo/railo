@@ -127,41 +127,29 @@ public final class ServerImpl implements Server {
 		
 	}*/
 
-	/**
-     * @see railo.runtime.net.mail.Server#getPassword()
-     */
+	@Override
 	public String getPassword() {
 		if(password==null && hasAuthentication()) return "";
 		return password;
 	}
-	/**
-     * @see railo.runtime.net.mail.Server#getPort()
-     */
+	@Override
 	public int getPort() {
 		return port;
 	}
-	/**
-     * @see railo.runtime.net.mail.Server#getHostName()
-     */
+	@Override
 	public String getHostName() {
 		return hostName;
 	}
-	/**
-     * @see railo.runtime.net.mail.Server#getUsername()
-     */
+	@Override
 	public String getUsername() {
 		return username;
 	}
-	/**
-     * @see railo.runtime.net.mail.Server#hasAuthentication()
-     */
+	@Override
 	public boolean hasAuthentication() {
 		return username!=null && username.length()>0;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		if(username!=null) {
 			return username+":"+password+"@"+hostName+":"+port;
@@ -169,25 +157,19 @@ public final class ServerImpl implements Server {
 		return hostName+":"+port;
 	}
 
-    /**
-     * @see railo.runtime.net.mail.Server#cloneReadOnly()
-     */
+    @Override
     public Server cloneReadOnly() {
         ServerImpl s = new ServerImpl(hostName, port,username, password,tls,ssl);
         s.readOnly=true;
         return s;
     }
 
-    /**
-     * @see railo.runtime.net.mail.Server#isReadOnly()
-     */
+    @Override
     public boolean isReadOnly() {
         return readOnly;
     }
 
-    /**
-     * @see railo.runtime.net.mail.Server#verify()
-     */
+    @Override
     public boolean verify() throws SMTPException {
         return SMTPVerifier.verify(hostName,username,password,port);
     }

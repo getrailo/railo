@@ -6,9 +6,7 @@ import railo.runtime.Info;
 
 public class FlashEngineDummy implements FlashEngine {
 
-	/**
-	 * @see railo.runtime.flash.FlashEngine#createFlash(java.lang.String)
-	 */
+	@Override
 	public InputStream createFlash(String input) {
 		return new Info().getClass().getResourceAsStream("/resource/media/flash/railo.swf");
 	}

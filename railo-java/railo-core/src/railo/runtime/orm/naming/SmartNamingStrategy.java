@@ -6,16 +6,12 @@ public class SmartNamingStrategy implements NamingStrategy {
 	
 	public static final NamingStrategy INSTANCE = new SmartNamingStrategy();
 
-	/**
-	 * @see railo.runtime.orm.NamingStrategy#convertTableName(java.lang.String)
-	 */
+	@Override
 	public String convertTableName(String tableName) {
         return translate(tableName);
     }
 
-    /**
-     * @see railo.runtime.orm.NamingStrategy#convertColumnName(java.lang.String)
-     */
+    @Override
     public String convertColumnName(String columnName) { 
         return translate(columnName);
     }
@@ -48,9 +44,7 @@ public class SmartNamingStrategy implements NamingStrategy {
         return sb.toString();
     }
 
-	/**
-	 * @see railo.runtime.orm.NamingStrategy#getType()
-	 */
+	@Override
 	public String getType() {
 		return "smart";
 	}

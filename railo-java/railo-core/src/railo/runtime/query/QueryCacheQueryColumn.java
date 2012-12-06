@@ -69,259 +69,169 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 		}
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#add(java.lang.Object)
-	 */
+	@Override
 	public void add(Object value) {
 		disconnectCache();
 		column.add(value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#addRow(int)
-	 */
+	@Override
 	public void addRow(int count) {
 		disconnectCache();
 		column.addRow(count);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#cutRowsTo(int)
-	 */
+	@Override
 	public void cutRowsTo(int maxrows) {
 		disconnectCache();
 		column.cutRowsTo(maxrows);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#get(int)
-	 */
+	@Override
 	public Object get(int row) throws PageException {
 		return column.get(row);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int row, Object defaultValue) {
 		return column.get(row, defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#getType()
-	 */
+	@Override
 	public int getType() {
 		return column.getType();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#getTypeAsString()
-	 */
+	@Override
 	public String getTypeAsString() {
 		return column.getTypeAsString();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#remove(int)
-	 */
+	@Override
 	public Object remove(int row) throws PageException {
 		disconnectCache();
 		return column.remove(row);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int row) {
 		disconnectCache();
 		return column.removeEL(row);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#removeRow(int)
-	 */
+	@Override
 	public Object removeRow(int row) throws PageException {
 		disconnectCache();
 		return column.removeRow(row);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#set(int, java.lang.Object)
-	 */
+	@Override
 	public Object set(int row, Object value) throws PageException {
 		disconnectCache();
 		return column.set(row, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.QueryColumn#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(int row, Object value) {
 		disconnectCache();
 		return column.setEL(row, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		disconnectCache();
 		column.clear();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-	 */
+	@Override
 	public boolean containsKey(String key) {
 		return column.containsKey(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return column.containsKey(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return column.duplicate(deepCopy);
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws PageException {
 		return get(KeyImpl.init(key));
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		return column.get(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		return column.get(key, defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		return column.get(key, defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		return column.keys();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		disconnectCache();
 		return column.remove(key);
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		disconnectCache();
 		return column.removeEL(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 		disconnectCache();
 		return column.set(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		disconnectCache();
 		return column.set(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {
 		disconnectCache();
 		return column.setEL(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		disconnectCache();
 		return column.setEL(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return column.size();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return column.toDumpData(pageContext, maxlevel,dp);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return column.keyIterator();
 	}
@@ -336,211 +246,140 @@ public class QueryCacheQueryColumn implements QueryColumn,Sizeable {
 		return column.entryIterator();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return column.castToBooleanValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return column.castToBoolean(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return column.castToDateTime();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return column.castToDateTime(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return column.castToDoubleValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return column.castToDoubleValue(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return column.castToString();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return column.castToString(defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return column.compareTo(str);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return column.compareTo(b);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return column.compareTo(d);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return column.compareTo(dt);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object get(PageContext pc) throws PageException {
 		return column.get(pc);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public Object get(PageContext pc, Object defaultValue) {
 		return column.get(pc, defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#getKey()
-	 */
+	@Override
 	public Key getKey() throws PageException {
 		return column.getKey();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#getKeyAsString()
-	 */
+	@Override
 	public String getKeyAsString() throws PageException {
 		return column.getKeyAsString();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#getParent()
-	 */
+	@Override
 	public Object getParent() {
 		return qcq;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#remove(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object remove(PageContext pc) throws PageException {
 		disconnectCache();
 		return column.remove(pc);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#removeEL(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object removeEL(PageContext pc) {
 		disconnectCache();
 		return column.removeEL(pc);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public Object set(PageContext pc, Object value) throws PageException {
 		disconnectCache();
 		return column.set(pc, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(PageContext pc, Object value) {
 		disconnectCache();
 		return column.setEL(pc, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object touch(PageContext pc) throws PageException {
 		disconnectCache();
 		return column.touch(pc);
 	}
 
-	/**
-	 * @see railo.runtime.type.ref.Reference#touchEL(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object touchEL(PageContext pc) {
 		disconnectCache();
 		return column.touchEL(pc);
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone() {
 		return column.clone();
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		return column.valueIterator();
 	}
 	
 
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return QueryUtil.sizeOf(column);
 	}

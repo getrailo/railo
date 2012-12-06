@@ -257,9 +257,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     private String domain=null;
 
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 	    params.clear();
@@ -522,9 +520,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag()	{
 		if(addtoken) {
 			setParam("cookie","cfid",pageContext.getCFID());
@@ -544,10 +540,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 		setParam(hpb);
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 	    Struct cfhttp=new StructImpl();
 		cfhttp.setEL(ERROR_DETAIL,"");
@@ -1243,16 +1236,12 @@ public final class Http4 extends BodyTagImpl implements Http {
     	return URLEncoder.encode(str,charset);
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+    @Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}

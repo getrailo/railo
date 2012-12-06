@@ -11,9 +11,7 @@ import railo.runtime.exp.PageServletException;
  */
 public abstract class BodyTagTryCatchFinallyImpl extends BodyTagImpl implements TryCatchFinally{
 
-	/**
-	 * @see javax.servlet.jsp.tagext.TryCatchFinally#doCatch(java.lang.Throwable)
-	 */
+	@Override
 	public void doCatch(Throwable t) throws Throwable {
 		if(t instanceof PageServletException) {
 		    PageServletException pse=(PageServletException)t;
@@ -28,9 +26,7 @@ public abstract class BodyTagTryCatchFinallyImpl extends BodyTagImpl implements 
 		throw t;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.TryCatchFinally#doFinally()
-	 */
+	@Override
 	public void doFinally() {
 		
 	}

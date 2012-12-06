@@ -13,10 +13,7 @@ public class ValueNull extends ValueSupport implements Literal {
 		super("NULL");
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(boolean noAlias) {
 		if(noAlias || getIndex()==0)return getString();
 		return getString()+" as "+getAlias();

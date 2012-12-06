@@ -24,59 +24,41 @@ public final class DevNullHttpServletResponse extends HttpServletResponseWrapper
         this.httpServletResponse=httpServletResponse;
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#flushBuffer()
-     */
+    @Override
     public void flushBuffer() {
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#getResponse()
-     */
+    @Override
     public ServletResponse getResponse() {
         return httpServletResponse;
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#getWriter()
-     */
+    @Override
     public PrintWriter getWriter() throws IOException {
         return new PrintWriter(DevNullOutputStream.DEV_NULL_OUTPUT_STREAM);
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#reset()
-     */
+    @Override
     public void reset() {
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#resetBuffer()
-     */
+    @Override
     public void resetBuffer() {
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#setBufferSize(int)
-     */
+    @Override
     public void setBufferSize(int size) {
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#setContentLength(int)
-     */
+    @Override
     public void setContentLength(int size) {
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#setContentType(java.lang.String)
-     */
+    @Override
     public void setContentType(String type) {
     }
 
-    /**
-     * @see javax.servlet.ServletResponseWrapper#getOutputStream()
-     */
+    @Override
     public ServletOutputStream getOutputStream() throws IOException {
         return new DevNullServletOutputStream();
     }

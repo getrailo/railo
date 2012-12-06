@@ -96,9 +96,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	this(searchEngine, name, path, language, lastUpdate, created, true);
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#_create()
-     */
+    @Override
     protected void _create() throws SearchException {
         try {
 			if(!collectionDir.exists())collectionDir.createDirectory(true);
@@ -106,9 +104,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         catch (IOException e) {}
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#_optimize()
-     */
+    @Override
     protected void _optimize() throws SearchException {
         IndexWriter[] writers=_getWriters(false);
         for(int i=0;i<writers.length;i++) {
@@ -121,24 +117,17 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         }
     }
 
-    /**
-     *
-     * @see railo.runtime.search.SearchCollectionSupport#_map(railo.commons.io.res.Resource)
-     */
+    @Override
     protected void _map(Resource path) throws SearchException {
         throw new SearchException("mapping of existing Collection for file ["+path+"] not supported");
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#_repair()
-     */
+    @Override
     protected void _repair() throws SearchException {
         //throw new SearchException("repair of existing Collection not supported");
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollectionSupport#_indexFile(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String)
-     */
+    @Override
     protected IndexResult _indexFile(String id, String title, Resource res,String language) throws SearchException {
     	info(res.getAbsolutePath());
         _checkLanguage(language);
@@ -164,9 +153,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 
     
 
-	/**
-     * @see railo.runtime.search.SearchCollectionSupport#_indexPath(java.lang.String, java.lang.String, railo.commons.io.res.Resource, java.lang.String[], boolean, java.lang.String)
-     */
+	@Override
     protected IndexResult _indexPath(String id, String title, Resource dir,String[] extensions, boolean recurse, String language) throws SearchException {
     	info(dir.getAbsolutePath());
     	_checkLanguage(language);
@@ -281,9 +268,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	}
 	}
 
-	/**
-     * @see railo.runtime.search.SearchCollection#_indexURL(java.lang.String, java.lang.String, java.net.URL, java.lang.String[], boolean, java.lang.String)
-     */
+	@Override
     protected IndexResult _indexURL(String id, String title, URL url,String[] extensions, boolean recurse, String language)throws SearchException {
     	//timeout=ThreadLocalPageContext.getConfig().getRequestTimeout().getMillis();
     	return _indexURL(id, title, url, extensions, recurse, language,50000L);
@@ -497,9 +482,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		return null;
 	}
 
-	/**
-     * @see railo.runtime.search.SearchCollection#_purge()
-     */
+	@Override
     protected IndexResult _purge() throws SearchException {
     	SearchIndex[] indexes=getIndexes();
     	int count=0;
@@ -510,9 +493,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	return new IndexResultImpl(count,0,0);
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#_delete()
-     */
+    @Override
     protected IndexResult _delete() throws SearchException {
     	SearchIndex[] indexes=getIndexes();
     	int count=0;
@@ -523,18 +504,14 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
     	return new IndexResultImpl(count,0,0);
     }
 
-	/**
-     * @see railo.runtime.search.SearchCollectionSupport#_deleteIndex(java.lang.String)
-     */
+	@Override
     protected IndexResult _deleteIndex(String id) throws SearchException {
     	int count=getDocumentCount(id);
     	ResourceUtil.removeEL(_getIndexDirectory(id,true), true);
     	return new IndexResultImpl(count,0,0);
     }
 
-    /**
-     * @see railo.runtime.search.SearchCollection#_search(railo.runtime.search.SearchData, java.lang.String, java.lang.String, short, java.lang.String, java.lang.String[])
-     */
+    @Override
     public SearchResulItem[] _search(SearchData data, String criteria, String language,short type, 
     		String categoryTree, String[] category) throws SearchException {
         try {
@@ -888,9 +865,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
         }
     }
 
-	/**
-	 * @see railo.runtime.search.SearchCollection#getDocumentCount()
-	 */
+	@Override
 	public int getDocumentCount(String id) {
 		try {
 			if(!_getIndexDirectory(id,false).exists()) return 0;
@@ -909,9 +884,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		return 0;
 	}
 	
-	/**
-	 * @see railo.runtime.search.SearchCollection#getDocumentCount()
-	 */
+	@Override
 	public int getDocumentCount() {
 		int count=0;
 		SearchIndex[] _indexes = getIndexes();
@@ -922,9 +895,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		return count;
 	}
 
-	/**
-	 * @see railo.runtime.search.SearchCollection#getSize()
-	 */
+	@Override
 	public long getSize() {
 		return ResourceUtil.getRealSize(collectionDir)/1024;
 	}
@@ -973,10 +944,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 			
 		}
 
-		/**
-		 *
-		 * @see org.apache.lucene.index.IndexWriter#close()
-		 */
+		@Override
 		public synchronized void close() throws IOException {
 			super.close();
 			dir.getResourceProvider().unlock(dir);
@@ -1024,11 +992,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 	
 	public class SpellDirFilter implements ResourceNameFilter {
 
-		/**
-		 * filter all names with the following pattern [<name>_<count>_spell]
-		 * 
-		 * @see railo.commons.io.res.filter.ResourceNameFilter#accept(railo.commons.io.res.Resource, java.lang.String)
-		 */
+		@Override
 		public boolean accept(Resource parent, String name) {
 			return name.endsWith("_spell");
 		}

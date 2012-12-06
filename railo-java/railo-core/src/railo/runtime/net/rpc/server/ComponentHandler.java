@@ -23,10 +23,7 @@ public final class ComponentHandler extends BasicHandler {
     
     private static Map soapServices = new WeakHashMap();
 
-    /**
-     * Just set up the service, the inner service will do the rest...
-     * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
-     */
+    @Override
     public void invoke(MessageContext msgContext) throws AxisFault {
         try {
             setupService(msgContext);
@@ -36,10 +33,7 @@ public final class ComponentHandler extends BasicHandler {
         }
     }
     
-    /**
-     * Just set up the service, the inner service will do the rest...
-     * @see org.apache.axis.Handler#generateWSDL(org.apache.axis.MessageContext)
-     */
+    @Override
     public void generateWSDL(MessageContext msgContext) throws AxisFault {
         try {
             setupService(msgContext);

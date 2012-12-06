@@ -113,16 +113,12 @@ public class HibernateORMEngine implements ORMEngine {
 	
 	
 	
-	/**
-	 * @see railo.runtime.orm.ORMEngine#init(railo.runtime.PageContext)
-	 */
+	@Override
 	public void init(PageContext pc) throws PageException{
 		getSessionFactory(pc,true);
 	}
 		
-	/**
-	 * @see railo.runtime.orm.ORMEngine#getSession(railo.runtime.PageContext)
-	 */
+	@Override
 	public ORMSession createSession(PageContext pc) throws PageException {
 		ApplicationContextPro appContext = (ApplicationContextPro) pc.getApplicationContext();
 		Object o=appContext.getORMDataSource();
@@ -151,9 +147,7 @@ public class HibernateORMEngine implements ORMEngine {
 		return _queryPlanCache;
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMEngine#getSessionFactory(railo.runtime.PageContext)
-	 */
+	@Override
 	public SessionFactory getSessionFactory(PageContext pc) throws PageException{
 		return getSessionFactory(pc,false);
 	}
@@ -479,9 +473,7 @@ public class HibernateORMEngine implements ORMEngine {
 		return 0;
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMEngine#getMode()
-	 */
+	@Override
 	public int getMode() {
 		//MUST impl
 		return MODE_LAZY;
@@ -491,9 +483,7 @@ public class HibernateORMEngine implements ORMEngine {
 		return ds;
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMEngine#getLabel()
-	 */
+	@Override
 	public String getLabel() {
 		return "Hibernate";
 	}
@@ -580,9 +570,7 @@ public class HibernateORMEngine implements ORMEngine {
 		
 	}
 
-	/**
-	 * @see railo.runtime.orm.ORMEngine#getConfiguration(railo.runtime.PageContext)
-	 */
+	@Override
 	public ORMConfiguration getConfiguration(PageContext pc) {
 		ApplicationContext ac = pc.getApplicationContext();
 		if(!ac.isORMEnabled())

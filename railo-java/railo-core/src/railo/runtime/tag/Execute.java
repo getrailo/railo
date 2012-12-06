@@ -46,9 +46,7 @@ public final class Execute extends BodyTagImpl {
 
 	private boolean terminateOnTimeout=false;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		arguments=null;
@@ -152,10 +150,7 @@ public final class Execute extends BodyTagImpl {
 	}
 
 
-	/**
-	* @throws ApplicationException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		return EVAL_BODY_BUFFERED;
 	}
@@ -202,10 +197,7 @@ public final class Execute extends BodyTagImpl {
 	    
 	}
 
-	/**
-	* @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		if(pageContext.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_TAG_EXECUTE)==SecurityManager.VALUE_NO) 
 			throw new SecurityException("can't access tag [execute]","access is prohibited by security manager");
@@ -221,16 +213,12 @@ public final class Execute extends BodyTagImpl {
 	    return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		body=bodyContent.getString();
 		if(!StringUtil.isEmpty(body))body=body.trim();

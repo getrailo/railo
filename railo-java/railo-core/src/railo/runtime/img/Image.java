@@ -1378,10 +1378,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		throw new CasterException(obj,"Image");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		try {
 			//if(_image!=null) return new Image(getBufferedImage());
@@ -1508,100 +1505,64 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		throw new RuntimeException("can't clear struct, struct is readonly");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return _info().containsKey(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		return info().get(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		return _info().get(key, defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		return _info().keys();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, struct is readonly");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		throw new PageRuntimeException("can't remove key ["+key.getString()+"] from struct, struct is readonly");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		throw new ExpressionException("can't set key ["+key.getString()+"] to struct, struct is readonly");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		throw new PageRuntimeException("can't set key ["+key.getString()+"] to struct, struct is readonly");
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return _info().size();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpData dd = _info().toDumpData(pageContext, maxlevel,dp);
 		if(dd instanceof DumpTable)((DumpTable)dd).setTitle("Struct (Image)");
 		return dd;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return _info().keyIterator();
 	}
@@ -1621,17 +1582,12 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		return _info().valueIterator();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return info().castToBooleanValue();
 	}
 
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToBoolean(java.lang.Boolean)
-	 */
+	@Override
 	public Boolean castToBoolean(Boolean defaultValue) {
 		try {
 			return info().castToBoolean(defaultValue);
@@ -1640,17 +1596,12 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return info().castToDateTime();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         try {
 			return info().castToDateTime(defaultValue);
@@ -1659,17 +1610,12 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return info().castToDoubleValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         try {
 			return info().castToDoubleValue(defaultValue);
@@ -1678,16 +1624,11 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return info().castToString();
 	}
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		try {
 			return info().castToString(defaultValue);
@@ -1696,34 +1637,22 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return info().compareTo(str);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return info().compareTo(b);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return info().compareTo(d);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return info().compareTo(dt);
 	}
@@ -1770,9 +1699,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		return source;
 	}
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		try {
 			return info().containsValue(value);
@@ -1782,9 +1709,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		}
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		try {
 			return info().values();

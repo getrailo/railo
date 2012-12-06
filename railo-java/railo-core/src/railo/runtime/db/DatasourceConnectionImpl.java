@@ -43,23 +43,17 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		
     }
     
-    /**
-     * @see railo.runtime.db.DatasourceConnection#getConnection()
-     */
+    @Override
     public Connection getConnection() {
         return connection;
     }
 
-    /**
-     * @see railo.runtime.db.DatasourceConnection#getDatasource()
-     */
+    @Override
     public DataSource getDatasource() {
         return datasource;
     }
 
-    /**
-     * @see railo.runtime.db.DatasourceConnection#isTimeout()
-     */
+    @Override
     public boolean isTimeout() {
         int timeout=datasource.getConnectionTimeout();
         if(timeout<1)timeout=1;
@@ -86,10 +80,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		return username;
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		if(this==obj) return true;
 		
@@ -129,9 +120,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 		this.requestId=requestId;
 	}
 
-	/**
-	 * @see railo.runtime.db.DatasourceConnectionPro#supportsGetGeneratedKeys()
-	 */
+	@Override
 	public boolean supportsGetGeneratedKeys() {
 		if(supportsGetGeneratedKeys==null){
 			try {
@@ -145,9 +134,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 	
 	//private Map<String,PreparedStatement> preparedStatements=new HashMap<String, PreparedStatement>();
 	
-	/**
-	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
-	 */
+	@Override
 	public PreparedStatement getPreparedStatement(SQL sql, boolean createGeneratedKeys,boolean allowCaching) throws SQLException {
 		if(createGeneratedKeys)	return getConnection().prepareStatement(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS);
 		return getConnection().prepareStatement(sql.getSQLString());
@@ -179,9 +166,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 	
 	
 
-	/**
-	 * @see railo.runtime.db.DatasourceConnectionPro#getPreparedStatement(railo.runtime.db.SQL, boolean)
-	 */
+	@Override
 	public PreparedStatement getPreparedStatement(SQL sql, int resultSetType,int resultSetConcurrency) throws SQLException {
 		return getConnection().prepareStatement(sql.getSQLString(),resultSetType,resultSetConcurrency);
 	}
@@ -212,9 +197,7 @@ public final class DatasourceConnectionImpl implements DatasourceConnection {
 	 */
 	
 
-	/**
-	 * @see railo.runtime.db.DatasourceConnectionPro#close()
-	 */
+	@Override
 	public void close() throws SQLException {
 		//closePreparedStatements(-1);
 		getConnection().close();

@@ -126,67 +126,41 @@ public abstract class PageExceptionImpl extends PageException {
 		this.customType=(customType==null)?this.type:customType;
 	}
     
-    /**
-     * @see railo.runtime.exp.PageException#getDetail()
-     */
+    @Override
 	public String getDetail() { 
 		if(detail==null || detail.equals(getMessage()))return "";
 		return detail; 
 	}
 	
-	/**
-     * @see railo.runtime.exp.PageException#getErrorCode()
-     */
+	@Override
 	public String getErrorCode() { return errorCode==null?"":errorCode; }
 	
-	/**
-     * @see railo.runtime.exp.PageException#getExtendedInfo()
-     */
+	@Override
 	public String getExtendedInfo() { return extendedInfo==null?"":extendedInfo; }
 	
-	/**
-	 * @see railo.runtime.exp.IPageException#getTypeAsString()
-	 *
-	public abstract String getTypeAsString();*/
-	
-
-	/**
-     * @see railo.runtime.exp.PageException#setDetail(java.lang.String)
-     */
+	@Override
 	public void setDetail(String detail) {
 		this.detail=detail;
 	}
-	/**
-     * @see railo.runtime.exp.PageException#setErrorCode(java.lang.String)
-     */
+	@Override
 	public void setErrorCode(String errorCode) {
 		this.errorCode=errorCode;
 	}
-	/**
-     * @see railo.runtime.exp.PageException#setExtendedInfo(java.lang.String)
-     */
+	@Override
 	public void setExtendedInfo(String extendedInfo) {
 		this.extendedInfo=extendedInfo;
 	}
 	
-	/**
-	 * @see railo.runtime.exp.IPageException#getCatchBlock()
-	 */
 	public final Struct getCatchBlock() {
 		return getCatchBlock(ThreadLocalPageContext.getConfig());
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.PageContext)
-	 */
+	@Override
 	public final Struct getCatchBlock(PageContext pc) {
 		return getCatchBlock(ThreadLocalPageContext.getConfig(pc));
 	}
 	
-	/**
-	 * @see railo.runtime.exp.IPageException#getCatchBlock(railo.runtime.Config)
-	 */
+	@Override
 	public CatchBlock getCatchBlock(Config config) {
 		return new CatchBlockImpl(this);
 	}
@@ -306,9 +280,7 @@ public abstract class PageExceptionImpl extends PageException {
 	}
 	
 	
-	/**
-     * @see railo.runtime.exp.PageException#getErrorBlock(railo.runtime.PageContext, railo.runtime.err.ErrorPage)
-     */
+	@Override
 	public Struct getErrorBlock(PageContext pc,ErrorPage ep) {
 		Struct struct=new StructImpl();
 
@@ -358,18 +330,15 @@ public abstract class PageExceptionImpl extends PageException {
         Struct sct=(Struct) getTagContext(config).get(1,null);
         return Caster.toString(sct.get("template",""),"");
     }
-    /**
-     * @see railo.runtime.exp.PageException#getLine()
-     */
+    
 	public String getLine(Config config) {
         if(getTagContext(config).size()==0) return "";
         
         Struct sct=(Struct) getTagContext(config).get(1,null);
         return Caster.toString(sct.get("line",""),"");
     }
-    /**
-     * @see railo.runtime.exp.PageException#addContext(railo.runtime.PageSource, int, int)
-     */
+    
+	@Override
 	public void addContext(PageSource pr, int line, int column, StackTraceElement element) {
 		if(line==-187) {
 			sources.add(pr);
@@ -411,9 +380,7 @@ public abstract class PageExceptionImpl extends PageException {
 		return sb.toString();
 	}
 	
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		
 		//FFFFCF
@@ -493,9 +460,7 @@ public abstract class PageExceptionImpl extends PageException {
 		return htmlBox; 
 	}	
 	
-	/**
-     * @see railo.runtime.exp.PageException#getStackTraceAsString()
-     */
+	@Override
 	public String getStackTraceAsString() {
 		
         StringWriter sw=new StringWriter();
@@ -507,16 +472,12 @@ public abstract class PageExceptionImpl extends PageException {
     
     
     
-    /**
-     * @see railo.runtime.exp.PageException#printStackTrace()
-     */
+    @Override
     public void printStackTrace() {
         printStackTrace(System.err);
     }
     
-    /**
-     * @see railo.runtime.exp.PageException#printStackTrace(java.io.PrintStream)
-     */
+    @Override
     public void printStackTrace(PrintStream s) {
         StackTraceElement[] traces = getStackTraceElements(this);
         StackTraceElement trace;
@@ -528,9 +489,7 @@ public abstract class PageExceptionImpl extends PageException {
         }
     }
     
-    /**
-     * @see railo.runtime.exp.PageException#printStackTrace(java.io.PrintWriter)
-     */
+    @Override
     public void printStackTrace(PrintWriter s) {
     	StackTraceElement[] traces = getStackTraceElements(this);
         StackTraceElement trace;
@@ -592,9 +551,7 @@ public abstract class PageExceptionImpl extends PageException {
 	}
 	
 	
-	/**
-     * @see railo.runtime.exp.PageException#getRootCause()
-     */
+	@Override
 	public Throwable getRootCause() {
         Throwable cause=this; 
         Throwable temp; 
@@ -603,46 +560,16 @@ public abstract class PageExceptionImpl extends PageException {
         return cause;
 	}
 
-	/**
-     * @see railo.runtime.exp.PageException#getTracePointer()
-     */
+	@Override
 	public int getTracePointer() {
 		return tracePointer;
 	}
-	/**
-     * @see railo.runtime.exp.PageException#setTracePointer(int)
-     */
+	@Override
 	public void setTracePointer(int tracePointer) {
 		this.tracePointer = tracePointer;
 	}
 	
-	/* *
-     * @see railo.runtime.exp.PageException#typeEqual(java.lang.String)
-     *  /
-	public final boolean typeEqual(String type) {
-	    type=type.toLowerCase().trim();
-	    print.ln(getTypeAsString()+"-"+type);
-		// ANY
-        if(type.equals("any")) return true;
-				
-		// translate customtype ->custom_type
-		else if(type.equals("customtype")) return typeEqual("custom_type");
-		
-        // Tye Compare
-		else if(getTypeAsString().equalsIgnoreCase(type)) return true;
-		
-        // Custom Type
-		else if(getTypeAsString().equals("custom_type")) {
-		    return compareCustomType(type,getCustomTypeAsString().toLowerCase().trim());
-		}
-        // Native Compare
-        
-		return false;		
-	}*/
-    
-    /**
-     * @see railo.runtime.exp.IPageException#typeEqual(java.lang.String)
-     */
+	@Override
     public boolean typeEqual(String type) {
     	if(type==null) return true;
         type=StringUtil.toUpperCase(type);
@@ -653,32 +580,24 @@ public abstract class PageExceptionImpl extends PageException {
         return getClass().getName().equalsIgnoreCase(type);
     }
     
-    /**
-     * @see railo.runtime.exp.PageException#getTypeAsString()
-     */
+    @Override
 	public String getTypeAsString() {
 		return type;
 	}
 	
-	/**
-     * @see railo.runtime.exp.PageException#getCustomTypeAsString()
-     */
+	@Override
 	public String getCustomTypeAsString() {
 		return customType==null?type:customType;
 	}
     
-    /**
-     * @see railo.runtime.exp.PageException#getAdditional()
-     */
+    @Override
 	public Struct getAdditional() {
         return additional;
     }public Struct getAddional() {
         return additional;
     }
     
-    /**
-     * @see java.lang.Throwable#getStackTrace()
-     */
+    @Override
     public StackTraceElement[] getStackTrace() {
         return super.getStackTrace();
     }

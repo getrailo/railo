@@ -13,19 +13,13 @@ public class ValueString extends ValueSupport implements Literal {
 		super(value);
 	}
 	
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString(boolean noAlias) {
 		if(noAlias || getIndex()==0)return "'"+StringUtil.replace(getString(), "'", "''", false)+"'";
 		return toString(true)+" as "+getAlias();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.sql.exp.value.Value#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return getString();
 	}

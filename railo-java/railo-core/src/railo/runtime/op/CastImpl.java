@@ -34,23 +34,17 @@ public final class CastImpl implements Cast {
 
     private static CastImpl singelton;
 
-    /**
-     * @see railo.runtime.util.Cast#castTo(railo.runtime.PageContext, short, java.lang.Object)
-     */
+    @Override
     public Object castTo(PageContext pc, short type, Object o) throws PageException {
         return Caster.castTo(pc,type,o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#castTo(railo.runtime.PageContext, short, java.lang.String, java.lang.Object)
-     */
+    @Override
     public Object castTo(PageContext pc, short type, String strType, Object o) throws PageException {
         return Caster.castTo(pc,type,strType,o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#castTo(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
+    @Override
     public Object castTo(PageContext pc, String type, Object o) throws PageException {
         return Caster.castTo(pc,type,o,false);
     }
@@ -58,303 +52,217 @@ public final class CastImpl implements Cast {
         return Caster.castTo(pc,type,o,alsoPattern);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toArray(java.lang.Object, railo.runtime.type.Array)
-     */
+    @Override
     public Array toArray(Object obj, Array defaultValue) {
         return Caster.toArray(obj,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toArray(java.lang.Object)
-     */
+    @Override
     public Array toArray(Object obj) throws PageException {
         return Caster.toArray(obj);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBase64(java.lang.Object, java.lang.String)
-     */
+    @Override
     public String toBase64(Object o, String defaultValue) {
         return Caster.toBase64(o,null,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBase64(java.lang.Object)
-     */
+    @Override
     public String toBase64(Object o) throws PageException {
         return Caster.toBase64(o,null);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBinary(java.lang.Object, byte[])
-     */
+    @Override
     public byte[] toBinary(Object obj, byte[] defaultValue) {
         return Caster.toBinary(obj,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBinary(java.lang.Object)
-     */
+    @Override
     public byte[] toBinary(Object obj) throws PageException {
         return Caster.toBinary(obj);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBoolean(boolean)
-     */
+    @Override
     public Boolean toBoolean(boolean b) {
         return Caster.toBoolean(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBoolean(char)
-     */
+    @Override
     public Boolean toBoolean(char c) {
         return Caster.toBoolean(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBoolean(double)
-     */
+    @Override
     public Boolean toBoolean(double d) {
         return Caster.toBoolean(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBoolean(java.lang.Object, java.lang.Boolean)
-     */
+    @Override
     public Boolean toBoolean(Object o, Boolean defaultValue) {
         return Caster.toBoolean(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBoolean(java.lang.Object)
-     */
+    @Override
     public Boolean toBoolean(Object o) throws PageException {
         return Caster.toBoolean(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBoolean(java.lang.String, java.lang.Boolean)
-     */
+    @Override
     public Boolean toBoolean(String str, Boolean defaultValue) {
         return Caster.toBoolean(str,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBoolean(java.lang.String)
-     */
+    @Override
     public Boolean toBoolean(String str) throws PageException {
         return Caster.toBoolean(str);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBooleanValue(boolean)
-     */
+    @Override
     public boolean toBooleanValue(boolean b) {
         return Caster.toBooleanValue(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBooleanValue(char)
-     */
+    @Override
     public boolean toBooleanValue(char c) {
         return Caster.toBooleanValue(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBooleanValue(double)
-     */
+    @Override
     public boolean toBooleanValue(double d) {
         return Caster.toBooleanValue(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBooleanValue(java.lang.Object, boolean)
-     */
+    @Override
     public boolean toBooleanValue(Object o, boolean defaultValue) {
         return Caster.toBooleanValue(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBooleanValue(java.lang.Object)
-     */
+    @Override
     public boolean toBooleanValue(Object o) throws PageException {
         return Caster.toBooleanValue(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBooleanValue(java.lang.String, boolean)
-     */
+    @Override
     public boolean toBooleanValue(String str, boolean defaultValue) {
         return Caster.toBooleanValue(str,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toBooleanValue(java.lang.String)
-     */
+    @Override
     public boolean toBooleanValue(String str) throws PageException {
         return Caster.toBooleanValue(str);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByte(boolean)
-     */
+    @Override
     public Byte toByte(boolean b) {
         return Caster.toByte(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByte(char)
-     */
+    @Override
     public Byte toByte(char c) {
         return Caster.toByte(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByte(double)
-     */
+    @Override
     public Byte toByte(double d) {
         return Caster.toByte(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByte(java.lang.Object, java.lang.Byte)
-     */
+    @Override
     public Byte toByte(Object o, Byte defaultValue) {
         return Caster.toByte(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByte(java.lang.Object)
-     */
+    @Override
     public Byte toByte(Object o) throws PageException {
         return Caster.toByte(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByteValue(boolean)
-     */
+    @Override
     public byte toByteValue(boolean b) {
         return Caster.toByteValue(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByteValue(char)
-     */
+    @Override
     public byte toByteValue(char c) {
         return Caster.toByteValue(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByteValue(double)
-     */
+    @Override
     public byte toByteValue(double d) {
         return Caster.toByteValue(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByteValue(java.lang.Object, byte)
-     */
+    @Override
     public byte toByteValue(Object o, byte defaultValue) {
         return Caster.toByteValue(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toByteValue(java.lang.Object)
-     */
+    @Override
     public byte toByteValue(Object o) throws PageException {
         return Caster.toByteValue(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharacter(boolean)
-     */
+    @Override
     public Character toCharacter(boolean b) {
         return Caster.toCharacter(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharacter(char)
-     */
+    @Override
     public Character toCharacter(char c) {
         return Caster.toCharacter(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharacter(double)
-     */
+    @Override
     public Character toCharacter(double d) {
         return Caster.toCharacter(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharacter(java.lang.Object, java.lang.Character)
-     */
+    @Override
     public Character toCharacter(Object o, Character defaultValue) {
         return Caster.toCharacter(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharacter(java.lang.Object)
-     */
+    @Override
     public Character toCharacter(Object o) throws PageException {
         return Caster.toCharacter(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharValue(boolean)
-     */
+    @Override
     public char toCharValue(boolean b) {
         return Caster.toCharValue(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharValue(char)
-     */
+    @Override
     public char toCharValue(char c) {
         return Caster.toCharValue(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharValue(double)
-     */
+    @Override
     public char toCharValue(double d) {
         return Caster.toCharValue(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharValue(java.lang.Object, char)
-     */
+    @Override
     public char toCharValue(Object o, char defaultValue) {
         return Caster.toCharValue(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCharValue(java.lang.Object)
-     */
+    @Override
     public char toCharValue(Object o) throws PageException {
         return Caster.toCharValue(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCollection(java.lang.Object, railo.runtime.type.Collection)
-     */
+    @Override
     public Collection toCollection(Object o, Collection defaultValue) {
         return Caster.toCollection(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toCollection(java.lang.Object)
-     */
+    @Override
     public Collection toCollection(Object o) throws PageException {
         return Caster.toCollection(o);
     }
     
-    /**
-     * @see railo.runtime.util.Cast#toColor(java.lang.Object)
-     */
+    @Override
     public Color toColor(Object o) throws PageException {
     	if(o instanceof Color) return (Color) o;
     	else if (o instanceof String)ColorCaster.toColor((String)o);
@@ -363,499 +271,357 @@ public final class CastImpl implements Cast {
     }
 
     
-    /**
-     * @see railo.runtime.util.Cast#toDate(boolean, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDate(boolean b, TimeZone tz) {
         return Caster.toDate(b,tz);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(char, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDate(char c, TimeZone tz) {
         return Caster.toDate(c,tz);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(double, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDate(double d, TimeZone tz) {
         return Caster.toDate(d,tz);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(java.util.Locale, java.lang.String, java.util.TimeZone, railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime toDate(Locale locale, String str, TimeZone tz, DateTime defaultValue) {
         return Caster.toDateTime(locale,str,tz,defaultValue,true);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(java.util.Locale, java.lang.String, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDate(Locale locale, String str, TimeZone tz) throws PageException {
         return Caster.toDateTime(locale,str,tz,true);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(java.lang.Object, boolean, java.util.TimeZone, railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime toDate(Object o, boolean alsoNumbers, TimeZone tz, DateTime defaultValue) {
         return Caster.toDate(o,alsoNumbers,tz,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(java.lang.Object, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDate(Object o, TimeZone tz) throws PageException {
         return Caster.toDate(o,tz);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(java.lang.String, boolean, java.util.TimeZone, railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime toDate(String str, boolean alsoNumbers, TimeZone tz, DateTime defaultValue) {
         return Caster.toDate(str,alsoNumbers,tz,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDate(java.lang.String, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDate(String str, TimeZone tz) throws PageException {
         return Caster.toDate(str,tz);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDatetime(java.lang.Object, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDatetime(Object o, TimeZone tz) throws PageException {
         return Caster.toDate(o,tz);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDateTime(java.lang.Object, java.util.TimeZone)
-     */
+    @Override
     public DateTime toDateTime(Object o, TimeZone tz) throws PageException {
         return Caster.toDate(o,tz);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDecimal(boolean)
-     */
+    @Override
     public String toDecimal(boolean b) {
         return Caster.toDecimal(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDecimal(char)
-     */
+    @Override
     public String toDecimal(char c) {
         return Caster.toDecimal(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDecimal(double)
-     */
+    @Override
     public String toDecimal(double d) {
         return Caster.toDecimal(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDecimal(java.lang.Object, java.lang.String)
-     */
+    @Override
     public String toDecimal(Object value, String defaultValue) {
         return Caster.toDecimal(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDecimal(java.lang.Object)
-     */
+    @Override
     public String toDecimal(Object value) throws PageException {
         return Caster.toDecimal(value);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDouble(boolean)
-     */
+    @Override
     public Double toDouble(boolean b) {
         return Caster.toDouble(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDouble(char)
-     */
+    @Override
     public Double toDouble(char c) {
         return Caster.toDouble(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDouble(double)
-     */
+    @Override
     public Double toDouble(double d) {
         return Caster.toDouble(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDouble(java.lang.Object, java.lang.Double)
-     */
+    @Override
     public Double toDouble(Object o, Double defaultValue) {
         return Caster.toDouble(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDouble(java.lang.Object)
-     */
+    @Override
     public Double toDouble(Object o) throws PageException {
         return Caster.toDouble(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDouble(java.lang.String, java.lang.Double)
-     */
+    @Override
     public Double toDouble(String str, Double defaultValue) {
         return Caster.toDouble(str,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDouble(java.lang.String)
-     */
+    @Override
     public Double toDouble(String str) throws PageException {
         return Caster.toDouble(str);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDoubleValue(boolean)
-     */
+    @Override
     public double toDoubleValue(boolean b) {
         return Caster.toDoubleValue(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDoubleValue(char)
-     */
+    @Override
     public double toDoubleValue(char c) {
         return Caster.toDoubleValue(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDoubleValue(double)
-     */
+    @Override
     public double toDoubleValue(double d) {
         return Caster.toDoubleValue(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDoubleValue(java.lang.Object, double)
-     */
+    @Override
     public double toDoubleValue(Object o, double defaultValue) {
         return Caster.toDoubleValue(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDoubleValue(java.lang.Object)
-     */
+    @Override
     public double toDoubleValue(Object o) throws PageException {
         return Caster.toDoubleValue(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDoubleValue(java.lang.String, double)
-     */
+    @Override
     public double toDoubleValue(String str, double defaultValue) {
         return Caster.toDoubleValue(str,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toDoubleValue(java.lang.String)
-     */
+    @Override
     public double toDoubleValue(String str) throws PageException {
         return Caster.toDoubleValue(str);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toFile(java.lang.Object, java.io.File)
-     */
+    @Override
     public File toFile(Object obj, File defaultValue) {
         return Caster.toFile(obj,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toFile(java.lang.Object)
-     */
+    @Override
     public File toFile(Object obj) throws PageException {
         return Caster.toFile(obj);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toInteger(boolean)
-     */
+    @Override
     public Integer toInteger(boolean b) {
         return Caster.toInteger(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toInteger(char)
-     */
+    @Override
     public Integer toInteger(char c) {
         return Caster.toInteger(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toInteger(double)
-     */
+    @Override
     public Integer toInteger(double d) {
         return Caster.toInteger(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toInteger(java.lang.Object, java.lang.Integer)
-     */
+    @Override
     public Integer toInteger(Object o, Integer defaultValue) {
         return Caster.toInteger(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toInteger(java.lang.Object)
-     */
+    @Override
     public Integer toInteger(Object o) throws PageException {
         return Caster.toInteger(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIntValue(boolean)
-     */
+    @Override
     public int toIntValue(boolean b) {
         return Caster.toIntValue(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIntValue(char)
-     */
+    @Override
     public int toIntValue(char c) {
         return Caster.toIntValue(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIntValue(double)
-     */
+    @Override
     public int toIntValue(double d) {
         return Caster.toIntValue(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIntValue(java.lang.Object, int)
-     */
+    @Override
     public int toIntValue(Object o, int defaultValue) {
         return Caster.toIntValue(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIntValue(java.lang.Object)
-     */
+    @Override
     public int toIntValue(Object o) throws PageException {
         return Caster.toIntValue(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIntValue(java.lang.String, int)
-     */
+    @Override
     public int toIntValue(String str, int defaultValue) {
         return Caster.toIntValue(str,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIntValue(java.lang.String)
-     */
+    @Override
     public int toIntValue(String str) throws PageException {
         return Caster.toIntValue(str);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toIterator(java.lang.Object)
-     */
+    @Override
     public Iterator toIterator(Object o) throws PageException {
         return Caster.toIterator(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toList(java.lang.Object, boolean, java.util.List)
-     */
+    @Override
     public List toList(Object o, boolean duplicate, List defaultValue) {
         return Caster.toList(o,duplicate,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toList(java.lang.Object, boolean)
-     */
+    @Override
     public List toList(Object o, boolean duplicate) throws PageException {
         return Caster.toList(o,duplicate);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toList(java.lang.Object, java.util.List)
-     */
+    @Override
     public List toList(Object o, List defaultValue) {
         return Caster.toList(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toList(java.lang.Object)
-     */
+    @Override
     public List toList(Object o) throws PageException {
         return Caster.toList(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLocale(java.lang.String, java.util.Locale)
-     */
+    @Override
     public Locale toLocale(String strLocale, Locale defaultValue) {
         return Caster.toLocale(strLocale,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLocale(java.lang.String)
-     */
+    @Override
     public Locale toLocale(String strLocale) throws PageException {
         return Caster.toLocale(strLocale);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLong(boolean)
-     */
+    @Override
     public Long toLong(boolean b) {
         return Caster.toLong(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLong(char)
-     */
+    @Override
     public Long toLong(char c) {
         return Caster.toLong(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLong(double)
-     */
+    @Override
     public Long toLong(double d) {
         return Caster.toLong(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLong(java.lang.Object, java.lang.Long)
-     */
+    @Override
     public Long toLong(Object o, Long defaultValue) {
         return Caster.toLong(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLong(java.lang.Object)
-     */
+    @Override
     public Long toLong(Object o) throws PageException {
         return Caster.toLong(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLongValue(boolean)
-     */
+    @Override
     public long toLongValue(boolean b) {
         return Caster.toLongValue(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLongValue(char)
-     */
+    @Override
     public long toLongValue(char c) {
         return Caster.toLongValue(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLongValue(double)
-     */
+    @Override
     public long toLongValue(double d) {
         return Caster.toLongValue(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLongValue(java.lang.Object, long)
-     */
+    @Override
     public long toLongValue(Object o, long defaultValue) {
         return Caster.toLongValue(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toLongValue(java.lang.Object)
-     */
+    @Override
     public long toLongValue(Object o) throws PageException {
         return Caster.toLongValue(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toMap(java.lang.Object, boolean, java.util.Map)
-     */
+    @Override
     public Map toMap(Object o, boolean duplicate, Map defaultValue) {
         return Caster.toMap(o,duplicate,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toMap(java.lang.Object, boolean)
-     */
+    @Override
     public Map toMap(Object o, boolean duplicate) throws PageException {
         return Caster.toMap(o,duplicate);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toMap(java.lang.Object, java.util.Map)
-     */
+    @Override
     public Map toMap(Object o, Map defaultValue) {
         return Caster.toMap(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toMap(java.lang.Object)
-     */
+    @Override
     public Map toMap(Object o) throws PageException {
         return Caster.toMap(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toNode(java.lang.Object, org.w3c.dom.Node)
-     */
+    @Override
     public Node toNode(Object o, Node defaultValue) {
         return Caster.toNode(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toNode(java.lang.Object)
-     */
+    @Override
     public Node toNode(Object o) throws PageException {
         return Caster.toNode(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toNodeList(java.lang.Object, org.w3c.dom.NodeList)
-     */
+    @Override
     public NodeList toNodeList(Object o, NodeList defaultValue) {
         return Caster.toNodeList(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toNodeList(java.lang.Object)
-     */
+    @Override
     public NodeList toNodeList(Object o) throws PageException {
         return Caster.toNodeList(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toNull(java.lang.Object, java.lang.Object)
-     */
+    @Override
     public Object toNull(Object value, Object defaultValue) {
         return Caster.toNull(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toNull(java.lang.Object)
-     */
+    @Override
     public Object toNull(Object value) throws PageException {
         return Caster.toNull(value);
     }
@@ -868,324 +634,232 @@ public final class CastImpl implements Cast {
     	return Caster.toKey(o,defaultValue);
     }
     
-    /**
-     * @see railo.runtime.util.Cast#toPageException(java.lang.Throwable)
-     */
+    @Override
     public PageException toPageException(Throwable t) {
         return Caster.toPageException(t);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toQuery(java.lang.Object, boolean, railo.runtime.type.Query)
-     */
+    @Override
     public Query toQuery(Object o, boolean duplicate, Query defaultValue) {
         return Caster.toQuery(o,duplicate,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toQuery(java.lang.Object, boolean)
-     */
+    @Override
     public Query toQuery(Object o, boolean duplicate) throws PageException {
         return Caster.toQuery(o,duplicate);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toQuery(java.lang.Object, railo.runtime.type.Query)
-     */
+    @Override
     public Query toQuery(Object o, Query defaultValue) {
         return Caster.toQuery(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toQuery(java.lang.Object)
-     */
+    @Override
     public Query toQuery(Object o) throws PageException {
         return Caster.toQuery(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(boolean)
-     */
+    @Override
     public Boolean toRef(boolean b) {
         return Caster.toRef(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(byte)
-     */
+    @Override
     public Byte toRef(byte b) {
         return Caster.toRef(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(char)
-     */
+    @Override
     public String toRef(char c) {
         return Caster.toRef(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(railo.runtime.type.Collection)
-     */
+    @Override
     public Collection toRef(Collection o) {
         return Caster.toRef(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(double)
-     */
+    @Override
     public Double toRef(double d) {
         return Caster.toRef(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(float)
-     */
+    @Override
     public Float toRef(float f) {
         return Caster.toRef(f);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(int)
-     */
+    @Override
     public Integer toRef(int i) {
         return Caster.toRef(i);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(long)
-     */
+    @Override
     public Long toRef(long l) {
         return Caster.toRef(l);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(java.lang.Object)
-     */
+    @Override
     public Object toRef(Object o) {
         return Caster.toRef(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(short)
-     */
+    @Override
     public Short toRef(short s) {
         return Caster.toRef(s);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toRef(java.lang.String)
-     */
+    @Override
     public String toRef(String str) {
         return Caster.toRef(str);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShort(boolean)
-     */
+    @Override
     public Short toShort(boolean b) {
         return Caster.toShort(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShort(char)
-     */
+    @Override
     public Short toShort(char c) {
         return Caster.toShort(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShort(double)
-     */
+    @Override
     public Short toShort(double d) {
         return Caster.toShort(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShort(java.lang.Object, java.lang.Short)
-     */
+    @Override
     public Short toShort(Object o, Short defaultValue) {
         return Caster.toShort(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShort(java.lang.Object)
-     */
+    @Override
     public Short toShort(Object o) throws PageException {
         return Caster.toShort(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShortValue(boolean)
-     */
+    @Override
     public short toShortValue(boolean b) {
         return Caster.toShortValue(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShortValue(char)
-     */
+    @Override
     public short toShortValue(char c) {
         return Caster.toShortValue(c);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShortValue(double)
-     */
+    @Override
     public short toShortValue(double d) {
         return Caster.toShortValue(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShortValue(java.lang.Object, short)
-     */
+    @Override
     public short toShortValue(Object o, short defaultValue) {
         return Caster.toShortValue(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toShortValue(java.lang.Object)
-     */
+    @Override
     public short toShortValue(Object o) throws PageException {
         return Caster.toShortValue(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toString(boolean)
-     */
+    @Override
     public String toString(boolean b) {
         return Caster.toString(b);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toString(double)
-     */
+    @Override
     public String toString(double d) {
         return Caster.toString(d);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toString(int)
-     */
+    @Override
     public String toString(int i) {
         return Caster.toString(i);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toString(long)
-     */
+    @Override
     public String toString(long l) {
         return Caster.toString(l);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toString(java.lang.Object, java.lang.String)
-     */
+    @Override
     public String toString(Object o, String defaultValue) {
         return Caster.toString(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toString(java.lang.Object)
-     */
+    @Override
     public String toString(Object o) throws PageException {
         return Caster.toString(o);
     }
     
-    /**
-     * @see railo.runtime.util.Cast#toStruct(java.lang.Object, railo.runtime.type.Struct, boolean)
-     */
+    @Override
     public Struct toStruct(Object o, Struct defaultValue,boolean caseSensitive) {
         return Caster.toStruct(o,defaultValue,caseSensitive);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toStruct(java.lang.Object, railo.runtime.type.Struct)
-     */
+    @Override
     public Struct toStruct(Object o, Struct defaultValue) {
         return Caster.toStruct(o,defaultValue,true);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toStruct(java.lang.Object)
-     */
+    @Override
     public Struct toStruct(Object o) throws PageException {
         return Caster.toStruct(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toTimespan(java.lang.Object, railo.runtime.type.dt.TimeSpan)
-     */
+    @Override
     public TimeSpan toTimespan(Object o, TimeSpan defaultValue) {
         return Caster.toTimespan(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toTimespan(java.lang.Object)
-     */
+    @Override
     public TimeSpan toTimespan(Object o) throws PageException {
         return Caster.toTimespan(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toTypeName(java.lang.Object)
-     */
+    @Override
     public String toTypeName(Object o) {
         return Caster.toTypeName(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toUUId(java.lang.Object, java.lang.Object)
-     */
+    @Override
     public Object toUUId(Object o, Object defaultValue) {
         return Caster.toUUId(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toUUId(java.lang.Object)
-     */
+    @Override
     public Object toUUId(Object o) throws PageException {
         return Caster.toUUId(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toVariableName(java.lang.Object, java.lang.Object)
-     */
+    @Override
     public Object toVariableName(Object obj, Object defaultValue) {
         return Caster.toVariableName(obj,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toVariableName(java.lang.Object)
-     */
+    @Override
     public Object toVariableName(Object o) throws PageException {
         return Caster.toVariableName(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toVoid(java.lang.Object, java.lang.Object)
-     */
+    @Override
     public Object toVoid(Object o, Object defaultValue) {
         return Caster.toVoid(o,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toVoid(java.lang.Object)
-     */
+    @Override
     public Object toVoid(Object o) throws PageException {
         return Caster.toVoid(o);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toXML(java.lang.Object, org.w3c.dom.Node)
-     */
+    @Override
     public Node toXML(Object value, Node defaultValue) {
         return Caster.toXML(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.util.Cast#toXML(java.lang.Object)
-     */
+    @Override
     public Node toXML(Object value) throws PageException {
         return Caster.toXML(value);
     }
@@ -1195,20 +869,14 @@ public final class CastImpl implements Cast {
         return singelton;
     }
 
-	/**
-	 *
-	 * @see railo.runtime.util.Cast#toResource(java.lang.Object)
-	 */
+	@Override
 	public Resource toResource(Object obj) throws PageException {
 		if(obj instanceof Resource) return (Resource) obj;
 		if(obj instanceof File) return ResourceUtil.toResource((File) obj);
 		return ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), toString(obj));
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.util.Cast#toResource(java.lang.Object, railo.commons.io.res.Resource)
-	 */
+	@Override
 	public Resource toResource(Object obj, Resource defaultValue) {
 		if(obj instanceof Resource) return (Resource) obj;
 		String path=toString(obj,null);
@@ -1216,23 +884,17 @@ public final class CastImpl implements Cast {
 		return ResourceUtil.toResourceNotExisting(ThreadLocalPageContext.get(), path);
 	}
 
-	/**
-	 * @see railo.runtime.util.Cast#to(java.lang.String, java.lang.Object, boolean)
-	 */
+	@Override
 	public Object to(String type, Object o,boolean alsoPattern) throws PageException {
 		return Caster.castTo(ThreadLocalPageContext.get(), type, o,alsoPattern);
 	}
 
-	/**
-	 * @see railo.runtime.util.Cast#toSerializable(java.lang.Object)
-	 */
+	@Override
 	public Serializable toSerializable(Object obj) throws PageException {
 		return Caster.toSerializable(obj);
 	}
 
-	/**
-	 * @see railo.runtime.util.Cast#toSerializable(java.lang.Object, java.io.Serializable)
-	 */
+	@Override
 	public Serializable toSerializable(Object object, Serializable defaultValue) {
 		return Caster.toSerializable(object, defaultValue);
 	}

@@ -27,9 +27,7 @@ public final class Location extends TagImpl {
 	private int statuscode=302;
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		addtoken=true;
@@ -72,9 +70,7 @@ public final class Location extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		try {
 			pageContext.getOut().clear();
@@ -126,9 +122,7 @@ public final class Location extends TagImpl {
 		return ac.isSetClientManagement() || ac.isSetSessionManagement();
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

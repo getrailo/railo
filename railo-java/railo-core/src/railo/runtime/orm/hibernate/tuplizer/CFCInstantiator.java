@@ -44,16 +44,12 @@ public class CFCInstantiator implements Instantiator {
 		}
 	}
 
-	/**
-	 * @see org.hibernate.tuple.Instantiator#instantiate(java.io.Serializable)
-	 */
+	@Override
 	public final Object instantiate(Serializable id) {
 		return instantiate();
 	}
 
-	/**
-	 * @see org.hibernate.tuple.Instantiator#instantiate()
-	 */
+	@Override
 	public final Object instantiate() {
 		try {
 			PageContextImpl pc = (PageContextImpl) ThreadLocalPageContext.get();
@@ -66,9 +62,7 @@ public class CFCInstantiator implements Instantiator {
 		}
 	}
 
-	/**
-	 * @see org.hibernate.tuple.Instantiator#isInstance(java.lang.Object)
-	 */
+	@Override
 	public final boolean isInstance(Object object) {
 		Component cfc = Caster.toComponent(object,null);
 		if(cfc==null) return false;

@@ -72,10 +72,7 @@ public final class HttpParam extends TagImpl {
 	}
 
 
-	/**
-	* @throws ApplicationException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws ApplicationException	{
         if(param.getName()==null &&
                 (!"body".equalsIgnoreCase(param.getType()) &&
@@ -99,16 +96,12 @@ public final class HttpParam extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		param=new HttpParamBean();

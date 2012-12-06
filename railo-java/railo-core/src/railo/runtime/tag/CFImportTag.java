@@ -18,9 +18,7 @@ import railo.runtime.type.List;
 public final class CFImportTag extends CFTag {
 
     
-	/**
-	 * @see railo.runtime.tag.CFTag#initFile()
-	 */
+	@Override
 	public void initFile() throws PageException {
 		ConfigWeb config = pageContext.getConfig();
         

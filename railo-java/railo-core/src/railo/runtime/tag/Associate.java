@@ -32,9 +32,7 @@ public final class Associate extends TagImpl {
 	/** The name of the base tag. */
 	private String basetag;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		datacollection=ASSOC_ATTRS;
@@ -57,10 +55,7 @@ public final class Associate extends TagImpl {
 	}
 
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		// current
@@ -130,9 +125,7 @@ public final class Associate extends TagImpl {
         return null;
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

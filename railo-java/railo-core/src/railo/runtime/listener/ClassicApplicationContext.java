@@ -157,9 +157,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 	}
     
     
-    /**
-     * @see railo.runtime.util.IApplicationContext#getApplicationTimeout()
-     */
+    @Override
     public TimeSpan getApplicationTimeout() {
         return applicationTimeout;
     }
@@ -169,9 +167,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setApplicationTimeout(TimeSpan applicationTimeout) {
         this.applicationTimeout = applicationTimeout;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#getLoginStorage()
-     */
+    @Override
     public int getLoginStorage() {
         return loginStorage;
     }
@@ -188,9 +184,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     
     
     
-    /**
-     * @see railo.runtime.util.IApplicationContext#getFullName()
-     */
+    @Override
     public String getName() {
         return name;
     }
@@ -200,9 +194,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setName(String name) {
         this.name = name;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#getSessionTimeout()
-     */
+    @Override
     public TimeSpan getSessionTimeout() {
         return sessionTimeout;
     }
@@ -226,9 +218,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.clientTimeout = clientTimeout;
     }
     
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetClientCookies()
-     */
+    @Override
     public boolean isSetClientCookies() {
         return setClientCookies;
     }
@@ -238,9 +228,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetClientCookies(boolean setClientCookies) {
         this.setClientCookies = setClientCookies;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetClientManagement()
-     */
+    @Override
     public boolean isSetClientManagement() {
         return setClientManagement;
     }
@@ -250,9 +238,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetClientManagement(boolean setClientManagement) {
         this.setClientManagement = setClientManagement;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetDomainCookies()
-     */
+    @Override
     public boolean isSetDomainCookies() {
         return setDomainCookies;
     }
@@ -262,9 +248,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetDomainCookies(boolean setDomainCookies) {
         this.setDomainCookies = setDomainCookies;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#isSetSessionManagement()
-     */
+    @Override
     public boolean isSetSessionManagement() {
         return setSessionManagement;
     }
@@ -274,9 +258,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
     public void setSetSessionManagement(boolean setSessionManagement) {
         this.setSessionManagement = setSessionManagement;
     }
-    /**
-     * @see railo.runtime.util.IApplicationContext#getClientstorage()
-     */
+    @Override
     public String getClientstorage() {
         return clientstorage;
     }
@@ -293,9 +275,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
         this.sessionstorage = sessionstorage;
     }
 
-    /**
-     * @see railo.runtime.util.IApplicationContext#hasName()
-     */
+    @Override
     public boolean hasName() {
         return name!=null;
     }
@@ -307,9 +287,7 @@ public class ClassicApplicationContext extends ApplicationContextSupport {
 		this.scriptProtect=scriptProtect;
 	}
 
-	/**
-	 * @see railo.runtime.util.ApplicationContext#getScriptProtect()
-	 */
+	@Override
 	public int getScriptProtect() {
 		//if(isDefault)print.err("get:"+scriptProtect);
 		return scriptProtect;

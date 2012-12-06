@@ -42,65 +42,47 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
     	return new ComponentWrap(access, ComponentUtil.toComponentAccess(component));
     }
 
-    /**
-     * @see railo.runtime.Component#getPageSource()
-     */
+    @Override
     public PageSource getPageSource(){
     	return component.getPageSource();
     }
     
-    /**
-     * @see railo.runtime.Component#keySet()
-     */
+    @Override
     public Set keySet() {
         return component.keySet(access);
     }
 
-    /**
-     * @see railo.runtime.Component#getDisplayName()
-     */
+    @Override
     public String getDisplayName() {
         return component.getDisplayName();
     }
 
-    /**
-     * @see railo.runtime.Component#getExtends()
-     */
+    @Override
     public String getExtends() {
         return component.getExtends();
     }
 
-    /**
-     * @see railo.runtime.Component#getHint()
-     */
+    @Override
     public String getHint() {
         return component.getHint();
     }
 
-    /**
-     * @see railo.runtime.Component#getName()
-     */
+    @Override
     public String getName() {
         return component.getName();
     }
 
-    /**
-     * @see railo.runtime.Component#getCallName()
-     */
+    @Override
     public String getCallName() {
         return component.getCallName();
     }
 
-    /**
-     * @see railo.runtime.Component#getAbsName()
-     */
+    @Override
     public String getAbsName() {
         return component.getAbsName();
     }
     
-    /**
-     * @see railo.runtime.Component#getBaseAbsName()
-     */
+    @Override
     public String getBaseAbsName() {
         return component.getBaseAbsName();
     }
@@ -109,149 +91,93 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return component.isPersistent();
 	}
 
-    /* *
-     * @see railo.runtime.Component#getBase()
-     * /
-    public Component getBase() {
-        return component.getBaseComponent();
-    }*/
-    
-    /* *
-     * @see railo.runtime.Component#getBaseComponent()
-     * /
-    public Component getBaseComponent() {
-        return component.getBaseComponent();
-    }*/
-
-    /**
-     * @see railo.runtime.Component#getOutput()
-     */
+    @Override
     public boolean getOutput() {
         return component.getOutput();
     }
 
-    /**
-     * @see railo.runtime.Component#instanceOf(java.lang.String)
-     */
+    @Override
     public boolean instanceOf(String type) {
         return component.instanceOf(type);
     }
 
-    /**
-     * @see railo.runtime.Component#isValidAccess(int)
-     */
+    @Override
     public boolean isValidAccess(int access) {
         return component.isValidAccess(access);
     }
 
-    /**
-     * @see railo.runtime.Component#getMetaData(railo.runtime.PageContext)
-     */
+    @Override
     public Struct getMetaData(PageContext pc) throws PageException {
         return component.getMetaData(pc);
     }
 
-    /**
-     * @see railo.runtime.Component#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-     */
+    @Override
     public Object call(PageContext pc, String key, Object[] args) throws PageException {
         return call(pc, KeyImpl.init(key), args);
     }
 
-	/**
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
-	 */
+	@Override
 	public Object call(PageContext pc, Collection.Key key, Object[] args) throws PageException {
 		return component.call(pc,access,key,args);
 	}
 
-    /**
-     * @see railo.runtime.Component#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-     */
+    @Override
     public Object callWithNamedValues(PageContext pc, String key, Struct args)throws PageException {
         return callWithNamedValues(pc,KeyImpl.init(key),args);
     }
 
-	/**
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pc, Collection.Key key, Struct args) throws PageException {
 		return component.callWithNamedValues(pc,access,key,args);
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#size()
-     */
+    @Override
     public int size() {
         return component.size(access);
     }
 
-    /**
-     * @see railo.runtime.type.Collection#keys()
-     */
+    @Override
     public Collection.Key[] keys() {
         return component.keys(access);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		return component.remove(key);
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return component.removeEL(key);
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#clear()
-     */
+    @Override
     public void clear() {
         component.clear();
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {
 		return component.get(access,key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		 return component.get(access,key, defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		return component.set(key,value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		return component.setEL(key,value);
 	}
 
-    /**
-     * @see railo.runtime.type.Iteratorable#keyIterator()
-     */
+    @Override
     public Iterator<Collection.Key> keyIterator() {
         return component.keyIterator(access);
     }
@@ -271,185 +197,123 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return component.valueIterator(access);
 	}
     
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
 		return component.get(access,key,null)!=null;
 	}
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    return component.toDumpData(pageContext,maxlevel,dp,access);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
         return component.castToString();
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return component.castToString(defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         return component.castToBooleanValue();
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return component.castToBoolean(defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         return component.castToDoubleValue();
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return component.castToDoubleValue(defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         return component.castToDateTime();
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return component.castToDateTime(defaultValue);
     }
 
 
-	/**
-	 * @throws PageException 
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return component.compareTo(b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return component.compareTo(dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return component.compareTo(str);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return component.compareTo(d);
 	}
 
-    /**
-     *
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object get(PageContext pc, String key, Object defaultValue) {
+    /*public Object get(PageContext pc, String key, Object defaultValue) {
         return get(pc,KeyImpl.init(key),defaultValue);
-    }
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
 		return component.get(access,key,defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
-     */
-    public Object get(PageContext pc, String key) throws PageException {
+    /*public Object get(PageContext pc, String key) throws PageException {
         return get(pc,KeyImpl.init(key));
-    }
+    }*/
 
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
 		return component.get(access,key);
 	}
     
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     */
+    @Override
     public Collection duplicate(boolean deepCopy) {
     	return new ComponentWrap(access,(ComponentAccess) component.duplicate(deepCopy));
     }
 
-    /**
-     * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object set(PageContext pc, String propertyName, Object value) throws PageException {
+    /*public Object set(PageContext pc, String propertyName, Object value) throws PageException {
         return component.set(propertyName,value);
-    }
+    }*/
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
 		return component.set(propertyName,value);
 	}
 
-    /**
-     *
-     * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-     */
-    public Object setEL(PageContext pc, String propertyName, Object value) {
+    /*public Object setEL(PageContext pc, String propertyName, Object value) {
         return component.setEL(propertyName,value);
-    }
+    }*/
 
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(PageContext pc, Key propertyName, Object value) {
 		return component.setEL(propertyName,value);
 	}
 
-    /**
-     *
-     * @see railo.runtime.Component#getAccess()
-     */
     public int getAccess() {
         return access;
     }
 
-	/**
-	 *
-	 * @see railo.runtime.Component#getJavaAccessClass(railo.commons.lang.types.RefBoolean)
-	 */
+	@Override
 	public Class getJavaAccessClass(RefBoolean isNew) throws PageException {
 		return component.getJavaAccessClass(isNew);
 	}
@@ -468,9 +332,7 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return ((ComponentPro)component).getProperties(onlyPeristent,includeBaseProperties, overrideProperties, inheritedMappedSuperClassOnly);
 	}
 
-	/**
-	 * @see railo.runtime.Component#getComponentScope()
-	 */
+	@Override
 	public ComponentScope getComponentScope(){
 		return component.getComponentScope();
 	}
@@ -479,23 +341,16 @@ public final class ComponentWrap extends StructSupport implements ComponentPro, 
 		return component;
 	}
 
-	/**
-	 * @see railo.runtime.Component#contains(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean contains(PageContext pc, Key key) {
 		return component.contains(access,key);
 	}
 
-	/**
-	 * @see railo.runtime.Component#getMember(int, railo.runtime.type.Collection.Key, boolean, boolean)
-	 */
 	public Member getMember(int access, Key key, boolean dataMember,boolean superAccess) {
 		return component.getMember(access, key, dataMember, superAccess);
 	}
 
-	/**
-	 * @see railo.runtime.Component#setProperty(railo.runtime.component.Property)
-	 */
+	@Override
 	public void setProperty(Property property) throws PageException {
 		component.setProperty(property);
 	}

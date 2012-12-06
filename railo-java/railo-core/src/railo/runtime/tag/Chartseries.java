@@ -22,10 +22,7 @@ public final class Chartseries extends BodyTagImpl {
 	private Query query;
 	private String valueColumn;
 	
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		series=new ChartSeriesBean();
@@ -164,10 +161,7 @@ public final class Chartseries extends BodyTagImpl {
 		return EVAL_BODY_INCLUDE;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.TagImpl#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws JspException {
 
 		ChartDataBean data;
