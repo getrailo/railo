@@ -50,9 +50,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return StructUtil.sizeOf(this);
 	}
 	
-	/**
-	 * @see java.util.Map#entrySet()
-	 */
+	@Override
 	public Set entrySet() {
 		return StructUtil.entrySet(this);
 	}
@@ -77,9 +75,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return setEL(KeyImpl.toKey(key,null), value);
 	}
 
-	/**
-	 * @see java.util.Map#putAll(java.util.Map)
-	 */
+	@Override
 	public final void putAll(Map t) {
 		StructUtil.putAll(this, t);
 	}
@@ -195,9 +191,7 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
 		return LazyConverter.serialize(this);
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return StructUtil.values(this);
 	}

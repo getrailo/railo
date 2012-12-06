@@ -42,9 +42,7 @@ public abstract class StorageScopeMemory extends StorageScopeImpl implements Mem
 	
 
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getStorageType()
-	 */
+	@Override
 	public String getStorageType() {
 		return "Memory";
 	}

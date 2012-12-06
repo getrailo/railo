@@ -59,147 +59,107 @@ public final class SVArray extends ArrayImpl implements Reference {
         this.position = position;
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#getKey()
-     */
+    @Override
     public Collection.Key getKey() {
         return KeyImpl.init(Caster.toString(position));
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#getKeyAsString()
-     */
+    @Override
     public String getKeyAsString() {
         return Caster.toString(position);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
-     */
+    @Override
     public Object get(PageContext pc) throws PageException {
         return getE(position);
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, Object defaultValue) {
         return get(position,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
-     */
+    @Override
     public Object touch(PageContext pc) throws PageException {
         Object o=get(position,null);
         if(o!=null) return o;
         return setE(position,new StructImpl());
     }
     
-    /**
-     * @see railo.runtime.type.ref.Reference#touchEL(railo.runtime.PageContext)
-     */
+    @Override
     public Object touchEL(PageContext pc) {
         Object o=get(position,null);
         if(o!=null) return o;
         return setEL(position,new StructImpl());
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc, Object value) throws PageException {
         return setE(position,value);
     }
     
-    /**
-     * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object setEL(PageContext pc, Object value) {
         return setEL(position,value);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#remove(railo.runtime.PageContext)
-     */
+    @Override
     public Object remove(PageContext pc) throws PageException {
         return removeE(position);
     }
     
-    /**
-     * @see railo.runtime.type.ref.Reference#removeEL(railo.runtime.PageContext)
-     */
+    @Override
     public Object removeEL(PageContext pc) {
         return removeEL(position);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#getParent()
-     */
+    @Override
     public Object getParent() {
         return this;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
         return Caster.toString(getE(position));
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		Object value = get(position,null);
 		if(value==null) return defaultValue;
 		return Caster.toString(value,defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         return Caster.toBooleanValue(getE(position));
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
     	Object value = get(position,defaultValue); 
     	if(value==null)return defaultValue;
         return Caster.toBoolean(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         return Caster.toDoubleValue(getE(position));
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
     	Object value = get(position,null);
     	if(value==null)return defaultValue;
         return Caster.toDoubleValue(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         return Caster.toDate(getE(position),null);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         Object value = get(position,defaultValue);
         if(value==null)return defaultValue;
@@ -207,56 +167,39 @@ public final class SVArray extends ArrayImpl implements Reference {
     }
 
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((Date)castToDateTime(), (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToString(), str);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ArrayImpl#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table= (DumpTable) super.toDumpData(pageContext, maxlevel,dp);
 		table.setTitle("SV Array");
 		return table;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ArrayImpl#clone()
-	 */
+	@Override
 	public synchronized Object clone() {
 		return duplicate(true);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.ArrayImpl#duplicate(boolean)
-	 */
+	@Override
 	public synchronized Collection duplicate(boolean deepCopy) {
 		SVArray sva = new SVArray();
 		duplicate(sva,deepCopy);

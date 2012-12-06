@@ -58,9 +58,7 @@ public class StructImpl extends StructSupport {
     }
     
 	
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		return map.g(key, defaultValue); // NULL Support
 		/* NULL old behavior
@@ -72,10 +70,7 @@ public class StructImpl extends StructSupport {
 		return defaultValue;*/
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {//print.out("k:"+(kcount++));
 		return map.g(key); // NULL Support
 		/* NULL Old behavior
@@ -87,26 +82,20 @@ public class StructImpl extends StructSupport {
 		throw invalidKey(this,key);*/
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		// NULL Support map.put(key,value==null?NULL:value);
 		map.put(key,value);
 		return value;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		map.put(key,value);
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return map.size();
 	}
@@ -136,18 +125,7 @@ public class StructImpl extends StructSupport {
 		}
 	}
 
-	/* *
-	 * @see railo.runtime.type.Collection#remove(java.lang.String)
-	 * /
-	public Object remove (String key) throws PageException {
-		Object obj= map.remove (KeyImpl.init(key));
-		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
-		return obj;
-	}*/
-
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		return map.r(key); // NULL Support
 		/* NULL old behavior
@@ -156,25 +134,18 @@ public class StructImpl extends StructSupport {
 		return obj;*/
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return map.remove(key);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		map.clear();
 	}
 
 	
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImpl(getType());
 		copy(this,sct,deepCopy);
@@ -199,9 +170,7 @@ public class StructImpl extends StructSupport {
 	
 	
 	
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return map.keySet().iterator();
 	}
@@ -216,30 +185,22 @@ public class StructImpl extends StructSupport {
 		return this.map.entrySet().iterator();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		return values().iterator();
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#_contains(java.lang.String)
-     */
+    @Override
     public boolean containsKey(Collection.Key key) {
         return map.containsKey(key);
     }
     
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return map.containsValue(value);
 	}
 	
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection<Object> values() {
 		return map.values();
 	}

@@ -96,115 +96,81 @@ public abstract class UDFGSProperty extends UDFImpl {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getFunctionArguments()
-	 */
+	@Override
 	public FunctionArgument[] getFunctionArguments() {
 		return arguments;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getFunctionName()
-	 */
+	@Override
 	public String getFunctionName() {
 		return name;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getOwnerComponent()
-	 */
+	@Override
 	public Component getOwnerComponent() {
 		return component;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getPage()
-	 */
 	public Page getPage() {
 		throw new PageRuntimeException(new DeprecatedException("method getPage():Page is no longer suppoted, use instead getPageSource():PageSource"));
-        //return component.getPage();
-	}
+    }
 
-	/**
-	 * @see railo.runtime.type.UDF#getOutput()
-	 */
+	@Override
 	public boolean getOutput() {
 		return false;
 	}
 
-	/**
-	 * @see railo.runtime.component.Member#getAccess()
-	 */
+	@Override
 	public int getAccess() {
 		return Component.ACCESS_PUBLIC;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getDisplayName()
-	 */
+	@Override
 	public String getDisplayName() {
 		return "";
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getDescription()
-	 */
+	@Override
 	public String getDescription() {
 		return "";
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getHint()
-	 */
+	@Override
 	public String getHint() {
 		return "";
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnFormat()
-	 */
+	@Override
 	public int getReturnFormat() {
 		return UDFImpl.RETURN_FORMAT_WDDX;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnType()
-	 */
+	@Override
 	public int getReturnType() {
 		return CFTypes.toShortStrict(getReturnTypeAsString(),CFTypes.TYPE_UNKNOW);
 	}
 
-	/**
-	 * @see railo.runtime.component.Member#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		return this;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getSecureJson()
-	 */
+	@Override
 	public Boolean getSecureJson() {
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getVerifyClient()
-	 */
+	@Override
 	public Boolean getVerifyClient() {
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties properties) {
 		return UDFImpl.toDumpData(pageContext, maxlevel, properties, this,false);
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getMetaData(railo.runtime.PageContext)
-	 */
+	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
 		return super.getMetaData(pc);
 		//return UDFImpl.getMetaData(pc, this);

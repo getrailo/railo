@@ -48,9 +48,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		return "struct".equalsIgnoreCase(t);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#duplicate()
-	 */
+	@Override
 	public UDF duplicate(ComponentImpl c) {
 		return new UDFRemoveProperty(c,prop);
 	}
@@ -60,9 +58,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		return duplicate(component);
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-	 */
+	@Override
 	public Object call(PageContext pageContext, Object[] args,boolean doIncludePath) throws PageException {
 		if(args.length<1)
 			throw new ExpressionException("The parameter "+this.arguments[0].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
@@ -70,9 +66,7 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		return remove(pageContext, args[0]);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,boolean doIncludePath) throws PageException {
 		UDFImpl.argumentCollection(values,getFunctionArguments());
 		Key key = arguments[0].getName();
@@ -134,23 +128,17 @@ public final class UDFRemoveProperty extends UDFGSProperty {
 		
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object implementation(PageContext pageContext) throws Throwable {
 		return null;
 	}
 	
-	/**
-	 * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public Object getDefaultValue(PageContext pc, int index) throws PageException {
 		return prop.getDefault();
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
-	 */
+	@Override
 	public String getReturnTypeAsString() {
 		return "boolean";
 	}

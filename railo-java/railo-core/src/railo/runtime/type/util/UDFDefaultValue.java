@@ -35,9 +35,7 @@ public class UDFDefaultValue implements ObjectWrap,Castable {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.ObjectWrap#getEmbededObject()
-	 */
+	@Override
 	public Object getEmbededObject() {
 		try {
             Object defaultValue = udf.getDefaultValue(ThreadLocalPageContext.get(), index);
@@ -51,93 +49,67 @@ public class UDFDefaultValue implements ObjectWrap,Castable {
 		return COMPLEX_DEFAULT_TYPE;
 	}
 	
-	/**
-	 * @see railo.runtime.type.ObjectWrap#getEmbededObject(java.lang.Object)
-	 */
+	@Override
 	public Object getEmbededObject(Object defaultValue) {
 		return getEmbededObject();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return Caster.toBooleanValue(getEmbededObject());
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
     	return Caster.toBoolean(getEmbededObject(),defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return Caster.toDatetime(getEmbededObject(),null);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return DateCaster.toDateAdvanced(getEmbededObject(),true,null,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return Caster.toDoubleValue(getEmbededObject());
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return Caster.toDoubleValue(getEmbededObject(),defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return Caster.toString(getEmbededObject());
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return Caster.toString(getEmbededObject(),defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToString(),str);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(),b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(),d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((Date)castToDateTime(), (Date)dt);
 	}

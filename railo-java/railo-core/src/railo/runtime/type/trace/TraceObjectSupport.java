@@ -34,9 +34,7 @@ public class TraceObjectSupport implements TraceObject {
 	
 
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#toString()
-	 */
+	@Override
 	
 	public String toString() {
 		

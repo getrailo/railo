@@ -51,33 +51,25 @@ public class ListAsArray implements Array,List,Sizeable {
 	}
 	
 	
-	/**
-	 * @see railo.runtime.type.Array#append(java.lang.Object)
-	 */
+	@Override
 	public Object append(Object o) throws PageException {
 		list.add(o);
 		return o;
 	}
 	
 	
-	/**
-	 * @see railo.runtime.type.Array#appendEL(java.lang.Object)
-	 */
+	@Override
 	public Object appendEL(Object o) {
 		list.add(o);
 		return o;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#containsKey(int)
-	 */
+	@Override
 	public boolean containsKey(int index) {
 		return get(index-1,null)!=null;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int key, Object defaultValue) {
 		try {
 			Object rtn = list.get(key-1);
@@ -89,9 +81,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#getE(int)
-	 */
+	@Override
 	public Object getE(int key) throws PageException {
 		try {
 			Object rtn = list.get(key-1);
@@ -103,9 +93,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#getDimension()
-	 */
+	@Override
 	public int getDimension() {
 		return 1;
 	}
@@ -140,9 +128,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		return intKeys;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#prepend(java.lang.Object)
-	 */
+	@Override
 	public Object prepend(Object o) throws PageException {
 		list.add(0,o);
 		return o;
@@ -157,9 +143,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int key) {
 		try {
 			return removeE(key);
@@ -172,9 +156,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		while(size()<to)list.add(null);
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#setE(int, java.lang.Object)
-	 */
+	@Override
 	public Object setE(int key, Object value) throws PageException {
 		if(key<=size()) {
 			try {
@@ -192,9 +174,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(int key, Object value) {
 		try {
 			return setE(key, value);
@@ -214,83 +194,60 @@ public class ListAsArray implements Array,List,Sizeable {
 		Collections.sort(list,comp);
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		return list.toArray();
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#toArrayList()
-	 */
 	public ArrayList toArrayList() {
 		return new ArrayList(list);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		list.clear();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-	 */
+	@Override
 	public boolean containsKey(String key) {
 		return get(key,null)!=null;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return get(key,null)!=null;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {new ArrayImpl().duplicate(deepCopy);
 		return new ListAsArray((List)Duplicator.duplicate(list,deepCopy));
 	}
 
 	
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws PageException {
 		return getE(Caster.toIntValue(key));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		return get(key.getString());
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		double index=Caster.toIntValue(key,Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) return defaultValue;
 	    return get((int)index,defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		return get(key.getString(),defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		int[] intKeys = intKeys();
 		Collection.Key[] keys = new Collection.Key[intKeys.length];
@@ -300,58 +257,41 @@ public class ListAsArray implements Array,List,Sizeable {
 		return keys;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		return removeE(Caster.toIntValue(key.getString()));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#removeEL(java.lang.String)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		double index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) return null;
 	    return removeEL((int)index);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 		return setE(Caster.toIntValue(key),value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		return set(key.getString(),value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {
 		double index=Caster.toIntValue(key,Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) return value;
 	    return setEL((int)index,value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		return setEL(key.getString(), value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return list.size();
 	}
@@ -360,9 +300,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		return DumpUtil.toDumpData(list, pageContext,maxlevel,dp);
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
+	@Override
 	public Iterator iterator() {
 		return list.iterator();
 	}
@@ -382,246 +320,177 @@ public class ListAsArray implements Array,List,Sizeable {
 		return new EntryIterator(this,keys());
 	}
 
-	/**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+	@Override
     public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to String",
           "Use Built-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type "+Caster.toClassName(list)+" to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type "+Caster.toClassName(list)+" with a String");
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return LazyConverter.serialize(this);
 	}
 	
-	/**
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone() {
 		return duplicate(true);
 	}
 
-	/**
-	 * @see java.util.List#addEntry(E)
-	 */
+	@Override
 	public boolean add(Object o) {
 		return list.add(o);
 	}
 
-	/**
-	 * @see java.util.List#add(int, E)
-	 */
+	@Override
 	public void add(int index, Object element) {
 		list.add(index, element);
 	}
 
-	/**
-	 * @see java.util.List#addAll(java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(java.util.Collection c) {
 		return list.addAll(c);
 	}
 
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(int index, java.util.Collection c) {
 		return list.addAll(index, c);
 	}
 
-	/**
-	 * @see java.util.List#contains(java.lang.Object)
-	 */
+	@Override
 	public boolean contains(Object o) {
 		return list.contains(o);
 	}
 
-	/**
-	 * @see java.util.List#containsAll(java.util.Collection)
-	 */
+	@Override
 	public boolean containsAll(java.util.Collection c) {
 		return list.contains(c);
 	}
 
-	/**
-	 * @see java.util.List#get(int)
-	 */
+	@Override
 	public Object get(int index) {
 		return list.get(index);
 	}
 
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
+	@Override
 	public int indexOf(Object o) {
 		return list.indexOf(o);
 	}
 
-	/**
-	 * @see java.util.List#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() {
 		return list.isEmpty();
 	}
 
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
+	@Override
 	public int lastIndexOf(Object o) {
 		return list.lastIndexOf(o);
 	}
 
-	/**
-	 * @see java.util.List#listIterator()
-	 */
+	@Override
 	public ListIterator listIterator() {
 		return list.listIterator();
 	}
 
-	/**
-	 * @see java.util.List#listIterator(int)
-	 */
+	@Override
 	public ListIterator listIterator(int index) {
 		return list.listIterator(index);
 	}
 
-	/**
-	 * @see java.util.List#remove(java.lang.Object)
-	 */
+	@Override
 	public boolean remove(Object o) {
 		return list.remove(o);
 	}
 
-	/**
-	 * @see java.util.List#remove(int)
-	 */
+	@Override
 	public Object remove(int index) {
 		return list.remove(index);
 	}
 
-	/**
-	 * @see java.util.List#removeAll(java.util.Collection)
-	 */
+	@Override
 	public boolean removeAll(java.util.Collection c) {
 		return list.removeAll(c);
 	}
 
-	/**
-	 * @see java.util.List#retainAll(java.util.Collection)
-	 */
+	@Override
 	public boolean retainAll(java.util.Collection c) {
 		return list.retainAll(c);
 	}
 
-	/**
-	 * @see java.util.List#set(int, E)
-	 */
+	@Override
 	public Object set(int index, Object element) {
 		return list.set(index, element);
 	}
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
+	@Override
 	public List subList(int fromIndex, int toIndex) {
 		return list.subList(fromIndex, toIndex);
 	}
 
-	/**
-	 * @see java.util.List#toArray(T[])
-	 */
+	@Override
 	public Object[] toArray(Object[] a) {
 		return list.toArray(a);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Array#toList()
-	 */
+	@Override
 	public List toList() {
 		return this;
 	}
@@ -630,9 +499,7 @@ public class ListAsArray implements Array,List,Sizeable {
 		return list.iterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return ArrayUtil.sizeOf(list);
 	}

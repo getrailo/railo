@@ -19,45 +19,35 @@ public class TOUDF extends TOObjects implements UDF {
 	
 	
 
-	/**
-	 * @see railo.runtime.component.Member#getAccess()
-	 */
+	@Override
 	public int getAccess() {
 		log(null);
 		return udf.getAccess();
 	}
 
 
-	/**
-	 * @see railo.runtime.component.Member#getValue()
-	 */
+	@Override
 	public Object getValue() {
 		log(null);
 		return udf.getValue();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#implementation(railo.runtime.PageContext)
-	 */
+	@Override
 	public Object implementation(PageContext pageContext) throws Throwable {
 		log(null);
 		return udf.implementation(pageContext);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getFunctionArguments()
-	 */
+	@Override
 	public FunctionArgument[] getFunctionArguments() {
 		log(null);
 		return udf.getFunctionArguments();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getDefaultValue(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public Object getDefaultValue(PageContext pc, int index)
 			throws PageException {
 		log(null);
@@ -65,81 +55,63 @@ public class TOUDF extends TOObjects implements UDF {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getFunctionName()
-	 */
+	@Override
 	public String getFunctionName() {
 		log(null);
 		return udf.getFunctionName();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getOutput()
-	 */
+	@Override
 	public boolean getOutput() {
 		log(null);
 		return udf.getOutput();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnType()
-	 */
+	@Override
 	public int getReturnType() {
 		log(null);
 		return udf.getReturnType();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnFormat()
-	 */
+	@Override
 	public int getReturnFormat() {
 		log(null);
 		return udf.getReturnFormat();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getSecureJson()
-	 */
+	@Override
 	public Boolean getSecureJson() {
 		log(null);
 		return udf.getSecureJson();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getVerifyClient()
-	 */
+	@Override
 	public Boolean getVerifyClient() {
 		log(null);
 		return udf.getVerifyClient();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getReturnTypeAsString()
-	 */
+	@Override
 	public String getReturnTypeAsString() {
 		log(null);
 		return udf.getReturnTypeAsString();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getDescription()
-	 */
+	@Override
 	public String getDescription() {
 		log(null);
 		return udf.getDescription();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pageContext, Struct values,
 			boolean doIncludePath) throws PageException {
 		log(null);
@@ -147,9 +119,7 @@ public class TOUDF extends TOObjects implements UDF {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-	 */
+	@Override
 	public Object call(PageContext pageContext, Object[] args,
 			boolean doIncludePath) throws PageException {
 		log(null);
@@ -157,52 +127,40 @@ public class TOUDF extends TOObjects implements UDF {
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getDisplayName()
-	 */
+	@Override
 	public String getDisplayName() {
 		log(null);
 		return udf.getDisplayName();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getHint()
-	 */
+	@Override
 	public String getHint() {
 		log(null);
 		return udf.getHint();
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#getPageSource()
-	 */
+	@Override
 	public PageSource getPageSource() {
 		log(null);
 		return udf.getPageSource();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getMetaData(railo.runtime.PageContext)
-	 */
+	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
 		log(null);
 		return udf.getMetaData(pc);
 	}
 
-	/**
-	 * @see railo.runtime.type.UDF#duplicate()
-	 */
+	@Override
 	public UDF duplicate() {
 		log(null);
 		return udf.duplicate();
 	}
 
 
-	/**
-	 * @see railo.runtime.type.UDF#getOwnerComponent()
-	 */
+	@Override
 	public Component getOwnerComponent() {
 		log(null);
 		return udf.getOwnerComponent();

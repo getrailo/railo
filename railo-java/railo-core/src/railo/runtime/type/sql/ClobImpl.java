@@ -253,9 +253,7 @@ public final class ClobImpl implements java.sql.Clob, Serializable {
   }
   
 
-  /**
-   * @see java.lang.Object#toString()
-   */
+  @Override
   public String toString() {
       return stringData;
   }

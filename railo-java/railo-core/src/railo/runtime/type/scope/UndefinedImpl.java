@@ -63,30 +63,22 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	
-	/**
-     * @see railo.runtime.type.scope.Undefined#localScope()
-     */
+	@Override
 	public Local localScope() {
 		return local;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Undefined#argumentsScope()
-	 */
+	@Override
 	public Argument argumentsScope() {
 		return argument;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Undefined#variablesScope()
-	 */
+	@Override
 	public Variables variablesScope() {
 		return variable;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Undefined#setMode(int)
-	 */
+	@Override
 	public int setMode(int mode) {
 		int m=Undefined.MODE_NO_LOCAL_AND_ARGUMENTS;
 		if(checkArguments) {
@@ -104,80 +96,59 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 	
-	/**
-     * @see railo.runtime.type.scope.Undefined#setFunctionScopes(railo.runtime.type.scope.Scope, railo.runtime.type.scope.Scope)
-     */
+	@Override
 	public void setFunctionScopes(Local local, Argument argument) {
 		this.local=local;
 		this.argument=argument;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Undefined#getQueryStack()
-	 */
+	@Override
 	public QueryStack getQueryStack() {
 		return qryStack;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Undefined#setQueryStack(railo.runtime.util.QueryStack)
-	 */
+	@Override
 	public void setQueryStack(QueryStack qryStack) {
 		this.qryStack=(QueryStackImpl) qryStack;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Undefined#addQuery(railo.runtime.type.Query)
-	 */
+	@Override
 	public void addQuery(Query qry) {
 		if(allowImplicidQueryCall)
 			qryStack.addQuery(qry);
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Undefined#removeQuery()
-	 */
+	@Override
 	public void removeQuery() {
 		if(allowImplicidQueryCall)
 			qryStack.removeQuery();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return variable.size();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Collection.Key[] keys() {
 		return variable.keys();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		if(checkArguments && local.containsKey(key))
 			return local.remove(key);
 		return variable.remove(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		if(checkArguments && local.containsKey(key))
 			return local.removeEL(key);
 		return variable.removeEL(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		variable.clear();
 	}
@@ -247,9 +218,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		if(pc!=null)pc.getDebugger().addImplicitAccess(name,key.getString());
 	}
 	
-	/**
-     * @see railo.runtime.type.scope.Undefined#getCollection(java.lang.String)
-     */
+	@Override
 	public Object getCollection(String key) throws PageException {
 		return getCollection(KeyImpl.init(key));
 	}
@@ -419,18 +388,13 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
     }
     
     
-    /**
-     * @see railo.runtime.type.scope.Undefined#getCascading(java.lang.String)
-     */
+    @Override
     public Object getCascading(String strKey) {
         return getCascading(KeyImpl.init(strKey));
     }
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Undefined#getCascading(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object getCascading(Collection.Key key) {
         throw new RuntimeException("this method is no longer supported, use getCascading(Collection.Key key, Object defaultValue) instead");// NULL support
 		/*Object rtn=null;
@@ -459,9 +423,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
         return defaultValue;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		if(checkArguments) {
             if(localAlways || local.containsKey(key))     return local.setEL(key,value);
@@ -475,10 +437,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
     	return variable.setEL(key,value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		if(checkArguments) {
         	if(localAlways || local.containsKey(key))     return local.set(key,value);
@@ -492,16 +451,12 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
     	return variable.set(key,value);
 	}
 	
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return variable.toDumpData(pageContext, maxlevel,dp);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return variable.keyIterator();
 	}
@@ -521,16 +476,12 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		return variable.valueIterator();
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public boolean isInitalized() {
 		return isInit;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 		if(isInitalized()) return;
 		isInit=true;
@@ -614,9 +565,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		if(allowImplicidQueryCall)qryStack.clear();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		UndefinedImpl dupl = new UndefinedImpl(pc, type);
 		dupl.allowImplicidQueryCall=allowImplicidQueryCall;
@@ -644,118 +593,85 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
         return get(key,null)!=null;
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to String",
           "Use Built-In-Function \"serialize(Struct):String\" to create a String from Struct");
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Struct to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Struct with a String");
 	}
 
-    /**
-     * @see railo.runtime.type.scope.Undefined#setVariableScope(railo.runtime.type.scope.Scope)
-     */
+    @Override
     public void setVariableScope(Variables scope) {
     	variable=scope;
     }
 
-    /**
-     * @see railo.runtime.type.scope.Scope#getType()
-     */
+    @Override
     public int getType() {
         return SCOPE_UNDEFINED;
     }
 
-    /**
-     * @see railo.runtime.type.scope.Scope#getTypeAsString()
-     */
+    @Override
     public String getTypeAsString() {
         return "undefined";
     }

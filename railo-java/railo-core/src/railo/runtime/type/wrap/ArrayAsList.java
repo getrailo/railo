@@ -28,9 +28,7 @@ public class ArrayAsList implements List {
 	}
 	
 	
-	/**
-	 * @see java.util.List#addEntry(E)
-	 */
+	@Override
 	public boolean add(Object o) {
 		try {
 			array.append(o);
@@ -49,9 +47,7 @@ public class ArrayAsList implements List {
 		}
 	}
 
-	/**
-	 * @see java.util.List#addAll(java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(Collection c) {
 		Iterator it = c.iterator();
 		while(it.hasNext()) {
@@ -60,9 +56,7 @@ public class ArrayAsList implements List {
 		return !c.isEmpty();
 	}
 
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
+	@Override
 	public boolean addAll(int index, Collection c) {
 		Iterator it = c.iterator();
 		while(it.hasNext()) {
@@ -71,23 +65,17 @@ public class ArrayAsList implements List {
 		return !c.isEmpty();
 	}
 
-	/**
-	 * @see java.util.List#clear()
-	 */
+	@Override
 	public void clear() {
 		array.clear();
 	}
 
-	/**
-	 * @see java.util.List#contains(java.lang.Object)
-	 */
+	@Override
 	public boolean contains(Object o) {
 		return indexOf(o)!=-1;
 	}
 
-	/**
-	 * @see java.util.List#containsAll(java.util.Collection)
-	 */
+	@Override
 	public boolean containsAll(Collection c) {
 		Iterator it = c.iterator();
 		while(it.hasNext()) {
@@ -96,9 +84,7 @@ public class ArrayAsList implements List {
 		return true;
 	}
 
-	/**
-	 * @see java.util.List#get(int)
-	 */
+	@Override
 	public Object get(int index) {
 		try {
 			return array.getE(index+1);
@@ -117,16 +103,12 @@ public class ArrayAsList implements List {
 		return -1;
 	}
 
-	/**
-	 * @see java.util.List#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() {
 		return array.size()==0;
 	}
 
-	/**
-	 * @see java.util.List#iterator()
-	 */
+	@Override
 	public Iterator iterator() {
 		return array.valueIterator();
 	}
@@ -142,25 +124,19 @@ public class ArrayAsList implements List {
 		return rtn;
 	}
 
-	/**
-	 * @see java.util.List#listIterator()
-	 */
+	@Override
 	public ListIterator listIterator() {
 		return listIterator(0);
 	}
 
-	/**
-	 * @see java.util.List#listIterator(int)
-	 */
+	@Override
 	public ListIterator listIterator(int index) {
 		return new ArrayListIteratorImpl(array,index);
 		//return array.toList().listIterator(index);
 	}
 	
 
-	/**
-	 * @see java.util.List#remove(java.lang.Object)
-	 */
+	@Override
 	public boolean remove(Object o) {
 		int index = indexOf(o);
 		if(index==-1) return false;
@@ -211,30 +187,22 @@ public class ArrayAsList implements List {
 		}
 	}
 
-	/**
-	 * @see java.util.List#size()
-	 */
+	@Override
 	public int size() {
 		return array.size();
 	}
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
+	@Override
 	public List subList(int fromIndex, int toIndex) {
 		return array.toList().subList(fromIndex, toIndex);
 	}
 
-	/**
-	 * @see java.util.List#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		return array.toArray();
 	}
 
-	/**
-	 * @see java.util.List#toArray(T[])
-	 */
+	@Override
 	public Object[] toArray(Object[] a) {
 		return array.toArray();
 	}

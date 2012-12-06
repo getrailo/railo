@@ -11,12 +11,7 @@ public final class VariablesImpl extends ScopeSupport implements Variables {
 		super("variables",SCOPE_VARIABLES,Struct.TYPE_REGULAR);
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Variables#registerUDF(railo.runtime.type.Collection.Key, railo.runtime.type.UDF)
-	 */
 	public void registerUDF(Key key, UDF udf) {
-		
-		
 		setEL(key, udf);
 	}
 

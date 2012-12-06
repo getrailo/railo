@@ -64,17 +64,13 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 		this.res=other.res;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#touchBeforeRequest(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchBeforeRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchBeforeRequest(pc);
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#touchAfterRequest(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchAfterRequest(pc);
@@ -83,9 +79,7 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 	
 	
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#store(railo.runtime.config.Config)
-	 */
+	@Override
 	public void store(Config config) {
 		//if(!super.hasContent()) return;
 		try {
@@ -163,9 +157,7 @@ public abstract class StorageScopeFile extends StorageScopeImpl {
 	}
 	
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getStorageType()
-	 */
+	@Override
 	public String getStorageType() {
 		return STORAGE_TYPE;
 	}

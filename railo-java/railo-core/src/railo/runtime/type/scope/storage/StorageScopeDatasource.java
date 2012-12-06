@@ -118,9 +118,7 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	    return s;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScopeImpl#touchAfterRequest(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchAfterRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchAfterRequest(pc); 
@@ -185,18 +183,13 @@ public abstract class StorageScopeDatasource extends StorageScopeImpl {
 	
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ClientSupportOld#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchBeforeRequest(PageContext pc) {
 		setTimeSpan(pc);
 		super.touchBeforeRequest(pc);
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getStorageType()
-	 */
+	@Override
 	public String getStorageType() {
 		return "Datasource";
 	}

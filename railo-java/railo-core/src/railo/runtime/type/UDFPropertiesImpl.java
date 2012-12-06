@@ -224,9 +224,7 @@ public final class UDFPropertiesImpl implements UDFProperties {
 				"","", "", null, null, 0L, null, null);
 	}
 
-	/**
-	 * @see railo.runtime.engine.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return 
 		SizeOf.size(functionName)+

@@ -22,9 +22,7 @@ public class ListIteratorImpl implements ListIterator {
 		this.index=index-1;
 	}
 
-	/**
-	 * @see java.util.ListIterator#addEntry(E)
-	 */
+	@Override
 	public void add(Object o) {
 		list.add(++index,o);
 	}

@@ -14,16 +14,12 @@ public final class SimpleCredentials implements Credentials {
         this.password=password;
     }
     
-    /**
-     * @see railo.runtime.user.Credentials#getUsername()
-     */
+    @Override
     public String getUsername() {
         return username;
     }
 
-    /**
-     * @see railo.runtime.user.Credentials#getPassword()
-     */
+    @Override
     public String getPassword() {
         return password;
     }

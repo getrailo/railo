@@ -35,9 +35,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	public static final short TYPE_CHARACTER = 8;
 	public static final short TYPE_STRING = 9;
 	
-	/**
-	 * @see java.util.List#add(int, E)
-	 */
+	@Override
 	public final void add(int index, Object element) {
 		try {
 			insert(index+1, element);
@@ -47,9 +45,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		}
 	}
 
-	/**
-	 * @see java.util.List#addAll(java.util.Collection)
-	 */
+	@Override
 	public final boolean addAll(java.util.Collection c) {
 		Iterator it = c.iterator();
 		while(it.hasNext()) {
@@ -58,9 +54,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		return true;
 	}
 	
-	/**
-	 * @see java.util.List#remove(java.lang.Object)
-	 */
+	@Override
 	public final boolean remove(Object o) {
 		int index = indexOf(o);
 		if(index==-1) return false;
@@ -73,9 +67,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		return true;
 	}
 
-	/**
-	 * @see java.util.List#removeAll(java.util.Collection)
-	 */
+	@Override
 	public final boolean removeAll(java.util.Collection c) {
 		Iterator it = c.iterator();
 		boolean rtn=false;
@@ -85,9 +77,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		return rtn;
 	}
 
-	/**
-	 * @see java.util.List#retainAll(java.util.Collection)
-	 */
+	@Override
 	public final boolean retainAll(java.util.Collection c) {
 		boolean modified = false;
 		Key[] keys = CollectionUtil.keys(this);
@@ -102,9 +92,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		return modified;
 	}
 
-	/**
-	 * @see java.util.List#toArray(T[])
-	 */
+	@Override
 	public final Object[] toArray(Object[] a) {
 		if(a==null) return toArray();
 		
@@ -166,9 +154,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		return a;
 	}
 
-	/**
-	 * @see java.util.List#get(int)
-	 */
+	@Override
 	public final Object get(int index) {
 		if(index<0)	
 			throw new IndexOutOfBoundsException("invalid index defintion ["+index+"], " +
@@ -180,9 +166,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		return get(index+1, null); 
 	}
 
-	/**
-	 * @see java.util.List#remove(int)
-	 */
+	@Override
 	public final Object remove(int index) {
 		if(index<0)	
 			throw new IndexOutOfBoundsException("invalid index defintion ["+index+"], " +
@@ -194,9 +178,7 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 		return removeEL(index+1); 
 	}
 
-	/**
-	 * @see java.util.List#set(int, java.lang.Object)
-	 */
+	@Override
 	public final Object set(int index, Object element) {
 		Object o=get(index);
 		setEL(index+1, element); 
@@ -204,143 +186,104 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 	}
 	
 
-    /**
-     * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-     */
+    @Override
     public boolean containsKey(String key) {
     	return get(KeyImpl.init(key),null)!=null;
     }
     
-    /**
-     * @see railo.runtime.type.Collection#_contains(java.lang.String)
-     */
+    @Override
     public boolean containsKey(Collection.Key key) {
         return get(key,null)!=null;
     }
 
-    /**
-     * @see railo.runtime.type.Array#containsKey(int)
-     */
+    @Override
     public boolean containsKey(int key) {
         return get(key,null)!=null;
     }
 
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return LazyConverter.serialize(this);
 	}
 	
-	/**
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public synchronized Object clone() {
 		return duplicate(true);
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Array to String",
           "Use Built-In-Function \"serialize(Array):String\" to create a String from Array");
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString(java.lang.String)
-     */
+    @Override
     public String castToString(String defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Array to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
     
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Array to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
     
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         throw new ExpressionException("Can't cast Complex Object Type Array to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Array with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Array with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Array with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Array with a String");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#toList()
-	 */
+	@Override
 	public List toList() {
 		return this;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		return iterator();
 	}

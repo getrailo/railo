@@ -119,9 +119,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
         id=++_id;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchBeforeRequest(PageContext pc) {
 		
 		hasChanges=false;
@@ -219,26 +217,17 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		sct.clear();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return sct.containsKey(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		return sct.get(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		return sct.get(key, defaultValue);
 	}
@@ -263,149 +252,103 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		return sct.valueIterator();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public railo.runtime.type.Collection.Key[] keys() {
 		return CollectionUtil.keys(this);
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		hasChanges=true;
 		return sct.remove(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		hasChanges=true;
 		return sct.removeEL(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		hasChanges=true;
 		return sct.set(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		hasChanges=true;
 		return sct.setEL(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return sct.size();
 	}
 
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return sct.castToBooleanValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return sct.castToBoolean(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return sct.castToDateTime();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return sct.castToDateTime(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return sct.castToDoubleValue();
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return sct.castToDoubleValue(defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return sct.castToString();
 	}
 	
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return sct.castToString(defaultValue);
 	}
 
-	/**
-	 * @throws PageException 
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return sct.compareTo(b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return sct.compareTo(dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return sct.compareTo(d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return sct.compareTo(str);
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#lastVisit()
-	 */
+	@Override
 	public long lastVisit() {
 		return lastvisit;
 	}
@@ -421,16 +364,12 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 		return keys.toArray(new Collection.Key[keys.size()]);
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#store(railo.runtime.config.Config)
-	 */
+	@Override
 	public void store(Config config){
 		//do nothing
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#unstore(railo.runtime.config.Config)
-	 */
+	@Override
 	public void unstore(Config config){
 		//do nothing
 	}
@@ -443,23 +382,17 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	}
 	
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return sct.containsValue(value);
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return sct.values();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(sct);
 	}
@@ -474,9 +407,7 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 	
 	
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public final DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this, StringUtil.ucFirst(getTypeAsString())+" Scope ("+getStorageType()+")", pageContext, maxlevel, dp);
 	}
@@ -497,16 +428,12 @@ public abstract class StorageScopeImpl extends StructSupport implements StorageS
 
 
 	
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#setStorage(java.lang.String)
-	 */
+	@Override
 	public void setStorage(String storage) {
 		this.storage=storage;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.storage.StorageScope#getStorage()
-	 */
+	@Override
 	public String getStorage() {
 		return storage;
 	}

@@ -30,77 +30,54 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
         this.key=key;
     }
     
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#getKey()
-     */
+    @Override
     public Collection.Key getKey() {
         return key;
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#getKeyAsString()
-     */
+    @Override
     public String getKeyAsString() {
         return key.getString();
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
-     */
+    @Override
     public Object get(PageContext pc) throws PageException {
         return get(key);
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, Object defaultValue) {
         return get(key,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc, Object value) throws PageException {
         return set(key,value);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object setEL(PageContext pc, Object value) {
         return setEL(key,value);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#remove(railo.runtime.PageContext)
-     */
+    @Override
     public Object remove(PageContext pc) throws PageException {
         return remove(key);
     }
     
-    /**
-     * @see railo.runtime.type.ref.Reference#removeEL(railo.runtime.PageContext)
-     */
+    @Override
     public Object removeEL(PageContext pc) {
         return removeEL(key);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
-     */
+    @Override
     public Object touch(PageContext pc) throws PageException {
         Object o=get(key,null);
         if(o!=null) return o;
         return set(key,new StructImpl());
     }
     
-    /**
-     * @see railo.runtime.type.ref.Reference#touchEL(railo.runtime.PageContext)
-     */
+    @Override
     public Object touchEL(PageContext pc) {
         Object o=get(key,null);
         if(o!=null) return o;
@@ -111,9 +88,7 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
         return parent;
     }
 
-    /**
-     * @see railo.runtime.type.Collection#clear()
-     */
+    @Override
     public void clear() {
         parent.clear();
     }
@@ -138,86 +113,63 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
 		return parent.valueIterator();
 	}
 
-    /**
-     *
-     * @see railo.runtime.type.Collection#keys()
-     */
+    @Override
     public Collection.Key[] keys() {
         return parent.keys();
     }
 
-    /**
-     * @see railo.runtime.type.Collection#size()
-     */
+    @Override
     public int size() {
         return parent.size();
     }
 
-    /**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+    @Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 	    return parent.toDumpData(pageContext,maxlevel,dp);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         return Caster.toBooleanValue(get(key));
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
     	Object value = get(key,defaultValue); 
     	if(value==null)return defaultValue;
         return Caster.toBoolean(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         return Caster.toDate(get(key),null);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         Object value = get(key,defaultValue);
         if(value==null)return defaultValue;
     	return DateCaster.toDateAdvanced(value, true, null, defaultValue); 
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         return Caster.toDoubleValue(get(key));
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
     	Object value=get(key,null);
     	if(value==null)return defaultValue;
         return Caster.toDoubleValue(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
         return Caster.toString(get(key));
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		Object value = get(key,null);
 		if(value==null) return defaultValue;
@@ -226,37 +178,27 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
 	}
 
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((Date)castToDateTime(), (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToString(), str);
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     */
+    @Override
     public Collection duplicate(boolean deepCopy) {
         SVStruct svs = new SVStruct(key);
         ThreadLocalDuplication.set(this, svs);
@@ -277,73 +219,49 @@ public final class SVStruct extends StructSupport implements Reference,Struct {
 	
     
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
 		return parent.containsKey(key);
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {
 		return parent.get(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		return parent.get(key, defaultValue);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		return parent.remove(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return parent.removeEL(key);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		return parent.set(key, value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		return parent.setEL(key, value);
 	}
 
-	/**
-	 * @see java.util.Map#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		return parent.containsValue(value);
 	}
 
-	/**
-	 * @see java.util.Map#values()
-	 */
+	@Override
 	public java.util.Collection values() {
 		return parent.values();
 	}
