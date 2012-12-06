@@ -669,38 +669,27 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return columnList;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return columncount;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Collection.Key[] keys() {
 		return columnNames;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
 		return setEL(key,null);
 	}
 
-	/**
-	 * @throws PageException 
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		return set(key,null);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		for(int i=0;i<columns.length;i++) {
             columns[i].clear();
@@ -708,10 +697,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         recordcount=0;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		return getAt(key,
 				arrCurrentRow.get(getPid(), 1),
@@ -729,38 +715,28 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return pc.getId();
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		return getAt(key,
 				arrCurrentRow.get(getPid(), 1),
 				defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws PageException {
 		return getAt(key,
 				arrCurrentRow.get(getPid(), 1)
 				);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {
 		return getAt(key,
 				arrCurrentRow.get(getPid(), 1)
 				);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Query#getAt(java.lang.String, int, java.lang.Object)
-	 */
+	@Override
 	public Object getAt(String key, int row, Object defaultValue) {
 		int index=getIndexFromKey(key);
 		if(index!=-1) {
@@ -797,9 +773,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return null;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Query#getAt(java.lang.String, int)
-	 */
+	@Override
 	public Object getAt(String key, int row) throws PageException {
 		//print.err("str:"+key);
         int index=getIndexFromKey(key);
@@ -819,9 +793,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
 
-	/**
-	 * @see railo.runtime.type.Query#getAt(railo.runtime.type.Collection.Key, int)
-	 */
+	@Override
 	public Object getAt(Collection.Key key, int row) throws PageException {
 		int index=getIndexFromKey(key);
 		if(index!=-1) {
@@ -840,9 +812,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
 
-    /**
-     * @see railo.runtime.type.Query#removeRow(int)
-     */
+    @Override
     public synchronized int removeRow(int row) throws PageException {
         //disconnectCache();
         
@@ -852,9 +822,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return --recordcount;
     }
 
-    /**
-     * @see railo.runtime.type.Query#removeRowEL(int)
-     */
+    @Override
     public int removeRowEL(int row) {
         //disconnectCache();
         
@@ -865,9 +833,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         }
     }
     
-    /**
-     * @see railo.runtime.type.Query#removeColumn(java.lang.String)
-     */
+    @Override
     public QueryColumn removeColumn(String key) throws DatabaseException {
         //disconnectCache();
         
@@ -881,9 +847,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return removed;
     }
 
-	/**
-	 * @see railo.runtime.type.Query#removeColumn(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public QueryColumn removeColumn(Collection.Key key) throws DatabaseException {
 		//disconnectCache();
         
@@ -899,9 +863,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return removed;
 	}
 
-    /**
-     * @see railo.runtime.type.Query#removeColumnEL(java.lang.String)
-     */
+    @Override
     public synchronized QueryColumn removeColumnEL(String key) {
         //disconnectCache();
         
@@ -954,45 +916,35 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return null;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {	
 		return setAtEL(key,
 				arrCurrentRow.get(getPid(), 1),
 				value);	
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		return setAtEL(key,
 				arrCurrentRow.get(getPid(), 1),
 				value);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 		return setAt(key,
 				arrCurrentRow.get(getPid(), 1),
 				value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		return setAt(key,
 				arrCurrentRow.get(getPid(), 1),
 				value);
 	}
     
-    /**
-     * @see railo.runtime.type.Query#setAt(java.lang.String, int, java.lang.Object)
-     */
+    @Override
     public Object setAt(String key,int row, Object value) throws PageException {
         //disconnectCache();
         
@@ -1013,9 +965,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         throw new DatabaseException("column ["+key+"] does not exist","columns are ["+getColumnlist(false)+"]",null,sql,null);
 	}
     
-    /**
-     * @see railo.runtime.type.Query#setAtEL(java.lang.String, int, java.lang.Object)
-     */
+    @Override
     public Object setAtEL(String key,int row, Object value) {
         //disconnectCache();
         
@@ -1036,16 +986,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return null;
 	}
 
-	/**
-	 * @see railo.runtime.type.Iterator#next()
-	 */
+	@Override
 	public boolean next() {
 		return next(getPid());
 	}
 
-	/**
-	 * @see railo.runtime.type.Iterator#next(int)
-	 */
+	@Override
 	public boolean next(int pid) {
 		if(recordcount>=(arrCurrentRow.set(pid,arrCurrentRow.get(pid,0)+1))) {
 			return true;
@@ -1054,9 +1000,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return false;
 	}
 
-	/**
-	 * @see railo.runtime.type.Iterator#reset()
-	 */
+	@Override
 	public void reset() {
 		reset(getPid());
 	}
@@ -1065,16 +1009,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		arrCurrentRow.set(pid,0);
 	}
 
-	/**
-	 * @see railo.runtime.type.Iterator#getRecordcount()
-	 */
+	@Override
 	public int getRecordcount() {
 		return recordcount;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Query#getCurrentrow(int)
-	 */
+	@Override
 	public int getCurrentrow(int pid) {
 		return arrCurrentRow.get(pid,1);
 	}
@@ -1097,10 +1037,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return getColumnlist(true);
 	}
 
-	/**
-	 * @deprecated use instead go(int,int)
-	 * @see railo.runtime.type.Iterator#go(int)
-	 */
 	public boolean go(int index) {
 		return go(index,getPid());
 	}
@@ -1114,16 +1050,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return false;
 	}
 
-	/**
-	 * @see railo.runtime.type.Iterator#isEmpty()
-	 */
+	@Override
 	public boolean isEmpty() {
 		return recordcount+columncount==0;
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return QueryUtil.toDumpData(this, pageContext, maxlevel, dp);
 	}
@@ -1137,9 +1069,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		sort(column,Query.ORDER_ASC);
 	}
 
-	/**
-	 * @see railo.runtime.type.Query#sort(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public void sort(Collection.Key column) throws PageException {
 		sort(column,Query.ORDER_ASC);
 	}
@@ -1155,9 +1085,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         sort(getColumn(strColumn),order);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Query#sort(railo.runtime.type.Collection.Key, int)
-	 */
+	@Override
 	public synchronized void sort(Collection.Key keyColumn, int order) throws PageException {
 		//disconnectCache();
         sort(getColumn(keyColumn),order);
@@ -1194,9 +1122,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Query#addRow(int)
-	 */
+	@Override
 	 public synchronized boolean addRow(int count) {		
          //disconnectCache();
             
@@ -1208,9 +1134,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		 return true;
 	 }
 	 
-	 /**
-	 * @see railo.runtime.type.Query#addColumn(java.lang.String, railo.runtime.type.Array)
-	 */
+	 @Override
 	public boolean addColumn(String columnName, Array content) throws DatabaseException {
 		return addColumn(columnName,content,Types.OTHER);
 	 }
@@ -1219,17 +1143,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return addColumn(columnName,content,Types.OTHER);
 	}
 	
-    /**
-     * @throws DatabaseException
-     * @see railo.runtime.type.Query#addColumn(java.lang.String, railo.runtime.type.Array, int)
-     */
+    @Override
     public synchronized boolean addColumn(String columnName, Array content, int type) throws DatabaseException {
 		return addColumn(KeyImpl.init(columnName.trim()), content, type);
     }
 
-	/**
-	 * @see railo.runtime.type.Query#addColumn(railo.runtime.type.Collection.Key, railo.runtime.type.Array, int)
-	 */
+	@Override
 	public boolean addColumn(Collection.Key columnName, Array content, int type) throws DatabaseException {
 		//disconnectCache();
         // TODO Meta type
@@ -1270,16 +1189,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	//protected void disconnectCache() {}
 
 	
-	/**
-	 * @see railo.runtime.type.Query#clone()
-	 */
+	@Override
     public Object clone() {
         return cloneQuery(true);
     }
     
-    /**
-     * @see railo.runtime.type.Collection#duplicate(boolean)
-     */
+    @Override
     public Collection duplicate(boolean deepCopy) {
         return cloneQuery(true);
     }
@@ -1318,9 +1233,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         }
     }
 
-	/**
-	 * @see railo.runtime.type.Query#getTypes()
-	 */
+	@Override
 	public synchronized int[] getTypes() {
 		int[] types=new int[columns.length];
 		for(int i=0;i<columns.length;i++) {
@@ -1329,9 +1242,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return types;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Query#getTypesAsMap()
-	 */
+	@Override
 	public synchronized Map getTypesAsMap() {
 		
 		Map map=new HashMap();
@@ -1341,16 +1252,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return map;
 	}
 
-	/**
-	 * @see railo.runtime.type.Query#getColumn(java.lang.String)
-	 */
+	@Override
 	public QueryColumn getColumn(String key) throws DatabaseException {
 		return getColumn(KeyImpl.init(key.trim()));
 	}
 
-	/**
-	 * @see railo.runtime.type.Query#getColumn(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public QueryColumn getColumn(Collection.Key key) throws DatabaseException {
 		int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
@@ -1385,17 +1292,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Query#getColumn(java.lang.String, railo.runtime.type.QueryColumn)
-	 */
+	@Override
 	public QueryColumn getColumn(String key, QueryColumn defaultValue) {
 		return getColumn(KeyImpl.init(key.trim()),defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Query#getColumn(railo.runtime.type.Collection.Key, railo.runtime.type.QueryColumn)
-	 */
+	@Override
 	public QueryColumn getColumn(Collection.Key key, QueryColumn defaultValue) {
         int index=getIndexFromKey(key);
 		if(index!=-1) return columns[index];
@@ -1412,9 +1314,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return defaultValue;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		Collection.Key[] keys=keys();
 		
@@ -1564,25 +1464,19 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return false;
     }
 
-    /**
-     * @see railo.runtime.type.Query#setCached(boolean)
-     */
+    @Override
     public void setCached(boolean isCached) {
         this.isCached=isCached; 
     }
 
-    /**
-     * @see railo.runtime.type.Query#isCached()
-     */
+    @Override
     public boolean isCached() {
         return isCached;
     }
 
 
 
-    /**
-     * @see com.allaire.cfx.Query#addRow()
-     */
+    @Override
     public int addRow() {
 		addRow(1);
 		return getRecordcount();
@@ -1595,9 +1489,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return keys[columnIndex-1];
     }
 
-    /**
-     * @see com.allaire.cfx.Query#getColumnIndex(java.lang.String)
-     */
+    @Override
     public int getColumnIndex(String coulmnName) {
         Collection.Key[] keys = keys();
 		for(int i=0;i<keys.length;i++) {
@@ -1608,16 +1500,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 
 
-    /**
-     * @see com.allaire.cfx.Query#getColumns()
-     */
+    @Override
     public String[] getColumns() {
         return getColumnNamesAsString();
     }
     
-    /**
-     * @see railo.runtime.type.Query#getColumnNames()
-     */
+    @Override
     public Collection.Key[] getColumnNames() {
     	Collection.Key[] keys = keys();
     	Collection.Key[] rtn=new Collection.Key[keys.length];
@@ -1663,16 +1551,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
     
 
 
-	/**
-	 * @see railo.runtime.type.Query#getColumnNamesAsString()
-	 */
+	@Override
 	public String[] getColumnNamesAsString() {
 		return CollectionUtil.keysAsString(this);
 	}
 
-    /**
-     * @see com.allaire.cfx.Query#getData(int, int)
-     */
+    @Override
     public String getData(int row, int col) throws IndexOutOfBoundsException {
         Collection.Key[] keys = keys();
 		if(col<1 || col>keys.length) {
@@ -1687,27 +1571,21 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 
 
-    /**
-     * @see com.allaire.cfx.Query#getName()
-     */
+    @Override
     public String getName() {
         return this.name;
     }
 
 
 
-    /**
-     * @see com.allaire.cfx.Query#getRowCount()
-     */
+    @Override
     public int getRowCount() {
         return getRecordcount();
     }
 
 
 
-    /**
-     * @see com.allaire.cfx.Query#setData(int, int, java.lang.String)
-     */
+    @Override
     public void setData(int row, int col, String value) throws IndexOutOfBoundsException {
         Collection.Key[] keys = keys();
 		if(col<1 || col>keys.length) {
@@ -1721,105 +1599,76 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
     }
 
-    /**
-     * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-     */
+    @Override
     public boolean containsKey(String key) {
         return getColumn(key,null)!=null;
     }	
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
         return getColumn(key,null)!=null;
 	}
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Query to String",
           "Use Built-In-Function \"serialize(Query):String\" to create a String from Query");
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Query to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Query to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Query to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare Complex Object Type Query with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Query with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Query with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare Complex Object Type Query with a String");
 	}
@@ -1870,26 +1719,20 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
 
-	/**
-	 * @see java.sql.ResultSet#getObject(java.lang.String)
-	 */
+	@Override
 	public Object getObject(String columnName) throws SQLException {
 		int currentrow;
 		if((currentrow=arrCurrentRow.get(getPid(),0))==0) return null;
 		return getAt(columnName,currentrow,null);
 	}
 	
-	/**
-	 * @see java.sql.ResultSet#getObject(int)
-	 */
+	@Override
 	public Object getObject(int columnIndex) throws SQLException {
 		if(columnIndex>0 && columnIndex<=columncount) return  getObject(this.columnNames[columnIndex-1].getString());
 		return null;
 	}
 	
-	/**
-	 * @see java.sql.ResultSet#getString(int)
-	 */
+	@Override
 	public String getString(int columnIndex) throws SQLException {
 		Object rtn = getObject(columnIndex);
 		if(rtn==null)return null;
@@ -1897,9 +1740,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new SQLException("can't cast value to string");
 	}
 	
-	/**
-	 * @see java.sql.ResultSet#getString(java.lang.String)
-	 */
+	@Override
 	public String getString(String columnName) throws SQLException {
 		Object rtn = getObject(columnName);
 		if(rtn==null)return null;
@@ -1907,9 +1748,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new SQLException("can't cast value to string");
 	}
 	
-	/**
-	 * @see java.sql.ResultSet#getBoolean(int)
-	 */
+	@Override
 	public boolean getBoolean(int columnIndex) throws SQLException {
 		Object rtn = getObject(columnIndex);
 		if(rtn==null)return false;
@@ -1917,9 +1756,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new SQLException("can't cast value to boolean");
 	}
 	
-	/**
-	 * @see java.sql.ResultSet#getBoolean(java.lang.String)
-	 */
+	@Override
 	public boolean getBoolean(String columnName) throws SQLException {
 		Object rtn = getObject(columnName);
 		if(rtn==null)return false;
@@ -1930,96 +1767,48 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	
 	// ---------------------------------------
 
-	/**
-	 *
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
-	 */
+	@Override
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
 		return MemberUtil.call(pc, this, methodName, arguments, railo.commons.lang.CFTypes.TYPE_QUERY, "query");
 		//return Reflector.callMethod(this,methodName,arguments);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {	
 		return MemberUtil.callWithNamedValues(pc, this, methodName, args,railo.commons.lang.CFTypes.TYPE_QUERY, "query");
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object get(PageContext pc, String key, Object defaultValue) {
-		return getAt(key,arrCurrentRow.get(pc.getId(),1),defaultValue);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(PageContext pc, Key key, Object defaultValue) {
 		return getAt(key,arrCurrentRow.get(
 				pc.getId(),1),defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, java.lang.String)
-	 */
-	public Object get(PageContext pc, String key) throws PageException {
-		return getAt(key,arrCurrentRow.get(pc.getId(),1));
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(PageContext pc, Key key) throws PageException {
 		return getAt(key,arrCurrentRow.get(pc.getId(),1));
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#isInitalized()
-	 */
 	public boolean isInitalized() {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
-		return setAt(propertyName,arrCurrentRow.get(pc.getId(),1),value);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
 		return setAt(propertyName,arrCurrentRow.get(pc.getId(),1),value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object setEL(PageContext pc, String propertyName, Object value) {
-		return setAtEL(propertyName,arrCurrentRow.get(pc.getId(),1),value);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(PageContext pc, Key propertyName, Object value) {
 		return setAtEL(propertyName,arrCurrentRow.get(pc.getId(),1),value);
 	}
 	
-	/**
-	 * @see java.sql.ResultSet#wasNull()
-	 */
+	@Override
 	public boolean wasNull() {
 		throw new PageRuntimeException(new ApplicationException("method [wasNull] is not supported"));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#absolute(int)
-	 */
+	@Override
 	public boolean absolute(int row) throws SQLException {
 		if(recordcount==0) {
 			if(row!=0) throw new SQLException("invalid row ["+row+"], query is Empty");
@@ -2032,44 +1821,32 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return true;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#afterLast()
-	 */
+	@Override
 	public void afterLast() throws SQLException {
 		arrCurrentRow.set(getPid(),recordcount+1);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#beforeFirst()
-	 */
+	@Override
 	public void beforeFirst() throws SQLException {
 		arrCurrentRow.set(getPid(),0);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#cancelRowUpdates()
-	 */
+	@Override
 	public void cancelRowUpdates() throws SQLException {
 		// ignored
 	}
 
-	/**
-	 * @see java.sql.ResultSet#clearWarnings()
-	 */
+	@Override
 	public void clearWarnings() throws SQLException {
 		// ignored
 	}
 
-	/**
-	 * @see java.sql.ResultSet#close()
-	 */
+	@Override
 	public void close() throws SQLException {
 		// ignored
 	}
 
-	/**
-	 * @see java.sql.ResultSet#deleteRow()
-	 */
+	@Override
 	public void deleteRow() throws SQLException {
 		try {
 			removeRow(arrCurrentRow.get(getPid()));
@@ -2078,18 +1855,14 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#findColumn(java.lang.String)
-	 */
+	@Override
 	public int findColumn(String columnName) throws SQLException {
 		int index= getColumnIndex(columnName);
 		if(index==-1) throw new SQLException("invald column definitions ["+columnName+"]");
 		return index;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#first()
-	 */
+	@Override
 	public boolean first() throws SQLException {
 		return absolute(1);
 	}
@@ -2102,55 +1875,41 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getAsciiStream(int)
-	 */
+	@Override
 	public InputStream getAsciiStream(int columnIndex) throws SQLException {
 		String res = getString(columnIndex);
 		if(res==null)return null;
 		return new ByteArrayInputStream(res.getBytes());
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getAsciiStream(java.lang.String)
-	 */
+	@Override
 	public InputStream getAsciiStream(String columnName) throws SQLException {
 		String res = getString(columnName);
 		if(res==null)return null;
 		return new ByteArrayInputStream(res.getBytes());
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBigDecimal(int)
-	 */
+	@Override
 	public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
 		return new BigDecimal(getDouble(columnIndex));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBigDecimal(java.lang.String)
-	 */
+	@Override
 	public BigDecimal getBigDecimal(String columnName) throws SQLException {
 		return new BigDecimal(getDouble(columnName));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBigDecimal(int, int)
-	 */
+	@Override
 	public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
 		return new BigDecimal(getDouble(columnIndex));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBigDecimal(java.lang.String, int)
-	 */
+	@Override
 	public BigDecimal getBigDecimal(String columnName, int scale) throws SQLException {
 		return new BigDecimal(getDouble(columnName));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBinaryStream(int)
-	 */
+	@Override
 	public InputStream getBinaryStream(int columnIndex) throws SQLException {
 		Object obj = getObject(columnIndex);
 		if(obj==null)return null;
@@ -2161,9 +1920,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBinaryStream(java.lang.String)
-	 */
+	@Override
 	public InputStream getBinaryStream(String columnName) throws SQLException {
 		Object obj = getObject(columnName);
 		if(obj==null)return null;
@@ -2174,9 +1931,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBlob(int)
-	 */
+	@Override
 	public Blob getBlob(int i) throws SQLException {
 		byte[] bytes = getBytes(i);
 		if(bytes==null) return null;
@@ -2188,9 +1943,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBlob(java.lang.String)
-	 */
+	@Override
 	public Blob getBlob(String colName) throws SQLException {
 		byte[] bytes = getBytes(colName);
 		if(bytes==null) return null;
@@ -2201,9 +1954,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getByte(int)
-	 */
+	@Override
 	public byte getByte(int columnIndex) throws SQLException {
 		Object obj = getObject(columnIndex);
 		if(obj==null) return (byte)0;
@@ -2214,9 +1965,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getByte(java.lang.String)
-	 */
+	@Override
 	public byte getByte(String columnName) throws SQLException {
 		Object obj = getObject(columnName);
 		if(obj==null) return (byte)0;
@@ -2227,9 +1976,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBytes(int)
-	 */
+	@Override
 	public byte[] getBytes(int columnIndex) throws SQLException {
 		Object obj = getObject(columnIndex);
 		if(obj==null) return null;
@@ -2240,9 +1987,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getBytes(java.lang.String)
-	 */
+	@Override
 	public byte[] getBytes(String columnName) throws SQLException {
 		Object obj = getObject(columnName);
 		if(obj==null) return null;
@@ -2253,59 +1998,45 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getCharacterStream(int)
-	 */
+	@Override
 	public Reader getCharacterStream(int columnIndex) throws SQLException {
 		String str=getString(columnIndex);
 		if(str==null) return null;
 		return new StringReader(str);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getCharacterStream(java.lang.String)
-	 */
+	@Override
 	public Reader getCharacterStream(String columnName) throws SQLException {
 		String str=getString(columnName);
 		if(str==null) return null;
 		return new StringReader(str);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getClob(int)
-	 */
+	@Override
 	public Clob getClob(int i) throws SQLException {
 		String str=getString(i);
 		if(str==null) return null;
 		return ClobImpl.toClob(str);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getClob(java.lang.String)
-	 */
+	@Override
 	public Clob getClob(String colName) throws SQLException {
 		String str=getString(colName);
 		if(str==null) return null;
 		return ClobImpl.toClob(str);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getConcurrency()
-	 */
+	@Override
 	public int getConcurrency() throws SQLException {
 		return 0;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getCursorName()
-	 */
+	@Override
 	public String getCursorName() throws SQLException {
 		return null;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getDate(int)
-	 */
+	@Override
 	public java.sql.Date getDate(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return null;
@@ -2316,9 +2047,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getDate(java.lang.String)
-	 */
+	@Override
 	public java.sql.Date getDate(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return null;
@@ -2329,23 +2058,17 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getDate(int, java.util.Calendar)
-	 */
+	@Override
 	public java.sql.Date getDate(int columnIndex, Calendar cal)throws SQLException {
 		return getDate(columnIndex); // TODO impl
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getDate(java.lang.String, java.util.Calendar)
-	 */
+	@Override
 	public java.sql.Date getDate(String columnName, Calendar cal) throws SQLException {
 		return getDate(columnName);// TODO impl
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getDouble(int)
-	 */
+	@Override
 	public double getDouble(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return 0;
@@ -2356,9 +2079,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getDouble(java.lang.String)
-	 */
+	@Override
 	public double getDouble(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return 0;
@@ -2369,23 +2090,17 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getFetchDirection()
-	 */
+	@Override
 	public int getFetchDirection() throws SQLException {
 		return 1000;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getFetchSize()
-	 */
+	@Override
 	public int getFetchSize() throws SQLException {
 		return 0;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getFloat(int)
-	 */
+	@Override
 	public float getFloat(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return 0;
@@ -2396,9 +2111,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getFloat(java.lang.String)
-	 */
+	@Override
 	public float getFloat(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return 0;
@@ -2409,9 +2122,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getInt(int)
-	 */
+	@Override
 	public int getInt(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return 0;
@@ -2422,9 +2133,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getInt(java.lang.String)
-	 */
+	@Override
 	public int getInt(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return 0;
@@ -2435,9 +2144,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getLong(int)
-	 */
+	@Override
 	public long getLong(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return 0;
@@ -2448,9 +2155,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getLong(java.lang.String)
-	 */
+	@Override
 	public long getLong(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return 0;
@@ -2461,16 +2166,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getObject(int, java.util.Map)
-	 */
+	@Override
 	public Object getObject(int i, Map map) throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getObject(java.lang.String, java.util.Map)
-	 */
+	@Override
 	public Object getObject(String colName, Map map) throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
@@ -2485,30 +2186,22 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return (T) QueryUtil.getObject(this,columnLabel, type);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getRef(int)
-	 */
+	@Override
 	public Ref getRef(int i) throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getRef(java.lang.String)
-	 */
+	@Override
 	public Ref getRef(String colName) throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getRow()
-	 */
+	@Override
 	public int getRow() throws SQLException {
 		return arrCurrentRow.get(getPid(),0);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getShort(int)
-	 */
+	@Override
 	public short getShort(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return 0;
@@ -2519,9 +2212,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getShort(java.lang.String)
-	 */
+	@Override
 	public short getShort(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return 0;
@@ -2536,9 +2227,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTime(int)
-	 */
+	@Override
 	public Time getTime(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return null;
@@ -2549,9 +2238,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTime(java.lang.String)
-	 */
+	@Override
 	public Time getTime(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return null;
@@ -2562,23 +2249,17 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTime(int, java.util.Calendar)
-	 */
+	@Override
 	public Time getTime(int columnIndex, Calendar cal) throws SQLException {
 		return getTime(columnIndex);// TODO impl
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTime(java.lang.String, java.util.Calendar)
-	 */
+	@Override
 	public Time getTime(String columnName, Calendar cal) throws SQLException {
 		return getTime(columnName);// TODO impl
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTimestamp(int)
-	 */
+	@Override
 	public Timestamp getTimestamp(int columnIndex) throws SQLException {
 		Object obj=getObject(columnIndex);
 		if(obj==null) return null;
@@ -2589,9 +2270,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTimestamp(java.lang.String)
-	 */
+	@Override
 	public Timestamp getTimestamp(String columnName) throws SQLException {
 		Object obj=getObject(columnName);
 		if(obj==null) return null;
@@ -2602,44 +2281,32 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTimestamp(int, java.util.Calendar)
-	 */
+	@Override
 	public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
 		return getTimestamp(columnIndex);// TODO impl
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getTimestamp(java.lang.String, java.util.Calendar)
-	 */
+	@Override
 	public Timestamp getTimestamp(String columnName, Calendar cal) throws SQLException {
 		return getTimestamp(columnName);// TODO impl
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getType()
-	 */
+	@Override
 	public int getType() throws SQLException {
 		return 0;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getURL(int)
-	 */
+	@Override
 	public URL getURL(int columnIndex) throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getURL(java.lang.String)
-	 */
+	@Override
 	public URL getURL(String columnName) throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getUnicodeStream(int)
-	 */
+	@Override
 	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
 		String str=getString(columnIndex);
 		if(str==null) return null;
@@ -2651,9 +2318,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getUnicodeStream(java.lang.String)
-	 */
+	@Override
 	public InputStream getUnicodeStream(String columnName) throws SQLException {
 		String str=getString(columnName);
 		if(str==null) return null;
@@ -2665,37 +2330,27 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#getWarnings()
-	 */
+	@Override
 	public SQLWarning getWarnings() throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#insertRow()
-	 */
+	@Override
 	public void insertRow() throws SQLException {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#isAfterLast()
-	 */
+	@Override
 	public boolean isAfterLast() throws SQLException {
 		return getCurrentrow(ThreadLocalPageContext.get().getId())>recordcount;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#isBeforeFirst()
-	 */
+	@Override
 	public boolean isBeforeFirst() throws SQLException {
 		return arrCurrentRow.get(getPid(),0)==0;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#isFirst()
-	 */
+	@Override
 	public boolean isFirst() throws SQLException {
 		return arrCurrentRow.get(getPid(),0)==1;
 	}
@@ -2734,30 +2389,22 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		
 	}
 
-	/**
-	 * @see java.sql.ResultSet#relative(int)
-	 */
+	@Override
 	public boolean relative(int rows) throws SQLException {
 		return absolute(getRow()+rows);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#rowDeleted()
-	 */
+	@Override
 	public boolean rowDeleted() throws SQLException {
 		return false;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#rowInserted()
-	 */
+	@Override
 	public boolean rowInserted() throws SQLException {
 		return false;
 	}
 
-	/**
-	 * @see java.sql.ResultSet#rowUpdated()
-	 */
+	@Override
 	public boolean rowUpdated() throws SQLException {
 		return false;
 	}
@@ -2770,51 +2417,37 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		// ignore
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateArray(int, java.sql.Array)
-	 */
+	@Override
 	public void updateArray(int columnIndex, java.sql.Array x)throws SQLException {
 		updateObject(columnIndex, x.getArray());
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateArray(java.lang.String, java.sql.Array)
-	 */
+	@Override
 	public void updateArray(String columnName, java.sql.Array x)throws SQLException {
 		updateObject(columnName, x.getArray());
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateAsciiStream(int, java.io.InputStream, int)
-	 */
+	@Override
 	public void updateAsciiStream(int columnIndex, InputStream x, int length)throws SQLException {
 		updateBinaryStream(columnIndex, x, length);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateAsciiStream(java.lang.String, java.io.InputStream, int)
-	 */
+	@Override
 	public void updateAsciiStream(String columnName, InputStream x, int length)throws SQLException {
 		updateBinaryStream(columnName, x, length);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBigDecimal(int, java.math.BigDecimal)
-	 */
+	@Override
 	public void updateBigDecimal(int columnIndex, BigDecimal x)throws SQLException {
 		updateObject(columnIndex, x.toString());
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBigDecimal(java.lang.String, java.math.BigDecimal)
-	 */
+	@Override
 	public void updateBigDecimal(String columnName, BigDecimal x) throws SQLException {
 		updateObject(columnName, x.toString());
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBinaryStream(int, java.io.InputStream, int)
-	 */
+	@Override
 	public void updateBinaryStream(int columnIndex, InputStream x, int length) throws SQLException {
 		try {
 			updateObject(columnIndex, IOUtil.toBytesMax(x, length));
@@ -2823,9 +2456,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBinaryStream(java.lang.String, java.io.InputStream, int)
-	 */
+	@Override
 	public void updateBinaryStream(String columnName, InputStream x, int length) throws SQLException {
 		try {
 			updateObject(columnName, IOUtil.toBytesMax(x, length));
@@ -2834,9 +2465,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBlob(int, java.sql.Blob)
-	 */
+	@Override
 	public void updateBlob(int columnIndex, Blob x) throws SQLException {
 		try {
 			updateObject(columnIndex, toBytes(x));
@@ -2845,9 +2474,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBlob(java.lang.String, java.sql.Blob)
-	 */
+	@Override
 	public void updateBlob(String columnName, Blob x) throws SQLException {
 		try {
 			updateObject(columnName, toBytes(x));
@@ -2856,51 +2483,37 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBoolean(int, boolean)
-	 */
+	@Override
 	public void updateBoolean(int columnIndex, boolean x) throws SQLException {
 		updateObject(columnIndex, Caster.toBoolean(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBoolean(java.lang.String, boolean)
-	 */
+	@Override
 	public void updateBoolean(String columnName, boolean x) throws SQLException {
 		updateObject(columnName, Caster.toBoolean(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateByte(int, byte)
-	 */
+	@Override
 	public void updateByte(int columnIndex, byte x) throws SQLException {
 		updateObject(columnIndex, new Byte(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateByte(java.lang.String, byte)
-	 */
+	@Override
 	public void updateByte(String columnName, byte x) throws SQLException {
 		updateObject(columnName, new Byte(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBytes(int, byte[])
-	 */
+	@Override
 	public void updateBytes(int columnIndex, byte[] x) throws SQLException {
 		updateObject(columnIndex, x);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateBytes(java.lang.String, byte[])
-	 */
+	@Override
 	public void updateBytes(String columnName, byte[] x) throws SQLException {
 		updateObject(columnName, x);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateCharacterStream(int, java.io.Reader, int)
-	 */
+	@Override
 	public void updateCharacterStream(int columnIndex, Reader reader, int length)throws SQLException {
 		try {
 			updateObject(columnIndex, IOUtil.toString(reader));
@@ -2909,9 +2522,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateCharacterStream(java.lang.String, java.io.Reader, int)
-	 */
+	@Override
 	public void updateCharacterStream(String columnName, Reader reader,int length) throws SQLException {
 		try {
 			updateObject(columnName, IOUtil.toString(reader));
@@ -2920,9 +2531,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateClob(int, java.sql.Clob)
-	 */
+	@Override
 	public void updateClob(int columnIndex, Clob x) throws SQLException {
 		try {
 			updateObject(columnIndex, toString(x));
@@ -2931,9 +2540,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateClob(java.lang.String, java.sql.Clob)
-	 */
+	@Override
 	public void updateClob(String columnName, Clob x) throws SQLException {
 		try {
 			updateObject(columnName, toString(x));
@@ -2942,93 +2549,67 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateDate(int, java.sql.Date)
-	 */
+	@Override
 	public void updateDate(int columnIndex, java.sql.Date x)throws SQLException {
 		updateObject(columnIndex, Caster.toDate(x, false, null, null));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateDate(java.lang.String, java.sql.Date)
-	 */
+	@Override
 	public void updateDate(String columnName, java.sql.Date x)throws SQLException {
 		updateObject(columnName, Caster.toDate(x, false, null, null));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateDouble(int, double)
-	 */
+	@Override
 	public void updateDouble(int columnIndex, double x) throws SQLException {
 		updateObject(columnIndex, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateDouble(java.lang.String, double)
-	 */
+	@Override
 	public void updateDouble(String columnName, double x) throws SQLException {
 		updateObject(columnName, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateFloat(int, float)
-	 */
+	@Override
 	public void updateFloat(int columnIndex, float x) throws SQLException {
 		updateObject(columnIndex, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateFloat(java.lang.String, float)
-	 */
+	@Override
 	public void updateFloat(String columnName, float x) throws SQLException {
 		updateObject(columnName, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateInt(int, int)
-	 */
+	@Override
 	public void updateInt(int columnIndex, int x) throws SQLException {
 		updateObject(columnIndex, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateInt(java.lang.String, int)
-	 */
+	@Override
 	public void updateInt(String columnName, int x) throws SQLException {
 		updateObject(columnName, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateLong(int, long)
-	 */
+	@Override
 	public void updateLong(int columnIndex, long x) throws SQLException {
 		updateObject(columnIndex, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateLong(java.lang.String, long)
-	 */
+	@Override
 	public void updateLong(String columnName, long x) throws SQLException {
 		updateObject(columnName, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateNull(int)
-	 */
+	@Override
 	public void updateNull(int columnIndex) throws SQLException {
 		updateObject(columnIndex, null);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateNull(java.lang.String)
-	 */
+	@Override
 	public void updateNull(String columnName) throws SQLException {
 		updateObject(columnName, null);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateObject(int, java.lang.Object)
-	 */
+	@Override
 	public void updateObject(int columnIndex, Object x) throws SQLException {
 		try {
 			set(getColumnName(columnIndex), x);
@@ -3037,9 +2618,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateObject(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public void updateObject(String columnName, Object x) throws SQLException {
 		try {
 			set(KeyImpl.init(columnName), x);
@@ -3048,30 +2627,22 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateObject(int, java.lang.Object, int)
-	 */
+	@Override
 	public void updateObject(int columnIndex, Object x, int scale)throws SQLException {
 		updateObject(columnIndex, x);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateObject(java.lang.String, java.lang.Object, int)
-	 */
+	@Override
 	public void updateObject(String columnName, Object x, int scale)throws SQLException {
 		updateObject(columnName, x);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateRef(int, java.sql.Ref)
-	 */
+	@Override
 	public void updateRef(int columnIndex, Ref x) throws SQLException {
 		updateObject(columnIndex, x.getObject());
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateRef(java.lang.String, java.sql.Ref)
-	 */
+	@Override
 	public void updateRef(String columnName, Ref x) throws SQLException {
 		updateObject(columnName, x.getObject());
 	}
@@ -3080,58 +2651,42 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		throw new SQLException("method is not implemented");
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateShort(int, short)
-	 */
+	@Override
 	public void updateShort(int columnIndex, short x) throws SQLException {
 		updateObject(columnIndex, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateShort(java.lang.String, short)
-	 */
+	@Override
 	public void updateShort(String columnName, short x) throws SQLException {
 		updateObject(columnName, Caster.toDouble(x));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateString(int, java.lang.String)
-	 */
+	@Override
 	public void updateString(int columnIndex, String x) throws SQLException {
 		updateObject(columnIndex, x);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateString(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void updateString(String columnName, String x) throws SQLException {
 		updateObject(columnName, x);
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateTime(int, java.sql.Time)
-	 */
+	@Override
 	public void updateTime(int columnIndex, Time x) throws SQLException {
 		updateObject(columnIndex, new DateTimeImpl(x.getTime(),false));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateTime(java.lang.String, java.sql.Time)
-	 */
+	@Override
 	public void updateTime(String columnName, Time x) throws SQLException {
 		updateObject(columnName, new DateTimeImpl(x.getTime(),false));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateTimestamp(int, java.sql.Timestamp)
-	 */
+	@Override
 	public void updateTimestamp(int columnIndex, Timestamp x) throws SQLException {
 		updateObject(columnIndex, new DateTimeImpl(x.getTime(),false));
 	}
 
-	/**
-	 * @see java.sql.ResultSet#updateTimestamp(java.lang.String, java.sql.Timestamp)
-	 */
+	@Override
 	public void updateTimestamp(String columnName, Timestamp x) throws SQLException {
 		updateObject(columnName, new DateTimeImpl(x.getTime(),false));
 	}
@@ -3187,9 +2742,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		catch (Throwable t) {}
 	}
 	
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf(){
 		long size=SizeOf.size(this.exeTime)+
 		SizeOf.size(this.isCached)+

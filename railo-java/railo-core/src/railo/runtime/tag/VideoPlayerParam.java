@@ -14,9 +14,7 @@ public class VideoPlayerParam extends TagSupport {
 	
 	private VideoPlayerParamBean param=new VideoPlayerParamBean();
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		param=new VideoPlayerParamBean();
@@ -75,9 +73,7 @@ public class VideoPlayerParam extends TagSupport {
 		param.setAuthor(author);
 	}
 		
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException	{
 
 		if(param.getFlash()==null && param.getVideo()==null)

@@ -25,67 +25,46 @@ public final class XMLAttrStruct extends XMLNodeStruct implements Attr {
         this.attr=attr;
     }
 
-	/**
-	 * @see org.w3c.dom.Attr#getName()
-	 */
+	@Override
 	public String getName() {
 		return attr.getName();
 	}
 
-	/**
-	 * @see org.w3c.dom.Attr#getOwnerElement()
-	 */
+	@Override
 	public Element getOwnerElement() {
 		return new XMLElementStruct(attr.getOwnerElement(),caseSensitive);
 	}
 
-	/**
-	 * @see org.w3c.dom.Attr#getSpecified()
-	 */
+	@Override
 	public boolean getSpecified() {
 		return attr.getSpecified();
 	}
 
-	/**
-	 * @see org.w3c.dom.Attr#getValue()
-	 */
+	@Override
 	public String getValue() {
 		return attr.getValue();
 	}
 
-	/**
-	 * @see org.w3c.dom.Attr#setValue(java.lang.String)
-	 */
+	@Override
 	public void setValue(String arg0) throws DOMException {
 		attr.setValue(arg0);
 	}
 
-	/**
-	 * @see org.w3c.dom.Attr#getSchemaTypeInfo()
-	 */
 	public TypeInfo getSchemaTypeInfo() {
 		return null;
 	}
 
-	/**
-	 * @see org.w3c.dom.Attr#isId()
-	 */
 	public boolean isId() {
 		return false;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLAttrStruct((Attr)attr.cloneNode(deepCopy),caseSensitive);
 	}
 	
 
-	/**
-	 * @see org.w3c.dom.Node#cloneNode(boolean)
-	 */
+	@Override
 	public Node cloneNode(boolean deep) {
 		return new XMLAttrStruct((Attr)attr.cloneNode(deep),caseSensitive);
 	}

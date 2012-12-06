@@ -13,15 +13,11 @@ public final class ArrayNodeList extends ArrayList implements org.w3c.dom.NodeLi
 	public ArrayNodeList() {
 	}
 	
-	/**
-	 * @see org.w3c.dom.NodeList#getLength()
-	 */
+	@Override
 	public int getLength() {
 		return size();
 	}
-	/**
-	 * @see org.w3c.dom.NodeList#item(int)
-	 */
+	@Override
 	public Node item(int index) {
 		//synchronized (o) {
 			return (Node)get(index);

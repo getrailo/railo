@@ -31,9 +31,7 @@ public final class Slider extends TagImpl {
 	private int vspace=0;
 	private int hspace=0;
     
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#release()
-     */
+    @Override
     public void release() {
         super.release();
 
@@ -309,9 +307,7 @@ public final class Slider extends TagImpl {
         this.width = (int) width;
     }
 
-    /**
-     * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-     */
+    @Override
     public int doStartTag() throws PageException {
         try {
             _doStartTag();

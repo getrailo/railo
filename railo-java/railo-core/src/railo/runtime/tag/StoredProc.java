@@ -235,9 +235,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		results.setEL(result.getResultset(),result);
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws JspException {
 		
 		return EVAL_BODY_INCLUDE;
@@ -399,9 +397,7 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		return (ProcResultBean) results.removeEL(it.next());
 	}
 
-	/**
-	 * @see railo.runtime.ext.tag.TagSupport#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws JspException {
 		long startNS=System.nanoTime();
 		

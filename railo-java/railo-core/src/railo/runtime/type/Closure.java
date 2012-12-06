@@ -41,18 +41,12 @@ public class Closure extends UDFImpl {
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.UDFImpl#duplicate(railo.runtime.ComponentImpl)
-	 */
 	@Override
 	public UDF duplicate(ComponentImpl c) {
 		// TODO Auto-generated method stub
 		return super.duplicate(c);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.UDFImpl#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Struct, boolean)
-	 */
 	@Override
 	public Object callWithNamedValues(PageContext pc, Struct values, boolean doIncludePath) throws PageException {
 		Variables parent=pc.variablesScope();
@@ -65,9 +59,7 @@ public class Closure extends UDFImpl {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.UDFImpl#call(railo.runtime.PageContext, java.lang.Object[], boolean)
-	 */
+	@Override
 	public Object call(PageContext pc, Object[] args, boolean doIncludePath) throws PageException {
 		Variables parent=pc.variablesScope();
         try{
@@ -79,17 +71,11 @@ public class Closure extends UDFImpl {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.UDFImpl#toDumpData(railo.runtime.PageContext, int, railo.runtime.dump.DumpProperties)
-	 */
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel,DumpProperties dp) {
 		return toDumpData(pageContext, maxlevel, dp,this,true);
 	}
 
-	/* (non-Javadoc)
-	 * @see railo.runtime.type.UDFImpl#getMetaData(railo.runtime.PageContext)
-	 */
 	@Override
 	public Struct getMetaData(PageContext pc) throws PageException {
 		Struct meta = ComponentUtil.getMetaData(pc, properties);

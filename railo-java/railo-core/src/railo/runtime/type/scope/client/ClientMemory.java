@@ -40,10 +40,7 @@ public class ClientMemory extends StorageScopeMemory implements Client,MemorySco
 	}
 	
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new ClientMemory(this,deepCopy);
 	}

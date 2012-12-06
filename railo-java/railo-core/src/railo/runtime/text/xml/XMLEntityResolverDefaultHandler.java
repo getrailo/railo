@@ -17,9 +17,7 @@ public class XMLEntityResolverDefaultHandler extends DefaultHandler {
 		this.entityRes=entityRes;
 	}
 	
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#resolveEntity(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public InputSource resolveEntity(String publicID, String systemID) throws SAXException {
 		//if(entityRes!=null)print.out("resolveEntity("+(entityRes!=null)+"):"+publicID+":"+systemID);
 		

@@ -60,9 +60,7 @@ public final class Update extends TagImpl {
 	** 		qualifier refers to the directory where the DBF files are located. */
 	private String tablequalifier;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		password=null;
@@ -135,16 +133,12 @@ public final class Update extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 
 		Object ds=Insert.getDatasource(pageContext,datasource);

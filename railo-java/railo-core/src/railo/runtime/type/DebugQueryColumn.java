@@ -44,9 +44,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
 	}
 
 
-	/**
-     * @see railo.runtime.type.QueryColumn#get(int)
-     */
+	@Override
     public Object get(int row){
     	used=true;
     	return super.get(row);
@@ -74,9 +72,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
     	return super.touchEL(row);
     }
 
-	/**
-	 * @see railo.runtime.type.QueryColumn#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int row, Object defaultValue) {
 		used=true;
     	return super.get(row,defaultValue);
@@ -89,48 +85,36 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
         return clone;
     }
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		used=true;
 		return super.valueIterator();
 	}
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
+	@Override
 	public int indexOf(Object o) {
 		used=true;
 		return super.indexOf(o);
 	}
 
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
+	@Override
 	public int lastIndexOf(Object o) {
 		used=true;
 		return super.lastIndexOf(o);
 	}
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
+	@Override
 	public List<Object> subList(int fromIndex, int toIndex) {
 		used=true;
 		return super.subList(fromIndex, toIndex);
 	}
 
-	/**
-	 * @see java.util.List#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		used=true;
 		return super.toArray();
 	}
 
-	/**
-	 * @see java.util.List#toArray(T[])
-	 */
+	@Override
 	public  Object[] toArray(Object[] trg) {
 		used=true;
 		return super.toArray(trg);

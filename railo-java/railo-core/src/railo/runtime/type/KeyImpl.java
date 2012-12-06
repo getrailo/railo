@@ -130,16 +130,12 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		}
 	}*/
 	
-	/**
-	 * @see railo.runtime.type.Collection.Key#charAt(int)
-	 */
+	@Override
 	public char charAt(int index) {
 		return key.charAt(index);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection.Key#lowerCharAt(int)
-	 */
+	@Override
 	public char lowerCharAt(int index) {
 		return lcKey.charAt(index);
 	}
@@ -148,9 +144,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return getUpperString().charAt(index);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection.Key#getLowerString()
-	 */
+	@Override
 	public String getLowerString() {
 		return lcKey;
 	}
@@ -160,24 +154,17 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 		return ucKey;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return key;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection.Key#getString()
-	 */
+	@Override
 	public String getString() {
 		return key;
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object other) {//call++;
 		if(other instanceof KeyImpl)	{
 			/*if(intern && ((KeyImpl)other).intern) {//eq++;
@@ -196,9 +183,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Collection.Key#equalsIgnoreCase(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean equalsIgnoreCase(Key other) {
 		if(other instanceof KeyImpl)	{
 			return lcKey.equals((((KeyImpl)other).lcKey));
@@ -208,100 +193,72 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	
 	
 
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode() {
 		return lcKey.hashCode();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection.Key#getId()
-	 */
+	@Override
 	public int getId() {
 		return hashCode();
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return Caster.toBooleanValue(key);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return Caster.toBoolean(key,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return Caster.toDatetime(key,null);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return DateCaster.toDateAdvanced(key,true,null,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		return Caster.toDoubleValue(key);
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
     	return Caster.toDoubleValue(key,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return key;
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return key;
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(key, b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare(key, (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(key, d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(key, str);
 	}

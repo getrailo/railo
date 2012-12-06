@@ -56,9 +56,7 @@ public final class Zip extends BodyTagImpl {
 	private static int id=0;
 	
 	
-    /**
-    * @see javax.servlet.jsp.tagext.Tag#release()
-    */
+    @Override
     public void release()   {
         super.release();
         action="zip";
@@ -226,10 +224,7 @@ public final class Zip extends BodyTagImpl {
 
 
 
-	/**
-	* @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		return EVAL_BODY_INCLUDE;
 	}
@@ -595,24 +590,17 @@ public final class Zip extends BodyTagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}
     
-    /**
-     * @throws PageException 
-     * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag() throws PageException	{//print.out("doEndTag"+doCaching+"-"+body);
 		try {
 			if(action.equals("delete")) actionDelete();

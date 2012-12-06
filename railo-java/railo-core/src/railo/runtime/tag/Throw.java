@@ -42,9 +42,7 @@ public final class Throw extends TagImpl {
 
 	private Object object;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		extendedinfo=null;
@@ -170,9 +168,7 @@ public final class Throw extends TagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		_doStartTag(message);
@@ -193,9 +189,7 @@ public final class Throw extends TagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -31,23 +31,17 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 		created = System.currentTimeMillis();
 	}
 
-	/**
-     * @see railo.runtime.type.scope.Application#getLastAccess()
-     */
+	@Override
 	public long getLastAccess() { 
 		return lastAccess;
 	}
 
-	/**
-     * @see railo.runtime.type.scope.Application#getTimeSpan()
-     */
+	@Override
 	public long getTimeSpan() { 
 	    return timeSpan;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void touchBeforeRequest(PageContext pc){
 	    ApplicationContext appContext = pc.getApplicationContext();
 	    setEL(APPLICATION_NAME,appContext.getName());
@@ -59,9 +53,7 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 		// do nothing
 	}
 
-    /**
-     * @see railo.runtime.type.scope.Application#isExpired()
-     */
+    @Override
     public boolean isExpired() {
         return (lastAccess+timeSpan)<System.currentTimeMillis();
     }
@@ -73,10 +65,7 @@ public final class ApplicationImpl extends ScopeSupport implements Application,S
 		this.lastAccess = lastAccess;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.Application#touch()
-	 */
+	@Override
 	public void touch() {
 		lastAccess=System.currentTimeMillis();
 	}

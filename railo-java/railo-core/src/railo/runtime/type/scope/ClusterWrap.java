@@ -2,7 +2,6 @@ package railo.runtime.type.scope;
 
 import java.io.Serializable;
 
-import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.dump.DumpData;
@@ -34,38 +33,24 @@ public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable 
 		this.core.init(configServer,this);
 	}
 	
+	@Override
 	public void init(ConfigServer configServer) {
 		// for the custer wrap this method is not invoked, but it is part of the interface
 	}
 
-	/*  *
-	 * @see railo.runtime.type.StructImpl#remove(java.lang.String)
-	 * /
-	public Object remove (String key) throws PageException {
-		return remove(KeyImpl.init(key));
-	}*/
-
-	
-	
-	/**
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		return ((ClusterEntry)super.get(key)).getValue();
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		Object res = super.get(key,defaultValue);
 		if(res instanceof ClusterEntry) return  ((ClusterEntry)res).getValue();
 		return res;
 	}
 	
-	/**
-	 * @see railo.runtime.type.StructImpl#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		core.addEntry(new ClusterEntryImpl(key,null,offset));
 		return ((ClusterEntry)super.remove (key)).getValue();
@@ -79,9 +64,7 @@ public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable 
 		return null;
 	}
 
-	/**
-	 * @see railo.runtime.type.StructImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 		if(core.checkValue(value)) {
 			ClusterEntry entry;
@@ -103,9 +86,7 @@ public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable 
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.StructImpl#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		if(!core.checkValue(value))
 			throw new ExpressionException("object from type ["+Caster.toTypeName(value)+"] are not allowed in cluster scope" );
@@ -115,47 +96,32 @@ public final class ClusterWrap extends ScopeSupport implements Cluster,Sizeable 
 		return value;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ScopeSupport#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return super.toDumpData(pageContext, maxlevel,dp);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ScopeSupport#getType()
-	 */
+	@Override
 	public int getType() {
 		return SCOPE_CLUSTER;
 	} 
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ScopeSupport#getTypeAsString()
-	 */
+	@Override
 	public String getTypeAsString() {
 		return "cluster";
 	}
 	
-	/**
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new ClusterWrap(configServer,core,true);
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Cluster#broadcast()
-	 */
+	@Override
 	public void broadcast() {
 		core.broadcastEntries();
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return 0;
 	}

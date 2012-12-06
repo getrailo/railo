@@ -62,23 +62,17 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
         this.filter=filter;
     }
 
-	/**
-	 * @see org.w3c.dom.NodeList#getLength()
-	 */
+	@Override
 	public int getLength() {
 		return XMLUtil.childNodesLength(parent,Node.ELEMENT_NODE,caseSensitive,filter);
 	}
 
-	/**
-	 * @see org.w3c.dom.NodeList#item(int)
-	 */
+	@Override
 	public Node item(int index) {
 		return XMLCaster.toXMLStruct(getChildNode(index),caseSensitive);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return getLength();
 	}
@@ -92,9 +86,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return keys;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#intKeys()
-	 */
+	@Override
 	public int[] intKeys() {
 		int[] keys=new int[getLength()];
 		for(int i=1;i<=keys.length;i++) {
@@ -108,17 +100,12 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	}
 
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		return removeE(Caster.toIntValue(key.getString()));
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int index) {
 		int len=size();
 		if(index<1 || index>len) return null;
@@ -130,9 +117,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		}
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#removeE(int)
-	 */
+	@Override
 	public Object removeE(int index) throws PageException {
 		int len=size();
 		if(index<1 || index>len)
@@ -141,9 +126,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return XMLCaster.toXMLStruct(parent.removeChild(XMLCaster.toRawNode(item(index-1))),caseSensitive);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		Node[] nodes=getChildNodesAsArray();
 		for(int i=0;i<nodes.length;i++) {
@@ -152,74 +135,53 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws ExpressionException {
 		return getE(Caster.toIntValue(key));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
 		return get(key.getString());
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#getE(int)
-	 */
+	@Override
 	public Object getE(int key) throws ExpressionException {
 		Object rtn= item(key-1);
 		if(rtn==null) throw new ExpressionException("invalid index ["+key+"] for XML Node List , indexes goes from [0-"+size()+"]");
 		return rtn;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 		int index=Caster.toIntValue(key,Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) return defaultValue;
 	    return get(index,defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		return get(key.getString(),defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int key, Object defaultValue) {
 		Object rtn= item(key-1);
 		if(rtn==null) return defaultValue;
 		return rtn;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 		return setE(Caster.toIntValue(key),value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		return set(key.getString(), value);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#setE(int, java.lang.Object)
-	 */
+	@Override
 	public Object setE(int index, Object value) throws PageException {
 		// check min Index
 			if(index<1)
@@ -249,26 +211,19 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(String key, Object value) {
 		int index=Caster.toIntValue(key,Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) return null;
 		return setEL(index,value);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		return setEL(key.getString(), value);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(int index, Object value) {
 		try {
 			return setE(index,value);
@@ -300,9 +255,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return new ArrayIterator(values);
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		maxlevel--;
 		DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
@@ -315,9 +268,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return table;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#append(java.lang.Object)
-	 */
+	@Override
 	public Object append(Object o) throws PageException {
 		return parent.appendChild(XMLCaster.toNode(doc,o));
 	}
@@ -330,32 +281,24 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		}
 	}
 	
-	/**
-	 * @see java.lang.Object#clone()
-	 */
+	@Override
 	public Object clone() {
 		return duplicate(true);
 	}
 
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLNodeList(parent.cloneNode(deepCopy),caseSensitive);
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.Array#getDimension()
-	 */
+	@Override
 	public int getDimension() {
 		return 1;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#insert(int, java.lang.Object)
-	 */
+	@Override
 	public boolean insert(int index, Object value) throws PageException {
 		// check min Index
 		if(index<1)
@@ -388,9 +331,7 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return true;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#prepend(java.lang.Object)
-	 */
+	@Override
 	public Object prepend(Object o) throws PageException {
 		
 		Node[] nodes=getChildNodesAsArray();
@@ -408,16 +349,12 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return o;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#resize(int)
-	 */
+	@Override
 	public void resize(int to) throws ExpressionException {
 		if(to>size())throw new ExpressionException("can't resize a XML Node List Array with empty Elements");
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#sort(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public void sort(String sortType, String sortOrder)
 			throws ExpressionException {
 		throw new ExpressionException("can't sort a XML Node List Array","sorttype:"+sortType+";sortorder:"+sortOrder);
@@ -429,16 +366,11 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		throw new ExpressionException("can't sort a XML Node List Array");
 	}
 
-	/**
-	 * @see railo.runtime.type.Array#toArray()
-	 */
+	@Override
 	public Object[] toArray() {
 		return getChildNodesAsArray();
 	}
 	
-	/**
-	 * @see railo.runtime.type.Array#toArrayList()
-	 */
 	public ArrayList toArrayList() {
 		Object[] arr=toArray();
 		ArrayList list=new ArrayList();
@@ -475,124 +407,89 @@ public final class XMLNodeList extends ArraySupport implements NodeList, XMLObje
 		return XMLUtil.getChildNodesAsArray(parent,Node.ELEMENT_NODE,caseSensitive,filter);
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-     */
+    @Override
     public boolean containsKey(String key) {
         return get(key,null)!=null;
     }   
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
         return get(key,null)!=null;
 	}
 
-    /**
-     * @see railo.runtime.type.Array#containsKey(int)
-     */
+    @Override
     public boolean containsKey(int key) {
         return get(key,null)!=null;
     }
 
-    /**
-     * @see railo.runtime.text.xml.struct.XMLObject#getCaseSensitive()
-     */
+    @Override
     public boolean getCaseSensitive() {
         return caseSensitive;
     }      
     
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast XML NodeList to String");
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("Can't cast XML NodeList to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("Can't cast XML NodeList to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
         throw new ExpressionException("Can't cast XML NodeList to a Date");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare XML NodeList with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare XML NodeList with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare XML NodeList with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare XML NodeList with a String");
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return ArrayUtil.sizeOf((List)this);
 	}

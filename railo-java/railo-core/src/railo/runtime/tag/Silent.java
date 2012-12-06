@@ -26,9 +26,7 @@ public final class Silent extends BodyTagTryCatchFinallyImpl {
 	}
 
 
-	/**
-     * @see railo.runtime.ext.tag.TagImpl#doStartTag()
-     */
+	@Override
     public int doStartTag() throws JspException {
     	if(bufferOutput==null)
     		bufferOutput=((ApplicationContextSupport)pageContext.getApplicationContext()).getBufferOutput()?Boolean.TRUE:Boolean.FALSE;
@@ -40,10 +38,7 @@ public final class Silent extends BodyTagTryCatchFinallyImpl {
     }
     
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doCatch(java.lang.Throwable)
-	 */
+	@Override
 	public void doCatch(Throwable t) throws Throwable {
 		if(bufferOutput.booleanValue()){
 	    	try {
@@ -57,9 +52,7 @@ public final class Silent extends BodyTagTryCatchFinallyImpl {
 	}
 
     
-    /**
-     * @see railo.runtime.ext.tag.BodyTagTryCatchFinallyImpl#doFinally()
-     */
+    @Override
     public void doFinally() {
     	if(bufferOutput.booleanValue()){
 	    	if(bc!=null){
@@ -71,10 +64,7 @@ public final class Silent extends BodyTagTryCatchFinallyImpl {
     }
 
 
-	/**
-	 *
-	 * @see railo.runtime.ext.tag.BodyTagImpl#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		bc=null;

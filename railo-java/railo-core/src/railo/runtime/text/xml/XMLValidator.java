@@ -19,9 +19,7 @@ import railo.runtime.type.StructImpl;
 
 public class XMLValidator extends XMLEntityResolverDefaultHandler {
 
-	/**
-	 * @see railo.runtime.text.xml.XMLEntityResolverDefaultHandler#resolveEntity(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public InputSource resolveEntity(String publicID, String systemID)
 			throws SAXException {
 		//print.out(publicID+":"+systemID);
@@ -47,24 +45,18 @@ public class XMLValidator extends XMLEntityResolverDefaultHandler {
 		hasErrors=false;
 	}
 	
-    /**
-     * @see org.xml.sax.helpers.DefaultHandler#warning(org.xml.sax.SAXParseException)
-     */
+    @Override
     public void warning(SAXParseException spe)	{
     	log(spe,"Warning",warnings);
     }
 	
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#error(org.xml.sax.SAXParseException)
-	 */
+	@Override
 	public void error(SAXParseException spe) {
 		hasErrors=true;
     	log(spe,"Error",errors);
     }
 
-    /**
-     * @see org.xml.sax.helpers.DefaultHandler#fatalError(org.xml.sax.SAXParseException)
-     */
+    @Override
     public void fatalError(SAXParseException spe) throws SAXException	{
 		hasErrors=true;
     	log(spe,"Fatal Error",fatals);

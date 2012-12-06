@@ -13,9 +13,7 @@ import railo.runtime.type.dt.DateTime;
 
 public final class DoubleStruct extends StructImpl  {
 	
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToBoolean(java.lang.Boolean)
-	 */
+	@Override
 	public Boolean castToBoolean(Boolean defaultValue) {
 		try {
 			return Caster.toBoolean(castToBooleanValue());
@@ -24,9 +22,7 @@ public final class DoubleStruct extends StructImpl  {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToDateTime(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public DateTime castToDateTime(DateTime defaultValue) {
 		try {
 			return castToDateTime();
@@ -35,9 +31,7 @@ public final class DoubleStruct extends StructImpl  {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToDoubleValue(double)
-	 */
+	@Override
 	public double castToDoubleValue(double defaultValue) {
 		try {
 			return castToDoubleValue();
@@ -46,9 +40,7 @@ public final class DoubleStruct extends StructImpl  {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		try {
 			return castToString();
@@ -57,30 +49,18 @@ public final class DoubleStruct extends StructImpl  {
 		}
 	}
 
-	/**
-	 *
-	 * @throws PageException 
-	 * @see railo.runtime.type.StructImpl#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws PageException {
 		return Caster.toBooleanValue(castToDoubleValue());
 		
 	}
 
-	/**
-	 *
-	 * @throws PageException 
-	 * @see railo.runtime.type.StructImpl#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws PageException {
 		return Caster.toDate(castToDateTime(),null);
 	}
 
-	/**
-	 *
-	 * @throws PageException 
-	 * @see railo.runtime.type.StructImpl#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() throws PageException {
 		Iterator it = valueIterator();
 		double value=0;
@@ -90,62 +70,39 @@ public final class DoubleStruct extends StructImpl  {
 		return value;
 	}
 
-	/**
-	 *
-	 * @throws PageException 
-	 * @see railo.runtime.type.StructImpl#castToString()
-	 */
+	@Override
 	public String castToString() throws PageException {
 		return Caster.toString(castToDoubleValue());
 	}
 
-	/**
-	 *
-	 * @throws PageException 
-	 * @see railo.runtime.type.StructImpl#compareTo(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToDoubleValue(), b);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare(castToDoubleValue(), dt);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(),d);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToDoubleValue(), str);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new DoubleStruct();
 		copy(this,sct,deepCopy);
 		return sct;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table = (DumpTable) super.toDumpData(pageContext, maxlevel, dp);
 		try{

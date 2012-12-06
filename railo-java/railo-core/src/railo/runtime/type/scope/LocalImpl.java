@@ -9,16 +9,12 @@ public final class LocalImpl extends ScopeSupport implements Scope,Local {
 		super(false, "local", Scope.SCOPE_LOCAL);
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.LocalPro#isBind()
-	 */
+	@Override
 	public boolean isBind() {
 		return bind;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.LocalPro#setBind(boolean)
-	 */
+	@Override
 	public void setBind(boolean bind) {
 		this.bind=bind;
 	}

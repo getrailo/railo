@@ -42,9 +42,7 @@ public final class SortRegister {
 		this.value = value;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return value.toString();
 	}

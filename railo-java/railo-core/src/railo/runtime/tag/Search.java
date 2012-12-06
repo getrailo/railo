@@ -68,9 +68,7 @@ public final class Search extends TagImpl {
 	//private int spellCheckMaxLevel=10;
 	//private String result=null;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		type=SearchCollection.SEARCH_TYPE_SIMPLE;
@@ -272,9 +270,7 @@ public final class Search extends TagImpl {
 		
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    //SerialNumber sn = pageContext.getConfig().getSerialNumber();
 	    //if(sn.getVersion()==SerialNumber.VERSION_COMMUNITY)
@@ -388,9 +384,7 @@ public final class Search extends TagImpl {
 		return SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

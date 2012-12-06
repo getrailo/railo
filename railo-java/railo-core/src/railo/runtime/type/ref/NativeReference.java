@@ -42,9 +42,7 @@ public final class NativeReference implements Reference {
         return new NativeReference(o,key);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#getParent()
-     */
+    @Override
     public Object getParent() {
         return o;
     }
@@ -53,31 +51,22 @@ public final class NativeReference implements Reference {
         return KeyImpl.init(key);
     }
     
-    /**
-     * @see railo.runtime.type.ref.Reference#getKeyAsString()
-     */
+    @Override
     public String getKeyAsString() {
         return key;
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
-     */
+    @Override
     public Object get(PageContext pc) throws PageException {
         return pc.getCollection(o,key);
     }
 
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, Object defaultValue) {
         return pc.getCollection(o,key,null);
     }
     
-    /**
-     * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
-     */
+    @Override
     public Object touch(PageContext pc) throws PageException {
         Object rtn=pc.getCollection(o,key,null);
         if(rtn!=null) return rtn;
@@ -93,9 +82,7 @@ public final class NativeReference implements Reference {
 		}
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc,Object value) throws PageException {
         return pc.set(o,key,value);
     }
@@ -108,17 +95,12 @@ public final class NativeReference implements Reference {
 		}
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#remove(PageContext pc)
-     */
+    @Override
     public Object remove(PageContext pc) throws PageException {
         return pc.getVariableUtil().remove(o,key);
     }
     
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#removeEL(railo.runtime.PageContext)
-     */
+    @Override
     public Object removeEL(PageContext pc) {
         return pc.getVariableUtil().removeEL(o,key);
     }

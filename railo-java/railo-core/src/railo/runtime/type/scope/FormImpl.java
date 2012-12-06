@@ -71,9 +71,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		super(true,"form",SCOPE_FORM);
 	}
 
-    /**
-     * @see railo.runtime.type.scope.Form#getEncoding()
-     */
+    @Override
     public String getEncoding() {
         return encoding;
     }
@@ -88,9 +86,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
         setFieldNames();
     }
 
-	/**
-	 * @see railo.runtime.type.scope.ScopeSupport#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 		if(encoding==null)encoding=pc.getConfig().getWebCharset();
 		
@@ -294,9 +290,6 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 	}
 	
 	
-	/**
-     * @see railo.runtime.type.scope.Form#getFileUpload(java.lang.String)
-     */
 	public DiskFileItem getFileUpload(String key) {
 		return null;
 	}
@@ -344,9 +337,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		return null;
 	}
 
-	/**
-     * @see railo.runtime.type.scope.Form#getInitException()
-     */
+	@Override
 	public PageException getInitException() {
 		if(initException!=null)
 			return Caster.toPageException(initException);
@@ -363,10 +354,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		this.scriptProtected=_scriptProtected;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.URL#isScriptProtected()
-	 */
+	@Override
 	public boolean isScriptProtected() {
 		return scriptProtected==ScriptProtected.YES ;
 	}

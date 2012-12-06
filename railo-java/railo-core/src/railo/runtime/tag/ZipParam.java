@@ -25,9 +25,7 @@ public final class ZipParam extends TagImpl {
 	
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		charset=null;
@@ -93,9 +91,7 @@ public final class ZipParam extends TagImpl {
 		this.recurse=Caster.toBoolean(recurse);
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		if(source!=null) {
@@ -165,9 +161,7 @@ public final class ZipParam extends TagImpl {
 			throw new ApplicationException("attribute ["+name+"] is required in combination with attribute(s) ["+combi+"]");	
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

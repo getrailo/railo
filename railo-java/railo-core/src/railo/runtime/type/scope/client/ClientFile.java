@@ -44,10 +44,7 @@ public class ClientFile extends StorageScopeFile implements Client {
 		return new ClientFile(pc,res,data);
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
     	return new ClientFile(this,deepCopy);
 	}

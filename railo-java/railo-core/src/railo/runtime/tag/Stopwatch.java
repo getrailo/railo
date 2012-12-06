@@ -20,9 +20,7 @@ public final class Stopwatch extends BodyTagImpl {
 	private long time;
     private String variable;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		label=null;
@@ -46,18 +44,13 @@ public final class Stopwatch extends BodyTagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		time=System.currentTimeMillis();
 		return EVAL_BODY_INCLUDE;
 	}
 
-	/**
-	* @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 		long exe = (System.currentTimeMillis()-time);
 		
@@ -77,16 +70,12 @@ public final class Stopwatch extends BodyTagImpl {
 		return EVAL_PAGE;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}

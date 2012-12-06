@@ -51,19 +51,13 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
         //return (Element)XMLCaster.toRawNode(array.getE(1));
     }
 
-    /**
-     *
-     * @see railo.runtime.text.xml.struct.XMLNodeStruct#removeEL(railo.runtime.type.Collection.Key)
-     */
+    @Override
     public Object removeEL(Collection.Key key) {
         int index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
         if(index==Integer.MIN_VALUE)return super.removeEL (key);
         return removeEL(index);
     }
 
-	/**
-	 * @see railo.runtime.type.Array#removeEL(int)
-	 */
 	public Object removeEL(int index) {
 		Object o=array.removeEL(index);
 		if(o instanceof Element) {
@@ -76,28 +70,13 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 		return o;
 	}
 	
-    
-    /* *
-     * @see railo.runtime.type.Collection#remove(java.lang.String)
-     * /
-    public Object remove (String key) throws PageException {
-        int index=Caster.toIntValue(key,Integer.MIN_VALUE);
-        if(index==Integer.MIN_VALUE)return super.remove (KeyImpl.init(key));
-        return remove(index);
-    }*/
-
-    /**
-     * @see railo.runtime.text.xml.struct.XMLNodeStruct#remove(railo.runtime.type.Collection.Key)
-     */
+    @Override
     public Object remove(Collection.Key key) throws PageException {
         int index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
         if(index==Integer.MIN_VALUE)return super.remove (key);
         return remove(index);
     }
 
-	/**
-	 * @see railo.runtime.type.Array#removeE(int)
-	 */
 	public Object remove(int index) throws PageException {
 		Object o=array.removeE(index);
 		if(o instanceof Element) {
@@ -107,44 +86,29 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 		return o;
 	}
 
-    /**
-     * @see railo.runtime.text.xml.struct.XMLNodeStruct#get(railo.runtime.type.Collection.Key)
-     */
+    @Override
     public Object get(Collection.Key key) throws PageException  {
         int index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
         if(index==Integer.MIN_VALUE)return super.get(key);
         return get(index);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Array#getE(int)
-	 */
 	public Object get(int index) throws PageException {
 		return array.getE(index);
 	}
     
-    /**
-     *
-     * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-     */
+    @Override
     public Object get(Collection.Key key, Object defaultValue) {
         int index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
         if(index==Integer.MIN_VALUE)return super.get(key,defaultValue);
         return get(index,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.type.Array#get(int, java.lang.Object)
-	 */
 	public Object get(int index, Object defaultValue) {
 		return array.get(index,defaultValue);
 	}
 
-    /**
-     *
-     * @see railo.runtime.text.xml.struct.XMLNodeStruct#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object setEL(Collection.Key key, Object value) {
         try {
 			return set(key,value);
@@ -166,9 +130,7 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 		}
 	}
 
-	/**
-	 * @see railo.runtime.text.xml.struct.XMLNodeStruct#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
         int index=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
         if(index==Integer.MIN_VALUE){
@@ -177,9 +139,6 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
         return set(index,value);
     }
 
-	/**
-	 * @see railo.runtime.type.Array#setE(int, java.lang.Object)
-	 */
 	public Object set(int index, Object value) throws PageException {
 		Element element=XMLCaster.toElement(getOwnerDocument(),value);
     	Object obj = array.get(index,null);
@@ -198,10 +157,7 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
 	}
     
 
-    /**
-     *
-     * @see railo.runtime.text.xml.struct.XMLNodeStruct#containsKey(railo.runtime.type.Collection.Key)
-     */
+    @Override
     public boolean containsKey(Collection.Key key) {
         return get(key,null)!=null;
     }
@@ -219,9 +175,7 @@ public final class XMLMultiElementStruct extends XMLElementStruct {
         }
     }
 
-	/**
-	 * @see org.w3c.dom.Node#cloneNode(boolean)
-	 */
+	@Override
 	public Node cloneNode(boolean deep) {
 		try {
             return new XMLMultiElementStruct((Array) Duplicator.duplicate(array,deep),getCaseSensitive());

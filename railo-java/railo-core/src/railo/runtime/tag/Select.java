@@ -47,9 +47,7 @@ public final class Select extends BodyTagImpl {
 	private boolean caseSensitive=false;
     
     
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
+    @Override
     public void release() {
         super.release();
         query=null;
@@ -300,16 +298,12 @@ public final class Select extends BodyTagImpl {
         this.value = value;
     }
     
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
-	public int doStartTag()	{
+    @Override
+    public int doStartTag()	{
 		return EVAL_BODY_BUFFERED;
 	}
     
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-     */
+    @Override
     public int doEndTag() throws PageException {
         try {
             _doEndTag();

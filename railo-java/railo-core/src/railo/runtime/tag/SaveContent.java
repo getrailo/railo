@@ -18,9 +18,7 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 	private boolean trim;
 	private boolean append;
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		variable=null;
@@ -49,17 +47,13 @@ public final class SaveContent extends BodyTagTryCatchFinallyImpl {
 		this.append=append;
 	}
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag()	{
 		return EVAL_BODY_BUFFERED;
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody() throws PageException	{
 	
 		String value = trim ? bodyContent.getString().trim() : bodyContent.getString();

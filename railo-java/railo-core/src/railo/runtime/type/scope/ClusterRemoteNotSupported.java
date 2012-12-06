@@ -6,23 +6,17 @@ public final class ClusterRemoteNotSupported implements ClusterRemote {
 
 	public void addEntry(ClusterEntry entry) {}
 
-	/**
-	 * @see railo.runtime.type.scope.ClusterRemote#broadcastEntries()
-	 */
+	@Override
 	public void broadcastEntries() {
 		//print.out("ClusterRemote#broadcastEntries()");
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.ClusterRemote#checkValue(java.lang.Object)
-	 */
+	@Override
 	public boolean checkValue(Object value) {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.ClusterRemote#duplicate()
-	 */
+	@Override
 	public ClusterRemote duplicate() {
 		return new ClusterRemoteNotSupported();
 	}

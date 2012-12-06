@@ -96,9 +96,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public QueryColumnImpl() {
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return size;
 	}
@@ -113,17 +111,13 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return k;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key key) throws PageException {
 		resetType();
 		return set(Caster.toIntValue(key.getString()),"");
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryColumn#remove(int)
-	 */
+	@Override
 	public Object remove(int row) throws DatabaseException {
         // query.disconnectCache();
         resetType();
@@ -131,28 +125,21 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	}
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Collection.Key key) {
         // query.disconnectCache();
         resetType();
 		return setEL(Caster.toIntValue(key.getString(),-1),"");
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryColumn#removeEL(int)
-	 */
+	@Override
 	public Object removeEL(int row) {
         // query.disconnectCache();
         resetType();
 		return setEL(row,"");
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public synchronized void clear() {
         // query.disconnectCache();
         resetType();
@@ -160,9 +147,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		size=0;
 	}
 	
-	/**
-	 * @see railo.runtime.type.ref.Reference#remove(PageContext pc)
-	 */
+	@Override
 	public Object remove(PageContext pc) throws PageException {
         return remove(query.getCurrentrow(pc.getId()));
 	}
@@ -171,10 +156,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return removeEL(query.getCurrentrow(pc.getId()));
 	}
 	
-	/**
-	 * @throws PageException
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(String key) throws PageException {
         int row=Caster.toIntValue(key,Integer.MIN_VALUE);
 	    if(row==Integer.MIN_VALUE) {
@@ -187,9 +169,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return get(row);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws PageException {
 		int row=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 		if(row==Integer.MIN_VALUE) {
@@ -238,15 +218,12 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 			boolean old = undefined.setAllowImplicidQueryCall(false);
 			Object sister = undefined.get(this.key,null);
 			undefined.setAllowImplicidQueryCall(old);
-			if(sister!=null)return pc.get(sister, key,defaultValue);
+			if(sister!=null)return pc.get(sister, KeyImpl.init(key),defaultValue);
 		}
     	return defaultValue;
 	}
 
-	/**
-     * @see railo.runtime.type.ContextCollection#get(railo.runtime.PageContext, java.lang.String)
-     */
-    public Object get(PageContext pc, String key) throws PageException {
+	public Object get(PageContext pc, String key) throws PageException {
         int row=Caster.toIntValue(key,Integer.MIN_VALUE);
         if(row==Integer.MIN_VALUE) {
             Object rtn=getChildElement(key, null);
@@ -259,9 +236,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return get(row);
     }
 
-    /**
-     * @see railo.runtime.type.QueryColumn#get(int)
-     */
+    @Override
     public Object get(int row){
         if(row<1 || row>size) return "";
         Object o=data[row-1];
@@ -296,9 +271,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return setEL(row,new StructImpl());
     }
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 	    int row=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 	    if(row==Integer.MIN_VALUE) {
@@ -310,10 +283,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return get(row,defaultValue);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#get(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object get(String key, Object defaultValue) {
 	    int row=Caster.toIntValue(key,Integer.MIN_VALUE);
 	    if(row==Integer.MIN_VALUE) {
@@ -339,18 +309,14 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return get(row,defaultValue);
     }
 
-	/**
-	 * @see railo.runtime.type.QueryColumn#get(int, java.lang.Object)
-	 */
+	@Override
 	public Object get(int row, Object defaultValue) {
 	    if(row<1 || row>size) return defaultValue;
 	    Object o=data[row-1];
 	    return o==null?defaultValue:o;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(String key, Object value) throws PageException {
 	    int row=Caster.toIntValue(key,Integer.MIN_VALUE);
 	    if(row==Integer.MIN_VALUE)return query.set(key,value);
@@ -363,9 +329,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return set(row,value);
 	}
 
-    /**
-	 * @see railo.runtime.type.QueryColumn#set(int, java.lang.Object)
-	 */
+    @Override
 	public synchronized Object set(int row, Object value) throws DatabaseException {
         // query.disconnectCache();
         if(row<1) throw new DatabaseException("invalid row number ["+row+"]","valid row numbers a greater or equal to one",null,null,null);
@@ -378,9 +342,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    data[row-1]=value;
 	    return value;
 	}
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public synchronized Object setEL(String key, Object value) {
 	    int index=Caster.toIntValue(key,Integer.MIN_VALUE);
 		if(index==Integer.MIN_VALUE) query.setEL(key,value);
@@ -394,9 +356,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return setEL(index, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryColumn#setEL(int, java.lang.Object)
-	 */
+	@Override
 	public synchronized Object setEL(int row, Object value) {
         // query.disconnectCache();
         if(row<1 || row>size) return value;
@@ -406,26 +366,20 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return value;
 	}
 
-    /**
-	 * @see railo.runtime.type.QueryColumn#add(java.lang.Object)
-	 */
+    @Override
 	public synchronized void add(Object value) {
         // query.disconnectCache();
         if(data.length<=size) growTo(size);
 	    data[size++]=value;
 	}
 
-    /**
-     * @see railo.runtime.type.QueryColumn#cutRowsTo(int)
-     */
+    @Override
     public synchronized void cutRowsTo(int maxrows) {
         // query.disconnectCache();
         if(maxrows>-1 && maxrows<size)size=maxrows;
     }
 
-	/**
-	 * @see railo.runtime.type.QueryColumn#addRow(int)
-	 */
+	@Override
 	public synchronized void addRow(int count) {	    
         // query.disconnectCache();
         if(data.length<(size+count)) growTo(size+count);
@@ -445,27 +399,20 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return o==null?"":o;
     }
 
-	/**
-	 * @param reorganize 
-	 * @see railo.runtime.type.QueryColumn#getType()
-	 */
+	@Override
 	public int getType() {
 	    reOrganizeType();
 		return type;
 	}
 	
 	
-    /**
-	 * @see railo.runtime.type.QueryColumn#getTypeAsString()
-	 */
+    @Override
 	public String getTypeAsString() {
 		return QueryImpl.getColumTypeName(getType());
 	}
 
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return DumpUtil.toDumpData(get(query.getCurrentrow(pageContext.getId())), pageContext,maxlevel,dp);
 	}	
@@ -504,31 +451,22 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         this.key = key;
     }
 
-	/**
-	 * @see railo.runtime.type.ref.Reference#getKeyAsString()
-	 */
+	@Override
 	public String getKeyAsString() throws PageException {
 		return key.getLowerString();// TODO ist das OK?
 	}
 
-    /**
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext)
-     */
+    @Override
     public Object get(PageContext pc) {
         return get(query.getCurrentrow(pc.getId()));
     }
     
-    /**
-     *
-     * @see railo.runtime.type.ref.Reference#get(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object get(PageContext pc, Object defaultValue) {
         return get(query.getCurrentrow(pc.getId()),defaultValue);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#touch(railo.runtime.PageContext)
-     */
+    @Override
     public Object touch(PageContext pc) throws PageException {
         return touch(query.getCurrentrow(pc.getId()));
     }
@@ -537,85 +475,63 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return touchEL(query.getCurrentrow(pc.getId()));
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#set(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object set(PageContext pc, Object value) throws PageException {
         return set(query.getCurrentrow(pc.getId()),value);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#setEL(railo.runtime.PageContext, java.lang.Object)
-     */
+    @Override
     public Object setEL(PageContext pc, Object value) {
         return setEL(query.getCurrentrow(pc.getId()),value);
     }
 
-    /**
-     * @see railo.runtime.type.ref.Reference#getParent()
-     */
+    @Override
     public Object getParent() {
         return query;
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws PageException {
         return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
 		return Caster.toString(value,defaultValue);
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws PageException {
         return Caster.toBooleanValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
     	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
 		return Caster.toBoolean(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws PageException {
         return Caster.toDoubleValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
     	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
 		return Caster.toDoubleValue(value,defaultValue);
     }
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws PageException {
         return DateCaster.toDateAdvanced(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())),null);
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
     	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
 		if(value==null) return defaultValue;
@@ -623,37 +539,27 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     }
 
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws PageException {
 		return Operator.compare(castToBooleanValue(), b);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare((Date)castToDateTime(), (Date)dt);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(castToDoubleValue(), d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(castToString(), str);
 	}
 
-    /**
-     * @see railo.runtime.type.Collection#clone()
-     */
+    @Override
     public synchronized Object clone() {
         return duplicate(true);
     }
@@ -689,9 +595,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     }
 	
 
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         try {
             return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
@@ -700,32 +604,21 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         }
     }
 
-    /**
-     * @see railo.runtime.type.Collection#containsKey(java.lang.String)
-     */
+    @Override
     public boolean containsKey(String key) {
         return get(key,null)!=null;
     }
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
         return get(key,null)!=null;
 	}
 
-	/**
-	 * @see railo.runtime.type.Sizeable#sizeOf()
-	 */
+	@Override
 	public long sizeOf() {
 		return SizeOf.size(key)+SizeOf.size(data);
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Iteratorable#iterator()
-	 */
 	public Iterator iterator() {
 		return keyIterator();
 	}
@@ -745,25 +638,19 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return new EntryIterator(this, keys());
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#valueIterator()
-	 */
+	@Override
 	public Iterator<Object> valueIterator() {
 		return new ArrayIterator(data,0,size);
 	}
 	
-	/**
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, railo.runtime.type.Collection.Key, railo.runtime.type.Struct)
-	 */
+	@Override
 	public Object callWithNamedValues(PageContext pc, Key methodName,Struct args) throws PageException {
 		
         throw new ExpressionException("No matching Method/Function ["+methodName+"] for call with named arguments found");
 		//return pc.getFunctionWithNamedValues(get(query.getCurrentrow()), methodName, Caster.toFunctionValues(args));
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object[])
-	 */
+	@Override
 	public Object call(PageContext pc, Key methodName, Object[] arguments) throws PageException {
 		MethodInstance mi = Reflector.getMethodInstanceEL(this.getClass(), methodName, arguments);
 		if(mi!=null) {
@@ -780,72 +667,30 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return pc.getFunction(get(query.getCurrentrow(pc.getId())), methodName, arguments);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#call(railo.runtime.PageContext, java.lang.String, java.lang.Object[])
-	 */
-	public Object call(PageContext pc, String methodName, Object[] arguments)throws PageException {
-		return call(pc, KeyImpl.init(methodName), arguments);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#callWithNamedValues(railo.runtime.PageContext, java.lang.String, railo.runtime.type.Struct)
-	 */
-	public Object callWithNamedValues(PageContext pc, String methodName,Struct args) throws PageException {
-		return callWithNamedValues(pc, KeyImpl.init(methodName), args);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(PageContext pc, Key key, Object defaultValue) {
 		return get(key,defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#get(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(PageContext pc, Key key) throws PageException {
 		return get(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#isInitalized()
-	 */
 	public boolean isInitalized() {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object set(PageContext pc, String propertyName, Object value)throws PageException {
-		return set(propertyName, value);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#set(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(PageContext pc, Key propertyName, Object value) throws PageException {
 		return set(propertyName, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, java.lang.String, java.lang.Object)
-	 */
-	public Object setEL(PageContext pc, String propertyName, Object value) {
-		return setEL(key, value);
-	}
-
-	/**
-	 * @see railo.runtime.type.Objects#setEL(railo.runtime.PageContext, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(PageContext pc, Key propertyName, Object value) {
 		return setEL(propertyName, value);
 	}
 
-	/**
-	 * @see java.util.List#add(int, java.lang.Object)
-	 */
 	public void add(int index, Object element) {
 		throwNotAllowedToAlter();
 		//setEL(index+1, element);
@@ -861,9 +706,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		
 	}
 
-	/**
-	 * @see java.util.List#addAll(java.util.Collection)
-	 */
 	public boolean addAll(java.util.Collection<? extends Object> c) {
 		throwNotAllowedToAlter();
 		return false;
@@ -874,9 +716,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return true;*/
 	}
 
-	/**
-	 * @see java.util.List#addAll(int, java.util.Collection)
-	 */
 	public boolean addAll(int index, java.util.Collection<? extends Object> c) {
 		throwNotAllowedToAlter();
 		return false;
@@ -887,16 +726,10 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return true;*/
 	}
 
-	/**
-	 * @see java.util.List#contains(java.lang.Object)
-	 */
 	public boolean contains(Object o) {
 		return indexOf(o)!=-1;
 	}
 
-	/**
-	 * @see java.util.List#containsAll(java.util.Collection)
-	 */
 	public boolean containsAll(java.util.Collection<?> c) {
 		Iterator<? extends Object> it = c.iterator();
 		while(it.hasNext()){
@@ -905,9 +738,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return true;
 	}
 
-	/**
-	 * @see java.util.List#indexOf(java.lang.Object)
-	 */
 	public int indexOf(Object o) {
 		for(int i=0;i<size;i++){
 			try {
@@ -918,9 +748,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return -1;
 	}
 
-	/**
-	 * @see java.util.List#lastIndexOf(java.lang.Object)
-	 */
 	public int lastIndexOf(Object o) {
 		for(int i=size-1;i>=0;i--){
 			try {
@@ -931,24 +758,10 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return -1;
 	}
 
-	/**
-	 * @see java.util.List#isEmpty()
-	 */
 	public boolean isEmpty() {
 		return size()==0;
 	}
 
-	/*public ListIterator<Object> listIterator() {
-		return null;
-	}
-
-	public ListIterator<Object> listIterator(int index) {
-		return null;
-	}*/
-
-	/**
-	 * @see java.util.List#removeAll(java.util.Collection)
-	 */
 	public boolean removeAll(java.util.Collection<?> c) {
 		throwNotAllowedToAlter();
 		return false;
@@ -962,9 +775,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return hasChanged;*/
 	}
 
-	/**
-	 * @see java.util.List#retainAll(java.util.Collection)
-	 */
 	public boolean retainAll(java.util.Collection<?> c) {
 		throwNotAllowedToAlter();
 		return false;
@@ -979,9 +789,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return hasChanged;*/
 	}
 
-	/**
-	 * @see java.util.List#subList(int, int)
-	 */
 	public List<Object> subList(int fromIndex, int toIndex) {
 		ArrayList<Object> list=new ArrayList<Object>();
 		for(int i=fromIndex;i<toIndex;i++){
@@ -990,22 +797,17 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		return list;
 	}
 
-	/**
-	 * @see java.util.List#toArray()
-	 */
 	public Object[] toArray() {
 		return toArray(new Object[size()]);
 	}
 
-	/**
-	 * @see java.util.List#toArray(T[])
-	 */
 	public  Object[] toArray(Object[] trg) {
 		System.arraycopy(data, 0, trg, 0, data.length>trg.length?trg.length:data.length);
 		return trg;
 	}
 
 
+	@Override
 	public boolean equals(Object obj){
 		if(!(obj instanceof Collection)) return false;
 		return CollectionUtil.equals(this,(Collection)obj);

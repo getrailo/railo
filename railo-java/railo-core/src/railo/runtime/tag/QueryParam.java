@@ -42,9 +42,7 @@ public final class QueryParam extends TagImpl {
 	** 	the value attribute. */
 	private double maxlength=-1;
     
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 	    separator=",";
 	    list=false;
@@ -115,9 +113,7 @@ public final class QueryParam extends TagImpl {
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    Tag parent = getParent();
 		while(parent!=null && !(parent instanceof Query)) {

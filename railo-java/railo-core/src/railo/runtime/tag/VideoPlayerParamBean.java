@@ -160,10 +160,7 @@ public class VideoPlayerParamBean {
 		return StringUtil.isEmpty(pathVideo)?pathFlash:pathVideo;
 	}
 
-	/**
-	 *
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return "video:"+pathVideo+";flash:"+pathFlash+";index:"+index+";show:"+show;
 	}

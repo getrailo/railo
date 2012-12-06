@@ -68,9 +68,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
     private int count=0;
 	private boolean startNewRow;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		query=null;
@@ -155,9 +153,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		startNewRow=true;
 		initRow=query.getRecordcount();
@@ -166,16 +162,12 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 		return query.getRecordcount()>=startrow?EVAL_BODY_INCLUDE:SKIP_BODY;
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		//if(htmltable) body.append("<tr>\n");
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody() throws PageException	{
 	    if(htmltable) body.append("</tr>\n");
 	    else body.append('\n');
@@ -184,9 +176,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 		return ++count<maxrows && query.next()?EVAL_BODY_AGAIN:SKIP_BODY;
 	}
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag() throws PageException	{
 	    try {
             _doEndTag();
@@ -221,9 +211,7 @@ public final class Table extends BodyTagTryCatchFinallyImpl {
 	    }
 	}
 
-    /**
-     * @see javax.servlet.jsp.tagext.TryCatchFinally#doFinally()
-     */
+    @Override
     public void doFinally() {
 		try {
 		    pageContext.undefinedScope().removeQuery();

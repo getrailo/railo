@@ -114,9 +114,7 @@ public final class FeedHandler extends DefaultHandler {
 		} 
 	}
 
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-	 */
+	@Override
 	public void startElement(String uri, String name, String qName, Attributes atts) {
 		deep++;
 		
@@ -340,9 +338,7 @@ public final class FeedHandler extends DefaultHandler {
 	
 	
 
-	/**
-	 * @see org.xml.sax.helpers.DefaultHandler#endDocument()
-	 */
+	@Override
 	public void endDocument() throws SAXException {
 		super.endDocument();
 		Struct def=new StructImpl();

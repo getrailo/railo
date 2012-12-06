@@ -59,9 +59,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	}
 	
 
-    /**
-     * @see railo.runtime.type.StructImpl#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-     */
+    @Override
     public Object setEL(Collection.Key key, Object value) {
         try {
             return set(key,value);
@@ -99,9 +97,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
         else super.set (KeyImpl.init(name),dec(cookie.getValue()));
 	}
 	
-    /**
-     * @see railo.runtime.type.Collection#clear()
-     */
+    @Override
     public void clear() {
     	raw.clear();
         Collection.Key[] keys = keys();
@@ -110,12 +106,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
         }
     }
 
-    /* *
-     * @see railo.runtime.type.Collection#remove(java.lang.String)
-     * /
-    public Object remove (String key) throws PageException {
-    	return remove(KeyImpl.init(key), true);
-    }*/
+    @Override
 
     public Object remove(Collection.Key key) throws PageException {
     	raw.remove(key.getLowerString());
@@ -260,9 +251,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
     
 	
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 		Config config = ThreadLocalPageContext.getConfig(pc);
 		charset = pc.getConfig().getWebCharset();
@@ -299,10 +288,7 @@ public final class CookieImpl extends ScopeSupport implements Cookie,ScriptProte
 	
 	
 
-	/**
-	 *
-	 * @see railo.runtime.type.scope.ScriptProtected#isScriptProtected()
-	 */
+	@Override
 	public boolean isScriptProtected() {
 		return scriptProtected==ScriptProtected.YES;
 	}

@@ -27,9 +27,7 @@ public final class Sprite extends TagImpl {
 		
 
 	
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		this._id=null;
 		this._ids=null;
@@ -56,9 +54,7 @@ public final class Sprite extends TagImpl {
 		this.src=src;
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 
 	public int doStartTag() throws PageException	{
 		try {
@@ -170,9 +166,7 @@ public final class Sprite extends TagImpl {
 
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

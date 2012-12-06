@@ -65,9 +65,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		this.caseSensitive=caseSensitive;
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		Collection.Key[] keys=keys();
 		maxlevel--;
@@ -89,17 +87,12 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return nodeMap.getLength();
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Collection.Key[] keys() {
 		int len=nodeMap.getLength();
 		ArrayList<Collection.Key> list =new ArrayList<Collection.Key>();
@@ -111,10 +104,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return list.toArray(new Collection.Key[list.size()]);
 	}
     
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Collection.Key k) throws PageException {
 		String key=k.getString();
 		Node rtn=null;
@@ -132,9 +122,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		throw new ExpressionException("can't remove element with name ["+key+"], element doesn't exist");
 	}	
     
-    /**
-     * @see railo.runtime.type.Struct#removeEL(java.lang.String)
-     */
+    @Override
     public Object removeEL(Collection.Key k) {
     	String key=k.getString();
 		Node rtn=null;
@@ -152,17 +140,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return null;
     }
     
-	/* *
-	 *
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 * /
-	public Object removeEL(Collection.Key key) {
-		return removeEL(key.getString());
-	}*/
-
-	/**
-	 * @see railo.runtime.type.Collection#clear()
-	 */
+	@Override
 	public void clear() {
 		Collection.Key[] keys=keys();
 		for(int i=0;i<keys.length;i++) {
@@ -170,9 +148,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(java.lang.String)
-	 */
+	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
 		Node rtn = nodeMap.getNamedItem(key.getString());
 		if(rtn!=null) return rtn.getNodeValue();
@@ -185,9 +161,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		throw new ExpressionException("No Attribute "+key.getString()+" defined for tag","attributes are ["+List.arrayToList(keys,", ")+"]");
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		try {
 			return get(key);
@@ -196,9 +170,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		}
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
 		if(owner==null) return value;
 		
@@ -236,9 +208,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return defaultValue;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#setEL(java.lang.String, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Collection.Key key, Object value) {
 		if(owner==null) return value;
 		try {
@@ -272,66 +242,47 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return new ValueIterator(this,keys());
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#getLength()
-	 */
+	@Override
 	public int getLength() {
 		return nodeMap.getLength();
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#item(int)
-	 */
+	@Override
 	public Node item(int index) {
 		return nodeMap.item(index);
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#getNamedItem(java.lang.String)
-	 */
+	@Override
 	public Node getNamedItem(String name) {
 		return nodeMap.getNamedItem(name);
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#removeNamedItem(java.lang.String)
-	 */
+	@Override
 	public Node removeNamedItem(String name) throws DOMException {
 		return nodeMap.removeNamedItem(name);
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#setNamedItem(org.w3c.dom.Node)
-	 */
+	@Override
 	public Node setNamedItem(Node arg) throws DOMException {
 		return nodeMap.setNamedItem(arg);
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#setNamedItemNS(org.w3c.dom.Node)
-	 */
+	@Override
 	public Node setNamedItemNS(Node arg) throws DOMException {
 		return nodeMap.setNamedItemNS(arg);
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#getNamedItemNS(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Node getNamedItemNS(String namespaceURI, String localName) {
 		return nodeMap.getNamedItemNS(namespaceURI,localName);
 	}
 
-	/**
-	 * @see org.w3c.dom.NamedNodeMap#removeNamedItemNS(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Node removeNamedItemNS(String namespaceURI, String localName) throws DOMException {
 		return nodeMap.removeNamedItemNS(namespaceURI, localName);
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		XMLAttributes sct=new XMLAttributes(owner,nodeMap,caseSensitive);
 		ThreadLocalDuplication.set(this, sct);
@@ -357,96 +308,69 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 		return nodeMap;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Collection.Key key) {
         return get(key,null)!=null;
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToString()
-     */
+    @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast XML NamedNodeMap to String");
     }
     
-	/**
-	 * @see railo.runtime.type.util.StructSupport#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return defaultValue;
 	}
 
-    /**
-     * @see railo.runtime.op.Castable#castToBooleanValue()
-     */
+    @Override
     public boolean castToBooleanValue() throws ExpressionException {
         throw new ExpressionException("Can't cast XML NamedNodeMap to a boolean value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue()
-     */
+    @Override
     public double castToDoubleValue() throws ExpressionException {
         throw new ExpressionException("Can't cast XML NamedNodeMap to a number value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return defaultValue;
     }
 
 
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime()
-     */
+    @Override
     public DateTime castToDateTime() throws ExpressionException {
     	throw new ExpressionException("Can't cast XML NamedNodeMap to a date value");
     }
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) throws ExpressionException {
 		throw new ExpressionException("can't compare XML NamedNodeMap with a boolean value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		throw new ExpressionException("can't compare XML NamedNodeMap with a DateTime Object");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		throw new ExpressionException("can't compare XML NamedNodeMap with a numeric value");
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		throw new ExpressionException("can't compare XML NamedNodeMap with a String");
 	}

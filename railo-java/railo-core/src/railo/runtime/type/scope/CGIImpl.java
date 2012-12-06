@@ -83,23 +83,17 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	}
 	
 
-	/**
-	 * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return staticKeys.containsKey(key);
 	}
 	
-	/**
-	 * @see railo.runtime.type.StructImpl#containsValue(java.lang.Object)
-	 */
+	@Override
 	public boolean containsValue(Object value) {
 		// TODO Auto-generated method stub
 		return super.containsValue(value);
 	}
-	/**
-	 * @see railo.runtime.type.StructImpl#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		Struct sct=new StructImpl();
 		copy(this,sct,deepCopy);
@@ -107,9 +101,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 	}
 	
 	
-	/**
-	 * @see railo.runtime.type.Collection#size()
-	 */
+	@Override
 	public int size() {
 		return keys.length;
 	}
@@ -118,10 +110,7 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return keys;
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
 		
 		if(req==null) {
@@ -258,19 +247,14 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return StringUtil.toStringEmptyIfNull(str);
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.StructImpl#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Collection.Key key) {
 		Object value=get(key,"");
 		if(value==null)value= "";
 		return value;
 	}
 	
-	/**
-	 * @see railo.runtime.type.Collection#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return new KeyIterator(keys());
 	}
@@ -285,16 +269,12 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		return new EntryIterator(this, keys());
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public boolean isInitalized() {
 		return isInit;
 	}
 	
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {
 		isInit=true;
 		this.pc=pc;
@@ -325,23 +305,17 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
 		headers=null;
 	}
 	
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		return StructUtil.toDumpTable(this, "CGI Scope", pageContext, maxlevel, dp);
 	}
     
-    /**
-     * @see railo.runtime.type.scope.Scope#getType()
-     */
+    @Override
     public int getType() {
         return SCOPE_CGI;
     }
     
-    /**
-     * @see railo.runtime.type.scope.Scope#getTypeAsString()
-     */
+    @Override
     public String getTypeAsString() {
         return "cgi";
     }

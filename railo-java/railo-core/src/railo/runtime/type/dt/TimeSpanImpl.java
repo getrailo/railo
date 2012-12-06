@@ -105,94 +105,68 @@ public final class TimeSpanImpl implements TimeSpan {
 		valueMillis=((second+(minute*60L)+(hour*3600L)+(day*3600L*24L))*1000)+millisecond;
 	}
 	
-    /**
-	 * @see railo.runtime.op.Castable#castToString()
-	 */
+    @Override
 	public String castToString() {
 		return Caster.toString(value);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToString(java.lang.String)
-	 */
+	@Override
 	public String castToString(String defaultValue) {
 		return Caster.toString(value);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#castToBooleanValue()
-	 */
+	@Override
 	public boolean castToBooleanValue() throws ExpressionException {
 		throw new ExpressionException("can't cast Timespan to boolean");
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToBoolean(java.lang.Boolean)
-     */
+    @Override
     public Boolean castToBoolean(Boolean defaultValue) {
         return defaultValue;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDoubleValue()
-	 */
+	@Override
 	public double castToDoubleValue() {
 		return value;
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDoubleValue(double)
-     */
+    @Override
     public double castToDoubleValue(double defaultValue) {
         return value;
     }
 
-	/**
-	 * @see railo.runtime.op.Castable#castToDateTime()
-	 */
+	@Override
 	public DateTime castToDateTime() throws ExpressionException {
 		throw new ExpressionException("can't cast Timespan to date");
 	}
     
-    /**
-     * @see railo.runtime.op.Castable#castToDateTime(railo.runtime.type.dt.DateTime)
-     */
+    @Override
     public DateTime castToDateTime(DateTime defaultValue) {
         return defaultValue;
     }
 
 
-	/**
-	 * @see railo.runtime.op.Castable#compare(boolean)
-	 */
+	@Override
 	public int compareTo(boolean b) {
 		return Operator.compare(value, b?1D:0D);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(railo.runtime.type.dt.DateTime)
-	 */
+	@Override
 	public int compareTo(DateTime dt) throws PageException {
 		return Operator.compare(value, dt.castToDoubleValue());
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(double)
-	 */
+	@Override
 	public int compareTo(double d) throws PageException {
 		return Operator.compare(value, d);
 	}
 
-	/**
-	 * @see railo.runtime.op.Castable#compareTo(java.lang.String)
-	 */
+	@Override
 	public int compareTo(String str) throws PageException {
 		return Operator.compare(value, str);
 	}
 
-	/**
-	 * @see railo.runtime.dump.Dumpable#toDumpData(railo.runtime.PageContext, int)
-	 */
+	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
 		DumpTable table=new DumpTable("timespan","#ff9900","#ffcc00","#000000");
 		if(milli>0)table.appendRow(1, new SimpleDumpData("Timespan"), new SimpleDumpData("createTimeSpan("+day+","+hour+","+minute+","+second+","+milli+")"));
@@ -202,9 +176,7 @@ public final class TimeSpanImpl implements TimeSpan {
 		
 		return table;
 	}
-	/**
-     * @see railo.runtime.type.dt.TimeSpan#getMillis()
-     */
+	@Override
 	public long getMillis() {
 		return valueMillis;
 	}
@@ -212,43 +184,31 @@ public final class TimeSpanImpl implements TimeSpan {
 		return milli;
 	}
 	
-	/**
-     * @see railo.runtime.type.dt.TimeSpan#getSeconds()
-     */
+	@Override
 	public long getSeconds() {
 		return valueMillis/1000;
 	}
 	
-	/**
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		if(milli>0)
 			return "createTimeSpan("+day+","+hour+","+minute+","+second+","+milli+")";
 		return "createTimeSpan("+day+","+hour+","+minute+","+second+")";
 	}
 
-    /**
-     * @see railo.runtime.type.dt.TimeSpan#getDay()
-     */
+    @Override
     public int getDay() {
         return day;
     }
-    /**
-     * @see railo.runtime.type.dt.TimeSpan#getHour()
-     */
+    @Override
     public int getHour() {
         return hour;
     }
-    /**
-     * @see railo.runtime.type.dt.TimeSpan#getMinute()
-     */
+    @Override
     public int getMinute() {
         return minute;
     }
-    /**
-     * @see railo.runtime.type.dt.TimeSpan#getSecond()
-     */
+    @Override
     public int getSecond() {
         return second;
     }

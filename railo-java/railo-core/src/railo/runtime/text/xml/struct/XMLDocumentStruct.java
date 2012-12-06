@@ -41,128 +41,91 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#getImplementation()
-	 */
+	@Override
 	public DOMImplementation getImplementation() {
 		return doc.getImplementation();
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createDocumentFragment()
-	 */
+	@Override
 	public DocumentFragment createDocumentFragment() {
 		return doc.createDocumentFragment();
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#getDoctype()
-	 */
+	@Override
 	public DocumentType getDoctype() {
 		return doc.getDoctype();
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#getDocumentElement()
-	 */
+	@Override
 	public Element getDocumentElement() {
 		return doc.getDocumentElement();
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createAttribute(java.lang.String)
-	 */
+	@Override
 	public Attr createAttribute(String name) throws DOMException {
 		return doc.createAttribute(name);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createCDATASection(java.lang.String)
-	 */
+	@Override
 	public CDATASection createCDATASection(String data) throws DOMException {
 		return doc.createCDATASection(data);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createComment(java.lang.String)
-	 */
+	@Override
 	public Comment createComment(String data) {
 		return doc.createComment(data);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createElement(java.lang.String)
-	 */
+	@Override
 	public Element createElement(String tagName) throws DOMException {
 		return doc.createElement(tagName);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#getElementById(java.lang.String)
-	 */
+	@Override
 	public Element getElementById(String elementId) {
 		return doc.getElementById(elementId);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createEntityReference(java.lang.String)
-	 */
+	@Override
 	public EntityReference createEntityReference(String name) throws DOMException {
 		return doc.createEntityReference(name);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#importNode(org.w3c.dom.Node, boolean)
-	 */
+	@Override
 	public Node importNode(Node importedNode, boolean deep) throws DOMException {
 		return doc.importNode(importedNode,deep);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#getElementsByTagName(java.lang.String)
-	 */
+	@Override
 	public NodeList getElementsByTagName(String tagname) {
 		return doc.getElementsByTagName(tagname);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createTextNode(java.lang.String)
-	 */
+	@Override
 	public Text createTextNode(String data) {
 		return doc.createTextNode(data);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createAttributeNS(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Attr createAttributeNS(String namespaceURI, String qualifiedName) throws DOMException {
 		return doc.createAttributeNS(namespaceURI,qualifiedName);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createElementNS(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public Element createElementNS(String namespaceURI, String qualifiedName) throws DOMException {
 		return doc.createElementNS(namespaceURI,qualifiedName);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#getElementsByTagNameNS(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public NodeList getElementsByTagNameNS(String namespaceURI, String localName) {
 		return doc.getElementsByTagNameNS(namespaceURI,localName);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#createProcessingInstruction(java.lang.String, java.lang.String)
-	 */
+	@Override
 	public ProcessingInstruction createProcessingInstruction(String target, String data) throws DOMException {
 		return doc.createProcessingInstruction(target,data);
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#adoptNode(org.w3c.dom.Node)
-	 */
 	public Node adoptNode(Node arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -174,9 +137,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#getDocumentURI()
-	 */
 	public String getDocumentURI() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -188,10 +148,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#getDomConfig()
-	 */
 	public DOMConfiguration getDomConfig() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -203,10 +159,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#getInputEncoding()
-	 */
 	public String getInputEncoding() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -218,10 +170,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#getStrictErrorChecking()
-	 */
 	public boolean getStrictErrorChecking() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -233,10 +181,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#getXmlEncoding()
-	 */
 	public String getXmlEncoding() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -248,10 +192,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#getXmlStandalone()
-	 */
 	public boolean getXmlStandalone() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -263,10 +203,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#getXmlVersion()
-	 */
 	public String getXmlVersion() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -278,10 +214,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#normalizeDocument()
-	 */
 	public void normalizeDocument() {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -293,10 +225,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 *
-	 * @see org.w3c.dom.Document#renameNode(org.w3c.dom.Node, java.lang.String, java.lang.String)
-	 */
 	public Node renameNode(Node arg0, String arg1, String arg2) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -308,9 +236,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#setDocumentURI(java.lang.String)
-	 */
 	public void setDocumentURI(String arg0) {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -323,9 +248,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#setStrictErrorChecking(boolean)
-	 */
 	public void setStrictErrorChecking(boolean arg0) {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -338,9 +260,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#setXmlStandalone(boolean)
-	 */
 	public void setXmlStandalone(boolean arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -353,9 +272,6 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		
 	}
 
-	/**
-	 * @see org.w3c.dom.Document#setXmlVersion(java.lang.String)
-	 */
 	public void setXmlVersion(String arg0) throws DOMException {
     	// dynamic load to support jre 1.4 and 1.5
 		try {
@@ -367,18 +283,13 @@ public final class XMLDocumentStruct extends XMLNodeStruct implements Document {
 		}
 	}
 	
-	/**
-	 *
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new XMLDocumentStruct((Document)doc.cloneNode(deepCopy),caseSensitive);
 	}
 	
 
-	/**
-	 * @see org.w3c.dom.Node#cloneNode(boolean)
-	 */
+	@Override
 	public Node cloneNode(boolean deep) {
 		return new XMLDocumentStruct((Document)doc.cloneNode(deep),caseSensitive);
 	}

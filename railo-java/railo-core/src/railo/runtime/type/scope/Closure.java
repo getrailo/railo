@@ -33,16 +33,12 @@ public class Closure extends ScopeSupport implements Variables {
 		this.debug=pc.getConfig().debug();
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#isInitalized()
-	 */
+	@Override
 	public boolean isInitalized() {
 		return true;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#initialize(railo.runtime.PageContext)
-	 */
+	@Override
 	public void initialize(PageContext pc) {	
 	}
 
@@ -54,62 +50,46 @@ public class Closure extends ScopeSupport implements Variables {
 	public void release(PageContext pc) {
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#getType()
-	 */
+	@Override
 	public int getType() {
 		return SCOPE_VARIABLES;
 	}
 
-	/**
-	 * @see railo.runtime.type.scope.Scope#getTypeAsString()
-	 */
+	@Override
 	public String getTypeAsString() {
 		return "variables";
 	}
 
-	/**
-	 * @see java.util.Map#size()
-	 */
+	@Override
 	public int size() {
 		return var.size();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#keys()
-	 */
+	@Override
 	public Key[] keys() {
 		return var.keys();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#remove(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object remove(Key key) throws PageException {
 		if(local.containsKey(key))
 			return local.remove(key);
 		return var.remove(key);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#removeEL(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object removeEL(Key key) {
 		if(local.containsKey(key))
 			return local.removeEL(key);
 		return var.removeEL(key);
 	}
 
-	/**
-	 * @see java.util.Map#clear()
-	 */
+	@Override
 	public void clear() {
 		var.clear();
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object get(Key key) throws PageException {
 		Object value = local.get(key,null);
 		if(value!=null) return value;
@@ -124,9 +104,7 @@ public class Closure extends ScopeSupport implements Variables {
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#get(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object get(Key key, Object defaultValue) {
 		Object value = local.get(key,null);
 		if(value!=null) return value;
@@ -142,9 +120,7 @@ public class Closure extends ScopeSupport implements Variables {
 		return value;
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#set(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object set(Key key, Object value) throws PageException {
 		if(und.getLocalAlways() || local.containsKey(key))     return local.set(key,value);
 	    if(arg.containsFunctionArgumentKey(key))  {
@@ -155,9 +131,7 @@ public class Closure extends ScopeSupport implements Variables {
 		return var.set(key, value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#setEL(railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+	@Override
 	public Object setEL(Key key, Object value) {
 	    if(und.getLocalAlways() || local.containsKey(key))     return local.setEL(key,value);
         if(arg.containsFunctionArgumentKey(key))  {
@@ -169,23 +143,17 @@ public class Closure extends ScopeSupport implements Variables {
 		return var.setEL(key,value);
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#duplicate(boolean)
-	 */
+	@Override
 	public Collection duplicate(boolean deepCopy) {
 		return new Closure(ThreadLocalPageContext.get(),(Argument)Duplicator.duplicate(arg,deepCopy), (Local)Duplicator.duplicate(local,deepCopy), (Variables)Duplicator.duplicate(var,deepCopy));
 	}
 
-	/**
-	 * @see railo.runtime.type.Collection#containsKey(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public boolean containsKey(Key key) {
 		return get(key,NULL)!=NULL;
 	}
 
-	/**
-	 * @see railo.runtime.type.Iteratorable#keyIterator()
-	 */
+	@Override
 	public Iterator<Collection.Key> keyIterator() {
 		return var.keyIterator();
 	}
@@ -205,16 +173,10 @@ public class Closure extends ScopeSupport implements Variables {
 		return var.valueIterator();
 	}
 	
-	/**
-	 * 
-	 * @see railo.runtime.type.scope.Variables#setBind(boolean)
-	 */
+	@Override
 	public void setBind(boolean bind) {}
 
-	/**
-	 * @see railo.runtime.type.scope.Variables#isBind()
-	 * return always true because this scope is always bind to a closure
-	 */
+	@Override
 	public boolean isBind() {
 		return true;
 	}

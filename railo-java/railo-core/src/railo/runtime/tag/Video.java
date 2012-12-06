@@ -109,9 +109,7 @@ public class Video extends TagSupport {
 		
 	}
 	
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#release()
-	 */
+	@Override
 	public void release() {
 		super.release();
 		result="cfvideo";
@@ -235,9 +233,7 @@ public class Video extends TagSupport {
 		setProfile(strQuality);
 	}
 		
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException	{
 		
 		try {

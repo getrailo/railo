@@ -222,18 +222,8 @@ public class QueryCacheQuery extends QueryImpl {
 	}
 
 	@Override
-	public Object get(PageContext pc, String key, Object defaultValue) {
-		return query.get(pc, key, defaultValue);
-	}
-
-	@Override
 	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {
 		return query.get(pc, key, defaultValue);
-	}
-
-	@Override
-	public Object get(PageContext pc, String key) throws PageException {
-		return query.get(pc, key);
 	}
 
 	@Override
@@ -520,12 +510,6 @@ public class QueryCacheQuery extends QueryImpl {
 	}
 
 	@Override
-	public Object set(PageContext pc, String propertyName, Object value) throws PageException {
-		disconnectCache();
-		return query.set(pc, propertyName, value);
-	}
-
-	@Override
 	public Object set(PageContext pc, Collection.Key propertyName, Object value) throws PageException {
 		disconnectCache();
 		return query.set(pc, propertyName, value);
@@ -576,12 +560,6 @@ public class QueryCacheQuery extends QueryImpl {
 	public Object setEL(Collection.Key key, Object value) {
 		disconnectCache();
 		return query.setEL(key, value);
-	}
-
-	@Override
-	public Object setEL(PageContext pc, String propertyName, Object value) {
-		disconnectCache();
-		return query.setEL(pc, propertyName, value);
 	}
 
 	@Override

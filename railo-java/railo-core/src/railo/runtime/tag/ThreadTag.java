@@ -65,9 +65,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 	private Struct attrs;
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		action=ACTION_RUN;
@@ -226,10 +224,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		attrs.setEL(key,value);
 	}
 
-	/**
-	 * @throws PageException 
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	 */
+	@Override
 	public int doStartTag() throws PageException	{
 		pc=pageContext;
 		switch(action) {
@@ -252,10 +247,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		return SKIP_BODY;
 	}
 
-	/**
-	 * @throws PageException
-	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	 */
+	@Override
 	public int doEndTag() throws PageException {
 		this.pc=pageContext;
 		//if(ACTION_RUN==action) doRun();
@@ -354,16 +346,12 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
 		return pc.getParentPageContext();
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
-	*/
+	@Override
 	public void doInitBody()	{
 		
 	}
 
-	/**
-	* @see javax.servlet.jsp.tagext.BodyTag#doAfterBody()
-	*/
+	@Override
 	public int doAfterBody()	{
 		return SKIP_BODY;
 	}

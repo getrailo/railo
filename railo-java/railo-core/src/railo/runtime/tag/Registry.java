@@ -63,9 +63,7 @@ public final class Registry extends TagImpl {
 	private String name;
 	
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		value=null;
@@ -165,9 +163,7 @@ public final class Registry extends TagImpl {
 	}
 
 
-	/**
-	 * @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 	    if(pageContext.getConfig().getSecurityManager().getAccess(SecurityManager.TYPE_TAG_REGISTRY)==SecurityManager.VALUE_NO) 
 			throw new SecurityException("can't access tag [registry]","access is prohibited by security manager");
@@ -295,9 +291,7 @@ public final class Registry extends TagImpl {
       	
     }
 
-    /**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+    @Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

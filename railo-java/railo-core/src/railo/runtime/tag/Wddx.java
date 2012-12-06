@@ -48,9 +48,7 @@ public final class Wddx extends TagImpl {
 
 	private boolean xmlConform;
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#release()
-	*/
+	@Override
 	public void release()	{
 		super.release();
 		input=null;
@@ -126,9 +124,7 @@ public final class Wddx extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doStartTag()
-	*/
+	@Override
 	public int doStartTag() throws PageException	{
 		try {
 			doIt();
@@ -195,9 +191,7 @@ public final class Wddx extends TagImpl {
 	}
 
 
-	/**
-	* @see javax.servlet.jsp.tagext.Tag#doEndTag()
-	*/
+	@Override
 	public int doEndTag()	{
 		return EVAL_PAGE;
 	}

@@ -24,23 +24,17 @@ public final class KeyIterator implements Iterator<Collection.Key>,Enumeration<C
 		this.pos=0;
 	}
 
-	/**
-	 * @see java.util.Iterator#remove()
-	 */
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("this operation is not suppored");
 	}
 
-	/**
-	 * @see java.util.Iterator#hasNext()
-	 */
+	@Override
 	public boolean hasNext() {
 		return (arr.length)>pos;
 	}
 
-	/**
-	 * @see java.util.Iterator#next()
-	 */
+	@Override
 	public Collection.Key next() {
 		Key key = arr[pos++];
 		if(key==null) return null;

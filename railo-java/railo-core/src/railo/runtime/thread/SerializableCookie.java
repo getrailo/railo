@@ -45,58 +45,34 @@ public class SerializableCookie implements Serializable {
 		this.httpOnly = CookieImpl.isHTTPOnly(cookie);
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getComment()
-	 */
 	public String getComment() {
 		return comment;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getDomain()
-	 */
 	public String getDomain() {
 		return domain;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getMaxAge()
-	 */
 	public int getMaxAge() {
 		return maxAge;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getName()
-	 */
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getPath()
-	 */
 	public String getPath() {
 		return path;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getSecure()
-	 */
 	public boolean getSecure() {
 		return secure;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getValue()
-	 */
 	public String getValue() {
 		return value;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#getVersion()
-	 */
 	public int getVersion() {
 		return version;
 	}
@@ -105,51 +81,30 @@ public class SerializableCookie implements Serializable {
 		return httpOnly;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#setComment(java.lang.String)
-	 */
 	public void setComment(String purpose) {
 		this.comment=purpose;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#setDomain(java.lang.String)
-	 */
 	public void setDomain(String pattern) {
 		this.domain=pattern;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#setMaxAge(int)
-	 */
 	public void setMaxAge(int expiry) {
 		this.maxAge=expiry;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#setPath(java.lang.String)
-	 */
 	public void setPath(String uri) {
 		this.path=uri;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#setSecure(boolean)
-	 */
 	public void setSecure(boolean secure) {
 		this.secure=secure;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#setValue(java.lang.String)
-	 */
 	public void setValue(String value) {
 		this.value=value;
 	}
 
-	/**
-	 * @see javax.servlet.http.Cookie#setVersion(int)
-	 */
 	public void setVersion(int version) {
 		this.version=version;
 	}
