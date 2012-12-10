@@ -91,7 +91,7 @@ component {
 
 		if ( this.backupParams.isEmpty() ) {
 
-			this.backupParams.append( { type: "directory", path: expandPath( '/' ), filter="!*.log" } );
+			this.backupParams.append( { type: "website" } );
 		}
 
 		if ( "/\" NCT right( this.attributes.destination, 1 ) )
@@ -115,6 +115,10 @@ component {
 						
 						zipparam source=ai.path filter=ai.filter;
 						break;
+
+					case "website":
+						zipparam source=expandPath( '/' ) filter="!*.log";
+						break;
 					
 					case "railo-server":
 						zipparam source=getDirectoryFromPath( expandPath( "{railo-server}" ) ) prefix="#this.railoSettingsPrefix#/railo-server" filter="!*.log, *.scpt, memory.bin";
@@ -134,7 +138,7 @@ component {
 
 					default:
 						
-						throw ( type="InvalidArgument", message="[#ai.type#] is not a valid BackupParam type.  valid types are [directory]" );
+						throw ( type="InvalidArgument", message="[#ai.type#] is not a valid BackupParam type. valid types are [directory], website, railo-web, railo-web-config, railo-server, railo-server-config" );
 				}
 			}
 		};

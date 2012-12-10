@@ -5,7 +5,7 @@ component {
 	this.metadata.attributetype = "dynamic";
 	this.metadata.attributes = {
 
-		  type: { required: false, default: "directory", hint="possible values: [directory], railo-web, railo-web-config, railo-server, railo-server-config" }
+		  type: { required: false, default: "directory", hint="possible values: [directory], website, railo-web, railo-web-config, railo-server, railo-server-config" }
 		, path: { required: false, default: "", hint="required if type is directory" }
 		, filter: { required: false, default: "", hint="if passed, only files that pass the filter will be backed up. prefix the filter with a ! to negate, so for example !*.log will accept all files that do not end with the suffix .log" }
 	};
