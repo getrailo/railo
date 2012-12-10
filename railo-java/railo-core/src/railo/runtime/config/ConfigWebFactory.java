@@ -2664,13 +2664,18 @@ public final class ConfigWebFactory {
     private static void createTagFiles(Config config,Resource configDir,Resource dir, boolean doNew) {
     	if(config instanceof ConfigServer){
     		
-    	// Dump
-    		Resource f = dir.getRealResource("Dump.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/Dump.cfc",f);
-            
-        // MediaPlayer
-            f = dir.getRealResource("MediaPlayer.cfc");
-            if(!f.exists() || doNew)createFileFromResourceEL("/resource/library/tag/MediaPlayer.cfc",f);
+    		String[] tags = new String[] { "Dump.cfc", "MediaPlayer.cfc", "Backup.cfc", "BackupParam.cfc" };
+    		Resource f;
+    		
+    		for ( String tag : tags ) {
+    			
+    			f = dir.getRealResource( tag );
+    			
+    			if ( !f.exists() || doNew ) 
+    				createFileFromResourceEL( "/resource/library/tag/" + tag, f );
+    		}
+    		
+        // MediaPlayer resources
             Resource build = dir.getRealResource("build");
             if(!build.exists())build.mkdirs();
             String[] names=new String[]{"_background.png","_bigplay.png","_controls.png","_loading.gif","_player.swf","_player.xap",
