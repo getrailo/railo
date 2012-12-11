@@ -99,17 +99,17 @@ Redirtect to entry --->
 						<cfset lbl = _debug.debug ? stText.general.yes : stText.general.no>
 						<cfif hasAccess>
 							
-							<cfif request.admintype EQ "web">
+							<cfif request.admintype == "web">
 
 								<label><input type="radio" name="debug" value="true" #_debug.debugsrc == "web" && _debug.debug ? 'checked="checked"' : ''#> #stText.general.yes#</label>
-								&nbsp;
+								
 								<label><input type="radio" name="debug" value="false" #_debug.debugsrc == "web" && !_debug.debug ? 'checked="checked"' : ''#> #stText.general.no#</label>
-								&nbsp;
+								
 								<label><input type="radio" name="debug" value="resetServerAdmin" #_debug.debugsrc == "server" ? 'checked="checked"' : ''#> #stText.Regional.ServerProp[request.adminType]# <cfif _debug.debugsrc == "server"> (#lbl#)</cfif></label>
 							<cfelse>
 
 								<label><input type="radio" name="debug" value="true" #_debug.debug ? 'checked="checked"' : ''#> #stText.general.yes#</label>
-								&nbsp;
+								
 								<label><input type="radio" name="debug" value="false" #!_debug.debug ? 'checked="checked"' : ''#> #stText.general.no#</label>		
 							</cfif>
 						<cfelse>
