@@ -572,51 +572,45 @@ public final class AxisCaster {
     }
 
     public static Object toRailoType(PageContext pc, Object value) throws PageException {
-    	return toRailoType(pc,value,false);
+    	return toRailoType(pc,value,true);
     	
     }
-    public static Object toRailoType(PageContext pc, Object value,boolean isClientCall) throws PageException {
+    public static Object toRailoType(PageContext pc, Object value,boolean attemptConversionToComponent) throws PageException {
     	pc=ThreadLocalPageContext.get(pc);
     	if(pc!=null && value instanceof Pojo) {
     		try{
-    			
-    			// get the path of the component 
-    			String className = value.getClass().getName();
-    			Component comp = null;
-    			if(isClientCall) {
-    				comp = pc.loadComponent(className);
-    			} else {
+    			if(attemptConversionToComponent) {		
+    				Component comp = null;
     				String componentPath = ComponentUtil.getComponentNameFromClass(value.getClass());
     				comp = pc.loadComponent(componentPath);
-    			}
-    			
 
-    			ComponentAccess c = ComponentUtil.toComponentAccess(comp);
-    			
-    			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
-    		
-    			// delete this scope data members
-        		Collection.Key[] keys = cw.keys();
-        		Object member;
-        		for(int i=0;i<keys.length;i++) {
-        			member = cw.get(keys[i]);
-        			if(member instanceof UDF) continue;
-                    cw.removeEL(keys[i]);
-        		}
-        		
-        		
-        		Property[] props = c.getProperties(false,true,false,false);
-        		Property prop;
-        		for(int i=0;i<props.length;i++){
-        			prop=props[i];
-        			try{
-        				cw.set(pc, prop.getName(), toRailoType(pc,Reflector.callGetter(value, prop.getName()),isClientCall));
-        			}
-        			catch(PageException pe){
-        				pe.printStackTrace();
-        			}
-        		}
-        		return c;
+	    			ComponentAccess c = ComponentUtil.toComponentAccess(comp);
+	    			
+	    			ComponentWrap cw=ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,c);
+	    		
+	    			// delete this scope data members
+	        		Collection.Key[] keys = cw.keys();
+	        		Object member;
+	        		for(int i=0;i<keys.length;i++) {
+	        			member = cw.get(keys[i]);
+	        			if(member instanceof UDF) continue;
+	                    cw.removeEL(keys[i]);
+	        		}
+	        		
+	        		
+	        		Property[] props = c.getProperties(false,true,false,false);
+	        		Property prop;
+	        		for(int i=0;i<props.length;i++){
+	        			prop=props[i];
+	        			try{
+	        				cw.set(pc, prop.getName(), toRailoType(pc,Reflector.callGetter(value, prop.getName()),attemptConversionToComponent));
+	        			}
+	        			catch(PageException pe){
+	        				pe.printStackTrace();
+	        			}
+	        		}
+	        		return c;
+    			}
     		}
     		catch(Throwable t){
     			return value;

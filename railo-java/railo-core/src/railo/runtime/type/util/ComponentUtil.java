@@ -237,6 +237,7 @@ public final class ComponentUtil {
 		
 	}
 	private static java.lang.reflect.Method getComplexTypeMethod(Class clazz) {
+		if(clazz == null) return null;
 		try {
 			return clazz.getMethod("_srcName", new Class[0]);
 		} 
@@ -402,6 +403,7 @@ public final class ComponentUtil {
 	
 		
 		Object o;
+		if(m==null) return null;
 		try {
 			o = m.invoke(null, new Object[0]);
 			return o.toString();
@@ -420,6 +422,7 @@ public final class ComponentUtil {
 	
 	public static String getComponentNameFromClass(Class clazz)  {
 		String s = getComponentPathFromClass(clazz);
+		if (s == null) return null;
 		if (s.equals("")) {
 			s = clazz.getName();
 		} else {
