@@ -253,7 +253,7 @@ public final class RPCClient implements Objects, Iteratorable{
         //TypeMappingRegistry reg=(TypeMappingRegistry) axisService.getTypeMappingRegistry();
         
         //tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-        tm=call.getMessageContext().getTypeMapping();
+       // tm=call.getMessageContext().getTypeMapping();
         
         Vector<String> inNames = new Vector<String>();
 		Vector<Parameter> inTypes = new Vector<Parameter>();
@@ -350,7 +350,7 @@ public final class RPCClient implements Objects, Iteratorable{
         }
 		last=call;
 		
-		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret,true);
+		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret,false);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
 		Map outputs = call.getOutputParams();
 		
@@ -362,7 +362,7 @@ public final class RPCClient implements Objects, Iteratorable{
 			if(value == null && pos == 0) {
 				value= ret;
 			}
-			sct.setEL(name, AxisCaster.toRailoType(null,value));
+			sct.setEL(name, AxisCaster.toRailoType(null,value,false));
 		}
 		return sct;
 	}
@@ -451,7 +451,6 @@ public final class RPCClient implements Objects, Iteratorable{
 	}
 	
 	private TypeEntry getSuperEntry(TypeEntry type) {
-		System.out.println("instanceof:"+(type instanceof DefinedType));
 		if (type instanceof DefinedType) {
 			DefinedType dType = (DefinedType)type;
 			return dType.getComplexTypeExtensionBase(parser.getSymbolTable());
