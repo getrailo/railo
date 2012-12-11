@@ -5,28 +5,27 @@
 	<cfswitch expression="#form.mainAction#">
 	<!--- UPDATE --->
 		<cfcase value="#stText.Buttons.Update#">
-			<cfadmin 
-				action="updateDebug"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				debug="#form.debug#"
-				debugTemplate=""
-				remoteClients="#request.getRemoteClients()#">
-			
-		</cfcase>
-	<!--- reset to server setting --->
-		<cfcase value="#stText.Buttons.resetServerAdmin#">
-			<cfadmin 
-				action="updateDebug"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
+
+			<cfif form.debug == "resetServerAdmin">
 				
-                debug=""
-				debugTemplate=""
-                
-				remoteClients="#request.getRemoteClients()#">
+				<cfadmin action="updateDebug"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"					
+	                debug=""
+					debugTemplate=""	                
+					remoteClients="#request.getRemoteClients()#">
 			
+			<cfelse>
+
+				<cfadmin action="updateDebug"
+					type="#request.adminType#"
+					password="#session["password"&request.adminType]#"
+					debug="#form.debug#"
+					debugTemplate=""
+					remoteClients="#request.getRemoteClients()#">
+			</cfif>
 		</cfcase>
+
     <!--- delete --->
 		<cfcase value="#stText.Buttons.Delete#">
 				<cfset data.rows=toArrayFromForm("row")>
@@ -97,19 +96,22 @@ Redirtect to entry --->
 				<tr>
 					<th scope="row">#stText.Debug.EnableDebugging#</th>
 					<td>
-						<cfset lbl=iif(_debug.debug,de(stText.general.yes),de(stText.general.no))>
+						<cfset lbl = _debug.debug ? stText.general.yes : stText.general.no>
 						<cfif hasAccess>
-							<select name="debug">
-								<cfif request.admintype EQ "web">
-									<option #iif(_debug.debugsrc EQ "server",de('selected'),de(''))# value="">#stText.Regional.ServerProp[request.adminType]# <cfif _debug.debugsrc EQ "server">(#lbl#) </cfif></option>
-									<option #iif(_debug.debugsrc EQ "web" and _debug.debug,de('selected'),de(''))# value="true">#stText.general.yes#</option>
-									<option #iif(_debug.debugsrc EQ "web" and not _debug.debug,de('selected'),de(''))# value="false">#stText.general.no#</option>
-								<cfelse>
-									<option #iif(_debug.debug,de('selected'),de(''))# value="true">#stText.general.yes#</option>
-									<option #iif(_debug.debug,de(''),de('selected'))# value="false">#stText.general.no#</option>
-								</cfif>
-							</select>
-							<!--- <input type="checkbox" class="checkbox" name="debug" value="yes" <cfif debug.debug>checked</cfif>>--->
+							
+							<cfif request.admintype EQ "web">
+
+								<label><input type="radio" name="debug" value="true" #_debug.debugsrc == "web" && _debug.debug ? 'checked="checked"' : ''#> #stText.general.yes#</label>
+								&nbsp;
+								<label><input type="radio" name="debug" value="false" #_debug.debugsrc == "web" && !_debug.debug ? 'checked="checked"' : ''#> #stText.general.no#</label>
+								&nbsp;
+								<label><input type="radio" name="debug" value="resetServerAdmin" #_debug.debugsrc == "server" ? 'checked="checked"' : ''#> #stText.Regional.ServerProp[request.adminType]# <cfif _debug.debugsrc == "server"> (#lbl#)</cfif></label>
+							<cfelse>
+
+								<label><input type="radio" name="debug" value="true" #_debug.debug ? 'checked="checked"' : ''#> #stText.general.yes#</label>
+								&nbsp;
+								<label><input type="radio" name="debug" value="false" #!_debug.debug ? 'checked="checked"' : ''#> #stText.general.no#</label>		
+							</cfif>
 						<cfelse>
 							<b>#lbl#</b>
 							<input type="hidden" name="debug" value="#_debug.debug#">
@@ -127,9 +129,6 @@ Redirtect to entry --->
 						<td colspan="2">
 							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
 							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-							<cfif request.adminType EQ "web">
-								<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#">
-							</cfif>
 						</td>
 					</tr>
 				</tfoot>
