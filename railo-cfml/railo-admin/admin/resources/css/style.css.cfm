@@ -545,9 +545,18 @@ a.edit {
 .btn-mini span {
 	display:none;
 }
+
+label {
+	
+	cursor:pointer;
+	margin-left: 1em;
+}
+label:first-child {
+
+	margin-left: auto;
+}
 label:hover {
 	/* background-color:#f6f6f6; */
-	cursor:pointer;
 	border-bottom:1px dotted #666;
 }
 .checkbox, .radio {
