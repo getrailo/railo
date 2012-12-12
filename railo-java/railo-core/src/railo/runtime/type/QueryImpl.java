@@ -58,6 +58,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.functions.query.QueryColumnCount;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -103,6 +104,8 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
 	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
+	public static final Collection.Key GENERATEDKEYS = KeyImpl.intern("GENERATEDKEYS");
+	public static final Collection.Key ID = KeyImpl.intern("ID");
 	
 	
 	
@@ -204,7 +207,8 @@ public class QueryImpl implements Query,Objects,Sizeable {
         	DatasourceConnectionImpl dci=(DatasourceConnectionImpl) dc;
         	if(!dci.supportsGetGeneratedKeys())createGeneratedKeys=false;
         }
-		
+
+        
 		//Stopwatch stopwatch=new Stopwatch();
         long start=System.nanoTime();
 		//stopwatch.start();
@@ -230,7 +234,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	        }
 			int uc;
 			ResultSet res;
-			
 			do {
 				if(hasResult) {
 					res=stat.getResultSet();
@@ -285,14 +288,20 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			setGeneratedKeys(dc, rs);
 			return true;
 		}
-		catch(Throwable t) {
+		catch(Throwable t) {t.printStackTrace();
 			return false;
 		}
 	}
 	
 	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
 		generatedKeys=new QueryImpl(rs,"");
-		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
+		
+		// ACF compatibility action 
+		if(generatedKeys.getColumnCount()==1 && DataSourceUtil.isMSSQL(dc)) {
+			generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(GENERATEDKEYS,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(ID,KeyConstants._IDENTITYCOL);
+		}
 	}
 	
 	/*private void setUpdateData(Statement stat, boolean createGeneratedKeys, boolean createUpdateCount)  {
@@ -1332,9 +1341,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	/**
 	 * @see railo.runtime.type.Query#getTypesAsMap()
 	 */
-	public synchronized Map getTypesAsMap() {
+	public synchronized Map<Collection.Key,String> getTypesAsMap() {
 		
-		Map map=new HashMap();
+		Map<Collection.Key,String> map=new HashMap<Collection.Key,String>();
 		for(int i=0;i<columns.length;i++) {
 			map.put(columnNames[i],columns[i].getTypeAsString());
 		}
@@ -1668,6 +1677,10 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 */
 	public String[] getColumnNamesAsString() {
 		return CollectionUtil.keysAsString(this);
+	}
+	
+	public int getColumnCount() {
+		return columncount;
 	}
 
     /**
@@ -3427,9 +3440,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
-	}
-	private RuntimeException notSupportedEL() {
-		return new RuntimeException(new SQLException("this feature is not supported"));
 	}
 
 	public synchronized void enableShowQueryUsage() {

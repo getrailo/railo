@@ -1799,16 +1799,17 @@ public final class ConfigWebFactory {
     	System.setProperty("oracle.jdbc.V8Compatible", "true");
         
         boolean hasCS=configServer!=null;
-        HashTable datasources=new HashTable();
+        Map<String,DataSource> datasources=new HashMap<String, DataSource>();
         
         // Copy Parent datasources as readOnly
         if(hasCS) {
-            Map ds = configServer.getDataSourcesAsMap();
-            Iterator it = ds.keySet().iterator();
+            Map<String, DataSource> ds = configServer.getDataSourcesAsMap();
+            Iterator<Entry<String, DataSource>> it = ds.entrySet().iterator();
+            Entry<String, DataSource> entry;
             while(it.hasNext()) {
-	                Object key=it.next();
-	                if(!key.equals("_queryofquerydb"))
-	                    datasources.put(key,((DataSource)ds.get(key)).cloneReadOnly());
+	                entry = it.next();
+	                if(!entry.getKey().equals("_queryofquerydb"))
+	                    datasources.put(entry.getKey(),entry.getValue().cloneReadOnly());
 	            }
 	        }
         
@@ -2275,7 +2276,7 @@ public final class ConfigWebFactory {
         		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,StringUtil.isEmpty(timezone,true)?null:TimeZoneUtil.toTimeZone(timezone,null)));
 
     }
-    private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
+    private static void setDatasourceEL(ConfigImpl config,Map<String,DataSource> datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
             int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,
             boolean storage,String timezone, Struct custom) {

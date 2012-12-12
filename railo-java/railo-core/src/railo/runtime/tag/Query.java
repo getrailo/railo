@@ -50,7 +50,6 @@ import railo.runtime.type.util.KeyConstants;
 public final class Query extends BodyTagTryCatchFinallyImpl {
 
 	private static final Collection.Key SQL_PARAMETERS = KeyImpl.intern("sqlparameters");
-	private static final Collection.Key EXECUTION_TIME = KeyImpl.intern("executiontime");
 	private static final Collection.Key CFQUERY = KeyImpl.intern("cfquery");
 	private static final Collection.Key GENERATEDKEY = KeyImpl.intern("generatedKey");
 	private static final Collection.Key MAX_RESULTS = KeyImpl.intern("maxResults");
@@ -456,7 +455,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 					if(result!=null){
 						Struct sct=new StructImpl();
 						sct.setEL(KeyConstants._cached, Boolean.FALSE);
-						sct.setEL(KeyConstants._executionTime, Caster.toDouble(System.nanoTime()-start));
+						long time=System.nanoTime()-start;
+						sct.setEL(KeyConstants._executionTime, Caster.toDouble(time/1000000));
+						sct.setEL(KeyConstants._executionTimeNano, Caster.toDouble(time));
 						sct.setEL(KeyConstants._SQL, sql.getSQLString());
 						if(Decision.isArray(obj)){
 							
@@ -466,7 +467,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 						pageContext.setVariable(result, sct);
 					}
 					else
-						setExecutionTime(System.nanoTime()-start);
+						setExecutionTime((System.nanoTime()-start)/1000000);
 					return EVAL_PAGE;
 				}
 			}
@@ -503,24 +504,26 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			int rc=query.getRecordcount();
 			if(rc==0)rc=query.getUpdateCount();
 			sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(rc));
-			sct.setEL(KeyConstants._executionTime, Caster.toDouble(query.getExecutionTime()));
+			sct.setEL(KeyConstants._executionTime, Caster.toDouble(query.getExecutionTime()/1000000));
+			sct.setEL(KeyConstants._executionTimeNano, Caster.toDouble(query.getExecutionTime()));
+			
 			sct.setEL(KeyConstants._SQL, sql.getSQLString());
 			
 			// GENERATED KEYS
 			railo.runtime.type.Query qi = Caster.toQuery(query,null);
 			if(qi !=null){
-				railo.runtime.type.Query qryKeys = Caster.toQuery(qi.getGeneratedKeys(),null);
+				railo.runtime.type.Query qryKeys = qi.getGeneratedKeys();
 				if(qryKeys!=null){
-					StringBuffer generatedKey=new StringBuffer(),sb;
+					StringBuilder generatedKey=new StringBuilder(),sb;
 					Collection.Key[] columnNames = qryKeys.getColumnNames();
 					QueryColumn column;
 					for(int c=0;c<columnNames.length;c++){
 						column = qryKeys.getColumn(columnNames[c]);
-						sb=new StringBuffer();
+						sb=new StringBuilder();
 						int size=column.size();
-						for(int r=1;r<=size;r++) {
-							if(r>1)sb.append(',');
-							sb.append(Caster.toString(column.get(r)));
+						for(int row=1;row<=size;row++) {
+							if(row>1)sb.append(',');
+							sb.append(Caster.toString(column.get(row)));
 						}
 						if(sb.length()>0){
 							sct.setEL(columnNames[c], sb.toString());
@@ -547,7 +550,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
 		// cfquery.executiontime
 		else {
-			setExecutionTime(exe);
+			setExecutionTime(exe/1000000);
 			
 		}
 		
@@ -559,7 +562,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 
 	private void setExecutionTime(long exe) {
 		Struct sct=new StructImpl();
-		sct.setEL(EXECUTION_TIME,new Double(exe));
+		sct.setEL(KeyConstants._executionTime,new Double(exe));
 		pageContext.undefinedScope().setEL(CFQUERY,sct);
 	}
 
@@ -612,6 +615,7 @@ cachename: Name of the cache in secondary cache.
 	private railo.runtime.type.Query executeDatasoure(SQL sql,boolean createUpdateData) throws PageException {
 		DatasourceManagerImpl manager = (DatasourceManagerImpl) pageContext.getDataSourceManager();
 		DatasourceConnection dc=manager.getConnection(pageContext,datasource, username, password);
+		
 		try {
 			if(lazy && !createUpdateData && cachedWithin==null && cachedafter==null && result==null)
 				return new SimpleQuery(dc,sql,maxrows,blockfactor,timeout,getName(),pageContext.getCurrentPageSource().getDisplayPath());
