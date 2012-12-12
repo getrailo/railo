@@ -174,7 +174,7 @@ public final class VariableInterpreter {
 		int scope=scopeString2Int(list.next());
 		Object coll =null; 
 		if(scope==Scope.SCOPE_UNDEFINED) {
-		    coll=pc.undefinedScope().get(list.current(),null);
+		    coll=pc.undefinedScope().get(KeyImpl.init(list.current()),null);
 		    if(coll==null) return defaultValue;
 		}
 		else {
@@ -188,7 +188,39 @@ public final class VariableInterpreter {
 		}
 		
 		while(list.hasNext()) {
-			coll=pc.getVariableUtil().get(pc,coll,list.next(),null);
+			coll=pc.getVariableUtil().get(pc,coll,KeyImpl.init(list.next()),null);
+			if(coll==null) return defaultValue;
+		}
+		return coll;
+    }
+	
+	public static Object getVariableELAsCollection(PageContext pc,String var, Object defaultValue) {
+        StringList list = parse(pc,new ParserString(var),false);
+        if(list==null) return defaultValue;
+        
+		int scope=scopeString2Int(list.next());
+		Object coll =null; 
+		if(scope==Scope.SCOPE_UNDEFINED) {
+		    try {
+				coll=pc.undefinedScope().getCollection(list.current());
+			} 
+		    catch (PageException e) {
+				coll=null;
+			}
+		    if(coll==null) return defaultValue;
+		}
+		else {
+		    try {
+                coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+		    	//coll=pc.scope(scope);
+            } 
+		    catch (PageException e) {
+                return defaultValue;
+            }
+		}
+		
+		while(list.hasNext()) {
+			coll=pc.getVariableUtil().getCollection(pc,coll,list.next(),null);
 			if(coll==null) return defaultValue;
 		}
 		return coll;

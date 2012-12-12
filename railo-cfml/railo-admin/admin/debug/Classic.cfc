@@ -54,7 +54,7 @@ string function getDescription(){
 	return "The old style debug template";
 }
 string function getid(){
-	return "railo-classic";
+	return "railo-classic"; 
 }
 
 
@@ -77,9 +77,9 @@ private void function throwWhenNotNumeric(struct custom, string name){
 		throw "value for ["&name&"] must be numeric";
 }
 
-private function isColumnEmpty(string columnName){
-	if(!isDefined(columnName)) return true;
-	return !len(replace(valueList(""&columnName),',','','all'));
+private function isColumnEmpty(query query, string columnName){
+	if(!QueryColumnExists(query,columnName)) return true;
+	return !len(ArrayToList(QueryColumnData(query,columnName),'')); 
 }
 
 
@@ -304,8 +304,8 @@ millisecond:"ms"
 
 <!--- Traces --->
 <cfif structKeyExists(custom,"tracing") and custom.tracing and traces.recordcount>
-	<cfset hasAction=!isColumnEmpty('traces.action')>
-	<cfset hasCategory=!isColumnEmpty('traces.category')>
+	<cfset hasAction=!isColumnEmpty(traces,'action')>
+	<cfset hasCategory=!isColumnEmpty(traces,'category')>
 	<p class="cfdebug"><hr/><b class="cfdebuglge">Trace Points</b></p>
 		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
 		<tr>

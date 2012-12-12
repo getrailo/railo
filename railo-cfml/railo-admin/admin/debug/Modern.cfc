@@ -55,7 +55,7 @@
 		}
 		
 		private function isColumnEmpty(query qry,string columnName){
-		if(!isDefined(columnName)) return true;
+		if(!QueryColumnExists(qry,columnName)) return true;
 		return !len(arrayToList(queryColumnData(qry,columnName),""));
 		}
 	</cfscript>
