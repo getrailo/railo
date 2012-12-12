@@ -55,40 +55,40 @@ return arguments.st;
 </cfscript>
 <table border="0" cellpadding="4" cellspacing="2" style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;background-color:red;border : 1px solid black;;">
 <tr>
-	<td colspan="2" style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Railo #server.railo.version# Error (#(catch.type)#)</td>
+	<td colspan="2" style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">Railo #server.railo.version# Error (#(catch.type)#)</td>
 </tr>
 <cfparam name="catch.message" default="">
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Message</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#replace(HTMLEditFormat(trim(catch.message)),'
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFB200; font-weight: bold;">Message</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFCC00;">#replace(HTMLEditFormat(trim(catch.message)),'
 ','<br />','all')#</td>
 </tr>
-<cfparam name="catch.message" default="">
+<cfparam name="catch.detail" default="">
 <cfif len(catch.detail)>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Detail</td>
-    <td style="border : 1px solid ##350606;background-color :##FFCC00;">#replace(HTMLEditFormat(trim(catch.detail)),'
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFB200; font-weight:bold;">Detail</td>
+    <td style="border: 1px solid ##350606; color: ##222; background-color:##FFCC00;">#replace(HTMLEditFormat(trim(catch.detail)),'
 ','<br />','all')#</td>
 </tr>
 </cfif>
 <cfif structkeyexists(catch,'errorcode') and len(catch.errorcode) and catch.errorcode NEQ 0>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Error Code</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#catch.errorcode#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">Error Code</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;">#catch.errorcode#</td>
 </tr>
 </cfif>
 <cfif structKeyExists(catch,'extendedinfo') and len(catch.extendedinfo)>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Extended Info</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#HTMLEditFormat(catch.extendedinfo)#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFB200; font-weight: bold;">Extended Info</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFCC00;">#HTMLEditFormat(catch.extendedinfo)#</td>
 </tr>
 </cfif>
 
 <cfif structKeyExists(catch,'additional')>
 <cfloop collection="#catch.additional#" item="key">
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">#key#</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#replace(HTMLEditFormat(catch.additional[key]),'
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">#key#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;">#replace(HTMLEditFormat(catch.additional[key]),'
 ','<br />','all')#</td>
 </tr>
 </cfloop>
@@ -98,8 +98,8 @@ return arguments.st;
 	<cfset len=arrayLen(catch.tagcontext)>
 	<cfif len>
 	<tr>
-		<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Stacktrace</td>
-		<td style="border : 1px solid ##350606;background-color :##FFCC00;">
+		<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">Stacktrace</td>
+		<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;">
 		The Error Occurred in<br />
 		<cfloop index="idx" from="1" to="#len#">
 			<cfset tc=catch.tagcontext[idx]>
@@ -124,8 +124,8 @@ return arguments.st;
 	</cfif>
 </cfif>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;" nowrap="nowrap">Java Stacktrace</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;" class="">#convertST(catch.stacktrace)#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;" nowrap="nowrap">Java Stacktrace</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;" class="">#convertST(catch.stacktrace)#</td>
 </tr>
 </table><br />
 </cfoutput>
