@@ -49,7 +49,7 @@ public final class Methods_Caster {
     // railo.runtime.type.Query toQueryColumn (Object)
     final public static Method TO_QUERY_COLUMN = new Method("toQueryColumn",
 			Types.QUERY_COLUMN,
-			new Type[]{Types.OBJECT}); 
+			new Type[]{Types.OBJECT,Types.PAGE_CONTEXT}); 
     // railo.runtime.type.Struct toStruct (Object)
     final public static Method TO_STRUCT = new Method("toStruct",
 			Types.STRUCT,
