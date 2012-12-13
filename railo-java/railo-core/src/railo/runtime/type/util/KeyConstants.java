@@ -651,6 +651,8 @@ public class KeyConstants {
 	public static final Key _config=KeyImpl._const("config");
 
 	public static final Key _executionTime = KeyImpl._const("executionTime");
+	public static final Key _executionTimeNano = KeyImpl._const("executionTimeNano");
+	
 	public static final Key _RECORDCOUNT = KeyImpl._const("RECORDCOUNT");
 	public static final Key _cached = KeyImpl._const("cached");
 	public static final Key _COLUMNLIST = KeyImpl._const("COLUMNLIST");

@@ -6,16 +6,16 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 
-public class CollectionIterator implements Iterator {
+public class CollectionIterator implements Iterator<Object> {
 
-	private Iterator keys;
+	private Iterator<Collection.Key> keys;
 	private Collection coll;
 
 	public CollectionIterator(Key[] keys, Collection coll) {
 		this.keys=new KeyIterator(keys);
 		this.coll=coll;
 	}
-	public CollectionIterator(Iterator keys, Collection coll) {
+	public CollectionIterator(Iterator<Collection.Key> keys, Collection coll) {
 		this.keys=keys;
 		this.coll=coll;
 	}
@@ -26,7 +26,7 @@ public class CollectionIterator implements Iterator {
 
 	@Override
 	public Object next() {
-		return coll.get(KeyImpl.toKey(keys.next(),null),null);
+		return coll.get(keys.next(),null);
 	}
 
 	public void remove() {
