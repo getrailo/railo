@@ -25,6 +25,7 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.configuration.EngineConfigurationFactoryFinder;
 import org.apache.axis.configuration.SimpleProvider;
+import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.axis.transport.http.CommonsHTTPSender;
 import org.apache.axis.wsdl.gen.Parser;
@@ -36,6 +37,7 @@ import org.apache.axis.wsdl.symbolTable.ServiceEntry;
 import org.apache.axis.wsdl.symbolTable.SymTabEntry;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
+import org.apache.axis.wsdl.symbolTable.DefinedType;
 import org.apache.axis.wsdl.toJava.Utils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -252,7 +254,7 @@ public final class RPCClient implements Objects, Iteratorable{
         //TypeMappingRegistry reg=(TypeMappingRegistry) axisService.getTypeMappingRegistry();
         
         //tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-        tm=call.getMessageContext().getTypeMapping();
+       // tm=call.getMessageContext().getTypeMapping();
         
         Vector<String> inNames = new Vector<String>();
 		Vector<Parameter> inTypes = new Vector<Parameter>();
@@ -349,7 +351,7 @@ public final class RPCClient implements Objects, Iteratorable{
         }
 		last=call;
 		
-		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret);
+		if(outNames.size()<=1) return AxisCaster.toRailoType(null,ret,false);
         //getParamData((org.apache.axis.client.Call)call,parameters.returnParam,ret);
 		Map outputs = call.getOutputParams();
 		
@@ -359,11 +361,9 @@ public final class RPCClient implements Objects, Iteratorable{
             //print.ln(name);
 			Object value = outputs.get(name);
 			if(value == null && pos == 0) {
-				sct.setEL(name, AxisCaster.toRailoType(null,ret));
+				value= ret;
 			}
-			else {
-				sct.setEL(name, AxisCaster.toRailoType(null,value));
-			}
+			sct.setEL(name, AxisCaster.toRailoType(null,value,false));
 		}
 		return sct;
 	}
@@ -436,13 +436,29 @@ public final class RPCClient implements Objects, Iteratorable{
 		}
 		ASMProperty[] props = properties.toArray(new ASMProperty[properties.size()]);
 		String clientClassName=getClientClassName(type);
-		Pojo pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,props);
+		TypeEntry superEntry = getSuperEntry(type);
+		Class superClass = null;
+		if(superEntry != null) {
+			superClass = mapComplex(config,call,tm,superEntry);
+		}
 		
+		
+		Pojo pojo = (Pojo) ComponentUtil.getClientComponentPropertiesObject(config,clientClassName,props,superClass);
 		TypeMappingUtil.registerBeanTypeMapping(tm,
     			pojo.getClass(), 
         		type.getQName());
 		
     	return pojo.getClass();
+	}
+	
+	private TypeEntry getSuperEntry(TypeEntry type) {
+		if (type instanceof DefinedType) {
+			DefinedType dType = (DefinedType)type;
+			return dType.getComplexTypeExtensionBase(parser.getSymbolTable());
+		} 
+		return null;
+		
+		
 	}
 	
 	private String getClientClassName(TypeEntry type) {
@@ -604,9 +620,10 @@ public final class RPCClient implements Objects, Iteratorable{
 		throw new RPCException("Can't locate port entry for service " + service.getQName().toString() + " WSDL");
 	}
 
-	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
+	private Object getArgumentData(org.apache.axis.encoding.TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
 		QName paramType = Utils.getXSIType(p);
-		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg,null);
+		String namespace = paramType.getNamespaceURI().replaceFirst("(?i)https?://", "");
+		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg,tm.getClassForQName(paramType),namespace);
         return o;
 	}
 
