@@ -820,13 +820,8 @@ public final class RPCServer{
 	private void registerTypeMapping(Class clazz,QName qname) {
 		TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
 		
-		org.apache.axis.encoding.TypeMapping tm;
-		tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-		Class c = tm.getClassForQName(qname);
-		if(c!=null && c!=clazz) {
-			tm.removeDeserializer(c, qname);
-			tm.removeSerializer(c, qname);
-		}
+		org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping)reg.getDefaultTypeMapping();
+
 		TypeMappingUtil.registerBeanTypeMapping(tm,clazz, qname);
 		}
 	}

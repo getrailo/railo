@@ -25,6 +25,7 @@ import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.configuration.EngineConfigurationFactoryFinder;
 import org.apache.axis.configuration.SimpleProvider;
+import org.apache.axis.encoding.TypeMappingRegistry;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.axis.transport.http.CommonsHTTPSender;
 import org.apache.axis.wsdl.gen.Parser;
@@ -619,9 +620,10 @@ public final class RPCClient implements Objects, Iteratorable{
 		throw new RPCException("Can't locate port entry for service " + service.getQName().toString() + " WSDL");
 	}
 
-	private Object getArgumentData(TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
+	private Object getArgumentData(org.apache.axis.encoding.TypeMapping tm,TimeZone tz, Parameter p, Object arg) throws PageException {
 		QName paramType = Utils.getXSIType(p);
-		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg,null);
+		String namespace = paramType.getNamespaceURI().replaceFirst("(?i)https?://", "");
+		Object o = AxisCaster.toAxisType(tm,tz,paramType,arg,tm.getClassForQName(paramType),namespace);
         return o;
 	}
 

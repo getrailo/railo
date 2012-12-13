@@ -1,5 +1,6 @@
 package railo.runtime.net.rpc;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -233,11 +234,11 @@ public final class AxisCaster {
         	componentType = targetClass.getComponentType();
         }
         
-    	if(componentType!=null) 
+    	if(componentType!=null) {
         	rtns = (Object[]) java.lang.reflect.Array.newInstance(componentType, objs.length);
-        else 
+    	}else {
         	rtns = new Object[objs.length];
-    	
+    	}
         for(int i=0;i<objs.length;i++) {
         	rtns[i]=_toAxisType(tm,null,null,objs[i],componentType,done,namespace);
         }
@@ -271,6 +272,29 @@ public final class AxisCaster {
 			//pc.removeLastPageSource(true);
 		}*/
     }
+    
+    private static Object structToPojo(TypeMapping tm, Struct struct, Class targetClass, Set<Object> done, String namespace) throws PageException {
+    	Object o;
+    	try {
+			o = ClassUtil.loadInstance(targetClass);
+		} catch (ClassException e) {
+			throw Caster.toPageException(e);
+		}
+    	for (Method m : targetClass.getMethods()) {
+    		if(m.getName().substring(0,3).toLowerCase().equals("set")) {
+    			//a setter is a propertyproperty
+    			String key = m.getName().substring(3);
+    			Object value = struct.get(Caster.toKey(key),null);
+	    		if (value != null && m.getParameterTypes().length == 1) {
+	    			Class type = m.getParameterTypes()[0];
+	    			value = _toAxisType(tm,null,null,value,type,done,namespace);
+	    			Reflector.callSetterEL(o,key.toLowerCase(), value);
+    			}
+    		}
+    	}
+
+    	return o;
+	}
     
     private static Object _toPojo(PageContext pc, TypeMapping tm,Component comp, Class targetClass, Set<Object> done,String namespace) throws PageException {//print.ds();System.exit(0);
     	ComponentAccess ca = ComponentUtil.toComponentAccess(comp);
@@ -383,19 +407,27 @@ public final class AxisCaster {
     	}
     	// Struct
         if(Decision.isStruct(value)) {
+        	Object pojo = null;
         	if(value instanceof Component) {
-        		Object pojo= toPojo(tm,(Component)value,targetClass,done,namespace);
-        		String className = pojo.getClass().getName();
-        		className = className.substring(className.lastIndexOf(".")+1);
-        		try	{	
+        		pojo= toPojo(tm,(Component)value,targetClass,done,namespace);
+        	} else if (targetClass != null) {
+        		//not a component instance, but there is a target class, see if it can be converted to the targetclass pojo
+        		pojo = structToPojo(tm,(Struct)value,targetClass,done,namespace);
+        	}
+        	if(pojo != null) {
+	    		String className = pojo.getClass().getName();
+	    		className = className.substring(className.lastIndexOf(".")+1);
+	    		try	{	
 	        		QName name = new QName("http://" + namespace,className);
 		    		TypeMappingUtil.registerBeanTypeMapping(tm, pojo.getClass(), name);
-	        		
-        		}
-        		catch(Throwable fault){
-        			throw Caster.toPageException(fault);
-        		}
-        		return pojo;
+		    		//QName arrName = new QName("http://" + namespace,"ArrayOf_tns1_"+className);
+		    		//Class arr = ClassUtil.toArrayClass(pojo.getClass());
+		    		//TypeMappingUtil.registerBeanTypeMapping(tm, arr, arrName);
+	    		}
+	    		catch(Throwable fault){
+	    			throw Caster.toPageException(fault);
+	    		}
+	    		return pojo;
         	}
         	return toMap(tm,value,targetClass,done,namespace);
         }
