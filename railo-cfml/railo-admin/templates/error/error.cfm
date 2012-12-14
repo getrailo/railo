@@ -1,20 +1,28 @@
-<cfsilent>
+<cffunction name="isOldIE" output="true">
+	<cfif structKeyExists(cgi,'http_user_agent')>
+		<cfset var index=findNocase('MSIE',cgi.http_user_agent)>
+		<cfif index GT 0>
+			<cfset index+=4>
+			<cfset var next=find(';',cgi.http_user_agent,index+1)>
+			<cfif next GT 0>
+				<cfset var sub=trim(mid(cgi.http_user_agent,index,next-index))>
+				<cfif isNumeric(sub) and sub LT 8>
+					<cfreturn true>
+				</cfif>
+			</cfif>
+		</cfif>
+	</cfif>
+	<cfreturn false>
+</cffunction><cfsilent>
 <!--- Plus/minus Image --->
-<cfset doItTheClassicWay=structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
-<!---<cftry>
-<cfif not doItTheClassicWay>
-    <cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
-    <cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
-</cfif>
-	<cfcatch>
-    	<cfset doItTheClassicWay=true>
-    </cfcatch>
-</cftry>
-<cfif doItTheClassicWay>--->
+<cfif not isOldIE()>
+	<cfset plus='data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw=='>
+	<cfset minus='data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7'>
+<cfelse>
 	<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm">
 	<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm">
-<!---</cfif>--->
-
+</cfif>
+	
 </cfsilent></TD></TD></TD></TH></TH></TH></TR></TR></TR></TABLE></TABLE></TABLE></A></ABBREV></ACRONYM></ADDRESS></APPLET></AU></B></BANNER></BIG></BLINK></BLOCKQUOTE></BQ></CAPTION></CENTER></CITE></CODE></COMMENT></DEL></DFN></DIR></DIV></DL></EM></FIG></FN></FONT></FORM></FRAME></FRAMESET></H1></H2></H3></H4></H5></H6></HEAD></I></INS></KBD></LISTING></MAP></MARQUEE></MENU></MULTICOL></NOBR></NOFRAMES></NOSCRIPT></NOTE></OL></P></PARAM></PERSON></PLAINTEXT></PRE></Q></S></SAMP></SCRIPT></SELECT></SMALL></STRIKE></STRONG></SUB></SUP></TABLE></TD></TEXTAREA></TH></TITLE></TR></TT></U></UL></VAR></WBR></XMP>
 <cfoutput>
 <script>

@@ -60,6 +60,23 @@
 		}
 	</cfscript>
  
+	<cffunction name="isOldIE" output="true">
+		<cfif structKeyExists(cgi,'http_user_agent')>
+			<cfset var index=findNocase('MSIE',cgi.http_user_agent)>
+			<cfif index GT 0>
+				<cfset index+=4>
+				<cfset var next=find(';',cgi.http_user_agent,index+1)>
+				<cfif next GT 0>
+					<cfset var sub=trim(mid(cgi.http_user_agent,index,next-index))>
+					<cfif isNumeric(sub) and sub LT 8>
+						<cfreturn true>
+					</cfif>
+				</cfif>
+			</cfif>
+		</cfif>
+		<cfreturn false>
+	</cffunction>
+
 	<cffunction name="output" returntype="void">
 		<cfargument name="custom" type="struct" required="yes" />
 		<cfargument name="debugging" required="true" type="struct" />
@@ -102,8 +119,16 @@
 				} />
 			<!--- Plus/minus Image --->
 			<cfoutput>
-				<cfset var plus="#cgi.context_path#/railo-context/admin/resources/img/plus.png.cfm" />
-				<cfset var minus="#cgi.context_path#/railo-context/admin/resources/img/minus.png.cfm" />
+				
+				<cfif not isOldIE()>
+					<cfset plus='data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw=='>
+					<cfset minus='data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7'>
+				<cfelse>
+					<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm">
+					<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm">
+				</cfif>
+				
+				
 				<cfsavecontent variable="local.sImgPlus">
 					<img src="#plus#">
 				</cfsavecontent>
