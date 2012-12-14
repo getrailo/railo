@@ -34,7 +34,7 @@ component {
 - classic: classic view with html/css/javascript"},
 		abort:{required:false,type:"boolean",default:false,hint="stops further processing of request."},
 		contextlevel:{required:false,type:"number",default:2,hidden:true},
-		async:{required:false, type="boolean", default=false, hint="if true and output is not to browser, the dump-writing takes place in a separte thread."}
+		async:{required:false, type="boolean", default=false, hint="if true and output is not to browser, Railo builds the output in a new thread that runs in parallel to the thread that called the dump.  please note that if the calling thread modifies the data before the dump takes place, it is possible that the dump will show the modified data."}
 	};
 
 
