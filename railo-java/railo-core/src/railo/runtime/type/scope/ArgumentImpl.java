@@ -22,7 +22,9 @@ import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -50,14 +52,14 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
 	@Override
 	public void release() {
-		functionArgumentNames=null;
-		super.release();
+		release(null);
 	}
 	
 	@Override
 	public void release(PageContext pc) {
 		functionArgumentNames=null;
-		super.release(pc);
+		if(pc==null)super.release();
+		else super.release(pc);
 	}
 	
 	
@@ -93,24 +95,24 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-		Object o=super.get(key,null);
-		if(o!=null)return o;
+		Object o=super.get(key,Null.NULL);
+		if(o!=Null.NULL)return o;
 		
-		o=get(Caster.toIntValue(key.getString(),-1),null);
-		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
+		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
+		if(o!=Null.NULL)return o;
+		// NULL Support if(super.containsKey(key)) return null;// that is only for compatibility to ACF
 		return defaultValue;
 	}
 
 
 	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
-		Object o=super.get(key,null);
-		if(o!=null)return o;
+		Object o=super.get(key,Null.NULL);
+		if(o!=Null.NULL)return o;
 
-		o=get(Caster.toIntValue(key.getString(),-1),null);
-		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
+		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
+		if(o!=Null.NULL)return o;
+		// NULL Support if(super.containsKey(key)) return null;// that is only for compatibility to neo
 		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
 				railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
 				+"]");
@@ -158,13 +160,13 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	    
 		maxlevel--;
 		//Map mapx=getMap();
-		Iterator it=keyIterator();//mapx.keySet().iterator();
+		Iterator<Key> it = keyIterator();//mapx.keySet().iterator();
 		int count=0;
 		Collection.Key key;
 		int maxkeys=dp.getMaxKeys();
 		int index=0;
 		while(it.hasNext()) {
-			key=KeyImpl.toKey(it.next(), null);//it.next();
+			key=it.next();//it.next();
 			
 			if(DumpUtil.keyValid(dp, maxlevel,key)){
 				if(maxkeys<=index++)break;
@@ -329,10 +331,10 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		if(Decision.isStruct(obj)) {
 			clear(); // TODO bessere impl. anstelle vererbung wrao auf struct
 			Struct sct=Caster.toStruct(obj);
-			Iterator it = sct.keyIterator();
-			String key;
+			Iterator<Key> it = sct.keyIterator();
+			Key key;
 			while(it.hasNext()) {
-				key=it.next().toString();
+				key=it.next();
 				setEL(key, sct.get(key,null));
 			}
 			return obj;
@@ -374,12 +376,12 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
     @Override
     public boolean containsKey(Collection.Key key) {
-    	return get(key,null)!=null && super.containsKey(key);
+    	return get(key,Null.NULL)!=Null.NULL && super.containsKey(key);
     }
 
     @Override
     public boolean containsKey(int key) {
-        return get(key,null)!=null;
+        return get(key,Null.NULL)!=Null.NULL;
     }
     
 

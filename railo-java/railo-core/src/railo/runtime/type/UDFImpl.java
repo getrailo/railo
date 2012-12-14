@@ -127,7 +127,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 					if(funcArgs[i].isRequired()) {
 						throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 					}
-					newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
+					// NULL Support newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
 				}
 				else {
 					newArgs.setEL(funcArgs[i].getName(),castTo(funcArgs[i],d,i+1));
