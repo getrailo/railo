@@ -310,14 +310,16 @@ public final class Directory extends TagImpl  {
 	
 	public static int toNameconflict( String nameconflict ) throws ApplicationException	{
 		
-		if ( StringUtil.isEmpty( nameconflict, true ) ) 	return NAMECONFLICT_UNDEFINED;
+		if ( StringUtil.isEmpty( nameconflict, true ) )
+			return NAMECONFLICT_UNDEFINED;
 		
-		nameconflict=nameconflict.trim();
+		nameconflict = nameconflict.trim();
 		
-		if ( "merge".equalsIgnoreCase( nameconflict ) )		return NAMECONFLICT_OVERWRITE;
-		if ( "overwrite".equalsIgnoreCase( nameconflict ) )	return NAMECONFLICT_OVERWRITE;
-		
-		if ( "error".equalsIgnoreCase( nameconflict ) ) 	return NAMECONFLICT_ERROR;
+		if ( "merge".equalsIgnoreCase( nameconflict ) || "overwrite".equalsIgnoreCase( nameconflict ) )
+			return NAMECONFLICT_OVERWRITE;
+				
+		if ( "error".equalsIgnoreCase( nameconflict ) )
+			return NAMECONFLICT_ERROR;
 						
 		throw new ApplicationException("invalid value for attribute/argument nameconflict ["+nameconflict+"]",
 			"valid values are [error,merge,overwrite]");
