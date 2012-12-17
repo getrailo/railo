@@ -58,14 +58,11 @@ public class UDFFilter extends UDFFilterSupport implements ResourceAndResourceNa
 		return new UDFFilter(filter);
 	}
 	
-	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(String pattern) throws PageException	{
-	    if(pattern.trim().length()>0) {
-            try {
-            	return new WildCardFilter(pattern);
-            } catch (MalformedPatternException e) {
-                throw Caster.toPageException(e);
-            }
-        }
+	public static ResourceAndResourceNameFilter createResourceAndResourceNameFilter(String pattern) {
+
+		if( !pattern.trim().isEmpty() )            
+	    	return new WildcardPatternFilter( pattern );
+        
 	    return null;
 	}
 }

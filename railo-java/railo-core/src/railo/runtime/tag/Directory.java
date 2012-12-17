@@ -154,8 +154,10 @@ public final class Directory extends TagImpl  {
 	public void setFilter(UDF filter) throws PageException	{
 		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(filter);
 	}
-	public void setFilter(String pattern) throws PageException	{
-		this.filter=nameFilter=UDFFilter.createResourceAndResourceNameFilter(pattern);
+	
+	public void setFilter(String pattern) {
+		
+		this.filter = nameFilter = UDFFilter.createResourceAndResourceNameFilter( pattern );
 	}
 	
 	/** set the value acl
