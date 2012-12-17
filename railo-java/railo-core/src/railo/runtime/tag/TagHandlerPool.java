@@ -7,6 +7,8 @@ import java.util.Stack;
 import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.ClassUtil;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -18,7 +20,12 @@ import railo.runtime.op.Caster;
  */
 public final class TagHandlerPool {
 	private Map<String,Stack<Tag>> map=new HashMap<String,Stack<Tag>>();
+	private ConfigWeb config;
 	
+	public TagHandlerPool(ConfigWeb config) { 
+		this.config=config;
+	}
+
 	/**
 	 * return a tag to use from a class
 	 * @param tagClass
@@ -52,7 +59,7 @@ public final class TagHandlerPool {
 	
 	private Tag loadTag(String tagClass) throws PageException {
 		try {
-			Class<Tag> clazz = ClassUtil.loadClass(tagClass);
+			Class<Tag> clazz = ClassUtil.loadClass(config.getClassLoader(),tagClass);
 			return clazz.newInstance();
 		} 
 		catch (Exception e) {

@@ -61,8 +61,8 @@ public final class UrlFormImpl extends StructSupport implements URLForm {
 	@Override
 	public void release(PageContext pc) {
 		isInit=false;
-		form.release();
-		url.release();
+		form.release(pc);
+		url.release(pc);
 	}
 
 	@Override

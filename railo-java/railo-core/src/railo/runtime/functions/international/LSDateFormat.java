@@ -9,12 +9,14 @@ import java.util.TimeZone;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.dt.DateTimeImpl;
 
 public final class LSDateFormat implements Function {
 
@@ -45,8 +47,9 @@ public final class LSDateFormat implements Function {
 	}
 
 	private static DateTime toDateLS(PageContext pc ,Locale locale, TimeZone timeZone, Object object) throws PageException {
-		//print.out("oh:"+object);
-		DateTime res = Caster.toDateTime(locale,Caster.toString(object),timeZone,null,locale.equals(Locale.US));
+		DateTime res;
+		if(object instanceof DateTime) res=(DateTime) object;
+		else res = Caster.toDateTime(locale,Caster.toString(object),timeZone,null,locale.equals(Locale.US));
 		if(res!=null)return res;
 		return DateCaster.toDateAdvanced(object,timeZone);
 		

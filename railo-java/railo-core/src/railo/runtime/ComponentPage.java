@@ -562,7 +562,7 @@ public abstract class ComponentPage extends Page  {
         }
         
       //content-type
-        Object o = component.get(methodName,null);
+        Object o = component.get(pc,methodName,null);
         Props props = getProps(pc, o, returnFormat);
         if(!props.output) setFormat(pc.getHttpServletResponse(),props.format);
         	

@@ -252,7 +252,7 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 			return serverFunctionMapping;
 		}
 	    private Map<String,Mapping> applicationMappings=new ReferenceMap();
-		private TagHandlerPool tagHandlerPool=new TagHandlerPool();
+		private TagHandlerPool tagHandlerPool=new TagHandlerPool(this);
 		public Mapping getApplicationMapping(String virtual, String physical) {
 			String key=virtual.toLowerCase()+physical.toLowerCase();
 			Mapping m= applicationMappings.get(key);
