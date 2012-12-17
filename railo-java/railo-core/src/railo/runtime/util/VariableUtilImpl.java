@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -33,11 +34,8 @@ import railo.runtime.type.wrap.MapAsStruct;
  */
 public final class VariableUtilImpl implements VariableUtil {
 
-    
-	/**
-     * @see railo.runtime.util.VariableUtil#getCollectionEL(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
-    public Object getCollection(PageContext pc, Object coll, String key, Object defaultValue) {
+    @Override
+	public Object getCollection(PageContext pc, Object coll, String key, Object defaultValue) {
         if(coll instanceof Query) {
         	// TODO sollte nicht null sein
             return ((Query)coll).getColumn(key,null);
@@ -53,10 +51,7 @@ public final class VariableUtilImpl implements VariableUtil {
         return get(pc,coll,key,defaultValue);
     }
 
-	/**
-	 *
-	 * @see railo.runtime.util.VariableUtil#get(railo.runtime.PageContext, java.lang.Object, java.lang.String, java.lang.Object)
-	 */
+    @Override
 	public Object get(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
@@ -100,9 +95,7 @@ public final class VariableUtilImpl implements VariableUtil {
 		
 	}
 	
-	/**
-	 * @see railo.runtime.util.VariableUtil#get(railo.runtime.PageContext, java.lang.Object, railo.runtime.type.Collection.Key, java.lang.Object)
-	 */
+    @Override
 	public Object get(PageContext pc, Object coll, Collection.Key key, Object defaultValue) {
         // Objects
 		//print.out("key:"+key.getString());
@@ -184,9 +177,7 @@ public final class VariableUtilImpl implements VariableUtil {
 		return defaultValue;
 	}
 	
-	/**
-     * @see railo.runtime.util.VariableUtil#getLightEL(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
+	@Override
 	public Object getLight(PageContext pc, Object coll, String key, Object defaultValue) {
         // Objects
         if(coll instanceof Objects) {
@@ -221,10 +212,8 @@ public final class VariableUtilImpl implements VariableUtil {
 		return defaultValue;
 	}
 	
-    /**
-     * @see railo.runtime.util.VariableUtil#getCollection(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
-    public Object getCollection(PageContext pc, Object coll, String key) throws PageException {
+	@Override
+	public Object getCollection(PageContext pc, Object coll, String key) throws PageException {
         if(coll instanceof Query) {
             return ((Query)coll).getColumn(key);
         }
@@ -304,10 +293,8 @@ public final class VariableUtilImpl implements VariableUtil {
 	
     }
     
-    /**
-     * @see railo.runtime.util.VariableUtil#get(railo.runtime.PageContext, java.lang.Object, java.lang.String)
-     */
-    public Object get(PageContext pc, Object coll, String key) throws PageException {
+    @Override
+	public Object get(PageContext pc, Object coll, String key) throws PageException {
         // Objects
         if(coll instanceof Objects) {
             return ((Objects)coll).get(pc,KeyImpl.init(key));

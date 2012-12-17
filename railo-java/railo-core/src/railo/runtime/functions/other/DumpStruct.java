@@ -128,7 +128,7 @@ public final class DumpStruct implements Function {
 			qry.setAtEL("highlight", r+1, new Double(dr.getHighlightType()));
 			
 		}
-		sct.setEL(KeyConstants._data, qry);
+		if(qry!=null)sct.setEL(KeyConstants._data, qry);
 		return sct;
 	}
 

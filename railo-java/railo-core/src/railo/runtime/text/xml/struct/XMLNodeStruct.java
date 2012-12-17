@@ -14,6 +14,8 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.UserDataHandler;
 import org.xml.sax.SAXException;
 
+import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
+
 import railo.commons.collections.HashTable;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
@@ -269,12 +271,12 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 	
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-		return XMLUtil.getPropertyEL(node,key,caseSensitive);
+		return XMLUtil.getProperty(node,key,caseSensitive,defaultValue);
 	}
 
 	@Override
 	public Object setEL(Key key, Object value) {
-		return XMLUtil.setPropertyEL(node,key,value,caseSensitive);
+		return XMLUtil.setProperty(node,key,value,caseSensitive,null);
 	}
 	
 	@Override

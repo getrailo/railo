@@ -165,8 +165,8 @@ public final class CallerImpl extends StructSupport implements Caller  {
         
         
         // get from cascaded scopes
-        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key);
-        if(o!=null) return o;
+        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key,Null.NULL);
+        if(o!=Null.NULL) return o;
         
         return defaultValue;
     }

@@ -324,12 +324,12 @@ public final class ArgumentThreadImpl implements Argument,Sizeable {
 
 	@Override
 	public boolean containsKey(int key) {
-		return sct.containsKey(KeyImpl.init(Caster.toString(key)));
+		return sct.containsKey(ArgumentIntKey.init(key));
 	}
 
 	@Override
 	public Object get(int key, Object defaultValue) {
-		return sct.get(KeyImpl.init(Caster.toString(key)),defaultValue);
+		return sct.get(ArgumentIntKey.init(key),defaultValue);
 	}
 
 	@Override

@@ -747,21 +747,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	@Override
 	public Object getAt(String key, int row, Object defaultValue) {
-		int index=getIndexFromKey(key);
-		if(index!=-1) {
-			return columns[index].get(row,defaultValue);
-		}
-		if(key.length()>0) {
-	        char c=key.charAt(0);
-	        if(c=='r' || c=='R') {
-	            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
-	        }
-	        if(c=='c' || c=='C') {
-	            if(key.equalsIgnoreCase("currentrow")) return new Double(row);
-	            else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
-	        }
-		}
-        return null;
+		return getAt(KeyImpl.init(key), row, defaultValue);
 	}
 
 	public Object getAt(Collection.Key key, int row, Object defaultValue) {
@@ -779,27 +765,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	            else if(key.equals(KeyConstants._COLUMNLIST)) return getColumnlist(true);
 	        }
 		}
-        return null;
+        return defaultValue;
 	}
 	
 	@Override
 	public Object getAt(String key, int row) throws PageException {
-		//print.err("str:"+key);
-        int index=getIndexFromKey(key);
-		if(index!=-1) {
-			return columns[index].get(row);
-		}
-		if(key.length()>0){
-	        char c=key.charAt(0);
-	        if(c=='r' || c=='R') {
-	            if(key.equalsIgnoreCase("recordcount")) return new Double(getRecordcount());
-			}
-	        else if(c=='c' || c=='C') {
-			    if(key.equalsIgnoreCase("currentrow")) return new Double(row);
-			    else if(key.equalsIgnoreCase("columnlist")) return getColumnlist(true);
-			}
-		}
-		throw new DatabaseException("column ["+key+"] not found in query, columns are ["+getColumnlist(false)+"]",null,sql,null);
+		return getAt(KeyImpl.init(key), row);
 	}
 
 	@Override
@@ -844,16 +815,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
     
     @Override
     public QueryColumn removeColumn(String key) throws DatabaseException {
-        //disconnectCache();
-        
-        QueryColumn removed = removeColumnEL(key);
-        if(removed==null) {
-            if(key.equalsIgnoreCase("recordcount") || key.equalsIgnoreCase("currentrow") || key.equalsIgnoreCase("columnlist"))
-                throw new DatabaseException("can't remove "+key+" this is not a row","existing rows are ["+getColumnlist(false)+"]",null,null,null);
-            throw new DatabaseException("can't remove row ["+key+"], this row doesn't exist",
-                    "existing rows are ["+getColumnlist(false)+"]",null,null,null);
-        }
-        return removed;
+        return removeColumn(KeyImpl.init(key));
     }
 
 	@Override
@@ -874,29 +836,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
     @Override
     public synchronized QueryColumn removeColumnEL(String key) {
-        //disconnectCache();
-        
-        int index=getIndexFromKey(key);
-        if(index!=-1) {
-            int current=0;
-            QueryColumn removed=null;
-            Collection.Key[] newColumnNames=new Collection.Key[columnNames.length-1];
-            QueryColumnPro[] newColumns=new QueryColumnPro[columns.length-1];
-            for(int i=0;i<columns.length;i++) {
-                if(i==index) {
-                    removed=columns[i];
-                }
-                else {
-                    newColumnNames[current]=columnNames[i];
-                    newColumns[current++]=columns[i];
-                }
-            }
-            columnNames=newColumnNames;
-            columns=newColumns;
-            columncount--;
-            return removed;
-        }
-        return null;
+        return removeColumnEL(KeyImpl.init(key));
     }
 
 	public QueryColumn removeColumnEL(Collection.Key key) {
@@ -927,9 +867,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 
 	@Override
 	public Object setEL(String key, Object value) {	
-		return setAtEL(key,
-				arrCurrentRow.get(getPid(), 1),
-				value);	
+		return setEL(KeyImpl.init(key),value);	
 	}
 
 	@Override
@@ -941,9 +879,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	
 	@Override
 	public Object set(String key, Object value) throws PageException {
-		return setAt(key,
-				arrCurrentRow.get(getPid(), 1),
-				value);
+		return set(KeyImpl.init(key),value);
 	}
 
 	@Override
@@ -955,19 +891,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
     
     @Override
     public Object setAt(String key,int row, Object value) throws PageException {
-        //disconnectCache();
-        
-        int index=getIndexFromKey(key);
-        if(index!=-1) {
-            return columns[index].set(row,value);
-        }
-        throw new DatabaseException("column ["+key+"] does not exist","columns are ["+getColumnlist(false)+"]",null,sql,null);
+    	return setAt(KeyImpl.init(key), row, value);
     }
 
     public Object setAt(Collection.Key key, int row, Object value) throws PageException {
-		//disconnectCache();
-        
-        int index=getIndexFromKey(key);
+		int index=getIndexFromKey(key);
         if(index!=-1) {
             return columns[index].set(row,value);
         }
@@ -976,19 +904,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
     
     @Override
     public Object setAtEL(String key,int row, Object value) {
-        //disconnectCache();
-        
-        int index=getIndexFromKey(key);
-        if(index!=-1) {
-            return columns[index].setEL(row,value);
-        }
-        return null;
+        return setAtEL(KeyImpl.init(key), row, value);
     }
 
 	public Object setAtEL(Collection.Key key, int row, Object value) {
-		//disconnectCache();
-        
-        int index=getIndexFromKey(key);
+		int index=getIndexFromKey(key);
         if(index!=-1) {
             return columns[index].setEL(row,value);
         }
@@ -1576,10 +1496,10 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			new IndexOutOfBoundsException("invalid column index to retrieve Data from query, valid index goes from 1 to "+keys.length);
 		}
 		
-		Object o=getAt(keys[col-1],row,null);
-		if(o==null)
+		Object o=getAt(keys[col-1],row,Null.NULL);
+		if(o==Null.NULL)
 			throw new IndexOutOfBoundsException("invalid row index to retrieve Data from query, valid index goes from 1 to "+getRecordcount());
-		return Caster.toString( o,"" );
+		return Caster.toString( o,QueryColumnImpl.DEFAULT_VALUE );
     }
 
 
@@ -1617,11 +1537,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return getColumn(key,null)!=null;
     }	
 
-
 	@Override
 	public boolean containsKey(Collection.Key key) {
         return getColumn(key,null)!=null;
 	}
+	
     @Override
     public String castToString() throws ExpressionException {
         throw new ExpressionException("Can't cast Complex Object Type Query to String",

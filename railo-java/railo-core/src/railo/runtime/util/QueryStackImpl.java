@@ -2,9 +2,12 @@ package railo.runtime.util;
 
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
+import railo.runtime.exp.DeprecatedException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -16,9 +19,7 @@ public final class QueryStackImpl implements QueryStack {
 	Query[] queries=new Query[20];
 	int start=queries.length;
 	
-	/**
-	 * @see railo.runtime.util.QueryStack#duplicate(boolean)
-	 */
+	@Override
 	public QueryStack duplicate(boolean deepCopy){
 		QueryStackImpl qs=new QueryStackImpl();
 		if(deepCopy) {
@@ -32,102 +33,64 @@ public final class QueryStackImpl implements QueryStack {
 		qs.start=start;
 		return qs;
 	}
-	
-	
-	/**
-     * @see railo.runtime.util.QueryStack#addQuery(railo.runtime.type.Query)
-     */
+
+	@Override
 	public void addQuery(Query query) {
 		if(start<1)grow();
         queries[--start]= query;
 	}
-	/*public void addQueryImpl(QueryImpl query) {
-        if(start<1)grow();
-        queries[--start]=query;
-	}*/
 
-    /**
-     * @see railo.runtime.util.QueryStack#removeQuery()
-     */
+	@Override
 	public void removeQuery() {
         //print.ln("queries["+start+"]=null;");
         queries[start++]=null;
 	}
 	
-	/**
-     * @see railo.runtime.util.QueryStack#isEmpty()
-     */
+	@Override
 	public boolean isEmpty() {
 		return start==queries.length;
 	}
 
-	/**
-     * @see railo.runtime.util.QueryStack#getDataFromACollection(java.lang.String)
-     */
+	@Override
 	public Object getDataFromACollection(String key) {
-		return getDataFromACollection(ThreadLocalPageContext.get(),key);
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported, use instead getDataFromACollection(PageContext pc,Key key, Object defaultValue)"));
 	}
 	
-	/**
-	 * @see railo.runtime.util.QueryStack#getDataFromACollection(railo.runtime.PageContext, java.lang.String)
-	 */
+	@Override
 	public Object getDataFromACollection(PageContext pc,String key) {
-		Object rtn=null;
-		
-		// get data from queries
-		for(int i=start;i<queries.length;i++) {
-			rtn=((Objects)queries[i]).get(pc,KeyImpl.init(key),"");
-			if(rtn!=null) {
-				return rtn;
-			}
-		}
-		return null;
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported, use instead getDataFromACollection(PageContext pc,Key key, Object defaultValue)"));
 	}
 
-	/**
-	 * @see railo.runtime.util.QueryStack#getDataFromACollection(railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object getDataFromACollection(Key key) {
-		return getDataFromACollection(ThreadLocalPageContext.get(),key); 
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported, use instead getDataFromACollection(PageContext pc,Key key, Object defaultValue)"));
 	}
 	
-	/**
-	 * @see railo.runtime.util.QueryStack#getDataFromACollection(railo.runtime.PageContext, railo.runtime.type.Collection.Key)
-	 */
+	@Override
 	public Object getDataFromACollection(PageContext pc,Key key) {
-		Object rtn=null;
-		
-		// get data from queries
-		for(int i=start;i<queries.length;i++) {
-			
-			rtn=((Objects)queries[i]).get(pc,key,"");
-			if(rtn!=null) {
-				return rtn;
-			}
-		}
-		return null;
+		throw new PageRuntimeException(new DeprecatedException("this method is no longer supported, use instead getDataFromACollection(PageContext pc,Key key, Object defaultValue)"));
 	}
 	
-	/**
-     * @see railo.runtime.util.QueryStack#getColumnFromACollection(java.lang.String)
-     */
-	public QueryColumn getColumnFromACollection(String key) {
-		QueryColumn rtn=null;
+	// FUTURE add to interface and set above to deprecated
+	public Object getDataFromACollection(PageContext pc,Key key, Object defaultValue) {
+		Object rtn;
 		
 		// get data from queries
 		for(int i=start;i<queries.length;i++) {
-			rtn=queries[i].getColumn(key,null);
-			if(rtn!=null) {
+			rtn=((Objects)queries[i]).get(pc,key,Null.NULL);
+			if(rtn!=Null.NULL) {
 				return rtn;
 			}
 		}
-		return null;
+		return defaultValue;
 	}
 
-	/**
-	 *
-	 * @see railo.runtime.util.QueryStack#getColumnFromACollection(railo.runtime.type.Collection.Key)
-	 */
+	@Override
+	public QueryColumn getColumnFromACollection(String key) {
+		return getColumnFromACollection(KeyImpl.init(key));
+	}
+
+	@Override
 	public QueryColumn getColumnFromACollection(Key key) {
 		QueryColumn rtn=null;
 		
@@ -141,9 +104,7 @@ public final class QueryStackImpl implements QueryStack {
 		return null;
 	}
 	
-	/**
-     * @see railo.runtime.util.QueryStack#clear()
-     */
+	@Override
 	public void clear() {
 		for(int i=start;i<queries.length;i++) {
 			queries[i]=null;
@@ -160,9 +121,7 @@ public final class QueryStackImpl implements QueryStack {
         start+=20;
     }
     
-	/**
-	 * @see railo.runtime.util.QueryStack#getQueries()
-	 */
+    @Override
 	public Query[] getQueries() {
 		Query[] tmp=new Query[queries.length-start];
 		int count=0;

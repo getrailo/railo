@@ -63,14 +63,14 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
      * @throws PageException
      */
     public Object touch(int row) throws PageException {
-        Object o= query.getAt(columnName,row,null);
-        if(o!=null) return o;
+        Object o= query.getAt(columnName,row,Null.NULL);
+        if(o!=Null.NULL) return o;
         return query.setAt(columnName,row,new StructImpl());
     }
     
     public Object touchEL(int row) {
-        Object o= query.getAt(columnName,row,null);
-        if(o!=null) return o;
+        Object o= query.getAt(columnName,row,Null.NULL);
+        if(o!=Null.NULL) return o;
         return query.setAtEL(columnName,row,new StructImpl());
     }
 
@@ -198,12 +198,12 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 
     @Override
     public boolean containsKey(String key) {
-        return get(key,null)!=null;
+        return get(key,Null.NULL)!=Null.NULL;
     }
 
 	@Override
 	public boolean containsKey(Collection.Key key) {
-		return get(key,null)!=null;
+		return get(key,Null.NULL)!=Null.NULL;
 	}
 
     @Override
@@ -218,8 +218,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 
 	@Override
 	public String castToString(String defaultValue) {
-		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null)return defaultValue;
+		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL)return defaultValue;
 		return Caster.toString(value,defaultValue);
 	}
 
@@ -230,8 +230,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     
     @Override
     public Boolean castToBoolean(Boolean defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null)return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL)return defaultValue;
 		return Caster.toBoolean(value,defaultValue);
     }
 
@@ -242,8 +242,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     
     @Override
     public double castToDoubleValue(double defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null)return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL)return defaultValue;
 		return Caster.toDoubleValue(value,defaultValue);
     }
 
@@ -254,8 +254,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null)return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL)return defaultValue;
 		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
     }
 

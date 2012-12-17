@@ -160,7 +160,7 @@
 		<cfset language.title=xml.title.XmlText>
 		<cfset language.text=xml.description.XmlText>
 		<cfif isDefined('xml.custom')>
-			<cfset var custom=xml.custom>
+			<cftry><cfset var custom=xml.custom><cfcatch><cfdump var="#isDefined('xml.custoiihm')#"><cfdump var="#xml#" abort></cfcatch></cftry>
 			<cfloop index="idx" from="1" to="#arraylen(custom)#">
 				<cfset language[custom[idx].XmlAttributes.key]=custom[idx].XmlText>
 			</cfloop>

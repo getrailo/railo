@@ -93,11 +93,31 @@ public final class VariableInterpreter {
 		}
 		else {
 			coll=VariableInterpreter.scope(pc, scope, list.hasNext());
-		    //coll=pc.scope(scope);
 		}
 		
 		while(list.hasNext()) {
 			coll=pc.getVariableUtil().get(pc,coll,list.next());
+		}
+		return coll;
+    }
+	
+
+
+	public static Object getVariableAsCollection(PageContext pc,String var) throws PageException {
+        StringList list = parse(pc,new ParserString(var),false);
+        if(list==null) throw new ExpressionException("invalid variable declaration ["+var+"]");
+        
+		int scope=scopeString2Int(list.next());
+		Object coll =null; 
+		if(scope==Scope.SCOPE_UNDEFINED) {
+		    coll=pc.undefinedScope().getCollection(list.current());
+		}
+		else {
+		    coll=VariableInterpreter.scope(pc, scope, list.hasNext());
+		}
+		
+		while(list.hasNext()) {
+			coll=pc.getVariableUtil().getCollection(pc,coll,list.next());
 		}
 		return coll;
     }
@@ -225,7 +245,6 @@ public final class VariableInterpreter {
 		}
 		return coll;
     }
-	
 	/**
 	 * return a variable reference by string syntax ("scopename.key.key" -> "url.name")
 	 * a variable reference, references to variable, to modifed it, with global effect.

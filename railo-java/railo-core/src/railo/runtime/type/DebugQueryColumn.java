@@ -56,7 +56,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
      * @return new row or existing
      * @throws DatabaseException
      */
-    public Object touch(int row) throws DatabaseException{
+    public Object touch(int row) {
     	used=true;
     	return super.touch(row);
     }

@@ -153,7 +153,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	
 	public Object get(Collection.Key key) throws PageException {
 		
-		Object rtn=null;
+		Object rtn;
 		if(checkArguments) {
 		    rtn=local.get(key,Null.NULL);
 		    if(rtn!=Null.NULL) return rtn;
@@ -167,8 +167,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 		// get data from queries
 		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
-			rtn=qryStack.getDataFromACollection(pc,key);
-			if(rtn!=null) {
+			rtn=qryStack.getDataFromACollection(pc,key,Null.NULL);
+			if(rtn!=Null.NULL) {
 				if(debug) debugCascadedAccess(pc,"query", key);
 				return rtn;
 		    }
@@ -338,8 +338,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 
     public Object get(Collection.Key key, Object defaultValue) {
 		Object rtn=null;
-        
-        if(checkArguments) {
+		if(checkArguments) {
             rtn=local.get(key,Null.NULL);
             if(rtn!=Null.NULL) return rtn;
             rtn=argument.getFunctionArgument(key,Null.NULL);
@@ -351,8 +350,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
         
         // get data from queries
         if(allowImplicidQueryCall && !qryStack.isEmpty()) {
-            rtn=qryStack.getDataFromACollection(key);
-            if(rtn!=null) {
+            rtn=qryStack.getDataFromACollection(pc,key,Null.NULL);
+            if(rtn!=Null.NULL) {
             	if(debug) debugCascadedAccess(pc,"query", key);
 				return rtn;
             }
@@ -364,7 +363,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
         	if(debug && checkArguments) debugCascadedAccess(pc,variable, rtn, key);
 			return rtn;
         }
-		
+        
 		// thread scopes
 		if(pc.hasFamily()) {
 			rtn = pc.getThreadScope(key,Null.NULL);
@@ -373,7 +372,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 				return rtn;
 			}
 		}
-        
+
         // get a scope value
         for(int i=0;i<scopes.length;i++) {
             rtn=scopes[i].get(key,Null.NULL);
@@ -382,6 +381,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
     			return rtn;
             }
         }
+        
         return defaultValue;
     }
     
@@ -701,11 +701,11 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	
 	@Override
 	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
-		Object obj = get(methodName,null);
+		Object obj = get(methodName,Null.NULL);
 		if(obj instanceof UDF) {
 			return ((UDF)obj).call(pc,args,false);
 		}
-		throw new ExpressionException("No matching function ["+methodName+"] found");
+		throw new ExpressionException("No matching function ["+methodName+"] found:"+obj.getClass().getName());
 	}
 
     @Override

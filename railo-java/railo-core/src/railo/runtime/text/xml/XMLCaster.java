@@ -604,8 +604,8 @@ public final class XMLCaster {
 		if(node instanceof Document) {
 			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Document");
-			table.appendRow(1,new SimpleDumpData("XmlComment"),new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCOMMENT).toString()));
-			table.appendRow(1,new SimpleDumpData("XmlRoot"),	DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLROOT), pageContext,maxlevel,props));
+			table.appendRow(1,new SimpleDumpData("XmlComment"),new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLCOMMENT,null).toString()));
+			table.appendRow(1,new SimpleDumpData("XmlRoot"),	DumpUtil.toDumpData(XMLUtil.getProperty(node,XMLUtil.XMLROOT,null), pageContext,maxlevel,props));
 			return table;
 			
 		}
@@ -613,13 +613,13 @@ public final class XMLCaster {
 		if(node instanceof Element) {
 			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Element");
-			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
-			table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));
-			table.appendRow(1,new SimpleDumpData("XmlNsURI"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSURI).toString()));
-			table.appendRow(1,new SimpleDumpData("XmlText"),		DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLTEXT), pageContext,maxlevel,props));
-			table.appendRow(1,new SimpleDumpData("XmlComment"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCOMMENT).toString()));
-			table.appendRow(1,new SimpleDumpData("XmlAttributes"),DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLATTRIBUTES), pageContext,maxlevel,props));
-			table.appendRow(1,new SimpleDumpData("XmlChildren"),	DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCHILDREN), pageContext,maxlevel,props));
+			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLNAME,null).toString()));
+			table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLNSPREFIX,null).toString()));
+			table.appendRow(1,new SimpleDumpData("XmlNsURI"),		new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLNSURI,null).toString()));
+			table.appendRow(1,new SimpleDumpData("XmlText"),		DumpUtil.toDumpData(XMLUtil.getProperty(node,XMLUtil.XMLTEXT,null), pageContext,maxlevel,props));
+			table.appendRow(1,new SimpleDumpData("XmlComment"),	new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLCOMMENT,null).toString()));
+			table.appendRow(1,new SimpleDumpData("XmlAttributes"),DumpUtil.toDumpData(XMLUtil.getProperty(node,XMLUtil.XMLATTRIBUTES,null), pageContext,maxlevel,props));
+			table.appendRow(1,new SimpleDumpData("XmlChildren"),	DumpUtil.toDumpData(XMLUtil.getProperty(node,XMLUtil.XMLCHILDREN,null), pageContext,maxlevel,props));
 			return table;
 			
 		}
@@ -627,7 +627,7 @@ public final class XMLCaster {
 		if(node instanceof Attr) {
 			DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 			table.setTitle("XML Attr");
-			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
+			table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLNAME,null).toString()));
 			table.appendRow(1,new SimpleDumpData("XmlValue"),	DumpUtil.toDumpData(((Attr)node).getValue(), pageContext,maxlevel,props));
 			table.appendRow(1,new SimpleDumpData("XmlType"),	new SimpleDumpData(XMLUtil.getTypeAsString(node,true)));
 			
@@ -637,13 +637,13 @@ public final class XMLCaster {
 		// Node
 		DumpTable table = new DumpTable("xml","#cc9999","#ffffff","#000000");
 		table.setTitle("XML Node ("+ListLast.call(null,node.getClass().getName(),".")+")");
-		table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNAME).toString()));
-		table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSPREFIX).toString()));
-		table.appendRow(1,new SimpleDumpData("XmlNsURI"),		new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLNSURI).toString()));
-		table.appendRow(1,new SimpleDumpData("XmlText"),		DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLTEXT), pageContext,maxlevel,props));
-		table.appendRow(1,new SimpleDumpData("XmlComment"),	new SimpleDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCOMMENT).toString()));
-		table.appendRow(1,new SimpleDumpData("XmlAttributes"),DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLATTRIBUTES), pageContext,maxlevel,props));
-		table.appendRow(1,new SimpleDumpData("XmlChildren"),	DumpUtil.toDumpData(XMLUtil.getPropertyEL(node,XMLUtil.XMLCHILDREN), pageContext,maxlevel,props));
+		table.appendRow(1,new SimpleDumpData("xmlName"),		new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLNAME,null).toString()));
+		table.appendRow(1,new SimpleDumpData("XmlNsPrefix"),	new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLNSPREFIX,null).toString()));
+		table.appendRow(1,new SimpleDumpData("XmlNsURI"),		new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLNSURI,null).toString()));
+		table.appendRow(1,new SimpleDumpData("XmlText"),		DumpUtil.toDumpData(XMLUtil.getProperty(node,XMLUtil.XMLTEXT,null), pageContext,maxlevel,props));
+		table.appendRow(1,new SimpleDumpData("XmlComment"),	new SimpleDumpData(XMLUtil.getProperty(node,XMLUtil.XMLCOMMENT,null).toString()));
+		table.appendRow(1,new SimpleDumpData("XmlAttributes"),DumpUtil.toDumpData(XMLUtil.getProperty(node,XMLUtil.XMLATTRIBUTES,null), pageContext,maxlevel,props));
+		table.appendRow(1,new SimpleDumpData("XmlChildren"),	DumpUtil.toDumpData(XMLUtil.getProperty(node,XMLUtil.XMLCHILDREN,null), pageContext,maxlevel,props));
 			
 		table.appendRow(1,new SimpleDumpData("XmlType"),	new SimpleDumpData(XMLUtil.getTypeAsString(node,true)));
 		

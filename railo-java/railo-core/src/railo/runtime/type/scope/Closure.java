@@ -10,6 +10,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 
 public class Closure extends ScopeSupport implements Variables {
@@ -91,10 +92,10 @@ public class Closure extends ScopeSupport implements Variables {
 
 	@Override
 	public Object get(Key key) throws PageException {
-		Object value = local.get(key,null);
-		if(value!=null) return value;
-		value=arg.get(key,null);
-		if(value!=null) {
+		Object value = local.get(key,Null.NULL);
+		if(value!=Null.NULL) return value;
+		value=arg.get(key,Null.NULL);
+		if(value!=Null.NULL) {
 			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
 			return value;
 		}
@@ -106,18 +107,19 @@ public class Closure extends ScopeSupport implements Variables {
 
 	@Override
 	public Object get(Key key, Object defaultValue) {
-		Object value = local.get(key,null);
-		if(value!=null) return value;
-		value=arg.get(key,null);
-		if(value!=null) {
+		Object value = local.get(key,Null.NULL);
+		if(value!=Null.NULL) return value;
+		value=arg.get(key,Null.NULL);
+		if(value!=Null.NULL) {
 			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
 			return value;
 		}
-		value= var.get(key,defaultValue);
-		if(value!=null && debug && value!=defaultValue) {
-			UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),var.getTypeAsString(), key);
+		value= var.get(key,Null.NULL);
+		if(value!=Null.NULL){
+			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),var.getTypeAsString(), key);
+			return value;
 		}
-		return value;
+		return defaultValue;
 	}
 
 	@Override

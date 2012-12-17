@@ -418,8 +418,11 @@ public final class CastOther extends ExpressionBase implements Cast {
             }
             if("querycolumn".equals(lcType)) {
             	rtn=(expr instanceof Variable)?((Variable)expr).writeOutCollection(bc, mode):expr.writeOut(bc,MODE_REF);
-                if(!rtn.equals(Types.QUERY_COLUMN))
+                if(!rtn.equals(Types.QUERY_COLUMN)) {
+
+                    adapter.loadArg(0);
                 	adapter.invokeStatic(Types.CASTER,Methods_Caster.TO_QUERY_COLUMN);
+                }
                 return Types.QUERY_COLUMN;
             }
             else if("timespan".equals(lcType)) {

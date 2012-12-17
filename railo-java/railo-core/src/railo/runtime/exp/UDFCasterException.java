@@ -20,7 +20,7 @@ public class UDFCasterException extends CasterException {
     	String detail;
     	if(value instanceof String) return "can't cast String ["+value+"] to a value of type ["+type+"]";
     	else if(value!=null) detail= "can't cast Object type ["+Type.getName(value)+"] to a value of type ["+type+"]";
-		else detail= "can't cast Null value to value of type ["+type+"]";
+		else detail= "can't cast null value to value of type ["+type+"]";
 		return "the function "+udf.getFunctionName()+" has an invalid return value , "+detail;
 
     }   

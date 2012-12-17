@@ -87,6 +87,7 @@ import railo.runtime.type.FunctionValue;
 import railo.runtime.type.FunctionValueImpl;
 import railo.runtime.type.Iteratorable;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Objects;
 import railo.runtime.type.Query;
@@ -2781,13 +2782,15 @@ public final class Caster {
      * @param o
      * @return
      * @throws PageException
+     * @info used in bytecode generation
      */
-    public static QueryColumn toQueryColumn(Object o, PageContext pc) throws PageException {
+    public static QueryColumn toQueryColumn(Object o, PageContext pc) throws PageException { 
     	if(o instanceof QueryColumn) return (QueryColumn)o;
     	if(o instanceof String) {
-    		o=VariableInterpreter.getVariableELAsCollection(pc, (String)o,null);
+    		o=VariableInterpreter.getVariableAsCollection(pc, (String)o);
     		if(o instanceof QueryColumn) return (QueryColumn) o;
     	}
+    	
     	throw new CasterException(o,"querycolumn");
     }
 

@@ -190,7 +190,7 @@ public final class RequestImpl extends StructSupport implements Request {
 			Enumeration<String> names = _req.getAttributeNames();
 			Collection.Key k;
 			while(names.hasMoreElements()){
-				k=Caster.toKey(names.nextElement(),null);
+				k=KeyImpl.init(names.nextElement());
 				if(key.equals(k)) return _req.getAttribute(k.getString());
 			}
 			return defaultValue;
@@ -219,7 +219,7 @@ public final class RequestImpl extends StructSupport implements Request {
 
 	@Override
 	public boolean containsKey(Key key) {
-		return get(key,null)!=null;
+		return get(key,Null.NULL)!=Null.NULL;
 	}
 	
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {

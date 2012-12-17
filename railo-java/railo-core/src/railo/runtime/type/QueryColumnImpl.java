@@ -38,7 +38,9 @@ import railo.runtime.util.ArrayIterator;
  */
 public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
-    private static final int CAPACITY=32;
+	private static final long serialVersionUID = -5544446523204021493L;
+	private static final int CAPACITY=32;
+	static final String DEFAULT_VALUE = null;// NULL Support "";
     
 	protected int type;
 	protected int size;
@@ -158,44 +160,38 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	
 	@Override
 	public Object get(String key) throws PageException {
-        int row=Caster.toIntValue(key,Integer.MIN_VALUE);
-	    if(row==Integer.MIN_VALUE) {
-            Object rtn = getChildElement(key, null);
-            if(rtn!=null) return rtn;
-	    	//QueryColumn cc=query.getColumn(key,null);
-            //if(cc!=null) return cc;
-            throw new DatabaseException("key ["+key+"] not found",null,null,null);
-        }
-	    return get(row);
+        return get(KeyImpl.init(key));
+	}
+	
+	@Override
+	public Object get(Key key) throws PageException {
+		return get((PageContext)null,key);
 	}
 
 	@Override
-	public Object get(Collection.Key key) throws PageException {
+	public Object get(PageContext pc, Collection.Key key) throws PageException {
 		int row=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 		if(row==Integer.MIN_VALUE) {
-			Object child=getChildElement(key,null);
-	    	if(child!=null) return child;
+			Object child=getChildElement(pc,key,Null.NULL);
+	    	if(child!=Null.NULL) return child;
             throw new DatabaseException("key ["+key+"] not found",null,null,null);
         }
 	    return get(row);
 	}
-	
-	
-	
 
-    private Object getChildElement(Key key, Object defaultValue) {
+    private Object getChildElement(PageContext pc,Key key, Object defaultValue) {// pc maybe null
     	// column and query has same name
     	if(key.equals(this.key)) {
         	return query.get(key,defaultValue);
     	}
     	// get it from undefined scope
-		PageContext pc = ThreadLocalPageContext.get();
+		pc = ThreadLocalPageContext.get(pc);
 		if(pc!=null){
 			Undefined undefined = pc.undefinedScope();
 			boolean old = undefined.setAllowImplicidQueryCall(false);
-			Object sister = undefined.get(this.key,null);
+			Object sister = undefined.get(this.key,Null.NULL);
 			undefined.setAllowImplicidQueryCall(old);
-			if(sister!=null){
+			if(sister!=Null.NULL){
 				try {
 					return pc.get(sister, key);
 				} catch (PageException e) {
@@ -205,42 +201,13 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		}
     	return defaultValue;
 	}
-    
-    private Object getChildElement(String key, Object defaultValue) {
-    	// column and query has same name
-    	if(key.equalsIgnoreCase(this.key.getString())) {
-        	return query.get(key,defaultValue);
-    	}
-    	// get it from undefined scope
-		PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null){
-			Undefined undefined = pc.undefinedScope();
-			boolean old = undefined.setAllowImplicidQueryCall(false);
-			Object sister = undefined.get(this.key,null);
-			undefined.setAllowImplicidQueryCall(old);
-			if(sister!=null)return pc.get(sister, KeyImpl.init(key),defaultValue);
-		}
-    	return defaultValue;
-	}
-
-	public Object get(PageContext pc, String key) throws PageException {
-        int row=Caster.toIntValue(key,Integer.MIN_VALUE);
-        if(row==Integer.MIN_VALUE) {
-            Object rtn=getChildElement(key, null);
-            //Object rtn=pc.get(get(query.getCurrentrow(),null),key,null);
-            //if(rtn!=null) return rtn;
-            //rtn= query.get(key,null);
-            if(rtn!=null) return rtn;
-            throw new ExpressionException("query column has no key with name ["+key+"]");
-        }
-        return get(row);
-    }
 
     @Override
     public Object get(int row){
-        if(row<1 || row>size) return "";
-        Object o=data[row-1];
-        return o==null?"":o;
+        if(row<1 || row>size) return DEFAULT_VALUE;
+        return data[row-1];
+        // NULL Support Object o=data[row-1];
+        // NULL Support return o==null?"":o;
     }
 
     /**
@@ -249,12 +216,11 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @return new row or existing
      * @throws DatabaseException
      */
-    public Object touch(int row) throws DatabaseException{
-        // query.disconnectCache();
-        if(row<1 || row>size) return "";
+    public Object touch(int row) {
+        if(row<1 || row>size) return DEFAULT_VALUE;
         Object o=data[row-1];
         if(o!=null) return o;
-        return set(row,new StructImpl());
+        return setEL(row,new StructImpl());
     }
     
     /**
@@ -264,56 +230,34 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @throws DatabaseException
      */
     public Object touchEL(int row) {
-        // query.disconnectCache();
-        if(row<1 || row>size) return "";
-        Object o=data[row-1];
-        if(o!=null) return o;
-        return setEL(row,new StructImpl());
+    	return touch(row);
     }
+    
+	@Override
+	public Object get(Key key, Object defaultValue) {
+		return get(null,key,defaultValue);
+	}
 
 	@Override
-	public Object get(Collection.Key key, Object defaultValue) {
+	public Object get(PageContext pc, Collection.Key key, Object defaultValue) {// pc maybe null
 	    int row=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 	    if(row==Integer.MIN_VALUE) {
-	    	return getChildElement(key, defaultValue);
-	    	//Object rtn= query.getColumn(key,null);
-	    	//if(rtn!=null)return rtn;
-	    	//return defaultValue;
+	    	return getChildElement(pc,key, defaultValue);
 	    }
 	    return get(row,defaultValue);
 	}
 
 	@Override
 	public Object get(String key, Object defaultValue) {
-	    int row=Caster.toIntValue(key,Integer.MIN_VALUE);
-	    if(row==Integer.MIN_VALUE) {
-	    	return getChildElement(key, defaultValue);
-	    	//Object rtn= query.getColumn(key,null);
-	    	//if(rtn!=null)return rtn;
-	    	//return defaultValue;
-	    }
-	    return get(row,defaultValue);
+	    return get(KeyImpl.init(key),defaultValue);
 	}
-
-    /**
-     * @param pc
-     * @param key
-     * @param defaultValue
-     * @return
-     */
-    public Object get(PageContext pc, String key, Object defaultValue) {
-        int row=Caster.toIntValue(key,Integer.MIN_VALUE);
-        if(row==Integer.MIN_VALUE) {
-            return getChildElement(key, defaultValue);
-        }
-        return get(row,defaultValue);
-    }
 
 	@Override
 	public Object get(int row, Object defaultValue) {
 	    if(row<1 || row>size) return defaultValue;
-	    Object o=data[row-1];
-	    return o==null?defaultValue:o;
+	    return data[row-1];
+	    // NULL Support Object o=data[row-1];
+	    // NULL Support return o==null?defaultValue:o;
 	}
 
 	@Override
@@ -396,7 +340,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         }
         size--;
         
-        return o==null?"":o;
+        return o;
+        // NULL Support return o==null?"":o;
     }
 
 	@Override
@@ -497,8 +442,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	@Override
 	public String castToString(String defaultValue) {
-		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null) return defaultValue;
+		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL) return defaultValue;
 		return Caster.toString(value,defaultValue);
 	}
 
@@ -509,8 +454,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     @Override
     public Boolean castToBoolean(Boolean defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null) return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL) return defaultValue;
 		return Caster.toBoolean(value,defaultValue);
     }
 
@@ -521,8 +466,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     @Override
     public double castToDoubleValue(double defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null) return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL) return defaultValue;
 		return Caster.toDoubleValue(value,defaultValue);
     }
 
@@ -533,8 +478,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null);
-		if(value==null) return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
+		if(value==Null.NULL) return defaultValue;
 		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
     }
 
@@ -606,12 +551,12 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
     @Override
     public boolean containsKey(String key) {
-        return get(key,null)!=null;
+        return containsKey(KeyImpl.init(key));
     }
 
 	@Override
 	public boolean containsKey(Collection.Key key) {
-        return get(key,null)!=null;
+        return get(key,Null.NULL)!=Null.NULL;
 	}
 
 	@Override
@@ -665,20 +610,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 			}
 		}
 		return pc.getFunction(get(query.getCurrentrow(pc.getId())), methodName, arguments);
-	}
-
-	@Override
-	public Object get(PageContext pc, Key key, Object defaultValue) {
-		return get(key,defaultValue);
-	}
-
-	@Override
-	public Object get(PageContext pc, Key key) throws PageException {
-		return get(key);
-	}
-
-	public boolean isInitalized() {
-		return true;
 	}
 
 	@Override

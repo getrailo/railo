@@ -16,7 +16,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -292,11 +291,11 @@ public final class XMLUtil {
 			return null;
 		}
 	}
-	public static Object setPropertyEL(Node node, Collection.Key key, Object value,boolean caseSensitive) {
+	public static Object setProperty(Node node, Collection.Key key, Object value,boolean caseSensitive, Object defaultValue) {
 		try {
 			return setProperty(node,key,value,caseSensitive);
 		} catch (PageException e) {
-			return null;
+			return defaultValue;
 		}
 	}
 	
@@ -448,8 +447,8 @@ public final class XMLUtil {
 		if(nc!=oc)p.replaceChild(nc, oc);
 	}
 
-	public static Object getPropertyEL(Node node, Collection.Key key) {
-		return getPropertyEL(node, key,isCaseSensitve(node));
+	public static Object getProperty(Node node, Collection.Key key, Object defaultValue) {
+		return getProperty(node, key,isCaseSensitve(node),defaultValue);
 	}
 	
 	
@@ -460,11 +459,11 @@ public final class XMLUtil {
 	 * @param caseSensitive
 	 * @return Object matching key
 	 */
-	public static Object getPropertyEL(Node node, Collection.Key k,boolean caseSensitive) {
+	public static Object getProperty(Node node, Collection.Key k,boolean caseSensitive, Object defaultValue) {
 		try {
 			return getProperty(node, k,caseSensitive);
 		} catch (SAXException e) {
-			return null;
+			return defaultValue;
 		}
 	}
 	
@@ -925,12 +924,12 @@ public final class XMLUtil {
      */
     public static Node[] getChildNodesAsArray(Node node, short type) {
         ArrayNodeList nodeList=getChildNodes(node, type);
-        return (Node[]) nodeList.toArray(new Node[nodeList.getLength()]);
+        return nodeList.toArray(new Node[nodeList.getLength()]);
     }
 
     public static Node[] getChildNodesAsArray(Node node, short type, boolean caseSensitive, String filter) {
         ArrayNodeList nodeList=getChildNodes(node, type,caseSensitive,filter);
-        return (Node[]) nodeList.toArray(new Node[nodeList.getLength()]);
+        return  nodeList.toArray(new Node[nodeList.getLength()]);
     }
     
     /**
@@ -940,7 +939,7 @@ public final class XMLUtil {
      */
     public static Element[] getChildElementsAsArray(Node node) {
         ArrayNodeList nodeList=getChildNodes(node,Node.ELEMENT_NODE);
-        return (Element[]) nodeList.toArray(new Element[nodeList.getLength()]);
+        return  nodeList.toArray(new Element[nodeList.getLength()]);
     }
 
     /**

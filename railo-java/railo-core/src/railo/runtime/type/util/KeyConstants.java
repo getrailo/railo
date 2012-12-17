@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.scope.ArgumentIntKey;
 
 public class KeyConstants {
 	public static final Key _A=KeyImpl._const("A");
@@ -652,11 +653,14 @@ public class KeyConstants {
 
 	public static final Key _executionTime = KeyImpl._const("executionTime");
 	public static final Key _executionTimeNano = KeyImpl._const("executionTimeNano");
-	
+
 	public static final Key _RECORDCOUNT = KeyImpl._const("RECORDCOUNT");
+	public static final Key _recordcount = KeyImpl._const("recordcount");
 	public static final Key _cached = KeyImpl._const("cached");
 	public static final Key _COLUMNLIST = KeyImpl._const("COLUMNLIST");
+	public static final Key _columnlist = KeyImpl._const("columnlist");
 	public static final Key _CURRENTROW = KeyImpl._const("CURRENTROW");
+	public static final Key _currentrow = KeyImpl._const("currentrow");
 	public static final Key _IDENTITYCOL =  KeyImpl._const("IDENTITYCOL");
 	public static final Key _dateLastModified =  KeyImpl._const("dateLastModified");
 	public static final Key _statuscode =  KeyImpl._const("statuscode");
