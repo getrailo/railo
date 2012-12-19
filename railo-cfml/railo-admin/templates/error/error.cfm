@@ -44,7 +44,7 @@
 <cfoutput>
 <table id="-railo-err" cellpadding="4" cellspacing="2">
 	<tr>
-		<td colspan="2" class="label">Railo #server.railo.version# Error (#(catch.type)#)</td>
+		<td colspan="2" class="label">Railo #server.railo.version# Error (#catch.type#)</td>
 	</tr>
 	<cfparam name="catch.message" default="">
 	<tr>
@@ -92,7 +92,7 @@
 							<cfset isFirst = ( idx == 1 )>
 
 							<a class="-railo-icon-#isFirst ? 'minus' : 'plus'#" id="__btn$#idx#" onclick="oc( this );" style="cursor: pointer;">
-								#isFirst ? "<b>#tc.template#: line #tc.line#</b>" : "<b>called from</b>#tc.template#: line #tc.line#"#
+								#isFirst ? "<b>#tc.template#: line #tc.line#</b>" : "<b>called from</b> #tc.template#: line #tc.line#"#
 							</a>
 							<br>
 
@@ -108,6 +108,10 @@
 	<tr>
 		<td class="label">Java Stacktrace</td>
 		<td>#convertST( catch.stacktrace )#</td>
+	</tr>
+	<tr>
+		<td class="label">Timestamp</td>
+		<td>#listGetAt( now(), 2, "'" )#</td>
 	</tr>
 </table>
 <br>
