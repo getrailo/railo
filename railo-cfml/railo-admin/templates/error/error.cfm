@@ -107,7 +107,7 @@
 	</cfif>
 	<tr>
 		<td class="label">Java Stacktrace</td>
-		<td>#convertST( catch.stacktrace )#</td>
+		<td>#replace( catch.stacktrace, chr(10), "<br><span style='margin-right: 1em;'>&nbsp;</span>", "all" )#</td>
 	</tr>
 	<tr>
 		<td class="label">Timestamp</td>
@@ -119,20 +119,3 @@
 </table>
 <br>
 </cfoutput>
-
-
-<cfscript>
-	function convertST( st ) {
-
-		arguments.st=replace( HTMLEditFormat( arguments.st ), chr(10), "<br>", "all" );
-
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"	","&nbsp;&nbsp;&nbsp;","all");
-		
-		return arguments.st;
-	}
-</cfscript>
