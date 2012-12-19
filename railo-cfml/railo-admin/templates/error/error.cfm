@@ -3,7 +3,7 @@
 
 <style>
 	#-railo-err			{ font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; font-size: 11px; background-color:red; border: 1px solid black; }
-	#-railo-err td 		{ border: 1px solid #350606; color: #222; background-color: #FFCC00; }
+	#-railo-err td 		{ border: 1px solid #350606; color: #222; background-color: #FFCC00; line-height: 1.5; }
 	#-railo-err td.label	{ background-color: #FFB200; font-weight: bold; white-space: nowrap; vertical-align: top; }
 
 	#-railo-err .collapsed	{ display: none; }
@@ -111,7 +111,10 @@
 	</tr>
 	<tr>
 		<td class="label">Timestamp</td>
-		<td>#listGetAt( now(), 2, "'" )#</td>
+		<td>
+			<cfset timestamp = now()>
+			#LsDateFormat( timestamp, 'short' )# #LsTimeFormat( timestamp, 'long' )#
+		</td>
 	</tr>
 </table>
 <br>
