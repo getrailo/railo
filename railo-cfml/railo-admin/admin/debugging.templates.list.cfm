@@ -3,30 +3,7 @@
 <cftry>
 	<cfset stVeritfyMessages = StructNew()>
 	<cfswitch expression="#form.mainAction#">
-	<!--- UPDATE --->
-		<cfcase value="#stText.Buttons.Update#">
-			<cfadmin 
-				action="updateDebug"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				debug="#form.debug#"
-				debugTemplate=""
-				remoteClients="#request.getRemoteClients()#">
-			
-		</cfcase>
-	<!--- reset to server setting --->
-		<cfcase value="#stText.Buttons.resetServerAdmin#">
-			<cfadmin 
-				action="updateDebug"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				
-                debug=""
-				debugTemplate=""
-                
-				remoteClients="#request.getRemoteClients()#">
-			
-		</cfcase>
+	
     <!--- delete --->
 		<cfcase value="#stText.Buttons.Delete#">
 				<cfset data.rows=toArrayFromForm("row")>
@@ -91,51 +68,7 @@ Redirtect to entry --->
 		}
 	</script>
 	
-	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
-		<table class="maintbl">
-			<tbody>
-				<tr>
-					<th scope="row">#stText.Debug.EnableDebugging#</th>
-					<td>
-						<cfset lbl=iif(_debug.debug,de(stText.general.yes),de(stText.general.no))>
-						<cfif hasAccess>
-							<select name="debug">
-								<cfif request.admintype EQ "web">
-									<option #iif(_debug.debugsrc EQ "server",de('selected'),de(''))# value="">#stText.Regional.ServerProp[request.adminType]# <cfif _debug.debugsrc EQ "server">(#lbl#) </cfif></option>
-									<option #iif(_debug.debugsrc EQ "web" and _debug.debug,de('selected'),de(''))# value="true">#stText.general.yes#</option>
-									<option #iif(_debug.debugsrc EQ "web" and not _debug.debug,de('selected'),de(''))# value="false">#stText.general.no#</option>
-								<cfelse>
-									<option #iif(_debug.debug,de('selected'),de(''))# value="true">#stText.general.yes#</option>
-									<option #iif(_debug.debug,de(''),de('selected'))# value="false">#stText.general.no#</option>
-								</cfif>
-							</select>
-							<!--- <input type="checkbox" class="checkbox" name="debug" value="yes" <cfif debug.debug>checked</cfif>>--->
-						<cfelse>
-							<b>#lbl#</b>
-							<input type="hidden" name="debug" value="#_debug.debug#">
-						</cfif>
-						<div class="comment">#stText.Debug.EnableDescription#</div>
-					</td>
-				</tr>
-				<cfif hasAccess>
-					<cfmodule template="remoteclients.cfm" colspan="2">
-				</cfif>
-			</tbody>
-			<cfif hasAccess>
-				<tfoot>
-					<tr>
-						<td colspan="2">
-							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
-							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-							<cfif request.adminType EQ "web">
-								<input class="button submit" type="submit" name="mainAction" value="#stText.Buttons.resetServerAdmin#">
-							</cfif>
-						</td>
-					</tr>
-				</tfoot>
-			</cfif>
-		</table>
-	</cfform>
+			#stText.debug.list.createDesc#
 
 	<!--- LIST --->
 	<cfloop list="server,web" index="k">
@@ -207,7 +140,7 @@ Redirtect to entry --->
 		<cfset _drivers=ListSort(StructKeyList(drivers),'textnocase')>
 	
 		<cfif listLen(_drivers)>
-			<h2>#stText.debug.titleCreate#</h2>
+			<h2>#stText.debug.createTitle#</h2>
 			<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 				<table class="maintbl autowidth" style="width:400px;">
 					<tbody>

@@ -6,6 +6,7 @@ import java.util.TimeZone;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
@@ -487,10 +488,12 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
         else query.setCached(hasCached);
 		
 		if(pageContext.getConfig().debug() && debug) {
-			boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-			((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
+			boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
+			if(logdb){
+				boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+				((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
+			}
 		}
-		
 		if(!query.isEmpty() && !StringUtil.isEmpty(name)) {
 			pageContext.setVariable(name,query);
 		}

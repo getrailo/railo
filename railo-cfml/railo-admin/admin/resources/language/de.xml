@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <language key="de" label="Deutsch">
 	<data key="admin.search.label">Durchsuche den Railo Administrator</data>
 	<data key="admin.search.desc">Suche nach Keywords im Railo Administrator</data>
@@ -131,6 +131,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.debugging.label">Debugging</data>
 	<data key="menu.debugging.logs">Logs</data>
 	<data key="menu.debugging.templates">Templates</data>
+	<data key="menu.debugging.settings">Einstellungen</data>
 	<data key="menu.security.label">Sicherheit</data>
 	<data key="menu.security.access">Zugriff</data>
 	<data key="menu.security.password">Passwort</data>
@@ -532,7 +533,8 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="searchlng.turkish">Türkisch</data>
 	<data key="debug.logmemoryusage">Memoryverbrauch loggen.</data>
 	<data key="debug.memoryloggerdescripiton">Datei in welchem der Memoryverbrauch geloggt wird</data>
-	<data key="debug.enabledescription">Falls eingeschaltet, erstellt Railo eine Debuggingausgabe für den aktuellen Request</data>
+	<data key="debug.enabledescription">Falls eingeschaltet logt Railo die Debugging Informationen, welche Sie unterhalb gewählt haben.
+Diese werden dann am Ende eines Request ausgegeben, falls sie ein Debug Template gewählt haben oder unter "Debug/Logs" hier im Administrator.</data>
 	<data key="debug.debugtemplatemissing">Bitte geben Sie einen Wert für das Debugging Template an.</data>
 	<data key="debug.debugtemplatedescription">Dieses Template wird für die Ausgabe der Debuginformationen</data>
 	<data key="debug.logmemoryusagedescription">Definiert ob der Memoryverbrauch des Systems geloggt werden soll oder nicht</data>
@@ -540,9 +542,21 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="debug.timezone">Bitte geben Sie einen Wert für die Zeitzone an.</data>
 	<data key="debug.enabledebugging">Debug Informationen anzeigen</data>
 	<data key="debug.memorylogger">Memory Logger</data>
-	<data key="debug.showQueryUsage">Query Zugriffe anzeigen</data>
-	<data key="debug.showQueryUsageDesc">Wenn engeschaltete werden die Zugriff auf die Queries die innerhalb eines request gezogen wurden angezeigt.</data>
-	
+	<data key="debug.settings.queryUsage">Query Usage</data>
+	<data key="debug.settings.queryUsageDesc">Select this option to log the query usage information.</data>
+	<data key="debug.settings.database">Database Activity</data>
+	<data key="debug.settings.databaseDesc">Select this option to log the database activity for the SQL Query events and Stored Procedure events.</data>
+	<data key="debug.settings.exception"> Exceptions </data>
+	<data key="debug.settings.exceptionDesc">Select this option to log all exceptions raised for the request.</data>
+	<data key="debug.settings.tracing"> Tracing </data>
+	<data key="debug.settings.tracingDesc">Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.</data>
+	<data key="debug.settings.timer"> Timer </data>
+	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
+	<data key="debug.settings.timer"> Timer </data>
+	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
+	<data key="debug.settings.implicitAccess">Implicit variable Access</data>
+	<data key="debug.settings.implicitAccessDesc">Select this option to log all accesses to scopes, queries and threads that happens implicit (cascaded).</data>
+	<data key="general.enabled">Enabled</data>
 		
 	<data key="setting.compiler">Railo Compiler Einstellungen, dies beeinflusst wie der Railo Compiler den Source Code übersetzt. Das ändern dieser Einstellungen löscht alle existierenden Class Files.</data>
 	<data key="setting.dotNotation">Dot Notation</data>
