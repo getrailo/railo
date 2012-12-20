@@ -19,23 +19,26 @@
 
 <script>
 
-	function oc( btn ) {
+	var __RAILO = {
 
-		var id = btn.id.split( '$' )[ 1 ];
+		oc: 	function ( btn ) {
 
-		var curBtnClass = btn.attributes[ 'class' ];	// bracket-notation required for IE<9
-		var cur = curBtnClass.value;
+			var id = btn.id.split( '$' )[ 1 ];
 
-		var curCstClass = document.getElementById( '__cst$' + id ).attributes[ 'class' ];
+			var curBtnClass = btn.attributes[ 'class' ];	// bracket-notation required for IE<9
+			var cur = curBtnClass.value;
 
-		if ( cur == '-railo-icon-plus' ) {
+			var curCstClass = document.getElementById( '__cst$' + id ).attributes[ 'class' ];
 
-			curBtnClass.value = '-railo-icon-minus';
-			curCstClass.value = 'expanded';
-		} else {
+			if ( cur == '-railo-icon-plus' ) {
 
-			curBtnClass.value = '-railo-icon-plus';
-			curCstClass.value = 'collapsed';
+				curBtnClass.value = '-railo-icon-minus';
+				curCstClass.value = 'expanded';
+			} else {
+
+				curBtnClass.value = '-railo-icon-plus';
+				curCstClass.value = 'collapsed';
+			}
 		}
 	}
 </script>
@@ -91,7 +94,7 @@
 
 							<cfset isFirst = ( idx == 1 )>
 
-							<a class="-railo-icon-#isFirst ? 'minus' : 'plus'#" id="__btn$#idx#" onclick="oc( this );" style="cursor: pointer;">
+							<a class="-railo-icon-#isFirst ? 'minus' : 'plus'#" id="__btn$#idx#" onclick="__RAILO.oc( this );" style="cursor: pointer;">
 								#isFirst ? "<b>#tc.template#: line #tc.line#</b>" : "<b>called from</b> #tc.template#: line #tc.line#"#
 							</a>
 							<br>
