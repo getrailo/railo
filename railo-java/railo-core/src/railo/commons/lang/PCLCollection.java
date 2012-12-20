@@ -9,6 +9,7 @@ import java.util.Map;
 import railo.commons.io.res.Resource;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
+import railo.runtime.instrumentation.InstrumentationUtil;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -88,7 +89,7 @@ public final class PCLCollection {
     			}
     		}*/
     		
-    		// flash classloader when update is not possible
+    		// flush classloader when update is not possible
     		mapping.clearPages(cl);
     		StructUtil.removeValue(index,cl);
     		if(isCFC){
