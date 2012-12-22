@@ -689,7 +689,7 @@
 			<!--- Scopes --->
 			<cfif isEnabled(arguments.custom,"scopes")>
 				
-				<cfset local.scopes = "application,CGI,cookie,form,request,server,URL">
+				<cfset local.scopes = "application,CGI,cookie,form,request,server,session,URL">
 			
 			
 				<span class="h2">Scope Information</span>
