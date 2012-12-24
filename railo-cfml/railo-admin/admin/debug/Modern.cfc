@@ -62,27 +62,28 @@
 		variables.cookieName = "railo_debug_modern";
 
 		variables.scopeNames = [ "Application", "CGI", "Cookie", "Form", "Request", "Server", "Session", "URL" ];
-		variables.otherNames = [ "ImpAccess", "ExecTime", "Exceptions", "Info", "Query", "Timer", "Trace" ];
 
 		variables.allSections = {'Application':1,'Form':8,'ExecTime':512,'Trace':16384,'Query':4096,'ImpAccess':256,'URL':128,'Info':2048,'Cookie':4,'Exceptions':1024,'CGI':2,'Session':64,'Timer':8192,'Request':16,'Server':32};
 
-		/*/	keep this snippet to generate values if we add more sections in the future
+		/*/	keep this snippet to easily generate values if we add more sections in the future
 		variables.allSections = buildSectionStruct();
 
-		function buildSectionStruct() {
+		private function buildSectionStruct() {
 
+			var otherSections = [ "ImpAccess", "ExecTime", "Exceptions", "Info", "Query", "Timer", "Trace" ];
 			var i = 0;
 
 			var result = {};
 
-			for ( var k in variables.scopeNames ) 
+			for ( var k in variables.scopeNames )
 				result[ k ] = 2 ^ i++;
 
-			for ( var k in variables.otherNames ) 
+			for ( var k in otherSections )
 				result[ k ] = 2 ^ i++;
 
 			return result;
 		}	//*/
+
 
 		private function isSectionOpen( string name ) {
 
@@ -94,7 +95,7 @@
 
 		private function isEnabled( custom, key ) {
 		
-			return structKeyExists( arguments.custom, key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true");
+			return structKeyExists( arguments.custom, key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true" );
 		}
 		
 	</cfscript>
