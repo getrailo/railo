@@ -66,7 +66,7 @@
 
 		variables.allSections = {'Application':1,'Form':8,'ExecTime':512,'Trace':16384,'Query':4096,'ImpAccess':256,'URL':128,'Info':2048,'Cookie':4,'Exceptions':1024,'CGI':2,'Session':64,'Timer':8192,'Request':16,'Server':32};
 
-		/*/
+		/*/	keep this snippet to generate values if we add more sections in the future
 		variables.allSections = buildSectionStruct();
 
 		function buildSectionStruct() {
