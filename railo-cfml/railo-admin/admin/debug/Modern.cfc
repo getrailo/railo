@@ -64,6 +64,9 @@
 		variables.scopeNames = [ "Application", "CGI", "Cookie", "Form", "Request", "Server", "Session", "URL" ];
 		variables.otherNames = [ "ImpAccess", "ExecTime", "Exceptions", "Info", "Query", "Timer", "Trace" ];
 
+		variables.allSections = {'Application':1,'Form':8,'ExecTime':512,'Trace':16384,'Query':4096,'ImpAccess':256,'URL':128,'Info':2048,'Cookie':4,'Exceptions':1024,'CGI':2,'Session':64,'Timer':8192,'Request':16,'Server':32};
+
+		/*/
 		variables.allSections = buildSectionStruct();
 
 		function buildSectionStruct() {
@@ -79,7 +82,7 @@
 				result[ k ] = 2 ^ i++;
 
 			return result;
-		}
+		}	//*/
 
 		private function isSectionOpen( string name ) {
 
