@@ -185,8 +185,7 @@
 
 				__RAILO.cookies = {
 
-
-					get: 	function( name, defaultValue ) {
+					  get: 	function( name, defaultValue ) {
 
 						var cookies = document.cookie.split( '; ' );
 						var len = cookies.length;
@@ -202,7 +201,6 @@
 						return defaultValue;
 					}
 
-
 					, set: 	function( name, value, expires ) {
 
 						document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" );
@@ -216,31 +214,29 @@
 
 
 
-				__RAILO.debugModern = {
+				__RAILO.debug = {
 
-					cookieName: 	"#variables.cookieName#"
-
+					  cookieName: 	"#variables.cookieName#"
 					, bitmaskAll: 	Math.pow( 2, 31 ) - 1
-
 					, allSections: 	#serializeJSON( variables.allSections )#
 
 					, openSection: 	function( name ) {
 
-						var value = __RAILO.cookies.get( __RAILO.debugModern.cookieName, 0 ) | __RAILO.debugModern.allSections[ name ];
+						var value = __RAILO.cookies.get( __RAILO.debug.cookieName, 0 ) | __RAILO.debug.allSections[ name ];
 
-						__RAILO.cookies.set( __RAILO.debugModern.cookieName, value );
+						__RAILO.cookies.set( __RAILO.debug.cookieName, value );
 
 						return value;
 					}
 
 					, closeSection: 	function( name ) {
 
-						var value = __RAILO.cookies.get( __RAILO.debugModern.cookieName, 0 ) & ( __RAILO.debugModern.bitmaskAll - __RAILO.debugModern.allSections[ name ] );
+						var value = __RAILO.cookies.get( __RAILO.debug.cookieName, 0 ) & ( __RAILO.debug.bitmaskAll - __RAILO.debug.allSections[ name ] );
 
 						if ( value > 0 )
-							__RAILO.cookies.set( __RAILO.debugModern.cookieName, value );
+							__RAILO.cookies.set( __RAILO.debug.cookieName, value );
 						else
-							__RAILO.cookies.remove( __RAILO.debugModern.cookieName );
+							__RAILO.cookies.remove( __RAILO.debug.cookieName );
 
 						return value;
 					}
@@ -251,20 +247,20 @@
 
 						var objClass = document.getElementById( "-railo-debug-" + name ).attributes[ 'class' ];
 
-						var isOpen = ( __RAILO.cookies.get( __RAILO.debugModern.cookieName, 0 ) & __RAILO.debugModern.allSections[ name ] ) > 0;
+						var isOpen = ( __RAILO.cookies.get( __RAILO.debug.cookieName, 0 ) & __RAILO.debug.allSections[ name ] ) > 0;
 
 						if ( isOpen ) {
 
 							btnClass.value = '-railo-icon-plus';
 							objClass.value = 'collapsed';
 
-							__RAILO.debugModern.closeSection( name );
+							__RAILO.debug.closeSection( name );
 						} else {
 
 							btnClass.value = '-railo-icon-minus';
 							objClass.value = 'expanded';
 
-							__RAILO.debugModern.openSection( name );
+							__RAILO.debug.openSection( name );
 						}
 					}
 				};
@@ -732,9 +728,9 @@
 		<cfargument name="label2" default="">
 
 		<tr>
-			<td><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" style="cursor: pointer;" onclick="__RAILO.debugModern.toggleSection( '#sectionId#' );">
+			<td><a id="-railo-debug-btn-#sectionId#" class="-railo-icon-#isOpen ? 'minus' : 'plus'#" style="cursor: pointer;" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">
 				#label1#</a></td>
-			<td class="pad"><a style="cursor: pointer;" onclick="__RAILO.debugModern.toggleSection( '#sectionId#' );">#label2#</a></td>
+			<td class="pad"><a style="cursor: pointer;" onclick="__RAILO.debug.toggleSection( '#sectionId#' );">#label2#</a></td>
 		</tr>
 	</cffunction>
 
