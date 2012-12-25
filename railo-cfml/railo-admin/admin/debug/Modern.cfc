@@ -59,18 +59,33 @@
 		return !len(arrayToList(queryColumnData(qry,columnName),""));
 		}
 
+
+		private function isSectionOpen( string name ) {
+
+			var cookieValue = structKeyExists( Cookie, variables.cookieName ) ? Cookie[ variables.cookieName ] : 0;
+
+			return cookieValue && ( bitAnd( cookieValue, variables.allSections[ name ] ) );
+		}
+
+
+		private function isEnabled( custom, key ) {
+		
+			return structKeyExists( arguments.custom, key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true" );
+		}
+
+
 		variables.cookieName = "railo_debug_modern";
 
 		variables.scopeNames = [ "Application", "CGI", "Cookie", "Form", "Request", "Server", "Session", "URL" ];
 
-		variables.allSections = {'Application':1,'Form':8,'ExecTime':512,'Trace':16384,'Query':4096,'ImpAccess':256,'URL':128,'Info':2048,'Cookie':4,'Exceptions':1024,'CGI':2,'Session':64,'Timer':8192,'Request':16,'Server':32};
+		variables.allSections = {"Application":1,"Form":8,"ExecTime":512,"Trace":32768,"Query":8192,"ExecOrder":1024,"ImpAccess":256,"URL":128,"Info":4096,"Cookie":4,"Exceptions":2048,"CGI":2,"Session":64,"Timer":16384,"Request":16,"Server":32};
 
 		/*/	keep this snippet to easily generate values if we add more sections in the future
 		variables.allSections = buildSectionStruct();
 
 		private function buildSectionStruct() {
 
-			var otherSections = [ "ImpAccess", "ExecTime", "Exceptions", "Info", "Query", "Timer", "Trace" ];
+			var otherSections = [ "ImpAccess", "ExecTime", "ExecOrder", "Exceptions", "Info", "Query", "Timer", "Trace" ];
 			var i = 0;
 
 			var result = {};
@@ -82,22 +97,7 @@
 				result[ k ] = 2 ^ i++;
 
 			return result;
-		}	//*/
-
-
-		private function isSectionOpen( string name ) {
-
-			var cookieValue = structKeyExists( Cookie, variables.cookieName ) ? Cookie[ variables.cookieName ] : 0;
-
-			return ( bitAnd( cookieValue, variables.allSections[ name ] ) );
-		}
-
-
-		private function isEnabled( custom, key ) {
-		
-			return structKeyExists( arguments.custom, key ) && ( arguments.custom[ arguments.key ] == "Enabled" || arguments.custom[ arguments.key ] == "true" );
-		}
-		
+		}	//*/		
 	</cfscript>
  
 	<cffunction name="output" returntype="void">
@@ -128,7 +128,17 @@
 			</cfif>
 			<cfset var timers=arguments.debugging.timers />
 			<cfset var traces=arguments.debugging.traces />
-			<cfset querySort(pages,"avg","desc") />
+
+			<cfset var isExecOrder = isSectionOpen( "ExecOrder" )>
+
+			<cfif isExecOrder>
+				
+				<cfset querySort(pages,"id","asc") />
+			<cfelse>
+
+				<cfset querySort(pages,"avg","desc") />
+			</cfif>
+			
 			<cfset var implicitAccess=arguments.debugging.implicitAccess />
 			<cfset querySort(implicitAccess,"template,line,count","asc,asc,desc") />
 			<cfparam name="arguments.custom.unit" default="millisecond">
@@ -147,27 +157,29 @@
 		</cfif>
 		<cfoutput>
 			<style type="text/css">
-				
 		
-				.tblHead{padding-left:5px;padding-right:5px;border:1px solid ##e0e0e0;background-color:##f2f2f2;color:##3c3e40} 
-				.tblContent {padding-left:5px;padding-right:5px;border:1px solid ##e0e0e0;background-color:##ffffff;} 
-				
-
 				##-railo-err 			{ border: 1px dashed ##CCC; padding: 0.5em; }
 
 				##-railo-err, ##-railo-err td	{ font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif; font-size: 9pt; }
 				##-railo-err table		{ empty-cells: show; }
+				##-railo-err table.details	{ margin-top: 0.5em; border: 1px solid ##999; margin-left: 14px; }
+				##-railo-err table.details th { border:1px solid ##e0e0e0; font-size: 10pt; font-weight: normal; background-color: ##f2f2f2; color: ##3c3e40; }
+				##-railo-err table.details td, ##-railo-err table.details th { padding: 2px 5px; }
+				##-railo-err table.details td	{ border-bottom: 1px solid ##e0e0e0; }
+				##-railo-err table.details tr:last-child td { border-bottom: 0; }
 				
 				##-railo-err .section-title	{ margin-top: 1em; font-size: 12pt; font-weight: normal; color:##007bb7; }
 				##-railo-err .section-title:first-child	{ margin-top: auto; }
-				##-railo-err td.label	{ white-space: nowrap; vertical-align: top; }
+				##-railo-err .label		{ white-space: nowrap; vertical-align: top; text-align: right; }
 
 				##-railo-err .collapsed	{ display: none; }
 				##-railo-err .expanded 	{ display: block; }
 
 				##-railo-err .bold 		{ font-weight: bold; }
+				##-railo-err .center 	{ text-align: center; }
 				##-railo-err .right 	{ text-align: right; }
-				##-railo-err tr.red td, ##-railo-err .red 	{ color: red; }
+				##-railo-err tr.nowrap td { white-space: nowrap; }
+				##-railo-err tr.red td, ##-railo-err .red 	{ background-color: ##FDD; }
 
 				.-railo-icon-plus 	{ background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==)
 			    					no-repeat left center; padding: 4px 0 4px 16px; }
@@ -180,7 +192,6 @@
 
 			<script>
 
-
 				var __RAILO = __RAILO || {};
 
 				__RAILO.cookies = {
@@ -189,10 +200,11 @@
 
 						var cookies = document.cookie.split( '; ' );
 						var len = cookies.length;
+						var parts;
 
 						for ( var i=0; i<len; i++ ) {
 
-							var parts = cookies[ i ].split( '=' );
+							parts = cookies[ i ].split( '=' );
 
 							if ( parts[ 0 ] == name )
 								return unescape( parts[ 1 ] );
@@ -201,7 +213,25 @@
 						return defaultValue;
 					}
 
-					, set: 	function( name, value, expires ) {
+					, getNames:	function() {
+
+						var result = [];
+
+						var cookies = document.cookie.split( '; ' );
+						var len = cookies.length;
+						var parts;
+
+						for ( var i=0; i<len; i++ ) {
+
+							parts = cookies[ i ].split( '=' );
+
+							result.push( parts[ 0 ] );
+						}
+
+						return result;
+					}
+
+					, set: 		function( name, value, expires ) {
 
 						document.cookie = name + "=" + escape( value ) + ( (expires) ? "; expires=" + expires.toGMTString() : "" );
 					}
@@ -213,14 +243,13 @@
 				};
 
 
-
 				__RAILO.debug = {
 
 					  cookieName: 	"#variables.cookieName#"
 					, bitmaskAll: 	Math.pow( 2, 31 ) - 1
 					, allSections: 	#serializeJSON( variables.allSections )#
 
-					, openSection: 	function( name ) {
+					, setFlag: 		function( name ) {
 
 						var value = __RAILO.cookies.get( __RAILO.debug.cookieName, 0 ) | __RAILO.debug.allSections[ name ];
 
@@ -229,7 +258,7 @@
 						return value;
 					}
 
-					, closeSection: 	function( name ) {
+					, clearFlag: 	function( name ) {
 
 						var value = __RAILO.cookies.get( __RAILO.debug.cookieName, 0 ) & ( __RAILO.debug.bitmaskAll - __RAILO.debug.allSections[ name ] );
 
@@ -241,7 +270,7 @@
 						return value;
 					}
 
-					, toggleSection: function( name ) {
+					, toggleSection: 	function( name ) {
 
 						var btnClass = document.getElementById( "-railo-debug-btn-" + name ).attributes[ 'class' ];	// bracket-notation required for IE<9
 
@@ -254,22 +283,35 @@
 							btnClass.value = '-railo-icon-plus';
 							objClass.value = 'collapsed';
 
-							__RAILO.debug.closeSection( name );
+							__RAILO.debug.clearFlag( name );
 						} else {
 
 							btnClass.value = '-railo-icon-minus';
 							objClass.value = 'expanded';
 
-							__RAILO.debug.openSection( name );
+							__RAILO.debug.setFlag( name );
 						}
 					}
+
+					, selectText: 	function( id ) {
+
+				        if ( document.selection ) {
+
+				            var range = document.body.createTextRange();
+				            range.moveToElementText( document.getElementById( id ) );
+				            range.select();
+				        } else if ( window.getSelection ) {
+
+				            var range = document.createRange();
+				            range.selectNode( document.getElementById( id ) );
+				            window.getSelection().addRange( range );
+				        }
+				    }
 				};
 			</script>
-
 			
 
 			<div id="-railo-err">
-
 			
 				<!--- General --->
 				<cfif isEnabled(arguments.custom,'general')>
@@ -287,124 +329,129 @@
 							<td class="pad">#_cgi.http_user_agent#</td>
 						</tr>
 						<tr>
-							<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
-
-								<tr>
-									<td class="label" colspan="2">
-										#server.coldfusion.productname# 
-										<cfif StructKeyExists(server.railo,'versionName')>(<a href="#server.railo.versionNameExplanation#" target="_blank">#server.railo.versionName#</a>)
-										</cfif>
-										#ucFirst(server.coldfusion.productlevel)# #uCase(server.railo.state)# #server.railo.version# (CFML Version #server.ColdFusion.ProductVersion#) 
-									</td>
-								</tr>
-								<tr>
-									<td class="label">Time Stamp</td>
-									<td class="cfdebug">#LSDateFormat(now())# #LSTimeFormat(now())#</td>
-								</tr>
-								<tr>
-									<td class="label">Time Zone</td>
-									<td class="cfdebug">#getTimeZone()#</td>
-								</tr>
-								<tr>
-									<td class="label">Locale</td>
-									<td class="cfdebug">#ucFirst(GetLocale())#</td>
-								</tr>
-								<tr>
-									<td class="label">Remote IP</td>
-									<td class="cfdebug">#_cgi.remote_addr#</td>
-								</tr>
-								<tr>
-									<td class="label">Host Name</td>
-									<td class="cfdebug">#_cgi.server_name#</td>
-								</tr>
-								<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+							<td colspan="2" id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#">
+								<table style="margin-left: 14px;">
 									<tr>
-										<td class="label">Architecture</td>
-										<td class="cfdebug">
-											<cfif server.os.archModel NEQ server.os.archModel>
-												OS #server.os.archModel#bit/JRE #server.java.archModel#bit
-											<cfelse>
-												#server.os.archModel#bit
+										<td class="label" colspan="2">
+											#server.coldfusion.productname# 
+											<cfif StructKeyExists(server.railo,'versionName')>(<a href="#server.railo.versionNameExplanation#" target="_blank">#server.railo.versionName#</a>)
 											</cfif>
+											#ucFirst(server.coldfusion.productlevel)# #uCase(server.railo.state)# #server.railo.version# (CFML Version #server.ColdFusion.ProductVersion#) 
 										</td>
 									</tr>
-								</cfif>
-								
-							</td></tr></table>
+									<tr>
+										<td class="label">Time Stamp</td>
+										<td class="cfdebug">#LSDateFormat(now())# #LSTimeFormat(now())#</td>
+									</tr>
+									<tr>
+										<td class="label">Time Zone</td>
+										<td class="cfdebug">#getTimeZone()#</td>
+									</tr>
+									<tr>
+										<td class="label">Locale</td>
+										<td class="cfdebug">#ucFirst(GetLocale())#</td>
+									</tr>
+									<tr>
+										<td class="label">Remote IP</td>
+										<td class="cfdebug">#_cgi.remote_addr#</td>
+									</tr>
+									<tr>
+										<td class="label">Host Name</td>
+										<td class="cfdebug">#_cgi.server_name#</td>
+									</tr>
+									<cfif StructKeyExists(server.os,"archModel") and StructKeyExists(server.java,"archModel")>
+										<tr>
+											<td class="label">Architecture</td>
+											<td class="cfdebug">
+												<cfif server.os.archModel NEQ server.os.archModel>
+													OS #server.os.archModel#bit/JRE #server.java.archModel#bit
+												<cfelse>
+													#server.os.archModel#bit
+												</cfif>
+											</td>
+										</tr>
+									</cfif>
+								</table>
+							</td>
 						</tr>
 					</table>
-				</cfif>
+				</cfif>				
 				
 				
-				
-			<!--- Execution Time --->
+				<!--- Execution Time --->
 				<cfset sectionId = "ExecTime">
 				<cfset isOpen = isSectionOpen( sectionId )>
-
+				
 				<div class="section-title"><a name="cfdebug_execution">Execution Time</a></div>
-				<cfset local.loa=0 />
-				<cfset local.tot=0 />
-				<cfset local.q=0 />
+				<cfset local.loa=0>
+				<cfset local.tot=0>
+				<cfset local.q=0>
 				
 				<cfloop query="pages">
-					<cfset tot=tot+pages.total />
-					<cfset q=q+pages.query />
+					<cfset tot=tot+pages.total>
+					<cfset q=q+pages.query>
 					<cfif pages.avg LT arguments.custom.minimal*1000>
 						<cfcontinue>
 					</cfif>
-					<cfset local.bad=pages.avg GTE arguments.custom.highlight*1000 />
+					<cfset local.bad=pages.avg GTE arguments.custom.highlight*1000>
 					<cfset loa=loa+pages.load />
 				</cfloop>
 
 				<table>
 
-					<cfset renderSectionHeadTR( sectionId, formatUnit( arguments.custom.unit, loa ), "Startup/Compiling" )>
+					<cfset renderSectionHeadTR( sectionId, "#formatUnit( arguments.custom.unit, loa )# &nbsp;&nbsp;&nbsp;&nbsp; Startup/Compiling" )>
+
+					<tr><td><table>
+						<tr>
+							<td class="pad right">#formatUnit( arguments.custom.unit, tot-q-loa )#</td>
+							<td class="pad">Application</td>
+						</tr>
+						<tr>
+							<td class="pad right">#formatUnit( arguments.custom.unit, q )#</td>
+							<td class="pad">Query</td>
+						</tr>
+						<tr>
+							<td class="pad right bold">#formatUnit( arguments.custom.unit, tot )#</td>
+							<td class="pad bold">Total</td>
+						</tr>
+					</table></td></tr>
 
 					<tr>
-						<td class="pad right">#formatUnit( arguments.custom.unit, tot-q-loa )#</td>
-						<td class="pad">Application</td>
-					</tr>
-					<tr>
-						<td class="pad right">#formatUnit( arguments.custom.unit, q )#</td>
-						<td class="pad">Query</td>
-					</tr>
-					<tr>
-						<td class="pad right bold">#formatUnit( arguments.custom.unit, tot )#</td>
-						<td class="pad bold">Total</td>
-					</tr>
-					<tr>
-						<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+						<td id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#">
+							<table class="details">
 
-							<tr>
-								<td class="tblHead" align="center">Total Time</td>
-								<td class="tblHead" align="center">Avg Time</td>
-								<td class="tblHead" align="center">Count</td>
-								<td class="tblHead">Template</td>
-							</tr>
-							<cfset loa=0>
-							<cfset tot=0>
-							<cfset q=0>
-							<cfloop query="pages">
-								<cfset tot=tot+pages.total>
-								<cfset q=q+pages.query>
-								<cfif pages.avg LT arguments.custom.minimal * 1000>
-									<cfcontinue>
-								</cfif>
-								<cfset bad=pages.avg GTE arguments.custom.highlight * 1000>
-								<cfset loa=loa+pages.load>
-								<tr #bad ? 'class="red"' : ''#>
-									<td align="right" class="tblContent" nowrap>#formatUnit(arguments.custom.unit, pages.total-pages.load)#</td>
-									<td align="right" class="tblContent" nowrap>#formatUnit(arguments.custom.unit, pages.avg)#</td>
-									<td align="center" class="tblContent" nowrap>#pages.count#</td>
-									<td align="left" class="tblContent" nowrap>#pages.src# <!-- [#pages.id#] !--></td>
+								<tr>
+									<th>Total Time</th>
+									<th><cfif isExecOrder><a onclick="__RAILO.debug.clearFlag( 'ExecOrder' );" style="cursor: pointer;" title="Order by Avg Time (starting with the next request))">Avg Time</a><cfelse>Avg Time</cfif></th>
+									<th>Count</th>
+									<th>Template</th>
+									<th><cfif isExecOrder>ID<cfelse><a onclick="__RAILO.debug.setFlag( 'ExecOrder' );" style="cursor: pointer;" title="Order by ID (starting with the next request)">ID</a></cfif></th>
 								</tr>
-							</cfloop>
-							<tr><td colspan="2" class="red">red = over #formatUnit( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
+								<cfset loa=0>
+								<cfset tot=0>
+								<cfset q=0>
+								<cfloop query="pages">
+									<cfset tot=tot+pages.total>
+									<cfset q=q+pages.query>
+									<cfif pages.avg LT arguments.custom.minimal * 1000>
+										<cfcontinue>
+									</cfif>
+									<cfset bad=pages.avg GTE arguments.custom.highlight * 1000>
+									<cfset loa=loa+pages.load>
+									<tr class="nowrap #bad ? 'red' : ''#">
+										<td class="right">#formatUnit(arguments.custom.unit, pages.total-pages.load)#</td>
+										<td class="right">#formatUnit(arguments.custom.unit, pages.avg)#</td>
+										<td class="center">#pages.count#</td>
+										<td>#pages.src#</td>
+										<td class="right" style="color: ##999;" title="#pages.id#">#pages.id % 10000#</td>
+									</tr>
+								</cfloop>
+								<tr class="red"><td colspan="3">red = over #formatUnit( arguments.custom.unit, arguments.custom.highlight * 1000 )# average execution time</td></tr>
 
-						</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+							</table>
+						</td>	<!--- id="-railo-debug-#sectionId#" !--->
 					</tr>
 				</table>
-
 
 
 				<!--- Exceptions --->
@@ -416,31 +463,34 @@
 					<div class="section-title">Caught Exceptions</div>
 					<table>
 
-						<cfset renderSectionHeadTR( sectionId, arrayLen(arguments.debugging.exceptions), "Exception#arrayLen( arguments.debugging.exceptions ) GT 1 ? 's' : ''# Caught" )>
+						<cfset renderSectionHeadTR( sectionId, "#arrayLen(arguments.debugging.exceptions)# Exception#arrayLen( arguments.debugging.exceptions ) GT 1 ? 's' : ''# Caught" )>
 
 						<tr>
-							<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+							<td id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#">
+								<table class="details">
 
-								<tr>
-									<td class="tblHead">Type</td>
-									<td class="tblHead">Message</td>
-									<td class="tblHead">Detail</td>
-									<td class="tblHead">Template</td>
-								</tr>
-								<cfloop array="#arguments.debugging.exceptions#" index="local.exp">
 									<tr>
-										<td class="tblContent" nowrap>#exp.type#</td>
-										<td class="tblContent" nowrap>#exp.message#</td>
-										<td class="tblContent" nowrap>#exp.detail#</td>
-										<td class="tblContent" nowrap>#exp.TagContext[1].template#:#exp.TagContext[1].line#</td>
+										<th>Type</th>
+										<th>Message</th>
+										<th>Detail</th>
+										<th>Template</th>
+										<th>Line</th>
 									</tr>
-								</cfloop>
-								
-							</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+									<cfloop array="#arguments.debugging.exceptions#" index="local.exp">
+										<tr class="nowrap">
+											<td>#exp.type#</td>
+											<td>#exp.message#</td>
+											<td>#exp.detail#</td>
+											<td>#exp.TagContext[1].template#</td>
+											<td class="right">#exp.TagContext[1].line#</td>
+										</tr>
+									</cfloop>
+									
+								</table>
+							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
 				</cfif>
-
 
 
 				<!--- Implicit variable Access --->
@@ -453,34 +503,35 @@
 
 					<table>
 
-						<cfset renderSectionHeadTR( sectionId, implicitAccess.recordcount, "Implicit Variable Access#( implicitAccess.recordcount GT 1 ) ? 'es' : ''#" )>
+						<cfset renderSectionHeadTR( sectionId, "#implicitAccess.recordcount# Implicit Variable Access#( implicitAccess.recordcount GT 1 ) ? 'es' : ''#" )>
 
 						<tr>
-							<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+							<td id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#">
+								<table class="details">
 
-								<tr>
-									<td class="tblHead">Scope</td>
-									<td class="tblHead">Template</td>
-									<td class="tblHead">Line</td>
-									<td class="tblHead">Var</td>
-									<td class="tblHead">Count</td>
-								</tr>
-								<cfset total=0 />
-								<cfloop query="implicitAccess">
 									<tr>
-										<td align="left" class="tblContent" nowrap>#implicitAccess.scope#</td>
-										<td align="left" class="tblContent" nowrap>#implicitAccess.template#</td>
-										<td align="right" class="tblContent" nowrap>#implicitAccess.line#</td>
-										<td align="left" class="tblContent" nowrap>#implicitAccess.name#</td>
-										<td align="right" class="tblContent" nowrap>#implicitAccess.count#</td>
+										<th>Scope</th>
+										<th>Template</th>
+										<th>Line</th>
+										<th>Var</th>
+										<th>Count</th>
 									</tr>
-								</cfloop>
+									<cfset total=0 />
+									<cfloop query="implicitAccess">
+										<tr class="nowrap">
+											<td align="left">#implicitAccess.scope#</td>
+											<td align="left">#implicitAccess.template#</td>
+											<td align="right">#implicitAccess.line#</td>
+											<td align="left">#implicitAccess.name#</td>
+											<td align="right">#implicitAccess.count#</td>
+										</tr>
+									</cfloop>
 								
-							</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+								</table>
+							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
 				</cfif>
-
 
 
 				<!--- Timers --->
@@ -493,29 +544,30 @@
 
 					<table>
 
-						<cfset renderSectionHeadTR( sectionId, timers.recordcount, "Timer#( timers.recordcount GT 1 ) ? 's' : ''# Set" )>
+						<cfset renderSectionHeadTR( sectionId, "#timers.recordcount# Timer#( timers.recordcount GT 1 ) ? 's' : ''# Set" )>
 
 						<tr>
-							<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+							<td id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#">
+								<table class="details">
 
-								<tr>
-									<td class="tblHead" align="center">Label</td>
-									<td class="tblHead">Time</td>
-									<td class="tblHead">Template</td>
-								</tr>
-								<cfloop query="timers">
 									<tr>
-										<td align="right" class="tblContent" nowrap>#timers.label#</td>
-										<td align="right" class="tblContent" nowrap>#formatUnit( arguments.custom.unit, timers.time * 1000000 )#</td>
-										<td align="right" class="tblContent" nowrap>#timers.template#</td>
+										<th align="center">Label</th>
+										<th>Time</th>
+										<th>Template</th>
 									</tr>
-								</cfloop>
-								
-							</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+									<cfloop query="timers">
+										<tr class="nowrap">
+											<td align="right">#timers.label#</td>
+											<td align="right">#formatUnit( arguments.custom.unit, timers.time * 1000000 )#</td>
+											<td align="right">#timers.template#</td>
+										</tr>
+									</cfloop>
+									
+								</table>
+							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
 				</cfif>
-
 
 
 				<!--- Traces --->
@@ -531,62 +583,63 @@
 					
 					<table>
 
-						<cfset renderSectionHeadTR( sectionId, traces.recordcount, "Trace Point#( traces.recordcount GT 1 ) ? 's' : ''#" )>
+						<cfset renderSectionHeadTR( sectionId, "#traces.recordcount# Trace Point#( traces.recordcount GT 1 ) ? 's' : ''#" )>
 
 						<tr>
-							<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+							<td id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#">
+								<table class="details">
 
-								<tr>
-									<td class="tblHead">Type</td>
-									<cfif hasCategory>
-										<td class="tblHead">Category</td>
-									</cfif>
-									<td class="tblHead">Text</td>
-									<td class="tblHead">Template</td>
-									<td class="tblHead">Line</td>
-									<cfif hasAction>
-										<td class="tblHead">Action</td>
-									</cfif>
-									<td class="tblHead">Var</td>
-									<td class="tblHead">Total Time</td>
-									<td class="tblHead">Trace Slot Time</td>
-								</tr>
-								<cfset total=0 />
-								<cfloop query="traces">
-									<cfset total=total+traces.time />
 									<tr>
-										<td align="left" class="tblContent" nowrap>#traces.type#</td>
+										<th>Type</th>
 										<cfif hasCategory>
-											<td align="left" class="tblContent" nowrap>#traces.category#&nbsp;</td>
+											<th>Category</th>
 										</cfif>
-										<td align="let" class="tblContent" nowrap>#traces.text#&nbsp;</td>
-										<td align="left" class="tblContent" nowrap>#traces.template#</td>
-										<td align="right" class="tblContent" nowrap>#traces.line#</td>
+										<th>Text</th>
+										<th>Template</th>
+										<th>Line</th>
 										<cfif hasAction>
-											<td align="left" class="tblContent" nowrap>#traces.action#</td>
+											<th>Action</th>
 										</cfif>
-										<td align="left" class="tblContent" nowrap>
-											<cfif len(traces.varName)>
-												#traces.varName#
-												<cfif structKeyExists(traces,'varValue')>
-													= #traces.varValue#
-												</cfif>
-											<cfelse>
-												&nbsp;
-												<br />
-											</cfif>
-										</td>
-										<td align="right" class="tblContent" nowrap>#formatUnit(arguments.custom.unit, total)#</td>
-										<td align="right" class="tblContent" nowrap>#formatUnit(arguments.custom.unit, traces.time)#</td>
+										<th>Var</th>
+										<th>Total Time</th>
+										<th>Trace Slot Time</th>
 									</tr>
-								</cfloop>
+									<cfset total=0 />
+									<cfloop query="traces">
+										<cfset total=total+traces.time />
+										<tr class="nowrap">
+											<td>#traces.type#</td>
+											<cfif hasCategory>
+												<td>#traces.category#&nbsp;</td>
+											</cfif>
+											<td>#traces.text#&nbsp;</td>
+											<td>#traces.template#</td>
+											<td class="right">#traces.line#</td>
+											<cfif hasAction>
+												<td>#traces.action#</td>
+											</cfif>
+											<td>
+												<cfif len(traces.varName)>
+													#traces.varName#
+													<cfif structKeyExists(traces,'varValue')>
+														= #traces.varValue#
+													</cfif>
+												<cfelse>
+													&nbsp;
+													<br />
+												</cfif>
+											</td>
+											<td class="right">#formatUnit(arguments.custom.unit, total)#</td>
+											<td class="right">#formatUnit(arguments.custom.unit, traces.time)#</td>
+										</tr>
+									</cfloop>
 								
-							</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+								</table>
+							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
 
 				</cfif>
-
 
 
 				<!--- Queries --->
@@ -603,12 +656,12 @@
 						<cfset records+=queries.count>
 					</cfloop>
 					
-
 					<div class="section-title">SQL Queries</div>
 					<table>
 						
-						<cfset renderSectionHeadTR( sectionId, queries.recordcount, "Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed" )>
+						<cfset renderSectionHeadTR( sectionId, "#queries.recordcount# Quer#queries.recordcount GT 1 ? 'ies' : 'y'# Executed" )>
 
+						<tr><td><table>
 						<tr>
 							<td nowrap class="pad right">#formatUnit(total, queries.time)#</td>
 							<td class="pad">Total Execution Time</td>
@@ -617,57 +670,95 @@
 							<td nowrap class="pad right">#records#</td>
 							<td class="pad">Total Records</td>
 						</tr>
+						</table></td></tr>
+
 						<tr>
-							<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+							<td id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#">
+								<table><tr><td>
 
-								<cfloop query="queries">
+									<cfloop query="queries">
 
-									<div style="margin-top: 4px; padding: 0.5em; border: 1px dashed ##CCC;">
+										<table class="details">
+											<tr>
+												<th></th>
+												<th>Name</th>
+												<th>Records</th>
+												<th>Time</th>
+												<th>Datasource</th>
+												<th>Source</th>
+											</tr>
+											<tr>
+												<th></th>
+												<td class="bold">#queries.name#</td>
+												<td class="right">#queries.count#</td>
+												<td class="right">#formatUnit(arguments.custom.unit, queries.time)#</td>
+												<td>#queries.datasource#</td>
+												<td>#queries.src#</td>
+											</tr>
+											<tr>
+												<th class="label">SQL Code:</th>
+												<td id="-railo-debug-query-sql-#queries.currentRow#" title="Click to Select Text" colspan="5" style="cursor: pointer;" onclick="__RAILO.debug.selectText( this.id );"><pre>#rtrim( queries.sql )#</pre></td>
+											</tr>
 
-										<code>
-											<b>#queries.name#</b>
-											(Datasource=#queries.datasource#, Time=#formatUnit(arguments.custom.unit, queries.time)#, Records=#queries.count#) in #queries.src#
-										</code>
-										<br/>
-										<cfif ListFindNoCase(queries.columnlist,'usage') and IsStruct(queries.usage)>
-											<cfset local.usage=queries.usage />
-											<cfset local.lstNeverRead="" />
-											<cfset local.lstRead = "" />
-											<cfloop collection="#usage#" index="local.item" item="local.value">
-												<cfif not value>
-													<cfset lstNeverRead=ListAppend(lstNeverRead,item, ',') />
-												<cfelse>
-													<cfset lstRead=ListAppend(lstRead,item, ',') />
+											<cfif listFindNoCase(queries.columnlist, 'usage') && isStruct(queries.usage)>
+
+												<cfset local.usage=queries.usage>
+												<cfset local.usageNotRead = []>
+												<cfset local.usageRead  = []>
+
+												<cfloop collection="#usage#" index="local.item" item="local.value">
+													<cfif !value>
+														<cfset arrayAppend( usageNotRead, item )>
+													<cfelse>
+														<cfset arrayAppend( usageRead, item )>
+													</cfif>
+												</cfloop>
+
+												<tr>
+													<th></th>
+													<th colspan="5" style="text-align: left;">Query usage within the request:</th>
+												</tr>
+
+												<cfset local.arr = usageRead>
+												<cfset local.arrLenU = arrayLen( arr )>
+												<cfif arrLenU>
+													<tr>
+														<th class="label">Used:</th>
+														<td>
+															<cfloop from="1" to="#arrLenU#" index="local.ii">
+																#arr[ ii ]# <cfif ii LT arrLenU>, </cfif>
+															</cfloop>
+														</td>
+													</tr>
 												</cfif>
-											</cfloop>
-											<b>Query usage within the request:</b>
-											<br>
-											<cfif len(lstRead)>
-												<font color="green">
-													Used Columns: <b>#replace( lstRead, ',', ', ', 'all' )#</b>
-												</font>
-												<br>
+												<cfset local.arr = usageNotRead>
+												<cfset local.arrLenN = arrayLen( arr )>
+												<cfif arrLenN>
+													<tr class="red">
+														<th class="label">Unused:</th>
+														<td>
+															<cfloop from="1" to="#arrLenN#" index="local.ii">
+																#arr[ ii ]# <cfif ii LT arrLenN>, </cfif>
+															</cfloop>
+														</td>
+													</tr>
+													<tr class="red">
+														<th></th>
+														<td><b>#arrLenU ? numberFormat( arrLenU / ( arrLenU + arrLenN ) * 100, "999.9" ) : 100# %</b></td>
+													</tr>
+												</cfif>
 											</cfif>
-											<cfif len(lstNeverRead)>
-												<font color="red">
-													Unused Columns: <b>#replace( lstNeverRead, ',', ', ', 'all' )#</b>
-													<br>
-													Usage: <b>#numberFormat(listLen(lstRead)/(listLen(lstRead)+listLen(lstNeverRead))*100, "999.9")# %</b>
-												</font>
-											</cfif>
-										</cfif>
-										<br><b>SQL:</b>
-										<pre>#rtrim( queries.sql )#</pre>
 
-									</div>
-								</cfloop>
+										</table>
+
+									</cfloop>
 								
-							</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+								</tr></td></table>
+							</td>	<!--- id="-railo-debug-#sectionId#" !--->
 						</tr>
 					</table>
 
 				</cfif>
-
 				
 				
 				<!--- Scopes --->
@@ -676,7 +767,7 @@
 					<cfset local.scopes = variables.scopeNames>			
 				
 					<div class="section-title">Scope Information</div>
-					<table class="tbl" cellpadding="0" cellspacing="0">
+					<table cellpadding="0" cellspacing="0">
 						
 						<cfloop array="#local.scopes#" index="local.k">
 							
