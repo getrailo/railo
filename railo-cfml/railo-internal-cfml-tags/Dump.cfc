@@ -1,6 +1,5 @@
+<cfcomponent>
 <cfscript>
-component {
-
 	ColorCaster=createObject('java','railo.commons.color.ColorCaster');
 	NEWLINE="
 ";
@@ -8,7 +7,7 @@ component {
 	default={};
 	default.browser="html";
 	default.console="text";
-	supportedFormats=["simple","text","html","classic"];
+	supportedFormats=["simple","text","html","classic","updated"];
 
 	// Meta data
 	this.metadata.hint="Outputs the elements, variables and values of most kinds of CFML objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.";
@@ -114,104 +113,147 @@ component {
 	/* ==================================================================================================
 	   html                                                                                             =
 	================================================================================================== */
-	string function html( required struct meta,
-						  required string context,
-						  required string expand,
-						  required string output,
-						  required string hasReference ,
-						  required string level ,
-						  required string dumpID,
-						  struct cssColors={}) {
-		var NEWLINE=variables.NEWLINE;
-		var id = createId();
-		var rtn = "";
-		var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
-		var title = !arguments.level ? ' title="#arguments.context#"' : '';
-		var width = structKeyExists(arguments.meta,'width') ? ' width="' & arguments.meta.width & '"' : '';
-		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
-		var indent = repeatString(variables.TAB, arguments.level);
+	</cfscript>
 
-			rtn&=('<table#width##height##title#>' );
+	<cffunction name="html" output="false" returntype="string">
+		<cfargument name="meta" required="true" type="struct">
+		<cfargument name="context" required="true" type="string">
+		<cfargument name="expand" required="true" type="string">
+		<cfargument name="output" required="true" type="string">
+		<cfargument name="hasReference" required="true" type="string">
+		<cfargument name="level" required="true" type="numeric" default="0">
+		<cfargument name="dumpID" required="true" type="string">
+		<cfargument name="cssColors" required="false" type="struct" default="#structNew()#">
+		
+		<cfset var NEWLINE=variables.NEWLINE>
+		<cfset var id = createId()>
+		<cfset var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0>
+		<cfset var title = !arguments.level ? ' title="#arguments.context#"' : ''>
+		<cfset var width = structKeyExists(arguments.meta,'width') ? ' width="' & arguments.meta.width & '"' : ''>
+		<cfset var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : ''>
+		<cfset var indent = repeatString(variables.TAB, arguments.level)>
 
-			// title
-			if(structKeyExists(arguments.meta, 'title')){
-				var metaID = arguments.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
-				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
+		<cfset var metaID = "">
+		<cfset var comment = "">
+		<cfset var c = 0>
+		<cfset var nodeID = "">
+		<cfset var hidden = "">
+		<cfset var col = 0>
+		<cfset var node = "">
+		<cfset var value = "">
+		<cfset var head = "">
+		
+		<cfset var rtn = "<table#width##height##title#>">
+		
+		<!--- title --->
+		<cfif structKeyExists(arguments.meta, 'title')>
+				<cfset metaID = arguments.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : ''>
+				<cfset comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : ''>
 
-				rtn&=('<tr>');
-				rtn&=('<td class="#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
-				rtn&=('<span>#arguments.meta.title##metaID#</span>');
-				rtn&=(comment & '</td>');
-				rtn&=('</tr>');
-			}
-			else {
-				id = "";
-			}
+				<cfset rtn &= "<tr>">
+				<cfset rtn &= "<td class=""#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)# cfdumpclickable"" onclick=""dumpOC('#id#');"" colspan=""#columnCount#"">">
+				<cfset rtn &= "<span>#arguments.meta.title##metaID#</span>">
+				<cfset rtn &= comment & "</td>">
+				<cfset rtn &= "</tr>">
+		<cfelse>
+			<cfset id = "">
+		</cfif>
 
-			// data
+		<cfset nodeID = len(id) ? ' name="#id#"' : ''>
+		<cfset rtn &= "<tr><td style=""padding:0;"" #nodeID#><table>">
+				
+		<!--- data --->
+		<cfif columnCount>
+			<cfloop query="arguments.meta.data">
+				<cfset c = 1>
+				
+				<cfset hidden = !arguments.expand && len(id) ? ' style="display:none"' : ''>
 
-			if(columnCount) {
-				loop query="arguments.meta.data" {
-					var c = 1;
-					var nodeID = len(id) ? ' name="#id#"' : '';
-					var hidden = !arguments.expand && len(id) ? ' style="display:none"' : '';
+				<cfset rtn &= "<tr#hidden#>">
+				
+				<cfset id = "">
+				<cfloop from="1" to="#columnCount-1#" index="col">
+					<cfset node = arguments.meta.data["data" & col]>
+					
+					<cfif col EQ 1>
+						<cfset id = createId()>
+						<cfset nodeID = "">
+					<cfelse>
+						<cfset nodeID = len(id) ? ' name="#id#"' : ''>
+					</cfif>
+					
+					<cfif isStruct(node)>
+						<!--- Recursively call this function on this node--->
+						<cfset value = html(
+							node
+							, ""
+							, arguments.expand
+							, arguments.output
+							, arguments.hasReference
+							, arguments.level+1
+							, arguments.dumpID
+							, arguments.cssColors)>
+						
+						<cfif col EQ 1>
+							<cfset rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))# cfdumpclickable"" onclick=""dumpOC('#id#');"">">
+						<cfelse>
+							<cfset rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#"">">
+						</cfif>
+						
+						<cfset rtn &= value>
+						<cfset rtn &= "</td>">
+					<cfelse>
+						<cfif col EQ 1>
+							<cfset rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))# cfdumpclickable"" onclick=""dumpOC('#id#');"">" & HTMLEditFormat(node) & "</td>">
+						<cfelse>
+							<cfset rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#"">" & HTMLEditFormat(node) & "</td>">
+						</cfif>
+					</cfif>
+					<cfset c *= 2>
+				</cfloop>
+				
+				<cfset rtn &= "</tr>">
+			</cfloop>
+		</cfif>
 
-					rtn&=('<tr#nodeID##hidden#>');
+		<cfset rtn &= "</table></td></tr></table>">
 
-					for(var col=1; col LTE columnCount-1; col++) {
-						var node = arguments.meta.data["data" & col];
+		<!--- Header --->
+		<cfif arguments.level EQ 0>
+			<!--- javascript --->
+			<cfset head = "<script language=""JavaScript"" type=""text/javascript"">" & NEWLINE>
+			
+			<cfset head &= "function dumpOC(name){">
+			<cfset head &= "var tds=document.all?document.getElementsByTagName('td'):document.getElementsByName(name);">
+			<cfset head &= "var s=null;">
+			<cfset head &= "name=name;">
+			<cfset head &= "for(var i=0;i<tds.length;i++) {">
+			<cfset head &= "if(document.all && tds[i].name!=name)continue;">
+			<cfset head &= "s=tds[i].style;">
+			<cfset head &= "if(s.display=='none') s.display='';">
+			<cfset head &= "else s.display='none';">
+			<cfset head &= "}">
+			<cfset head &= "}" & NEWLINE>
+			<cfset head &= "</script>" & NEWLINE>
 
-						if(isStruct(node)) {
-							var value = this.html(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1,arguments.dumpID,arguments.cssColors);
+			<!--- styles --->
+			<cfset head &= "<style type=""text/css"">" & NEWLINE>
+			<cfset head &= "div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#; border-spacing: 1px}" & NEWLINE>
+			<cfset head &= "div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}" & NEWLINE>
+			<cfset head &= "div###arguments.dumpID# td span {font-weight:bold;}" & NEWLINE>
+			<cfset head &= "td.cfdumpclickable {cursor:pointer;}">
+			<cfloop collection="#arguments.cssColors#" item="local.key">
+				<cfset head &= "td.#key# {background-color:#arguments.cssColors[key]#;}" & NEWLINE>
+			</cfloop>
+			<cfset head &= "</style>" & NEWLINE>
+			
+			<cfset rtn = head & rtn>
+		</cfif>
 
-							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#">');
-							rtn&=(value);
-							rtn&=('</td>');
-						}
-						else {
-							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#">' & HTMLEditFormat(node) & '</td>' );
-						}
-						c *= 2;
-					}
-					rtn&=('</tr>');
-				}
-			}
-			rtn&=('</table>');
-
-			// Header
-			if(arguments.level EQ 0){
-				// javascript
-				var head=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
-				head&=("function dumpOC(name){");
-				head&=("var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);");
-				head&=("var s=null;");
-				head&=("name=name;");
-				head&=("for(var i=0;i<tds.length;i++) {");
-				head&=("if(document.all && tds[i].name!=name)continue;");
-				head&=("s=tds[i].style;");
-				head&=("if(s.display=='none') s.display='';");
-				head&=("else s.display='none';");
-				head&=("}");
-				head&=("}"& NEWLINE);
-				head&=("</script>" & NEWLINE);
-
-				// styles
-				head&=('<style type="text/css">' & NEWLINE);
-				head&=('div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#; border-spacing: 1px}' & NEWLINE);
-				head&=('div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
-				head&=('div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
-				loop collection="#arguments.cssColors#" item="local.key" {
-					head&="td.#key# {background-color:#arguments.cssColors[key]#;}"& NEWLINE;
-				}
-				head&=('</style>' & NEWLINE);
-
-				rtn=head&rtn;
-			}
-
-		return rtn;
-	}
-
-
+		<cfreturn rtn>
+	</cffunction>
+	
+	<cfscript>
 	/* ==================================================================================================
 	   classic                                                                                          =
 	================================================================================================== */
@@ -316,7 +358,8 @@ component {
 
 		return rtn;
 	}
-
+	
+				
 	/* ==================================================================================================
 	   simple                                                                                           =
 	================================================================================================== */
@@ -482,6 +525,5 @@ component {
 		return key;
 	}
 
-
-}
 </cfscript>
+</cfcomponent>
