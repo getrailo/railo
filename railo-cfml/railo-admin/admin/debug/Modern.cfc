@@ -885,7 +885,7 @@
 
 			for ( var i in values ) {
 
-				if ( size > i[ 1 ] ) 
+				if ( size >= i[ 1 ] ) 
 					return numberFormat( size / i[ 1 ], '9.99' ) & i[ 2 ];
 			}
 
