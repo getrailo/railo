@@ -76,9 +76,9 @@
 
 		variables.cookieName = "railo_debug_modern";
 
-		variables.scopeNames = [ "Application", "CGI", "Cookie", "Form", "Request", "Server", "Session", "URL" ];
+		variables.scopeNames = [ "Application", "CGI", "Client", "Cookie", "Form", "Request", "Server", "Session", "URL" ];
 
-		variables.allSections = {"Application":1,"Form":8,"ExecTime":512,"Trace":32768,"Query":8192,"ExecOrder":1024,"ImpAccess":256,"URL":128,"Info":4096,"Cookie":4,"Exceptions":2048,"CGI":2,"Session":64,"Timer":16384,"Request":16,"Server":32};
+		variables.allSections = {"Application":1,"Client":4,"Form":16,"ExecTime":1024,"Trace":65536,"Query":16384,"ExecOrder":2048,"ImpAccess":512,"URL":256,"Info":8192,"Cookie":8,"Exceptions":4096,"CGI":2,"Session":128,"Timer":32768,"Request":32,"Server":64};
 
 		/*/	keep this snippet to easily generate values if we add more sections in the future
 		variables.allSections = buildSectionStruct();
@@ -156,6 +156,7 @@
 			</td></td></td></th></th></th></tr></tr></tr></table></table></table></a></abbrev></acronym></address></applet></au></b></banner></big></blink></blockquote></bq></caption></center></cite></code></comment></del></dfn></dir></div></div></dl></em></fig></fn></font></form></frame></frameset></h1></h2></h3></h4></h5></h6></head></i></ins></kbd></listing></map></marquee></menu></multicol></nobr></noframes></noscript></note></ol></p></param></person></plaintext></pre></q></s></samp></script></select></small></strike></strong></sub></sup></table></td></textarea></th></title></tr></tt></u></ul></var></wbr></xmp>
 		</cfif>
 		<cfoutput>
+
 			<style type="text/css">
 		
 				##-railo-err 			{ border: 1px dashed ##CCC; padding: 0.5em; }
@@ -762,44 +763,74 @@
 				
 				
 				<!--- Scopes --->
-				<cfif isEnabled(arguments.custom,"scopes")>					
+				<cfif isEnabled( arguments.custom, "scopes" )>
 
-					<cfset local.scopes = variables.scopeNames>			
+					<cfset local.scopes = variables.scopeNames>
+
+					<cfset local.appSettings = getApplicationSettings()>
+					<cfset local.isScopeEnabled = true>
 				
 					<div class="section-title">Scope Information</div>
 					<table cellpadding="0" cellspacing="0">
 						
 						<cfloop array="#local.scopes#" index="local.k">
+
+							<tr><td style="font-size: 4px;">&nbsp;</td></tr>
 							
 							<cfset sectionId = k>
-							<cfset isOpen = isSectionOpen( sectionId )>
-
-							<cfset local.v = evaluate( k )>
-							<cfset local.sc = structCount(v)>
-
-							<cftry>
-
-								<cfset local.estSize = byteFormat( sc==0 ? 0 : sizeOf( v ) )>
-
-								<cfcatch><cfset local.estSize = "not available"></cfcatch>
-							</cftry>						
-
-							<tr><td style="height:0.5em;"></td></tr>
-							<cfset renderSectionHeadTR( sectionId, "<b>#k# Scope</b> #sc ? '(Estimated Size: #estSize#)' : '(Empty)' #" )>
-
-							<tr><td colspan="3">
-
-								<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
-
-									<cfif isOpen>
-										<cftry><cfdump var="#v#" keys="1000" label="#sc GT 1000?"First 1000 Records":""#"><cfcatch>not available</cfcatch></cftry>
-									<cfelse>
-										the Scope will be displayed with the next request
-									</cfif>
-
-								</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
 							
-							</td></tr>
+							<cfswitch expression="#k#">
+								
+								<cfcase value="Client">
+									
+									<cfset isScopeEnabled = local.appSettings.clientManagement>
+								</cfcase>
+								<cfcase value="Session">
+									
+									<cfset isScopeEnabled = local.appSettings.sessionManagement>
+								</cfcase>
+								<cfdefaultcase>
+									
+									<cfset isScopeEnabled = true>
+								</cfdefaultcase>
+							</cfswitch>
+
+							<cfif isScopeEnabled>
+								
+								<cfset isOpen = isSectionOpen( sectionId )>
+								<cfset local.v = evaluate( k )>
+								<cfset local.sc = structCount( v )>
+
+								<cftry>
+
+									<cfset local.estSize = byteFormat( sc == 0 ? 0 : sizeOf( v ) )>
+
+									<cfcatch>
+
+										<cfset local.estSize = "not available">
+									</cfcatch>
+								</cftry>
+								
+								<cfset renderSectionHeadTR( sectionId, "<b>#k# Scope</b> #sc ? '(Estimated Size: #estSize#)' : '(Empty)' #" )>
+
+								<tr><td colspan="3">
+
+									<table id="-railo-debug-#sectionId#" class="#isOpen ? 'expanded' : 'collapsed'#" style="margin-left: 14px;"><tr><td>
+
+										<cfif isOpen>
+											<cftry><cfdump var="#v#" keys="1000" label="#sc GT 1000?"First 1000 Records":""#"><cfcatch>not available</cfcatch></cftry>
+										<cfelse>
+											the Scope will be displayed with the next request
+										</cfif>
+
+									</td></tr></table>	<!--- id="-railo-debug-#sectionId#" !--->
+								</td></tr>
+							<cfelse>
+
+								<tr>
+									<td style="padding-left: 16px; color: ##667;"><b>#k# Scope</b> (Not Enabled for this Application)</td>
+								</tr>
+							</cfif>							
 						</cfloop>
 								
 					</table>
@@ -845,23 +876,22 @@
 		<cfreturn (arguments.time/1000000)&" ms" />
 	</cffunction>
 
-	
-	<cffunction name="byteFormat" output="no">
-        <cfargument name="raw" type="numeric">
-        <cfif raw EQ 0><cfreturn "0b"></cfif>
-        <cfset var b=raw>
-        <cfset var rtn="">
-        <cfset var kb=b/1024>
-        <cfset var mb=kb/1024>
-        <cfset var gb=mb/1024>
-        <cfset var tb=gb/1024>
-        
-        <cfif tb GTE 1><cfreturn numberFormat(tb,'0.0')&"tb"></cfif>
-        <cfif gb GTE 1><cfreturn numberFormat(gb,'0.0')&"gb"></cfif>
-        <cfif mb GTE 1><cfreturn numberFormat(mb,'0.0')&"mb"></cfif>
-        <cfif  b GT 100><cfreturn numberFormat(kb,'0.0')&"kb"></cfif>
-		<cfreturn b&"b">
-    </cffunction>
+
+	<cfscript>
+		
+		function byteFormat( size ) {
+
+			var values = [ [ 1099511627776, 'TB' ], [ 1073741824, 'GB' ], [ 1048576, 'MB' ], [ 1024, 'KB' ] ];
+
+			for ( var i in values ) {
+
+				if ( size > i[ 1 ] ) 
+					return numberFormat( size / i[ 1 ], '9.99' ) & i[ 2 ];
+			}
+
+			return size & 'B';
+		}
+	</cfscript>
 
 
 </cfcomponent>
