@@ -162,14 +162,19 @@
 				##-railo-err 			{ border: 1px dashed ##CCC; padding: 0.5em; }
 
 				##-railo-err, ##-railo-err td	{ font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif; font-size: 9pt; }
+				##-railo-err.large, ##-railo-err.large td	{ font-size: 10pt; }
+				##-railo-err.small, ##-railo-err.small td	{ font-size: 8.5pt; }
+
 				##-railo-err table		{ empty-cells: show; }
-				##-railo-err table.details	{ margin-top: 0.5em; border: 1px solid ##999; margin-left: 14px; }
-				##-railo-err table.details th { border:1px solid ##e0e0e0; font-size: 10pt; font-weight: normal; background-color: ##f2f2f2; color: ##3c3e40; }
+				
+				##-railo-err table.details	{ margin-top: 0.5em; border: 1px solid ##999; margin-left: 9pt; }
+				
+				##-railo-err table.details th { border:1px solid ##e0e0e0; font-size: 0.9em; font-weight: normal; background-color: ##f2f2f2; color: ##3c3e40; }
 				##-railo-err table.details td, ##-railo-err table.details th { padding: 2px 5px; }
 				##-railo-err table.details td	{ border-bottom: 1px solid ##e0e0e0; }
 				##-railo-err table.details tr:last-child td { border-bottom: 0; }
 				
-				##-railo-err .section-title	{ margin-top: 1em; font-size: 12pt; font-weight: normal; color:##007bb7; }
+				##-railo-err .section-title	{ margin-top: 1.25em; font-size: 1.25em; font-weight: normal; color:##007bb7; }
 				##-railo-err .section-title:first-child	{ margin-top: auto; }
 				##-railo-err .label		{ white-space: nowrap; vertical-align: top; text-align: right; }
 
@@ -312,7 +317,7 @@
 			</script>
 			
 
-			<div id="-railo-err">
+			<div id="-railo-err" class="#arguments.custom.size#">
 			
 				<!--- General --->
 				<cfif isEnabled(arguments.custom,'general')>
