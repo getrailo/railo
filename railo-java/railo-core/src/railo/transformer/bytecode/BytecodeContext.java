@@ -36,7 +36,8 @@ public class BytecodeContext implements Context {
 	private String id=id();
 	private Page page;
 
-	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,Page page,StringExternalizerWriter externalizer,List keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,Method method,boolean writeLog, boolean supressWSbeforeArg) {
+	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,Page page,StringExternalizerWriter externalizer,List<LitString> keys,ClassWriter classWriter,String className, GeneratorAdapter adapter,
+			Method method,boolean writeLog, boolean supressWSbeforeArg) {
 		this.classWriter = classWriter;
 		this.className = className;
 		this.writeLog = writeLog;
@@ -50,7 +51,7 @@ public class BytecodeContext implements Context {
 		this.supressWSbeforeArg=supressWSbeforeArg;
 	}
 	
-	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List keys,BytecodeContext bc, GeneratorAdapter adapter,Method method) {
+	public BytecodeContext(BytecodeContext statConstr,BytecodeContext constr,List<LitString> keys,BytecodeContext bc, GeneratorAdapter adapter,Method method) {
 		this.classWriter = bc.getClassWriter();
 		this.className = bc.getClassName();
 		this.writeLog = bc.writeLog();
@@ -134,7 +135,7 @@ public class BytecodeContext implements Context {
 		return keys.size()-1;
 	}
 
-	public List getKeys() {
+	public List<LitString> getKeys() {
 		return keys;
 	}
 
