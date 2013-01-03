@@ -1,4 +1,6 @@
 <cfif thistag.executionmode EQ "end" or not thistag.hasendtag>
+
+	<cfparam name="session.railo_admin_lang" default="en">
 	<cfset variables.stText = application.stText[session.railo_admin_lang] />
 	<cfparam name="attributes.navigation" default="">
 	<cfparam name="attributes.title" default="">
@@ -16,10 +18,11 @@
 	<cfset request.mode="full">
 	
 <cfcontent reset="yes" /><!DOCTYPE HTML>
+<!--[if lt IE 9]> <style> body.full #header #logo.sprite { background-image: url(resources/img/server-railo-small.png.cfm); background-position: 0 0; margin-top: 16px; } </style> <![endif]-->	<!--- remove once IE9 is the min version to be supported !--->
 <cfoutput>
 <html>
 <head>
-	<title>Railo #ucFirst(request.adminType)# Administrator</title>
+	<title>DEV Railo #ucFirst(request.adminType)# Administrator</title>
 </cfoutput>
 	<link rel="stylesheet" href="resources/css/style.css.cfm" type="text/css" />
 	<script src="resources/js/jquery-1.7.2.min.js.cfm" type="text/javascript"></script>
@@ -27,27 +30,37 @@
 	<script src="resources/js/admin.js.cfm" type="text/javascript"></script>
 </head>
 <cfoutput>
-<body id="body" class="#request.adminType#<cfif application.adminfunctions.getdata('fullscreen') eq 1> full</cfif>" <cfif structKeyExists(attributes,"onload")>onload="#attributes.onload#"</cfif>>
+
+<cfparam name="attributes.onload" default="">
+
+<body id="body" class="admin-#request.adminType# #request.adminType#<cfif application.adminfunctions.getdata('fullscreen') eq 1> full</cfif>" onload="#attributes.onload#">
 	<div id="layout">
 		<table id="layouttbl">
 			<tbody>
-				<tr>
-					<td colspan="2" id="logotd" class="lotd">
-						<div id="logo">
-							<a href="#request.self#"><h2>Railo</h2></a>
-						</div>
+
+				<tr id="tr-header">	<!--- TODO: not sure where height of 275px is coming from? forcing here 113px/63px !--->
+					<td></td>
+					<td colspan="2">
+						<div id="header">
+
+							<a id="logo" class="sprite"></a>
+							<div id="admin-tabs" class="clearfix">
+								<a href="server.cfm" class="sprite server"></a>
+								<a href="web.cfm" class="sprite web"></a>
+							</div>
+						</div>	<!--- #header !--->
 					</td>
-					<td id="tabstd" class="lotd">
-						<a <cfif ad EQ "web">href="#otherURL#"<cfelse>href="server.cfm"</cfif>><img src="resources/img/left-tab-#ad#.png.cfm" alt="Server Administrator tab" title="Go to the Server Administrator" /></a><!---
-						---><a <cfif ad EQ "server">href="#otherURL#"<cfelse>href="web.cfm"</cfif>><img src="resources/img/right-tab-#ad#.png.cfm" alt="Web Administrator tab" title="Go to the Web Administrator" /></a>
-					</td>
-					<td class="lotd"></td>
+					<td></td>
 				</tr>
+
 				<tr>
-					<td id="leftshadow" rowspan="2" class="lotd"></td>
+					<td rowspan="2" class="lotd">
+						<div style="height: 77px;"></div>
+						<div class="sprite colshadow" style="float: right; background-position: -16px 0px;"></div>
+					</td>
 					<td id="navtd" class="lotd">
 						<div id="nav">
-							<a href="##" id="resizewin" title="resize window"><span>Resize window</span></a>
+							<a href="##" id="resizewin" class="sprite" title="resize window"></a>
 							<cfif hasNavigation>
 								<form method="get" action="#cgi.SCRIPT_NAME#">
 									<input type="hidden" name="action" value="admin.search" />
@@ -91,7 +104,10 @@
 							</div>
 						</div>
 					</td>
-					<td id="rightshadow" rowspan="2" class="lotd"></td>
+					<td rowspan="2" class="lotd">
+						<div style="height: 77px;"></div>
+						<div class="sprite colshadow" style="background-position: 0px 0px;"></div>
+					</td>
 				</tr>
 				<tr>
 					<td class="lotd">&nbsp;</td>
@@ -107,19 +123,11 @@
 			</tbody>
 		</table>
 	</div>
-<!---	<cfif false and StructKeyExists(application,'notTranslated')>
-		<cfset keys=structKeyArray(application.notTranslated)>
-		<cfset ArraySort(keys,'textnocase')>
-	<!-- The following text is not translated the the current language
-<cfloop array="#keys#" index="key"><data key="#key#">#trim(application.notTranslated[key])#</data>
-</cfloop>
-	-->
-	</cfif>
---->
 </body>
 </html>
 </cfoutput>
 	<cfset thistag.generatedcontent="">
 </cfif>
+
 <cfparam name="url.showdebugoutput" default="no">
 <cfsetting showdebugoutput="#url.showdebugoutput#">

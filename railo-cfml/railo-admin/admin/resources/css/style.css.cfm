@@ -133,17 +133,7 @@ body.full #logo {
 body.full td#logotd {
 	height: 34px;
 }
-#logo a {
-	display:block;
-	background-image:url(../img/web-railo.png.cfm);
-	width: 102px;
-	height:69px;
-}
-body.full #logo a {
-	background-image:url(../img/web-railo-small.png.cfm);
-	width:50px;
-	height:34px;
-}
+
 #logo h2 {
 	display:none;
 }
@@ -181,19 +171,6 @@ td#navtd {
 }
 #nav {
 	padding:10px 10px 40px 10px;
-}
-#resizewin {
-	display:block;
-	width:22px;
-	height:22px;
-	overflow:hidden;
-	background-image:url(../img/maxl.png.cfm);
-}
-#resizewin span {
-	visibility:hidden;
-}
-body.full #resizewin {
-	background-image:url(../img/minl.png.cfm);
 }
 #nav form {
 	white-space: nowrap;
@@ -545,18 +522,9 @@ a.edit {
 .btn-mini span {
 	display:none;
 }
-
-label {
-	
-	cursor:pointer;
-	margin-left: 1em;
-}
-label:first-child {
-
-	margin-left: auto;
-}
 label:hover {
 	/* background-color:#f6f6f6; */
+	cursor:pointer;
 	border-bottom:1px dotted #666;
 }
 .checkbox, .radio {
@@ -888,3 +856,79 @@ div.tooltip {
 ::-webkit-input-placeholder {
 	color: #ccc !important;
 }
+
+
+
+			body 	{ margin: 0; padding: 0; }
+
+			#page	{ margin: 0 auto; width: 960px; height: 100%; background-color: #999; position: relative; }
+
+
+			/** reusable util classes */
+			.clearfix:before, .clearfix:after { content: " "; display: table; }
+			.clearfix:after { clear: both; }
+			.clearfix 	{ *zoom: 1; /** IE 6/7 fix */ }
+
+			.pos-l		{ position: absolute; left: 0; }
+			.pos-r		{ position: absolute; right: 0; }			
+			.pos-b		{ position: absolute; bottom: 0; }
+
+
+			/** admin common properties */
+			#tr-header				{ height: 113px; }
+			body.full #tr-header	{ height: 63px; }
+
+			#header			{ position: relative; height: 100px; -padding: 0 22px; -margin: 0 22px 0 22px; }
+			body.full #header { height: 50px; }
+
+			#logo			{ display: block; position: absolute; top: 0; left: 0; width: 100px; height: 68px; padding: 0; }
+			body.full #logo { width: 70px; height:48px; background-size: 150px; background-position: -18px -50px; }
+
+			#admin-tabs		{ width: 370px; position: absolute; bottom: -10px; right: -7px; }
+
+			#admin-tabs	a 	{ display: block; width: 184px; height: 30px; float: left; }
+
+			.sprite			{ background-image: url( '../img/admin-sprite.png.cfm' ); background-repeat: no-repeat; }
+			
+			.colshadow		{ width: 6px; height: 329px; }
+
+			#resizewin 		{ display:block; width:22px; height:22px; text-indent: -9999px; background-position: -160px 0; }
+
+			body.full #resizewin { background-position: -184px 0; }
+
+			
+
+			/** server-specific values */
+			.-admin-server #header				{ background-color: #F33; }
+
+			.admin-server #logo 				{ background-position: -22px -69px; }			
+			.admin-server #admin-tabs .server 	{ background-position: -22px -193px; }
+			.admin-server #admin-tabs .web 		{ background-position: -22px -299px; }
+
+
+			/** web-specific values */
+			.-admin-web #header					{ background-color: #33F; }
+
+			.admin-web #logo					{ background-position: -22px 0; }
+			.admin-web #admin-tabs .server 		{ background-position: -22px -227px; }
+			.admin-web #admin-tabs .web 		{ background-position: -22px -264px; }
+
+
+			#content	{ margin: 1em 2.5em; }
+
+			.icon		{ background-image: url( '../img/admin-sprite.png.cfm' ); margin: 3px; width: 9px; height: 9px; cursor: pointer; }
+
+			.plus		{ background-position: -55px -149px; }
+			.minus		{ background-position: -55px -140px; }
+
+
+
+			/** base64 icons begin */
+
+			.icon-b64-expand { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw==)
+    							no-repeat left center; padding: 4px 0 4px 16px; }
+
+			.icon-b64-contract { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7)
+    							no-repeat left center; padding: 4px 0 4px 16px; }
+
+    		/** base64 icons end */
