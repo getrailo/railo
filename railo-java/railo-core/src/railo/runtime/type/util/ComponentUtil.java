@@ -53,6 +53,7 @@ import railo.runtime.type.UDF;
 import railo.runtime.type.UDFPropertiesImpl;
 import railo.runtime.type.cfc.ComponentAccess;
 import railo.transformer.bytecode.BytecodeContext;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMProperty;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
@@ -127,7 +128,7 @@ public final class ComponentUtil {
     	//FieldVisitor fv = cw.visitField(Opcodes.ACC_PRIVATE, "c", "Lrailo/runtime/ComponentImpl;", null, null);
     	//fv.visitEnd();
     	
-    	java.util.List _keys=new ArrayList();
+    	java.util.List<LitString> _keys=new ArrayList<LitString>();
     
         // remote methods
         Collection.Key[] keys = component.keys(Component.ACCESS_REMOTE);
@@ -292,17 +293,12 @@ public final class ComponentUtil {
 
 	public static String getClassname(Component component) {
     	PageSource ps = component.getPageSource();
-    	//ps.getRealpath()
-    	//String path=ps.getMapping().getVirtual()+ps.getRealpath();
     	String path=ps.getDisplayPath();// Must remove webroot
     	Config config = ps.getMapping().getConfig();
     	String root = config.getRootDirectory().getAbsolutePath();
     	if(path.startsWith(root))
     		path=path.substring(root.length());
-    	
-    	
-    	
-    	
+
     	path=path.replace('\\', '/').toLowerCase();
     	path=List.trim(path, "/");
     	String[] arr = List.listToStringArray(path, '/');
@@ -379,8 +375,7 @@ public final class ComponentUtil {
     public static Class _getServerComponentPropertiesClass(Component component) throws PageException, IOException, ClassNotFoundException {
     	String className=getClassname(component);//StringUtil.replaceLast(classNameOriginal,"$cfc","");
     	String real=className.replace('.','/');
-    	
-    	
+
     	Mapping mapping = component.getPageSource().getMapping();
 		Config config = mapping.getConfig();
 		PhysicalClassLoader cl = (PhysicalClassLoader)config.getRPCClassLoader(false);
@@ -390,8 +385,7 @@ public final class ComponentUtil {
     	String classNameOriginal=component.getPageSource().getFullClassName();
     	String realOriginal=classNameOriginal.replace('.','/');
 		Resource classFileOriginal = mapping.getClassRootDirectory().getRealResource(realOriginal.concat(".class"));
-		
-		
+
 		// load existing class
 		if(classFile.lastModified()>=classFileOriginal.lastModified()) {
 			try {
@@ -400,9 +394,7 @@ public final class ComponentUtil {
 			}
 			catch(Throwable t){}
 		}
-		//print.out("new");
-    	
-		
+
 		// create file
 		byte[] barr = ASMUtil.createPojo(real, ASMUtil.toASMProperties(
 				ComponentUtil.getProperties(component, false, true, false, false)),Object.class,new Class[]{Pojo.class},component.getPageSource().getDisplayPath());
@@ -412,7 +404,7 @@ public final class ComponentUtil {
 		return cl.loadClass(className); //ClassUtil.loadInstance(cl.loadClass(className));
     }
 
-	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List keys,ClassWriter cw,String className, Object member,int max,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
+	private static int createMethod(BytecodeContext statConstr,BytecodeContext constr, java.util.List<LitString> keys,ClassWriter cw,String className, Object member,int max,boolean writeLog, boolean supressWSbeforeArg) throws PageException {
 		
 		boolean hasOptionalArgs=false;
 		
