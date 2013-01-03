@@ -133,6 +133,53 @@ Error Output --->
 		</cfif>	
 	</cfif>
 	
+	<cfif !server.java.javaAgentSupported>
+		<!--- look for the railo-inst location, this may not work --->
+		<cfscript>	
+		string function getRealPath2RailoInstJar(required string valueWhenNotExist, required string valueOnError) localmode="true" {
+			try {
+				root=createObject('java','java.io.File').init('.').getCanonicalPath();
+				directory action="list" directory="#root#" recurse="true" name="res" 
+					filter="#function (path){
+						var name=listLast(path,'/\');
+						return name == "railo-instrumentation.jar" or name == "railo-inst.jar";
+					}#";
+				if(res.recordcount > 0){
+					sub=listTrim(replace(res.directory,root,''),'/\');
+					return sub&server.separator.file&res.name;
+				}
+				else return valueWhenNotExist;
+				
+			}
+			catch(e){
+				return valueOnError;
+			}	
+		}
+		realpath=getRealPath2RailoInstJar("ne","");
+		</cfscript>
+		
+		
+		
+		
+		<div class="warning nofocus">
+			There is no Java Agent defined in this enviroment. 
+			The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
+			There are 2 ways to provide the Java Agent functionality:
+			<ol>
+				<li>at the JVM argument "-javaagent" that point to the railo-inst.jar <cfif realpath == "ne"> (you have to add the railo-inst.jar with help of the Railo Server Administrator update page)</cfif><br>
+					<cfif stringlen(realpath) and realpath != "ne">
+						in your case this is:
+						<i>-javaagent:#realpath#</i>
+					</cfif>
+					
+					
+				</li>
+				<li>at the tools.jar to the classpath, tools.jar is part of the JDK (Java Development Kit)</li>
+			</ol>
+			
+		</div>
+	</cfif>
+	
 	<table>
 		<tr>
 			<td valign="top" width="65%">

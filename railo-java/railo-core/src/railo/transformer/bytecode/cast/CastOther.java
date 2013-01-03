@@ -19,7 +19,7 @@ import railo.transformer.bytecode.util.Types;
 /**
  * cast a Expression to a Double
  */
-public final class CastOther extends ExpressionBase implements Cast {
+public final class CastOther extends ExpressionBase implements Cast { 
     // TODO support short type
     private Expression expr;
     private String type;

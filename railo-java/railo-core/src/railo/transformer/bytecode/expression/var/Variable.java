@@ -257,12 +257,15 @@ public static boolean registerKey(BytecodeContext bc,Expression name,boolean doU
 				return true;
 			}
 			int index=bc.registerKey(lit);
-			bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, 
-					bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
+			bc.getAdapter().visitVarInsn(Opcodes.ALOAD, 0);
+			bc.getAdapter().visitFieldInsn(Opcodes.GETFIELD,  bc.getClassName(), "keys", Types.COLLECTION_KEY_ARRAY.toString());
 			bc.getAdapter().push(index);
 			bc.getAdapter().visitInsn(Opcodes.AALOAD);
 			
-			//bc.getAdapter().visitFieldInsn(Opcodes.GETSTATIC, bc.getClassName(), key, "Lrailo/runtime/type/Collection$Key;");
+			
+			//ExpressionUtil.writeOutSilent(lit,bc, Expression.MODE_REF);
+			//bc.getAdapter().invokeStatic(Page.KEY_IMPL, Page.KEY_INTERN);
+			
 			return true;
 		}
 		name.writeOut(bc, MODE_REF);

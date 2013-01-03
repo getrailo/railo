@@ -78,7 +78,7 @@ public final class PCLCollection {
     	PCLBlock cl = index.get(name);
     	if(cl!=null) {
     		// if can upate class
-    		/*if(InstrumentationUtil.isSupported()){
+    		if(InstrumentationUtil.isSupported()){
     			try{
     				Class<?> old = cl.loadClass(name);
             		InstrumentationUtil.redefineClass(old, barr);
@@ -87,7 +87,7 @@ public final class PCLCollection {
     			catch(Throwable t){
     				t.printStackTrace();
     			}
-    		}*/
+    		}
     		
     		// flush classloader when update is not possible
     		mapping.clearPages(cl);

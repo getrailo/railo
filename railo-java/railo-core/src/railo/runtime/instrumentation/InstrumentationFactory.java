@@ -33,10 +33,11 @@ public class InstrumentationFactory {
 			
 			// if Agent was loaded at startup there is already a Instrumentation
 			inst=getInstrumentation(agent);
+			
 			// try to load Agent
 			if(inst==null) {
+				SystemOut.printDate("class railo.runtime.instrumentation.Agent.getInstrumentation() is not returning a Instrumentation");
 				try {
-					
 					String id=getPid();
 					String path=getResourcFromLib().getAbsolutePath();
 					

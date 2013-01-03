@@ -7,6 +7,8 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.i18n.LocaleFactory;
+import railo.runtime.instrumentation.InstrumentationUtil;
+import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ReadOnlyStruct;
@@ -38,6 +40,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key  SERVLET= KeyConstants._servlet;
     private static final Key  ARCH= KeyImpl.intern("arch");
     private static final Key  ARCH_MODEL= KeyImpl.intern("archModel");
+    private static final Key  JAVA_AGGENT_SUPPORTED= KeyImpl.intern("javaAgentSupported");
     private static final Key  VERSION= KeyConstants._version;
     private static final Key  ADDITIONAL_INFORMATION= KeyImpl.intern("additionalinformation");
     private static final Key BUILD_NUMBER = KeyImpl.intern("buildnumber");
@@ -118,6 +121,8 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			os.setEL(ADDITIONAL_INFORMATION,"");
 			os.setEL(BUILD_NUMBER,"");
 			
+			
+			
 			os.setReadOnly(true);
 		super.setEL (OS,os);
 		
@@ -146,6 +151,8 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			java.setEL(FREE_MEMORY,new Double(rt.freeMemory()));
 			java.setEL(TOTAL_MEMORY,new Double(rt.totalMemory()));
 			java.setEL(MAX_MEMORY,new Double(rt.maxMemory()));
+			java.setEL(JAVA_AGGENT_SUPPORTED,Caster.toBoolean(InstrumentationUtil.isSupported()));
+			
 			java.setReadOnly(true);
 			super.setEL (JAVA,java);
 		
