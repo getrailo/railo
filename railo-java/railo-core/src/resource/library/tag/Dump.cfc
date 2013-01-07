@@ -60,7 +60,13 @@ component {
 			if(not len(attrib.label))
 				attrib['label'] = attrib.eval;
 
-			attrib['var'] = evaluate(attrib.eval, arguments.caller);
+			try {
+
+				attrib['var'] = evaluate(attrib.eval, arguments.caller);
+			} catch ( ex ) {
+
+				attrib['var'] = "ERROR: " & ex.message;
+			}
 		}
 
 		// context
