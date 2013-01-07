@@ -170,7 +170,6 @@ public final class Update extends TagImpl {
 						boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
 						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
 					}
->>>>>>> 4.0
 				}
 			}
 			return EVAL_PAGE;
