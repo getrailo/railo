@@ -27,6 +27,10 @@ public final class ListToArray implements Function {
 	
 
 	public static Array call(PageContext pc , String list, String delimiter,boolean includeEmptyFields,boolean multiCharacterDelimiter) {
+		
+		if ( delimiter.length() < 2 )
+			multiCharacterDelimiter = false;
+		
 		if(includeEmptyFields){
 			if(list.length()==0) {
 				Array a=new ArrayImpl();
