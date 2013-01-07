@@ -833,6 +833,8 @@ public class KeyConstants {
 	public static final Key _select = KeyImpl._const("select");
 	public static final Key _update = KeyImpl._const("update");
 	public static final Key _alter = KeyImpl._const("alter");
+	public static final Key _database = KeyImpl._const("database");
+	public static final Key _exception = KeyImpl._const("exception");
 	
 	private static HashSet<String> _____keys;
 	

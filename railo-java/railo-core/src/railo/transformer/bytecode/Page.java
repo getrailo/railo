@@ -869,7 +869,7 @@ public final class Page extends BodyBase {
 				
 				
 			}
-		});
+		},null);
 		tcf.visitTryBegin(bc);
 			// oldData=c.beforeCall(pc);
 			adapter.loadArg(1);

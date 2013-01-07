@@ -61,6 +61,7 @@
 		),
 		struct(action:"debugging",label:stMenu.debugging.label,
 			children:array(
+				struct(action:"settings",label:stMenu.debugging.settings),
 				struct(action:"templates",label:stMenu.debugging.templates),
 				struct(action:"logs",label:stMenu.debugging.logs)
 			)

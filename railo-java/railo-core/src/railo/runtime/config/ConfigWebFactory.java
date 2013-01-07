@@ -1291,27 +1291,6 @@ public final class ConfigWebFactory {
         f=errorDir.getRealResource("error-public.cfm");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/error/error-public.cfm",f);
         
-        /*Resource debuggingDir = templatesDir.getRealResource("debugging");
-        if(!debuggingDir.exists())debuggingDir.mkdirs();
-        
-        f=debuggingDir.getRealResource("debugging.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging.cfm",f);
-        
-        f=debuggingDir.getRealResource("debugging-cascade.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-cascade.cfm",f);
-        
-        f=debuggingDir.getRealResource("debugging-comment.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-comment.cfm",f);
-
-        f=debuggingDir.getRealResource("debugging-neo.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-neo.cfm",f);
-
-        f=debuggingDir.getRealResource("debugging-2-console.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-2-console.cfm",f);
-        
-        //f=debuggingDir.getRealResource("debugging-stats.cfm");
-        //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/debugging/debugging-stats.cfm",f);
-		*/
         Resource displayDir = templatesDir.getRealResource("display");
         if(!displayDir.exists())displayDir.mkdirs();
 
@@ -1320,25 +1299,6 @@ public final class ConfigWebFactory {
         
         f=displayDir.getRealResource(Constants.APP_CFC);
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/Application.cfc",f);
-        /*
-        f=displayDir.getRealResource("debugging-console-output-pages.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output-pages.cfm",f);
-        
-        f=displayDir.getRealResource("debugging-console-output-queries.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output-queries.cfm",f);
-
-        f=displayDir.getRealResource("debugging-console-output.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output.cfm",f);
-
-        f=displayDir.getRealResource("debugging-console.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console.cfm",f);
-        
-        //f=displayDir.getRealResource("debugging-stats.cfm");
-        //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/display/debugging-stats.cfm",f);
-*/
-        
-        
-        
         
         Resource lib = ResourceUtil.toResource(CFMLEngineFactory.getClassLoaderRoot(TP.class.getClassLoader()));
         f=lib.getRealResource("jfreechart-patch.jar");
@@ -3742,6 +3702,45 @@ public final class ConfigWebFactory {
       	}
       	else if(hasCS)config.setDebugLogOutput(configServer.debugLogOutput()?ConfigImpl.SERVER_BOOLEAN_TRUE:ConfigImpl.SERVER_BOOLEAN_FALSE);
       	
+     // debug options
+      	int options=0;
+      	String str=debugging.getAttribute("database");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_DATABASE;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_DATABASE)) options+=ConfigImpl.DEBUG_DATABASE;
+      	
+      	str=debugging.getAttribute("exception");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_EXCEPTION;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) options+=ConfigImpl.DEBUG_EXCEPTION;
+      	
+      	str=debugging.getAttribute("tracing");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_TRACING;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_TRACING)) options+=ConfigImpl.DEBUG_TRACING;
+      	
+      	str=debugging.getAttribute("timer");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_TIMER;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_TIMER)) options+=ConfigImpl.DEBUG_TIMER;
+      	
+      	str=debugging.getAttribute("implicit-access");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_IMPLICIT_ACCESS;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS)) options+=ConfigImpl.DEBUG_IMPLICIT_ACCESS;
+      	
+      	str=debugging.getAttribute("query-usage");
+      	if(StringUtil.isEmpty(str))str=debugging.getAttribute("show-query-usage");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_QUERY_USAGE;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)) options+=ConfigImpl.DEBUG_QUERY_USAGE;
+ 	
      // max records logged
       	String strMax=debugging.getAttribute("max-records-logged");
       	if(hasAccess && !StringUtil.isEmpty(strMax)) {
@@ -3749,16 +3748,7 @@ public final class ConfigWebFactory {
       	}
       	else if(hasCS)config.setDebugMaxRecordsLogged(configServer.getDebugMaxRecordsLogged());
       	
-      	
-     // show-usage
-      	Boolean showUsage = Caster.toBoolean(debugging.getAttribute("show-query-usage"),null);
-      	showUsage=Boolean.TRUE;
-      	if(showUsage!=null && hasAccess) {
-      	    config.setDebugShowQueryUsage(showUsage.booleanValue());
-      	}
-      	else if(hasCS) {
-      	    config.setDebugShowQueryUsage(configServer.getDebugShowQueryUsage());
-      	}
+      	config.setDebugOptions(options);
     }
 
     /**

@@ -160,8 +160,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 	public static final String[] CFX_JARS = new String[]{"com.naryx.tagfusion.cfx.jar"};
 	public static final String[] UPDATE_JARS = new String[]{"ehcache.jar","antlr.jar","dom4j.jar","hibernate.jar","javassist.jar","jta.jar","slf4j-api.jar","railo-sl4j.jar","railo-inst.jar","metadata-extractor.jar","icepdf-core.jar","com.naryx.tagfusion.cfx.jar","railo-inst.jar"};
 	
-	private static final Collection.Key DEBUG = KeyImpl.intern("debug");
-	private static final Collection.Key DEBUG_SRC = KeyImpl.intern("debugSrc");
+	private static final Collection.Key DEBUG = KeyConstants._debug;
 	//private static final Collection.Key DEBUG_TEMPLATE = KeyImpl.intern("debugTemplate");
 	private static final Collection.Key DEBUG_SHOW_QUERY_USAGE = KeyImpl.intern("debugShowQueryUsage");
 	//private static final Collection.Key STR_DEBUG_TEMPLATE = KeyImpl.intern("strdebugTemplate");
@@ -1268,21 +1267,13 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Struct sct=new StructImpl();
         pageContext.setVariable(getString("admin",action,"returnVariable"),sct);
         
-        String src = config.intDebug()==ConfigImpl.SERVER_BOOLEAN_TRUE || config.intDebug()==ConfigImpl.SERVER_BOOLEAN_FALSE?"server":"web";
-        
         sct.set(DEBUG,Caster.toBoolean(config.debug()));
-        sct.set(DEBUG_SRC,src);
-        sct.set(DEBUG_SHOW_QUERY_USAGE,Caster.toBoolean(config.getDebugShowQueryUsage()));
-        
-        /*sct.set(DEBUG_TEMPLATE,config.getDebugTemplate());
-        try {
-            PageSource ps = ((PageContextImpl)pageContext).getPageSourceExisting(config.getDebugTemplate());
-            if(ps!=null) sct.set(DEBUG_TEMPLATE,ps.getDisplayPath());
-            else sct.set(DEBUG_TEMPLATE,"");
-        } catch (PageException e) {
-            sct.set(DEBUG_TEMPLATE,"");
-        }
-        sct.set(STR_DEBUG_TEMPLATE,config.getDebugTemplate());*/
+        sct.set(KeyConstants._database,Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_DATABASE)));
+        sct.set(KeyConstants._exception,Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)));
+        sct.set("tracing",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_TRACING)));
+        sct.set("timer",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_TIMER)));
+        sct.set("implicitAccess",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS)));
+        sct.set("queryUsage",Caster.toBoolean(config.hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)));
     }
     
     private void doGetError() throws PageException {
@@ -1578,9 +1569,20 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * 
      */
 	private void doUpdateDebug() throws PageException {
-    	admin.updateDebug(Caster.toBoolean(getString("debug",""),null));
+		
+    	admin.updateDebug(
+    			Caster.toBoolean(getString("debug",""),null),
+    			Caster.toBoolean(getString("database",""),null),
+    			Caster.toBoolean(getString("exception",""),null),
+    			Caster.toBoolean(getString("tracing",""),null),
+    			Caster.toBoolean(getString("timer",""),null),
+    			Caster.toBoolean(getString("implicitAccess",""),null),
+    			Caster.toBoolean(getString("queryUsage",""),null)
+    			);
+    	
+    	
+    	
         admin.updateDebugTemplate(getString("admin",action,"debugTemplate"));
-        admin.updateDebugShowQueryUsage(Caster.toBoolean(getString("debugShowQueryUsage",""),null));
         store();
         adminSync.broadcast(attributes, config);
     }

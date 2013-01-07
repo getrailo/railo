@@ -2259,6 +2259,13 @@ Example:
 			<rtexprvalue>true</rtexprvalue>
 			<description>Whether Railo performs the action on subdirectories</description>
 		</attribute>
+		<attribute>
+			<type>string</type>
+			<name>nameconflict</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Used with action = "copy". Ignored by all other actions. Optional values are: [Overwrite]|Error.</description>
+		</attribute>
 	</tag>
 	<!-- Div -->
 	<tag>

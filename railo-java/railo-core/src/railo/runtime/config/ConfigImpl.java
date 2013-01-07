@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -128,6 +127,17 @@ public abstract class ConfigImpl implements Config {
 	public static final int CLIENT_BOOLEAN_FALSE = 1;
 	public static final int SERVER_BOOLEAN_TRUE = 2;
 	public static final int SERVER_BOOLEAN_FALSE = 3;
+
+	public static final int DEBUG_DATABASE = 1;
+	public static final int DEBUG_EXCEPTION = 2;
+	public static final int DEBUG_TRACING = 4;
+	public static final int DEBUG_TIMER = 8;
+	public static final int DEBUG_IMPLICIT_ACCESS = 16;
+	public static final int DEBUG_QUERY_USAGE = 32;
+	
+	
+	
+	
 	public static final ExtensionProvider[] RAILO_EXTENSION_PROVIDERS = new ExtensionProviderImpl[]{
 		new ExtensionProviderImpl("http://www.getrailo.com/ExtensionProvider.cfc",true),
 		new ExtensionProviderImpl("http://www.getrailo.org/ExtensionProvider.cfc",true)
@@ -173,6 +183,7 @@ public abstract class ConfigImpl implements Config {
 
     private int _debug;
     private int debugLogOutput;
+    private int debugOptions=0;
 
     private boolean suppresswhitespace = false;
     private boolean suppressContent = false;
@@ -1867,15 +1878,6 @@ public abstract class ConfigImpl implements Config {
     public String getDebugTemplate() {
     	throw new PageRuntimeException(new DeprecatedException("no longer supported, use instead getDebugEntry(ip, defaultValue)"));
     }
-    public boolean getDebugShowQueryUsage() {
-        return debugShowUsage;
-    }
-    /**
-     * @param debugTemplate The debugTemplate to set.
-     */
-    protected void setDebugShowQueryUsage(boolean debugShowUsage) {
-        this.debugShowUsage = debugShowUsage;
-    }
 
 	@Override
 	public String getErrorTemplate(int statusCode) {
@@ -3320,8 +3322,21 @@ public abstract class ConfigImpl implements Config {
 	public boolean getBufferOutput() {
 		return bufferOutput;
 	}
+
 	protected void setBufferOutput(boolean bufferOutput) {
 		this.bufferOutput= bufferOutput;
+	}
+
+	public int getDebugOptions() {
+		return debugOptions;
+	}
+	
+	public boolean hasDebugOptions(int debugOption) {
+		return (debugOptions&debugOption)>0  ;
+	}
+	
+	protected void setDebugOptions(int debugOptions) {
+		this.debugOptions = debugOptions;
 	}
 	
 }

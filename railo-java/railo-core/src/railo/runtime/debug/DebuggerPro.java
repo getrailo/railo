@@ -2,6 +2,7 @@ package railo.runtime.debug;
 
 // FUTURE add to extended interface and delete this interface
 
+import railo.runtime.PageContext;
 import railo.runtime.PageSource;
 import railo.runtime.db.SQL;
 import railo.runtime.type.Query;
@@ -35,4 +36,6 @@ public interface DebuggerPro extends Debugger {
      * @param time 
      */
     public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time);
+    
+    public DebugTrace[] getTraces(PageContext pc);
 }

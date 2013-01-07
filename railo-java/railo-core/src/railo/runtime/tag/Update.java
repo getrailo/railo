@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.db.DataSource;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -164,8 +165,12 @@ public final class Update extends TagImpl {
 				
 				if(pageContext.getConfig().debug()) {
 					String dsn=ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);
-					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+					boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
+					if(logdb){
+						boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,dsn,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+					}
+>>>>>>> 4.0
 				}
 			}
 			return EVAL_PAGE;

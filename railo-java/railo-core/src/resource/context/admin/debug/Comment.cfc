@@ -23,13 +23,6 @@ component extends="Debug" {
 		
 		,field("Scope Variables","scopes","Application,CGI,Client,Cookie,Form,Request,Server,Session,URL",true,"Select this option to show the content of the corresponding Scope.","checkbox","Application,CGI,Client,Cookie,Form,Request,Server,Session,URL")
 		
-		,field("Database Activity","database",true,false,"Select this option to show the database activity for the SQL Query events and Stored Procedure events.","checkbox")
-		
-		,field("Exceptions","exception",true,false,"Select this option to output all exceptions raised for the request. ","checkbox")
-		
-		,field("Tracing","tracing",true,false,"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag or the TraceObject Function.","checkbox")
-		
-		,field("Timer","timer",true,false,"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. ","checkbox")
 		
 	);
     
@@ -130,19 +123,19 @@ component extends="Debug" {
 		print("Pages",array('src','count','load','query','app','total'),pages);
 	 	
 	// DATABASE
-		if(structKeyExists(custom,"database") && custom.database && debugging.queries.recordcount)
+		if(debugging.queries.recordcount)
 			print("Queries",array('src','datasource','name','sql','time','count'),debugging.queries);
 			
 	// TIMER
-	 	if(structKeyExists(custom,"timer") && custom.timer && debugging.timers.recordcount)
+	 	if(debugging.timers.recordcount)
 			print("Timers",array('template','label','time'),debugging.timers);
 	
 	// TRACING
-	 	if(structKeyExists(custom,"tracing") && custom.tracing && debugging.traces.recordcount)
+	 	if(debugging.traces.recordcount)
 			print("Trace Points",array('template','type','category','text','line','action','varname','varvalue','time'),debugging.traces);
 		
 	// EXCEPTION
-		if(structKeyExists(custom,"exception") && custom.exception && arrayLen(debugging.exceptions)) {
+		if(arrayLen(debugging.exceptions)) {
 			var qry=queryNew("type,message,detail,template")
 			var len=arrayLen(debugging.exceptions);
 			QueryAddRow(qry,len);

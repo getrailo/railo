@@ -508,7 +508,7 @@ public final class TagLoop extends TagGroup implements FlowControlBreak,FlowCont
 				bc.getAdapter().loadLocal(br);
 				bc.getAdapter().invokeStatic(IO_UTIL, CLOSE_EL);
 			}
-		});
+		},null);
 		//TryFinallyVisitor tcfv=new TryFinallyVisitor();
 		
 		// try

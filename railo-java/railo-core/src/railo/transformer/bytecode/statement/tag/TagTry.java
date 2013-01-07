@@ -23,7 +23,6 @@ import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
 import railo.transformer.bytecode.statement.FlowControlRetry;
 import railo.transformer.bytecode.statement.TryCatchFinally;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -123,24 +122,25 @@ public final class TagTry extends TagBase implements FlowControlRetry {
 			if(_finally!=null && _finally.getBody()!=null)_finally.getBody().writeOut(bc);
 			return;
 		}
-		
 		TryCatchFinallyVisitor tcfv=new TryCatchFinallyVisitor(new OnFinally() {
 			
 			public void writeOut(BytecodeContext bc) throws BytecodeException {
+				/*GeneratorAdapter ga = bc.getAdapter();
+				if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)
+					ASMUtil.visitLabel(ga,fcf.getFinalEntryLabel());
+				*/
 				if(_finally!=null) {
-					GeneratorAdapter ga = bc.getAdapter();
-					if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)
-						ASMUtil.visitLabel(ga,fcf.getFinalEntryLabel());
 					
 					ExpressionUtil.visitLine(bc, _finally.getStart());
 					_finally.getBody().writeOut(bc);
-					if(fcf!=null){
-						Label l=fcf.getAfterFinalGOTOLabel();
-						if(l!=null)ga.visitJumpInsn(Opcodes.GOTO, l);
-					}
+					
 				}
+				/*if(fcf!=null){
+					Label l=fcf.getAfterFinalGOTOLabel();
+					if(l!=null)ga.visitJumpInsn(Opcodes.GOTO, l);
+				}*/
 			}
-		});
+		},getFlowControlFinal());
 		
 		
 		// Try

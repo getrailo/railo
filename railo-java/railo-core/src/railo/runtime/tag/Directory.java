@@ -60,12 +60,17 @@ public final class Directory extends TagImpl  {
 	private static final Key DATE_LAST_MODIFIED = KeyConstants._dateLastModified;
 	private static final Key ATTRIBUTES = KeyConstants._attributes;
 	private static final Key DIRECTORY = KeyConstants._directory;
-	
-	
+		
 	public static final int LIST_INFO_QUERY_ALL = 1;
 	public static final int LIST_INFO_QUERY_NAME = 2;
 	public static final int LIST_INFO_ARRAY_NAME = 4;
 	public static final int LIST_INFO_ARRAY_PATH = 8;
+	
+	public static final int NAMECONFLICT_ERROR     = 1;
+//	public static final int NAMECONFLICT_SKIP      = 2;	// FUTURE
+	public static final int NAMECONFLICT_OVERWRITE = 3;
+//	public static final int NAMECONFLICT_CLOSURE   = 5;	// FUTURE
+	public static final int NAMECONFLICT_UNDEFINED = NAMECONFLICT_OVERWRITE;	// default
 	
 	/** Optional for action = "list". Ignored by all other actions. File extension filter applied to
 	** 		returned names. For example: *m. Only one mask filter can be applied at a time. */
@@ -109,6 +114,7 @@ public final class Directory extends TagImpl  {
 	private int storage=S3Constants.STORAGE_UNKNOW;
 	private String destination; 
 
+	private int nameconflict = NAMECONFLICT_UNDEFINED;
 
 
 	@Override
@@ -131,6 +137,8 @@ public final class Directory extends TagImpl  {
         recurse=false;
         serverPassword=null;
         listInfo=LIST_INFO_QUERY_ALL;
+        
+        nameconflict = NAMECONFLICT_UNDEFINED;
 	}
 
 	
@@ -213,11 +221,6 @@ public final class Directory extends TagImpl  {
 	public void setListinfo(String strListinfo)	{
 		strListinfo=strListinfo.trim().toLowerCase();
 		this.listInfo="name".equals(strListinfo)?LIST_INFO_QUERY_NAME:LIST_INFO_QUERY_ALL;
-		
-		
-		
-		
-		
 	}
 	
 	
@@ -296,6 +299,32 @@ public final class Directory extends TagImpl  {
         this.recurse = recurse;
     }
 
+    /** set the value nameconflict
+	*  Action to take if destination directory is the same as that of a file in the directory.
+	* @param nameconflict value to set
+	 * @throws ApplicationException 
+	**/
+	public void setNameconflict(String nameconflict) throws ApplicationException	{
+		this.nameconflict = toNameconflict( nameconflict );
+	}
+	
+	public static int toNameconflict( String nameconflict ) throws ApplicationException	{
+		
+		if ( StringUtil.isEmpty( nameconflict, true ) )
+			return NAMECONFLICT_UNDEFINED;
+		
+		nameconflict = nameconflict.trim();
+		
+		if ( "merge".equalsIgnoreCase( nameconflict ) || "overwrite".equalsIgnoreCase( nameconflict ) )
+			return NAMECONFLICT_OVERWRITE;
+				
+		if ( "error".equalsIgnoreCase( nameconflict ) )
+			return NAMECONFLICT_ERROR;
+						
+		throw new ApplicationException("invalid value for attribute/argument nameconflict ["+nameconflict+"]",
+			"valid values are [error,merge,overwrite]");
+	}
+	
 
 	@Override
 	public int doStartTag() throws PageException	{
@@ -313,7 +342,7 @@ public final class Directory extends TagImpl  {
 			if(StringUtil.isEmpty(destination,true) && !StringUtil.isEmpty(strNewdirectory,true)) {
 				destination=strNewdirectory.trim();
 			}
-			actionCopy(pageContext,directory,destination,serverPassword,acl,storage,filter,recurse);
+			actionCopy(pageContext,directory,destination,serverPassword,acl,storage,filter,recurse, nameconflict);
 		}
 		else throw new ApplicationException("invalid action ["+action+"] for the tag directory");
 			
@@ -656,7 +685,7 @@ public final class Directory extends TagImpl  {
 	}
 	
 	
-	public static  void actionCopy(PageContext pc,Resource directory,String strDestination,String serverPassword, Object acl,int storage, ResourceFilter filter, boolean recurse) throws PageException {
+	public static  void actionCopy(PageContext pc,Resource directory,String strDestination,String serverPassword, Object acl,int storage, ResourceFilter filter, boolean recurse, int nameconflict) throws PageException {
 		// check directory
 		SecurityManager securityManager = pc.getConfig().getSecurityManager();
 	    securityManager.checkFileLocation(pc.getConfig(),directory,serverPassword);
@@ -675,9 +704,11 @@ public final class Directory extends TagImpl  {
 		// real to source 
 		Resource newdirectory=toDestination(pc,strDestination,directory);
 		
-	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
-		if(newdirectory.exists())
+		if ( nameconflict == NAMECONFLICT_ERROR && newdirectory.exists() )
 			throw new ApplicationException("new directory ["+newdirectory.toString()+"] already exist");
+		
+	    securityManager.checkFileLocation(pc.getConfig(),newdirectory,serverPassword);
+
 		try {
 			// has already a filter
 			if(filter!=null) {

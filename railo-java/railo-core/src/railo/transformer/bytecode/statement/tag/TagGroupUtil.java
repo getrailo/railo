@@ -281,7 +281,7 @@ public class TagGroupUtil {
 					adapter.loadLocal(tag.getNumberIterator());
 					adapter.invokeStatic(NUMBER_ITERATOR, REALEASE);
 				}
-			});
+			},null);
 			tfv.visitTryBegin(bc);
 				WhileVisitor wv = new WhileVisitor();
 				if(tag instanceof TagLoop) ((TagLoop)tag).setLoopVisitor(wv); 

@@ -17,6 +17,7 @@ import javax.servlet.jsp.JspException;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
 import railo.runtime.db.DataSource;
@@ -549,7 +550,9 @@ public class StoredProc extends BodyTagTryCatchFinallySupport {
 		    res.set(KeyConstants._cached,Caster.toBoolean(isFromCache));
 		    
 		    if(pageContext.getConfig().debug() && debug) {
-		    	pageContext.getDebugger().addQuery(null,dsn,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
+		    	boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
+				if(logdb)
+					pageContext.getDebugger().addQuery(null,dsn,procedure,_sql,count,pageContext.getCurrentPageSource(),(int)exe);
 			}
 		    
 		    

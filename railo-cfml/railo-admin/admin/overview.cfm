@@ -390,7 +390,7 @@ Error Output --->
 					
 					<!--- Blog --->
 					<h3>
-						<a href="http://www.railo-technologies.com/blog/" target="_blank">#stText.Overview.blog#</a>
+						<a href="http://blog.getrailo.com/" target="_blank">#stText.Overview.blog#</a>
 					</h3>
 					<div class="comment">#stText.Overview.bookDesc#</div>
 					

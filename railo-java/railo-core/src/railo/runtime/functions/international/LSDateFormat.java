@@ -47,48 +47,11 @@ public final class LSDateFormat implements Function {
 	}
 
 	private static DateTime toDateLS(PageContext pc ,Locale locale, TimeZone timeZone, Object object) throws PageException {
-		DateTime res;
-		if(object instanceof DateTime) res=(DateTime) object;
-		else res = Caster.toDateTime(locale,Caster.toString(object),timeZone,null,locale.equals(Locale.US));
-		if(res!=null)return res;
-		return DateCaster.toDateAdvanced(object,timeZone);
-		
-		/*try{
-			return DateCaster.toDateAdvanced(object,timeZone);
+		if(object instanceof DateTime) return (DateTime) object;
+		else if(object instanceof CharSequence) {
+			DateTime res = DateCaster.toDateTime(locale,Caster.toString(object),timeZone,null,locale.equals(Locale.US));
+			if(res!=null)return res;
 		}
-		catch(PageException pe){
-			if(object instanceof String) {
-				String str=(String) object;
-				DateFormat[] formats=FormatUtil.getDateFormats(locale,true);
-				for(int i=0;i<formats.length;i++) {
-					try {
-						long t = formats[i].parse(str).getTime();
-						return new DateTimeImpl(fixYear(timeZone,t),false);
-					} 
-					catch (ParseException e) {
-						//
-					}
-				}
-			}
-			throw pe;
-		}*/
+		return DateCaster.toDateAdvanced(object,timeZone);
 	}
-	
-	/*private static long fixYear(TimeZone timezone,long time) {  
-		if (calendar == null)
-        	calendar=JREDateTimeUtil.newInstance();
-        synchronized (calendar) {
-        	calendar.clear();
-        	calendar.setTimeZone(timezone);
-        	calendar.setTimeInMillis(time);         
-    		int year = calendar.get(Calendar.YEAR);
-            if(year<100) {
-                if(year<21)year=year+=2000;
-                else year=year+=1900;
-                calendar.set(Calendar.YEAR,year);
-                return calendar.getTimeInMillis();
-            }
-        }
-       return time;
-	}*/
 }

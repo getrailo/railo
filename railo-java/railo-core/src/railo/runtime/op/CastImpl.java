@@ -19,6 +19,7 @@ import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
+import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
@@ -288,12 +289,12 @@ public final class CastImpl implements Cast {
 
     @Override
     public DateTime toDate(Locale locale, String str, TimeZone tz, DateTime defaultValue) {
-        return Caster.toDateTime(locale,str,tz,defaultValue,true);
+        return DateCaster.toDateTime(locale,str,tz,defaultValue,true);
     }
 
     @Override
     public DateTime toDate(Locale locale, String str, TimeZone tz) throws PageException {
-        return Caster.toDateTime(locale,str,tz,true);
+        return DateCaster.toDateTime(locale,str,tz,true);
     }
 
     @Override

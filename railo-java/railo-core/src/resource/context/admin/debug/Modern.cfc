@@ -6,21 +6,6 @@
 		,field("Minimal Execution Time","minimal","0",true,{_appendix:"microseconds",_bottom:"Execution times for templates, includes, modules, custom tags, and component method calls. Outputs only templates taking longer than the time (in microseconds) defined above."},"text40")
 		,field("Highlight","highlight","250000",true,{_appendix:"microseconds",_bottom:"Highlight templates taking longer than the following (in microseconds) in red."},"text50")
 		,group("Custom Debugging Output","Define what is outputted",3)
-		,field("Database Activity","database","Enabled",false,
-			"Select this option to show the database activity for the SQL Query events and Stored Procedure events in the debugging output."
-			,"checkbox","Enabled")
-		,field("Exceptions","exception","Enabled",false,
-			"Select this option to output all exceptions raised for the request. "
-			,"checkbox","Enabled")
-		,field("Tracing","tracing","Enabled",false,
-			"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag."
-			,"checkbox","Enabled")
-		,field("Timer","timer","Enabled",false,
-			"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. "
-			,"checkbox","Enabled")
-		,field("Implicit variable Access","implicitAccess","Enabled",false,
-			"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). "
-			,"checkbox","Enabled")
 		,field("Scope Variables","scopes","Enabled",false,"Enable Scope reporting","checkbox","Enabled")
 		,field("General Debug Information ","general","Enabled",false,
 		"Select this option to show general information about this request. General items are Railo Version, Template, Time Stamp, User Locale, User Agent, User IP, and Host Name. ",
@@ -85,11 +70,6 @@
 			<cfif !structKeyExists(arguments.custom,'minimal')><cfset arguments.custom.minimal="0"></cfif>
 			<cfif !structKeyExists(arguments.custom,'highlight')><cfset arguments.custom.highlight="250000"></cfif>
 			<cfif !structKeyExists(arguments.custom,'scopes')><cfset arguments.custom.scopes=false></cfif>
-			<cfif !structKeyExists(arguments.custom,'tracing')><cfset arguments.custom.tracing="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'timer')><cfset arguments.custom.timer="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'implicitAccess')><cfset arguments.custom.implicitAccess="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'exception')><cfset arguments.custom.exception="Enabled"></cfif>
-			<cfif !structKeyExists(arguments.custom,'database')><cfset arguments.custom.database="Enabled"></cfif>
 			<cfif !structKeyExists(arguments.custom,'general')><cfset arguments.custom.general="Enabled"></cfif>
 			
 			<cfset var time=getTickCount() />
@@ -114,7 +94,7 @@
 			<cfparam name="arguments.custom.size" default="medium">
 			<cfset var unit={
 				millisecond:"ms"
-				,microsecond:"µs"
+				,microsecond:"ï¿½s"
 				,nanosecond:"ns"
 				} />
 			<!--- Plus/minus Image --->
@@ -412,7 +392,7 @@
 				</tr>
 			</table>
 			<!--- Exceptions --->
-			<cfif isEnabled(arguments.custom,"exception") and structKeyExists(arguments.debugging,"exceptions")  and arrayLen(arguments.debugging.exceptions)>
+			<cfif structKeyExists(arguments.debugging,"exceptions")  and arrayLen(arguments.debugging.exceptions)>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_exp') and cookie.railo_debug_modern_exp />
 				<cfset exceptions=debugging.exceptions />
 				<span class="h2">Caught Exceptions</span>
@@ -459,7 +439,7 @@
 				</table>
 			</cfif>
 			<!--- Implicit variable Access --->
-			<cfif isEnabled(arguments.custom,"implicitAccess") and implicitAccess.recordcount>
+			<cfif implicitAccess.recordcount>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_acc') and cookie.railo_debug_modern_acc />
 				<cfset hasAction=!isColumnEmpty(traces,'action') />
 				<cfset hasCategory=!isColumnEmpty(traces,'category') />
@@ -510,7 +490,7 @@
 				</table>
 			</cfif>
 			<!--- Timers --->
-			<cfif isEnabled(arguments.custom,"timer") and timers.recordcount>
+			<cfif timers.recordcount>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_time') and cookie.railo_debug_modern_time />
 				<span class="h2">CFTimer Times</span>
 				<table class="tbl" cellpadding="0" cellspacing="0">
@@ -552,7 +532,7 @@
 				</table>
 			</cfif>
 			<!--- Traces --->
-			<cfif isEnabled(arguments.custom,"tracing") and traces.recordcount>
+			<cfif traces.recordcount>
 				<cfset display=structKeyExists(cookie,'railo_debug_modern_trace') and cookie.railo_debug_modern_trace />
 				<cfset hasAction=!isColumnEmpty(traces,'action') />
 				<cfset hasCategory=!isColumnEmpty(traces,'category') />
@@ -628,7 +608,7 @@
 				</table>
 			</cfif>
 			<!--- Queries --->
-			<cfif isEnabled(arguments.custom,"database") and queries.recordcount>
+			<cfif queries.recordcount>
 				<cfset local.total=0 />
 				<cfset local.records=0 />
 				<cfloop query="queries"><cfset total+=queries.time />

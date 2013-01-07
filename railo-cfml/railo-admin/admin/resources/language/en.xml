@@ -196,6 +196,7 @@
 	<data key="menu.debugging.label">Debugging</data>
 	<data key="menu.debugging.logs">Logs</data>
 	<data key="menu.debugging.templates">Templates</data>
+	<data key="menu.debugging.settings">Settings</data>
 	<data key="menu.security.label">Security</data>
 	<data key="menu.security.access">Access</data>
 	<data key="menu.security.password">Password</data>
@@ -550,7 +551,8 @@
 	<data key="searchlng.turkish">Turkish</data>
 	<data key="debug.logmemoryusage">Log memory usage</data>
 	<data key="debug.memoryloggerdescripiton">File the memory usage will be stored to</data>
-	<data key="debug.enabledescription">Enable or disable the debugging output</data>
+	<data key="debug.enabledescription">If set to "yes" Railo logs the debug information you have selected below. 
+you can see the log result at the end of every request, if a debug template is defined or under Debug/Logs in this administrator.</data>
 	<data key="debug.debugtemplatemissing">Please enter a value for the debug template</data>
 	<data key="debug.debugtemplatedescription">This template is used for formatting the debugging output</data>
 	<data key="debug.logmemoryusagedescription">Sets whether the memory usage should be logged</data>
@@ -558,8 +560,21 @@
 	<data key="debug.timezone">Please enter a value for the timezone</data>
 	<data key="debug.enabledebugging">Enable debugging</data>
 	<data key="debug.memorylogger">Memory logger</data>
-	<data key="debug.showQueryUsage">Show Query Usage</data>
-	<data key="debug.showQueryUsageDesc">Show the query usage information in debug output.</data>
+	<data key="debug.settings.queryUsage">Query Usage</data>
+	<data key="debug.settings.queryUsageDesc">Select this option to log the query usage information.</data>
+	<data key="debug.settings.database">Database Activity</data>
+	<data key="debug.settings.databaseDesc">Select this option to log the database activity for the SQL Query events and Stored Procedure events.</data>
+	<data key="debug.settings.exception"> Exceptions </data>
+	<data key="debug.settings.exceptionDesc">Select this option to log all exceptions raised for the request.</data>
+	<data key="debug.settings.tracing"> Tracing </data>
+	<data key="debug.settings.tracingDesc">Select this option to log trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.</data>
+	<data key="debug.settings.timer"> Timer </data>
+	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
+	<data key="debug.settings.timer"> Timer </data>
+	<data key="debug.settings.timerDesc">Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag.</data>
+	<data key="debug.settings.implicitAccess">Implicit variable Access</data>
+	<data key="debug.settings.implicitAccessDesc">Select this option to log all accesses to scopes, queries and threads that happens implicit (cascaded).</data>
+	<data key="general.enabled">Enabled</data>
 	<data key="scopes.sessiontimeoutdescription">Sets the amount of time Railo will keep the session scope alive. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.sessiontype_cfml">CFML</data>
 	<data key="scopes.clientcookies">Client cookies</data>

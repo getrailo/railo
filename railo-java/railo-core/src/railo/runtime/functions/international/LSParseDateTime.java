@@ -17,6 +17,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
+import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTimeImpl;
 
 public final class LSParseDateTime implements Function {
@@ -56,7 +57,7 @@ public final class LSParseDateTime implements Function {
 		
 		// regular parse date time
 		if(StringUtil.isEmpty(format,true))
-			return Caster.toDateTime(locale,strDate,tz,locale.equals(Locale.US));
+			return DateCaster.toDateTime(locale,strDate,tz,locale.equals(Locale.US));
 		
 		
 		// with java based format

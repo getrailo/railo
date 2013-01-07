@@ -90,51 +90,7 @@ Redirtect to entry --->
 		}
 	</script>
 	
-	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post" name="debug_settings">
-		<table class="maintbl">
-			<tbody>
-				<tr>
-					<th scope="row">#stText.Debug.EnableDebugging#</th>
-					<td>
-						<cfset lbl = _debug.debug ? stText.general.yes : stText.general.no>
-						<cfif hasAccess>
-							
-							<cfif request.admintype == "web">
-
-								<label><input type="radio" name="debug" value="true" #_debug.debugsrc == "web" && _debug.debug ? 'checked="checked"' : ''#> #stText.general.yes#</label>
-								
-								<label><input type="radio" name="debug" value="false" #_debug.debugsrc == "web" && !_debug.debug ? 'checked="checked"' : ''#> #stText.general.no#</label>
-								
-								<label><input type="radio" name="debug" value="resetServerAdmin" #_debug.debugsrc == "server" ? 'checked="checked"' : ''#> #stText.Regional.ServerProp[request.adminType]# <cfif _debug.debugsrc == "server"> (#lbl#)</cfif></label>
-							<cfelse>
-
-								<label><input type="radio" name="debug" value="true" #_debug.debug ? 'checked="checked"' : ''#> #stText.general.yes#</label>
-								
-								<label><input type="radio" name="debug" value="false" #!_debug.debug ? 'checked="checked"' : ''#> #stText.general.no#</label>		
-							</cfif>
-						<cfelse>
-							<b>#lbl#</b>
-							<input type="hidden" name="debug" value="#_debug.debug#">
-						</cfif>
-						<div class="comment">#stText.Debug.EnableDescription#</div>
-					</td>
-				</tr>
-				<cfif hasAccess>
-					<cfmodule template="remoteclients.cfm" colspan="2">
-				</cfif>
-			</tbody>
-			<cfif hasAccess>
-				<tfoot>
-					<tr>
-						<td colspan="2">
-							<input type="submit" class="button submit" name="mainAction" value="#stText.Buttons.Update#">
-							<input type="reset" class="reset" name="cancel" value="#stText.Buttons.Cancel#">
-						</td>
-					</tr>
-				</tfoot>
-			</cfif>
-		</table>
-	</cfform>
+			#stText.debug.list.createDesc#
 
 	<!--- LIST --->
 	<cfloop list="server,web" index="k">
@@ -206,7 +162,7 @@ Redirtect to entry --->
 		<cfset _drivers=ListSort(StructKeyList(drivers),'textnocase')>
 	
 		<cfif listLen(_drivers)>
-			<h2>#stText.debug.titleCreate#</h2>
+			<h2>#stText.debug.createTitle#</h2>
 			<cfform onerror="customError" action="#request.self#?action=#url.action#&action2=create" method="post">
 				<table class="maintbl autowidth" style="width:400px;">
 					<tbody>
