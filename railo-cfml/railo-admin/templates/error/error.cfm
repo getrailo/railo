@@ -1,7 +1,7 @@
 </TD></TD></TD></TH></TH></TH></TR></TR></TR></TABLE></TABLE></TABLE></A></ABBREV></ACRONYM></ADDRESS></APPLET></AU></B></BANNER></BIG></BLINK></BLOCKQUOTE></BQ></CAPTION></CENTER></CITE></CODE></COMMENT></DEL></DFN></DIR></DIV></DL></EM></FIG></FN></FONT></FORM></FRAME></FRAMESET></H1></H2></H3></H4></H5></H6></HEAD></I></INS></KBD></LISTING></MAP></MARQUEE></MENU></MULTICOL></NOBR></NOFRAMES></NOSCRIPT></NOTE></OL></P></PARAM></PERSON></PLAINTEXT></PRE></Q></S></SAMP></SCRIPT></SELECT></SMALL></STRIKE></STRONG></SUB></SUP></TABLE></TD></TEXTAREA></TH></TITLE></TR></TT></U></UL></VAR></WBR></XMP>
 <style>
 	#-railo-err			{ font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; font-size: 11px; background-color:red; border: 1px solid black; }
-	#-railo-err td 		{ border: 1px solid #350606; color: #222; background-color: #FFCC00; }
+	#-railo-err td 		{ border: 1px solid #350606; color: #222; background-color: #FFCC00; line-height: 1.35; }
 	#-railo-err td.label	{ background-color: #FFB200; font-weight: bold; white-space: nowrap; vertical-align: top; }
 
 	#-railo-err .collapsed	{ display: none; }
@@ -15,23 +15,26 @@
 </style>
 <script>
 
-	function oc( btn ) {
+	var __RAILO = {
 
-		var id = btn.id.split( '$' )[ 1 ];
+		oc: 	function ( btn ) {
 
-		var curBtnClass = btn.attributes[ 'class' ];	// bracket-notation required for IE<9
-		var cur = curBtnClass.value;
+			var id = btn.id.split( '$' )[ 1 ];
 
-		var curCstClass = document.getElementById( '__cst$' + id ).attributes[ 'class' ];
+			var curBtnClass = btn.attributes[ 'class' ];	// bracket-notation required for IE<9
+			var cur = curBtnClass.value;
 
-		if ( cur == '-railo-icon-plus' ) {
+			var curCstClass = document.getElementById( '__cst$' + id ).attributes[ 'class' ];
 
-			curBtnClass.value = '-railo-icon-minus';
-			curCstClass.value = 'expanded';
-		} else {
+			if ( cur == '-railo-icon-plus' ) {
 
-			curBtnClass.value = '-railo-icon-plus';
-			curCstClass.value = 'collapsed';
+				curBtnClass.value = '-railo-icon-minus';
+				curCstClass.value = 'expanded';
+			} else {
+
+				curBtnClass.value = '-railo-icon-plus';
+				curCstClass.value = 'collapsed';
+			}
 		}
 	}
 </script>
@@ -87,7 +90,7 @@
 
 							<cfset isFirst = ( idx == 1 )>
 
-							<a class="-railo-icon-#isFirst ? 'minus' : 'plus'#" id="__btn$#idx#" onclick="oc( this );" style="cursor: pointer;">
+							<a class="-railo-icon-#isFirst ? 'minus' : 'plus'#" id="__btn$#idx#" onclick="__RAILO.oc( this );" style="cursor: pointer;">
 								#isFirst ? "<b>#tc.template#: line #tc.line#</b>" : "<b>called from</b> #tc.template#: line #tc.line#"#
 							</a>
 							<br>
@@ -103,29 +106,15 @@
 	</cfif>
 	<tr>
 		<td class="label">Java Stacktrace</td>
-		<td>#convertST( catch.stacktrace )#</td>
+		<td>#replace( catch.stacktrace, chr(10), "<br><span style='margin-right: 1em;'>&nbsp;</span>", "all" )#</td>
 	</tr>
 	<tr>
 		<td class="label">Timestamp</td>
-		<td>#listGetAt( now(), 2, "'" )#</td>
+		<td>
+			<cfset timestamp = now()>
+			#LsDateFormat( timestamp, 'short' )# #LsTimeFormat( timestamp, 'long' )#
+		</td>
 	</tr>
 </table>
 <br>
 </cfoutput>
-
-
-<cfscript>
-	function convertST( st ) {
-
-		arguments.st=replace( HTMLEditFormat( arguments.st ), chr(10), "<br>", "all" );
-
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"  ","&nbsp; ","all");
-		arguments.st=replace(arguments.st,"	","&nbsp;&nbsp;&nbsp;","all");
-		
-		return arguments.st;
-	}
-</cfscript>
