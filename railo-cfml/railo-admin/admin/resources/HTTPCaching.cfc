@@ -29,7 +29,8 @@
 
 	<cffunction name="getFileDateLastModified" access="public" returntype="string" output="no">
 		<cfargument name="path" type="string" required="true" />
-		<cfreturn createObject("java", "java.io.File").init(arguments.path).lastModified() />
+		
+		<cfreturn getFileInfo( arguments.path ).lastModified>
 	</cffunction>
 	
 </cfcomponent>
