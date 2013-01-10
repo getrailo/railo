@@ -5541,14 +5541,14 @@ no: the function is processed as if it were within a cfsilent tag </description>
 			<rtexprvalue>true</rtexprvalue>
 			<description>When required by a server, a valid password.</description>
 		</attribute>
-		<!-- <attribute>
+		<attribute>
 			<type>boolean</type>
 			<name>preauth</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>if set to true (default), Railo sends the basic authentication (username password) always (Preemptive Basic Authentication), 
 			if set to false the authentication is only send when the server ask for it (status code 401).</description>
-		</attribute> -->
+		</attribute>
 		<attribute>
 			<type>boolean</type>
 			<name>multipart</name>
