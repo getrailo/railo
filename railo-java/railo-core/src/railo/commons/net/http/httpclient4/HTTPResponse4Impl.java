@@ -62,6 +62,7 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 	public byte[] getContentAsByteArray() throws IOException {
 		HttpEntity entity = rsp.getEntity();
 		InputStream is=null;
+		if(entity==null) return new byte[0];
 		try{
 			return IOUtil.toBytes(is=entity.getContent());
 		}
