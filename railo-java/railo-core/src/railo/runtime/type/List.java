@@ -74,8 +74,19 @@ public final class List {
 	 */
 	public static Array listToArray(String list, String delimiter) {
 	    if(delimiter.length()==1)return listToArray(list, delimiter.charAt(0));
-		if(list.length()==0) return new ArrayImpl();
-		int len=list.length();
+	    if(list.length()==0) return new ArrayImpl();
+	    if(delimiter.length()==0) {
+	    	int len = list.length();
+	    	ArrayImpl array=new ArrayImpl();
+	    	array.appendEL("");// ACF compatibility
+			for(int i=0;i<len;i++){
+	    		array.appendEL(list.charAt(i));
+	    	}
+			array.appendEL("");// ACF compatibility
+			return array;
+	    }
+		
+	    int len=list.length();
 		int last=0;
 		char[] del=delimiter.toCharArray();
 		char c;
@@ -98,7 +109,7 @@ public final class List {
 	}
 	
 	public static Array listToArray(String list, String delimiter, boolean multiCharDelim) {
-		if(!multiCharDelim) return listToArray(list, delimiter);
+		if(!multiCharDelim || delimiter.length()==0) return listToArray(list, delimiter);
 		if(delimiter.length()==1)return listToArray(list, delimiter.charAt(0));
 		int len=list.length();
 		if(len==0) return new ArrayImpl();
@@ -148,7 +159,7 @@ public final class List {
 	 * @return Array Object
 	 */
 	public static Array listToArrayRemoveEmpty(String list, String delimiter, boolean multiCharDelim) {
-		if(!multiCharDelim) return listToArrayRemoveEmpty(list, delimiter);
+		if(!multiCharDelim || delimiter.length()==0) return listToArrayRemoveEmpty(list, delimiter);
 		
 	    if(delimiter.length()==1)return listToArrayRemoveEmpty(list, delimiter.charAt(0));
 		
@@ -177,6 +188,12 @@ public final class List {
 		int len=list.length();
 		ArrayImpl array=new ArrayImpl();
 		if(len==0) return array;
+		if(delimiter.length()==0) {
+	    	for(int i=0;i<len;i++){
+	    		array.appendEL(list.charAt(i));
+	    	}
+			return array;
+	    }
 		int last=0;
 		
 		char[] del = delimiter.toCharArray();
