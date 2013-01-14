@@ -3029,7 +3029,9 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>Empty</name>
 		<class>railo.runtime.functions.system.Empty</class>
-		<description>return true if a function exists and is not "empty". 
+		<status>deprecated</status>
+		<description>this function is deprcated, use instead "IsEmpty".
+		this function returns true if a value exists and is not "empty". 
 The following things are considered to be empty:
 - string:"" (an empty string)
 - number:return always false
@@ -9835,6 +9837,30 @@ The value determines whether the image is blurred or sharpened:
 			<required>Yes</required>
 		<description>The object that is checked.</description>
     </argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	
+	<!-- IsEmpty -->
+	<function>
+		<name>IsEmpty</name>
+		<class>railo.runtime.functions.decision.IsEmpty</class>
+		<description>return true if a value is "empty". 
+The following things are considered to be empty:
+- string:"" (an empty string)
+- array: [] (an empty array)
+- struct: {} (an empty struct)
+...
+		 </description>
+		<argument>
+			<name>value</name>
+			<alias>object</alias>
+			<type>object</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>
 		<return>
 			<type>boolean</type>
 		</return>
