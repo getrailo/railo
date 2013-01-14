@@ -1,4 +1,4 @@
-package railo.runtime.functions.system;
+package railo.runtime.functions.decision;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
@@ -7,7 +7,7 @@ import railo.runtime.functions.string.Len;
 import railo.runtime.interpreter.VariableInterpreter;
 import railo.runtime.op.Caster;
 
-public class Empty implements Function {
+public class IsEmpty implements Function {
 
 	private static final long serialVersionUID = 3780957672985941192L;
 	

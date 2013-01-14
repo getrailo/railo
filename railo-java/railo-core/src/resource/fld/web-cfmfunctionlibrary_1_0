@@ -3028,7 +3028,32 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<!-- Empty -->
 	<function>
 		<name>Empty</name>
-		<class>railo.runtime.functions.system.Empty</class>
+		<class>railo.runtime.functions.decision.IsEmpty</class>
+		<status>deprecated</status>
+		<description>return true if a function exists and is not "empty". 
+The following things are considered to be empty:
+- string:"" (an empty string)
+- number:return always false
+- boolean: return always false
+- array: [] (an empty array)
+- struct: {} (an empty struct)
+		 </description>
+		<argument>
+			<name>variable</name>
+			<alias>variableName,object</alias>
+			<type>variable_string</type>
+			<required>Yes</required>
+			<description></description>
+    	</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	<!-- IsEmpty -->
+	<function>
+		<name>IsEmpty</name>
+		<class>railo.runtime.functions.decision.IsEmpty</class>
 		<description>return true if a function exists and is not "empty". 
 The following things are considered to be empty:
 - string:"" (an empty string)
