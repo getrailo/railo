@@ -522,13 +522,17 @@ a.edit {
 	background-image: url(../img/edit.png.cfm), -webkit-linear-gradient(top, #fff,#ddd); /* Chrome 10+, Saf5.1+ */
 	background-image: url(../img/edit.png.cfm),	-moz-linear-gradient(top, #fff,#ddd); /* FF3.6+ */
 	background-image: url(../img/edit.png.cfm),	 -ms-linear-gradient(top, #fff,#ddd); /* IE10 */
-	background-image: url(../img/edit.png.cfm),	  -o-linear-gradient(top, #fff,#ddd); /* Opera 11.10+ */
-	background-image: url(../img/edit.png.cfm),         linear-gradient(top, #fff,#ddd); /* W3C */
+	background-image: url(../img/edit.png.cfm),	 -o-linear-gradient(top, #fff,#ddd); /* Opera 11.10+ */
+	background-image: url(../img/edit.png.cfm),  linear-gradient(top, #fff,#ddd); /* W3C */
 	background-repeat: no-repeat;
 	background-position: center;
 	line-height:18px;
 	width:20px;
 }
+.ielt9 a.edit {/*ie 8*/
+	background-image: url(../img/edit.png.cfm);
+}
+
 .btn-search {
 	background-image: url(../img/search_icon.png.cfm); /* fallback */
 	background-image: url(../img/search_icon.png.cfm), -webkit-linear-gradient(top, #fff,#ddd); /* Chrome 10+, Saf5.1+ */
@@ -542,6 +546,10 @@ a.edit {
 	height:20px;
 	width:20px;
 }
+.ielt9 .btn-search {/*ie 8*/
+	background-image: url(../img/search_icon.png.cfm);
+}
+
 .btn-mini span {
 	display:none;
 }

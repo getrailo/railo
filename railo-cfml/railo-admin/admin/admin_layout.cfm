@@ -25,6 +25,7 @@
 	<script src="resources/js/jquery-1.7.2.min.js.cfm" type="text/javascript"></script>
 	<script src="resources/js/jquery.blockUI.js.cfm" type="text/javascript"></script>
 	<script src="resources/js/admin.js.cfm" type="text/javascript"></script>
+	<!--[if IE lt 9]><script>$(function(){$('body').addClass('ielt9')})</script><![endif]-->
 </head>
 <cfoutput>
 <body id="body" class="#request.adminType#<cfif application.adminfunctions.getdata('fullscreen') eq 1> full</cfif>" <cfif structKeyExists(attributes,"onload")>onload="#attributes.onload#"</cfif>>

@@ -174,7 +174,7 @@ function checkTheBox(field) {
 	if (box.filter(':checked').length==0)
 	{
 		// calls the click handlers as well
-		$(box).click();
+		box.prop('checked', 'checked').triggerHandler('change');
 	}
 }
 
