@@ -3040,7 +3040,7 @@ The following things are considered to be empty:
 		<argument>
 			<name>variable</name>
 			<alias>variableName,object</alias>
-			<type>variable_string</type>
+			<type>variablestring</type>
 			<required>Yes</required>
 			<description></description>
     	</argument>
@@ -3629,7 +3629,8 @@ dec: descending (z to a) sort order.
 		<class>railo.runtime.functions.struct.Duplicate</class>
 		<description>Returns a new duplicated version of the given object, removing all references to the old one</description>
 		<argument>
-			<name>variable_name</name>
+			<name>object</name>
+			<alias>variable_name,obj</alias>
 			<type>any</type>
 			<required>Yes</required>
 		<description>Name of a variable to duplicate</description>
@@ -12659,7 +12660,7 @@ ormEvictQueries([cacheName])</description>
 		<description>Determines if the parameter exists</description>
 		<argument>
 			<name>parameter</name>
-			<type>variable_string</type>
+			<type>variablestring</type>
 			<required>Yes</required>
 		<description></description>
     </argument>
@@ -15685,7 +15686,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>node</name>
 			<alias>xmlObj,xmlDoc,xml</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>XML element within which to search.</description>
     </argument>
@@ -15713,7 +15714,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>xmlObj</name>
 			<alias>node,element,xml,xmlDoc</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>Name of the XML document object in which you are creating the element</description>
     	</argument>
@@ -15759,7 +15760,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>xml</name>
 			<alias>xmlDoc,xmlObj</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>An XML DOM object node</description>
     </argument>
@@ -15779,7 +15780,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description>Determines how Railo processes the case of XML document object component identifiers:</description>
     </argument>
 		<return>
-			<type>node</type>
+			<type>xml</type>
 		</return>
 	</function>
 	<!-- xmlParse -->
@@ -15812,7 +15813,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 - The URL of a DTD or Schema file; valid protocol identifiers include http, https, ftp, and file</description>
     </argument>
 		<return>
-			<type>node</type>
+			<type>xml</type>
 		</return>
 	</function>
 	<!-- htmlParse -->
@@ -15834,7 +15835,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<description></description>
     </argument>
 		<return>
-			<type>node</type>
+			<type>xml</type>
 		</return>
 	</function>
 	<!-- xmlSearch -->
@@ -15845,7 +15846,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 		<argument>
 			<name>xml</name>
 			<alias>xmlObj,xmlDoc,node</alias>
-			<type>node</type>
+			<type>xml</type>
 			<required>Yes</required>
 		<description>XML document object</description>
     </argument>

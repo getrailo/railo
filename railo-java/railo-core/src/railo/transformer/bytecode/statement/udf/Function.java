@@ -415,7 +415,7 @@ public abstract class Function extends StatementBaseNoFinal implements Opcodes, 
 		// name
 		ExpressionUtil.writeOutSilent(name,bc, Expression.MODE_REF);
 		// return type
-		short type=ExpressionUtil.toShortType(returnType,CFTypes.TYPE_UNKNOW);
+		short type=ExpressionUtil.toShortType(returnType,false,CFTypes.TYPE_UNKNOW);
 		if(type==CFTypes.TYPE_UNKNOW) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
 		else adapter.push(type);
 		

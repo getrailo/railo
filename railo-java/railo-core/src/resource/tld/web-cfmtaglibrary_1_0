@@ -478,7 +478,7 @@ dbcreate(default:none): Hibernate can automatically create the tables for your a
 - dropcreate: Setting this value drops the table if it exists and then creates it.
 - none: Setting this value does not change anything in the database schema.
 
-dialect: Specifies the dialect.Railo supports the following dialects: [Cache 2007.1, Cache71, CachŽ 2007.1, DB2, DB2/390, DB2/400, DB2390, DB2400, DB2AS400, DB2OS390, DataDirectOracle9, Derby, Firebird, FrontBase, H2, H2DB, HSQL, HSQLDB, Informix, Ingres, Interbase, JDataStore, MSSQL, Mckoi, MckoiSQL, MicrosoftSQLServer, Mimer, MimerSQL, MySQL, MySQL/InnoDB, MySQL/MyISAM, MySQL5, MySQL5/InnoDB, MySQL5InnoDB, MySQLInnoDB, MySQLMyISAM, MySQLwithInnoDB, MySQLwithMyISAM, Oracle, Oracle10g, Oracle8i, Oracle9, Oracle9i, Pointbase, PostgreSQL, PostgresPlus, Progress, SAPDB, SQLServer, Sybase, Sybase11, SybaseASE15, SybaseAnywhere, com.ddtek.jdbc.db2.DB2Driver, com.microsoft.jdbc.sqlserver.SQLServerDriver, oracle.jdbc.driver.OracleDriver, org.firebirdsql.jdbc.FBDriver, org.gjt.mm.mysql.Driver, org.h2.Driver, org.hsqldb.jdbcDriver, org.postgresql.Driver]
+dialect: Specifies the dialect.Railo supports the following dialects: [Cache 2007.1, Cache71, Cachï¿½ 2007.1, DB2, DB2/390, DB2/400, DB2390, DB2400, DB2AS400, DB2OS390, DataDirectOracle9, Derby, Firebird, FrontBase, H2, H2DB, HSQL, HSQLDB, Informix, Ingres, Interbase, JDataStore, MSSQL, Mckoi, MckoiSQL, MicrosoftSQLServer, Mimer, MimerSQL, MySQL, MySQL/InnoDB, MySQL/MyISAM, MySQL5, MySQL5/InnoDB, MySQL5InnoDB, MySQLInnoDB, MySQLMyISAM, MySQLwithInnoDB, MySQLwithMyISAM, Oracle, Oracle10g, Oracle8i, Oracle9, Oracle9i, Pointbase, PostgreSQL, PostgresPlus, Progress, SAPDB, SQLServer, Sybase, Sybase11, SybaseASE15, SybaseAnywhere, com.ddtek.jdbc.db2.DB2Driver, com.microsoft.jdbc.sqlserver.SQLServerDriver, oracle.jdbc.driver.OracleDriver, org.firebirdsql.jdbc.FBDriver, org.gjt.mm.mysql.Driver, org.h2.Driver, org.hsqldb.jdbcDriver, org.postgresql.Driver]
 
 eventHandling(default:false): Specifies whether ORM Event callbacks should be given.
 
@@ -8821,7 +8821,7 @@ Each type-value pair must start with a hyphen.</description>
 - email: a valid e-mail address
 - eurodate: a date-time value. Any date part must be in the format dd/mm/yy. The format can use /, -, or . characters as delimiters
 - float or numeric: a numeric value
-- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where Ô XÕ is a hexadecimal number
+- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where ï¿½ Xï¿½ is a hexadecimal number
 - integer: an integer
 - query: a query object
 - range: a numeric range, specified by the min and max attributes
@@ -8831,7 +8831,7 @@ Each type-value pair must start with a hyphen.</description>
 - struct: a structure
 - telephone: a standard U.S. telephone number
 - url: an http, https, ftp, file, mailto, or news URL
-- uuid: a ColdFusion Universally Unique Identifier, formatted Ô XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXXÕ, where Ô XÕ is a hexadecimal number. See CreateUUID
+- uuid: a ColdFusion Universally Unique Identifier, formatted ï¿½ XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXXï¿½, where ï¿½ Xï¿½ is a hexadecimal number. See CreateUUID
 - usdate: a U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years
 - variableName: a string formatted according to ColdFusion variable naming conventions
 - xml: XML objects and XML strings

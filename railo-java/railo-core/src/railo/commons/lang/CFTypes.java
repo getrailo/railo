@@ -1,5 +1,7 @@
 package railo.commons.lang;
 
+import railo.runtime.op.Caster;
+
 
 
 
@@ -183,7 +185,7 @@ public final class CFTypes {
 		return defaultValue;
 	}
 	
-	public static short toShort(String type, short defaultValue) {
+	public static short toShort(String type, boolean alsoAlias, short defaultValue) {
 		type=type.toLowerCase().trim();
 	    if(type.length()>2) {
 	        char first=type.charAt(0);
@@ -193,27 +195,27 @@ public final class CFTypes {
 	        	    if(type.equals("array")) return TYPE_ARRAY;
 	        	break;
 	        	case 'b':
-	        	    if(type.equals("boolean") || type.equals("bool")) return TYPE_BOOLEAN;
+	        	    if(type.equals("boolean") || (alsoAlias && type.equals("bool"))) return TYPE_BOOLEAN;
 	        	    if(type.equals("binary")) return TYPE_BINARY;
-	        	    if(type.equals("bigint")) return TYPE_NUMERIC;
+	        	    if(alsoAlias && type.equals("bigint")) return TYPE_NUMERIC;
 	        	    if("base64".equals(type))return TYPE_STRING;
 	        	    
 	        	break;	           	
 	        	case 'c':
-	        	    if("char".equals(type))return TYPE_STRING;
+	        	    if(alsoAlias && "char".equals(type))return TYPE_STRING;
 	        	    
 	        	break;	           	
 	            case 'd':
-	                if("double".equals(type))							return TYPE_NUMERIC;
-	                if("decimal".equals(type))							return TYPE_STRING;
-	        	    if(type.equals("date") || type.equals("datetime"))	return TYPE_DATETIME;
+	                if(alsoAlias && "double".equals(type))							return TYPE_NUMERIC;
+	                if(alsoAlias && "decimal".equals(type))							return TYPE_STRING;
+	        	    if(type.equals("date") || type.equals("datetime"))				return TYPE_DATETIME;
 	        	break; 
 
 	            case 'e':
 	                if("eurodate".equals(type)) 							return TYPE_DATETIME;
 	            break;
 	            case 'f':
-	                if("float".equals(type)) 							return TYPE_NUMERIC;
+	                if(alsoAlias && "float".equals(type)) 							return TYPE_NUMERIC;
 	                if("function".equals(type)) 							return TYPE_FUNCTION;
 	            break;
 	            case 'g':
@@ -221,24 +223,25 @@ public final class CFTypes {
 	            break;
 
 	            case 'i':
-	                if("int".equals(type)) 								return TYPE_NUMERIC;
-	                if("integer".equals(type))							return TYPE_NUMERIC;
+	                if(alsoAlias && ("int".equals(type) || "integer".equals(type))) 	return TYPE_NUMERIC;
 	            break;
 
 	            case 'l':
-	                if("long".equals(type))								return TYPE_NUMERIC;
+	                if(alsoAlias && "long".equals(type))								return TYPE_NUMERIC;
 	            break;
 	        	
 	        	case 'n':
 	        	    if(type.equals("numeric")) return TYPE_NUMERIC;
 	        	    else if(type.equals("number")) return TYPE_NUMERIC;
-	        	    else if(type.equals("node")) return TYPE_XML;
-	        	    else if(type.equals("nvarchar")) return TYPE_STRING;
-	        	    else if(type.equals("nchar")) return TYPE_STRING;
+	        	    if(alsoAlias) {
+		        	    if(type.equals("node")) return TYPE_XML;
+		        	    else if(type.equals("nvarchar")) return TYPE_STRING;
+		        	    else if(type.equals("nchar")) return TYPE_STRING;
+	        	    }
 	        	    break;
 	        	case 'o':
 	        	    if(type.equals("object")) return TYPE_ANY;
-	        	    if(type.equals("other")) return TYPE_ANY;
+	        	    if(alsoAlias && type.equals("other")) return TYPE_ANY;
 	        	    break;
 	        	case 'q':
 	        	    if(type.equals("query")) return TYPE_QUERY;
@@ -247,26 +250,29 @@ public final class CFTypes {
 	        	case 's':
 	        	    if(type.equals("string")) return TYPE_STRING;
 	        	    else if(type.equals("struct")) return TYPE_STRUCT;
-	                if("short".equals(type))return TYPE_NUMERIC;
+	                if(alsoAlias && "short".equals(type))return TYPE_NUMERIC;
 	        	break;
 	        	case 't':
 	        	    if(type.equals("timespan")) return TYPE_TIMESPAN;
 	        	    if(type.equals("time")) return TYPE_DATETIME;
-	        	    if(type.equals("timestamp")) return TYPE_DATETIME;
-	        	    if(type.equals("text")) return TYPE_STRING;
+	        	    if(alsoAlias && type.equals("timestamp")) return TYPE_DATETIME;
+	        	    if(alsoAlias && type.equals("text")) return TYPE_STRING;
 	        	    break;
 	        	case 'u':
 	        	    if(type.equals("uuid")) return TYPE_UUID;
-	                if("usdate".equals(type))return TYPE_DATETIME;
-	                if("udf".equals(type))return TYPE_FUNCTION;
+	                if(alsoAlias && "usdate".equals(type))return TYPE_DATETIME;
+	                if(alsoAlias && "udf".equals(type))return TYPE_FUNCTION;
 	        	    break;
 	        	case 'v':
 	        	    if(type.equals("variablename")) return TYPE_VARIABLE_NAME;
-	        	    if(type.equals("variable_name")) return TYPE_VARIABLE_NAME;
+	        	    if(alsoAlias && type.equals("variable_name")) return TYPE_VARIABLE_NAME;
+	        	    
 	        	    if(type.equals("variablestring")) return TYPE_VARIABLE_STRING;
-	        	    if(type.equals("variable_string")) return TYPE_VARIABLE_STRING;
+	        	    if(alsoAlias && type.equals("variable_string")) return TYPE_VARIABLE_STRING;
+	        	    
+	        	    
 	        	    if(type.equals("void")) return TYPE_VOID;
-	        	    if(type.equals("varchar")) return TYPE_STRING;
+	        	    if(alsoAlias && type.equals("varchar")) return TYPE_STRING;
 	        	    break;
                 case 'x':
                     if(type.equals("xml")) return TYPE_XML;

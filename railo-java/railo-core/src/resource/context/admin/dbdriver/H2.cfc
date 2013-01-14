@@ -15,6 +15,7 @@
 	
 	
 	<cffunction name="onBeforeUpdate" returntype="void" output="no">
+		<!--- add the right file delimiter --->
 		<cfset form.custom_path=replace(
 						form.custom_path,
 						SLASH[server.separator.file],
@@ -24,7 +25,15 @@
 			<cfset form.custom_path=form.custom_path&server.separator.file>
 		</cfif>
 		
+		<!--- make sure relative path and path with placeholder are working --->
+		<cfif not directoryExists(form.custom_path)>
+			<cfset local._custom_path=expandPath(form.custom_path)>
+			<cfif directoryExists(local._custom_path)>
+				<cfset form.custom_path=local._custom_path>
+			</cfif>
+		</cfif>
 		
+		<!--- if parent exist, create it --->
 		<cfif not directoryExists(form.custom_path)>
 			<cfset var parent=mid(form.custom_path,1,len(form.custom_path)-1)>
 			<cfset parent=getDirectoryFromPath(parent)>
@@ -34,6 +43,7 @@
 				<cfthrow message="directory [#form.custom_path#] doesn't exist">
 			</cfif>
 		</cfif>
+		
 	</cffunction>
 	
 	<cffunction name="getName" returntype="string"  output="no"

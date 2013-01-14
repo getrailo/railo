@@ -429,7 +429,7 @@ public final class QoQ {
             case 'c':
                 if(op.equals("ceiling"))return new Double(Math.ceil(Caster.toDoubleValue(value)));
                 if(op.equals("cos"))    return new Double(Math.cos(Caster.toDoubleValue(value)));
-                if(op.equals("cast"))    return Caster.castTo(pc, CFTypes.toShort(operators[0].getAlias(),CFTypes.TYPE_UNKNOW),operators[0].getAlias(), value);
+                if(op.equals("cast"))    return Caster.castTo(pc, CFTypes.toShort(operators[0].getAlias(),true,CFTypes.TYPE_UNKNOW),operators[0].getAlias(), value);
             break;
             case 'e':
                 if(op.equals("exp"))    return new Double(Math.exp(Caster.toDoubleValue(value)));

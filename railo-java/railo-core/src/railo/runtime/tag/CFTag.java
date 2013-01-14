@@ -401,7 +401,7 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 						throw new ApplicationException("attribute ["+key.getString()+"] is required for tag ["+tagName+"]");
 				}
 				if(value!=null) {
-					if(!Decision.isCastableTo(attr.getType(),value,true,-1)) 
+					if(!Decision.isCastableTo(attr.getType(),value,true,true,-1)) 
 						throw new CasterException(createMessage(attr.getType(), value));
 				
 				}
