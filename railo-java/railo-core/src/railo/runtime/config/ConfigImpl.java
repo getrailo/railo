@@ -28,6 +28,8 @@ import railo.commons.io.res.Resources;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.type.compress.Compress;
+import railo.commons.io.res.type.compress.CompressResource;
+import railo.commons.io.res.type.compress.CompressResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
@@ -1012,49 +1014,74 @@ public abstract class ConfigImpl implements Config {
      */
     public PageSource toPageSource(Mapping[] mappings, Resource res,PageSource defaultValue) {
         Mapping mapping;
-        Resource root;
         String path;
         
         // app-cfc mappings
         if(mappings!=null){
             for(int i=0;i<mappings.length;i++) {
                 mapping = mappings[i];
-                root=mapping.getPhysical();
-                path=ResourceUtil.getPathToChild(res, root);
-                if(path!=null) {
-                	return mapping.getPageSource(path);
-                }
+                
+            // Physical
+               if(mapping.hasPhysical()) {
+               	path=ResourceUtil.getPathToChild(res, mapping.getPhysical());
+                   if(path!=null) {
+                   	return mapping.getPageSource(path);
+                   }
+               }
+           // Archive
+               if(mapping.hasArchive() && res.getResourceProvider() instanceof CompressResourceProvider) {
+            	   Resource archive = mapping.getArchive();
+            	   CompressResource cr = ((CompressResource) res);
+            	   if(archive.equals(cr.getCompressResource())) {
+            		   return mapping.getPageSource(cr.getCompressPath());
+            	   }
+               }
             }
         }
         
         // config mappings
         for(int i=0;i<this.mappings.length;i++) {
             mapping = this.mappings[i];
-            root=mapping.getPhysical();
-            path=ResourceUtil.getPathToChild(res, root);
-            //print.out(path+"==="+res+"="+root);
-            if(path!=null) {
-            	return mapping.getPageSource(path);
+            	
+         // Physical
+            if(mapping.hasPhysical()) {
+            	path=ResourceUtil.getPathToChild(res, mapping.getPhysical());
+                if(path!=null) {
+                	return mapping.getPageSource(path);
+                }
+            }
+        // Archive
+            if(mapping.hasArchive() && res.getResourceProvider() instanceof CompressResourceProvider) {
+        		Resource archive = mapping.getArchive();
+        		CompressResource cr = ((CompressResource) res);
+        		if(archive.equals(cr.getCompressResource())) {
+        			return mapping.getPageSource(cr.getCompressPath());
+        		}
             }
         }
         
-        // map resource to root mapping when same filesystem
+    // map resource to root mapping when same filesystem
         Mapping rootMapping = this.mappings[this.mappings.length-1];
-        root=rootMapping.getPhysical();
-        if(res.getResourceProvider().getScheme().equals(root.getResourceProvider().getScheme())){
-        	String realpath="";
-        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
-        		root=root.getParentResource();
-        		realpath+="../";
-        	}
-        	String p2c=ResourceUtil.getPathToChild(res,root);
-        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
-        		p2c=p2c.substring(1);
-        	realpath+=p2c;
-        	
-        	return rootMapping.getPageSource(realpath);
+        Resource root;
+     // Physical
+        if(rootMapping.hasPhysical()) {
+	        root=rootMapping.getPhysical();
+	        if(res.getResourceProvider().getScheme().equals(root.getResourceProvider().getScheme())){
+	        	String realpath="";
+	        	while(root!=null && !ResourceUtil.isChildOf(res, root)){
+	        		root=root.getParentResource();
+	        		realpath+="../";
+	        	}
+	        	String p2c=ResourceUtil.getPathToChild(res,root);
+	        	if(StringUtil.startsWith(p2c, '/') || StringUtil.startsWith(p2c, '\\') )
+	        		p2c=p2c.substring(1);
+	        	realpath+=p2c;
+	        	
+	        	return rootMapping.getPageSource(realpath);
+	        }
         }
-        
+     // Archive
+        // MUST check archive
         return defaultValue;
     }
     
