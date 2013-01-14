@@ -266,6 +266,11 @@ public final class CFTypes {
 	        	case 'v':
 	        	    if(type.equals("variablename")) return TYPE_VARIABLE_NAME;
 	        	    if(alsoAlias && type.equals("variable_name")) return TYPE_VARIABLE_NAME;
+	        	    
+	        	    if(type.equals("variablestring")) return TYPE_VARIABLE_STRING;
+	        	    if(alsoAlias && type.equals("variable_string")) return TYPE_VARIABLE_STRING;
+	        	    
+	        	    
 	        	    if(type.equals("void")) return TYPE_VOID;
 	        	    if(alsoAlias && type.equals("varchar")) return TYPE_STRING;
 	        	    break;
