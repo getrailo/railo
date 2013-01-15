@@ -32,6 +32,7 @@ import railo.runtime.query.QueryCache;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
@@ -326,7 +327,7 @@ public final class CFMLFactoryImpl extends CFMLFactory {
 		
 		synchronized (runningPcs) {
             //int len=runningPcs.size();
-			Iterator it = runningPcs.keyIterator();
+			Iterator<Key> it = runningPcs.keyIterator();
             PageContextImpl pc;
             Struct data,sctThread,scopes;
     		Collection.Key key;
