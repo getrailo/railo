@@ -16,7 +16,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 
-public final class TagThread extends TagBase {
+public final class TagThread extends TagBaseNoFinal {
 
 	
 	

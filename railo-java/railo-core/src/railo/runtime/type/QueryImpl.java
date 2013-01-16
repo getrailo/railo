@@ -121,9 +121,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	private String template;
 	
 	
-	/**
-	 * @return return execution time to get query
-	 */
+	@Override
 	public int executionTime() {
 		return (int) exeTime;
 	}
@@ -137,16 +135,17 @@ public class QueryImpl implements Query,Objects,Sizeable {
      */
     public QueryImpl(ResultSet result, int maxrow, String name) throws PageException {
     	this.name=name;
-        Stopwatch stopwatch=new Stopwatch();
-		stopwatch.start();
-		try {
+        //Stopwatch stopwatch=new Stopwatch();
+		//stopwatch.start();
+		long start=System.nanoTime();
+    	try {
             fillResult(null,result,maxrow,false,false);
         } catch (SQLException e) {
             throw new DatabaseException(e,null);
         } catch (IOException e) {
             throw Caster.toPageException(e);
         }
-		exeTime=stopwatch.time();
+		exeTime=System.nanoTime()-start;
     }
     
     /**
@@ -206,8 +205,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
         	if(!dci.supportsGetGeneratedKeys())createGeneratedKeys=false;
         }
 		
-		Stopwatch stopwatch=new Stopwatch();
-		stopwatch.start();
+		//Stopwatch stopwatch=new Stopwatch();
+        long start=System.nanoTime();
+		//stopwatch.start();
 		boolean hasResult=false;
 		//boolean closeStatement=true;
 		try {	
@@ -259,7 +259,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         	//if(closeStatement)
         		DBUtil.closeEL(stat);
         }  
-		exeTime=stopwatch.time();
+		exeTime=System.nanoTime()-start;
 
 		if(columncount==0) {
 			if(columnNames==null) columnNames=new Collection.Key[0];
@@ -1429,7 +1429,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 
 		if(exeTime>0)	{
-			sb.append("Execution Time: "+exeTime+"\n");
+			sb.append("Execution Time (ns): "+exeTime+"\n");
 			sb.append("---------------------------------------------------\n");
 		}
 		
@@ -1541,10 +1541,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return -1;
 	}
 	
-
-	/**
-	 * @see railo.runtime.type.Query#setExecutionTime(long)
-	 */
+	@Override
 	public void setExecutionTime(long exeTime) {
 		this.exeTime=exeTime;
 	}
@@ -1840,7 +1837,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return cols;
     }
 
-    public synchronized Struct _getMetaData() {
+    /*public synchronized Struct _getMetaData() {
     	
         Struct cols=new StructImpl();
         for(int i=0;i<columns.length;i++) {
@@ -1856,7 +1853,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         sct.setEL(KeyConstants._cached,Caster.toBoolean(isCached()));
         return sct;
         
-    }
+    }*/
 
 	/**
 	 * @return the sql
@@ -3431,6 +3428,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
+	@Override
 	public long getExecutionTime() {
 		return exeTime;
 	}
