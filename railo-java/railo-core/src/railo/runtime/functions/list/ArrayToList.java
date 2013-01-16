@@ -17,7 +17,7 @@ public final class ArrayToList implements Function {
 		if(delimiter.length()==1) return call(pc,array,delimiter.charAt(0));
 		int len=array.size();
 		if(len==0) return "";
-		if(len==1)return Caster.toString(array.getE(1));
+		if(len==1)return Caster.toString(array.get(1,""));
 		
 		Object o=array.get(1,null);
 		StringBuffer sb=new StringBuffer(o==null?"":Caster.toString(o));

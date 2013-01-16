@@ -60,34 +60,26 @@ public final class Hash implements Function {
 		byte[] arrBytes = null;
 		
 		try {			
-
-			if ( input instanceof byte[] ) {
-				
+			if(input instanceof byte[]) {
 				arrBytes = (byte[])input;
-				
-				if ( isDefaultAlgo ) 
-					return Md5.getDigestAsString( arrBytes ).toUpperCase();
-			} else {
-				
-				String string = input.toString();
-				
-				if ( isDefaultAlgo ) 
-					return Md5.getDigestAsString( string ).toUpperCase();
-				
+				if(isDefaultAlgo) return Md5.getDigestAsString( arrBytes ).toUpperCase();
+			} 
+			else {
+				String string = Caster.toString(input);
+				if (isDefaultAlgo) return Md5.getDigestAsString( string ).toUpperCase();
 				arrBytes = string.getBytes( encoding );
 			}
 			
 			MessageDigest md=MessageDigest.getInstance(algorithm);
+		    md.reset();
 		    
-			md.reset();
-		    
-			for( int i=0; i<numIterations; i++ )
-				md.update( arrBytes );
+			for(int i=0; i<numIterations; i++)
+				md.update(arrBytes);
 		    
 			return Md5.stringify( md.digest() ).toUpperCase();
 		} 
-		catch (Exception e) {
-			throw Caster.toPageException(e);
+		catch (Throwable t) {
+			throw Caster.toPageException(t);
 		}
 	}
 

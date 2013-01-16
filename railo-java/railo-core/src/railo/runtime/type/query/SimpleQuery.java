@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -1566,6 +1567,16 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		return res.getObject(toIndex(colName), map);
 	}
 
+	// used only with java 7, do not set @Override
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnIndex, type);
+	}
+
+	// used only with java 7, do not set @Override
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnLabel, type);
+	}
+	
 	/**
 	 * @see railo.runtime.type.QueryImpl#getRef(int)
 	 */
@@ -2734,7 +2745,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 
 	
 	public static PageRuntimeException notSupported() {
-		return new PageRuntimeException(new ApplicationException("not supported"));
+		return toRuntimeExc(new SQLFeatureNotSupportedException("not supported"));
 	}
 
 	public static PageRuntimeException toRuntimeExc(Throwable t) {

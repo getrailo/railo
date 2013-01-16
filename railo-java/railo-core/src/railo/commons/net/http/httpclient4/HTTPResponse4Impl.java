@@ -62,6 +62,7 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 	public byte[] getContentAsByteArray() throws IOException {
 		HttpEntity entity = rsp.getEntity();
 		InputStream is=null;
+		if(entity==null) return new byte[0];
 		try{
 			return IOUtil.toBytes(is=entity.getContent());
 		}
@@ -69,16 +70,7 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 			IOUtil.closeEL(is);
 		}
 	}
-	
-	/*public ContentType getContentType() {
-		Header header = getLastHeaderIgnoreCase("Content-Type");
-		if(header==null) return null;
-		
-		String[] mimeCharset = HTTPUtil.splitMimeTypeAndCharset(header.getValue());
-		String[] typeSub = HTTPUtil.splitTypeAndSubType(mimeCharset[0]);
-		return new ContentTypeImpl(typeSub[0],typeSub[1],mimeCharset[1]);
-	}*/
-	
+
 	@Override
 	public Header getLastHeader(String name) {
 		org.apache.http.Header header = rsp.getLastHeader(name);
@@ -102,43 +94,7 @@ public class HTTPResponse4Impl extends HTTPResponseSupport implements HTTPRespon
 		}
 		return null;
 	}
-	
-	/*public String getCharset() {
-		ContentType ct = getContentType();
-		String charset=null;
-		if(ct!=null)charset=ct.getCharset();
-		if(!StringUtil.isEmpty(charset)) return charset;
-		
-		PageContext pc = ThreadLocalPageContext.get();
-		if(pc!=null) return pc.getConfig().getWebCharset();
-		return "ISO-8859-1";
-	}*/
-	
-	/*public long getContentLength() throws IOException {
-		
-		
-		Header ct = getLastHeaderIgnoreCase("Content-Length");
-		if(ct!=null) return Caster.toLongValue(ct.getValue(),-1);
-		
-		
-		HttpEntity entity = rsp.getEntity();
-		InputStream is=null;
-		long length=0;
-		try{
-			is=entity.getContent();
-			byte[] buffer = new byte[1024];
-		    int len;
-		    
-		    while((len = is.read(buffer)) !=-1){
-		      length+=len;
-		    }
-			return length;
-		}
-		finally {
-			IOUtil.closeEL(is);
-		}
-	}*/
-	
+
 	@Override
 	public URL getURL() {
 		try {

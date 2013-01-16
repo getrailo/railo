@@ -24,6 +24,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.SQL;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -422,6 +423,7 @@ public final class DebuggerImpl implements DebuggerPro {
 
 		// traces
 		len=traces==null?0:traces.size();
+		if(!((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_TRACING))len=0;
         Query qryTraces=new QueryImpl(
                 new Collection.Key[]{
                 		KeyConstants._type,
@@ -563,6 +565,7 @@ public final class DebuggerImpl implements DebuggerPro {
 		timers.add(t=new DebugTimerImpl(label,time,template));
 		return t;
 	}
+	
 
 	@Override
 	public DebugTrace addTrace(int type, String category, String text, PageSource page,String varName,String varValue) {
@@ -582,8 +585,8 @@ public final class DebuggerImpl implements DebuggerPro {
 			}
 		}
 		
-		DebugTraceImpl t;
-		traces.add(t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace));
+		DebugTraceImpl t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace);
+		traces.add(t);
 		return t;
 	}
 	
@@ -593,14 +596,20 @@ public final class DebuggerImpl implements DebuggerPro {
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
 		lastTrace = System.currentTimeMillis();
         
-		DebugTraceImpl t;
-		traces.add(t=new DebugTraceImpl(type,category,text,template,line,action,varName,varValue,lastTrace-_lastTrace));
+		DebugTraceImpl t=new DebugTraceImpl(type,category,text,template,line,action,varName,varValue,lastTrace-_lastTrace);
+		traces.add(t);
 		return t;
 	}
 	
 	@Override
 	public DebugTrace[] getTraces() {
-		return traces.toArray(new DebugTrace[traces.size()]);
+		return getTraces(ThreadLocalPageContext.get());
+	}
+
+	public DebugTrace[] getTraces(PageContext pc) {
+		if(pc!=null && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_TRACING))
+			return traces.toArray(new DebugTrace[traces.size()]);
+		return new DebugTrace[0];
 	}
 	
 	@Override
@@ -619,7 +628,7 @@ public final class DebuggerImpl implements DebuggerPro {
 
 	public static boolean debugQueryUsage(PageContext pageContext, Query query) {
 		if(pageContext.getConfig().debug() && query instanceof QueryImpl) {
-			if(((ConfigWebImpl)pageContext.getConfig()).getDebugShowQueryUsage()){
+			if(((ConfigWebImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)){
 				((QueryImpl)query).enableShowQueryUsage();
 				return true;
 			}

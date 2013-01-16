@@ -966,14 +966,12 @@ public final class ConfigWebFactory {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 	    
-	    if(!SystemUtil.isWindows()) {
+	    if(SystemUtil.isWindows()) {
 	    	Resource systemDir=SystemUtil.getSystemDirectory();
 	        if(systemDir!=null) {
-	        	boolean is64=SystemUtil.getJREArch()==SystemUtil.ARCH_64;
-	        	String name;
-	        	if(is64) name="jacob-x64.dll";
-	        	else name="jacob-x86.dll";
-	            
+	        	
+	        	String name = ( SystemUtil.getJREArch()==SystemUtil.ARCH_64 ) ? "jacob-x64.dll" : "jacob-x86.dll";
+	        	
 	        	Resource jacob=systemDir.getRealResource(name);
 	            if(!jacob.exists()) {
 	            	createFileFromResourceEL("/resource/bin/"+name,jacob);
@@ -1297,27 +1295,6 @@ public final class ConfigWebFactory {
         f=errorDir.getRealResource("error-public.cfm");
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/error/error-public.cfm",f);
         
-        /*Resource debuggingDir = templatesDir.getRealResource("debugging");
-        if(!debuggingDir.exists())debuggingDir.mkdirs();
-        
-        f=debuggingDir.getRealResource("debugging.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging.cfm",f);
-        
-        f=debuggingDir.getRealResource("debugging-cascade.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-cascade.cfm",f);
-        
-        f=debuggingDir.getRealResource("debugging-comment.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-comment.cfm",f);
-
-        f=debuggingDir.getRealResource("debugging-neo.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-neo.cfm",f);
-
-        f=debuggingDir.getRealResource("debugging-2-console.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/debugging/debugging-2-console.cfm",f);
-        
-        //f=debuggingDir.getRealResource("debugging-stats.cfm");
-        //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/debugging/debugging-stats.cfm",f);
-		*/
         Resource displayDir = templatesDir.getRealResource("display");
         if(!displayDir.exists())displayDir.mkdirs();
 
@@ -1326,25 +1303,6 @@ public final class ConfigWebFactory {
         
         f=displayDir.getRealResource(Constants.APP_CFC);
         if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/Application.cfc",f);
-        /*
-        f=displayDir.getRealResource("debugging-console-output-pages.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output-pages.cfm",f);
-        
-        f=displayDir.getRealResource("debugging-console-output-queries.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output-queries.cfm",f);
-
-        f=displayDir.getRealResource("debugging-console-output.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console-output.cfm",f);
-
-        f=displayDir.getRealResource("debugging-console.cfm");
-        if(!f.exists() || doNew)createFileFromResourceEL("/resource/context/templates/display/debugging-console.cfm",f);
-        
-        //f=displayDir.getRealResource("debugging-stats.cfm");
-        //if(!f.exists() || doNew)createFileFromResource("/resource/context/templates/display/debugging-stats.cfm",f);
-*/
-        
-        
-        
         
         Resource lib = ResourceUtil.toResource(CFMLEngineFactory.getClassLoaderRoot(TP.class.getClassLoader()));
         f=lib.getRealResource("jfreechart-patch.jar");
@@ -1801,16 +1759,17 @@ public final class ConfigWebFactory {
     	System.setProperty("oracle.jdbc.V8Compatible", "true");
         
         boolean hasCS=configServer!=null;
-        HashTable datasources=new HashTable();
+        Map<String,DataSource> datasources=new HashMap<String, DataSource>();
         
         // Copy Parent datasources as readOnly
         if(hasCS) {
-            Map ds = configServer.getDataSourcesAsMap();
-            Iterator it = ds.keySet().iterator();
+            Map<String, DataSource> ds = configServer.getDataSourcesAsMap();
+            Iterator<Entry<String, DataSource>> it = ds.entrySet().iterator();
+            Entry<String, DataSource> entry;
             while(it.hasNext()) {
-	                Object key=it.next();
-	                if(!key.equals("_queryofquerydb"))
-	                    datasources.put(key,((DataSource)ds.get(key)).cloneReadOnly());
+	                entry = it.next();
+	                if(!entry.getKey().equals("_queryofquerydb"))
+	                    datasources.put(entry.getKey(),entry.getValue().cloneReadOnly());
 	            }
 	        }
         
@@ -2277,7 +2236,7 @@ public final class ConfigWebFactory {
         		  metaCacheTimeout,blob,clob, allow,custom, false,validate,storage,StringUtil.isEmpty(timezone,true)?null:TimeZoneUtil.toTimeZone(timezone,null)));
 
     }
-    private static void setDatasourceEL(ConfigImpl config,Map datasources,String datasourceName, String className, String server, 
+    private static void setDatasourceEL(ConfigImpl config,Map<String,DataSource> datasources,String datasourceName, String className, String server, 
             String databasename, int port, String dsn, String user, String pass, 
             int connectionLimit, int connectionTimeout, long metaCacheTimeout, boolean blob, boolean clob, int allow,boolean validate,
             boolean storage,String timezone, Struct custom) {
@@ -3670,6 +3629,44 @@ public final class ConfigWebFactory {
       	}
       	else if(hasCS)config.setDebug(configServer.debug()?ConfigImpl.SERVER_BOOLEAN_TRUE:ConfigImpl.SERVER_BOOLEAN_FALSE);
       	
+     // debug options
+      	int options=0;
+      	String str=debugging.getAttribute("database");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_DATABASE;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_DATABASE)) options+=ConfigImpl.DEBUG_DATABASE;
+      	
+      	str=debugging.getAttribute("exception");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_EXCEPTION;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) options+=ConfigImpl.DEBUG_EXCEPTION;
+      	
+      	str=debugging.getAttribute("tracing");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_TRACING;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_TRACING)) options+=ConfigImpl.DEBUG_TRACING;
+      	
+      	str=debugging.getAttribute("timer");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_TIMER;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_TIMER)) options+=ConfigImpl.DEBUG_TIMER;
+      	
+      	str=debugging.getAttribute("implicit-access");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_IMPLICIT_ACCESS;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS)) options+=ConfigImpl.DEBUG_IMPLICIT_ACCESS;
+      	
+      	str=debugging.getAttribute("query-usage");
+      	if(StringUtil.isEmpty(str))str=debugging.getAttribute("show-query-usage");
+      	if(hasAccess && !StringUtil.isEmpty(str)) {
+      		if(toBoolean(str,false))options+=ConfigImpl.DEBUG_QUERY_USAGE;
+      	}
+      	else if(hasCS && configServer.hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)) options+=ConfigImpl.DEBUG_QUERY_USAGE;
       	
      // max records logged
       	String strMax=debugging.getAttribute("max-records-logged");
@@ -3678,16 +3675,7 @@ public final class ConfigWebFactory {
       	}
       	else if(hasCS)config.setDebugMaxRecordsLogged(configServer.getDebugMaxRecordsLogged());
       	
-      	
-     // show-usage
-      	Boolean showUsage = Caster.toBoolean(debugging.getAttribute("show-query-usage"),null);
-      	showUsage=Boolean.TRUE;
-      	if(showUsage!=null && hasAccess) {
-      	    config.setDebugShowQueryUsage(showUsage.booleanValue());
-      	}
-      	else if(hasCS) {
-      	    config.setDebugShowQueryUsage(configServer.getDebugShowQueryUsage());
-      	}
+      	config.setDebugOptions(options);
     }
 
     /**

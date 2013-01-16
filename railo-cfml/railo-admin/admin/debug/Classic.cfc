@@ -26,15 +26,6 @@
 		
 		,field("Scope Variables","scopes","Application,CGI,Client,Cookie,Form,Request,Server,Session,URL",true,"Enable Scope reporting","checkbox","Application,CGI,Client,Cookie,Form,Request,Server,Session,URL")
 		
-		,field("Database Activity","database",true,false,"Select this option to show the database activity for the SQL Query events and Stored Procedure events in the debugging output.","checkbox")
-		
-		,field("Exceptions","exception",true,false,"Select this option to output all exceptions raised for the request. ","checkbox")
-		
-		,field("Tracing","tracing",true,false,"Select this option to show trace event information. Tracing lets a developer track program flow and efficiency through the use of the CFTRACE tag.","checkbox")
-		
-		,field("Timer","timer",true,false,"Select this option to show timer event information. Timers let a developer track the execution time of the code between the start and end tags of the CFTIMER tag. ","checkbox")
-		,field("Implicit variable Access","implicitAccess",true,false,"Select this option to show all accesses to scopes, queries and threads that happens implicit (cascaded). ","checkbox")
-		
 		
 		,group("Output Format","Define details to the fomrat of the debug output",3)
 		,field("Background Color","bgcolor","white",true,"Color in the back, ","text80")
@@ -54,7 +45,7 @@ string function getDescription(){
 	return "The old style debug template";
 }
 string function getid(){
-	return "railo-classic";
+	return "railo-classic"; 
 }
 
 
@@ -77,9 +68,9 @@ private void function throwWhenNotNumeric(struct custom, string name){
 		throw "value for ["&name&"] must be numeric";
 }
 
-private function isColumnEmpty(string columnName){
-	if(!isDefined(columnName)) return true;
-	return !len(replace(valueList(""&columnName),',','','all'));
+private function isColumnEmpty(query query, string columnName){
+	if(!QueryColumnExists(query,columnName)) return true;
+	return !len(ArrayToList(QueryColumnData(query,columnName),'')); 
 }
 
 
@@ -236,7 +227,7 @@ millisecond:"ms"
 
 
 <!--- Exceptions --->
-<cfif structKeyExists(custom,"exception") and custom.exception and structKeyExists(debugging,"exceptions")  and arrayLen(debugging.exceptions)>
+<cfif structKeyExists(debugging,"exceptions")  and arrayLen(debugging.exceptions)>
 	<cfset exceptions=debugging.exceptions>
     
 	<p class="cfdebug"><hr/><b class="cfdebuglge">Caught Exceptions</b></p>
@@ -260,7 +251,7 @@ millisecond:"ms"
 
 
 <!--- Timers --->
-<cfif structKeyExists(custom,"timer") and custom.timer and  timers.recordcount>
+<cfif timers.recordcount>
 	<p class="cfdebug"><hr/><b class="cfdebuglge">CFTimer Times</b></p>
 		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
 		<tr>
@@ -279,7 +270,7 @@ millisecond:"ms"
 </cfif>
 
 <!--- Access Scope --->
-<cfif structKeyExists(custom,"implicitAccess") and custom.implicitAccess and implicitAccess.recordcount>
+<cfif implicitAccess.recordcount>
 	<p class="cfdebug"><hr/><b class="cfdebuglge">Implicit variable Access</b></p>
 		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
 		<tr>
@@ -303,9 +294,9 @@ millisecond:"ms"
 </cfif> 
 
 <!--- Traces --->
-<cfif structKeyExists(custom,"tracing") and custom.tracing and traces.recordcount>
-	<cfset hasAction=!isColumnEmpty('traces.action')>
-	<cfset hasCategory=!isColumnEmpty('traces.category')>
+<cfif traces.recordcount>
+	<cfset hasAction=!isColumnEmpty(traces,'action')>
+	<cfset hasCategory=!isColumnEmpty(traces,'category')>
 	<p class="cfdebug"><hr/><b class="cfdebuglge">Trace Points</b></p>
 		<table border="1" cellpadding="2" cellspacing="0" class="cfdebug">
 		<tr>
@@ -340,7 +331,7 @@ millisecond:"ms"
 
 
 <!--- Queries --->
-<cfif structKeyExists(custom,"database") and custom.database and queries.recordcount>
+<cfif queries.recordcount>
 <p class="cfdebug"><hr/><b class="cfdebuglge"><a name="cfdebug_sql">SQL Queries</a></b></p>
 <cfloop query="queries">	
 <code><b>#queries.name#</b> (Datasource=#queries.datasource#, Time=#formatUnit(custom.unit, queries.time)#, Records=#queries.count#) in #queries.src#</code><br />

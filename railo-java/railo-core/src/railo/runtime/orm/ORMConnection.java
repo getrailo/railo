@@ -9,6 +9,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Savepoint;
@@ -16,6 +17,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
@@ -335,15 +337,12 @@ public class ORMConnection implements Connection {
 	}
 
 	private SQLException notSupported() {
-		return new SQLException("this feature is not supported");
+		return new SQLFeatureNotSupportedException("this feature is not supported");
 	}
 	private RuntimeException notSupportedEL() {
-		return new RuntimeException(new SQLException("this feature is not supported"));
+		return new RuntimeException(new SQLFeatureNotSupportedException("this feature is not supported"));
 	}
-
-	
-	//JDK6: uncomment this for compiling with JDK6 
-	 
+ 
 	public NClob createNClob() throws SQLException {
 		throw notSupported();
 	}
@@ -351,6 +350,29 @@ public class ORMConnection implements Connection {
 	public SQLXML createSQLXML() throws SQLException {
 		throw notSupported();
 	}
+
+	// used only with java 7, do not set @Override
+	public void setSchema(String schema) throws SQLException {
+		throw notSupported();
+	}
+
+	// used only with java 7, do not set @Override
+	public String getSchema() throws SQLException {
+		throw notSupported();
+	}
+
+	// used only with java 7, do not set @Override
+	public void abort(Executor executor) throws SQLException {
+		throw notSupported();
+	}
+
+	// used only with java 7, do not set @Override
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+		throw notSupported();
+	}
 	
-	
+	// used only with java 7, do not set @Override
+	public int getNetworkTimeout() throws SQLException {
+		throw notSupported();
+	}
 }

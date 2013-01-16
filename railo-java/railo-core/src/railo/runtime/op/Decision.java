@@ -1010,7 +1010,7 @@ public final class Decision {
      * @param maxlength only used for email,url, string, ignored otherwise
      * @return
      */
-    public static boolean isCastableTo(String type, Object o, boolean alsoPattern, int maxlength) {
+    public static boolean isCastableTo(String type, Object o, boolean alsoAlias, boolean alsoPattern, int maxlength) {
         
     	type=StringUtil.toLowerCase(type).trim();
         if(type.length()>2) {
@@ -1025,19 +1025,30 @@ public final class Decision {
                     }
                     break;
                 case 'b':
-                    if(type.equals("boolean") || type.equals("bool")) {
+                    if(type.equals("boolean") || (alsoAlias && type.equals("bool"))) {
                         return isCastableToBoolean(o);
                     }
                     else if(type.equals("binary")) {
                         return isCastableToBinary(o,true);
+                    }
+                    else if(alsoAlias && type.equals("bigint")) {
+                    	return isCastableToNumeric(o);
                     }
                     else if(type.equals("base64")) {
                         return Caster.toBase64(o,null,null)!=null;
                     }
                     break;
                 case 'c':
-                    if(alsoPattern && type.equals("creditcard")) {
+                	if(alsoPattern && type.equals("creditcard")) {
                     	return Caster.toCreditCard(o,null)!=null;
+                    }
+                	if(alsoPattern && type.equals("char")) {
+                		if(maxlength>-1) {
+                    		String str = Caster.toString(o,null);
+                    		if(str==null) return false;
+                    		return str.length()<=maxlength;
+                    	}
+                        return isCastableToString(o);
                     }
                     break;
                 case 'd':
@@ -1047,15 +1058,15 @@ public final class Decision {
                     else if(type.equals("datetime")) {
                         return isDateAdvanced(o, true);
                     }
-                    else if(type.equals("double")) {
+                    else if(alsoAlias && type.equals("double")) {
                         return isCastableToNumeric(o);
                     }
-                    else if(type.equals("decimal")) {
+                    else if(alsoAlias && type.equals("decimal")) {
                         return Caster.toDecimal(o,null)!=null;
                     }
                     break;
                 case 'e':
-                    if(type.equals("eurodate")) {
+                    if(alsoAlias && type.equals("eurodate")) {
                     	return isDateAdvanced(o, true);
                     }
                     else if(alsoPattern && type.equals("email")) {
@@ -1068,7 +1079,7 @@ public final class Decision {
                     }
                     break;
                 case 'f':
-                    if(type.equals("float")) {
+                    if(alsoAlias && type.equals("float")) {
                     	return isCastableToNumeric(o);
                     }
                     if(type.equals("function")) {
@@ -1081,12 +1092,12 @@ public final class Decision {
                     }
                     break;
                 case 'i':
-                    if(type.equals("integer") || type.equals("int")) {
+                    if(alsoAlias && (type.equals("integer") || type.equals("int"))) {
                         return isCastableToNumeric(o);
                     }
                     break;
                 case 'l':
-                    if(type.equals("long")) {
+                    if(alsoAlias && type.equals("long")) {
                         return isCastableToNumeric(o);
                     }
                     break;
@@ -1097,12 +1108,25 @@ public final class Decision {
                     else if(type.equals("number")) {
                         return isCastableToNumeric(o);
                     }
+                    
+                    if(alsoAlias) {
+		        	    if(type.equals("node")) return isXML(o);
+		        	    else if(type.equals("nvarchar") || type.equals("nchar")) {
+		        	    	if(maxlength>-1) {
+	                    		String str = Caster.toString(o,null);
+	                    		if(str==null) return false;
+	                    		return str.length()<=maxlength;
+	                    	}
+	                        return isCastableToString(o);
+		        	    }
+	        	    }
+                    
                     break;
                 case 'o':
                     if(type.equals("object")) {
                         return true;
                     }
-                    else if(type.equals("other")) {
+                    else if(alsoAlias && type.equals("other")) {
                         return true;
                     }
                     break;
@@ -1115,6 +1139,9 @@ public final class Decision {
                     if(type.equals("query")) {
                         return isQuery(o);
                     }
+                    
+	        	    if(type.equals("querycolumn")) return isQueryColumn(o);
+	        	    
                     break;
                 case 's':
                     if(type.equals("string")) {
@@ -1128,7 +1155,7 @@ public final class Decision {
                     else if(type.equals("struct")) {
                         return isCastableToStruct(o);
                     }
-                    else if(type.equals("short")) {
+                    else if(alsoAlias && type.equals("short")) {
                         return isCastableToNumeric(o);
                     }
                     else if(alsoPattern && (type.equals("ssn") ||type.equals("social_security_number"))) {
@@ -1145,13 +1172,24 @@ public final class Decision {
                     if(alsoPattern && type.equals("telephone")) {
                     	return Caster.toPhone(o,null)!=null;
                     }
+                    
+
+	        	    if(alsoAlias && type.equals("timestamp")) return isDateAdvanced(o, true);
+	        	    if(alsoAlias && type.equals("text")) {
+	        	    	if(maxlength>-1) {
+                    		String str = Caster.toString(o,null);
+                    		if(str==null) return false;
+                    		return str.length()<=maxlength;
+                    	}
+                        return isCastableToString(o);
+	        	    }
+	        	    
                 case 'u':
                     if(type.equals("uuid")) {
                         return isUUId(o);
                     }
-                    if(type.equals("usdate")) {
+                    if(alsoAlias && type.equals("usdate")) {
                     	return isDateAdvanced(o, true);
-                    	//return DateCaster.toDate(o,pc.getTimeZone());
                     }
                     if(alsoPattern && type.equals("url")) {
                     	if(maxlength>-1) {
@@ -1161,6 +1199,9 @@ public final class Decision {
                     	}
                         return Caster.toURL(o,null)!=null;
                     }
+                    if(alsoAlias && type.equals("udf")) {
+                    	return isFunction(o);
+                    }
                     break;
                 case 'v':
                     if(type.equals("variablename")) {
@@ -1169,11 +1210,19 @@ public final class Decision {
                     else if(type.equals("void")) {
                         return isVoid(o);//Caster.toVoid(o,Boolean.TRUE)!=Boolean.TRUE;
                     }
-                    else if(type.equals("variable_name")) {
+                    else if(alsoAlias && type.equals("variable_name")) {
                         return isVariableName(o);
                     }
-                    else if(type.equals("variable-name")) {
+                    else if(alsoAlias && type.equals("variable-name")) {
                         return isVariableName(o);
+                    }
+                    if(type.equals("varchar")) {
+                    	if(maxlength>-1) {
+                    		String str = Caster.toString(o,null);
+                    		if(str==null) return false;
+                    		return str.length()<=maxlength;
+                    	}
+                        return isCastableToString(o);
                     }
                     break;
                 case 'x':
@@ -1196,9 +1245,9 @@ public final class Decision {
         	String t=type.substring(0,type.length()-2);
         	Array arr = Caster.toArray(o,null);
         	if(arr!=null){
-        		Iterator it = arr.valueIterator();
+        		Iterator<Object> it = arr.valueIterator();
         		while(it.hasNext()){
-        			if(!isCastableTo(t, it.next(), alsoPattern,-1))
+        			if(!isCastableTo(t, it.next(), alsoAlias,alsoPattern,-1))
         				return false;
         			
         		}

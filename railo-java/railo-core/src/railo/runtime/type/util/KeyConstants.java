@@ -650,6 +650,8 @@ public class KeyConstants {
 	public static final Key _config=KeyImpl._const("config");
 
 	public static final Key _executionTime = KeyImpl._const("executionTime");
+	public static final Key _executionTimeNano = KeyImpl._const("executionTimeNano");
+	
 	public static final Key _RECORDCOUNT = KeyImpl._const("RECORDCOUNT");
 	public static final Key _cached = KeyImpl._const("cached");
 	public static final Key _COLUMNLIST = KeyImpl._const("COLUMNLIST");
@@ -813,6 +815,8 @@ public class KeyConstants {
 	public static final Key _produces = KeyImpl._const("produces");
 	public static final Key _ref = KeyImpl._const("ref");
 	public static final Key _script = KeyImpl._const("script");
+	public static final Key _database = KeyImpl._const("database");
+	public static final Key _exception = KeyImpl._const("exception");
 	
 	private static HashSet<String> _____keys;
 	

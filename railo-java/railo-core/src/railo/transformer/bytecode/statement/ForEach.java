@@ -77,15 +77,15 @@ public final class ForEach extends StatementBase implements FlowControlBreak,Flo
 				@Override
 				public void writeOut(BytecodeContext bc) throws BytecodeException {
 					GeneratorAdapter a = bc.getAdapter();
-					if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(a,fcf.getFinalEntryLabel());
+					//if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(a,fcf.getFinalEntryLabel());
 					a.loadLocal(it);
 					a.invokeStatic(FOR_EACH_UTIL, RESET);
-					if(fcf!=null){
+					/*if(fcf!=null){
 						Label l=fcf.getAfterFinalGOTOLabel();
 						if(l!=null)a.visitJumpInsn(Opcodes.GOTO, l);
-					}
+					}*/
 				}
-			});
+			},getFlowControlFinal());
 			tfv.visitTryBegin(bc);
 			// Key
 				// new VariableReference(...)

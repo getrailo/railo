@@ -3,14 +3,15 @@
  */
 package railo.runtime.functions.system;
 
-import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 
 public final class GetCurrentTemplatePath implements Function {
+
+	private static final long serialVersionUID = 1862733968548626803L;
+
 	public static String call(PageContext pc ) throws PageException {
-		return ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getAbsolutePath();
-		//return pc.getCurrentTemplatePageSource().getPhyscalFile().getAbsolutePath();
+		return pc.getCurrentTemplatePageSource().getResourceTranslated(pc).getAbsolutePath();
 	}
 }

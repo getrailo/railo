@@ -11,9 +11,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.print;
 import railo.runtime.type.scope.Scope;
-import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -27,7 +25,6 @@ import railo.transformer.bytecode.expression.var.VariableString;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.TagTry;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.OnFinally;
@@ -151,7 +148,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 			public void writeOut(BytecodeContext bc) throws BytecodeException {
 				_writeOutFinally(bc,lRef);
 			}
-		});
+		},getFlowControlFinal());
 
 		// try
 		tcfv.visitTryBegin(bc);
@@ -174,7 +171,7 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		//Reference r=null;
 		GeneratorAdapter adapter = bc.getAdapter();
 		
-		if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(adapter,fcf.getFinalEntryLabel());
+		//if(fcf!=null && fcf.getAfterFinalGOTOLabel()!=null)ASMUtil.visitLabel(adapter,fcf.getFinalEntryLabel());
 		ExpressionUtil.visitLine(bc, finallyLine);
 		
 		
@@ -191,10 +188,10 @@ public final class TryCatchFinally extends StatementBase implements Opcodes,HasB
 		adapter.visitLabel(removeEnd);
 		
 		if(finallyBody!=null)finallyBody.writeOut(bc); // finally
-		if(fcf!=null){
+		/*if(fcf!=null){
 			Label l = fcf.getAfterFinalGOTOLabel();
 			if(l!=null)adapter.visitJumpInsn(Opcodes.GOTO, l);
-		}
+		}*/
 	}
 	
 	private void _writeOutCatch(BytecodeContext bc, int lRef,int lThrow) throws BytecodeException {

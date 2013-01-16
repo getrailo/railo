@@ -127,8 +127,8 @@ Error Output --->
 		<cfset names=StructKeyArray(info.servlets)>
 		<cfif !ArrayContainsNoCase(names,"Rest")>
 			<div class="warning nofocus">
-				There is no REST Servlet defined in your enviroment.
-				Follow this <a href="" target="_blank">description</a> to enable REST.
+				The REST Servlet is not configured in your enviroment.
+				Follow these <a href="https://github.com/getrailo/railo/wiki/Configuration:web.xml##wiki-REST" target="_blank">instructions</a> to enable REST.
 			</div>
 		</cfif>	
 	</cfif>
@@ -343,7 +343,7 @@ Error Output --->
 					
 					<!--- Blog --->
 					<h3>
-						<a href="http://www.railo-technologies.com/blog/" target="_blank">#stText.Overview.blog#</a>
+						<a href="http://blog.getrailo.com/" target="_blank">#stText.Overview.blog#</a>
 					</h3>
 					<div class="comment">#stText.Overview.bookDesc#</div>
 					

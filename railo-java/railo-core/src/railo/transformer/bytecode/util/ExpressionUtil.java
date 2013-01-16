@@ -92,9 +92,9 @@ public final class ExpressionUtil {
 		value.writeOut(bc, mode);
 	}
 
-	public static short toShortType(ExprString expr, short defaultValue) {
+	public static short toShortType(ExprString expr,boolean alsoAlias, short defaultValue) {
 		if(expr instanceof LitString){
-			return CFTypes.toShort(((LitString)expr).getString(),defaultValue);
+			return CFTypes.toShort(((LitString)expr).getString(),alsoAlias,defaultValue);
 		}
 		return defaultValue;
 	}
