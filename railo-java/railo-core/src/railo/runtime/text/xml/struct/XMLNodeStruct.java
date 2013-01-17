@@ -14,8 +14,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.UserDataHandler;
 import org.xml.sax.SAXException;
 
-import com.sun.xml.internal.ws.api.streaming.XMLStreamReaderFactory.Default;
-
 import railo.commons.collections.HashTable;
 import railo.runtime.PageContext;
 import railo.runtime.dump.DumpData;
