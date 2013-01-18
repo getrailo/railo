@@ -63,6 +63,7 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
+import railo.runtime.db.debug.DebugQuery;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
@@ -3145,6 +3146,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	private Set<String> pagesUsed=new HashSet<String>();
+
+	private DebugQuery activeQuery;
 	
 	
 
@@ -3232,5 +3235,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	// this is just a wrapper method for ACF
 	public Scope SymTab_findBuiltinScope(String name) throws PageException {
 		return scope(name, null);
+	}
+
+
+
+	public void setActiveQuery(DebugQuery dq) {
+		activeQuery=dq;
+	}
+	public DebugQuery getActiveQuery() {
+		return activeQuery;
+	}
+
+	public void releaseActiveQuery() {
+		activeQuery=null;
 	}
 }
