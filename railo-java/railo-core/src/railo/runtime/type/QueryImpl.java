@@ -3487,4 +3487,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public java.util.Iterator getIterator() {
 		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
     } 
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }

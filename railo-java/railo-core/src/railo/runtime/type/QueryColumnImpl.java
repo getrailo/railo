@@ -1020,4 +1020,9 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     }
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }
