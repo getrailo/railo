@@ -1,4 +1,4 @@
-<cfsavecontent variable='content'>html, body {
+html, body {
 	min-height: 450px;
 	height: 100%;
 }
@@ -904,26 +904,4 @@ div.tooltip {
 			.icon-b64-contract { background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7)
     							no-repeat left center; padding: 4px 0 4px 16px; }
 
-    		/** base64 icons end */</cfsavecontent>
-
-	<cfsetting showdebugoutput='#false#'>
-		
-
-		<cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
-				
-		<cfset etag 	= '''5AEF5E9BA0654B86D9B643304109BC13'''>
-		<cfset mimetype = 'text/css'>		
-
-		<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>
-		<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>		
-		<cfheader name='ETag' value='#etag#'>
-
-		<cfif len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
-
-			<!--- etag matches, return 304 !--->
-			<cfheader statuscode='304' statustext='Not Modified'>
-			<cfcontent reset='#true#' type='#mimetype#'><cfabort>
-		</cfif>
-
-		<!--- file was not cached; send the content !--->
-		<cfcontent reset='#true#' type='#mimetype#'><cfoutput>#content#</cfoutput><cfabort>
+    		/** base64 icons end */

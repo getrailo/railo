@@ -1,23 +1,27 @@
-<cfset c='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABBJREFUeNpiePbs2TWAAAMACPEDidZ4fncAAAAASUVORK5CYII='><cfif getBaseTemplatePath() EQ getCurrentTemplatePath()><!---
-	
-	---><cfsilent>
-	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
-	<cfif not structKeyExists(application, "oHTTPCaching")>
-		<cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
-	</cfif>
-	
-	<!--- the string to be used as an Etag - in the response header --->
-	<cfset etag = "7BDF4F2A5F2172CD6CDAFAC1C47B3D70" />
-	<cfset mimetype = "image/png" />
-	
-	<!--- check if the content was cached on the browser, and set the ETag header. --->
-	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype, expireDays=100)>
-		<cfexit method="exittemplate" />
-	</cfif>
-</cfsilent>
+<cfsavecontent variable='content'>iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABBJREFUeNpiePbs2TWAAAMACPEDidZ4fncAAAAASUVORK5CYII=</cfsavecontent>
 
-<!--- file was not cached; send the data --->
-<cfcontent reset="yes" type="#mimetype#"
-	variable="#toBinary(c)#" />
-<cfelse>data:image/image/png;base64,<cfoutput>#c#</cfoutput></cfif>
-	
+	<cfsetting showdebugoutput='#false#'>
+	<cfif getBaseTemplatePath() == getCurrentTemplatePath()>	
+
+		<cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
+				
+		<cfset etag 	= '''78BE49F426034DEA4E227CD655822A2B'''>
+		<cfset mimetype = 'image/png'>		
+
+		<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>
+		<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>		
+		<cfheader name='ETag' value='#etag#'>
+
+		<cfif len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
+
+			<!--- etag matches, return 304 !--->
+			<cfheader statuscode='304' statustext='Not Modified'>
+			<cfcontent reset='#true#' type='#mimetype#'><cfabort>
+		</cfif>
+
+		<!--- file was not cached; send the content !--->
+		<cfcontent reset='#true#' type='#mimetype#' variable='#toBinary( content )#'><cfabort>
+	<cfelse>
+
+		<cfcontent reset='#true#'><cfoutput>content:image/image/png;base64,#content#</cfoutput><cfabort>
+	</cfif>

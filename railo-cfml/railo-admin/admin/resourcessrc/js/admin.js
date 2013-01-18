@@ -1,4 +1,4 @@
-<cfsavecontent variable='content'>
+
 /* init functions */
 $(function(){
 	$('#resizewin').click(resizelayout);
@@ -292,26 +292,4 @@ function resizelayout(e)
 	$.get('?action=internal.savedata&action2=setdata&key=fullscreen&data='+isfull);
 	$.get('?action=internal.savedata&action2=setdata&key=contentwidth&data='+contentwidth);
 	return false;
-};</cfsavecontent>
-
-	<cfsetting showdebugoutput='#false#'>
-		
-
-		<cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
-				
-		<cfset etag 	= '''5F6D4229B7CCEFAD2ADBED66C0D138AC'''>
-		<cfset mimetype = 'text/js'>		
-
-		<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>
-		<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>		
-		<cfheader name='ETag' value='#etag#'>
-
-		<cfif len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
-
-			<!--- etag matches, return 304 !--->
-			<cfheader statuscode='304' statustext='Not Modified'>
-			<cfcontent reset='#true#' type='#mimetype#'><cfabort>
-		</cfif>
-
-		<!--- file was not cached; send the content !--->
-		<cfcontent reset='#true#' type='#mimetype#'><cfoutput>#content#</cfoutput><cfabort>
+};
