@@ -204,4 +204,9 @@ public class StructImpl extends StructSupport {
 	public java.util.Collection<Object> values() {
 		return map.values();
 	}
+	
+	@Override
+	public int hashCode() {
+		return map.hashCode();
+	}
 }

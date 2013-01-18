@@ -66,7 +66,6 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
-import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
@@ -2960,4 +2959,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	public java.util.Iterator getIterator() {
 		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
     } 
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }

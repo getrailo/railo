@@ -334,4 +334,10 @@ public abstract class ArraySupport extends AbstractList implements Array,List,Si
 			throw new ExpressionException("only 1 dimensional arrays can be sorted");
 		sort(ArrayUtil.toComparator(null, sortType, sortOrder,false));
 	}
+	
+
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }

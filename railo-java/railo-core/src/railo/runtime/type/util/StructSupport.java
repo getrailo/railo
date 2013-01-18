@@ -253,4 +253,9 @@ public abstract class StructSupport implements Map,Struct,Sizeable {
     public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     } 
+
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }

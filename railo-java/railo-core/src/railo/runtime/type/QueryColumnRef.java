@@ -18,6 +18,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.QueryUtil;
 
 /**
@@ -362,5 +363,9 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 	public java.util.Iterator<String> getIterator() {
     	return keysAsStringIterator();
     }
-
+	
+	@Override
+	public int hashCode() {
+		return CollectionUtil.hashCode(this);
+	}
 }

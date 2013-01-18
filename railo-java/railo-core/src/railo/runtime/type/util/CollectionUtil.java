@@ -3,6 +3,7 @@ package railo.runtime.type.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection;
@@ -81,6 +82,22 @@ public class CollectionUtil {
 			rtn.add(it.next().getString());
 		}
 		return rtn.toArray(new String[rtn.size()]);
+	}
+
+	public static int hashCode(Collection coll) {
+		int hashCode = 1;
+		Iterator<Entry<Key, Object>> it = coll.entryIterator();
+		Entry<Key, Object> e;
+		while(it.hasNext()) {
+			e = it.next();
+			hashCode = 31*hashCode+
+			
+			(
+					 (e.getKey()==null?0:e.getKey().hashCode()) ^
+					  (e.getValue()==null ? 0 : e.getValue().hashCode())		
+			);
+		}
+		return hashCode;
 	}
 
 	

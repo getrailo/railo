@@ -71,8 +71,9 @@ public class MemberUtil {
 			
 		}
 		if(pc.getConfig().getSecurityManager().getAccess(railo.runtime.security.SecurityManager.TYPE_DIRECT_JAVA_ACCESS)==railo.runtime.security.SecurityManager.VALUE_YES) {
-	    	Object res = Reflector.callMethod(coll,methodName,args,DEFAULT_VALUE);
-	    	if(res!=DEFAULT_VALUE) return res;
+			return Reflector.callMethod(coll,methodName,args);
+			//Object res = Reflector.callMethod(coll,methodName,args,DEFAULT_VALUE);
+	    	//if(res!=DEFAULT_VALUE) return res;
 	    } 
 		throw new ExpressionException("No matching function member ["+methodName+"] found, available function members are ["+railo.runtime.type.List.sort(CollectionUtil.getKeyList(members.keySet().iterator(), ","),"textnocase","asc",",")+"]");
 	}
