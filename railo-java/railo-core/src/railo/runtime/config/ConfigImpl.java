@@ -101,6 +101,7 @@ import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.Cluster;
 import railo.runtime.type.scope.ClusterNotSupported;
 import railo.runtime.type.scope.Undefined;
+import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLib;
@@ -3487,6 +3488,29 @@ public abstract class ConfigImpl implements Config {
 	
 	protected void setDebugOptions(int debugOptions) {
 		this.debugOptions = debugOptions;
+	}
+
+	public static Mapping[] getAllMappings(PageContext pc) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,pc.getConfig().getMappings());
+		getAllMappings(list,pc.getConfig().getCustomTagMappings());
+		getAllMappings(list,pc.getConfig().getComponentMappings());
+		getAllMappings(list,pc.getApplicationContext().getMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+	
+	public static Mapping[] getAllMappings(ConfigWeb cw) {
+		List<Mapping> list=new ArrayList<Mapping>();
+		getAllMappings(list,cw.getMappings());
+		getAllMappings(list,cw.getCustomTagMappings());
+		getAllMappings(list,cw.getComponentMappings());
+		return list.toArray(new Mapping[list.size()]);
+	}
+
+	private static void getAllMappings(List<Mapping> list, Mapping[] mappings) {
+		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
+			list.add(mappings[i]);
+		}
 	}
 	
 }

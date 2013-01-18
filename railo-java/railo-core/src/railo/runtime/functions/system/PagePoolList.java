@@ -9,17 +9,19 @@ import railo.runtime.MappingImpl;
 import railo.runtime.PageContext;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.PageSourcePool;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 
 public final class PagePoolList implements Function {
+
+	private static final long serialVersionUID = 7743072823224800862L;
+
 	public static Array call(PageContext pc) throws PageException {
 		ArrayImpl arr = new ArrayImpl();
-		fill(arr,pc.getConfig().getMappings());
-		fill(arr,pc.getConfig().getCustomTagMappings());
-		fill(arr,pc.getApplicationContext().getMappings());
+		fill(arr,ConfigImpl.getAllMappings(pc));
 		return arr;
 	}
 
