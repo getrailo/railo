@@ -1,6 +1,5 @@
 <cfscript>
 component {
-
 	ColorCaster=createObject('java','railo.commons.color.ColorCaster');
 	NEWLINE="
 ";
@@ -8,7 +7,7 @@ component {
 	default={};
 	default.browser="html";
 	default.console="text";
-	supportedFormats=["simple","text","html","classic"];
+	supportedFormats=["simple","text","html","classic","updated"];
 
 	// Meta data
 	this.metadata.hint="Outputs the elements, variables and values of most kinds of CFML objects. Useful for debugging. You can display the contents of simple and complex variables, objects, components, user-defined functions, and other elements.";
@@ -114,104 +113,158 @@ component {
 	/* ==================================================================================================
 	   html                                                                                             =
 	================================================================================================== */
-	string function html( required struct meta,
-						  required string context,
-						  required string expand,
-						  required string output,
-						  required string hasReference ,
-						  required string level ,
-						  required string dumpID,
-						  struct cssColors={}) {
+
+	string function html(
+			required struct meta,
+			required string context,
+			required string expand,
+			required string output,
+			required string hasReference,
+			required string level,
+			required string dumpID,
+			struct cssColors = structNew()
+		) {
+
 		var NEWLINE=variables.NEWLINE;
 		var id = createId();
-		var rtn = "";
 		var columnCount = structKeyExists(arguments.meta,'data') ? listLen(arguments.meta.data.columnlist) : 0;
 		var title = !arguments.level ? ' title="#arguments.context#"' : '';
 		var width = structKeyExists(arguments.meta,'width') ? ' width="' & arguments.meta.width & '"' : '';
 		var height = structKeyExists(arguments.meta,'height') ? ' height="' & arguments.meta.height & '"' : '';
 		var indent = repeatString(variables.TAB, arguments.level);
 
-			rtn&=('<table#width##height##title#>' );
+		var metaID = "";
+		var comment = "";
+		var c = 0;
+		var nodeID = "";
+		var hidden = "";
+		var col = 0;
+		var node = "";
+		var value = "";
+		var head = "";
+		var rtn = "<table#width##height##title#>";
+		
+		
+		//title
+		if(structKeyExists(arguments.meta, 'title')){
+			metaID = arguments.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
+			comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
+				
+			rtn &= "<tr>";
+			rtn &= "<td class=""#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)# cfdumpclickable"" onclick=""dumpOC('#id#');"" colspan=""#columnCount#"">";
+			rtn &= "<span>#arguments.meta.title##metaID#</span>";
+			rtn &= comment & "</td>";
+			rtn &= "</tr>";
+		} else {
+			id = "";
+		}
 
-			// title
-			if(structKeyExists(arguments.meta, 'title')){
-				var metaID = arguments.hasReference && structKeyExists(arguments.meta,'id') ? ' [#arguments.meta.id#]' : '';
-				var comment = structKeyExists(arguments.meta,'comment') ? "<br />" & replace(HTMLEditFormat(arguments.meta.comment),chr(10),' <br>','all') : '';
+		nodeID = len(id) ? ' name="#id#"' : '';
+		rtn &= "<tr><td style=""padding:0;border:none;"" #nodeID#><table>";
+				
+		//data
+		if(columnCount){
 
-				rtn&=('<tr>');
-				rtn&=('<td class="#doCSSColors(arguments.cssColors,arguments.meta.highLightColor)#" onclick="dumpOC(''#id#'');" colspan="#columnCount#">');
-				rtn&=('<span>#arguments.meta.title##metaID#</span>');
-				rtn&=(comment & '</td>');
-				rtn&=('</tr>');
-			}
-			else {
+			loop query="arguments.meta.data" {
+				c = 1;
+				
+				hidden = !arguments.expand && len(id) ? ' style="display:none"' : '';
+
+				rtn &= "<tr#hidden#>";
+				
+				//clear the id
 				id = "";
-			}
+				
+				for(col=1; col LTE columnCount-1; col++) {
+					node = arguments.meta.data["data" & col];
+					
+					if(col EQ 1){
+						id = createId();
+						nodeID = "";
+					} else {
+						nodeID = len(id) ? ' name="#id#"' : '';
+					} // end if
+					
+					if(isStruct(node)){
+						// Recursively call this function on this node
+						value = html(
+							node
+							, ""
+							, arguments.expand
+							, arguments.output
+							, arguments.hasReference
+							, arguments.level+1
+							, arguments.dumpID
+							, arguments.cssColors);
+						
+						if(col EQ 1){
+							rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))# cfdumpclickable"" onclick=""dumpOC('#id#');"">";
+						} else {
+							rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#"">";
+						} // end if
+						
+						rtn &= value;
+						rtn &= "</td>";
+						
+					} else {
+						if(col EQ 1){
+							rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))# cfdumpclickable"" onclick=""dumpOC('#id#');"">" & HTMLEditFormat(node) & "</td>";
+						} else {
+							rtn &= "<td#nodeID# class=""#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#"">" & HTMLEditFormat(node) & "</td>";
+						} // end if
+					} // end if
+					
+					c *= 2;
+				} // end loop
+				
+				rtn &= "</tr>";
+			} // end loop
+		} // end if
 
-			// data
+		
+		rtn &= "</table></td></tr></table>";
+		
+		//Header
+		
+		if(arguments.level EQ 0){
+		
+			//javascript
+			
+			head = "<script language=""JavaScript"" type=""text/javascript"">" & NEWLINE;
+			head &= "function dumpOC(name){";
+			head &= "var tds=document.all?document.getElementsByTagName('td'):document.getElementsByName(name);";
+			head &= "var s=null;";
+			head &= "name=name;";
+			head &= "for(var i=0;i<tds.length;i++) {";
+			head &= "if(document.all && tds[i].name!=name)continue;";
+			head &= "s=tds[i].style;";
+			head &= "if(s.display=='none') s.display='';";
+			head &= "else s.display='none';";
+			head &= "}";
+			head &= "}" & NEWLINE;
+			head &= "</script>" & NEWLINE;
 
-			if(columnCount) {
-				loop query="arguments.meta.data" {
-					var c = 1;
-					var nodeID = len(id) ? ' name="#id#"' : '';
-					var hidden = !arguments.expand && len(id) ? ' style="display:none"' : '';
-
-					rtn&=('<tr#nodeID##hidden#>');
-
-					for(var col=1; col LTE columnCount-1; col++) {
-						var node = arguments.meta.data["data" & col];
-
-						if(isStruct(node)) {
-							var value = this.html(node, "", arguments.expand, arguments.output, arguments.hasReference, arguments.level+1,arguments.dumpID,arguments.cssColors);
-
-							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#">');
-							rtn&=(value);
-							rtn&=('</td>');
-						}
-						else {
-							rtn&=('<td class="#doCSSColors(arguments.cssColors,bgColor(arguments.meta,c))#">' & HTMLEditFormat(node) & '</td>' );
-						}
-						c *= 2;
-					}
-					rtn&=('</tr>');
-				}
-			}
-			rtn&=('</table>');
-
-			// Header
-			if(arguments.level EQ 0){
-				// javascript
-				var head=('<script language="JavaScript" type="text/javascript">' & NEWLINE);
-				head&=("function dumpOC(name){");
-				head&=("var tds=document.all?document.getElementsByTagName('tr'):document.getElementsByName(name);");
-				head&=("var s=null;");
-				head&=("name=name;");
-				head&=("for(var i=0;i<tds.length;i++) {");
-				head&=("if(document.all && tds[i].name!=name)continue;");
-				head&=("s=tds[i].style;");
-				head&=("if(s.display=='none') s.display='';");
-				head&=("else s.display='none';");
-				head&=("}");
-				head&=("}"& NEWLINE);
-				head&=("</script>" & NEWLINE);
-
-				// styles
-				head&=('<style type="text/css">' & NEWLINE);
-				head&=('div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#; border-spacing: 1px}' & NEWLINE);
-				head&=('div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}' & NEWLINE);
-				head&=('div###arguments.dumpID# td span {font-weight:bold;}' & NEWLINE);
-				loop collection="#arguments.cssColors#" item="local.key" {
-					head&="td.#key# {background-color:#arguments.cssColors[key]#;}"& NEWLINE;
-				}
-				head&=('</style>' & NEWLINE);
-
-				rtn=head&rtn;
-			}
+			//styles
+			
+			head &= "<style type=""text/css"">" & NEWLINE;
+			head &= "div###arguments.dumpID# table {font-family:Verdana, Geneva, Arial, Helvetica, sans-serif; font-size:11px; empty-cells:show; color:#arguments.meta.fontColor#; border-spacing: 1px}" & NEWLINE;
+			head &= "div###arguments.dumpID# td {border:1px solid #arguments.meta.borderColor#; vertical-align:top; padding:2px; empty-cells:show;}" & NEWLINE;
+			head &= "div###arguments.dumpID# td span {font-weight:bold;}" & NEWLINE;
+			head &= "td.cfdumpclickable {cursor:pointer;}";
+			
+			for (local.key in arguments.cssColors) {
+				head &= "td.#key# {background-color:#arguments.cssColors[key]#;}" & NEWLINE;
+			} // end loop
+			
+			head &= "</style>" & NEWLINE;
+			
+			rtn = head & rtn;
+		}
 
 		return rtn;
 	}
-
-
+	
+	
 	/* ==================================================================================================
 	   classic                                                                                          =
 	================================================================================================== */
@@ -316,7 +369,8 @@ component {
 
 		return rtn;
 	}
-
+	
+				
 	/* ==================================================================================================
 	   simple                                                                                           =
 	================================================================================================== */
@@ -481,7 +535,6 @@ component {
 			arguments.data[key]=arguments.color;
 		return key;
 	}
-
 
 }
 </cfscript>
