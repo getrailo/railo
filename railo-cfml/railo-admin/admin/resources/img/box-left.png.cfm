@@ -1,23 +1,27 @@
-<cfset c='iVBORw0KGgoAAAANSUhEUgAAAAQAAAAfCAIAAABPgvtxAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIdJREFUeNqkkbEKAyEMhk0swi1O7r7/E4mDkz6AqIioYLXSox3uhvZbkj/5QyCBMUbv3TmXUsJaq1KKUiqlBGMMY0wIQQhB7z3nfLx4rALizFaywwbJB19izYw3eIpr223n2vbLzN9Lb2zHcbTWcDNFjDHnPDtQStFaA8A8N+wvWGtDCE8BBgCPkYgQfbqwkQAAAABJRU5ErkJggg=='><cfif getBaseTemplatePath() EQ getCurrentTemplatePath()><!---
-	
-	---><cfsilent>
-	<cfapplication name="HTTPCaching" sessionmanagement="no" clientmanagement="no" applicationtimeout="#createtimespan(1,0,0,0)#" />
-	<cfif not structKeyExists(application, "oHTTPCaching")>
-		<cfset application.oHTTPCaching = createObject("component", "../HTTPCaching") />
-	</cfif>
-	
-	<!--- the string to be used as an Etag - in the response header --->
-	<cfset etag = "4F0BADD2FFE7C3A1286ABD877588A2DB" />
-	<cfset mimetype = "image/png" />
-	
-	<!--- check if the content was cached on the browser, and set the ETag header. --->
-	<cfif application.oHTTPCaching.handleResponseWhenCached(fileEtag=etag, mimetype=mimetype, expireDays=100)>
-		<cfexit method="exittemplate" />
-	</cfif>
-</cfsilent>
+<cfsavecontent variable='content'>iVBORw0KGgoAAAANSUhEUgAAAAQAAAAfCAIAAABPgvtxAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIdJREFUeNqkkbEKAyEMhk0swi1O7r7/E4mDkz6AqIioYLXSox3uhvZbkj/5QyCBMUbv3TmXUsJaq1KKUiqlBGMMY0wIQQhB7z3nfLx4rALizFaywwbJB19izYw3eIpr223n2vbLzN9Lb2zHcbTWcDNFjDHnPDtQStFaA8A8N+wvWGtDCE8BBgCPkYgQfbqwkQAAAABJRU5ErkJggg==</cfsavecontent>
 
-<!--- file was not cached; send the data --->
-<cfcontent reset="yes" type="#mimetype#"
-	variable="#toBinary(c)#" />
-<cfelse>data:image/image/png;base64,<cfoutput>#c#</cfoutput></cfif>
-	
+	<cfsetting showdebugoutput='#false#'>
+	<cfif getBaseTemplatePath() == getCurrentTemplatePath()>	
+
+		<cfapplication name='__RAILO_STATIC_CONTENT' sessionmanagement='#false#' clientmanagement='#false#' applicationtimeout='#createtimespan( 1, 0, 0, 0 )#'>
+				
+		<cfset etag 	= '''278756A17890A98967880B676B4E4EC0'''>
+		<cfset mimetype = 'image/png'>		
+
+		<cfheader name='Expires' value='#getHttpTimeString( now() + 100 )#'>
+		<cfheader name='Cache-Control' value='max-age=#86400 * 100#'>		
+		<cfheader name='ETag' value='#etag#'>
+
+		<cfif len( CGI.HTTP_IF_NONE_MATCH ) && ( CGI.HTTP_IF_NONE_MATCH == '#etag#' )>
+
+			<!--- etag matches, return 304 !--->
+			<cfheader statuscode='304' statustext='Not Modified'>
+			<cfcontent reset='#true#' type='#mimetype#'><cfabort>
+		</cfif>
+
+		<!--- file was not cached; send the content !--->
+		<cfcontent reset='#true#' type='#mimetype#' variable='#toBinary( content )#'><cfabort>
+	<cfelse>
+
+		<cfcontent reset='#true#'><cfoutput>content:image/image/png;base64,#content#</cfoutput><cfabort>
+	</cfif>
