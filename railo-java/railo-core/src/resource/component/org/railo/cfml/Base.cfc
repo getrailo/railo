@@ -138,14 +138,12 @@
 				<cfset var q = "">
 				
 				<cfquery name="q" attributeCollection="#tagAttributes#" result="tagResult">
-					<cfloop array="#qArray#" index="item">
-						<!--- item is s string so just output --->
-						<cfif structKeyExists(item,'type') and item.type eq 'string'>
-							#preserveSingleQuotes(item.value)#
-						<cfelse>
-							<cfqueryparam attributecollection="#item#">
-						</cfif>
-					</cfloop>
+					<cfloop array="#qArray#" index="Local.item"><!---
+						!---><cfif structKeyExists(item,'type') and item.type eq 'string'><!---
+							!--->#preserveSingleQuotes(item.value)#<!---
+						!---><cfelse><!---
+							!---><cfqueryparam attributecollection="#item#"><!---
+						!---></cfif></cfloop>
 				</cfquery>
 				
 				<cfset result.setResult(q)>			
