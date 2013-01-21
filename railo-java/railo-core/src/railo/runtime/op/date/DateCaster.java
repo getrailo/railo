@@ -150,6 +150,13 @@ public final class DateCaster {
         
     	DateTime dt=toDateTime(locale, str, tz,null,useCommomDateParserAsWell);
         if(dt==null){
+        	/* FUTURE 4.1
+        	String prefix=locale.getLanguage()+"-"+locale.getCountry()+"-";
+        	throw new ExpressionException("can't cast ["+str+"] to date value",
+        			"to add custom formats for "+LocaleFactory.toString(locale)+
+        			", create/extend on of the following files ["+prefix+"datetime.df (for date time formats), "+prefix+"date.df (for date formats) or "+prefix+"time.df (for time formats)] in the following directory [<context>/railo/locales]."+
+        			"");
+        	*/
         	throw new ExpressionException("can't cast ["+str+"] to date value");
         }
         return dt;
@@ -176,7 +183,9 @@ public final class DateCaster {
         	ParsePosition pp=new ParsePosition(0);
 	        df=FormatUtil.getDateTimeFormats(locale,tz,false);//dfc[FORMATS_DATE_TIME];
 	        Date d;
+    		//print.e(locale.getDisplayName(Locale.ENGLISH));
 	    	for(int i=0;i<df.length;i++) {
+	    		//print.e(df[i].format(new Date()));
 	    		pp.setErrorIndex(-1);
 				pp.setIndex(0);
 				//try {
@@ -192,7 +201,9 @@ public final class DateCaster {
 	        }
 	        // date
 	        df=FormatUtil.getDateFormats(locale,tz,false);//dfc[FORMATS_DATE];
+	        //print.e(locale.getDisplayName(Locale.ENGLISH));
 	    	for(int i=0;i<df.length;i++) {
+	    		//print.e(df[i].format(new Date()));
 	    		pp.setErrorIndex(-1);
 				pp.setIndex(0);
 				//try {
@@ -209,8 +220,10 @@ public final class DateCaster {
 	    	
 	        // time
 	        df=FormatUtil.getTimeFormats(locale,tz,false);//dfc[FORMATS_TIME];
-	        for(int i=0;i<df.length;i++) {
-	        	pp.setErrorIndex(-1);
+	        //print.e(locale.getDisplayName(Locale.ENGLISH));
+	    	for(int i=0;i<df.length;i++) {
+	        	//print.e(df[i].format(new Date()));
+		    	pp.setErrorIndex(-1);
 				pp.setIndex(0);
 				//try {
             	df[i].setTimeZone(tz);
