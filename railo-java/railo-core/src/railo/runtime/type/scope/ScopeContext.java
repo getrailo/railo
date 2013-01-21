@@ -460,7 +460,7 @@ public final class ScopeContext {
 					if(ds!=null && ds.isStorage()){
 						if(SessionDatasource.hasInstance(storage,pc)) return true;
 					}
-					return  SessionCache.hasInstance(storage,appContext.getName(),pc);
+					return  SessionCache.hasInstance(storage,appContext.getSessionClusterKey(),pc);
 				}
 			}
 			return true;
@@ -515,7 +515,7 @@ public final class ScopeContext {
 				else{
 					DataSourceImpl ds = (DataSourceImpl) ((ConfigImpl)pc.getConfig()).getDataSource(storage,null);
 					if(ds!=null && ds.isStorage())session=SessionDatasource.getInstance(storage,pc,getLog(),null);
-					else session=SessionCache.getInstance(storage,appContext.getName(),pc,getLog(),null);
+					else session=SessionCache.getInstance(storage,appContext.getSessionClusterKey(),pc,getLog(),null);
 					
 					if(session==null){
 						// datasource not enabled for storage

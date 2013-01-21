@@ -137,16 +137,16 @@
 				<!--- declare the query local var --->
 				<cfset var q = "">
 				
-				<cfquery name="q" attributeCollection="#tagAttributes#" result="tagResult">
-					<cfloop array="#qArray#" index="item">
+				<cfquery name="q" attributeCollection="#tagAttributes#" result="tagResult"><!---
+					---><cfloop array="#qArray#" index="local.item"><!---
 						<!--- item is s string so just output --->
-						<cfif structKeyExists(item,'type') and item.type eq 'string'>
-							#preserveSingleQuotes(item.value)#
-						<cfelse>
-							<cfqueryparam attributecollection="#item#">
-						</cfif>
-					</cfloop>
-				</cfquery>
+						---><cfif structKeyExists(local.item,'type') and local.item.type eq 'string'><!---
+							--->#preserveSingleQuotes(local.item.value)#<!---
+						---><cfelse><!---
+							---><cfqueryparam attributecollection="#local.item#"><!---
+						---></cfif><!---
+					---></cfloop><!---
+				---></cfquery>
 				
 				<cfset result.setResult(q)>			
 				<cfset result.setPrefix(tagResult)>

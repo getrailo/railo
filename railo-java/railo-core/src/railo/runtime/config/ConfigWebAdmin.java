@@ -1662,6 +1662,7 @@ public final class ConfigWebAdmin {
         	parent.removeAttribute("default-query");
         if(name.equalsIgnoreCase(parent.getAttribute("default-resource")))
         	parent.removeAttribute("default-resource");
+      
         
         // remove element
         Element[] children = ConfigWebFactory.getChildren(parent,"connection");
@@ -1670,11 +1671,16 @@ public final class ConfigWebAdmin {
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
   	    		Map conns = config.getCacheConnections();
   	    		CacheConnection cc=(CacheConnection) conns.get(n);
+  	    		
+  	    		//check if key is lower case
+  	    		if (cc == null) {
+  	    			cc = (CacheConnection) conns.get(n.toLowerCase());
+  	    		}
+  	    		
   	    		if(cc!=null)Util.removeEL(config instanceof ConfigWeb?(ConfigWeb)config:null,cc);
   	    	  parent.removeChild(children[i]);
   			}
   	    }
-      	
 	}
 	
 

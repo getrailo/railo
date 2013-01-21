@@ -156,7 +156,7 @@ public class HibernateSessionFactory {
 			configuration.setProperty("hibernate.default_schema",ormConf.getSchema());
 		
 		if(ormConf.secondaryCacheEnabled()){
-			if(cacheConfig!=null && cacheConfig.isFile())
+			if(cacheConfig!=null && cacheConfig.isFile()) 
 				configuration.setProperty("hibernate.cache.provider_configuration_file_resource_path",cacheConfig.getAbsolutePath());
 			configuration.setProperty("hibernate.cache.provider_class", cacheProvider);
 	    	

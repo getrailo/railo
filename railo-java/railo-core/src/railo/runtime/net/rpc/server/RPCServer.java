@@ -52,6 +52,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageServletException;
 import railo.runtime.net.rpc.TypeMappingUtil;
 import railo.runtime.op.Caster;
+import railo.runtime.type.util.ComponentUtil;
 
 /**
  * xdoclet tags are not active yet; keep web.xml in sync.
@@ -800,21 +801,24 @@ public final class RPCServer{
 
 
 	public void registerTypeMapping(Class clazz) {
-		String fullname = clazz.getName();//,name,packages;
-		QName qname = new QName("http://DefaultNamespace",fullname);
+		registerTypeMapping(clazz,"DefaultNamespace");
+	}
+
+	public void registerTypeMapping(Class clazz, String namespace) {
+		String fullname = ComponentUtil.getComponentNameFromClass(clazz);
+
+		if(namespace == null) {
+			namespace = "DefaultNamespace";
+		}
+		QName qname = new QName("http://"+namespace,fullname);
 		registerTypeMapping(clazz, qname);
 	}
 	
 	private void registerTypeMapping(Class clazz,QName qname) {
 		TypeMappingRegistry reg = axisServer.getTypeMappingRegistry();
 		
-		org.apache.axis.encoding.TypeMapping tm;
-		tm=reg.getOrMakeTypeMapping("http://schemas.xmlsoap.org/soap/encoding/");
-		Class c = tm.getClassForQName(qname);
-		if(c!=null && c!=clazz) {
-			tm.removeDeserializer(c, qname);
-			tm.removeSerializer(c, qname);
-		}
+		org.apache.axis.encoding.TypeMapping tm = (org.apache.axis.encoding.TypeMapping)reg.getDefaultTypeMapping();
+
 		TypeMappingUtil.registerBeanTypeMapping(tm,clazz, qname);
+		}
 	}
-}
