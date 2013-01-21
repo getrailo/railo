@@ -60,7 +60,7 @@ component output="false" extends="Base" accessors="true"{
 			if ( NextChar EQ '"' OR NextChar EQ "'" )
 			{
 				var Len = 1 ;
-				while ( Mid(Sql,Pos+Len,1) NEQ NextChar AND Pos LTE TotalLen )
+				while ( Mid(Sql,Pos+Len,1) NEQ NextChar && ( TotalLen GT ( Pos + Len ) ) )
 				{
 					Len++ ;
 
