@@ -22,8 +22,9 @@
         </cfif>    
     </cfloop>
 	
-	<!--- get matching log entry --->
 	
+	<!--- get matching log entry --->
+	<cfset log="">
     <cfloop from="1" to="#arrayLen(logs)#" index="i">
     	<cfset el=logs[i]>
     	<cfset id=hash(el.id&":"&el.startTime)>
@@ -34,7 +35,10 @@
     
     <table width="100%">
     <tr>
-    	<td><cfset driver.output(entry.custom,log,"admin")> </td>
+    	<td><cfif !isSimpleValue(log)>
+			<cfset c=structKeyExists(entry,'custom')?entry.custom:{}>
+			<cfset c.scopes=false>
+			<cfset driver.output(c,log,"admin")><cfelse>Data no longer available</cfif> </td>
     </tr>
     </table>
 	

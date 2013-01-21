@@ -1,6 +1,7 @@
 package railo.runtime.tag;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,7 @@ import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
@@ -24,6 +26,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.FormBodyPart;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -33,12 +36,12 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import railo.commons.io.CharsetUtil;
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -46,10 +49,12 @@ import railo.commons.net.HTTPUtil;
 import railo.commons.net.URLEncoder;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.Header;
+import railo.commons.net.http.httpclient4.CachingGZIPInputStream;
 import railo.commons.net.http.httpclient4.HTTPEngine4Impl;
 import railo.commons.net.http.httpclient4.HTTPResponse4Impl;
 import railo.commons.net.http.httpclient4.ResourceBody;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigWeb;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
@@ -57,6 +62,7 @@ import railo.runtime.exp.HTTPException;
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.BodyTagImpl;
+import railo.runtime.net.http.MultiPartResponseUtils;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.proxy.ProxyData;
 import railo.runtime.net.proxy.ProxyDataImpl;
@@ -124,8 +130,6 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private static final short METHOD_TRACE=6;
 	
 	private static final String NO_MIMETYPE="Unable to determine MIME type of file.";
-	
-	private static final int STATUS_OK=200;
 	
 	private static final short GET_AS_BINARY_NO=0;
 	private static final short GET_AS_BINARY_YES=1;
@@ -253,6 +257,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     private short authType=AUTH_TYPE_BASIC;
     private String workStation=null;
     private String domain=null;
+	private boolean preauth=true; 
 
 	
 	/**
@@ -294,6 +299,7 @@ public final class Http4 extends BodyTagImpl implements Http {
         authType=AUTH_TYPE_BASIC;
         workStation=null;
         domain=null;
+        preauth=true; 
 	}
 	
 	/**
@@ -335,6 +341,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 	public void setResolveurl(boolean resolveurl)	{
 		this.resolveurl=resolveurl;
 	}
+	
+	public void setPreauth(boolean preauth)	{
+		this.preauth=preauth;
+	}
+	
+	
 
 	/** set the value timeout
 	* @param timeout value to set
@@ -572,17 +584,302 @@ public final class Http4 extends BodyTagImpl implements Http {
 	private void _doEndTag(Struct cfhttp) throws PageException, IOException	{
 		BasicHttpParams params = new BasicHttpParams();
     	DefaultHttpClient client = HTTPEngine4Impl.createClient(params,redirect?HTTPEngine.MAX_REDIRECT:0);
-    	 
-    	HttpRequestBase req = init(pageContext.getConfig(),this,client,params,url,port);
-		
+    	
+    	
+    	ConfigWeb cw = pageContext.getConfig();
+    	HttpRequestBase req=null;
+    	HttpContext httpContext=null;
+		//HttpRequestBase req = init(pageContext.getConfig(),this,client,params,url,port);
+    	{
+    		if(StringUtil.isEmpty(charset,true)) charset=cw.getWebCharset();
+    		else charset=charset.trim();
+    		
+    		
+    	// check if has fileUploads	
+    		boolean doUploadFile=false;
+    		for(int i=0;i<this.params.size();i++) {
+    			if((this.params.get(i)).getType().equals("file")) {
+    				doUploadFile=true;
+    				break;
+    			}
+    		}	
+    	
+    	// parse url (also query string)
+    		int len=this.params.size();
+    		StringBuilder sbQS=new StringBuilder();
+    		for(int i=0;i<len;i++) {
+    			HttpParamBean param=this.params.get(i);
+    			String type=param.getType();
+    		// URL
+    			if(type.equals("url")) {
+    				if(sbQS.length()>0)sbQS.append('&');
+    				sbQS.append(translateEncoding(param.getName(), charset));
+    				sbQS.append('=');
+    				sbQS.append(translateEncoding(param.getValueAsString(), charset));
+    			}
+    		}
+    		String host=null;
+    		HttpHost httpHost;
+    		try {
+    			URL _url = HTTPUtil.toURL(url,port);
+    			httpHost = new HttpHost(_url.getHost(),_url.getPort());
+    			host=_url.getHost();
+    			url=_url.toExternalForm();
+    			if(sbQS.length()>0){
+    				// no existing QS
+    				if(StringUtil.isEmpty(_url.getQuery())) {
+    					url+="?"+sbQS;
+    				}
+    				else {
+    					url+="&"+sbQS;
+    				}
+    					
+    			}
+    			
+    			
+    		} catch (MalformedURLException mue) {
+    			throw Caster.toPageException(mue);
+    		}
+    		
+    	// select best matching method (get,post, post multpart (file))
+
+    		boolean isBinary = false;
+    		boolean doMultiPart=doUploadFile || this.multiPart;
+    		HttpPost post=null;
+    		HttpEntityEnclosingRequest eem=null;
+    		
+    		
+    		if(this.method==METHOD_GET) {
+    			req=new HttpGet(url);
+    		}
+    		else if(this.method==METHOD_HEAD) {
+    		    req=new HttpHead(url);
+    		}
+    		else if(this.method==METHOD_DELETE) {
+    			isBinary=true;
+    		    req=new HttpDelete(url);
+    		}
+    		else if(this.method==METHOD_PUT) {
+    			isBinary=true;
+    			HttpPut put = new HttpPut(url);
+    		    req=put;
+    		    eem=put;
+    		    
+    		}
+    		else if(this.method==METHOD_TRACE) {
+    			isBinary=true;
+    		    req=new HttpTrace(url);
+    		}
+    		else if(this.method==METHOD_OPTIONS) {
+    			isBinary=true;
+    		    req=new HttpOptions(url);
+    		}
+    		else {
+    			isBinary=true;
+    			post=new HttpPost(url);
+    			req=post;
+    			eem=post;
+    		}
+    		
+    		boolean hasForm=false;
+    		boolean hasBody=false;
+    		boolean hasContentType=false;
+    	// Set http params
+    		ArrayList<FormBodyPart> parts=new ArrayList<FormBodyPart>();
+    		
+    		StringBuilder acceptEncoding=new StringBuilder();
+    		java.util.List<NameValuePair> postParam = post!=null?new ArrayList <NameValuePair>():null;
+            
+    		for(int i=0;i<len;i++) {
+    			HttpParamBean param=this.params.get(i);
+    			String type=param.getType();
+    		// URL
+    			if(type.equals("url")) {
+    				//listQS.add(new BasicNameValuePair(translateEncoding(param.getName(), http.charset),translateEncoding(param.getValueAsString(), http.charset)));
+    			}
+    		// Form
+    			else if(type.equals("formfield") || type.equals("form")) {
+    				hasForm=true;
+    				if(this.method==METHOD_GET) throw new ApplicationException("httpparam type formfield can't only be used, when method of the tag http equal post");
+    				if(post!=null){
+    					if(doMultiPart){
+    						parts.add(
+    							new FormBodyPart(
+    								param.getName(),
+    								new StringBody(
+    										param.getValueAsString(),
+    										CharsetUtil.toCharset(charset)
+    								)
+    							)
+    						);
+    					}
+    					else {
+    						postParam.add(new BasicNameValuePair(param.getName(),param.getValueAsString()));
+    					}
+    				}
+    				//else if(multi!=null)multi.addParameter(param.getName(),param.getValueAsString());
+    			}
+    		// CGI
+    			else if(type.equals("cgi")) {
+    				if(param.isEncoded())
+    				    req.addHeader(
+                                translateEncoding(param.getName(),charset),
+                                translateEncoding(param.getValueAsString(),charset));
+                    else
+                        req.addHeader(param.getName(),param.getValueAsString());
+    			}
+            // Header
+                else if(type.startsWith("head")) {
+                	if(param.getName().equalsIgnoreCase("content-type")) hasContentType=true;
+                	
+                	if(param.getName().equalsIgnoreCase("Accept-Encoding")) {
+                		acceptEncoding.append(headerValue(param.getValueAsString()));
+                		acceptEncoding.append(", ");
+                	}
+                	else req.addHeader(param.getName(),headerValue(param.getValueAsString()));
+                }
+    		// Cookie
+    			else if(type.equals("cookie")) {
+    				HTTPEngine4Impl.addCookie(client,host,param.getName(),param.getValueAsString(),"/",charset);
+    			}
+    		// File
+    			else if(type.equals("file")) {
+    				hasForm=true;
+    				if(this.method==METHOD_GET) throw new ApplicationException("httpparam type file can't only be used, when method of the tag http equal post");
+    				if(doMultiPart) {
+    					try {
+    						Resource res = param.getFile();
+    						parts.add(new FormBodyPart(
+    								param.getName(), 
+    								new ResourceBody(res, getContentType(param), res.getName(), charset)
+    						));
+    						//parts.add(new ResourcePart(param.getName(),new ResourcePartSource(param.getFile()),getContentType(param),_charset));
+    					} 
+    					catch (FileNotFoundException e) {
+    						throw new ApplicationException("can't upload file, path is invalid",e.getMessage());
+    					}
+    				}
+    			}
+    		// XML
+    			else if(type.equals("xml")) {
+    				hasBody=true;
+    				hasContentType=true;
+    				req.addHeader("Content-type", "text/xml; charset="+charset);
+    			    if(eem==null)throw new ApplicationException("type xml is only supported for type post and put");
+    			    HTTPEngine4Impl.setBody(eem, param.getValueAsString());
+    			}
+    		// Body
+    			else if(type.equals("body")) {
+    				hasBody=true;
+    				if(eem==null)throw new ApplicationException("type body is only supported for type post and put");
+    				HTTPEngine4Impl.setBody(eem, param.getValue());
+    				
+    			}
+                else {
+                    throw new ApplicationException("invalid type ["+type+"]");
+                }
+    		    
+    		}
+    		
+    		// post params
+    		if(postParam!=null && postParam.size()>0)
+    			post.setEntity(new org.apache.http.client.entity.UrlEncodedFormEntity(postParam,charset));
+    		
+    		req.setHeader("Accept-Encoding",acceptEncoding.append("gzip").toString());
+    		
+    		// multipart
+    		if(doMultiPart && eem!=null) {
+    			hasContentType=true;
+    			boolean doIt=true;
+    			if(!this.multiPart && parts.size()==1){
+    				ContentBody body = parts.get(0).getBody();
+    				if(body instanceof StringBody){
+    					StringBody sb=(StringBody)body;
+    					try {
+    						String str = IOUtil.toString(sb.getReader());
+    						StringEntity entity = new StringEntity(str,sb.getMimeType(),sb.getCharset());
+    						eem.setEntity(entity);
+    						
+    					} catch (IOException e) {
+    						throw Caster.toPageException(e);
+    					}
+    					doIt=false;
+    				}
+    			}
+    			if(doIt) {
+    				MultipartEntity mpe = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE,null,CharsetUtil.toCharset(charset));
+    				Iterator<FormBodyPart> it = parts.iterator();
+    				while(it.hasNext()) {
+    					mpe.addPart(it.next());
+    				}
+    				eem.setEntity(mpe);
+    			}
+    				//eem.setRequestEntity(new MultipartRequestEntityFlex(parts.toArray(new Part[parts.size()]), eem.getParams(),http.multiPartType));
+    		}
+    		
+    		
+    		
+    		if(hasBody && hasForm)
+    			throw new ApplicationException("mixing httpparam  type file/formfield and body/XML is not allowed");
+    	
+    		if(!hasContentType) {
+    			if(isBinary) {
+    				if(hasBody) req.addHeader("Content-type", "application/octet-stream");
+    				else req.addHeader("Content-type", "application/x-www-form-urlencoded; charset="+charset);
+    			}
+    			else {
+    				if(hasBody)
+    					req.addHeader("Content-type", "text/html; charset="+charset ); 
+    			}
+    		}
+    		
+    		
+    		// set User Agent
+    			if(!hasHeaderIgnoreCase(req,"User-Agent"))
+    				req.setHeader("User-Agent",this.useragent);
+    		
+    	// set timeout
+    		if(this.timeout>0L)HTTPEngine4Impl.setTimeout(params, (int)this.timeout);
+    		
+    	// set Username and Password
+    		if(this.username!=null) {
+    			if(this.password==null)this.password="";
+    			if(AUTH_TYPE_NTLM==this.authType) {
+    				if(StringUtil.isEmpty(this.workStation,true))
+    	                throw new ApplicationException("attribute workstation is required when authentication type is [NTLM]");
+    				if(StringUtil.isEmpty(this.domain,true))
+    	                throw new ApplicationException("attribute domain is required when authentication type is [NTLM]");
+    					
+    				HTTPEngine4Impl.setNTCredentials(client, this.username, this.password, this.workStation,this.domain);
+    			}
+    			else httpContext=HTTPEngine4Impl.setCredentials(client, httpHost, this.username, this.password,preauth);
+    		}
+    	
+    	// set Proxy
+    		ProxyData proxy=null;
+    		if(!StringUtil.isEmpty(this.proxyserver)) {
+    			proxy=ProxyDataImpl.getInstance(this.proxyserver, this.proxyport, this.proxyuser, this.proxypassword) ;
+    		}
+    		if(pageContext.getConfig().isProxyEnableFor(host)) { 
+    			proxy=pageContext.getConfig().getProxyData();
+    		}
+    		HTTPEngine4Impl.setProxy(client, req, proxy);
+    		
+    	}
+    	
+    	
+    	
+    	
+    	
     	try {
-		
+    	if(httpContext==null)httpContext = new BasicHttpContext();
+    		
 /////////////////////////////////////////// EXECUTE /////////////////////////////////////////////////
-		Executor4 e = new Executor4(this,client,req,redirect);
+		Executor4 e = new Executor4(this,client,httpContext,req,redirect);
 		HTTPResponse4Impl rsp=null;
 		if(timeout<0){
 			try{
-				rsp = e.execute();
+				rsp = e.execute(httpContext);
 			}
 			
 			catch(Throwable t){
@@ -690,7 +987,8 @@ public final class Http4 extends BodyTagImpl implements Http {
 	        	mimetype == null ||  
 	        	mimetype == NO_MIMETYPE || HTTPUtil.isTextMimeType(mimetype);
 	        	
-	        
+		    // is multipart 
+	        boolean isMultipart= MultiPartResponseUtils.isMultipart(mimetype);        
 	       
 	        cfhttp.set(KeyConstants._text,Caster.toBoolean(isText));
 	        
@@ -737,10 +1035,18 @@ public final class Http4 extends BodyTagImpl implements Http {
                 try {
                 	is = rsp.getContentAsStream();
                     if(is!=null &&isGzipEncoded(contentEncoding))
-                    	is = new GZIPInputStream(is);
+                    	is = rsp.getStatusCode()!=200? new CachingGZIPInputStream(is):new GZIPInputStream(is);
                         	
                     try {
+                    	try{
                     	str = is==null?"":IOUtil.toString(is,responseCharset);
+                    	}
+                    	catch(EOFException eof){
+                    		if(is instanceof CachingGZIPInputStream) {
+                    			str = IOUtil.toString(is=((CachingGZIPInputStream)is).getRawData(),responseCharset);
+                    		}
+                    		else throw eof;
+                    	}
                     }
                     catch (UnsupportedEncodingException uee) {
                     	str = IOUtil.toString(is,null);
@@ -775,9 +1081,17 @@ public final class Http4 extends BodyTagImpl implements Http {
 		    else {
 		    	byte[] barr=null;
 		        if(isGzipEncoded(contentEncoding)){
-		        	is = new GZIPInputStream(rsp.getContentAsStream());
+		        	is=rsp.getContentAsStream();
+		        	is = rsp.getStatusCode()!=200?new CachingGZIPInputStream(is) :new GZIPInputStream(is);
 		        	try {
-		        		barr = IOUtil.toBytes(is);
+		        		try{
+		        			barr = IOUtil.toBytes(is);
+		        		}
+		        		catch(EOFException eof){
+		        			if(is instanceof CachingGZIPInputStream)
+		        				barr = IOUtil.toBytes(((CachingGZIPInputStream)is).getRawData());
+		        			else throw eof;
+		        		}
 					} 
 		        	catch (IOException t) {
 		        		throw Caster.toPageException(t);
@@ -794,8 +1108,12 @@ public final class Http4 extends BodyTagImpl implements Http {
 		        		throw Caster.toPageException(t);
 					}
 		        }
-		        	
-		        cfhttp.set(FILE_CONTENT,barr);
+		        //IF Multipart response get file content and parse parts
+			    if(isMultipart) {
+			    	cfhttp.set(FILE_CONTENT,MultiPartResponseUtils.getParts(barr,mimetype));
+			    } else {
+			    	cfhttp.set(FILE_CONTENT,barr);
+			    }
 		        
 		        if(file!=null) {
 		        	try {
@@ -903,7 +1221,7 @@ public final class Http4 extends BodyTagImpl implements Http {
     }*/
 	
 
-	static HttpRequestBase init(Config cw,Http4 http, DefaultHttpClient client, HttpParams params, String url, int port) throws PageException, IOException {
+	/*static HttpRequestBase init(Config cw,Http4 http, DefaultHttpClient client, HttpParams params, String url, int port) throws PageException, IOException {
 		String charset=http.charset;
 		if(StringUtil.isEmpty(charset,true)) charset=cw.getWebCharset();
 		else charset=charset.trim();
@@ -934,8 +1252,10 @@ public final class Http4 extends BodyTagImpl implements Http {
 			}
 		}
 		String host=null;
+		HttpHost httpHost;
 		try {
 			URL _url = HTTPUtil.toURL(url,port);
+			httpHost = new HttpHost(_url.getHost(),_url.getPort());
 			host=_url.getHost();
 			url=_url.toExternalForm();
 			if(sbQS.length()>0){
@@ -1148,12 +1468,14 @@ public final class Http4 extends BodyTagImpl implements Http {
 		
 		
 		// set User Agent
-			req.setHeader("User-Agent",http.useragent);
+			if(!hasHeaderIgnoreCase(req,"User-Agent"))
+				req.setHeader("User-Agent",http.useragent);
 		
 	// set timeout
 		if(http.timeout>0L)HTTPEngine4Impl.setTimeout(params, (int)http.timeout);
 		
 	// set Username and Password
+		BasicHttpContext httpContext=null;
 		if(http.username!=null) {
 			if(http.password==null)http.password="";
 			if(AUTH_TYPE_NTLM==http.authType) {
@@ -1164,7 +1486,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 					
 				HTTPEngine4Impl.setNTCredentials(client, http.username, http.password, http.workStation,http.domain);
 			}
-			else HTTPEngine4Impl.setCredentials(client, http.username, http.password);
+			else httpContext=HTTPEngine4Impl.setCredentials(client, httpHost, http.username, http.password);
 		}
 	
 	// set Proxy
@@ -1178,6 +1500,15 @@ public final class Http4 extends BodyTagImpl implements Http {
 		HTTPEngine4Impl.setProxy(client, req, proxy);
 		
 		return req;
+	}*/
+
+	private static boolean hasHeaderIgnoreCase(HttpRequestBase req,String name) {
+		org.apache.http.Header[] headers = req.getAllHeaders();
+		if(headers==null) return false;
+		for(int i=0;i<headers.length;i++){
+			if(name.equalsIgnoreCase(headers[i].getName())) return true;
+		}
+		return false;
 	}
 
 	private static String headerValue(String value) {
@@ -1431,70 +1762,31 @@ class Executor4 extends Thread {
 	//URL redirectURL;
 	HTTPResponse4Impl response;
 	private HttpRequestBase req;
+	private HttpContext context;
 
-	public Executor4(Http4 http, DefaultHttpClient client,HttpRequestBase req, boolean redirect) {
+	public Executor4(Http4 http,DefaultHttpClient client, HttpContext context, HttpRequestBase req, boolean redirect) {
 		this.http=http;
 		this.client=client;
+		this.context=context;
 		this.redirect=redirect;
 		this.req=req;
 	}
 	
-
+	@Override
 	public void run(){
 		try {
-			response=execute();
+			response=execute(context);
 			done=true;
-			synchronized(http){
-				http.notify();
-			}
-		} catch (Throwable t) {
+		} 
+		catch (Throwable t) {
 			this.t=t;
+		}
+		finally {
+			SystemUtil.notify(http);
 		}
 	}
 	
-	/*public HTTPResponse4Impl executeOld() throws IOException	{
-
-		short count=0;
-        HttpResponse rsp;
-        HttpContext localContext = new BasicHttpContext();
-        do {
-        	rsp = client.execute(req,localContext);
-        	if(!redirect || count++ >= HTTPEngine.MAX_REDIRECT || !Http4.isRedirect(rsp.getStatusLine().getStatusCode())) break;
-        	
-        	redirectURL=Http4.locationURL(req,rsp);
-        	if(redirectURL==null) break;
-        	
-        	URI redirectURI;
-        	try {
-    			redirectURI= new URI(redirectURL.toExternalForm());
-    		} catch (URISyntaxException e) {
-    			break;
-    		}
-        	
-    		
-    		print.e("req:"+req.getClass().getName());
-        	print.e("rsp:"+rsp.getClass().getName());
-        	req.setURI(redirectURI);
-        	print.e("redirectURI:"+redirectURI);
-        }
-        while(false);
-        
-        HttpHost target = (HttpHost) localContext.getAttribute(
-                ExecutionContext.HTTP_TARGET_HOST);
-        HttpUriRequest req = (HttpUriRequest) localContext.getAttribute(
-                ExecutionContext.HTTP_REQUEST);
-        
-        System.out.println("Target host: " + target.toURI());
-        System.out.println("Final request URI: " + req.getURI()); // relative URI (no proxy used)
-        System.out.println("Final request method: " + req.getMethod());
-        
-        return response=new HTTPResponse4Impl(null,client,req,rsp);
-        
-	}*/
-	
-
-	public HTTPResponse4Impl execute() throws IOException	{
-		HttpContext context = new BasicHttpContext();
+	public HTTPResponse4Impl execute(HttpContext context) throws IOException	{
 		return response=new HTTPResponse4Impl(null,context,req,client.execute(req,context));
 	}
 }

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -12,6 +13,7 @@ import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
 import railo.runtime.debug.DebuggerImpl;
+import railo.runtime.debug.DebuggerPro;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
@@ -165,8 +167,11 @@ public final class Update extends TagImpl {
 				railo.runtime.type.Query query = new QueryImpl(dc,sql,-1,-1,-1,"query");
 				
 				if(pageContext.getConfig().debug()) {
-					boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
-					pageContext.getDebugger().addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.executionTime());
+					boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
+					if(logdb){
+						boolean debugUsage=DebuggerImpl.debugQueryUsage(pageContext,query);
+						((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource,"",sql,query.getRecordcount(),pageContext.getCurrentPageSource(),query.getExecutionTime());
+					}
 				}
 			}
 			return EVAL_PAGE;

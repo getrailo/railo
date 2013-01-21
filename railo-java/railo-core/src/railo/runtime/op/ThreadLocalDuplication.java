@@ -1,6 +1,6 @@
 package railo.runtime.op;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import railo.commons.lang.types.RefBoolean;
@@ -43,14 +43,13 @@ public class ThreadLocalDuplication {
 		
 		Map<Object,Object> list = touch();
 		return list.get(object);
-		//return get(object);
 	}
 	
 
 	private static Map<Object,Object> touch() {
 		Map<Object,Object> set = local.get();
 		if(set==null) {
-			set = new HashMap<Object,Object>();
+			set = new IdentityHashMap<Object,Object>();// it is importend to have a reference comparsion here
 			local.set(set);
 		}
 		return set;

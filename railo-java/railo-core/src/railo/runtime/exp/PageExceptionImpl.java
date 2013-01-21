@@ -318,17 +318,17 @@ public abstract class PageExceptionImpl extends PageException {
 		struct.setEL("GeneratedContent",getGeneratedContent(pc));
 		struct.setEL("HTTPReferer",pc.cgiScope().get("HTTP_REFERER",""));
 		struct.setEL("mailto",ep.getMailto());
-		struct.setEL("message",getMessage());
+		struct.setEL(KeyConstants._message,getMessage());
 		struct.setEL("QueryString",StringUtil.emptyIfNull(pc. getHttpServletRequest().getQueryString()));
 		struct.setEL("RemoteAddress",pc.cgiScope().get("REMOTE_ADDR",""));
 		struct.setEL("RootCause",getCatchBlock(pc));
 		struct.setEL("StackTrace",getStackTraceAsString());
-		struct.setEL("template",pc. getHttpServletRequest().getServletPath());
+		struct.setEL(KeyConstants._template,pc. getHttpServletRequest().getServletPath());
 		
-			struct.setEL("Detail",getDetail());
+			struct.setEL(KeyConstants._Detail,getDetail());
 			struct.setEL("ErrorCode",getErrorCode());
 			struct.setEL("ExtendedInfo",getExtendedInfo());
-			struct.setEL("type",getTypeAsString());
+			struct.setEL(KeyConstants._type,getTypeAsString());
 			struct.setEL("TagContext",getTagContext(pc.getConfig()));
 			struct.setEL("additional",additional);
 			// TODO RootCause,StackTrace

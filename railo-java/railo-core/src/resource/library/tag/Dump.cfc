@@ -65,6 +65,7 @@ component {
 		// context
 		var context = GetCurrentContext();
 		var contextLevel = structKeyExists(attrib,'contextLevel') ? attrib.contextLevel : 2;
+		contextLevel = min(contextLevel,arrayLen(context));
 		context = context[contextLevel].template & ":" & context[contextLevel].line;
 
 		// format

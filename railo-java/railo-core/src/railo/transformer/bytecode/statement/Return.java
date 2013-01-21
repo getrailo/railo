@@ -17,7 +17,7 @@ import railo.transformer.bytecode.visitor.OnFinally;
 /**
  * Return Statement
  */
-public final class Return extends StatementBase {
+public final class Return extends StatementBaseNoFinal {
 
 	Expression expr;
 

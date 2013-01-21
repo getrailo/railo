@@ -6,9 +6,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -94,6 +97,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private final RefBoolean controlerState=new RefBooleanImpl(true);
 	private boolean allowRequestTimeout=true;
 	private Monitor monitor;
+	private List<ServletConfig> servletConfigs=new ArrayList<ServletConfig>(); 
     
     //private static CFMLEngineImpl engine=new CFMLEngineImpl();
 
@@ -102,12 +106,11 @@ public final class CFMLEngineImpl implements CFMLEngine {
     	CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
         ConfigServerImpl cs = getConfigServerImpl();
     	
-        SystemOut.printDate(SystemUtil.PRINTWRITER_OUT,"Start CFML Controller");
+        SystemOut.printDate(SystemUtil.getPrintWriter(SystemUtil.OUT),"Start CFML Controller");
         Controler controler = new Controler(cs,initContextes,5*1000,controlerState);
         controler.setDaemon(true);
         controler.setPriority(Thread.MIN_PRIORITY);
-        controler.start();  
-        
+        controler.start();
 
         touchMonitor(cs);  
         
@@ -131,7 +134,6 @@ public final class CFMLEngineImpl implements CFMLEngine {
     public static synchronized CFMLEngine getInstance(CFMLEngineFactory factory) {
     	if(engine==null) {
     		engine=new CFMLEngineImpl(factory);
-    		
         }
         return engine;
     }
@@ -150,6 +152,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @see railo.loader.engine.CFMLEngine#addServletConfig(javax.servlet.ServletConfig)
      */
     public void addServletConfig(ServletConfig config) throws ServletException {
+    	servletConfigs.add(config);
     	String real=config.getServletContext().getRealPath("/");
         if(!initContextes.containsKey(real)) {             
         	CFMLFactory jspFactory = loadJSPFactory(getConfigServerImpl(),config,initContextes.size());
@@ -626,15 +629,18 @@ public final class CFMLEngineImpl implements CFMLEngine {
 		
 		
 		
-		HttpServletRequest req=new HttpServletRequestDummy(
+		HttpServletRequestDummy req=new HttpServletRequestDummy(
 				root,serverName,uri.getPath(),uri.getQuery(),cookies,headers,parameters,attributes,null);
+		req.setProtocol("CLI/1.0");
 		HttpServletResponse rsp=new HttpServletResponseDummy(os);
 		
 		serviceCFML(servlet, req, rsp);
 		String res = os.toString(rsp.getCharacterEncoding());
 		System.out.println(res);
-		
-
+	}
+	
+	public ServletConfig[] getServletConfigs(){
+		return servletConfigs.toArray(new ServletConfig[servletConfigs.size()]);
 	}
 
 }

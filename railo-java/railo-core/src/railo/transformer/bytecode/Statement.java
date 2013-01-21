@@ -1,6 +1,7 @@
 package railo.transformer.bytecode;
 
 import railo.runtime.exp.TemplateException;
+import railo.transformer.bytecode.statement.FlowControlFinal;
 
 
 
@@ -52,4 +53,10 @@ public interface Statement {
 	 * @return the endLine
 	 */
 	public Position getEnd();
+	
+
+	/**
+	 * @return return the label where the finally block of this tags starts, IF there is a finally block, otherwise return null; 
+	 */
+	public FlowControlFinal getFlowControlFinal();
 }

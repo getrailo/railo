@@ -36,7 +36,7 @@ import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.Argument;
 import railo.transformer.bytecode.statement.HasBody;
 import railo.transformer.bytecode.statement.IFunction;
-import railo.transformer.bytecode.statement.StatementBase;
+import railo.transformer.bytecode.statement.StatementBaseNoFinal;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.ASMUtil;
@@ -44,7 +44,7 @@ import railo.transformer.bytecode.util.ExpressionUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.cfml.evaluator.EvaluatorException;
 
-public abstract class Function extends StatementBase implements Opcodes, IFunction,HasBody {
+public abstract class Function extends StatementBaseNoFinal implements Opcodes, IFunction,HasBody {
 
 	
 
@@ -391,7 +391,7 @@ public abstract class Function extends StatementBase implements Opcodes, IFuncti
 		// name
 		ExpressionUtil.writeOutSilent(name,bc, Expression.MODE_REF);
 		// return type
-		short type=ExpressionUtil.toShortType(returnType,CFTypes.TYPE_UNKNOW);
+		short type=ExpressionUtil.toShortType(returnType,false,CFTypes.TYPE_UNKNOW);
 		if(type==CFTypes.TYPE_UNKNOW) ExpressionUtil.writeOutSilent(returnType,bc, Expression.MODE_REF);
 		else adapter.push(type);
 		

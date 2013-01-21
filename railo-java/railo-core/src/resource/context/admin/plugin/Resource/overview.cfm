@@ -4,7 +4,7 @@
 function selectAll(field) {
 	var form=field.form;
 	for(var key in form.elements){
-		if((form.elements[key] && ""+form.elements[key].name).indexOf("path")==0){
+		if(form.elements[key] && (""+form.elements[key].name).indexOf("path")==0){
 			form.elements[key].checked=field.checked;
 		}
 	}
@@ -16,15 +16,15 @@ function selectAll(field) {
 <table class="tbl">
 <tr>
     <td valign="top" class="tblHead">#lang.size#</td>
-    <td valign="top" class="tblContent">#req.dspSize#</td>
+    <td valign="top">#req.dspSize#</td>
 </tr>
 <tr>
     <td valign="top" class="tblHead">#lang.countDir#</td>
-    <td valign="top" class="tblContent">#req.countDir#</td>
+    <td valign="top">#req.countDir#</td>
 </tr>
 <tr>
     <td valign="top" class="tblHead">#lang.countFile#</td>
-    <td valign="top" class="tblContent">#req.countFile#</td>
+    <td valign="top">#req.countFile#</td>
 </tr>
 </table>
 <br />
@@ -32,7 +32,7 @@ function selectAll(field) {
 <h2>#lang.listing#</h2>
 #lang.descListing#<br /><br />
 <table class="tbl">
-<cfform action="#action('delete')#" method="post">
+<cfform onerror="customError" action="#action('delete')#" method="post">
     <tr>
         <td width="20"><input type="checkbox" class="checkbox" name="rowreadonly" onclick="selectAll(this)">
             </td>
@@ -52,9 +52,9 @@ function selectAll(field) {
         </tr>
         </table>
         </td>
-        <td class="tblContent" nowrap>#req.listing.path#</td>
-        <td class="tblContent" nowrap>#req.listing.dspSize#</td>
-        <td class="tblContent" nowrap>#dateFormat(req.listing.dateLastModified)# #TimeFormat(req.listing.dateLastModified)#</td>
+        <td nowrap>#req.listing.path#</td>
+        <td nowrap>#req.listing.dspSize#</td>
+        <td nowrap>#dateFormat(req.listing.dateLastModified)# #TimeFormat(req.listing.dateLastModified)#</td>
     </tr>
     </cfloop>
     <tr>
@@ -69,7 +69,7 @@ function selectAll(field) {
             <td></td>
             <td valign="top"><cfmodule template="/railo-context/admin/img.cfm" src="#request.adminType#-bgcolor.gif" width="1" height="14"><cfmodule template="/railo-context/admin/img.cfm" src="#request.adminType#-bgcolor.gif" width="36" height="1"></td>
              <td>&nbsp;
-            <input type="submit" class="submit" name="delete" value="#lang.btnDelete#">
+            <input type="submit" class="button submit" name="delete" value="#lang.btnDelete#">
             </td>	
         </tr>
          </table>

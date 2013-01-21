@@ -474,6 +474,7 @@ public class KeyConstants {
 	public static final Key _parameters=KeyImpl._const("parameters");
 	public static final Key _parent=KeyImpl._const("parent");
 	public static final Key _password=KeyImpl._const("password");
+	public static final Key _username=KeyImpl._const("username");
 	public static final Key _path=KeyImpl._const("path");
 	public static final Key _path_info=KeyImpl._const("path_info");
 	public static final Key _pattern=KeyImpl._const("pattern");
@@ -649,6 +650,8 @@ public class KeyConstants {
 	public static final Key _config=KeyImpl._const("config");
 
 	public static final Key _executionTime = KeyImpl._const("executionTime");
+	public static final Key _executionTimeNano = KeyImpl._const("executionTimeNano");
+	
 	public static final Key _RECORDCOUNT = KeyImpl._const("RECORDCOUNT");
 	public static final Key _cached = KeyImpl._const("cached");
 	public static final Key _COLUMNLIST = KeyImpl._const("COLUMNLIST");
@@ -803,8 +806,17 @@ public class KeyConstants {
 	public static final Key _COLL = KeyImpl._const("COLL");
 	public static final Key _FILTER = KeyImpl._const("FILTER");
 	public static final Key _recurse = KeyImpl._const("recurse");
-	
-	
+	public static final Key _rest = KeyImpl._const("rest");
+	public static final Key _httpmethod = KeyImpl._const("httpmethod");
+	public static final Key _restPath = KeyImpl._const("restPath");
+	public static final Key _restArgName = KeyImpl._const("restArgName");
+	public static final Key _restArgSource = KeyImpl._const("restArgSource");
+	public static final Key _consumes = KeyImpl._const("consumes");
+	public static final Key _produces = KeyImpl._const("produces");
+	public static final Key _ref = KeyImpl._const("ref");
+	public static final Key _script = KeyImpl._const("script");
+	public static final Key _database = KeyImpl._const("database");
+	public static final Key _exception = KeyImpl._const("exception");
 	
 	private static HashSet<String> _____keys;
 	

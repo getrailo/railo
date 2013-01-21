@@ -57,7 +57,7 @@ public final class FunctionLibFunctionArg {
 	 */
 	public short getType() {
 		if(type==UNDEFINED) {
-			type=CFTypes.toShort(strType,CFTypes.TYPE_UNKNOW);
+			type=CFTypes.toShort(strType,false,CFTypes.TYPE_UNKNOW);
 		}
 		return type;
 	}

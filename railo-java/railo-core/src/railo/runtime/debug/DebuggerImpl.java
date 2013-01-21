@@ -24,6 +24,7 @@ import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.db.SQL;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
@@ -46,7 +47,7 @@ import railo.runtime.type.util.KeyConstants;
 /**
  * Class to debug the application
  */
-public final class DebuggerImpl implements Debugger {
+public final class DebuggerImpl implements DebuggerPro {
 	private static final long serialVersionUID = 3957043879267494311L;
 	
 	
@@ -150,13 +151,13 @@ public final class DebuggerImpl implements Debugger {
         // Queries
         int len=queries.size();
         for(int i=0;i<len;i++) {
-            QueryEntry entry=queries.get(i);
+            QueryEntryPro entry=(QueryEntryPro) queries.get(i);
             String path=entry.getSrc();
             Object o=entries.get(path);
             
             if(o!=null) {
                 DebugEntryTemplate oe=(DebugEntryTemplate) o;
-                oe.updateQueryTime(entry.getExe());
+                oe.updateQueryTime(entry.getExecutionTime());
             }
         }
         
@@ -181,6 +182,11 @@ public final class DebuggerImpl implements Debugger {
 	
 	@Override
 	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,int time) {
+		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
+	}
+	
+	@Override
+	public void addQuery(Query query,String datasource,String name,SQL sql, int recordcount, PageSource src,long time) {
 		queries.add(new QueryEntryImpl(query,datasource,name,sql,recordcount,src.getDisplayPath(),time));
 	}
 	
@@ -262,9 +268,9 @@ public final class DebuggerImpl implements Debugger {
 		try {
 		    while(qryIt.hasNext()) {
 		        row++;
-		        QueryEntry qe=qryIt.next();
+		        QueryEntryPro qe=(QueryEntryPro) qryIt.next();
 				qryQueries.setAt(KeyConstants._name,row,qe.getName()==null?"":qe.getName());
-		        qryQueries.setAt(KeyConstants._time,row,Integer.valueOf(qe.getExe()));
+		        qryQueries.setAt(KeyConstants._time,row,Long.valueOf(qe.getExecutionTime()));
 		        qryQueries.setAt(KeyConstants._sql,row,qe.getSQL().toString());
 				qryQueries.setAt(KeyConstants._src,row,qe.getSrc());
                 qryQueries.setAt(KeyConstants._count,row,Integer.valueOf(qe.getRecordcount()));
@@ -276,8 +282,8 @@ public final class DebuggerImpl implements Debugger {
                 
                 
 		        Object o=qryExe.get(KeyImpl.init(qe.getSrc()),null);
-		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Integer.valueOf(qe.getExe()));
-		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Integer.valueOf(((Integer)o).intValue()+qe.getExe()));
+		        if(o==null) qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(qe.getExecutionTime()));
+		        else qryExe.setEL(KeyImpl.init(qe.getSrc()),Long.valueOf(((Long)o).longValue()+qe.getExecutionTime()));
 		    }
 		}
 		catch(PageException dbe) {}
@@ -417,6 +423,7 @@ public final class DebuggerImpl implements Debugger {
 
 		// traces
 		len=traces==null?0:traces.size();
+		if(!((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_TRACING))len=0;
         Query qryTraces=new QueryImpl(
                 new Collection.Key[]{
                 		KeyConstants._type,
@@ -558,6 +565,7 @@ public final class DebuggerImpl implements Debugger {
 		timers.add(t=new DebugTimerImpl(label,time,template));
 		return t;
 	}
+	
 
 	@Override
 	public DebugTrace addTrace(int type, String category, String text, PageSource page,String varName,String varValue) {
@@ -577,8 +585,8 @@ public final class DebuggerImpl implements Debugger {
 			}
 		}
 		
-		DebugTraceImpl t;
-		traces.add(t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace));
+		DebugTraceImpl t=new DebugTraceImpl(type,category,text,page.getDisplayPath(),line,"",varName,varValue,lastTrace-_lastTrace);
+		traces.add(t);
 		return t;
 	}
 	
@@ -588,14 +596,20 @@ public final class DebuggerImpl implements Debugger {
 		long _lastTrace =(traces.isEmpty())?lastEntry: lastTrace;
 		lastTrace = System.currentTimeMillis();
         
-		DebugTraceImpl t;
-		traces.add(t=new DebugTraceImpl(type,category,text,template,line,action,varName,varValue,lastTrace-_lastTrace));
+		DebugTraceImpl t=new DebugTraceImpl(type,category,text,template,line,action,varName,varValue,lastTrace-_lastTrace);
+		traces.add(t);
 		return t;
 	}
 	
 	@Override
 	public DebugTrace[] getTraces() {
-		return traces.toArray(new DebugTrace[traces.size()]);
+		return getTraces(ThreadLocalPageContext.get());
+	}
+
+	public DebugTrace[] getTraces(PageContext pc) {
+		if(pc!=null && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_TRACING))
+			return traces.toArray(new DebugTrace[traces.size()]);
+		return new DebugTrace[0];
 	}
 	
 	@Override
@@ -614,7 +628,7 @@ public final class DebuggerImpl implements Debugger {
 
 	public static boolean debugQueryUsage(PageContext pageContext, Query query) {
 		if(pageContext.getConfig().debug() && query instanceof QueryImpl) {
-			if(((ConfigWebImpl)pageContext.getConfig()).getDebugShowQueryUsage()){
+			if(((ConfigWebImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_QUERY_USAGE)){
 				((QueryImpl)query).enableShowQueryUsage();
 				return true;
 			}
@@ -649,8 +663,10 @@ public final class DebuggerImpl implements Debugger {
 
 final class DebugEntryTemplateComparator implements Comparator<DebugEntryTemplate> {
     
-    public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
-        return (int)((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
+	public int compare(DebugEntryTemplate de1,DebugEntryTemplate de2) {
+		long result = ((de2.getExeTime()+de2.getFileLoadTime())-(de1.getExeTime()+de1.getFileLoadTime()));
+        // we do this addional step to try to avoid ticket RAILO-2076
+        return result>0L?1:(result<0L?-1:0);
     }
 }
 
@@ -658,17 +674,8 @@ final class DebugEntryTemplatePartComparator implements Comparator<DebugEntryTem
 	
 	@Override
 	public int compare(DebugEntryTemplatePart de1,DebugEntryTemplatePart de2) {
-        return (int) (de2.getExeTime()-de1.getExeTime());
-		
-		
-		/*int diff = de1.getPath().compareTo(de2.getPath());		
-        if(diff!=0) return diff;
-		
-		diff= de1.getStartPosition()-de2.getStartPosition();
-		if(diff!=0) return diff;
-		
-		return de1.getEndPosition()-de2.getEndPosition();
-		*/
-		
+		long result=de2.getExeTime()-de1.getExeTime();
+		// we do this addional step to try to avoid ticket RAILO-2076
+        return result>0L?1:(result<0L?-1:0);
     }
 }

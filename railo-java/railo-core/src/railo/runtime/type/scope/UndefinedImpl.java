@@ -8,6 +8,7 @@ import railo.runtime.ComponentScope;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.Config;
+import railo.runtime.config.ConfigImpl;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
@@ -56,7 +57,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public UndefinedImpl(PageContextImpl pc, short type) {
 		this.type=type;
 		this.pc=pc;
-		this.debug=pc.getConfig().debug();
+		this.debug=pc.getConfig().debug() && ((ConfigImpl)pc.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_IMPLICIT_ACCESS);
 	}
 	
 	
@@ -766,6 +767,22 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 	public boolean getCheckArguments() {
 		return checkArguments;
 	}
+	
+	@Override
+	public Object call(PageContext pc, Key methodName, Object[] args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).call(pc,args,false);
+		}
+		throw new ExpressionException("No matching function ["+methodName+"] found");
+	}
 
-
+    @Override
+	public Object callWithNamedValues(PageContext pc, Key methodName, Struct args) throws PageException {
+		Object obj = get(methodName,null);
+		if(obj instanceof UDF) {
+			return ((UDF)obj).callWithNamedValues(pc,args,false);
+		}
+		throw new ExpressionException("No matching function ["+methodName+"] found");
+	}
 }

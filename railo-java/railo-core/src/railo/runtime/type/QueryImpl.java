@@ -58,6 +58,7 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
+import railo.runtime.functions.query.QueryColumnCount;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -103,6 +104,8 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	}
 
 	public static final Collection.Key GENERATED_KEYS = KeyImpl.intern("GENERATED_KEYS");
+	public static final Collection.Key GENERATEDKEYS = KeyImpl.intern("GENERATEDKEYS");
+	public static final Collection.Key ID = KeyImpl.intern("ID");
 	
 	
 	
@@ -121,9 +124,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	private String template;
 	
 	
-	/**
-	 * @return return execution time to get query
-	 */
+	@Override
 	public int executionTime() {
 		return (int) exeTime;
 	}
@@ -137,16 +138,17 @@ public class QueryImpl implements Query,Objects,Sizeable {
      */
     public QueryImpl(ResultSet result, int maxrow, String name) throws PageException {
     	this.name=name;
-        Stopwatch stopwatch=new Stopwatch();
-		stopwatch.start();
-		try {
+        //Stopwatch stopwatch=new Stopwatch();
+		//stopwatch.start();
+		long start=System.nanoTime();
+    	try {
             fillResult(null,result,maxrow,false,false);
         } catch (SQLException e) {
             throw new DatabaseException(e,null);
         } catch (IOException e) {
             throw Caster.toPageException(e);
         }
-		exeTime=stopwatch.time();
+		exeTime=System.nanoTime()-start;
     }
     
     /**
@@ -205,9 +207,11 @@ public class QueryImpl implements Query,Objects,Sizeable {
         	DatasourceConnectionImpl dci=(DatasourceConnectionImpl) dc;
         	if(!dci.supportsGetGeneratedKeys())createGeneratedKeys=false;
         }
-		
-		Stopwatch stopwatch=new Stopwatch();
-		stopwatch.start();
+
+        
+		//Stopwatch stopwatch=new Stopwatch();
+        long start=System.nanoTime();
+		//stopwatch.start();
 		boolean hasResult=false;
 		//boolean closeStatement=true;
 		try {	
@@ -230,7 +234,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	        }
 			int uc;
 			ResultSet res;
-			
 			do {
 				if(hasResult) {
 					res=stat.getResultSet();
@@ -259,7 +262,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         	//if(closeStatement)
         		DBUtil.closeEL(stat);
         }  
-		exeTime=stopwatch.time();
+		exeTime=System.nanoTime()-start;
 
 		if(columncount==0) {
 			if(columnNames==null) columnNames=new Collection.Key[0];
@@ -285,14 +288,20 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			setGeneratedKeys(dc, rs);
 			return true;
 		}
-		catch(Throwable t) {
+		catch(Throwable t) {t.printStackTrace();
 			return false;
 		}
 	}
 	
 	private void setGeneratedKeys(DatasourceConnection dc,ResultSet rs) throws PageException  {
 		generatedKeys=new QueryImpl(rs,"");
-		if(DataSourceUtil.isMSSQL(dc)) generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
+		
+		// ACF compatibility action 
+		if(generatedKeys.getColumnCount()==1 && DataSourceUtil.isMSSQL(dc)) {
+			generatedKeys.renameEL(GENERATED_KEYS,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(GENERATEDKEYS,KeyConstants._IDENTITYCOL);
+			generatedKeys.renameEL(ID,KeyConstants._IDENTITYCOL);
+		}
 	}
 	
 	/*private void setUpdateData(Statement stat, boolean createGeneratedKeys, boolean createUpdateCount)  {
@@ -1332,9 +1341,9 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	/**
 	 * @see railo.runtime.type.Query#getTypesAsMap()
 	 */
-	public synchronized Map getTypesAsMap() {
+	public synchronized Map<Collection.Key,String> getTypesAsMap() {
 		
-		Map map=new HashMap();
+		Map<Collection.Key,String> map=new HashMap<Collection.Key,String>();
 		for(int i=0;i<columns.length;i++) {
 			map.put(columnNames[i],columns[i].getTypeAsString());
 		}
@@ -1429,7 +1438,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 
 		if(exeTime>0)	{
-			sb.append("Execution Time: "+exeTime+"\n");
+			sb.append("Execution Time (ns): "+exeTime+"\n");
 			sb.append("---------------------------------------------------\n");
 		}
 		
@@ -1541,10 +1550,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		return -1;
 	}
 	
-
-	/**
-	 * @see railo.runtime.type.Query#setExecutionTime(long)
-	 */
+	@Override
 	public void setExecutionTime(long exeTime) {
 		this.exeTime=exeTime;
 	}
@@ -1671,6 +1677,10 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 */
 	public String[] getColumnNamesAsString() {
 		return CollectionUtil.keysAsString(this);
+	}
+	
+	public int getColumnCount() {
+		return columncount;
 	}
 
     /**
@@ -1840,7 +1850,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         return cols;
     }
 
-    public synchronized Struct _getMetaData() {
+    /*public synchronized Struct _getMetaData() {
     	
         Struct cols=new StructImpl();
         for(int i=0;i<columns.length;i++) {
@@ -1856,7 +1866,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         sct.setEL(KeyConstants._cached,Caster.toBoolean(isCached()));
         return sct;
         
-    }
+    }*/
 
 	/**
 	 * @return the sql
@@ -2476,6 +2486,16 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 */
 	public Object getObject(String colName, Map map) throws SQLException {
 		throw new SQLException("method is not implemented");
+	}
+
+	// used only with java 7, do not set @Override
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnIndex, type);
+	}
+
+	// used only with java 7, do not set @Override
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnLabel, type);
 	}
 
 	/**
@@ -3421,9 +3441,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	private SQLException notSupported() {
 		return new SQLException("this feature is not supported");
 	}
-	private RuntimeException notSupportedEL() {
-		return new RuntimeException(new SQLException("this feature is not supported"));
-	}
 
 	public synchronized void enableShowQueryUsage() {
 		if(columns!=null)for(int i=0;i<columns.length;i++){
@@ -3431,6 +3448,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 	}
 
+	@Override
 	public long getExecutionTime() {
 		return exeTime;
 	}

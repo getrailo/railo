@@ -791,9 +791,11 @@ public final class ResourceUtil {
 	 * @return is inside or not
 	 */
 	public static boolean isChildOf(Resource file, Resource dir) {
-	    if(file==null) return false;
-	    if(file.equals(dir)) return true;
-	    return isChildOf(file.getParentResource(),dir);
+		while(file!=null) {
+			if(file.equals(dir)) return true;
+			file=file.getParentResource();
+		}
+		return false;
 	}
 	/**
 	 * return diffrents of one file to a other if first is child of second otherwise return null
@@ -801,13 +803,12 @@ public final class ResourceUtil {
 	 * @param dir directory to search
 	 */
 	public static String getPathToChild(Resource file, Resource dir) {
+		if(dir==null || !file.getResourceProvider().getScheme().equals(dir.getResourceProvider().getScheme())) return null;
 		boolean isFile=file.isFile();
 		String str="/";
 		while(file!=null) {
-			//print.out("- "+file+".equals("+dir+"):"+file.equals(dir));
 			if(file.equals(dir)) {
-				if(isFile)
-					return str.substring(0,str.length()-1);
+				if(isFile) return str.substring(0,str.length()-1);
 				return str;
 			}
 			str="/"+file.getName()+str;
@@ -1121,7 +1122,7 @@ public final class ResourceUtil {
 	public static Resource[] listResources(Resource[] resources,ResourceFilter filter) {
 		int count=0;
 		Resource[] children;
-		ArrayList list=new ArrayList();
+		ArrayList<Resource[]> list=new ArrayList<Resource[]>();
 		for(int i=0;i<resources.length;i++) {
 			children=filter==null?resources[i].listResources():resources[i].listResources(filter);
 			if(children!=null){
@@ -1133,7 +1134,7 @@ public final class ResourceUtil {
 		Resource[] rtn=new Resource[count];
 		int index=0;
 		for(int i=0;i<resources.length;i++) {
-			children=(Resource[]) list.get(i);
+			children=list.get(i);
 			for(int y=0;y<children.length;y++) {
 				rtn[index++]=children[y];
 			}

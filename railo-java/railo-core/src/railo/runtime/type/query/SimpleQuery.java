@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
 import java.sql.Statement;
@@ -79,7 +80,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 	private String name;
 	private String template;
 	private SQL sql;
-	private int exeTime;
+	private long exeTime;
 	private int recordcount;
 	private ArrayInt arrCurrentRow=new ArrayInt();
 	
@@ -96,8 +97,9 @@ public class SimpleQuery implements Query, ResultSet, Objects {
             QueryUtil.checkSQLRestriction(dc,sql);
         }
 		
-		Stopwatch stopwatch=new Stopwatch();
-		stopwatch.start();
+		//Stopwatch stopwatch=new Stopwatch(Stopwatch.UNIT_NANO);
+		//stopwatch.start();
+		long start=System.nanoTime();
 		boolean hasResult=false;
 		try {	
 			SQLItem[] items=sql.getItems();
@@ -133,7 +135,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		catch (Throwable e) {
 			throw Caster.toPageException(e);
 		}
-		exeTime=(int) stopwatch.time();
+		exeTime= System.nanoTime()-start;
 	}
 	
 	private void setAttributes(Statement stat,int maxrow, int fetchsize,int timeout) throws SQLException {
@@ -194,12 +196,9 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#executionTime()
-	 */
-	
+	@Override
 	public int executionTime() {
-		return exeTime;
+		return (int)exeTime;
 	}
 
 	/**
@@ -773,49 +772,31 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		// TODO implement
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#toString()
-	 */
+	@Override
 	public String toString() {
 		return res.toString();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setExecutionTime(long)
-	 */
-	
+	@Override
 	public void setExecutionTime(long exeTime) {
 		throw notSupported();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#cutRowsTo(int)
-	 */
-	
 	public synchronized boolean cutRowsTo(int maxrows) {
 		throw notSupported();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setCached(boolean)
-	 */
-	
+	@Override
 	public void setCached(boolean isCached) {
 		throw notSupported();
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#isCached()
-	 */
-	
+	@Override
 	public boolean isCached() {
 		return false;
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#addRow()
-	 */
-	
+	@Override
 	public int addRow() {
 		throw notSupported();
 	}
@@ -1586,6 +1567,16 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 		return res.getObject(toIndex(colName), map);
 	}
 
+	// used only with java 7, do not set @Override
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnIndex, type);
+	}
+
+	// used only with java 7, do not set @Override
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnLabel, type);
+	}
+	
 	/**
 	 * @see railo.runtime.type.QueryImpl#getRef(int)
 	 */
@@ -2754,7 +2745,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
 
 	
 	public static PageRuntimeException notSupported() {
-		return new PageRuntimeException(new ApplicationException("not supported"));
+		return toRuntimeExc(new SQLFeatureNotSupportedException("not supported"));
 	}
 
 	public static PageRuntimeException toRuntimeExc(Throwable t) {

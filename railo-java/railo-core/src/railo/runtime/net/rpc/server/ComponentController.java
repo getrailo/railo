@@ -49,18 +49,19 @@ public final class ComponentController {
 		}
 		
 		Object udf = c.get(p,key,null);
-		String rt="any";
+		String returntype="any";
 		if(udf instanceof UDF) {
-			rt=((UDF)udf).getReturnTypeAsString();
+			returntype=((UDF)udf).getReturnTypeAsString();
 		}
-		Object rv = c.call(p, key, args);
+		Object returnvalue = c.call(p, key, args);
 		
 		try {
 			RPCServer server = RPCServer.getInstance(p.getId(),p.getServletContext());
 			TypeMapping tm = server.getEngine().getTypeMappingRegistry().getDefaultTypeMapping();
-			rv=Caster.castTo(p, rt, rv, false);
-			Class clazz = Caster.cfTypeToClass(rt);
-			return AxisCaster.toAxisType(tm,rv,clazz.getComponentType()!=null?clazz:null);
+			returnvalue=Caster.castTo(p, returntype, returnvalue, false);
+			Class clazz = Caster.cfTypeToClass(returntype);
+			String namespace = "cf." + c.getName().toLowerCase();
+			return AxisCaster.toAxisType(tm,returnvalue,clazz.getComponentType()!=null?clazz.getComponentType():clazz,namespace);
 		} 
 		catch (Throwable t) {
 			throw Caster.toPageException(t);

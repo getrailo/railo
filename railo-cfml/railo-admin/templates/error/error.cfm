@@ -1,20 +1,28 @@
-<cfsilent>
+<cffunction name="isOldIE" output="true">
+	<cfif structKeyExists(cgi,'http_user_agent')>
+		<cfset var index=findNocase('MSIE',cgi.http_user_agent)>
+		<cfif index GT 0>
+			<cfset index+=4>
+			<cfset var next=find(';',cgi.http_user_agent,index+1)>
+			<cfif next GT 0>
+				<cfset var sub=trim(mid(cgi.http_user_agent,index,next-index))>
+				<cfif isNumeric(sub) and sub LT 8>
+					<cfreturn true>
+				</cfif>
+			</cfif>
+		</cfif>
+	</cfif>
+	<cfreturn false>
+</cffunction><cfsilent>
 <!--- Plus/minus Image --->
-<cfset doItTheClassicWay=structKeyExists(cgi,'http_user_agent') and findNocase('MSIE',cgi.http_user_agent)>
-<!---<cftry>
-<cfif not doItTheClassicWay>
-    <cfsavecontent variable="plus"><cfinclude template="../../admin/resources/img/debug_plus.gif.cfm"></cfsavecontent>
-    <cfsavecontent variable="minus"><cfinclude template="../../admin/resources/img/debug_minus.gif.cfm"></cfsavecontent>
-</cfif>
-	<cfcatch>
-    	<cfset doItTheClassicWay=true>
-    </cfcatch>
-</cftry>
-<cfif doItTheClassicWay>--->
+<cfif not isOldIE()>
+	<cfset plus='data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIRhI+hG7bwoJINIktzjizeUwAAOw=='>
+	<cfset minus='data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEAAAEALAAAAAAJAAkAAAIQhI+hG8brXgPzTHllfKiDAgA7'>
+<cfelse>
 	<cfset plus="#cgi.context_path#/railo-context/admin/resources/img/debug_plus.gif.cfm">
 	<cfset minus="#cgi.context_path#/railo-context/admin/resources/img/debug_minus.gif.cfm">
-<!---</cfif>--->
-
+</cfif>
+	
 </cfsilent></TD></TD></TD></TH></TH></TH></TR></TR></TR></TABLE></TABLE></TABLE></A></ABBREV></ACRONYM></ADDRESS></APPLET></AU></B></BANNER></BIG></BLINK></BLOCKQUOTE></BQ></CAPTION></CENTER></CITE></CODE></COMMENT></DEL></DFN></DIR></DIV></DL></EM></FIG></FN></FONT></FORM></FRAME></FRAMESET></H1></H2></H3></H4></H5></H6></HEAD></I></INS></KBD></LISTING></MAP></MARQUEE></MENU></MULTICOL></NOBR></NOFRAMES></NOSCRIPT></NOTE></OL></P></PARAM></PERSON></PLAINTEXT></PRE></Q></S></SAMP></SCRIPT></SELECT></SMALL></STRIKE></STRONG></SUB></SUP></TABLE></TD></TEXTAREA></TH></TITLE></TR></TT></U></UL></VAR></WBR></XMP>
 <cfoutput>
 <script>
@@ -55,40 +63,40 @@ return arguments.st;
 </cfscript>
 <table border="0" cellpadding="4" cellspacing="2" style="font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;font-size : 11px;background-color:red;border : 1px solid black;;">
 <tr>
-	<td colspan="2" style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Railo #server.railo.version# Error (#(catch.type)#)</td>
+	<td colspan="2" style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">Railo #server.railo.version# Error (#(catch.type)#)</td>
 </tr>
 <cfparam name="catch.message" default="">
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Message</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#replace(HTMLEditFormat(trim(catch.message)),'
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFB200; font-weight: bold;">Message</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFCC00;">#replace(HTMLEditFormat(trim(catch.message)),'
 ','<br />','all')#</td>
 </tr>
-<cfparam name="catch.message" default="">
+<cfparam name="catch.detail" default="">
 <cfif len(catch.detail)>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Detail</td>
-    <td style="border : 1px solid ##350606;background-color :##FFCC00;">#replace(HTMLEditFormat(trim(catch.detail)),'
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFB200; font-weight:bold;">Detail</td>
+    <td style="border: 1px solid ##350606; color: ##222; background-color:##FFCC00;">#replace(HTMLEditFormat(trim(catch.detail)),'
 ','<br />','all')#</td>
 </tr>
 </cfif>
 <cfif structkeyexists(catch,'errorcode') and len(catch.errorcode) and catch.errorcode NEQ 0>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Error Code</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#catch.errorcode#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">Error Code</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;">#catch.errorcode#</td>
 </tr>
 </cfif>
 <cfif structKeyExists(catch,'extendedinfo') and len(catch.extendedinfo)>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Extended Info</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#HTMLEditFormat(catch.extendedinfo)#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFB200; font-weight: bold;">Extended Info</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color:##FFCC00;">#HTMLEditFormat(catch.extendedinfo)#</td>
 </tr>
 </cfif>
 
 <cfif structKeyExists(catch,'additional')>
 <cfloop collection="#catch.additional#" item="key">
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">#key#</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;">#replace(HTMLEditFormat(catch.additional[key]),'
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">#key#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;">#replace(HTMLEditFormat(catch.additional[key]),'
 ','<br />','all')#</td>
 </tr>
 </cfloop>
@@ -98,8 +106,8 @@ return arguments.st;
 	<cfset len=arrayLen(catch.tagcontext)>
 	<cfif len>
 	<tr>
-		<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;">Stacktrace</td>
-		<td style="border : 1px solid ##350606;background-color :##FFCC00;">
+		<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;">Stacktrace</td>
+		<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;">
 		The Error Occurred in<br />
 		<cfloop index="idx" from="1" to="#len#">
 			<cfset tc=catch.tagcontext[idx]>
@@ -124,8 +132,8 @@ return arguments.st;
 	</cfif>
 </cfif>
 <tr>
-	<td style="border : 1px solid ##350606;background-color :##FFB200;font-weight:bold;" nowrap="nowrap">Java Stacktrace</td>
-	<td style="border : 1px solid ##350606;background-color :##FFCC00;" class="">#convertST(catch.stacktrace)#</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFB200; font-weight: bold;" nowrap="nowrap">Java Stacktrace</td>
+	<td style="border: 1px solid ##350606; color: ##222; background-color: ##FFCC00;" class="">#convertST(catch.stacktrace)#</td>
 </tr>
 </table><br />
 </cfoutput>

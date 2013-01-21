@@ -123,6 +123,16 @@ Error Output --->
 		password="#session["password"&request.adminType]#"
 		returnVariable="info">
 	
+	<cfif request.adminType EQ "server">
+		<cfset names=StructKeyArray(info.servlets)>
+		<cfif !ArrayContainsNoCase(names,"Rest")>
+			<div class="warning nofocus">
+				The REST Servlet is not configured in your enviroment.
+				Follow these <a href="https://github.com/getrailo/railo/wiki/Configuration:web.xml##wiki-REST" target="_blank">instructions</a> to enable REST.
+			</div>
+		</cfif>	
+	</cfif>
+	
 	<table>
 		<tr>
 			<td valign="top" width="65%">
@@ -263,10 +273,10 @@ Error Output --->
 						<tr>
 							<th scope="row">Classpath</th>
 							<td>
-								<div class="classpaths">
+								<div class="classpaths longwords">
 									<cfset arr=getClasspath()>
 									<cfloop from="1" to="#arrayLen(arr)#" index="line">
-										<div>#arr[line]#</div>
+										<div<cfif line mod 2> class="odd"</cfif>>#arr[line]#</div>
 									</cfloop>
 								</div>
 							</td> 
@@ -333,7 +343,7 @@ Error Output --->
 					
 					<!--- Blog --->
 					<h3>
-						<a href="http://www.railo-technologies.com/blog/" target="_blank">#stText.Overview.blog#</a>
+						<a href="http://blog.getrailo.com/" target="_blank">#stText.Overview.blog#</a>
 					</h3>
 					<div class="comment">#stText.Overview.bookDesc#</div>
 					

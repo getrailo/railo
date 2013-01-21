@@ -12,7 +12,6 @@ import railo.transformer.bytecode.util.ExpressionUtil;
  */
 public abstract class StatementBase implements Statement {
 
-
 	private Position start;
 	private Position end;
 	private Statement parent;
@@ -115,5 +114,4 @@ public abstract class StatementBase implements Statement {
 		if(parent!=null)parent.setHasFlowController(hasReturnChild);
 		this.hasReturnChild = hasReturnChild?1:0;
 	}
-
 }

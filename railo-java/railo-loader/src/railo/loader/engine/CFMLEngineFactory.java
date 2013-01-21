@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,8 +44,10 @@ public class CFMLEngineFactory {
     private CFMLEngine engine;
     private ClassLoader mainClassLoader=new TP().getClass().getClassLoader();
     private int version;
-    private ArrayList listeners=new ArrayList();
+    private List<EngineChangeListener> listeners=new ArrayList<EngineChangeListener>();
     private File resourceRoot;
+
+	private PrintWriter out;
     
     
     /**
@@ -204,7 +207,7 @@ public class CFMLEngineFactory {
         File patcheDir=null;
         try {
             patcheDir = getPatchDirectory();
-            System.out.println("railo-server-root:"+patcheDir.getParent());
+            log("railo-server-root:"+patcheDir.getParent());
         } 
         catch (IOException e) {
            throw new ServletException(e);
@@ -386,7 +389,6 @@ public class CFMLEngineFactory {
         tlog("Found a newer Version \n - current Version "+Util.toStringVersion(version)+"\n - available Version "+availableVersion);
         
         URL updateUrl=new URL(hostUrl,"/railo/remote/version/update.cfm?ext="+getCoreExtension()+"&version="+availableVersion);
-        System.out.println("updateurl:"+updateUrl);
         File patchDir=getPatchDirectory();
         File newRailo=new File(patchDir,availableVersion+("."+getCoreExtension()));//isSecure?".rcs":".rc"
         
@@ -523,9 +525,9 @@ public class CFMLEngineFactory {
      * @param engine
      */
     private void callListeners(CFMLEngine engine) {
-        Iterator it = listeners.iterator();
+        Iterator<EngineChangeListener> it = listeners.iterator();
         while(it.hasNext()) {
-            ((EngineChangeListener)it.next()).onUpdate(engine);
+            it.next().onUpdate(engine);
         }
     }
     
@@ -633,7 +635,7 @@ public class CFMLEngineFactory {
      * @param obj Object to output
      */
     public void tlog(Object obj) {
-        System.out.println(new Date()+ " "+obj);   
+    	log(new Date()+ " "+obj);
     }
     
     /**
@@ -641,7 +643,30 @@ public class CFMLEngineFactory {
      * @param obj Object to output
      */
     public void log(Object obj) {
-        System.out.println(obj.toString());   
+    	if(out==null){
+    		boolean isCLI=false;
+    		String str=System.getProperty("railo.cli.call");
+    		if(!Util.isEmpty(str, true)) {
+    			str=str.trim();
+    			isCLI="true".equalsIgnoreCase(str) || "yes".equalsIgnoreCase(str);
+    			
+    		}
+    		
+    		if(isCLI) {
+    			try{
+    				File dir = new File(getResourceRoot(),"logs");
+    				dir.mkdirs();
+    				File file = new File(dir,"out");
+        			
+    			file.createNewFile();
+    			out=new PrintWriter(file);
+    			}
+    			catch(Throwable t){t.printStackTrace();}
+    		}
+    		if(out==null)out=new PrintWriter(System.out);
+    	}
+    	out.write(""+obj+"\n");   
+    	out.flush();
     }
     
     private class UpdateChecker extends Thread {

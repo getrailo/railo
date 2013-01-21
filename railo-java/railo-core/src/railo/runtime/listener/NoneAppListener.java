@@ -11,8 +11,8 @@ import railo.runtime.op.Caster;
 public final class NoneAppListener  extends AppListenerSupport {
 
 	private int mode;
-	private String type;
 
+	
 	@Override
 	public void onRequest(PageContext pc,PageSource requestedPage, RequestListener rl) throws PageException {
 		if(rl!=null) {
@@ -70,11 +70,6 @@ public final class NoneAppListener  extends AppListenerSupport {
 
 	@Override
 	public String getType() {
-		return type;
-	}
-
-	@Override
-	public void setType(String type) {
-		this.type = type;
+		return "none";
 	}
 }

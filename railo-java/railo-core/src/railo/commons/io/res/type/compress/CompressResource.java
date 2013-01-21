@@ -31,9 +31,17 @@ public final class CompressResource extends ResourceSupport {
 		this.provider=provider;
 		this.zip=zip; 
 		this.path=path;
-		String[] tmp = ResourceUtil.translatePathName(path);
-		this.name=tmp[1];
-		this.parent=tmp[0];
+		
+		if("/".equals(path)) {
+			this.parent=null;
+			this.name="";
+		}
+		else {
+			String[] pn = ResourceUtil.translatePathName(path);
+			this.parent=pn[0];
+			this.name=pn[1];
+		}
+		
 		this.caseSensitive=caseSensitive;
 	}
 
@@ -63,6 +71,14 @@ public final class CompressResource extends ResourceSupport {
 	public InputStream getInputStream() throws IOException {
 		ResourceUtil.checkGetInputStreamOK(this);
 		return getRamResource().getInputStream();
+	}
+	
+	public Resource getCompressResource() {
+		return zip.getCompressFile();
+	}
+	
+	public String getCompressPath() {
+		return path;
 	}
 
 	/**

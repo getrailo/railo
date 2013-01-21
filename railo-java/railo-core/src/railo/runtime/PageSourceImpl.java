@@ -57,8 +57,6 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     //private boolean recompileAlways;
     //private boolean recompileAfterStartUp;
     
-    
-    
     private PageSourceImpl() {
     	mapping=null;
         realPath=null;
@@ -279,12 +277,21 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
         }
 	}
 
-	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws TemplateException, IOException, SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	private synchronized Page _compile(ConfigWeb config,Resource classRootDir, Boolean resetCL) throws IOException, SecurityException, IllegalArgumentException, PageException {
         ConfigWebImpl cwi=(ConfigWebImpl) config;
+        
+        
         byte[] barr = cwi.getCompiler().
         	compile(cwi,this,cwi.getTLDs(),cwi.getFLDs(),classRootDir,getJavaName());
         Class<?> clazz = mapping.touchPCLCollection().loadClass(getClazz(), barr,isComponent());
-        return  newInstance(clazz);
+        try{
+        	return  newInstance(clazz);
+        }
+        catch(Throwable t){
+        	PageException pe = Caster.toPageException(t);
+        	pe.setExtendedInfo("failed to load template "+getDisplayPath());
+        	throw pe;
+        }
     }
 
     private Page newInstance(Class clazz) throws SecurityException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -766,9 +773,10 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     
     @Override
     public Resource getResourceTranslated(PageContext pc) throws ExpressionException {
-    	Resource res = getPhyscalFile();
-		
-		// there is no physical resource
+    	Resource res = null;
+    	if(!isLoad(LOAD_ARCHIVE)) res=getPhyscalFile();
+    	
+    	// there is no physical resource
 		if(res==null){
         	String path=getDisplayPath();
         	if(path!=null){

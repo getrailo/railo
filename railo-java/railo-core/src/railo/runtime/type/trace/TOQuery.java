@@ -30,6 +30,7 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.it.ForEachQueryIterator;
+import railo.runtime.type.util.QueryUtil;
 
 public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query {
 
@@ -45,8 +46,8 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 	 * @see railo.runtime.type.QueryImpl#executionTime()
 	 */
 	
+	@Override
 	public int executionTime() {
-		
 		return qry.executionTime();
 	}
 
@@ -421,10 +422,7 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 		return qry.getColumn(key, defaultValue);
 	}
 
-	/**
-	 * @see railo.runtime.type.QueryImpl#setExecutionTime(long)
-	 */
-	
+	@Override
 	public void setExecutionTime(long exeTime) {
 		log();
 		qry.setExecutionTime(exeTime);
@@ -2190,6 +2188,17 @@ public class TOQuery extends TOCollection implements Query,com.allaire.cfx.Query
 			throws SQLException {
 		log(arg0);
 		return qry.getObject(arg0, arg1);
+	}
+
+
+	// used only with java 7, do not set @Override
+	public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnIndex, type);
+	}
+
+	// used only with java 7, do not set @Override
+	public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+		return (T) QueryUtil.getObject(this,columnLabel, type);
 	}
 
 	@Override

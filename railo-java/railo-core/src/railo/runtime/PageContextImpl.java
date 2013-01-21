@@ -1413,16 +1413,16 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	Object value=null;
 		boolean isNew=false;
+		
 		// get value
-		try {
-			value=getVariable(name);
-		} 
-		catch (PageException e) {
+		value=VariableInterpreter.getVariableEL(this,name,null);// NULL Support 
+		if(value==null) {
 			if(defaultValue==null)
 				throw new ExpressionException("The required parameter ["+name+"] was not provided.");
 			value=defaultValue;
 			isNew=true;
 		}
+		
 		// cast and set value
 		if(!"any".equals(type)) {
 			// range
@@ -1452,7 +1452,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				setVariable(name,str);
 			}
 			else {
-				if(!Decision.isCastableTo(type,value,true,maxLength)) {
+				if(!Decision.isCastableTo(type,value,true,true,maxLength)) {
 					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
 						StringBuilder msg=new StringBuilder(CasterException.createMessage(value, type));
 						msg.append(" with a maximal length of "+maxLength+" characters");
@@ -2113,6 +2113,13 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     		accept.add(MimeType.APPLICATION_CFML);
     		hasFormatExtension=true;
     	}
+    	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".serialize")) {
+    		pathInfo=pathInfo.substring(0,pathInfo.length()-10);
+    		format = UDF.RETURN_FORMAT_SERIALIZE;
+    		accept.clear();
+    		accept.add(MimeType.APPLICATION_CFML);
+    		hasFormatExtension=true;
+    	}
     	else if(StringUtil.endsWithIgnoreCase(pathInfo, ".xml")) {
     		pathInfo=pathInfo.substring(0,pathInfo.length()-4);
     		format = UDF.RETURN_FORMAT_XML;
@@ -2687,7 +2694,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	else {
     		exception = Caster.toPageException(t);
     		undefinedScope().setEL(KeyConstants._cfcatch,exception.getCatchBlock(config));
-    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
+    		if(!gatewayContext && config.debug() && config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) debugger.addException(config,exception);
     	}
     	return exception;
     }
@@ -2699,7 +2706,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	}
     	else {
     		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
-    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
+    		if(!gatewayContext && config.debug() && config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) debugger.addException(config,exception);
     	}
     }
     
@@ -2714,7 +2721,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    	}
 	    	else {
 	    		undefinedScope().setEL(KeyConstants._cfcatch,pe.getCatchBlock(config));
-	    		if(!gatewayContext && config.debug()) debugger.addException(config,exception);
+	    		if(!gatewayContext && config.debug() && config.hasDebugOptions(ConfigImpl.DEBUG_EXCEPTION)) debugger.addException(config,exception);
 	    	}
     	}
     }

@@ -94,6 +94,7 @@ public final class ConfigWebUtil {
     	}
     	return _replacePlaceholder(str, config);
     }*/
+    
     public static String replacePlaceholder(String str, Config config) {
     	if(StringUtil.isEmpty(str)) return str;
     	
@@ -102,9 +103,9 @@ public final class ConfigWebUtil {
             
             // Config Server
             if(str.startsWith("{railo-config")) {    
-                if(str.startsWith("}",13)) str=config.getConfigDir().getReal(str.substring(14));
-                else if(str.startsWith("-dir}",13)) str=config.getConfigDir().getReal(str.substring(18));
-                else if(str.startsWith("-directory}",13)) str=config.getConfigDir().getReal(str.substring(24));
+                if(str.startsWith("}",13)) str=checkResult(str,config.getConfigDir().getReal(str.substring(14)));
+                else if(str.startsWith("-dir}",13)) str=checkResult(str,config.getConfigDir().getReal(str.substring(18)));
+                else if(str.startsWith("-directory}",13)) str=checkResult(str,config.getConfigDir().getReal(str.substring(24)));
             }
             
             
@@ -112,34 +113,34 @@ public final class ConfigWebUtil {
             	Resource dir=config instanceof ConfigWeb?((ConfigWeb)config).getConfigServerDir():config.getConfigDir();
                 //if(config instanceof ConfigServer && cs==null) cs=(ConfigServer) cw;
                 if(dir!=null) {
-                    if(str.startsWith("}",13)) str=dir.getReal(str.substring(14));
-                    else if(str.startsWith("-dir}",13)) str=dir.getReal(str.substring(18));
-                    else if(str.startsWith("-directory}",13)) str=dir.getReal(str.substring(24));
+                    if(str.startsWith("}",13)) str=checkResult(str,dir.getReal(str.substring(14)));
+                    else if(str.startsWith("-dir}",13)) str=checkResult(str,dir.getReal(str.substring(18)));
+                    else if(str.startsWith("-directory}",13)) str=checkResult(str,dir.getReal(str.substring(24)));
                 }
             }
             // Config Web
             else if(str.startsWith("{railo-web")) {
                 //if(cw instanceof ConfigServer) cw=null;
                 //if(config instanceof ConfigWeb) {
-                    if(str.startsWith("}",10)) str=config.getConfigDir().getReal(str.substring(11));
-                    else if(str.startsWith("-dir}",10)) str=config.getConfigDir().getReal(str.substring(15));
-                    else if(str.startsWith("-directory}",10)) str=config.getConfigDir().getReal(str.substring(21));
+                    if(str.startsWith("}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(11)));
+                    else if(str.startsWith("-dir}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(15)));
+                    else if(str.startsWith("-directory}",10)) str=checkResult(str,config.getConfigDir().getReal(str.substring(21)));
                 //}
             }
             // Web Root
             else if(str.startsWith("{web-root")) {
                 //if(cw instanceof ConfigServer) cw=null;
                 if(config instanceof ConfigWeb) {
-                    if(str.startsWith("}",9)) str=config.getRootDirectory().getReal(str.substring(10));
-                    else if(str.startsWith("-dir}",9)) str=config.getRootDirectory().getReal(str.substring(14));
-                    else if(str.startsWith("-directory}",9)) str=config.getRootDirectory().getReal(str.substring(20));
+                    if(str.startsWith("}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(10)));
+                    else if(str.startsWith("-dir}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(14)));
+                    else if(str.startsWith("-directory}",9)) str=checkResult(str,config.getRootDirectory().getReal(str.substring(20)));
                 }
             }
             // Temp
             else if(str.startsWith("{temp")) {
-                if(str.startsWith("}",5)) str=config.getTempDirectory().getRealResource(str.substring(6)).toString();
-                else if(str.startsWith("-dir}",5)) str=config.getTempDirectory().getRealResource(str.substring(10)).toString();
-                else if(str.startsWith("-directory}",5)) str=config.getTempDirectory().getRealResource(str.substring(16)).toString();
+                if(str.startsWith("}",5)) str=checkResult(str,config.getTempDirectory().getRealResource(str.substring(6)).toString());
+                else if(str.startsWith("-dir}",5)) str=checkResult(str,config.getTempDirectory().getRealResource(str.substring(10)).toString());
+                else if(str.startsWith("-directory}",5)) str=checkResult(str,config.getTempDirectory().getRealResource(str.substring(16)).toString());
             }
             else if(config instanceof ServletConfig){
             	Map<String,String> labels=null;
@@ -164,8 +165,8 @@ public final class ConfigWebUtil {
             		e = it.next();
             		if(StringUtil.startsWithIgnoreCase(str,"{"+e.getKey().getString()+"}")) {
             			String value=(String) e.getValue();
-            			str=config.getResource( value)
-            				.getReal(str.substring(e.getKey().getString().length()+2));
+            			str=checkResult(str,config.getResource( value)
+            				.getReal(str.substring(e.getKey().getString().length()+2)));
                         break;
             			
             		}
@@ -176,7 +177,17 @@ public final class ConfigWebUtil {
     }
     
     
-    /**
+    
+    private static String checkResult(String src, String res) { 
+    	boolean srcEndWithSep=StringUtil.endsWith(src, ResourceUtil.FILE_SEPERATOR) || StringUtil.endsWith(src, '/') || StringUtil.endsWith(src, '\\');
+    	boolean resEndWithSep=StringUtil.endsWith(res, ResourceUtil.FILE_SEPERATOR) || StringUtil.endsWith(res, '/') || StringUtil.endsWith(res, '\\');
+    	if(srcEndWithSep && !resEndWithSep) return res+ResourceUtil.FILE_SEPERATOR;
+    	if(!srcEndWithSep && resEndWithSep) return res.substring(0,res.length()-1);
+    	
+    	return res;
+	}
+
+	/**
      * get only a existing file, dont create it
      * @param sc
      * @param strDir

@@ -172,7 +172,6 @@ public class CFMLEngineWrapper implements CFMLEngine, EngineChangeListener {
 	 * @see railo.loader.engine.CFMLEngine#getCFMLFactory(javax.servlet.ServletContext, javax.servlet.ServletConfig, javax.servlet.http.HttpServletRequest)
 	 */
 	public CFMLFactory getCFMLFactory(ServletContext srvContext, ServletConfig srvConfig, HttpServletRequest req) throws ServletException {
-		System.out.println(engine);
 		return engine.getCFMLFactory(srvContext, srvConfig, req);
 	}
 

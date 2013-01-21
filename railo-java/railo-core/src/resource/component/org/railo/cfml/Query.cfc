@@ -65,7 +65,7 @@ component output="false" extends="Base" accessors="true"{
 					Len++ ;
 
 					// If escaped quote, skip twice.
-					if (Mid(Sql,Pos+Len,2) EQ "\" & NextChar) Len+=2;
+					if (Mid(Sql,Pos+Len,2) EQ "\" & NextChar) Len+=1;
 				}
 				// Include closing quote:
 				Len++ ;

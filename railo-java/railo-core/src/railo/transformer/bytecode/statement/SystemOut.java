@@ -12,7 +12,7 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.util.Types;
 
-public final class SystemOut extends StatementBase {
+public final class SystemOut extends StatementBaseNoFinal {
     
 
     // void println (Object)

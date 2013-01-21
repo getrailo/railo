@@ -790,7 +790,7 @@ div.classpaths {
 div.classpaths div {
 	padding:1px 5px;
 }
-div.classpaths div:nth-child(odd) {
+div.classpaths div.odd {
 	background-color:#d2e0ee;
 }
 

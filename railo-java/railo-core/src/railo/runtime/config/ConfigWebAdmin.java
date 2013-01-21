@@ -1662,6 +1662,7 @@ public final class ConfigWebAdmin {
         	parent.removeAttribute("default-query");
         if(name.equalsIgnoreCase(parent.getAttribute("default-resource")))
         	parent.removeAttribute("default-resource");
+      
         
         // remove element
         Element[] children = ConfigWebFactory.getChildren(parent,"connection");
@@ -1670,11 +1671,16 @@ public final class ConfigWebAdmin {
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
   	    		Map conns = config.getCacheConnections();
   	    		CacheConnection cc=(CacheConnection) conns.get(n);
+  	    		
+  	    		//check if key is lower case
+  	    		if (cc == null) {
+  	    			cc = (CacheConnection) conns.get(n.toLowerCase());
+  	    		}
+  	    		
   	    		if(cc!=null)Util.removeEL(config instanceof ConfigWeb?(ConfigWeb)config:null,cc);
   	    	  parent.removeChild(children[i]);
   			}
   	    }
-      	
 	}
 	
 
@@ -2288,14 +2294,36 @@ public final class ConfigWebAdmin {
      * @param debug if value is null server setting is used
      * @throws SecurityException
      */
-    public void updateDebug(Boolean debug) throws SecurityException {
+    public void updateDebug(Boolean debug, Boolean database, Boolean exception, Boolean tracing, Boolean timer, 
+    		Boolean implicitAccess, Boolean queryUsage) throws SecurityException {
     	checkWriteAccess();
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
         if(!hasAccess)
             throw new SecurityException("no access to change debugging settings");
         Element debugging=_getRootElement("debugging");
+        
         if(debug!=null)debugging.setAttribute("debug",Caster.toString(debug.booleanValue()));
         else debugging.removeAttribute("debug");
+        
+        if(database!=null)debugging.setAttribute("database",Caster.toString(database.booleanValue()));
+        else debugging.removeAttribute("database");
+        
+        if(exception!=null)debugging.setAttribute("exception",Caster.toString(exception.booleanValue()));
+        else debugging.removeAttribute("exception");
+        
+        if(tracing!=null)debugging.setAttribute("tracing",Caster.toString(tracing.booleanValue()));
+        else debugging.removeAttribute("tracing");
+        
+        if(timer!=null)debugging.setAttribute("timer",Caster.toString(timer.booleanValue()));
+        else debugging.removeAttribute("timer");
+
+        if(implicitAccess!=null)debugging.setAttribute("implicit-access",Caster.toString(implicitAccess.booleanValue()));
+        else debugging.removeAttribute("implicit-access");
+        
+        if(queryUsage!=null)debugging.setAttribute("query-usage",Caster.toString(queryUsage.booleanValue()));
+        else debugging.removeAttribute("query-usage");
+        
+        
     }
 
     /**
@@ -2313,25 +2341,6 @@ public final class ConfigWebAdmin {
         //if(template.trim().length()>0)
         	debugging.setAttribute("template",template);
     }
-    
-
-
-
-	public void updateDebugShowQueryUsage(Boolean showQueryUsage) throws SecurityException {
-		checkWriteAccess();
-        boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_DEBUGGING);
-        if(!hasAccess)
-            throw new SecurityException("no access to change debugging settings");
-
-        Element debugging=_getRootElement("debugging");
-        if(showQueryUsage!=null)
-        	debugging.setAttribute("show-query-usage",Caster.toString(showQueryUsage.booleanValue()));
-        else
-        	debugging.removeAttribute("show-query-usage");
-        	
-	}
-    
-    
     
     /**
      * updates the ErrorTemplate
@@ -3230,9 +3239,9 @@ public final class ConfigWebAdmin {
 
 	private String createUid(String provider, String id) throws PageException {
 		if(Decision.isUUId(id)) {
-			return Hash.invoke(config,id,null,null);
+			return Hash.invoke(config,id,null,null, 1);
 		}
-		return Hash.invoke(config,provider+id,null,null);
+		return Hash.invoke(config,provider+id,null,null, 1);
 	}
 
 

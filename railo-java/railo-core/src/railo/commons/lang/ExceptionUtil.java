@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import railo.runtime.exp.NativeException;
 import railo.runtime.exp.PageException;
@@ -84,5 +85,19 @@ public final class ExceptionUtil {
 		IOException ioe = new IOException(t.getClass().getName()+":"+t.getMessage());
 		ioe.setStackTrace(t.getStackTrace());
 		return ioe;
+	}
+
+
+	public static String createSoundexDetail(String name, Iterator<String> it, String keyName) {
+		StringBuilder sb=new StringBuilder();
+		String k ,sname=StringUtil.soundex(name);
+		while(it.hasNext()){
+			k = it.next();
+			if(StringUtil.soundex(k).equals(sname))
+				return "did you mean ["+k+"]";
+			if(sb.length()!=0)sb.append(',');
+			sb.append(k);
+		}
+		return "existing "+keyName+" are ["+sb+"]";
 	}
 }

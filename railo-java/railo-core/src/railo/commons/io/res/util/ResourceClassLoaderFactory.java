@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
+import railo.commons.lang.ClassLoaderHelper;
 
 public class ResourceClassLoaderFactory {
 
@@ -45,6 +46,10 @@ public class ResourceClassLoaderFactory {
 
 	public void reset() {
 		IOUtil.closeEL(rcl);
+	}
+
+	public static ResourceClassLoaderFactory defaultClassLoader() {
+		return new ResourceClassLoaderFactory(new ClassLoaderHelper().getClass().getClassLoader());
 	}
 
 }

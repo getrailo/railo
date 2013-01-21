@@ -5,6 +5,7 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.Statement;
+import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.visitor.ParseBodyVisitor;
 
 public final class TagOutput extends TagGroup {
@@ -99,6 +100,12 @@ public final class TagOutput extends TagGroup {
 	@Override
 	public short getType() {
 		return TAG_OUTPUT;
+	}
+
+
+	@Override
+	public FlowControlFinal getFlowControlFinal() {
+		return null;
 	}
 
 }
