@@ -20,6 +20,7 @@ import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
+import railo.runtime.db.driver.StatementPro;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
@@ -193,8 +194,8 @@ public class QueryUtil {
 		}
 	}
 
-	public static boolean execute(Statement stat, boolean createGeneratedKeys, SQL sql) throws SQLException {
-		return createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+	public static boolean execute(PageContext pc,StatementPro stat, boolean createGeneratedKeys, SQL sql) throws SQLException {
+		return createGeneratedKeys?stat.execute(pc,sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(pc,sql.getSQLString());
 	}
 
 	public static String getColumnName(ResultSetMetaData meta, int column) throws SQLException {

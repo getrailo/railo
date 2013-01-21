@@ -19,9 +19,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-public abstract class CallableStatementProxy extends PreparedStatementProxy implements CallableStatement {
+public class CallableStatementProxy extends PreparedStatementProxy implements CallableStatement {
 
-	private CallableStatement stat;
+	protected CallableStatement stat;
 
 	public CallableStatementProxy(ConnectionProxy conn, CallableStatement prepareCall, String sql) {
 		super(conn,prepareCall,sql);

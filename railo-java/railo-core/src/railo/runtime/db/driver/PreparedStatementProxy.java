@@ -21,7 +21,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-public abstract class PreparedStatementProxy extends StatementProxy implements PreparedStatement {
+import railo.runtime.PageContext;
+
+public class PreparedStatementProxy extends StatementProxy implements PreparedStatementPro {
 
 	protected PreparedStatement stat;
 	protected String sql;
@@ -51,14 +53,21 @@ public abstract class PreparedStatementProxy extends StatementProxy implements P
 		return stat.executeUpdate();
 	}
 	
+	@Override
+	public boolean execute(PageContext pc) throws SQLException{
+		return stat.execute();
+	}
 	
+	@Override
+	public ResultSet executeQuery(PageContext pc) throws SQLException{
+		return stat.executeQuery();
+	}
 	
+	@Override
+	public int executeUpdate(PageContext pc) throws SQLException{
+		return stat.executeUpdate();
+	}
 	
-	
-	
-	
-	
-
 	@Override
 	public void addBatch() throws SQLException {
 		stat.addBatch();

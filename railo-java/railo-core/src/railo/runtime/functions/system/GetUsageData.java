@@ -61,6 +61,7 @@ public final class GetUsageData implements Function {
 	private static final Key ELEMENTS = KeyImpl.init("elements");
 	private static final Key USERS = KeyImpl.init("users");
 	private static final Key QUERIES = KeyImpl.init("queries");
+	private static final Key LOCKS = KeyImpl.init("locks");
 	
 	public static Struct call(PageContext pc) throws PageException  {
 		ConfigWeb cw = pc.getConfig();
@@ -70,8 +71,6 @@ public final class GetUsageData implements Function {
 		CFMLEngineImpl engine = (CFMLEngineImpl) cs.getCFMLEngine();
 		
 		Struct sct=new StructImpl();
-		
-		
 		
 		
 		// Locks
@@ -99,10 +98,14 @@ public final class GetUsageData implements Function {
 		scopes.setEL(KeyConstants._application, app);
 		Query sess=new QueryImpl(new Collection.Key[]{KeyConstants._web,KeyConstants._application,USERS,ELEMENTS,KeyConstants._size}, 0, "templateCache");
 		scopes.setEL(KeyConstants._session, sess);
-		
+
 		// Query
 		Query qry=new QueryImpl(new Collection.Key[]{KeyConstants._web,KeyConstants._application,START_TIME,KeyConstants._sql}, 0, "requests");
 		sct.setEL(QUERIES, qry);
+		
+		// Locks
+		Query lck=new QueryImpl(new Collection.Key[]{KeyConstants._web,KeyConstants._name,START_TIME,KeyConstants._timeout}, 0, "requests");
+		sct.setEL(LOCKS, lck);
 
 		// Loop webs
 		ConfigWebImpl web;
@@ -153,6 +156,20 @@ public final class GetUsageData implements Function {
 			// Scope Application
 			getAllApplicationScopes(web,factory.getScopeContext(),app);
 			getAllCFSessionScopes(web,factory.getScopeContext(),sess);
+			
+			// Locks
+			try{
+				LockManager manager = web.getLockManager();
+		        String[] locks = manager.getOpenLockNames();
+		        for(int y=0;y<locks.length;y++){
+		        	row = lck.addRow();
+		        	lck.setAt(KeyConstants._web, row, web.getLabel());
+		        	lck.setAt(KeyConstants._name, row, locks[i]);
+		        }
+			}
+			catch(Throwable t){}
+			
+			
 		}
 		
 		// Datasource

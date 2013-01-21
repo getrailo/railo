@@ -55,10 +55,10 @@ public final class LogDataSource implements Log {
     	try {
 			dc = pool.getDatasourceConnection(pc,datasource, username, password);
 			try {
-				new QueryImpl(dc,SELECT,-1,-1,-1,"query");
+				new QueryImpl(pc,dc,SELECT,-1,-1,-1,"query");
 			}
 			catch (PageException e) {
-				new QueryImpl(dc,CREATE,-1,-1,-1,"query");
+				new QueryImpl(pc,dc,CREATE,-1,-1,-1,"query");
 			}
 		} 
     	catch (PageException e) {
@@ -83,7 +83,7 @@ public final class LogDataSource implements Log {
 			sql.addItems(new SQLItemImpl(application,CFTypes.VARCHAR));
 			sql.addItems(new SQLItemImpl(message,CFTypes.VARCHAR));
 			sql.addItems(new SQLItemImpl(new DateTimeImpl(),CFTypes.DATE));
-			new QueryImpl(dc,sql,-1,-1,-1,"query");
+			new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
 		} 
     	catch (PageException e) {
 			console.log(level, application, message);

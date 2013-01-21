@@ -347,7 +347,7 @@ public final class HSQLDBHandler {
 		    		}
 	                DBUtil.setReadOnlyEL(conn,true);
 	                try {
-	                	nqr =new QueryImpl(dc,sql,maxrows,fetchsize,timeout,"query",null,false,false);
+	                	nqr =new QueryImpl(pc,dc,sql,maxrows,fetchsize,timeout,"query",null,false,false);
 	                }
 	                finally {
 						DBUtil.setReadOnlyEL(conn,false);

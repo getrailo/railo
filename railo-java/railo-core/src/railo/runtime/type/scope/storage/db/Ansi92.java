@@ -15,6 +15,7 @@ import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLImpl;
 import railo.runtime.db.SQLItem;
 import railo.runtime.db.SQLItemImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.interpreter.VariableInterpreter;
@@ -45,28 +46,28 @@ public class Ansi92 extends SQLExecutorSupport {
 		});
 		
 		try {
-			query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
+			query = new QueryImpl(ThreadLocalPageContext.get(),dc,sqlSelect,-1,-1,-1,"query");
 		}
 	    catch (DatabaseException de) {
 	    	if(dc==null || !createTableIfNotExist) throw de;
 	    	try {
 	    		SQL sql = createSQL(dc,"text",strType);
 	    		ScopeContext.info(log,sql.toString());
-				new QueryImpl(dc,sql,-1,-1,-1,"query");
+				new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
 	    	}
 		    catch (DatabaseException _de) {
 		    	try {
 		    		SQL sql = createSQL(dc,"memo",strType);
 		    		ScopeContext.info(log,sql.toString());
-					new QueryImpl(dc,sql,-1,-1,-1,"query");
+					new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
 		    	}
 			    catch (DatabaseException __de) {
 			    	SQL sql = createSQL(dc,"clob",strType);
 		    		ScopeContext.info(log,sql.toString());
-			    	new QueryImpl(dc,sql,-1,-1,-1,"query");
+			    	new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
 			    }
 		    }
-	    	query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
+	    	query = new QueryImpl(ThreadLocalPageContext.get(),dc,sqlSelect,-1,-1,-1,"query");
 		}
 	    ScopeContext.info(log,sqlSelect.toString());
 		return query;
@@ -128,7 +129,7 @@ public class Ansi92 extends SQLExecutorSupport {
 				});
 	    QueryImpl query;
 	    try{
-			query = new QueryImpl(dc,sqlSelect,-1,-1,-1,"query");
+			query = new QueryImpl(ThreadLocalPageContext.get(),dc,sqlSelect,-1,-1,-1,"query");
 		}
 		catch(Throwable t){
 			// possible that the table not exist, if not there is nothing to clean
@@ -151,7 +152,7 @@ public class Ansi92 extends SQLExecutorSupport {
 					new SQLItemImpl(cfid,Types.VARCHAR),
 					new SQLItemImpl(name,Types.VARCHAR)
 					});
-			new QueryImpl(dc,sql,-1,-1,-1,"query");
+			new QueryImpl(ThreadLocalPageContext.get(),dc,sql,-1,-1,-1,"query");
 			
 			
 			

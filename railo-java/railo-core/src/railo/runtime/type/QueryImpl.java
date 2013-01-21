@@ -50,6 +50,8 @@ import railo.runtime.db.DatasourceConnectionImpl;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
+import railo.runtime.db.driver.PreparedStatementPro;
+import railo.runtime.db.driver.StatementPro;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -181,22 +183,22 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	 * @param maxrow maxrow for the resultset
 	 * @throws PageException
 	 */	
-    public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name) throws PageException {
-    	this(dc, sql, maxrow, fetchsize, timeout, name,null,false,true);
+    public QueryImpl(PageContext pc, DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name) throws PageException {
+    	this(pc,dc, sql, maxrow, fetchsize, timeout, name,null,false,true);
     }
     
 
-    public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template) throws PageException {
-    	this(dc, sql, maxrow, fetchsize, timeout, name,template,false,true);
+    public QueryImpl(PageContext pc, DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template) throws PageException {
+    	this(pc,dc, sql, maxrow, fetchsize, timeout, name,template,false,true);
     }
     
-	public QueryImpl(DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,boolean createUpdateData, boolean allowToCachePreperadeStatement) throws PageException {
+	public QueryImpl(PageContext pc, DatasourceConnection dc,SQL sql,int maxrow, int fetchsize,int timeout, String name,String template,boolean createUpdateData, boolean allowToCachePreperadeStatement) throws PageException {
 		this.name=name;
 		this.template=template;
         this.sql=sql;
 		
         //ResultSet result=null;
-		Statement stat=null;
+		StatementPro stat=null;
 		// check SQL Restrictions
 		if(dc.getDatasource().hasSQLRestriction()) {
 			QueryUtil.checkSQLRestriction(dc,sql);
@@ -217,20 +219,20 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		try {	
 			SQLItem[] items=sql.getItems();
 			if(items.length==0) {
-		    	stat=dc.getConnection().createStatement();
+		    	stat=(StatementPro) dc.getConnection().createStatement();
 		        setAttributes(stat,maxrow,fetchsize,timeout);
 		     // some driver do not support second argument
 		        //hasResult=createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
-		        hasResult=QueryUtil.execute(stat,createGeneratedKeys,sql);
+		        hasResult=QueryUtil.execute(pc,stat,createGeneratedKeys,sql);
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatement preStat = dc.getPreparedStatement(sql, createGeneratedKeys,allowToCachePreperadeStatement);
+	        	PreparedStatementPro preStat = (PreparedStatementPro) dc.getPreparedStatement(sql, createGeneratedKeys,allowToCachePreperadeStatement);
 	        	//closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
-		        hasResult=preStat.execute();    
+		        hasResult=preStat.execute(pc);    
 	        }
 			int uc;
 			ResultSet res;

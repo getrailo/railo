@@ -164,7 +164,7 @@ public final class Update extends TagImpl {
 		    String[] pKeys=getPrimaryKeys(dc);
 			SQL sql=createSQL(dc,pKeys,meta);
 			if(sql!=null) {
-				railo.runtime.type.Query query = new QueryImpl(dc,sql,-1,-1,-1,"query");
+				railo.runtime.type.Query query = new QueryImpl(pageContext,dc,sql,-1,-1,-1,"query");
 				
 				if(pageContext.getConfig().debug()) {
 					boolean logdb=((ConfigImpl)pageContext.getConfig()).hasDebugOptions(ConfigImpl.DEBUG_DATABASE);
