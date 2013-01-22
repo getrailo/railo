@@ -2691,12 +2691,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		}
 		return size;
 	}
-	
-
-	public boolean equals(Object obj){
-		if(!(obj instanceof Collection)) return false;
-		return CollectionUtil.equals(this,(Collection)obj);
-	}
 
 	public int getHoldability() throws SQLException {
 		throw notSupported();
@@ -2957,7 +2951,13 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	@Override
 	public java.util.Iterator getIterator() {
 		return new ForEachQueryIterator(this, ThreadLocalPageContext.get().getId());
-    } 
+    }
+	
+	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
 	
 	@Override
 	public int hashCode() {

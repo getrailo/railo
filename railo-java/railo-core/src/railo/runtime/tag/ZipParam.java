@@ -2,8 +2,6 @@ package railo.runtime.tag;
 
 import javax.servlet.jsp.tagext.Tag;
 
-import org.apache.oro.text.regex.MalformedPatternException;
-
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.io.res.util.WildcardPatternFilter;

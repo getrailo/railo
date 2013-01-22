@@ -19,7 +19,6 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
-import railo.transformer.bytecode.statement.tag.TagBase;
 import railo.transformer.bytecode.statement.tag.TagOther;
 import railo.transformer.cfml.attributes.AttributeEvaluator;
 import railo.transformer.cfml.attributes.AttributeEvaluatorException;

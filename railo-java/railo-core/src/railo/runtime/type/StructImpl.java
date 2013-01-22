@@ -214,4 +214,9 @@ public class StructImpl extends StructSupport {
 	public int hashCode() {
 		return map.hashCode();
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return map.equals(obj);
+	}
 }

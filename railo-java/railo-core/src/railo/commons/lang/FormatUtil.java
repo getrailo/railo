@@ -1,6 +1,5 @@
 package railo.commons.lang;
 
-import railo.print;
 
 public class FormatUtil {
 	

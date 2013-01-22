@@ -11,7 +11,6 @@ import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.statement.FlowControlFinal;
 import railo.transformer.bytecode.statement.FlowControlFinalImpl;
-import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.Types;
 import railo.transformer.bytecode.visitor.NotVisitor;
 import railo.transformer.bytecode.visitor.OnFinally;

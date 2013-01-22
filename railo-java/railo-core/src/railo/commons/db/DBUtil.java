@@ -6,9 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import railo.runtime.db.driver.ConnectionProxy;
-import railo.runtime.db.driver.state.StateFactory;
-
 /**
  * Utility for db
  */

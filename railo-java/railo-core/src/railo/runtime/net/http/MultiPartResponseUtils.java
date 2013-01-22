@@ -3,22 +3,17 @@ package railo.runtime.net.http;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import org.apache.commons.fileupload.MultipartStream;
-import org.apache.commons.fileupload.MultipartStream.MalformedStreamException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringUtil;
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;

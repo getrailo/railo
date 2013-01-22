@@ -1,23 +1,16 @@
 package railo.runtime.functions.system;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import railo.print;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
-import railo.commons.lang.ClassException;
-import railo.commons.lang.ClassUtil;
 import railo.commons.lang.SizeAndCount;
 import railo.commons.lang.SizeAndCount.Size;
-import railo.loader.engine.CFMLEngine;
 import railo.loader.engine.CFMLEngineFactory;
-import railo.loader.util.Util;
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.Mapping;
 import railo.runtime.MappingImpl;
@@ -27,10 +20,8 @@ import railo.runtime.PageSourceImpl;
 import railo.runtime.PageSourcePool;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
-import railo.runtime.config.ConfigServerImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.db.DatasourceManagerImpl;
 import railo.runtime.db.debug.DebugQuery;
 import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.exp.PageException;
@@ -39,19 +30,14 @@ import railo.runtime.lock.LockManager;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.Array;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
-import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.scope.ScopeContext;
-import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
-import railo.runtime.util.Cast;
 
 public final class GetUsageData implements Function {
     
@@ -243,7 +229,6 @@ public final class GetUsageData implements Function {
 			sess.setAt(KeyConstants._size, row, new Double(size));
 			sess.setAt(ELEMENTS, row, new Double(count));
 		}
-		print.e(all);
 	}
 	
 	private static long[] templateCacheElements(Mapping[] mappings) {
