@@ -38,6 +38,7 @@ import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
+import railo.print;
 import railo.commons.io.BodyContentStack;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
@@ -64,6 +65,7 @@ import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
 import railo.runtime.debug.DebugCFMLWriter;
+import railo.runtime.db.debug.DebugQuery;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
@@ -2858,6 +2860,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	private Set<String> pagesUsed=new HashSet<String>();
+
+	private DebugQuery activeQuery;
 	
 	
 
@@ -2942,12 +2946,23 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	public Scope SymTab_findBuiltinScope(String name) throws PageException {
 		return scope(name, null);
 	}
-
-
-	// FUTURE add to PageContext
+	
+// FUTURE add to PageContext
 	public DataSource getDataSource(String datasource) throws PageException {
 		DataSource ds = ((ApplicationContextPro)getApplicationContext()).getDataSource(datasource,null);
 		if(ds==null) ds=getConfig().getDataSource(datasource);
 		return ds;
+	}
+
+	public void setActiveQuery(DebugQuery dq) {
+		activeQuery=dq;
+	}
+	
+	public DebugQuery getActiveQuery() {
+		return activeQuery;
+	}
+
+	public void releaseActiveQuery() {
+		activeQuery=null;
 	}
 }

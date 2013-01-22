@@ -962,6 +962,15 @@ public final class ConfigWebFactory {
 		Resource contextDir = configDir.getRealResource("context");
 	    if(!contextDir.exists())contextDir.mkdirs();
 	    
+	    // custom locale files
+	    {
+	    	Resource dir = configDir.getRealResource("locales");
+	        if(!dir.exists())dir.mkdirs();
+	        Resource file = dir.getRealResource("pt-PT-date.df");
+	        if(!file.exists())createFileFromResourceEL("/resource/locales/pt-PT-date.df",file);
+	    }
+	    
+	    // Jacob
 	    if(SystemUtil.isWindows()) {
 	    	Resource systemDir=SystemUtil.getSystemDirectory();
 	        if(systemDir!=null) {

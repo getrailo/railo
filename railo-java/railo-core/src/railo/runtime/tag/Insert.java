@@ -166,7 +166,7 @@ public final class Insert extends TagImpl {
 	    	
 	    	SQL sql=createSQL(meta);
 			if(sql!=null) {
-				railo.runtime.type.Query query = new QueryImpl(dc,sql,-1,-1,-1,"query");
+				railo.runtime.type.Query query = new QueryImpl(pageContext,dc,sql,-1,-1,-1,"query");
 				
 				if(pageContext.getConfig().debug()) {
 					String dsn=ds instanceof DataSource?((DataSource)ds).getName():Caster.toString(ds);

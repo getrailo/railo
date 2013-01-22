@@ -458,12 +458,10 @@ public final class DBInfo extends TagImpl {
 		
 		checkTable(metaData);
 		
-		ResultSet columns = metaData.getCrossReference(dbname, schema, table, null, null, null);// TODO ist das ok
-		railo.runtime.type.Query qry = new QueryImpl(columns,"query");
+		ResultSet columns = metaData.getExportedKeys(dbname, schema, table);
+		railo.runtime.type.Query qry = new QueryImpl(columns,"query");		
 		
-		
-        qry.setExecutionTime(stopwatch.time());
-        
+        qry.setExecutionTime(stopwatch.time());        
         
 		pageContext.setVariable(name, qry);
 	}

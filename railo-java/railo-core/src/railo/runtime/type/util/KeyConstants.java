@@ -732,6 +732,7 @@ public class KeyConstants {
 	public static final Key _cluster = KeyImpl._const("cluster");
 	public static final Key _form = KeyImpl._const("form");
 	public static final Key _request = KeyImpl._const("request");
+	public static final Key _requests = KeyImpl._const("requests");
 	public static final Key _session = KeyImpl._const("session");
 	public static final Key _cferror = KeyImpl._const("cferror");
 	public static final Key _error = KeyImpl._const("error");

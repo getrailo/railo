@@ -59,6 +59,18 @@ class DCStack {
 		}
 		return count;
 	}
+	public synchronized int openConnections(){
+		int count=0;
+		Item i = item;
+		while(i!=null){
+			try {
+				if(!i.dc.getConnection().isClosed())count++;
+			} 
+			catch (SQLException e) {}
+			i=i.prev;
+		}
+		return count;
+	}
 	
 	class Item {
 		private DatasourceConnection dc;

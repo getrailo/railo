@@ -3,6 +3,7 @@ package railo.runtime.type.util;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -20,6 +21,8 @@ import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
+import railo.runtime.db.driver.PreparedStatementPro;
+import railo.runtime.db.driver.StatementPro;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
@@ -193,8 +196,20 @@ public class QueryUtil {
 		}
 	}
 
-	public static boolean execute(Statement stat, boolean createGeneratedKeys, SQL sql) throws SQLException {
+	public static boolean execute(PageContext pc,Statement stat, boolean createGeneratedKeys, SQL sql) throws SQLException {
+		if(stat instanceof StatementPro) {
+			StatementPro sp=(StatementPro) stat;
+			return createGeneratedKeys?sp.execute(pc,sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):sp.execute(pc,sql.getSQLString());
+		}
 		return createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
+	}
+
+	public static boolean execute(PageContext pc,PreparedStatement ps) throws SQLException {
+		if(ps instanceof PreparedStatementPro) {
+			PreparedStatementPro psp=(PreparedStatementPro) ps;
+			return psp.execute(pc);
+		}
+		return ps.execute();
 	}
 
 	public static String getColumnName(ResultSetMetaData meta, int column) throws SQLException {

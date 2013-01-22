@@ -209,4 +209,9 @@ public class StructImpl extends StructSupport {
 	public int hashCode() {
 		return map.hashCode();
 	}
+	
+	@Override
+	public int hashCode() {
+		return map.hashCode();
+	}
 }

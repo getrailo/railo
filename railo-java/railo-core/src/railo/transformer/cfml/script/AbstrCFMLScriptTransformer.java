@@ -1037,7 +1037,7 @@ int pos=data.cfml.getPos();
 			
 			
 		}
-		else checkSemiColonLineFeed(data,true);
+		else checkSemiColonLineFeed(data,true,true);
 		
 		tag.setEnd(data.cfml.getPosition());
 		eval(tlt,data,tag);
@@ -1113,10 +1113,10 @@ int pos=data.cfml.getPos();
 		
 		
 		
-		// folgend wird tlt extra nicht übergeben, sonst findet prüfung statt
+		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
 		Attribute[] attrs = attributes(property,tlt,data,SEMI,	NULL,Boolean.FALSE,"name",true);
 		
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 
 		property.setTagLibTag(tlt);
 		property.setScriptBase(true);
@@ -1234,9 +1234,9 @@ int pos=data.cfml.getPos();
 		
 		
 		
-		// folgend wird tlt extra nicht übergeben, sonst findet prüfung statt
+		// folgend wird tlt extra nicht uebergeben, sonst findet pruefung statt
 		Attribute[] attrs = attributes(param,tlt,data,SEMI,	NULL,Boolean.TRUE,"name",true);
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 
 		param.setTagLibTag(tlt);
 		param.setScriptBase(true);
@@ -1370,10 +1370,10 @@ int pos=data.cfml.getPos();
 	    Return rtn;
 	    
 	    comments(data);
-	    if(checkSemiColonLineFeed(data, false)) rtn=new Return(line,data.cfml.getPosition());
+	    if(checkSemiColonLineFeed(data, false,false)) rtn=new Return(line,data.cfml.getPosition());
 	    else {
 	    	Expression expr = expression(data);
-	    	checkSemiColonLineFeed(data, true);
+	    	checkSemiColonLineFeed(data, true,true);
 	    	rtn=new Return(expr,line,data.cfml.getPosition());
 	    }
 		comments(data);
@@ -1460,7 +1460,7 @@ int pos=data.cfml.getPos();
 			return null;
 		}
 		
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 		if(!StringUtil.isEmpty(tlt.getTteClassName()))data.ep.add(tlt, tag, data.fld, data.cfml);
 		
 		if(!StringUtil.isEmpty(attrName))validateAttributeName(attrName, data.cfml, new ArrayList<String>(), tlt, new RefBooleanImpl(false), new StringBuffer(), allowTwiceAttr);
@@ -1564,17 +1564,17 @@ int pos=data.cfml.getPos();
 	 */
 	private Statement expressionStatement(Data data, Body parent) throws TemplateException {
 		Expression expr=expression(data);
-		checkSemiColonLineFeed(data,true);
+		checkSemiColonLineFeed(data,true,true);
 		if(expr instanceof ClosureAsExpression)
 			return ((ClosureAsExpression)expr).getClosure();
 			
 		return new ExpressionAsStatement(expr);
 	}
 	
-	private final boolean checkSemiColonLineFeed(Data data,boolean throwError) throws TemplateException {
+	private final boolean checkSemiColonLineFeed(Data data,boolean throwError, boolean checkNLBefore) throws TemplateException {
 		comments(data);
 		if(!data.cfml.forwardIfCurrent(';')){
-			if(!data.cfml.hasNLBefore() && !data.cfml.isCurrent("</",data.tagName) && !data.cfml.isCurrent('}')){
+			if((!checkNLBefore || !data.cfml.hasNLBefore()) && !data.cfml.isCurrent("</",data.tagName) && !data.cfml.isCurrent('}')){
 				if(!throwError) return false;
 				throw new TemplateException(data.cfml,"Missing [;] or [line feed] after expression");
 			}
