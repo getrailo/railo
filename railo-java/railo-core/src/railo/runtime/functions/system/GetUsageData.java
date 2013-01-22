@@ -243,7 +243,6 @@ public final class GetUsageData implements Function {
 			sess.setAt(KeyConstants._size, row, new Double(size));
 			sess.setAt(ELEMENTS, row, new Double(count));
 		}
-		print.e(all);
 	}
 	
 	private static long[] templateCacheElements(Mapping[] mappings) {

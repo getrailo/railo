@@ -5583,7 +5583,7 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 			<type>string</type>
 		</return>
 	</function>
-	<!-- GetUsageData -->
+	<!-- GetUsageData
 	<function>
 		<name>GetUsageData</name>
 		<class>railo.runtime.functions.system.GetUsageData</class>
@@ -5591,7 +5591,7 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 		<return>
 			<type>struct</type>
 		</return>
-	</function>
+	</function> -->
 	<!-- GetWriteableImageFormats -->
 	<function>
 		<name>GetWriteableImageFormats</name>
