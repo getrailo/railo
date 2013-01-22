@@ -492,6 +492,12 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     }
 	
 	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Collection)) return false;
+		return CollectionUtil.equals(this,(Collection)obj);
+	}
+	
+	@Override
 	public int hashCode() {
 		return CollectionUtil.hashCode(this);
 	}
