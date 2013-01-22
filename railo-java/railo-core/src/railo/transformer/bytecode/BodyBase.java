@@ -12,7 +12,6 @@ import org.objectweb.asm.commons.Method;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.PrintOut;
-import railo.transformer.bytecode.statement.StatementBase;
 import railo.transformer.bytecode.statement.StatementBaseNoFinal;
 import railo.transformer.bytecode.util.ASMUtil;
 import railo.transformer.bytecode.util.ExpressionUtil;

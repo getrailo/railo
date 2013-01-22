@@ -47,7 +47,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
-import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.ArrayInt;
 import railo.runtime.type.Collection;

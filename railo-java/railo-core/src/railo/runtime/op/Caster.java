@@ -17,9 +17,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +37,6 @@ import org.w3c.dom.NodeList;
 
 import railo.commons.date.JREDateTimeUtil;
 import railo.commons.date.TimeZoneUtil;
-import railo.commons.i18n.FormatUtil;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;

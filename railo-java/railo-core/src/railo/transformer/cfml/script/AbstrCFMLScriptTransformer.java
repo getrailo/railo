@@ -42,7 +42,6 @@ import railo.transformer.bytecode.statement.TryCatchFinally;
 import railo.transformer.bytecode.statement.While;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
-import railo.transformer.bytecode.statement.tag.TagBase;
 import railo.transformer.bytecode.statement.tag.TagOther;
 import railo.transformer.bytecode.statement.tag.TagParam;
 import railo.transformer.bytecode.statement.udf.Closure;
