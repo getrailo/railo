@@ -82,12 +82,14 @@ public final class DBUtil {
 
 	public static Connection getConnection(String dsn, String user, String pass) throws SQLException {
 		try {
-			return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(dsn, user, pass));
+			return DriverManager.getConnection(dsn, user, pass);
+			//return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(dsn, user, pass));
         } 
         catch (SQLException e) {
         	if(dsn.indexOf('?')!=-1) {
                 String connStr=dsn+"&user="+user+"&password="+pass;
-    			return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(connStr));
+    			return DriverManager.getConnection(connStr);
+    			//return new ConnectionProxy(new StateFactory(), DriverManager.getConnection(connStr));
             }
         	throw e;
         }

@@ -50,8 +50,6 @@ import railo.runtime.db.DatasourceConnectionImpl;
 import railo.runtime.db.SQL;
 import railo.runtime.db.SQLCaster;
 import railo.runtime.db.SQLItem;
-import railo.runtime.db.driver.PreparedStatementPro;
-import railo.runtime.db.driver.StatementPro;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -60,7 +58,6 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
-import railo.runtime.functions.query.QueryColumnCount;
 import railo.runtime.interpreter.CFMLExpressionInterpreter;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
@@ -68,7 +65,6 @@ import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.query.caster.Cast;
-import railo.runtime.timer.Stopwatch;
 import railo.runtime.type.comparator.NumberSortRegisterComparator;
 import railo.runtime.type.comparator.SortRegister;
 import railo.runtime.type.comparator.SortRegisterComparator;
@@ -198,7 +194,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
         this.sql=sql;
 		
         //ResultSet result=null;
-		StatementPro stat=null;
+		Statement stat=null;
 		// check SQL Restrictions
 		if(dc.getDatasource().hasSQLRestriction()) {
 			QueryUtil.checkSQLRestriction(dc,sql);
@@ -219,7 +215,7 @@ public class QueryImpl implements Query,Objects,Sizeable {
 		try {	
 			SQLItem[] items=sql.getItems();
 			if(items.length==0) {
-		    	stat=(StatementPro) dc.getConnection().createStatement();
+		    	stat=dc.getConnection().createStatement();
 		        setAttributes(stat,maxrow,fetchsize,timeout);
 		     // some driver do not support second argument
 		        //hasResult=createGeneratedKeys?stat.execute(sql.getSQLString(),Statement.RETURN_GENERATED_KEYS):stat.execute(sql.getSQLString());
@@ -227,12 +223,12 @@ public class QueryImpl implements Query,Objects,Sizeable {
 	        }
 	        else {
 	        	// some driver do not support second argument
-	        	PreparedStatementPro preStat = (PreparedStatementPro) dc.getPreparedStatement(sql, createGeneratedKeys,allowToCachePreperadeStatement);
+	        	PreparedStatement preStat = dc.getPreparedStatement(sql, createGeneratedKeys,allowToCachePreperadeStatement);
 	        	//closeStatement=false;
 	        	stat=preStat;
 	            setAttributes(preStat,maxrow,fetchsize,timeout);
 	            setItems(preStat,items);
-		        hasResult=preStat.execute(pc);    
+		        hasResult=QueryUtil.execute(pc,preStat);    
 	        }
 			int uc;
 			ResultSet res;
