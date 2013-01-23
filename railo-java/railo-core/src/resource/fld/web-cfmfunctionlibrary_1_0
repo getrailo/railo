@@ -1343,7 +1343,7 @@ sort direction:
 		<name>CacheRemoveAll</name>
 		<class>railo.runtime.functions.cache.CacheRemoveAll</class>
 		<status>deprecated</status>
-		<description>this function is deprecated, use instead cacheCelar. Removes all elements from the cache</description>
+		<description>this function is deprecated, use instead cacheClear. Removes all elements from the cache</description>
 		<argument>
 			<name>cacheName</name>
 			<alias>cache,region</alias>
