@@ -1327,6 +1327,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1335,7 +1336,29 @@ sort direction:
 			<type>number</type>
 		</return>
 	</function>
-	
+
+	<!-- CacheRemoveAll -->
+	<function>
+		<name>CacheRemoveAll</name>
+		<class>railo.runtime.functions.cache.CacheClear</class>
+		<description>Flushes the cache</description>
+		<argument>
+			<name>filter</name>
+			<type>string</type>
+			<required>No</required>
+			<description>You can specify a key filter for the elements in the cache to flush, the filter follow the same rules as for cfdirectory-filter</description>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<alias>region</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
 		
 	<!-- CacheCount -->
 	<function>
@@ -1344,6 +1367,7 @@ sort direction:
 		<description>Returns the amount (integer) of keys stored in the cache.</description>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1372,6 +1396,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1400,6 +1425,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1438,6 +1464,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1460,6 +1487,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1482,6 +1510,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1525,6 +1554,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1533,7 +1563,30 @@ sort direction:
 			<type>boolean</type>
 		</return>
 	</function>
-	
+
+	<!-- CacheIdExists -->
+	<function>
+		<name>CacheIdExists</name>
+		<class>railo.runtime.functions.cache.CacheKeyExists</class>
+		<description>Returns true/false whether the cache contains an element with the certain keyname.</description>
+		<argument>
+			<name>key</name>
+			<type>string</type>
+			<required>yes</required>
+			<description>key to check</description>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<alias>region</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+
 	<!-- CacheSetProperties -->
 	<function>
 		<name>CacheSetProperties</name>
@@ -1583,6 +1636,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1611,6 +1665,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -10469,7 +10524,7 @@ The value determines whether the image is blurred or sharpened:
 			- email: a string containig a valid email address.
 			- eurodate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A date in the form d/m/y, d-m-y, or d.m.y. The m and d format can be 1 or 2 digits; y can be 2 or 4 digits. 
 			- float or numeric: a numeric value; equivalent to the IsNumeric function.
-			- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where Ô XÕ is a hexadecimal number.
+			- guid: a Universally Unique Identifier of the form "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" where X is a hexadecimal number.
 			- integer: an integer.
 			- query: a query object; equivalent to the IsQuery function.
 			- range: a numeric range, specified by the min and max attributes.
@@ -10479,7 +10534,7 @@ The value determines whether the image is blurred or sharpened:
 			- struct: a structure; equivalent to the IsStruct function.
 			- telephone: a standard US telephone number.
 			- URL: an http, https, ftp, file, mailto, or news URL,
-			- UUID: a ColdFusion Universally Unique Identifier, formatted Ô XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXXÕ, where Ô XÕ is a hexadecimal number. See CreateUUID.
+			- UUID: a ColdFusion Universally Unique Identifier, formatted "XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXXXXX", where X is a hexadecimal number. See CreateUUID.
 			- USdate: this functionality is only supported for compatibility reasion, we do not suggest to use this functionality. Use instead function isDate or lsIsDate. A U.S. date of the format mm/dd/yy, with 1-2 digit days and months, 1-4 digit years.
 			- variableName: a string formatted according to ColdFusion variable naming conventions.
 			- zipcode: U.S., 5- or 9-digit format ZIP codes.</description>
