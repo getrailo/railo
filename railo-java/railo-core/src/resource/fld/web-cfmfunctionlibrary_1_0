@@ -1420,7 +1420,7 @@ sort direction:
 		<argument>
 			<name>throwWhenNotExist</name>
 			<default>false</default>
-			<type>any</type><!-- this is any for compatibility reasons to ACF -->
+			<type>boolean</type>
 			<required>no</required>
 			<description>define if the functions throws a exception when the element does not exist (default is false).</description>
 		</argument>
