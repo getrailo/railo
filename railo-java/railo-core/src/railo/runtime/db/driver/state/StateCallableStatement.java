@@ -7,9 +7,9 @@ import java.sql.Statement;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.db.debug.DebugQuery;
 import railo.runtime.db.driver.CallableStatementProxy;
 import railo.runtime.db.driver.ConnectionProxy;
+import railo.runtime.debug.ActiveQuery;
 import railo.runtime.engine.ThreadLocalPageContext;
 
 public class StateCallableStatement extends CallableStatementProxy {
@@ -138,7 +138,7 @@ public class StateCallableStatement extends CallableStatementProxy {
 	}
 
 	protected void setActiveStatement(PageContextImpl pc,Statement stat, String sql) {
-		pc.setActiveQuery(new DebugQuery(sql,System.currentTimeMillis()));
+		pc.setActiveQuery(new ActiveQuery(sql,System.currentTimeMillis()));
 	}
 
 }

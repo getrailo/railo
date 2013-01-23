@@ -1,13 +1,12 @@
-package railo.runtime.db.debug;
+package railo.runtime.debug;
 
-public class DebugQuery {
+public class ActiveQuery {
 
 	public final String sql;
 	public final long startTime;
 
-	public DebugQuery(String sql, long startTime) {
+	public ActiveQuery(String sql, long startTime) {
 		this.sql=sql;
 		this.startTime=startTime;
 	}
-
 }

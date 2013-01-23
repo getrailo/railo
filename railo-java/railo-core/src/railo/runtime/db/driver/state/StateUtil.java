@@ -7,7 +7,7 @@ import java.sql.Statement;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
-import railo.runtime.db.debug.DebugQuery;
+import railo.runtime.debug.ActiveQuery;
 
 public class StateUtil {
 	
@@ -158,6 +158,6 @@ public class StateUtil {
 	
 
 	private static void setActiveStatement(PageContextImpl pc,Statement stat, String sql) {
-		pc.setActiveQuery(new DebugQuery(sql,System.currentTimeMillis()));
+		pc.setActiveQuery(new ActiveQuery(sql,System.currentTimeMillis()));
 	}
 }

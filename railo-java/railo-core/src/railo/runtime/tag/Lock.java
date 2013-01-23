@@ -1,5 +1,7 @@
 package railo.runtime.tag;
 
+import railo.runtime.PageContextImpl;
+import railo.runtime.debug.ActiveLock;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.LockException;
 import railo.runtime.exp.PageException;
@@ -211,8 +213,10 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
         
 		try {
 		    data = manager.lock(type,name,timeoutInMillis,pageContext.getId());
+		    ((PageContextImpl)pageContext).setActiveLock(new ActiveLock(type,name,timeoutInMillis));
 		} 
 		catch (LockTimeoutException e) {
+		    ((PageContextImpl)pageContext).releaseActiveLock();
 			//print.out("LockTimeoutException");
 		    name=null;
 			String errorText=e.getMessage();
@@ -229,7 +233,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 			return SKIP_BODY;
 		} 
 		catch (InterruptedException e) {
-		    
+			((PageContextImpl)pageContext).releaseActiveLock();
 		    cflock.set("succeeded",Boolean.FALSE);
 		    cflock.set("errortext",e.getMessage());
 		    
@@ -245,8 +249,8 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	
 	@Override
 	public void doFinally() {
-		//print.out("unlock:"+data.getName()+":"+pageContext.getId());
-        if(name!=null)manager.unlock(data);
+		((PageContextImpl)pageContext).releaseActiveLock();
+	    if(name!=null)manager.unlock(data);
 	}
 	
 	

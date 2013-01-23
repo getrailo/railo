@@ -17,6 +17,7 @@ public final class QueryEntryImpl implements QueryEntryPro {
     private final int recordcount;
     private final String datasource;
 	private final Query qry;
+	private final long startTime;
 	
 	/**
 	 * constructor of the class
@@ -26,7 +27,8 @@ public final class QueryEntryImpl implements QueryEntryPro {
 	 * @param exe
 	 */
 	public QueryEntryImpl(Query qry,String datasource, String name,SQL sql,int recordcount, String src, long exe) {
-        this.datasource=datasource;
+		this.startTime=System.currentTimeMillis()-(exe/1000000);
+		this.datasource=datasource;
         this.recordcount=recordcount;
         this.name=name;
 	    this.src=src;
@@ -70,5 +72,10 @@ public final class QueryEntryImpl implements QueryEntryPro {
 	@Override
 	public String getDatasource() {
         return datasource;
+    }
+	
+	// FUTURE add to interface
+	public long getStartTime() {
+        return startTime;
     }
 }
