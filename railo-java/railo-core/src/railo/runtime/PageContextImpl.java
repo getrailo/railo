@@ -285,6 +285,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	private boolean gatewayContext;
 	private String serverPassword;
 
+	private PageException pe;
+
 	public long sizeOf() {
 		
 		return 
@@ -649,7 +651,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	manager.release();
     	includeOnce.clear();
-    	
+    	pe=null;
 
 	}
 
@@ -2103,6 +2105,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	    catch(Throwable t) {
 	    	PageException pe = Caster.toPageException(t);
 	    	if(!Abort.isSilentAbort(pe)){
+	    		this.pe=pe;
 	    		log(true);
 	    		if(fdEnabled){
 	        		FDSignal.signal(pe, false);
@@ -2977,5 +2980,9 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	public void releaseActiveLock() {
 		activeLock=null;
+	}
+
+	public PageException getPageException() {
+		return pe;
 	}
 }
