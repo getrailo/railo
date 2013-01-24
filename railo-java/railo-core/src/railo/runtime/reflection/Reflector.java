@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -27,6 +29,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.java.JavaObject;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
+import railo.runtime.op.Duplicator;
 import railo.runtime.op.Operator;
 import railo.runtime.reflection.pairs.ConstructorInstance;
 import railo.runtime.reflection.pairs.MethodInstance;
@@ -35,6 +38,7 @@ import railo.runtime.reflection.storage.WeakFieldStorage;
 import railo.runtime.reflection.storage.WeakMethodStorage;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
+import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Query;
@@ -426,7 +430,7 @@ public final class Reflector {
 		//throw new NoSuchMethodException("No matching Constructor for "+clazz.getName()+"("+getDspMethods(getClasses(args))+") found");
 	}
 
-    /**
+	/**
 	 * gets the MethodInstance matching given Parameter
 	 * @param clazz Class Of the Method to get
 	 * @param methodName Name of the Method to get
@@ -493,22 +497,119 @@ public final class Reflector {
 		return null;
 	}
 
-    /*private static MethodInstance create(MethodInstance existing, Method method, Object[] args) {
-		if(existing==null) return new MethodInstance(method,args);
-    	Class[] exTypes = existing.getMethod().getParameterTypes();
-    	Class[] nwTypes = method.getParameterTypes();
-		for(int i=0;i<exTypes.length;i++){
-			if(exTypes[i]==nwTypes[i]) continue;
-			if(isInstaneOf(exTypes[i], nwTypes[i])){
-				return existing;
-			}
-			if(isInstaneOf(nwTypes[i], exTypes[i])){
-				return  new MethodInstance(method,args);
+
+    private static Object[] cleanArgs(Object[] args) {
+    	if(args==null) return args;
+    	
+    	for(int i=0;i<args.length;i++){
+    		args[i]=_clean(args[i]);
+    	}
+    	return args;
+    }
+	
+	
+    private static Object _clean(Object obj)  {
+		if(obj instanceof ObjectWrap) {
+			try {
+				return ((ObjectWrap)obj).getEmbededObject();
+			} catch (PageException e) {
+				return obj;
 			}
 		}
-    	return existing;
-	}*/
+		if(obj instanceof Collection) return  _clean((Collection)obj);
+		if(obj instanceof Map) return  _clean((Map)obj);
+		if(obj instanceof List) return  _clean((List)obj);
+		if(obj instanceof Object[]) return  _clean((Object[])obj);
+		return obj;
+	}
     
+    private static Object _clean(Collection coll) {
+    	Iterator<Object> vit = coll.valueIterator();
+    	Object v;
+    	boolean change=false;
+    	while(vit.hasNext()){
+    		v=vit.next();
+    		if(v!=_clean(v)) {
+    			change=true;
+    			break;
+    		}
+    	}
+    	if(!change) return coll;
+    	
+    	coll=coll.duplicate(false);
+    	Iterator<Entry<Key, Object>> eit = coll.entryIterator();
+    	Entry<Key, Object> e;
+    	while(eit.hasNext()){
+    		e=eit.next();
+    		coll.setEL(e.getKey(), _clean(e.getValue()));
+    	}
+    	
+    	return coll;
+    }
+    
+    private static Object _clean(Map map) {
+    	Iterator vit = map.values().iterator();
+    	Object v;
+    	boolean change=false;
+    	while(vit.hasNext()){
+    		v=vit.next();
+    		if(v!=_clean(v)) {
+    			change=true;
+    			break;
+    		}
+    	}
+    	if(!change) return map;
+    	
+    	map=Duplicator.duplicateMap(map, false);
+    	Iterator<Entry> eit = map.entrySet().iterator();
+    	Entry e;
+    	while(eit.hasNext()){
+    		e=eit.next();
+    		map.put(e.getKey(), _clean(e.getValue()));
+    	}
+    	
+    	return map;
+    }
+    
+    private static Object _clean(List list) {
+    	Iterator it = list.iterator();
+    	Object v;
+    	boolean change=false;
+    	while(it.hasNext()){
+    		v=it.next();
+    		if(v!=_clean(v)) {
+    			change=true;
+    			break;
+    		}
+    	}
+    	if(!change) return list;
+    	
+    	list=Duplicator.duplicateList(list, false);
+    	it = list.iterator();
+    	while(it.hasNext()){
+    		list.add(_clean(it.next()));
+    	}
+    	
+    	return list;
+    }
+    
+    private static Object _clean(Object[] src) {
+    	boolean change=false;
+    	for(int i=0;i<src.length;i++){
+    		if(src[i]!=_clean(src[i])) {
+    			change=true;
+    			break;
+    		}
+    	}
+    	if(!change) return src;
+    	
+    	Object[] trg=new Object[src.length];
+		for(int i=0;i<trg.length;i++) {
+			trg[i]=_clean(src[i]);
+		}
+    	
+    	return trg;
+    }
 
 	/**
      * gets the MethodInstance matching given Parameter
@@ -690,12 +791,12 @@ public final class Reflector {
 		if(obj==null) {
 			throw new ExpressionException("can't call method ["+methodName+"] on object, object is null");
 		}
+        
 		MethodInstance mi=getMethodInstanceEL(obj.getClass(), methodName, args);
 		if(mi==null)
 		    throw throwCall(obj,methodName,args);
 	    try {
-	    	
-            return mi.invoke(obj);
+	    	return mi.invoke(obj);
         }
 		catch (InvocationTargetException e) {
 			Throwable target = e.getTargetException();
@@ -1073,29 +1174,10 @@ public final class Reflector {
         
 	}
 	
-	/**
-	 * clean all Arguments
-     * @param args arguments to clean
-     * @return cleaned Arguments
-	 * @throws PageException
-     */
-    private static Object[] cleanArgs(Object[] args) {
-        if(args==null)return new Object[0];
-        for(int i=0;i<args.length;i++) {
-            if(args[i] instanceof ObjectWrap) {
-				try {
-					args[i]=((ObjectWrap)args[i]).getEmbededObject();
-				}
-				catch (PageException e) {}
-            }
-        }
-        
-        return args;
-    }
     
 
     private static Object toNativeArray(Class clazz, Object obj) throws PageException {
-		if(obj.getClass()==clazz) return obj;
+    	//if(obj.getClass()==clazz) return obj;
 		Object[] objs=null;
 		if(obj instanceof Array)						objs=toRefArray((Array)obj);
 		else if(obj instanceof List)					objs=toRefArray((List)obj);
@@ -1108,9 +1190,11 @@ public final class Reflector {
 			else if(obj.getClass()==long[].class)		objs=toRefArray((long[])obj);
 			else if(obj.getClass()==float[].class)		objs=toRefArray((float[])obj);
 			else if(obj.getClass()==double[].class)		objs=toRefArray((double[])obj);
-			else										objs=(Object[]) obj;
+			else										objs=(Object[])obj;//toRefArray((Object[])obj);
 			
 		}
+		if(clazz==objs.getClass()) return objs;
+		
 		//if(objs==null) return defaultValue;
 		//Class srcClass = objs.getClass().getComponentType();
 		Class trgClass = clazz.getComponentType();
@@ -1124,69 +1208,69 @@ public final class Reflector {
 	
 
 	private static Object[] toRefArray(boolean[] src) {
-		Object[] trg=new Object[src.length];
+		Boolean[] trg=new Boolean[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=src[i]?Boolean.TRUE:Boolean.FALSE;
 		}
 		return trg;
 	}
 
-	private static Object[] toRefArray(byte[] src) {
-		Object[] trg=new Object[src.length];
+	private static Byte[] toRefArray(byte[] src) {
+		Byte[] trg=new Byte[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=new Byte(src[i]);
 		}
 		return trg;
 	}
 
-	private static Object[] toRefArray(char[] src) {
-		Object[] trg=new Object[src.length];
+	private static Character[] toRefArray(char[] src) {
+		Character[] trg=new Character[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=new Character(src[i]);
 		}
 		return trg;
 	}
 
-	private static Object[] toRefArray(short[] src) {
-		Object[] trg=new Object[src.length];
+	private static Short[] toRefArray(short[] src) {
+		Short[] trg=new Short[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=Short.valueOf(src[i]);
 		}
 		return trg;
 	}
 
-	private static Object[] toRefArray(int[] src) {
-		Object[] trg=new Object[src.length];
+	private static Integer[] toRefArray(int[] src) {
+		Integer[] trg=new Integer[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=Integer.valueOf(src[i]);
 		}
 		return trg;
 	}
 
-	private static Object[] toRefArray(long[] src) {
-		Object[] trg=new Object[src.length];
+	private static Long[] toRefArray(long[] src) {
+		Long[] trg=new Long[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=Long.valueOf(src[i]);
 		}
 		return trg;
 	}
 
-	private static Object[] toRefArray(float[] src) {
-		Object[] trg=new Object[src.length];
+	private static Float[] toRefArray(float[] src) {
+		Float[] trg=new Float[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=new Float(src[i]);
 		}
 		return trg;
 	}
 
-	private static Object[] toRefArray(double[] src) {
-		Object[] trg=new Object[src.length];
+	private static Double[] toRefArray(double[] src) {
+		Double[] trg=new Double[src.length];
 		for(int i=0;i<trg.length;i++) {
 			trg[i]=new Double(src[i]);
 		}
 		return trg;
 	}
-
+	
 	private static Object[] toRefArray(Array array) throws PageException {
 		Object[] objs=new Object[array.size()];
 		for(int i=0;i<objs.length;i++) {

@@ -1340,6 +1340,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1349,6 +1350,26 @@ sort direction:
 		</return>
 	</function>
 	
+	
+	<!-- CacheRemoveAll -->
+	<function>
+		<name>CacheRemoveAll</name>
+		<class>railo.runtime.functions.cache.CacheRemoveAll</class>
+		<status>deprecated</status>
+		<description>this function is deprecated, use instead cacheClear. Removes all elements from the cache</description>
+		<argument>
+			<name>cacheName</name>
+			<alias>cache,region</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
+		</argument>
+		<return>
+			<type>number</type>
+		</return>
+	</function>
+	
+	
 		
 	<!-- CacheCount -->
 	<function>
@@ -1357,6 +1378,7 @@ sort direction:
 		<description>Returns the amount (integer) of keys stored in the cache.</description>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1373,6 +1395,7 @@ sort direction:
 		<description>Deletes a single element from the cache.</description>
 		<argument>
 			<name>id</name>
+			<alias>name,key</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>the id of the element to delete, can also contain a "," (not used as separator)</description>
@@ -1385,6 +1408,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1401,18 +1425,21 @@ sort direction:
 		<description>Gets an object that is stored in the cache.</description>
 		<argument>
 			<name>id</name>
+			<alias>name,key</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>name of the element to return</description>
 		</argument>
 		<argument>
 			<name>throwWhenNotExist</name>
+			<default>false</default>
 			<type>boolean</type>
 			<required>no</required>
 			<description>define if the functions throws a exception when the element does not exist (default is false).</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1451,6 +1478,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1473,6 +1501,7 @@ sort direction:
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1489,12 +1518,14 @@ sort direction:
 		<description>returns a structure with some Metadata regarding the cache elements (keys returned depends on the Cache type used).</description>
 		<argument>
 			<name>id</name>
+			<alias>name,key</alias>
 			<type>string</type>
 			<required>yes</required>
 			<description>name of the element you need metadat for</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1529,15 +1560,42 @@ sort direction:
 	<function>
 		<name>CacheKeyExists</name>
 		<class>railo.runtime.functions.cache.CacheKeyExists</class>
-		<description>Returns true/false whether the cache contains an element with the certain keyname.</description>
+		<status>deprecated</status>
+		<description>this function is deprecated, use instead CacheIdExists. Returns true/false whether the cache contains an element with the certain keyname.</description>
 		<argument>
 			<name>key</name>
+			<alias>name,id</alias>
 			<type>string</type>
 			<required>yes</required>
 			<description>key to check</description>
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
+			<type>string</type>
+			<required>No</required>
+			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
+		</argument>
+		<return>
+			<type>boolean</type>
+		</return>
+	</function>
+	
+	<!-- CacheIdExists -->
+	<function>
+		<name>CacheIdExists</name>
+		<class>railo.runtime.functions.cache.CacheKeyExists</class>
+		<description>Returns true/false whether the cache contains an element with the certain id.</description>
+		<argument>
+			<name>id</name>
+			<alias>name,key</alias>
+			<type>string</type>
+			<required>yes</required>
+			<description>key to check</description>
+		</argument>
+		<argument>
+			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1556,6 +1614,7 @@ sort direction:
 you can use tag cfadmin instead. we will add support for this function in a future release, but then you can enable,disable this  function in admin for every single cache instance.</description>
 		<argument>
 			<name>propsSruct</name>
+			<alias>properties,props</alias>
 			<type>struct</type>
 			<required>yes</required>
 			<description>A structure specifying the cache properties plus identifying information</description>
@@ -1572,6 +1631,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		<description>Stores an object in the cache, with a life time and a idle time.</description>
 		<argument>
 			<name>id</name>
+			<alias>key,name</alias>
 			<type>string</type>
 			<required>Yes</required>
 			<description>The id for the cache object.</description>
@@ -1596,6 +1656,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -1612,6 +1673,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		<description>removes elements from cache defined with argument ids.</description>
 		<argument>
 			<name>ids</name>
+			<alias>names,keys</alias>
 			<type>object</type>
 			<required>Yes</required>
 			<description>This can be a string list of multiple elements or a array containing the keys</description>
@@ -1624,6 +1686,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 		</argument>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 			<description>definition of the cache used by name, when not set the "default Object Cache" defined in Railo Administrator is used instead.</description>
@@ -12609,6 +12672,7 @@ If name is not specified, all quiries from default cache will be removed.
 ormEvictQueries([cacheName])</description>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>String</type>
 			<required>no</required>
 		<description></description>
@@ -15114,6 +15178,7 @@ _- asc (default): ascending (a to z) sort order
 		<description>clears all caches or the specified cache</description>
 		<argument>
 			<name>cacheName</name>
+			<alias>cache,region</alias>
 			<type>string</type>
 			<required>No</required>
 		<description>Name of the cache to clear, if not defined all caches will be cleared:

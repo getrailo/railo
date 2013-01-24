@@ -113,21 +113,21 @@ public interface Cache {
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List<CacheEntry> values() throws IOException;
+	public List<Object> values() throws IOException;
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List<CacheEntry> values(CacheKeyFilter filter) throws IOException;
+	public List<Object> values(CacheKeyFilter filter) throws IOException;
 	
 	/**
 	 * Returns a list of values containing in this cache that match the given filter.
 	 * The set is NOT backed by the cache, so changes to the cache are NOT reflected in the set, and vice-versa. 
 	 * @return a set of the entries contained in this cache.
 	 */
-	public List<CacheEntry> values(CacheEntryFilter filter) throws IOException; 
+	public List<Object> values(CacheEntryFilter filter) throws IOException; 
 	
 	/**
 	 * Returns a List of entries containing in this cache Each element in the returned list is a CacheEntry. 
