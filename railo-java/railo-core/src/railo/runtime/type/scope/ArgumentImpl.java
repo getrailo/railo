@@ -83,9 +83,9 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
-		if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
+		/*if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
 			return defaultValue;
-		}
+		}*/
 		return get(key, defaultValue);
 	}
 	
@@ -94,7 +94,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	 * @see railo.runtime.type.scope.ArgumentPro#containsFunctionArgumentKey(railo.runtime.type.Collection.Key)
 	 */
 	public boolean containsFunctionArgumentKey(Key key) {
-		return functionArgumentNames!=null && functionArgumentNames.contains(key);
+		return containsKey(key);//sfunctionArgumentNames!=null && functionArgumentNames.contains(key);
 	}
 	
 	
