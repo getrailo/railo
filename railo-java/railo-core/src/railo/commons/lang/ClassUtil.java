@@ -103,7 +103,7 @@ public final class ClassUtil {
 	 */
 	public static Class loadClass(String className) throws ClassException {
 		Config config = ThreadLocalPageContext.getConfig();
-		Class clazz = loadClass(config.getClassLoader(),className,null);
+		Class clazz = loadClass(config==null?null:config.getClassLoader(),className,null);
 		if(clazz!=null) return clazz;
 		throw new ClassException("cannot load class through its string name, because no definition for the class with the specified name ["+className+"] could be found");
 	}
