@@ -1649,7 +1649,7 @@ public final class ConfigWebAdmin {
 		
         // check parameters
         if(StringUtil.isEmpty(name))
-            throw new ExpressionException("name for Cache Connection can be a empty value");
+            throw new ExpressionException("name for Cache Connection can not be an empty value");
         
         Element parent=_getRootElement("cache");
         
@@ -1677,6 +1677,32 @@ public final class ConfigWebAdmin {
       	
 	}
 	
+
+    public boolean cacheConnectionExists( String name ) throws ExpressionException, SecurityException {
+
+        checkReadAccess();
+
+        if ( !ConfigWebUtil.hasAccess( config, SecurityManagerImpl.TYPE_CACHE ) )
+            throw new SecurityException( "no access to check cache connection" );
+
+        if ( name == null || name.isEmpty() )
+            throw new ExpressionException( "name for Cache Connection can not be an empty value" );
+
+        Element parent = _getRootElement( "cache" );
+
+        Element[] children = ConfigWebFactory.getChildren( parent, "connection" );
+
+        for ( int i=0; i < children.length; i++ ) {
+
+            String n = children[ i ].getAttribute( "name" );
+
+            if ( n != null && n.equalsIgnoreCase( name ) )
+                return true;
+        }
+
+        return false;
+    }
+
 
 	public void removeCacheGatewayEntry(String name) throws PageException {
 		checkWriteAccess();
