@@ -29,4 +29,10 @@ public class CacheRegionRemove implements Function {
         }
     }
 
+
+    public static void call( PageContext pc, String cacheName ) throws PageException {
+
+        call( pc, cacheName, null );
+    }
+
 }

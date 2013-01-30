@@ -1784,7 +1784,7 @@ you can use tag cfadmin instead. we will add support for this function in a futu
             <name>password</name>
             <alias>webAdminPassword</alias>
             <type>string</type>
-            <required>no</required>
+            <required>No</required>
             <description>the password for the web administrator is required to interact with Cache Connections.
             you can optionally set it for your Application in Application.cfc using the variable [this.webAdminPassword].</description>
         </argument>

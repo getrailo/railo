@@ -48,4 +48,10 @@ public class CacheRegionNew implements Function {
         CacheRegionNew.call( pc, cacheName, new StructImpl(), true, webAdminPassword );     // TODO: pass empty struct?
     }
 
+
+    public static void call( PageContext pc, String cacheName ) throws PageException {
+
+        CacheRegionNew.call( pc, cacheName, new StructImpl(), true, null );
+    }
+
 }

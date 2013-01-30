@@ -29,4 +29,10 @@ public class CacheRegionExists implements Function {
         }
     }
 
+
+    public static boolean call( PageContext pc, String cacheName ) throws PageException {
+
+        return call( pc, cacheName, null );
+    }
+
 }
