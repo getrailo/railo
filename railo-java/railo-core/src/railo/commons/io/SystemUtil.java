@@ -27,6 +27,7 @@ import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.loader.TP;
 import railo.runtime.Info;
 import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
@@ -146,6 +147,7 @@ public final class SystemUtil {
     private static Boolean isFSCaseSensitive;
 	private static JavaSysMon jsm;
 	private static Boolean isCLI;
+	private static float loaderVersion=0F; 
 
     /**
      * returns if the file system case sensitive or not
@@ -880,5 +882,21 @@ public final class SystemUtil {
     		isCLI=Caster.toBoolean(System.getProperty("railo.cli.call"),Boolean.FALSE);
     	}
     	return isCLI.booleanValue();
+	}
+	
+	public static float getLoaderVersion() {
+		// this is done via reflection to make it work in older version, where the class railo.loader.Version does not exist
+		if(loaderVersion==0) {
+			loaderVersion=1F;
+			Class cVersion = ClassUtil.loadClass(TP.class.getClassLoader(),"railo.loader.Version",null);
+			if(cVersion!=null) {
+				try {
+					Field f = cVersion.getField("VERSION");
+					loaderVersion=f.getFloat(null);
+				} 
+				catch (Throwable t) {}
+			}
+		}
+		return loaderVersion;
 	}
 }
