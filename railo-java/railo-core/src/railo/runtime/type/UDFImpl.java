@@ -626,22 +626,24 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 		else if("plain".equals(returnFormat))		return UDF.RETURN_FORMAT_PLAIN;
 		else if("text".equals(returnFormat))		return UDF.RETURN_FORMAT_PLAIN;
 		else if("serialize".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
-		else throw new ExpressionException("invalid returnFormat definition ["+returnFormat+"], valid values are [wddx,plain,json,serialize]");
+		else if("cfml".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
+		else if("cfm".equals(returnFormat))	return UDF.RETURN_FORMAT_SERIALIZE;
+		else throw new ExpressionException("invalid returnFormat definition ["+returnFormat+"], valid values are [wddx,plain,json,cfml]");
 	}
 
 	public static String toReturnFormat(int returnFormat) throws ExpressionException {
 		if(RETURN_FORMAT_WDDX==returnFormat)		return "wddx";
 		else if(RETURN_FORMAT_JSON==returnFormat)	return "json";
 		else if(RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
-		else if(RETURN_FORMAT_SERIALIZE==returnFormat)	return "serialize";
-		else throw new ExpressionException("invalid returnFormat definition, valid values are [wddx,plain,json,serialize]");
+		else if(RETURN_FORMAT_SERIALIZE==returnFormat)	return "cfml";
+		else throw new ExpressionException("invalid returnFormat definition, valid values are [wddx,plain,json,cfml]");
 	}
 	
 	public static String toReturnFormat(int returnFormat,String defaultValue) {
 		if(RETURN_FORMAT_WDDX==returnFormat)		return "wddx";
 		else if(RETURN_FORMAT_JSON==returnFormat)	return "json";
 		else if(RETURN_FORMAT_PLAIN==returnFormat)	return "plain";
-		else if(RETURN_FORMAT_SERIALIZE==returnFormat)	return "serialize";
+		else if(RETURN_FORMAT_SERIALIZE==returnFormat)	return "cfml";
 		else return defaultValue;
 	}
 

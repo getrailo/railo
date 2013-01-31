@@ -67,9 +67,11 @@ public final class ConfigServerFactory {
     			"SERVER CONTEXT\n" +
     			"-------------------------------------------------------------------\n"+
     			"- config:"+configDir+"\n"+
+    			"- loader-version:"+SystemUtil.getLoaderVersion()+"\n"+
     			"===================================================================\n"
     			
     			);
+          		
     	boolean doNew=ConfigWebFactory.doNew(configDir);
     	
     	Resource configFile=configDir.getRealResource("railo-server.xml");

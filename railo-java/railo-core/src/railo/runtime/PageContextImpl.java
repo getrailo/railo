@@ -2966,8 +2966,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return activeQuery;
 	}
 
-	public void releaseActiveQuery() {
+	public ActiveQuery releaseActiveQuery() {
+		ActiveQuery tmp = activeQuery;
 		activeQuery=null;
+		return tmp;
 	}
 
 	public void setActiveLock(ActiveLock activeLock) {
@@ -2978,8 +2980,10 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		return activeLock;
 	}
 
-	public void releaseActiveLock() {
+	public ActiveLock releaseActiveLock() {
+		ActiveLock tmp = activeLock;
 		activeLock=null;
+		return tmp;
 	}
 
 	public PageException getPageException() {

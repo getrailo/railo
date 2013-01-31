@@ -633,7 +633,7 @@ public abstract class ComponentPage extends Page  {
         break;
         case UDF.RETURN_FORMAT_SERIALIZE:
         	rsp.setContentType("text/plain; charset=UTF-8");
-        	rsp.setHeader("Return-Format", "serialize");
+        	rsp.setHeader("Return-Format", "cfml");
         break;
         }
 	}

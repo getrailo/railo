@@ -1,6 +1,8 @@
 package railo.runtime.tag;
 
+import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.debug.ActiveLock;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.LockException;
@@ -67,6 +69,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	
 	private LockManager manager;
     private LockData data=null;
+	private long start;
 
 	@Override
 	public void release() {
@@ -210,13 +213,13 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	    cflock.set("succeeded",Boolean.TRUE);
 	    cflock.set("errortext","");
 	    pageContext.variablesScope().set("cflock",cflock);
-        
+        start=System.nanoTime();
 		try {
 		    data = manager.lock(type,name,timeoutInMillis,pageContext.getId());
 		    ((PageContextImpl)pageContext).setActiveLock(new ActiveLock(type,name,timeoutInMillis));
 		} 
 		catch (LockTimeoutException e) {
-		    ((PageContextImpl)pageContext).releaseActiveLock();
+		    _release(pageContext,System.nanoTime()-start);
 			//print.out("LockTimeoutException");
 		    name=null;
 			String errorText=e.getMessage();
@@ -233,7 +236,7 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 			return SKIP_BODY;
 		} 
 		catch (InterruptedException e) {
-			((PageContextImpl)pageContext).releaseActiveLock();
+			_release(pageContext,System.nanoTime()-start);
 		    cflock.set("succeeded",Boolean.FALSE);
 		    cflock.set("errortext",e.getMessage());
 		    
@@ -247,9 +250,18 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 		return EVAL_BODY_INCLUDE;
 	}
 	
+	private void _release(PageContext pc, long exe) {
+		ActiveLock al = ((PageContextImpl)pc).releaseActiveLock();
+	    // listener
+		((ConfigWebImpl)pc.getConfig()).getActionMonitorCollector()
+			.log(pageContext, "lock", "Lock", exe, al.name+":"+al.timeoutInMillis);
+		
+	}
+
+
 	@Override
 	public void doFinally() {
-		((PageContextImpl)pageContext).releaseActiveLock();
+		_release(pageContext,System.nanoTime()-start);
 	    if(name!=null)manager.unlock(data);
 	}
 	

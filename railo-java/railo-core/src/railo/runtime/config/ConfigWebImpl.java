@@ -41,6 +41,7 @@ import railo.runtime.gateway.GatewayEngineImpl;
 import railo.runtime.gateway.GatewayEntry;
 import railo.runtime.lock.LockManager;
 import railo.runtime.lock.LockManagerImpl;
+import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.security.SecurityManager;
@@ -432,4 +433,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 	        else
 	            return new CFMLWriterWSPref	(req,rsp,-1,false,closeConnection(),isShowVersion(),contentLength(),allowCompression());
 	    }
+
+		
+		public ActionMonitorCollector getActionMonitorCollector() {
+			return configServer.getActionMonitorCollector();
+		}
 }

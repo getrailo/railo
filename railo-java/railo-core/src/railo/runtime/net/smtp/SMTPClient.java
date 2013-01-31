@@ -3,6 +3,7 @@ package railo.runtime.net.smtp;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import javax.mail.internet.MimePart;
 
 import org.apache.commons.collections.ReferenceMap;
 
+import railo.print;
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
@@ -39,6 +41,8 @@ import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
@@ -600,7 +604,7 @@ public final class SMTPClient implements Serializable  {
 
 	
 	
-	public void send(ConfigImpl config) throws MailException {
+	public void send(ConfigWeb config) throws MailException {
 		if(ArrayUtil.isEmpty(config.getMailServers()) && ArrayUtil.isEmpty(host))
 			throw new MailException("no SMTP Server defined");
 		
@@ -617,7 +621,8 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 
-	public void _send(railo.runtime.config.Config config) throws MailException {
+	public void _send(railo.runtime.config.ConfigWeb config) throws MailException {
+		long start=System.nanoTime();
 		try {
 
         	Proxy.start(proxyData);
@@ -680,7 +685,8 @@ public final class SMTPClient implements Serializable  {
 				try {
 					msgSess = createMimeMessage(config,server.getHostName(),server.getPort(),_username,_password,_tls,_ssl);
 				} catch (MessagingException e) {
-					log.error("mail",LogUtil.toMessage(e));
+					// listener
+					listener(config,server,log,e,System.nanoTime()-start);
 					MailException me = new MailException(e.getMessage());
 					me.setStackTrace(e.getStackTrace());
 					throw me;
@@ -708,16 +714,14 @@ public final class SMTPClient implements Serializable  {
                 	}
                 	clean(config,attachmentz);
                 	
-	            	log.info("mail","send mail");
-					break;
+                	listener(config,server,log,null,System.nanoTime()-start);
+                	break;
 				} 
 	            catch (Exception e) {e.printStackTrace();
 					if(i+1==servers.length) {
-						String msg=e.getMessage();
-						if(StringUtil.isEmpty(msg))msg=Caster.toClassName(e);
 						
-						log.error("mail spooler",msg);
-						MailException me = new MailException(server.getHostName()+" "+msg+":"+i);
+						listener(config,server,log,e,System.nanoTime()-start);
+						MailException me = new MailException(server.getHostName()+" "+LogUtil.toMessage(e)+":"+i);
 						me.setStackTrace(e.getStackTrace());
 						
 						throw me;
@@ -730,6 +734,47 @@ public final class SMTPClient implements Serializable  {
         	Proxy.end();
 		}
 	}
+
+	private void listener(ConfigWeb config,Server server, LogAndSource log, Exception e, long exe) {
+		StringBuilder sbTos=new StringBuilder();
+		for(int i=0;i<tos.length;i++){
+			if(sbTos.length()>0)sbTos.append(", ");
+			sbTos.append(tos[i].toString());
+		}
+
+		if(e==null) log.info("mail","mail sended (from:"+from.toString()+"; to:"+sbTos+" subject:"+subject+")");
+		else log.error("mail",LogUtil.toMessage(e));
+		
+		// listener
+		Map<String,Object> props=new HashMap<String,Object>();
+		props.put("attachments", this.attachmentz);
+		props.put("bccs", this.bccs);
+		props.put("ccs", this.ccs);
+		props.put("charset", this.charset);
+		props.put("from", this.from);
+		props.put("fts", this.fts);
+		props.put("headers", this.headers);
+		props.put("host", server.getHostName());
+		props.put("htmlText", this.htmlText);
+		props.put("htmlTextCharset", this.htmlTextCharset);
+		props.put("parts", this.parts);
+		props.put("password", this.password);
+		props.put("plainText", this.plainText);
+		props.put("plainTextCharset", this.plainTextCharset);
+		props.put("port", server.getPort());
+		props.put("proxyData", this.proxyData);
+		props.put("rts", this.rts);
+		props.put("subject", this.subject);
+		props.put("timeout", this.timeout);
+		props.put("timezone", this.timeZone);
+		props.put("tos", this.tos);
+		props.put("username", this.username);
+		props.put("xmailer", this.xmailer);
+		((ConfigWebImpl)config).getActionMonitorCollector()
+			.log(config, "mail", "Mail", exe, props);
+		
+	}
+
 
 	// remove all atttachements that are marked to remove
 	private static void clean(Config config, Attachment[] attachmentz) {

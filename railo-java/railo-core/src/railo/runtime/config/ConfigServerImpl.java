@@ -31,6 +31,7 @@ import railo.runtime.engine.CFMLEngineImpl;
 import railo.runtime.engine.ThreadQueueImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.PageException;
+import railo.runtime.monitor.ActionMonitorCollector;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.op.Caster;
@@ -61,6 +62,8 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	private Map<String, String> labels;
 	private RequestMonitor[] requestMonitors;
 	private IntervallMonitor[] intervallMonitors;
+	private ActionMonitorCollector actionMonitorCollector;
+	
 	private boolean monitoringEnabled=false;
 	private int delay=0;
 	private boolean captcha=false;
@@ -324,6 +327,19 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 
 	protected void setIntervallMonitors(IntervallMonitor[] monitors) {
 		this.intervallMonitors=monitors;;
+	}
+	
+
+	public void setActionMonitorCollector(ActionMonitorCollector actionMonitorCollector) {
+		this.actionMonitorCollector=actionMonitorCollector;
+	}
+	
+	public ActionMonitorCollector getActionMonitorCollector() {
+		return actionMonitorCollector;
+	}
+	
+	public Object getActionMonitor(String name) { // FUTURE return ActionMonitor
+		return actionMonitorCollector.getActionMonitor(name);
 	}
 
 	@Override

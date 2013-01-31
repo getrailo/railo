@@ -8,6 +8,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceImpl;
@@ -486,6 +487,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 				((DebuggerPro)pageContext.getDebugger()).addQuery(debugUsage?query:null,datasource!=null?datasource.getName():null,name,sql,query.getRecordcount(),pageContext.getCurrentPageSource(),exe);
 			}
 		}
+		
 		if(!query.isEmpty() && !StringUtil.isEmpty(name)) {
 			pageContext.setVariable(name,query);
 		}
@@ -550,7 +552,9 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 		}
 		
 		
-		
+		// listener
+		((ConfigWebImpl)pageContext.getConfig()).getActionMonitorCollector()
+			.log(pageContext, "query", "Query", exe, query);
 		
 		return EVAL_PAGE;
 	}

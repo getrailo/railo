@@ -31,6 +31,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import railo.aprint;
+import railo.print;
 import railo.commons.collections.HashTable;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.digest.MD5;
@@ -103,6 +104,8 @@ import railo.runtime.listener.ClassicAppListener;
 import railo.runtime.listener.MixedAppListener;
 import railo.runtime.listener.ModernAppListener;
 import railo.runtime.listener.NoneAppListener;
+import railo.runtime.monitor.ActionMonitorCollector;
+import railo.runtime.monitor.ActionMonitorFatory;
 import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.IntervallMonitorWrap;
 import railo.runtime.monitor.RequestMonitor;
@@ -118,6 +121,7 @@ import railo.runtime.orm.ORMConfigurationImpl;
 import railo.runtime.orm.ORMEngine;
 import railo.runtime.orm.hibernate.HibernateORMEngine;
 import railo.runtime.reflection.Reflector;
+import railo.runtime.reflection.pairs.ConstructorInstance;
 import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
@@ -3537,7 +3541,7 @@ public final class ConfigWebFactory {
     }
     
 
-    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
+    private static void loadMonitors(ConfigServerImpl configServer, ConfigImpl config, Document doc) throws IOException {
         if(configServer!=null) return;
         
         configServer=(ConfigServerImpl) config;
@@ -3550,6 +3554,7 @@ public final class ConfigWebFactory {
         Element[] children = getChildren(parent,"monitor");
         java.util.List<IntervallMonitor> intervalls=new ArrayList<IntervallMonitor>();
         java.util.List<RequestMonitor> requests=new ArrayList<RequestMonitor>();
+        java.util.List<MonitorTemp> actions=new ArrayList<MonitorTemp>();
         String className,strType,name;
         boolean log;
         short type;
@@ -3559,8 +3564,11 @@ public final class ConfigWebFactory {
       		strType=el.getAttribute("type");
       		name=el.getAttribute("name");
       		log=Caster.toBooleanValue(el.getAttribute("log"),true);
+      		
       		if("request".equalsIgnoreCase(strType))
       			type=IntervallMonitor.TYPE_REQUEST;
+      		else if("action".equalsIgnoreCase(strType))
+      			type=4;// FUTURE Monitor.TYPE_ACTION;
       		else
       			type=IntervallMonitor.TYPE_INTERVALL;
       		
@@ -3568,15 +3576,21 @@ public final class ConfigWebFactory {
       			name=name.trim();
       			try{
       				Class clazz = ClassUtil.loadClass(config.getClassLoader(),className);
-      				Constructor constr = clazz.getConstructor(new Class[]{ConfigServer.class});
-      				Object obj = constr.newInstance(new Object[]{configServer});
+      				Object obj;
+      				ConstructorInstance constr = Reflector.getConstructorInstance(clazz,new Object[]{configServer}, null);
+      				if(constr!=null) obj=constr.invoke();
+      				else obj=clazz.newInstance();
+      				
       				if(type==IntervallMonitor.TYPE_INTERVALL) {
-      					IntervallMonitorWrap m = new IntervallMonitorWrap(obj);
+      					IntervallMonitor m = obj instanceof IntervallMonitor?(IntervallMonitor)obj:new IntervallMonitorWrap(obj);
           				m.init(configServer,name,log);
           				intervalls.add(m);
       				}
+      				else if(type==4) {// FUTURE Monitor.TYPE_ACTION;
+      					actions.add(new MonitorTemp(obj,name,log));
+      				}
       				else {
-      					RequestMonitorWrap m = new RequestMonitorWrap(obj);
+      					RequestMonitor m =  obj instanceof RequestMonitor?(RequestMonitor)obj:new RequestMonitorWrap(obj);
           				m.init(configServer,name,log);
           				requests.add(m);
       				}
@@ -3589,7 +3603,12 @@ public final class ConfigWebFactory {
       	}
       	configServer.setRequestMonitors(requests.toArray(new RequestMonitor[requests.size()]));
       	configServer.setIntervallMonitors(intervalls.toArray(new IntervallMonitor[intervalls.size()]));
-        ((CFMLEngineImpl)configServer.getCFMLEngine()).touchMonitor(configServer);
+      	ActionMonitorCollector actionMonitorCollector=
+      		ActionMonitorFatory.getActionMonitorCollector(configServer, actions.toArray(new MonitorTemp[actions.size()]));
+      	configServer.setActionMonitorCollector(actionMonitorCollector);
+      	
+      	
+      	((CFMLEngineImpl)configServer.getCFMLEngine()).touchMonitor(configServer);
     }
 
     /**
@@ -4521,5 +4540,19 @@ public final class ConfigWebFactory {
             }
         }
         return (Element[]) rtn.toArray(new Element[rtn.size()]);
+    }
+    
+    public static class MonitorTemp {
+
+    	public final Object obj;
+    	public final String name;
+    	public final boolean log;
+
+		public MonitorTemp(Object obj, String name, boolean log) {
+			this.obj=obj;
+			this.name=name;
+			this.log=log;
+		}
+    	
     }
 }
