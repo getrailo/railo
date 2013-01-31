@@ -8,14 +8,12 @@
 	<!--- Public ------------------------------------------------------------------------------>
 	<cffunction name="classToPath" returntype="string">
 		<cfargument name="cfcClass" required="true" type="string" />
-		<cfset var cfcPath = "" />	
-		<!--- Support context root differents from '/' --->
-		<cfif getContextRoot() neq '/'> 
-			<cfset cfcPath = getContextRoot() & arguments.cfcClass />
-		</cfif>	
-		<cfset var cfcPath = reReplace(arguments.cfcClass,'\.','/','All')/>
+		<cfset var cfcPath = reReplace(arguments.cfcClass,'\.','/','All') />
 		<cfset cfcPath = '/' & cfcPath & '.cfc' />
-
+		<!--- Support context roots different from '/', ie '/myRailo' --->
+		<cfif getContextRoot() neq '/'> 
+			<cfset cfcPath = getContextRoot() & cfcPath />
+		</cfif>
 		<cfreturn cfcPath />
 	</cffunction>
 	
