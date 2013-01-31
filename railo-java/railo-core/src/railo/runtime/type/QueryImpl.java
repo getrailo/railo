@@ -89,7 +89,7 @@ import railo.runtime.type.util.QueryUtil;
 /**
  * 
  */
-public class QueryImpl implements Query,Objects,Sizeable {
+public class QueryImpl implements Query,Objects {
 
 	private static final long serialVersionUID = 1035795427320192551L;
 
@@ -2671,25 +2671,6 @@ public class QueryImpl implements Query,Objects,Sizeable {
 			out.writeUTF(new ScriptConverter().serialize(this));
 		} 
 		catch (Throwable t) {}
-	}
-	
-	@Override
-	public long sizeOf(){
-		long size=SizeOf.size(this.exeTime)+
-		SizeOf.size(this.isCached)+
-		SizeOf.size(this.arrCurrentRow)+
-		SizeOf.size(this.columncount)+
-		SizeOf.size(this.generatedKeys)+
-		SizeOf.size(this.name)+
-		SizeOf.size(this.recordcount)+
-		SizeOf.size(this.sql)+
-		SizeOf.size(this.template)+
-		SizeOf.size(this.updateCount);
-		
-		for(int i=0;i<columns.length;i++){
-			size+=this.columns[i].sizeOf();
-		}
-		return size;
 	}
 
 	public int getHoldability() throws SQLException {
