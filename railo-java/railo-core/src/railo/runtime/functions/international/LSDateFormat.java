@@ -9,14 +9,12 @@ import java.util.TimeZone;
 import railo.commons.date.TimeZoneUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.i18n.LocaleFactory;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
-import railo.runtime.type.dt.DateTimeImpl;
 
 public final class LSDateFormat implements Function {
 

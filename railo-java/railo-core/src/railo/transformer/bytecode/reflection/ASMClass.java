@@ -1,11 +1,12 @@
 package railo.transformer.bytecode.reflection;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
 import java.io.InputStream;
-
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericSignatureFormatError;
+import java.lang.reflect.MalformedParameterizedTypeException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public final class ASMClass implements java.io.Serializable {

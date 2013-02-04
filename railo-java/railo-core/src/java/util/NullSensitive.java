@@ -1,7 +1,5 @@
 package java.util;
 
-import java.util.HashMap.Entry;
-
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection.Key;
 

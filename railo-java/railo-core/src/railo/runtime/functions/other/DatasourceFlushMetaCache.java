@@ -5,7 +5,6 @@ import java.util.Map;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceSupport;
 
 

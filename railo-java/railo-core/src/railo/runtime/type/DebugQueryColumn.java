@@ -3,8 +3,6 @@ package railo.runtime.type;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import railo.runtime.exp.DatabaseException;
 
 /**

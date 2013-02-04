@@ -11,7 +11,6 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceManagerImpl;
 import railo.runtime.db.HSQLDBHandler;

@@ -1,14 +1,9 @@
 package railo.commons.io;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyContent;
 
 import railo.runtime.writer.BodyContentImpl;
 import railo.runtime.writer.CFMLWriter;
-import railo.runtime.writer.CFMLWriterImpl;
-import railo.runtime.writer.CFMLWriterWS;
-import railo.runtime.writer.CFMLWriterWSPref;
 import railo.runtime.writer.DevNullBodyContent;
 
 /**

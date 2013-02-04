@@ -8,7 +8,6 @@ import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExprInt;
-import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.Methods;
 import railo.transformer.bytecode.util.Types;

@@ -1,8 +1,6 @@
 package railo.runtime;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import railo.commons.util.mod.HashMapPro;
 import railo.commons.util.mod.MapPro;
@@ -14,7 +12,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
-import railo.runtime.type.KeyImpl;
 import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;

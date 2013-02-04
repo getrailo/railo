@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;

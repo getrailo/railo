@@ -1,9 +1,7 @@
 package railo.runtime.concurrency;
 
 import railo.runtime.PageContext;
-import railo.runtime.concurrency.Caller;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.Array;
 import railo.runtime.type.Struct;
 import railo.runtime.type.UDF;
 

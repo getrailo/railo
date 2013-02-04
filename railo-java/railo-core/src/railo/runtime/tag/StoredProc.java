@@ -21,7 +21,6 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.Constants;
 import railo.runtime.db.CFTypes;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceImpl;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DataSourceSupport;
 import railo.runtime.db.DatasourceConnection;

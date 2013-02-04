@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;

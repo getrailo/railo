@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.scope.ArgumentIntKey;
 
 public class KeyConstants {
 	public static final Key _A=KeyImpl._const("A");

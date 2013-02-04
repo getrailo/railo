@@ -8,7 +8,6 @@ import javax.servlet.jsp.tagext.Tag;
 
 import railo.commons.lang.ClassUtil;
 import railo.runtime.config.ConfigWeb;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;

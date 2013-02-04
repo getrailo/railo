@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.db.DataSource;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;

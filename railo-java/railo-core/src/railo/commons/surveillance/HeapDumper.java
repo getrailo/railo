@@ -3,10 +3,12 @@ package railo.commons.surveillance;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 
+import javax.management.MBeanServer;
+
 import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.type.file.FileResource;
-import javax.management.MBeanServer;
+
 import com.sun.management.HotSpotDiagnosticMXBean;
 
 public class HeapDumper {

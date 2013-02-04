@@ -2,8 +2,6 @@ package railo.commons.io.res.util;
 
 import java.io.File;
 
-import org.apache.oro.text.regex.MalformedPatternException;
-
 import railo.commons.io.res.Resource;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;

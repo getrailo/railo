@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.concurrent.Callable;
 
 import railo.commons.io.IOUtil;
-import railo.commons.lang.Pair;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigImpl;

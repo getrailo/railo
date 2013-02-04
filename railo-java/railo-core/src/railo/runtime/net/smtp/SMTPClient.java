@@ -3,7 +3,6 @@ package railo.runtime.net.smtp;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import javax.mail.internet.MimePart;
 
 import org.apache.commons.collections.ReferenceMap;
 
-import railo.print;
 import railo.commons.activation.ResourceDataSource;
 import railo.commons.io.SystemUtil;
 import railo.commons.io.log.LogAndSource;
@@ -40,7 +38,6 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SerializableObject;
 import railo.commons.lang.StringUtil;
 import railo.runtime.config.Config;
-import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;

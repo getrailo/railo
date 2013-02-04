@@ -24,7 +24,9 @@
  */
 
 package railo.commons.util.mod;
-import java.io.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -32,10 +34,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.Struct;
-import railo.runtime.type.Collection.Key;
 
 public class HashMapPro<K,V>
     extends AbstractMapPro<K,V>

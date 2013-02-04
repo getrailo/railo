@@ -4,8 +4,6 @@ import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.converter.LazyConverter;

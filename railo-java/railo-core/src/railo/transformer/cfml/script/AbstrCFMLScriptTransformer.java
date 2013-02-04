@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import railo.print;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.commons.lang.types.RefBooleanImpl;
@@ -22,8 +21,8 @@ import railo.transformer.bytecode.FunctionBody;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.ScriptBody;
 import railo.transformer.bytecode.Statement;
-import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.cast.CastBoolean;
+import railo.transformer.bytecode.cast.CastOther;
 import railo.transformer.bytecode.cast.CastString;
 import railo.transformer.bytecode.expression.ClosureAsExpression;
 import railo.transformer.bytecode.expression.ExprBoolean;

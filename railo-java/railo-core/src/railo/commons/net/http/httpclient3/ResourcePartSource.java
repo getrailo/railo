@@ -1,6 +1,5 @@
 package railo.commons.net.http.httpclient3;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;

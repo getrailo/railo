@@ -1,7 +1,6 @@
 package railo.runtime.util;
 
 import railo.runtime.PageContext;
-import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Duplicator;

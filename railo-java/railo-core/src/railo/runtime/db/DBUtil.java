@@ -1,10 +1,6 @@
 package railo.runtime.db;
 
-import java.util.TimeZone;
-
-import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
-import railo.runtime.type.Struct;
 
 public class DBUtil {
 	

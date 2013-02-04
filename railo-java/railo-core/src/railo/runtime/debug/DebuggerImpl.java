@@ -23,7 +23,6 @@ import railo.runtime.PageSourceImpl;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWebImpl;
-import railo.runtime.db.DataSource;
 import railo.runtime.db.SQL;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.CatchBlock;

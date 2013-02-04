@@ -1,7 +1,6 @@
 package railo.runtime.tag;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
 
 import javax.servlet.jsp.tagext.Tag;
 

@@ -4,6 +4,7 @@
 package railo.runtime.functions.string;
 
 import java.util.Map;
+
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.exp.ExpressionException;

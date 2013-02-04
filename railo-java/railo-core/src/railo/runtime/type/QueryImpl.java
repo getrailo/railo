@@ -37,7 +37,6 @@ import java.util.Set;
 
 import railo.commons.db.DBUtil;
 import railo.commons.io.IOUtil;
-import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.loader.engine.CFMLEngineFactory;

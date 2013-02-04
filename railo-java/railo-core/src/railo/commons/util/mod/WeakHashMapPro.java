@@ -1,7 +1,6 @@
 package railo.commons.util.mod;
-import java.lang.ref.WeakReference;
 import java.lang.ref.ReferenceQueue;
-import java.security.InvalidKeyException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

@@ -1,13 +1,7 @@
 package coldfusion.runtime;
 
-import java.io.IOException;
-
-import org.xml.sax.SAXException;
-
 import railo.runtime.CFMLFactoryImpl;
 import railo.runtime.PageContext;
-import railo.runtime.config.ConfigWebAdmin;
-import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.type.Struct;
 import railo.runtime.type.scope.ScopeContext;

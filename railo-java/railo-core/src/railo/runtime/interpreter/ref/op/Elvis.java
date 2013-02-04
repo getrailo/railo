@@ -1,6 +1,5 @@
 package railo.runtime.interpreter.ref.op;
 
-import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.decision.IsDefined;
@@ -8,7 +7,6 @@ import railo.runtime.interpreter.ref.Ref;
 import railo.runtime.interpreter.ref.RefSupport;
 import railo.runtime.interpreter.ref.literal.LFunctionValue;
 import railo.runtime.interpreter.ref.var.Variable;
-import railo.runtime.op.Caster;
 
 public class Elvis  extends RefSupport implements Ref{
 
