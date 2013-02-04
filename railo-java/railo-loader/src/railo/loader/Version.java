@@ -3,5 +3,5 @@ package railo.loader;
  * version of this loader (jar)
  */
 public class Version {
-	public static float VERSION=1.1F;
+	public static double VERSION=4.1D;
 }

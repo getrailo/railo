@@ -6,11 +6,10 @@ import railo.commons.io.SystemUtil;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWebFactory;
 import railo.runtime.config.ConfigWebFactory.MonitorTemp;
-import railo.runtime.reflection.Reflector;
 
 public class ActionMonitorFatory {
 	public static ActionMonitorCollector getActionMonitorCollector() {
-		if(SystemUtil.getLoaderVersion()>1) return new ActionMonitorCollectorImpl();
+		if(SystemUtil.getLoaderVersion()>4) return new ActionMonitorCollectorImpl();
 		return new ActionMonitorCollectorRefImpl();
 	}
 
@@ -21,7 +20,7 @@ public class ActionMonitorFatory {
 			addMonitors(collector,cs,temps);
 			return collector;
 		}
-		catch(Throwable t){
+		catch(Throwable t){t.printStackTrace();
 			ActionMonitorCollector collector = new ActionMonitorCollectorRefImpl();
 			addMonitors(collector,cs,temps);
 			return collector;

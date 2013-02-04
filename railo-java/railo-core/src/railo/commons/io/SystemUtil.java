@@ -147,7 +147,7 @@ public final class SystemUtil {
     private static Boolean isFSCaseSensitive;
 	private static JavaSysMon jsm;
 	private static Boolean isCLI;
-	private static float loaderVersion=0F; 
+	private static double loaderVersion=0D; 
 
     /**
      * returns if the file system case sensitive or not
@@ -884,17 +884,17 @@ public final class SystemUtil {
     	return isCLI.booleanValue();
 	}
 	
-	public static float getLoaderVersion() {
+	public static double getLoaderVersion() {
 		// this is done via reflection to make it work in older version, where the class railo.loader.Version does not exist
-		if(loaderVersion==0) {
-			loaderVersion=1F;
+		if(loaderVersion==0D) {
+			loaderVersion=4D;
 			Class cVersion = ClassUtil.loadClass(TP.class.getClassLoader(),"railo.loader.Version",null);
 			if(cVersion!=null) {
 				try {
 					Field f = cVersion.getField("VERSION");
-					loaderVersion=f.getFloat(null);
+					loaderVersion=f.getDouble(null);
 				} 
-				catch (Throwable t) {}
+				catch (Throwable t) {t.printStackTrace();}
 			}
 		}
 		return loaderVersion;
