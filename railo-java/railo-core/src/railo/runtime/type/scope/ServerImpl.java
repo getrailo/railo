@@ -41,6 +41,7 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
     private static final Key  ARCH= KeyImpl.intern("arch");
     private static final Key  ARCH_MODEL= KeyImpl.intern("archModel");
     private static final Key  JAVA_AGGENT_SUPPORTED= KeyImpl.intern("javaAgentSupported");
+    private static final Key  LOADER_VERSION= KeyImpl.intern("loaderVersion");
     private static final Key  VERSION= KeyConstants._version;
     private static final Key  ADDITIONAL_INFORMATION= KeyImpl.intern("additionalinformation");
     private static final Key BUILD_NUMBER = KeyImpl.intern("buildnumber");
@@ -132,6 +133,8 @@ public final class ServerImpl extends ScopeSupport implements Server,SharedScope
 			railo.setEL(VERSION_NAME_EXPLANATION,Info.getVersionNameExplanation());
 			railo.setEL(STATE,Info.getStateAsString());
 			railo.setEL(RELEASE_DATE,Info.getRealeaseDate());
+			railo.setEL(LOADER_VERSION,Caster.toDouble(SystemUtil.getLoaderVersion()));
+			
 			railo.setReadOnly(true);
 		super.setEL (RAILO,railo);
 		
