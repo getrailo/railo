@@ -33,7 +33,8 @@ import railo.runtime.type.comparator.TextComparator;
 public final class ArrayUtil {
     
     public static final Object[] OBJECT_EMPTY = new Object[]{};
-	/**
+	
+    /**
      * trims all value of a String Array
      * @param arr
      * @return trimmed array
@@ -164,17 +165,27 @@ public final class ArrayUtil {
 		
 		double rtn=0;
 		int len=array.size();
-		try {			
+		//try {			
 			for(int i=1;i<=len;i++) {
-				rtn+=Caster.toDoubleValue(array.getE(i));
+				rtn+=_toDoubleValue(array,i);
 			}
-		} 
+		/*} 
 		catch (PageException e) {
 			throw new ExpressionException("exception while execute array operation: "+e.getMessage());
-		}
+		}*/
 		return rtn;
 	}
 	
+	private static double _toDoubleValue(Array array, int i) throws ExpressionException {
+		Object obj = array.get(i,null);
+		if(obj==null)throw new ExpressionException("there is no element at position ["+i+"] or the element is null");
+		double tmp = Caster.toDoubleValue(obj,Double.NaN);
+		if(Double.isNaN(tmp))
+			throw new CasterException(obj,Double.class);
+		return tmp;
+	}
+
+
 	/**
 	 * the smallest value, of all values inside the array, only work when all values are numeric
 	 * @param array
@@ -186,11 +197,11 @@ public final class ArrayUtil {
 			throw new ExpressionException("can only get max value from 1 dimensional arrays");
 		if(array.size()==0) return 0;
 		
-		double rtn=Caster.toDoubleValue(array.getE(1));
+		double rtn=_toDoubleValue(array,1);
 		int len=array.size();
 		try {
 			for(int i=2;i<=len;i++) {
-				double v=Caster.toDoubleValue(array.getE(i));
+				double v=_toDoubleValue(array,i);
 				if(rtn>v)rtn=v;
 				
 			}
@@ -211,11 +222,11 @@ public final class ArrayUtil {
 			throw new ExpressionException("can only get max value from 1 dimensional arrays");
 		if(array.size()==0) return 0;
 		
-		double rtn=Caster.toDoubleValue(array.getE(1));
+		double rtn=_toDoubleValue(array,1);
 		int len=array.size();
 		try {
 			for(int i=2;i<=len;i++) {
-				double v=Caster.toDoubleValue(array.getE(i));
+				double v=_toDoubleValue(array,i);
 				if(rtn<v)rtn=v;
 				
 			}
