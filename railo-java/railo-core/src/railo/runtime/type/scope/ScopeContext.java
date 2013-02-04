@@ -23,7 +23,6 @@ import railo.runtime.cache.CacheConnection;
 import railo.runtime.config.Config;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.db.DataSource;
-import railo.runtime.db.DataSourceImpl;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExceptionHandler;
 import railo.runtime.exp.ExpressionException;
@@ -944,6 +943,7 @@ public final class ScopeContext {
 	}
 
 	private static void _migrate(PageContextImpl pc, Map<String, Scope> context, UserScope scope, boolean migrate) {
+		if(scope==null) return;
 		if(!migrate) scope.clear();
 		scope.resetEnv(pc);
 		context.put(pc.getCFID(), scope);

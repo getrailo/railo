@@ -63,9 +63,9 @@ import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.DatasourceConnectionPool;
 import railo.runtime.db.DatasourceManagerImpl;
-import railo.runtime.debug.DebugCFMLWriter;
 import railo.runtime.debug.ActiveLock;
 import railo.runtime.debug.ActiveQuery;
+import railo.runtime.debug.DebugCFMLWriter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.debug.Debugger;
 import railo.runtime.debug.DebuggerImpl;
@@ -1160,6 +1160,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 
 	public void invalidateUserScopes(boolean migrateSessionData,boolean migrateClientData) throws PageException {
+		checkSessionContext();
 		scopeContext.invalidateUserScope(this, migrateSessionData, migrateClientData);
 	}
     
