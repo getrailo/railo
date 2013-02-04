@@ -100,7 +100,9 @@ public final class GetUsageData implements Function {
 		PageContextImpl _pc;
 		int row,openConnections=0;
 		CFMLFactoryImpl factory;
+		ActiveQuery[] queries;
 		ActiveQuery aq;
+		ActiveLock[] locks;
 		ActiveLock al;
 		for(int i=0;i<webs.length;i++){
 			
@@ -121,25 +123,31 @@ public final class GetUsageData implements Function {
 				req.setAt(KeyConstants._timeout, row, new Double(pc.getRequestTimeout()));
 				
 				// Query
-				aq = _pc.getActiveQuery();
-				if(aq!=null) {
-					row = qry.addRow();
-					qry.setAt(KeyConstants._web, row, web.getLabel());
-					qry.setAt(KeyConstants._application, row, _pc.getApplicationContext().getName());
-					qry.setAt(START_TIME, row, new DateTimeImpl(web,aq.startTime,true));
-					qry.setAt(KeyConstants._sql, row, aq.sql);
+				queries = _pc.getActiveQueries();
+				if(queries!=null) {
+					for(int y=0;y<queries.length;y++){
+						aq=queries[y];
+						row = qry.addRow();
+						qry.setAt(KeyConstants._web, row, web.getLabel());
+						qry.setAt(KeyConstants._application, row, _pc.getApplicationContext().getName());
+						qry.setAt(START_TIME, row, new DateTimeImpl(web,aq.startTime,true));
+						qry.setAt(KeyConstants._sql, row, aq.sql);
+					}
 				}
 				
 				// Lock
-				al = _pc.getActiveLock();
-				if(al!=null) {
-					row = lck.addRow();
-					lck.setAt(KeyConstants._web, row, web.getLabel());
-					lck.setAt(KeyConstants._application, row, _pc.getApplicationContext().getName());
-					lck.setAt(KeyConstants._name, row, al.name);
-					lck.setAt(START_TIME, row, new DateTimeImpl(web,al.startTime,true));
-					lck.setAt(KeyConstants._timeout, row, Caster.toDouble(al.timeoutInMillis/1000));
-					lck.setAt(KeyConstants._type, row, al.type==LockManager.TYPE_EXCLUSIVE?"exclusive":"readonly");
+				locks = _pc.getActiveLocks();
+				if(locks!=null) {
+					for(int y=0;y<locks.length;y++){
+						al=locks[y];
+						row = lck.addRow();
+						lck.setAt(KeyConstants._web, row, web.getLabel());
+						lck.setAt(KeyConstants._application, row, _pc.getApplicationContext().getName());
+						lck.setAt(KeyConstants._name, row, al.name);
+						lck.setAt(START_TIME, row, new DateTimeImpl(web,al.startTime,true));
+						lck.setAt(KeyConstants._timeout, row, Caster.toDouble(al.timeoutInMillis/1000));
+						lck.setAt(KeyConstants._type, row, al.type==LockManager.TYPE_EXCLUSIVE?"exclusive":"readonly");
+					}
 				}
 			}
 			openConnections+=web.getDatasourceConnectionPool().openConnections();

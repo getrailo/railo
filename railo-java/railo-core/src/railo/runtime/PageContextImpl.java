@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TimeZone;
 
 import javax.servlet.Servlet;
@@ -2865,8 +2866,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 
 	private Set<String> pagesUsed=new HashSet<String>();
 
-	private ActiveQuery activeQuery;
-	private ActiveLock activeLock;
+	private Stack<ActiveQuery> activeQueries=new Stack<ActiveQuery>();
+	private Stack<ActiveLock> activeLocks=new Stack<ActiveLock>();
 	
 	
 
@@ -2960,31 +2961,27 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 	}
 
 	public void setActiveQuery(ActiveQuery activeQuery) {
-		this.activeQuery=activeQuery;
+		this.activeQueries.add(activeQuery);
 	}
 	
-	public ActiveQuery getActiveQuery() {
-		return activeQuery;
+	public ActiveQuery[] getActiveQueries() {
+		return activeQueries.toArray(new ActiveQuery[activeQueries.size()]);
 	}
 
 	public ActiveQuery releaseActiveQuery() {
-		ActiveQuery tmp = activeQuery;
-		activeQuery=null;
-		return tmp;
+		return activeQueries.pop();
 	}
 
 	public void setActiveLock(ActiveLock activeLock) {
-		this.activeLock=activeLock;
+		this.activeLocks.add(activeLock);
 	}
 	
-	public ActiveLock getActiveLock() {
-		return activeLock;
+	public ActiveLock[] getActiveLocks() {
+		return activeLocks.toArray(new ActiveLock[activeLocks.size()]);
 	}
 
 	public ActiveLock releaseActiveLock() {
-		ActiveLock tmp = activeLock;
-		activeLock=null;
-		return tmp;
+		return activeLocks.pop();
 	}
 
 	public PageException getPageException() {
