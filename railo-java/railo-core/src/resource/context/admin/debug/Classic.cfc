@@ -106,7 +106,7 @@ private function isColumnEmpty(query query, string columnName){
 
 <cfset unit={
 millisecond:"ms"
-,microsecond:"ï¿½s"
+,microsecond:"µs"
 ,nanosecond:"ns"
 
 }>

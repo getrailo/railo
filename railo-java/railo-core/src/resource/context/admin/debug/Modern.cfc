@@ -94,7 +94,7 @@
 			<cfparam name="arguments.custom.size" default="medium">
 			<cfset var unit={
 				millisecond:"ms"
-				,microsecond:"ï¿½s"
+				,microsecond:"µs"
 				,nanosecond:"ns"
 				} />
 			<!--- Plus/minus Image --->
