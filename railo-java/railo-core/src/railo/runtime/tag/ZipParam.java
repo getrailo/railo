@@ -35,6 +35,7 @@ public final class ZipParam extends TagImpl {
 		prefix=null;
 		source=null;
 		recurse=null;
+		zip=null;
 	}
 	
 	
