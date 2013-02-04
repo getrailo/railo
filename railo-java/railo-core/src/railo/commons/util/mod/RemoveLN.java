@@ -3,7 +3,7 @@ package railo.commons.util.mod;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import railo.print;
+import railo.aprint;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourceProvider;
@@ -20,7 +20,7 @@ public class RemoveLN {
 			sb.append(line.substring(5));
 			sb.append('\n');
 		}
-		print.e(sb);
+		aprint.e(sb);
 		
 	}
 }
