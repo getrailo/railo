@@ -1433,7 +1433,7 @@ sort direction:
 		<argument>
 			<name>throwWhenNotExist</name>
 			<default>false</default>
-			<type>boolean</type>
+			<type>object</type>
 			<required>no</required>
 			<description>define if the functions throws a exception when the element does not exist (default is false).</description>
 		</argument>
