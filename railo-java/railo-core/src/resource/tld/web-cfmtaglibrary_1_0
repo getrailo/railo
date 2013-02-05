@@ -562,7 +562,7 @@ A struct that defines default S3 settings, this settings can be overwritten as p
 		<name>argument</name>
 		<tag-class>railo.runtime.tag.Argument</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Argument</tte-class>
-
+		<att-default-value></att-default-value>
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<description>Allows subtag data to be saved with the base tag. Applies only to custom tags.</description>
@@ -1626,6 +1626,7 @@ A return value from the CreateTimeSpan function, for example, "#CreateTimeSpan(0
 		<tag-class>railo.runtime.tag.Component</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Component</tte-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagComponent</ttt-class>
+		<att-default-value></att-default-value>
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
 		<script>
@@ -4162,6 +4163,7 @@ If omitted, the file's attributes are maintained.</description>
 		<tag-class>railo.runtime.tag.Function</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Function</tte-class>
 		<ttt-class>railo.transformer.bytecode.statement.tag.TagFunction</ttt-class>
+		<att-default-value></att-default-value>
 		<!-- <tdbt-class>railo.transformer.cfml.script.CFMLScriptTransformer</tdbt-class> -->
 		<body-content>must</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
@@ -9570,6 +9572,7 @@ Manipulates existing PDF documents. The following list describes some of the tas
 		<name>property</name>
 		<tag-class>railo.runtime.tag.Property</tag-class>
 		<tte-class>railo.transformer.cfml.evaluator.impl.Property</tte-class>
+		<att-default-value></att-default-value>
 		<!-- ttt-class>railo.transformer.bytecode.statement.tag.TagProperty</ttt-class -->
 		<body-content>empty</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>
@@ -13965,6 +13968,7 @@ dWord: creates a value of 0 (zero)</description>
 		<name>_</name>
 		<appendix>true</appendix>
 		<tag-class>railo.runtime.tag.CFTag</tag-class>
+		<att-default-value>boolean:true</att-default-value>
 		<handle-exception>true</handle-exception>
 		<body-content>free</body-content>
 		<body-rtexprvalue>false</body-rtexprvalue>

@@ -928,7 +928,7 @@ public final class CFMLTransformer {
     	}
     	// default value boolean true
     	else {
-    		value=LitBoolean.TRUE;
+    		value=tag.getAttributeDefaultValue();
     		if(sbType.toString().length()>0) {
     			value=Cast.toExpression(value, sbType.toString());
     		}
