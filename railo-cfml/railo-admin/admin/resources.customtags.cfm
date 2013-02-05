@@ -306,7 +306,11 @@ Redirtect to entry --->
 						</td>
 						<td>
 							<cfif mappings.ReadOnly>
-								<cfif mappings.physicalFirst>physical<cfelse>archive</cfif>
+								<cfif mappings.PhysicalFirst>
+									#stText.Mappings.Physical#
+								<cfelse>
+									#stText.Mappings.Archive#
+								</cfif>
 							<cfelse>
 								<select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 									<option value="physical" <cfif mappings.physicalFirst>selected</cfif>>#stText.CustomTags.physical#</option>
