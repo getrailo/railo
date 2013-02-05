@@ -84,7 +84,7 @@ public class InterceptorImpl extends EmptyInterceptor {
             before = state[i];
             current = ORMUtil.getPropertyValue(/* jira2049 session,*/cfc, prop,null);
             
-            if(before != current && (current == null || !Operator.equalsComplexEL(before, current, false))) {
+            if(before != current && (current == null || !Operator.equalsComplexEL(before, current, false,true))) {
             	try {
 					state[i] = HibernateCaster.toSQL(null, types[i], current,null);
 				} catch (PageException e) {

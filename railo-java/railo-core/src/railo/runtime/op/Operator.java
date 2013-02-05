@@ -516,14 +516,14 @@ public final class Operator {
 				return false;
 			}
 		}
-		return equalsComplexEL(left, right, caseSensitive);
+		return equalsComplexEL(left, right, caseSensitive,false);
 	}
 	
-	public static boolean equalsComplexEL(Object left, Object right, boolean caseSensitive) {
-		return _equalsComplexEL(null,left, right, caseSensitive);
+	public static boolean equalsComplexEL(Object left, Object right, boolean caseSensitive, boolean checkOnlyPublicAppearance) {
+		return _equalsComplexEL(null,left, right, caseSensitive,checkOnlyPublicAppearance);
 	}
 	
-	public static boolean _equalsComplexEL(Set<Object> done,Object left, Object right, boolean caseSensitive) {
+	public static boolean _equalsComplexEL(Set<Object> done,Object left, Object right, boolean caseSensitive, boolean checkOnlyPublicAppearance) {
 		if(Decision.isSimpleValue(left) && Decision.isSimpleValue(right)){
 			try {
 				return equals(left, right, caseSensitive);
@@ -539,31 +539,31 @@ public final class Operator {
 		done.add(right);
 		
 		if(left instanceof Component && right instanceof Component)
-			return __equalsComplexEL(done,(Component)left, (Component)right,caseSensitive);
+			return __equalsComplexEL(done,(Component)left, (Component)right,caseSensitive,checkOnlyPublicAppearance);
 		
 		if(left instanceof Collection && right instanceof Collection)
-			return __equalsComplexEL(done,(Collection)left, (Collection)right,caseSensitive);
+			return __equalsComplexEL(done,(Collection)left, (Collection)right,caseSensitive,checkOnlyPublicAppearance);
 		
 		if(left instanceof List && right instanceof List)
-			return __equalsComplexEL(done,ListAsArray.toArray((List)left), ListAsArray.toArray((List)right),caseSensitive);
+			return __equalsComplexEL(done,ListAsArray.toArray((List)left), ListAsArray.toArray((List)right),caseSensitive,checkOnlyPublicAppearance);
 		
 		if(left instanceof Map && right instanceof Map)
-			return __equalsComplexEL(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive);
+			return __equalsComplexEL(done,MapAsStruct.toStruct((Map)left,true), MapAsStruct.toStruct((Map)right,true),caseSensitive,checkOnlyPublicAppearance);
 		
 		return left.equals(right);
 	}
 	
-	private static boolean __equalsComplexEL(Set<Object> done,Component left, Component right,boolean caseSensitive) {
+	private static boolean __equalsComplexEL(Set<Object> done,Component left, Component right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
 		if(left==null || right==null) return false;
 		if(!left.getPageSource().equals(right.getPageSource())) return false;
 		
-		if(!__equalsComplexEL(done,left.getComponentScope(),right.getComponentScope(), caseSensitive)) return false;
-		if(!__equalsComplexEL(done,(Collection)left,(Collection)right, caseSensitive)) return false;
+		if(!checkOnlyPublicAppearance && !__equalsComplexEL(done,left.getComponentScope(),right.getComponentScope(), caseSensitive,checkOnlyPublicAppearance)) return false;
+		if(!__equalsComplexEL(done,(Collection)left,(Collection)right, caseSensitive,checkOnlyPublicAppearance)) return false;
 
 		return true;
 	}
 	
-	private static boolean __equalsComplexEL(Set<Object> done,Collection left, Collection right,boolean caseSensitive) {
+	private static boolean __equalsComplexEL(Set<Object> done,Collection left, Collection right,boolean caseSensitive, boolean checkOnlyPublicAppearance) {
 		if(left.size()!=right.size()) return false;
 		Iterator<Key> it = left.keyIterator();
 		Key k;
@@ -573,7 +573,7 @@ public final class Operator {
 			r=right.get(k,NULL);
 			if(r==NULL) return false;
 			l=left.get(k,NULL);
-			if(!_equalsComplexEL(done,r, l, caseSensitive)) return false;
+			if(!_equalsComplexEL(done,r, l, caseSensitive,checkOnlyPublicAppearance)) return false;
 		}
 		return true;
 	}
