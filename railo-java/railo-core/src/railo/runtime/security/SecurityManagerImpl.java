@@ -308,6 +308,7 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         if(getAccess(TYPE_FILE)==VALUE_ALL) return;
         // Local
         if(getAccess(TYPE_FILE)==VALUE_LOCAL) {
+        	res=ResourceUtil.getCanonicalResourceEL(res);
             // local 
             if(rootDirectory!=null)
             	if(ResourceUtil.isChildOf(res,rootDirectory)) return;
@@ -325,7 +326,8 @@ public final class SecurityManagerImpl implements Cloneable, SecurityManager {
         
         // custom
         if(!ArrayUtil.isEmpty(customFileAccess)){
-        	for(int i=0;i<customFileAccess.length;i++){
+        	res=ResourceUtil.getCanonicalResourceEL(res);
+            for(int i=0;i<customFileAccess.length;i++){
         		if(ResourceUtil.isChildOf(res,customFileAccess[i])) return;
         	}
         }
