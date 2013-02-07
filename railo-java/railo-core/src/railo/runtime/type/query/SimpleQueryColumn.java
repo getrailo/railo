@@ -352,7 +352,7 @@ public class SimpleQueryColumn implements QueryColumn {
 		throw SimpleQuery.notSupported();
 	}
 
-	
+	@Override
 	public synchronized Object get(int row) throws PageException {
 		Object sv = getStoredValue(row);
 		if(sv!=SimpleQuery.DEFAULT_VALUE) return sv;
