@@ -41,7 +41,8 @@ public interface QueryColumn extends Collection,Reference,Castable {
 	public Object get(int row) throws PageException;
 
 	/**
-	 * getExpressionLess method with a int as key
+	 * return the value in this row (can be null), when row number is invalid the default value is returned
+	 * 
 	 * @param row row to get value
 	 * @return row value
 	 */
