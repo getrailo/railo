@@ -6,12 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.hibernate.QueryException;
 
-import railo.print;
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
-import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
@@ -246,9 +243,10 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return get(KeyImpl.init(key),defaultValue);
 	}
 
+	// TODO make sure nobody is using this method, then rewrite functionality
     @Override
-    public Object get(int row) throws QueryException {
-    	if(row<1 || row>size) throw new QueryException("row ["+row+"] is invalid");
+    public Object get(int row) {
+    	if(row<1 || row>size) return NullSupportHelper.full()?null:"";//throw new DatabaseException("row ["+row+"] is invalid",null,null,null);
     	
     	if(NullSupportHelper.full()) return data[row-1];
 	    
@@ -256,7 +254,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return o==null?"":o;
     }
 
-	@Override
+    // TODO make sure nobody is using this method, then rewrite functionality
+    @Override
 	public Object get(int row, Object defaultValue) {
 		if(row<1 || row>size) return defaultValue;
 	    
