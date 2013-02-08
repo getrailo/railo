@@ -10,7 +10,7 @@
 		bindOnLoad: {required:false,type:"boolean",default:true,hint="- true (executes the bind attribute expression when first loading the tag. 
 		- false (does not execute the bind attribute expression until the first bound event)
 		To use this attribute, you must also specify a bind attribute"},		
-		bind:		{required:false,type:"string",default:"",hint="A bind expression that returns the container contents. Note: If a CFML page specified in this attribute contains tags that use AJAX features, such as cfform, cfgrid, and cfwindow, you must use a tag on the page with the tag. For more information, see cfajaximport."},
+		bind:		{required:false,type:"string",hint="A bind expression that returns the container contents. Note: If a CFML page specified in this attribute contains tags that use AJAX features, such as cfform, cfgrid, and cfwindow, you must use a tag on the page with the tag. For more information, see cfajaximport."},
 		onBindError:{required:false,type:"string",default:"",hint="The name of a JavaScript function to execute if evaluating a bind expression results in an error. The function must take two attributes: an HTTP status code and a message."},
 		tagName:	{required:false,type:"string",default:"div",hint="The HTML container tag to create."}
 	}/>
@@ -27,15 +27,18 @@
    		<cfargument name="caller" type="struct">				
 
 		<!--- check --->
-    	<cfset var hasBind=len(trim(attributes.bind))>
     	<cfset var hasBindError=len(trim(attributes.onBindError))>
  				
         <cfif hasBindError>
-        	<cfif not len(trim(attributes.bind))>
+        	<cfif IsDefined("attributes.bind") and not len(trim(attributes.bind))>
         		<cfthrow message="in this context attribute [onBindError] is not allowed">
         	</cfif>
         </cfif>
-		<cfset doBind(argumentCollection=arguments)/>
+		<!--- Don't bind if the argument is not provided, just render the tag. 
+			  Function doBind will validate the bind expression if provided ---> 
+        <cfif IsDefined("attributes.bind")>
+			<cfset doBind(argumentCollection=arguments) />
+		</cfif>
 		<cfoutput><#attributes.tagname# id="#attributes.id#"></cfoutput>
 		<cfif not variables.hasEndTag>
 			<cfoutput></#attributes.tagname#></cfoutput>

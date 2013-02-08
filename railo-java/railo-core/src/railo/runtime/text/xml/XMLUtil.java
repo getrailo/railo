@@ -72,6 +72,7 @@ public final class XMLUtil {
     public static final Collection.Key XMLTEXT = KeyImpl.intern("xmltext");
     public static final Collection.Key XMLCDATA = KeyImpl.intern("xmlcdata");
     public static final Collection.Key XMLCHILDREN = KeyImpl.intern("xmlchildren");
+    public static final Collection.Key XMLNODES = KeyImpl.intern("xmlnodes");
     public static final Collection.Key XMLNSURI = KeyImpl.intern("xmlnsuri");
     public static final Collection.Key XMLNSPREFIX = KeyImpl.intern("xmlnsprefix");
     public static final Collection.Key XMLROOT = KeyImpl.intern("xmlroot");
@@ -380,7 +381,7 @@ public final class XMLUtil {
 				node.appendChild(XMLCaster.toRawNode(XMLCaster.toCDATASection(doc,value)));
 			}
 		// Children	
-			else if(k.equals(XMLCHILDREN)) {
+			else if(k.equals(XMLCHILDREN) || k.equals(XMLNODES)) {
 				Node[] nodes=XMLCaster.toNodeArray(doc,value);
 				removeChilds(XMLCaster.toRawNode(node),Node.ELEMENT_NODE,false);
 				for(int i=0;i<nodes.length;i++) {
@@ -569,7 +570,7 @@ public final class XMLUtil {
                 return sb.toString();
 			}
 			// children	
-			else if(k.equals(XMLCHILDREN)) {
+			else if(k.equals(XMLCHILDREN) || k.equals(XMLNODES)) {
 				return new XMLNodeList(node,caseSensitive);
 			}
 		}
@@ -709,7 +710,7 @@ public final class XMLUtil {
                 return sb.toString();
             }
             // children 
-            else if(k.equals(XMLCHILDREN)) {
+            else if(k.equals(XMLCHILDREN) || k.equals(XMLNODES)) {
                 NodeList list=node.getChildNodes();
                 for(int i=list.getLength()-1;i>=0;i--) {
                     node.removeChild(XMLCaster.toRawNode(list.item(i)));

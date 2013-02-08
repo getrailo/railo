@@ -1,39 +1,21 @@
 <cfset error.message="">
 <cfset error.detail="">
-<cfif structKeyExists(session,"passwordserver")>
-	<cfdirectory 
-		directory="#expandPath('dbdriver')#" 
-		action="list" name="dbdriver" filter="*.cfc" serverpassword="#session.passwordserver#"><!---  --->
-<cfelse>
-	<cftry>
-		<cfdirectory 
-			directory="#expandPath('dbdriver')#" 
-			action="list" name="dbdriver" filter="*.cfc">
-		<cfcatch type="security">
-			<cfadmin 
-				action="getDatasourceDriverList"
-				type="#request.adminType#"
-				password="#session["password"&request.adminType]#"
-				returnVariable="dbdriver">			
-		</cfcatch>		
-	</cftry>
-</cfif>
+<cfset driverNames=ComponentListPackage("dbdriver")>
 
-<cfset variables.drivers	= struct()>
+
+<cfset variables.drivers=struct()>
 <cfset variables.selectors	= struct()>
-<cfoutput query="dbdriver">
-	<cfset n=listFirst(dbdriver.name,".")>
+<cfloop array="#driverNames#" item="n">
 	
-	<cfset obj = createObject("component","dbdriver."&n)>
-	
-	<cfif isInstanceOf( obj, "types.IDriverSelector" )>
-	
-		<cfset variables.selectors[n] = obj>
-	<cfelseif isInstanceOf( obj, "types.IDatasource" )>
-		
-		<cfset variables.drivers[n] = obj>
+	<cfif n NEQ "Driver" and n NEQ "IDriver">
+		<cfset obj = createObject("component","dbdriver."&n)>
+		<cfif isInstanceOf( obj, "types.IDriverSelector" )>
+			<cfset variables.selectors[n] = obj>
+		<cfelseif isInstanceOf( obj, "types.IDatasource" )>
+			<cfset variables.drivers[n] = obj>
+		</cfif>
 	</cfif>
-</cfoutput>
+</cfloop>
 
 <cffunction name="getTypeName">
 	<cfargument name="className" required="true">

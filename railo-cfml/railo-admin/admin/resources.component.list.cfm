@@ -223,7 +223,13 @@
 							</cfif>
 						</td>
 						
-						<td nowrap><cfif mappings.ReadOnly><cfif mappings.physicalFirst>physical<cfelse>archive</cfif><cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
+						<td nowrap><cfif mappings.ReadOnly>
+							<cfif mappings.PhysicalFirst>
+									#stText.Mappings.Physical#
+								<cfelse>
+									#stText.Mappings.Archive#
+								</cfif>
+							<cfelse><select name="primary_#mappings.currentrow#" onchange="checkTheBox(this)">
 							<option value="physical" <cfif mappings.physicalFirst>selected</cfif>>#stText.Components.physical#</option>
 							<option value="archive" <cfif not mappings.physicalFirst>selected</cfif>>#stText.Components.archive#</option>
 						</select></cfif></td>

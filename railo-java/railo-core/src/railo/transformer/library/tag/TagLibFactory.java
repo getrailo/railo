@@ -259,7 +259,8 @@ public final class TagLibFactory extends DefaultHandler {
 				else if(inside.equals("allow-removing-literal"))  {
                     tag.setAllowRemovingLiteral(Caster.toBooleanValue(value,false));
                 }
-    			
+				else if(inside.equals("att-default-value"))	tag.setAttributeDefaultValue(value);
+				
     			
     			
                 // Handle Exceptions

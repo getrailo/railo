@@ -61,9 +61,9 @@
 							<!--- primary --->
 							<td>
 								<cfif mappings.PhysicalFirst>
-									physical
+									#stText.Mappings.Physical#
 								<cfelse>
-									archive
+									#stText.Mappings.Archive#
 								</cfif>
 							</td>
 							<!--- trusted --->

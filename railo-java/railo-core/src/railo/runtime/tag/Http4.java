@@ -724,7 +724,8 @@ public final class Http4 extends BodyTagImpl implements Http {
                 else if(type.startsWith("head")) {
                 	if(param.getName().equalsIgnoreCase("content-type")) hasContentType=true;
                 	
-                	if(param.getName().equalsIgnoreCase("Accept-Encoding")) {
+                	if(param.getName().equalsIgnoreCase("Content-Length")) {}
+                	else if(param.getName().equalsIgnoreCase("Accept-Encoding")) {
                 		acceptEncoding.append(headerValue(param.getValueAsString()));
                 		acceptEncoding.append(", ");
                 	}

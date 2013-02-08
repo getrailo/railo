@@ -80,16 +80,16 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
-		if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
+		/*if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
 			return defaultValue;
-		}
+		}*/
 		return get(key, defaultValue);
 	}
 	
 
 	@Override
 	public boolean containsFunctionArgumentKey(Key key) {
-		return functionArgumentNames!=null && functionArgumentNames.contains(key);
+		return containsKey(key);//sfunctionArgumentNames!=null && functionArgumentNames.contains(key);
 	}
 	
 	

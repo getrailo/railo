@@ -247,7 +247,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     private ErrorPagePool errorPagePool=new ErrorPagePool();
 	private TagHandlerPool tagHandlerPool;
 	private FTPPool ftpPool=new FTPPoolImpl();
-	private QueryCache queryCache;
+	private final QueryCache queryCache;
 
 	private Component activeComponent;
 	private UDF activeUDF;

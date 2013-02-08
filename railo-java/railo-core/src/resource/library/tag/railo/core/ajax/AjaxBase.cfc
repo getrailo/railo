@@ -14,7 +14,15 @@
 	Railo js library location 
 	--->
 	<cfset variables.instance.RAILOJSSRC = "/mapping-tag/railo/core/ajax/JSLoader.cfc?method=get&lib=" />
-	
+
+	<!--- Default to current context, can be overridden on init --->
+	<cfif getContextRoot() neq "/">
+		<cfset variables.instance.SCRIPTSRC = getContextRoot() & variables.instance.SCRIPTSRC />
+		<cfset variables.instance.CSSSRC = getContextRoot() & variables.instance.CSSSRC />
+		<cfset variables.instance.LOADERSRC = getContextRoot() & variables.instance.LOADERSRC />
+		<cfset variables.instance.RAILOJSSRC = getContextRoot() & variables.instance.RAILOJSSRC />
+	</cfif>
+		
 	<!--- Constructor --->
     <cffunction name="init" output="no" returntype="void">
     	<cfargument name="scriptSrc" type="string" default="#variables.instance.SCRIPTSRC#" />
@@ -22,14 +30,8 @@
     	<cfargument name="loaderSrc" type="string" default="#variables.instance.LOADERSRC#" />
     	<cfargument name="adapter" default="" type="string" required="false" />
 		<cfargument name="params" default="#struct()#" type="struct" required="false" />
-		
+
 		<cfset var js = "" />
-		
-		<!--- Support context root differents from '/' --->
-		<cfif getContextRoot() neq '/'> 
-			<cfset arguments.scriptSrc = getContextRoot() & ARGUMENTS.scriptSrc />
-			<cfset arguments.cssSrc = getContextRoot() & ARGUMENTS.cssSrc />
-		</cfif>	
 		
 		<cfif arguments.cssSrc neq variables.instance.CSSSRC>
 			<cfset variables.instance.isCustomCss = true />

@@ -15,8 +15,14 @@ import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
+import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
+import railo.transformer.bytecode.cast.Cast;
+import railo.transformer.bytecode.expression.Expression;
+import railo.transformer.bytecode.literal.LitBoolean;
+import railo.transformer.bytecode.literal.LitDouble;
+import railo.transformer.bytecode.literal.LitString;
 import railo.transformer.bytecode.statement.tag.Attribute;
 import railo.transformer.bytecode.statement.tag.Tag;
 import railo.transformer.bytecode.statement.tag.TagOther;
@@ -85,11 +91,9 @@ public final class TagLibTag {
 	private short status=TagLib.STATUS_IMPLEMENTED;
 	private Class clazz;
 	private TagLibTagScript script;
-	
-
 	private final static TagLibTagAttr UNDEFINED=new TagLibTagAttr(null);
-	
 	private TagLibTagAttr singleAttr=UNDEFINED;
+	private Expression attributeDefaultValue;
 
 	public TagLibTag duplicate(boolean cloneAttributes) {
 		TagLibTag tlt = new TagLibTag(tagLib);
@@ -717,12 +721,12 @@ public final class TagLibTag {
 		sb.append(this.getParseBody());
 		sb.append(this.getTteClassName());
 		sb.append(this.getTttClassName());
-		Iterator it = this.getAttributes().entrySet().iterator();
-		Map.Entry entry;
+		Iterator<Entry<String, TagLibTagAttr>> it = this.getAttributes().entrySet().iterator();
+		Entry<String, TagLibTagAttr> entry;
 		while(it.hasNext()){
-			entry=(Entry) it.next();
+			entry = it.next();
 			sb.append(entry.getKey());
-			sb.append(((TagLibTagAttr)entry.getValue()).getHash());
+			sb.append(entry.getValue().getHash());
 		}
 		
 		try {
@@ -771,4 +775,38 @@ public final class TagLibTag {
 		return singleAttr;
 	}
 
+
+	/**
+	 * attribute value set, if the attribute has no value defined
+	 * @return
+	 */
+	public Expression getAttributeDefaultValue() {
+		if(attributeDefaultValue==null) return LitBoolean.TRUE;
+		return attributeDefaultValue;
+	}
+	
+	public void setAttributeDefaultValue(String defaultValue) {
+		defaultValue=defaultValue.trim();
+		// boolean
+		if(StringUtil.startsWithIgnoreCase(defaultValue, "boolean:")) {
+			String str=defaultValue.substring(8).trim();
+			Boolean b = Caster.toBoolean(str,null);
+			if(b!=null){
+				this.attributeDefaultValue=LitBoolean.toExprBoolean(b.booleanValue());
+				return;
+			}
+			
+		}
+		// number
+		else if(StringUtil.startsWithIgnoreCase(defaultValue, "number:")) {
+			String str=defaultValue.substring(7).trim();
+			Double d = Caster.toDouble(str,null);
+			if(d!=null){
+				this.attributeDefaultValue=LitDouble.toExprDouble(d.doubleValue());
+				return;
+			}
+			
+		}
+		else this.attributeDefaultValue=LitString.toExprString(defaultValue);
+	}
 }

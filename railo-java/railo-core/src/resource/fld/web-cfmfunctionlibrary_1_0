@@ -1831,6 +1831,24 @@ you can use tag cfadmin instead. we will add support for this function in a futu
 			<type>struct</type>
 		</return>
 	</function>
+	<!-- ComponentListPackage -->
+	<function>
+		<name>ComponentListPackage</name>
+		<class>railo.runtime.functions.component.ComponentListPackage</class>
+		<status>hidden</status>
+		<description>this implementation is experimentell. list all components in a certain package, throws a application exception if package does not exist.</description>
+		<argument>
+			<name>package</name>
+			<alias>packageName,name</alias>
+			<type>string</type>
+			<required>Yes</required>
+			<description>name of the package to list</description>
+	    </argument>
+		
+		<return>
+			<type>array</type>
+		</return>
+	</function>
 	
 	<!-- CSRFGenerateToken -->
 	<function>

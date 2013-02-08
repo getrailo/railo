@@ -2510,11 +2510,11 @@ public final class Caster {
     }
 
 
-    public static String toB64(String str,String charset) throws CoderException, UnsupportedEncodingException {
+    public static String toB64(String str,String charset) throws UnsupportedEncodingException {
         return toB64(str.getBytes(charset));
     }
     
-    public static String toB64(byte[] b) throws CoderException {
+    public static String toB64(byte[] b)  {
         return Base64Coder.encode(b);
     }
 
