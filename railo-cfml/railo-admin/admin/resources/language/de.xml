@@ -98,6 +98,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.label">Einstellungen</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regionales</data>
+	<data key="overview.langPerf">Performance/Language</data>
 	<data key="menu.server.compiler">Language/Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
@@ -558,17 +559,32 @@ Diese werden dann am Ende eines Request ausgegeben, falls sie ein Debug Template
 	<data key="debug.settings.implicitAccess">Implicit variable Access</data>
 	<data key="debug.settings.implicitAccessDesc">Select this option to log all accesses to scopes, queries and threads that happens implicit (cascaded).</data>
 	<data key="general.enabled">Enabled</data>
-		
+	
+	<data key="compiler.nullSupport">Null Support</data>
+	<data key="compiler.nullSupportOnlyServer">Diese Einstellung ist nur im Railo Server Administrator möglich.</data>
+	<data key="compiler.nullSupportDesc">Definiert wie Railo null unterstützt.</data>
+	<data key="compiler.nullSupportFull">Volle Unterstützung</data>
+	<data key="compiler.nullSupportFullDesc">Railo hat volle Unterstützung für "null", dies beinhaltet "null" Literale. Im Railo Wiki finden Sie mehr Details dazu.</data>
+	<data key="compiler.nullSupportPartial">Partial Support (CFML Default)</data>
+	<data key="compiler.nullSupportPartialDesc">Railo has only a partial null support.</data>
+
+	
 	<data key="setting.compiler">Railo Compiler Einstellungen, dies beeinflusst wie der Railo Compiler den Source Code übersetzt. Das ändern dieser Einstellungen löscht alle existierenden Class Files.</data>
 	<data key="setting.dotNotation">Dot Notation</data>
-	<data key="setting.dotNotationDesc">Konvertiert Struct Keys definiert mit "Dot Notation" als grossgeschrieben (CFML Standard) oder lässt diese wie sie sind (wie "Bracked Notation").
-Übersetzt zu grossgeschrieben:
+	
+	
+	<data key="setting.dotNotationUpperCaseDesc">Konvertiert Struct Keys definiert mit "Dot Notation" als grossgeschrieben (CFML Standard).
+Beispiel:
 sct.dotNotation --> keyname: "DOTNOTATION"
-sct[""bracketNotation""] --> keyname: "bracketNotation"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+	
+<data key="setting.dotNotationOriginalCaseDesc">Belässt Struct Keys definiert mit "Dot Notation" wie sie sind (wie "Bracked Notation").
 
-Behält die Keys wie sie sind:
+Beispiel:
 sct.dotNotation --> keyname: "dotNotation"
 sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+
+
 	<data key="setting.dotNotationUpperCase">Übersetzt zu grossgeschrieben (CFML Standard)</data>
 	<data key="setting.dotNotationOriginalCase">Behält die Keys wie sie sind (wie "Bracked Notation")</data>
 	<data key="setting.supressWSBeforeArg">Unterdrückt White-Space vor cfargument</data>
@@ -630,8 +646,8 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="scopes.sessiontypedescription">J2EE Sessions erlauben es Railo Sessions über einen J2EE Server-Cluster zu verteilen. Wenn Sie diese Einstellung ändern verlieren Sie die aktuelle Session und müssen sich erneut einloggen.</data>
 	<data key="scopes.web">Hier können Sie festlegen, wie Railo Scopes abarbeitet.</data>
 	
-	<data key="scopes.localmodeClassic">Classic</data>
-	<data key="scopes.localmodeModern">Modern (CFML standard)</data>
+	<data key="scopes.localmodeClassic">Classic (CFML standard)</data>
+	<data key="scopes.localmodeModern">Modern</data>
 	
 	<data key="scopes.localmodedesc">Definiert wie der Lokal Scope innerhalb einer UDF von einer Variable ohne Scope angesprochen wird.</data>
 

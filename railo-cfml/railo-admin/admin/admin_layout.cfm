@@ -11,9 +11,9 @@
 	<cfscript>
 		ad=request.adminType;
 		hasNavigation=len(attributes.navigation) GT 0;
-		other=iif(request.adminType EQ "web","'server'","'web'");
-		otherURL=other&".cfm"
-		if(structKeyExists(url,'action'))otherURL&="?action="&url.action;
+		home=request.adminType&".cfm"
+		if(structKeyExists(url,'action'))homeQS="?action="&url.action;
+		else homeQS="";
 	</cfscript>
 	<cfset request.mode="full">
 	
@@ -43,10 +43,10 @@
 					<td colspan="2">
 						<div id="header">
 
-							<a id="logo" class="sprite"></a>
+							<a id="logo" class="sprite" href="#home#"></a>
 							<div id="admin-tabs" class="clearfix">
-								<a href="server.cfm" class="sprite server"></a>
-								<a href="web.cfm" class="sprite web"></a>
+								<a href="server.cfm#homeQS#" class="sprite server"></a>
+								<a href="web.cfm#homeQS#" class="sprite web"></a>
 							</div>
 						</div>	<!--- #header !--->
 					</td>

@@ -3392,7 +3392,7 @@ public final class ConfigWebFactory {
         
         //
         String strInspectTemplate=java.getAttribute("inspect-template");
-        if(!StringUtil.isEmpty(strInspectTemplate)) {
+        if(!StringUtil.isEmpty(strInspectTemplate,true)) {
         	strInspectTemplate=strInspectTemplate.trim().toLowerCase();
         	if(strInspectTemplate.equals("always")) 
                 config.setInspectTemplate(ConfigImpl.INSPECT_ALWAYS);

@@ -2964,7 +2964,8 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     private void doUpdateCompilerSettings() throws SecurityException, PageException {
     	admin.updateCompilerSettings(
     			getBoolObject("admin", "UpdateCompilerSettings", "dotNotationUpperCase"),
-    			getBoolObject("admin", "UpdateCompilerSettings", "supressWSBeforeArg")
+    			getBoolObject("admin", "UpdateCompilerSettings", "supressWSBeforeArg"),
+    			getBoolObject("admin", "UpdateCompilerSettings", "nullSupport")
 				);
         store();
         adminSync.broadcast(attributes, config);
@@ -4500,7 +4501,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
      * @throws PageException
      * 
      */
-    private void store() throws PageException {
+    private synchronized void store() throws PageException {
         try {
             admin.store();
         } catch (Exception e) {

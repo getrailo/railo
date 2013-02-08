@@ -1,16 +1,6 @@
 <cfset error.message="">
 <cfset error.detail="">
 
-<cfset stText.compiler.description="Settings that affect the functionality of the language">
-<cfset stText.compiler.nullSupport="Null Support">
-<cfset stText.compiler.nullSupportOnlyServer="This setting is only possible in the Railo Server Administrator.">
-<cfset stText.compiler.nullSupportDesc="Definiert wie Railo null unterstŸtzt.">
-<cfset stText.compiler.nullSupportFull="Full Support">
-<cfset stText.compiler.nullSupportFullDesc='Railo has a complete support for null, including "null" literal. Find more details in the Railo Wiki.'>
-<cfset stText.compiler.nullSupportPartial="Partial Support">
-<cfset stText.compiler.nullSupportPartialDesc='Railo has only a partial null support, compatible to other CFML Engines.'>
-
-
 <cfadmin 
 	action="securityManager"
 	type="#request.adminType#"
@@ -37,12 +27,16 @@ Defaults --->
             <cfif not isDefined('form.supressWSBeforeArg')>
             	<cfset form.supressWSBeforeArg=false>
             </cfif>
+            <cfif not isDefined('form.nullSupport')>
+            	<cfset form.nullSupport=false>
+            </cfif>
             
 			<cfadmin 
 				action="updateCompilerSettings"
 				type="#request.adminType#"
 				password="#session["password"&request.adminType]#"
 				
+				nullSupport="#nullSupport#"
 				dotNotationUpperCase="#dotNotUpper#"
                 supressWSBeforeArg="#form.supressWSBeforeArg#"
 				remoteClients="#request.getRemoteClients()#">
@@ -133,22 +127,39 @@ Redirtect to entry --->
 				</tr>
 				
 				
-				<!--- Supress Whitespace --->
+				<!--- Dot Notation --->
 				<tr>
 					<th scope="row">#stText.setting.dotNotation#</th>
 					<td>
 						<cfif hasAccess>
-							<select name="dotNotation">
-								<option value="uc"<cfif setting.dotNotationUpperCase> selected="selected"</cfif>>#stText.setting.dotNotationUpperCase#</option>
-								<option value="oc"<cfif !setting.dotNotationUpperCase> selected="selected"</cfif>>#stText.setting.dotNotationOriginalCase#</option>
-							</select>
+							<ul class="radiolist">
+								<li>
+									<!--- original case --->
+									<label>
+										<input class="radio" type="radio" name="dotNotation" value="oc"<cfif !setting.dotNotationUpperCase> checked="checked"</cfif>>
+										<b>#stText.setting.dotNotationOriginalCase#</b>
+									</label>
+									<div class="comment">#replace(stText.setting.dotNotationOriginalCaseDesc, server.separator.line, '<br />', 'all')#</div>
+								</li>
+								<li>
+									<!--- upper case --->
+									<label>
+										<input class="radio" type="radio" name="dotNotation" value="uc"<cfif setting.dotNotationUpperCase> checked="checked"</cfif>>
+										<b>#stText.setting.dotNotationUpperCase#</b>
+									</label>
+									<div class="comment">#replace(stText.setting.dotNotationUpperCaseDesc, server.separator.line, '<br />', 'all')#</div>
+								</li>
+							</ul>
 						<cfelse>
-							<b>#(setting.dotNotationUpperCase)?stText.setting.dotNotationUpperCase:stText.setting.dotNotationOriginalCase#</b>
-							<input type="hidden" name="dotNotation" value="#setting.dotNotationUpperCase?'uc':'oc'#">
+							<cfset strDotNotation=setting.dotNotationUpperCase?"uc":"oc">
+							<cfset strDotNotationID=setting.dotNotationUpperCase?"Upper":"Original">
+							<input type="hidden" name="dotNotation" value="#strDotNotation#">
+							<b>#stText.setting["dotNotation"& strDotNotationID &"Case"]#</b><br />
+							<div class="comment">#replace(stText.setting["dotNotation"& strDotNotationID &"CaseDesc"], server.separator.line, '<br />', 'all')#</div>
 						</cfif>
-						<div class="comment">#replace(stText.setting.dotNotationDesc, server.separator.line, '<br />', 'all')#</div>
 					</td>
 				</tr>
+				
 				<!--- Supress Whitespace in front of cfargument --->
 				<tr>
 					<th scope="row">#stText.setting.supressWSBeforeArg#</th>

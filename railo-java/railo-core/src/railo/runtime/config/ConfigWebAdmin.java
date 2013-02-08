@@ -18,6 +18,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import railo.print;
 import railo.commons.digest.MD5;
 import railo.commons.io.FileUtil;
 import railo.commons.io.IOUtil;
@@ -3787,7 +3788,7 @@ public final class ConfigWebAdmin {
 	}
 
 
-	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean supressWSBeforeArg) throws PageException {
+	public void updateCompilerSettings(Boolean dotNotationUpperCase, Boolean supressWSBeforeArg, Boolean nullSupport) throws PageException {
 		
 		Element element = _getRootElement("compiler");
 		
@@ -3806,6 +3807,15 @@ public final class ConfigWebAdmin {
 		}
     	else {
     		element.setAttribute("supress-ws-before-arg", Caster.toString(supressWSBeforeArg));
+    	}
+    	
+    	// full null support
+    	if(nullSupport==null){
+			if(element.hasAttribute("full-null-support"))
+				element.removeAttribute("full-null-support");
+		}
+    	else {
+    		element.setAttribute("full-null-support", Caster.toString(nullSupport));
     	}
     	
     	

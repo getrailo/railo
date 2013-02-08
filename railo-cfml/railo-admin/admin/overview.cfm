@@ -43,7 +43,6 @@ Error Output --->
 
 
 
-
 <cfset pool['HEAP']="Heap">
 <cfset pool['NON_HEAP']="Non-Heap">
 
@@ -122,6 +121,26 @@ Error Output --->
 		type="#request.adminType#"
 		password="#session["password"&request.adminType]#"
 		returnVariable="info">
+		
+		
+<cfadmin 
+	action="getCompilerSettings"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="compiler">
+	
+
+<cfadmin 
+	action="getScope"
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	returnVariable="scope">
+	
+<cfadmin 
+	type="#request.adminType#"
+	password="#session["password"&request.adminType]#"
+	action="getPerformanceSettings"
+	returnVariable="performance">
 	
 	<cfif request.adminType EQ "server">
 		<cfset names=StructKeyArray(info.servlets)>
@@ -183,6 +202,53 @@ Error Output --->
 	<table>
 		<tr>
 			<td valign="top" width="65%">
+				
+				<h2>#stText.overview.langPerf#</h2>
+				<table class="maintbl">
+					<tbody>
+							<tr>
+								<th scope="row">#stText.setting.inspectTemplate#</th>
+								<td <cfif performance.inspectTemplate EQ "always">style="color:##cc0000"</cfif>>
+									<cfif performance.inspectTemplate EQ "never">
+										#stText.setting.inspectTemplateNever#
+									<cfelseif performance.inspectTemplate EQ "once">
+										#stText.setting.inspectTemplateOnce#
+									<cfelseif performance.inspectTemplate EQ "always">
+										#stText.setting.inspectTemplateAlways#
+									</cfif>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.compiler.nullSupport#</th>
+								<td <cfif !compiler.nullSupport>style="color:##cc0000"</cfif>>
+									<cfif compiler.nullSupport>
+										#stText.compiler.nullSupportFull#
+									<cfelse>
+										#stText.compiler.nullSupportPartial#
+									</cfif>
+							</td>
+							</tr>
+							<tr>
+								<th scope="row">#stText.setting.dotNotation#</th>
+								<td <cfif compiler.DotNotationUpperCase>style="color:##cc0000"</cfif>>
+									<cfif compiler.DotNotationUpperCase>#stText.setting.dotNotationUpperCase#<cfelse>#stText.setting.dotNotationOriginalCase#</cfif>
+								</td>
+							</tr>
+							<!---<tr>
+								<th scope="row">#stText.setting.supressWSBeforeArg#</th>
+								<td <cfif !compiler.supressWSBeforeArg>style="color:##cc0000"</cfif>>#yesNoFormat(compiler.supressWSBeforeArg)#</td>
+							</tr> --->
+							
+							<tr>
+								<th scope="row">#stText.Scopes.LocalMode#</th>
+								<td <cfif scope.localMode EQ "classic">style="color:##cc0000"</cfif>>
+									<cfif scope.localMode EQ "modern">#stText.Scopes.LocalModeModern#<cfelse>#stText.Scopes.LocalModeClassic#</cfif>
+								</td>
+							</tr>
+							
+					</tbody>
+				</table>
+				
 				<h2>#stText.Overview.Info#</h2>
 				<table class="maintbl">
 					<tbody>
