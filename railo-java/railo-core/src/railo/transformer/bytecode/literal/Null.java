@@ -8,7 +8,7 @@ import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.util.ASMConstants;
 import railo.transformer.bytecode.util.Types;
-// NULL Support
+
 public class Null extends ExpressionBase  {
 
 

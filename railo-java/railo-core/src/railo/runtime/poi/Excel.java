@@ -20,13 +20,13 @@ import org.openxmlformats.schemas.officeDocument.x2006.extendedProperties.CTProp
 
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -282,8 +282,8 @@ public class Excel extends StructSupport implements Cloneable,Struct {
 
 	@Override
 	public Object get(Key key) throws PageException {
-		Object value = get(key,Null.NULL);
-		if(value!=Null.NULL) return value;
+		Object value = get(key,NullSupportHelper.NULL());
+		if(value!=NullSupportHelper.NULL()) return value;
 		throw invalidKey(this,key);
 	}
 

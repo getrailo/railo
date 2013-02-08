@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.listener.ApplicationContext;
@@ -18,7 +19,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.security.ScriptProtect;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.ReadOnlyStruct;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -153,10 +153,10 @@ public final class CGIImpl extends ReadOnlyStruct implements CGI,ScriptProtected
             }
             else if(first=='h')	{
             	if(lkey.startsWith("http_")){
-        	    	Object o = https.get(key,Null.NULL);
-                    if(o==Null.NULL && key.equals(KeyConstants._http_if_modified_since))
-                    	o = https.get(KeyConstants._last_modified,Null.NULL);
-                    if(o!=Null.NULL)return doScriptProtect((String)o);
+        	    	Object o = https.get(key,NullSupportHelper.NULL());
+                    if(o==NullSupportHelper.NULL() && key.equals(KeyConstants._http_if_modified_since))
+                    	o = https.get(KeyConstants._last_modified,NullSupportHelper.NULL());
+                    if(o!=NullSupportHelper.NULL())return doScriptProtect((String)o);
             }
             }
             else if(first=='r') {

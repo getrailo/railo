@@ -1,6 +1,16 @@
 <cfset error.message="">
 <cfset error.detail="">
 
+<cfset stText.compiler.description="Settings that affect the functionality of the language">
+<cfset stText.compiler.nullSupport="Null Support">
+<cfset stText.compiler.nullSupportOnlyServer="This setting is only possible in the Railo Server Administrator.">
+<cfset stText.compiler.nullSupportDesc="Definiert wie Railo null unterstŸtzt.">
+<cfset stText.compiler.nullSupportFull="Full Support">
+<cfset stText.compiler.nullSupportFullDesc='Railo has a complete support for null, including "null" literal. Find more details in the Railo Wiki.'>
+<cfset stText.compiler.nullSupportPartial="Partial Support">
+<cfset stText.compiler.nullSupportPartialDesc='Railo has only a partial null support, compatible to other CFML Engines.'>
+
+
 <cfadmin 
 	action="securityManager"
 	type="#request.adminType#"
@@ -46,6 +56,7 @@ Defaults --->
 				type="#request.adminType#"
 				password="#session["password"&request.adminType]#"
 				
+				nullSupport=""
 				dotNotationUpperCase=""
 				supressWSBeforeArg=""
 				
@@ -88,6 +99,40 @@ Redirtect to entry --->
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">
 		<table class="maintbl">
 			<tbody>
+				<!--- Null Support --->
+				<tr>
+					<th scope="row">#stText.compiler.nullSupport#</th>
+					<td>
+						<cfif hasAccess && request.admintype EQ "server">
+							<ul class="radiolist">
+								<li>
+									<!--- full --->
+									<label>
+										<input class="radio" type="radio" name="nullSupport" value="true"<cfif setting.nullSupport> checked="checked"</cfif>>
+										<b>#stText.compiler.nullSupportFull#</b>
+									</label>
+									<div class="comment">#stText.compiler.nullSupportFullDesc#</div>
+								</li>
+								<li>
+									<!--- partial --->
+									<label>
+										<input class="radio" type="radio" name="nullSupport" value="false"<cfif !setting.nullSupport> checked="checked"</cfif>>
+										<b>#stText.compiler.nullSupportPartial#</b>
+									</label>
+									<div class="comment">#stText.compiler.nullSupportPartialDesc#</div>
+								</li>
+							</ul>
+						<cfelse>
+							<cfset strNullSupport=setting.nullSupport?"full":"partial">
+							<input type="hidden" name="nullSupport" value="#setting.nullSupport#">
+							<b>#stText.compiler["nullSupport"& strNullSupport]#</b><br />
+							<div class="comment">#stText.compiler["nullSupport"& strNullSupport&"Desc"]#</div>
+							<cfif request.admintype EQ "web"><div class="warning nofocus">#stText.compiler.nullSupportOnlyServer#</div></cfif>
+						</cfif>
+					</td>
+				</tr>
+				
+				
 				<!--- Supress Whitespace --->
 				<tr>
 					<th scope="row">#stText.setting.dotNotation#</th>

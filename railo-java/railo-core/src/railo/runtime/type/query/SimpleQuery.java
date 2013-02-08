@@ -269,7 +269,7 @@ public class SimpleQuery implements Query, ResultSet, Objects {
         SimpleQueryColumn column = columns.get(key.getLowerString());
         if(column==null) return null;
 		try {
-			return column.get(row);
+			return column.get(row,defaultValue);
 		} 
 		catch (Throwable t) {
 			return defaultValue;

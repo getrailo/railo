@@ -1407,6 +1407,10 @@ public final class ConfigWebFactory {
 		sb.append(config.getSupressWSBeforeArg());
 		sb.append(';');
 		
+		// full null support
+		sb.append(config.getFullNullSupport());
+		sb.append(';');
+		
 		// tld
 		for(int i=0;i<tlds.length;i++){
 			sb.append(tlds[i].getHash());
@@ -4224,6 +4228,23 @@ public final class ConfigWebFactory {
 	        else if(hasCS){
 	        	config.setDotNotationUpperCase(configServer.getDotNotationUpperCase());
 	        }
+        }
+        
+        // full null support
+        if(!hasCS) {
+	        boolean fns=false;
+	        if(mode==ConfigImpl.MODE_STRICT) {
+	        	fns=true;
+	        }
+	        else {
+	        	String str=compiler.getAttribute("full-null-support");
+	        	
+		        if(!StringUtil.isEmpty(str,true)){
+		        	fns=Caster.toBooleanValue(str,false);
+		        }
+	        }
+	        NullSupportHelper.fullNullSupport=fns;
+	    	((ConfigServerImpl)config).setFullNullSupport(fns);
         }
     }
 

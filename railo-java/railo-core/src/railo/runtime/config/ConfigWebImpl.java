@@ -438,4 +438,9 @@ public final class ConfigWebImpl extends ConfigImpl implements ServletConfig, Co
 		public ActionMonitorCollector getActionMonitorCollector() {
 			return configServer.getActionMonitorCollector();
 		}
+
+		@Override
+		public boolean getFullNullSupport() {
+			return configServer.getFullNullSupport();
+		}
 }

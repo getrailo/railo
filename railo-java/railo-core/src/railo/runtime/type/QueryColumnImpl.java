@@ -6,8 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.hibernate.QueryException;
+
+import railo.print;
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
@@ -38,7 +43,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	private static final long serialVersionUID = -5544446523204021493L;
 	private static final int CAPACITY=32;
-	static final String DEFAULT_VALUE = null;// NULL Support "";
     
 	protected int type;
 	protected int size;
@@ -170,8 +174,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	public Object get(PageContext pc, Collection.Key key) throws PageException {
 		int row=Caster.toIntValue(key.getString(),Integer.MIN_VALUE);
 		if(row==Integer.MIN_VALUE) {
-			Object child=getChildElement(pc,key,Null.NULL);
-	    	if(child!=Null.NULL) return child;
+			Object child=getChildElement(pc,key,NullSupportHelper.NULL());
+	    	if(child!=NullSupportHelper.NULL()) return child;
             throw new DatabaseException("key ["+key+"] not found",null,null,null);
         }
 	    return get(row);
@@ -187,9 +191,9 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 		if(pc!=null){
 			Undefined undefined = pc.undefinedScope();
 			boolean old = undefined.setAllowImplicidQueryCall(false);
-			Object sister = undefined.get(this.key,Null.NULL);
+			Object sister = undefined.get(this.key,NullSupportHelper.NULL());
 			undefined.setAllowImplicidQueryCall(old);
-			if(sister!=Null.NULL){
+			if(sister!=NullSupportHelper.NULL()){
 				try {
 					return pc.get(sister, key);
 				} catch (PageException e) {
@@ -200,14 +204,6 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     	return defaultValue;
 	}
 
-    @Override
-    public Object get(int row){
-        if(row<1 || row>size) return DEFAULT_VALUE;
-        return data[row-1];
-        // NULL Support Object o=data[row-1];
-        // NULL Support return o==null?"":o;
-    }
-
     /**
      * touch the given line on the column at given row
      * @param row
@@ -215,7 +211,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
      * @throws DatabaseException
      */
     public Object touch(int row) {
-        if(row<1 || row>size) return DEFAULT_VALUE;
+        if(row<1 || row>size) return NullSupportHelper.full()?null:"";
         Object o=data[row-1];
         if(o!=null) return o;
         return setEL(row,new StructImpl());
@@ -250,13 +246,26 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return get(KeyImpl.init(key),defaultValue);
 	}
 
+    @Override
+    public Object get(int row) throws QueryException {
+    	if(row<1 || row>size) throw new QueryException("row ["+row+"] is invalid");
+    	
+    	if(NullSupportHelper.full()) return data[row-1];
+	    
+    	Object o=data[row-1];
+	    return o==null?"":o;
+    }
+
 	@Override
 	public Object get(int row, Object defaultValue) {
-	    if(row<1 || row>size) return defaultValue;
-	    return data[row-1];
-	    // NULL Support Object o=data[row-1];
-	    // NULL Support return o==null?defaultValue:o;
+		if(row<1 || row>size) return defaultValue;
+	    
+		if(NullSupportHelper.full()) return data[row-1];
+	    
+		Object o=data[row-1];
+	    return o==null?"":o;
 	}
+	
 
 	@Override
 	public Object set(String key, Object value) throws PageException {
@@ -337,9 +346,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
             data[i-1]=data[i];
         }
         size--;
-        
-        return o;
-        // NULL Support return o==null?"":o;
+        if(NullSupportHelper.full()) return o;
+        return o==null?"":o;
     }
 
 	@Override
@@ -440,8 +448,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	@Override
 	public String castToString(String defaultValue) {
-		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL) return defaultValue;
+		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL()) return defaultValue;
 		return Caster.toString(value,defaultValue);
 	}
 
@@ -452,8 +460,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     @Override
     public Boolean castToBoolean(Boolean defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL) return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL()) return defaultValue;
 		return Caster.toBoolean(value,defaultValue);
     }
 
@@ -464,8 +472,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     @Override
     public double castToDoubleValue(double defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL) return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL()) return defaultValue;
 		return Caster.toDoubleValue(value,defaultValue);
     }
 
@@ -476,8 +484,8 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL) return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL()) return defaultValue;
 		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
     }
 
@@ -554,7 +562,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	@Override
 	public boolean containsKey(Collection.Key key) {
-        return get(key,Null.NULL)!=Null.NULL;
+        return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
 	}
 
 	@Override

@@ -59,6 +59,7 @@ import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
 import railo.runtime.config.Constants;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DataSourceManager;
 import railo.runtime.db.DatasourceConnection;
@@ -1346,8 +1347,8 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 		boolean isNew=false;
 		
 		// get value
-		value=VariableInterpreter.getVariableEL(this,name,null);// NULL Support 
-		if(value==null) {
+		value=VariableInterpreter.getVariableEL(this,name,NullSupportHelper.NULL());
+		if(NullSupportHelper.NULL()==value) {
 			if(defaultValue==null)
 				throw new ExpressionException("The required parameter ["+name+"] was not provided.");
 			value=defaultValue;

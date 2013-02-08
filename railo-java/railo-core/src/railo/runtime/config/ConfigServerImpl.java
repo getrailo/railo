@@ -577,4 +577,14 @@ public final class ConfigServerImpl extends ConfigImpl implements ConfigServer {
 	public boolean allowRequestTimeout() {
 		return engine.allowRequestTimeout();
 	}
+	
+
+	private boolean fullNullSupport=false;
+	protected void setFullNullSupport(boolean fullNullSupport) {
+		this.fullNullSupport=fullNullSupport;
+	}
+
+	public boolean getFullNullSupport() {
+		return fullNullSupport;
+	}
 }

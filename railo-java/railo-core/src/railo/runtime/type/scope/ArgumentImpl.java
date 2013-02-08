@@ -10,11 +10,14 @@ import java.util.Set;
 
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
+import railo.runtime.config.Constants;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
@@ -23,7 +26,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -94,29 +96,49 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-		Object o=super.get(key,Null.NULL);
-		if(o!=Null.NULL)return o;
-		
-		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
-		if(o!=Null.NULL)return o;
-		// NULL Support if(super.containsKey(key)) return null;// that is only for compatibility to ACF
+		if(NullSupportHelper.full()) {
+			Object o=super.get(key,NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+			
+			o=get(Caster.toIntValue(key.getString(),-1),NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+			return defaultValue;
+		}
+		Object o=super.get(key,null);
+		if(o!=null)return o;
+
+		o=get(Caster.toIntValue(key.getString(),-1),null);
+		if(o!=null)return o;
+		if(super.containsKey(key)) return null;// that is only for compatibility to neo
 		return defaultValue;
 	}
-
+	
+	
 
 	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
-		Object o=super.get(key,Null.NULL);
-		if(o!=Null.NULL)return o;
-
-		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
-		if(o!=Null.NULL)return o;
-		// NULL Support if(super.containsKey(key)) return null;// that is only for compatibility to neo
-		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
-				railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
-				+"]");
+		if(NullSupportHelper.full()) {
+			Object o=super.get(key,NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+	
+			o=get(Caster.toIntValue(key.getString(),-1),NullSupportHelper.NULL());
+			if(o!=NullSupportHelper.NULL())return o;
+			throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+					railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+					+"]");
+		}
 		
+		Object o=super.get(key,null);
+		if(o!=null)return o;
+
+		o=get(Caster.toIntValue(key.getString(),-1),null);
+		if(o!=null)return o;
+		if(super.containsKey(key)) return null;// that is only for compatibility to neo
+		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope");
+
 	}
+	
+	
 
 	@Override
 	public Object get(int intKey, Object defaultValue) {
@@ -375,12 +397,12 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
     @Override
     public boolean containsKey(Collection.Key key) {
-    	return get(key,Null.NULL)!=Null.NULL && super.containsKey(key);
+    	return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL() && super.containsKey(key);
     }
 
     @Override
     public boolean containsKey(int key) {
-        return get(key,Null.NULL)!=Null.NULL;
+        return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
     }
     
 

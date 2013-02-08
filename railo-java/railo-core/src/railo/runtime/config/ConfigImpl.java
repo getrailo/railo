@@ -3312,6 +3312,8 @@ public abstract class ConfigImpl implements Config {
 	public boolean getSupressWSBeforeArg() {
 		return getSupressWSBeforeArg;
 	}
+
+	public abstract boolean getFullNullSupport();
 	
 	
 

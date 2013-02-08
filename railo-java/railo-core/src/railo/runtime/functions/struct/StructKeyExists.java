@@ -4,6 +4,7 @@
 package railo.runtime.functions.struct;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.ext.function.Function;
 import railo.runtime.functions.query.QueryColumnExists;
 import railo.runtime.type.Collection;
@@ -26,6 +27,8 @@ public final class StructKeyExists implements Function {
 				return QueryColumnExists.call(pc, (Query)c, key);
 			}
 		}
-		return struct.containsKey(key); // NULL && struct.get(key,null)!=null;// do not change, this has do be this way
+		if(NullSupportHelper.full()) return struct.containsKey(key);
+		
+		return struct.containsKey(key) && struct.get(key,null)!=null;// do not change, this has do be this way
 	}
 }

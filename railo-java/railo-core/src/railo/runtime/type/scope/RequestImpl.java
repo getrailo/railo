@@ -9,13 +9,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.it.EntryIterator;
@@ -130,8 +130,8 @@ public final class RequestImpl extends StructSupport implements Request {
 
 	@Override
 	public Object remove(Key key) throws PageException {
-		Object value = remove(key,Null.NULL);
-		if(value!=Null.NULL)return value;
+		Object value = remove(key,NullSupportHelper.NULL());
+		if(value!=NullSupportHelper.NULL())return value;
 		throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
 	}
 
@@ -146,8 +146,8 @@ public final class RequestImpl extends StructSupport implements Request {
 	}
 
 	public Object get(Key key) throws PageException {
-		Object value = get(key,Null.NULL);
-		if(value==Null.NULL) throw invalidKey(this,key);
+		Object value = get(key,NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL()) throw invalidKey(this,key);
 		return value;
 	}
 	
@@ -218,7 +218,7 @@ public final class RequestImpl extends StructSupport implements Request {
 
 	@Override
 	public boolean containsKey(Key key) {
-		return get(key,Null.NULL)!=Null.NULL;
+		return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
 	}
 	
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {

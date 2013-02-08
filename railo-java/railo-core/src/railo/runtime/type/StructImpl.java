@@ -11,6 +11,9 @@ import railo.commons.util.mod.MapPro;
 import railo.commons.util.mod.MapProWrapper;
 import railo.commons.util.mod.SyncMap;
 import railo.commons.util.mod.WeakHashMapPro;
+import railo.runtime.config.Constants;
+import railo.runtime.config.NullSupportHelper;
+import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.op.ThreadLocalDuplication;
@@ -23,8 +26,6 @@ import railo.runtime.type.util.StructSupport;
 public class StructImpl extends StructSupport {
 	private static final long serialVersionUID = 1421746759512286393L;
 
-	// NULL Support private static final Object NULL=new Object();
-	
 	private MapPro<Collection.Key,Object> map;
 	
 	/**
@@ -60,31 +61,24 @@ public class StructImpl extends StructSupport {
 	
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-		return map.g(key, defaultValue); // NULL Support
-		/* NULL old behavior
-		 Object rtn=map.get(key);
-		if(rtn!=null) {
-			// NULL Support if(rtn==NULL) return null;
-			return rtn;
-		}
-		return defaultValue;*/
+		if(NullSupportHelper.full())return map.g(key, defaultValue);
+		
+		Object rtn=map.get(key);
+		if(rtn!=null) return rtn;
+		return defaultValue;
 	}
 
 	@Override
-	public Object get(Collection.Key key) throws PageException {//print.out("k:"+(kcount++));
-		return map.g(key); // NULL Support
-		/* NULL Old behavior
-		 Object rtn=map.get(key);
-		if(rtn!=null) {
-			// NULL Support if(rtn==NULL) return null;
-			return rtn;
-		}
-		throw invalidKey(this,key);*/
+	public Object get(Collection.Key key) throws PageException {
+		if(NullSupportHelper.full()) return map.g(key);
+		
+		Object rtn=map.get(key);
+		if(rtn!=null) return rtn;
+		throw StructSupport.invalidKey(this,key);
 	}
 	
 	@Override
 	public Object set(Collection.Key key, Object value) throws PageException {
-		// NULL Support map.put(key,value==null?NULL:value);
 		map.put(key,value);
 		return value;
 	}
@@ -127,11 +121,10 @@ public class StructImpl extends StructSupport {
 
 	@Override
 	public Object remove(Collection.Key key) throws PageException {
-		return map.r(key); // NULL Support
-		/* NULL old behavior
+		if(NullSupportHelper.full())return map.r(key);
 		Object obj= map.remove(key);
 		if(obj==null) throw new ExpressionException("can't remove key ["+key+"] from struct, key doesn't exist");
-		return obj;*/
+		return obj;
 	}
 	
 	@Override

@@ -3,13 +3,13 @@ package railo.runtime.type.scope;
 import java.util.Iterator;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Null;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
@@ -67,17 +67,17 @@ public final class CallerImpl extends StructSupport implements Caller  {
         Object o;
         
         if(checkArgs) {
-            o=localScope.get(key,Null.NULL);
-            if(o!=Null.NULL) return o;
-            o=argumentsScope.get(key,Null.NULL);
-            if(o!=Null.NULL) return o;
+            o=localScope.get(key,NullSupportHelper.NULL());
+            if(o!=NullSupportHelper.NULL()) return o;
+            o=argumentsScope.get(key,NullSupportHelper.NULL());
+            if(o!=NullSupportHelper.NULL()) return o;
         }
-        o=variablesScope.get(key,Null.NULL);
-        if(o!=Null.NULL) return o;
+        o=variablesScope.get(key,NullSupportHelper.NULL());
+        if(o!=NullSupportHelper.NULL()) return o;
         
         // get from cascaded scopes
-        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key,Null.NULL);
-        if(o!=Null.NULL) return o;
+        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key,NullSupportHelper.NULL());
+        if(o!=NullSupportHelper.NULL()) return o;
         
         /*
         // get scopes
@@ -155,18 +155,18 @@ public final class CallerImpl extends StructSupport implements Caller  {
     	
     	Object o;
         if(checkArgs) {
-            o=localScope.get(key,Null.NULL);
-            if(o!=Null.NULL) return o;
-            o=argumentsScope.get(key,Null.NULL);
-            if(o!=Null.NULL) return o;
+            o=localScope.get(key,NullSupportHelper.NULL());
+            if(o!=NullSupportHelper.NULL()) return o;
+            o=argumentsScope.get(key,NullSupportHelper.NULL());
+            if(o!=NullSupportHelper.NULL()) return o;
         }
-        o=variablesScope.get(key,Null.NULL);
-        if(o!=Null.NULL) return o;
+        o=variablesScope.get(key,NullSupportHelper.NULL());
+        if(o!=NullSupportHelper.NULL()) return o;
         
         
         // get from cascaded scopes
-        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key,Null.NULL);
-        if(o!=Null.NULL) return o;
+        o=((UndefinedImpl)pc.undefinedScope()).getCascading(key,NullSupportHelper.NULL());
+        if(o!=NullSupportHelper.NULL()) return o;
         
         return defaultValue;
     }

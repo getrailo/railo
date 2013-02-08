@@ -142,12 +142,7 @@ Error Output --->
 		<cfset noAccess(stText.setting.noAccess)>
 	</cfif>
 	
-	<div class="pageintro">
-		<cfif request.adminType EQ "server">
-			#stText.application.Server#
-		<cfelse>
-			#stText.application.Web#
-		</cfif>
+	<div class="pageintro">#stText.request.description#
 	</div>
 	
 	<cfform onerror="customError" action="#request.self#?action=#url.action#" method="post">

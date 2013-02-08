@@ -3005,6 +3005,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
 
     	sct.set("DotNotationUpperCase", config.getDotNotationUpperCase()?Boolean.TRUE:Boolean.FALSE);
     	sct.set("supressWSBeforeArg", config.getSupressWSBeforeArg()?Boolean.TRUE:Boolean.FALSE);
+    	sct.set("nullSupport", config.getFullNullSupport()?Boolean.TRUE:Boolean.FALSE);
     }
     
     private void doGetLogSettings() throws  PageException {

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import railo.runtime.Component;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.TemplateException;
 import railo.runtime.functions.other.CreateUniqueId;
@@ -1197,8 +1198,7 @@ public abstract class AbstrCFMLExprTransformer {
 			comments(data);
 			return new LitBoolean(false,line,data.cfml.getPosition());
 		}
-		// NULL Support
-		else if(id.getString().equalsIgnoreCase("NULL"))	{
+		else if(NullSupportHelper.full() && id.getString().equalsIgnoreCase("NULL"))	{
 			comments(data);
 			return new Null(line,data.cfml.getPosition());
 		}

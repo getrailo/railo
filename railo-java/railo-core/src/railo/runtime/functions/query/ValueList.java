@@ -5,6 +5,7 @@ package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -33,7 +34,7 @@ public class ValueList implements Function {
 		int size=column.size();
 		for(int i=1;i<=size;i++) {
 			if(i>1)sb.append(delimiter);
-			sb.append(Caster.toString(column.get(i)));
+			sb.append(Caster.toString(column.get(i,"")));
 		}
 		return sb.toString();
 	}

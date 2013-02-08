@@ -386,4 +386,15 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 	public int length() {
 		return key.length();
 	}
+
+
+	public static Key[] toKeyArray(String[] arr) {
+		if(arr==null) return null;
+		
+		Key[] keys=new Key[arr.length];
+		for(int i=0;i<keys.length;i++){
+			keys[i]=init(arr[i]);
+		}
+		return keys;
+	}
 }

@@ -6,6 +6,7 @@ import java.lang.Thread.State;
 import java.util.Iterator;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -19,7 +20,6 @@ import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.tag.Http3;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.Null;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
@@ -186,15 +186,15 @@ The current status of the thread; one of the following values:
 
 	@Override
 	public Object get(Key key, Object defaultValue) {
-		Object meta = getMeta(key,Null.NULL);
-		if(meta!=Null.NULL) return meta;
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) return meta;
 		return ct.content.get(key,defaultValue);
 	}
 
 	@Override
 	public Object get(Key key) throws PageException {
-		Object meta = getMeta(key,Null.NULL);
-		if(meta!=Null.NULL) return meta;
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) return meta;
 		return ct.content.get(key);
 	}
 
@@ -224,8 +224,8 @@ The current status of the thread; one of the following values:
 	@Override
 	public Object remove(Key key) throws PageException {
 		if(isReadonly())throw errorOutside();
-		Object meta = getMeta(key,Null.NULL);
-		if(meta!=Null.NULL) throw errorMeta(key);
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) throw errorMeta(key);
 		return ct.content.remove(key);
 	}
 
@@ -243,16 +243,16 @@ The current status of the thread; one of the following values:
 		
 		
 		if(isReadonly())throw errorOutside();
-		Object meta = getMeta(key,Null.NULL);
-		if(meta!=Null.NULL) throw errorMeta(key);
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) throw errorMeta(key);
 		return ct.content.set(key, value);
 	}
 
 	@Override
 	public Object setEL(Key key, Object value) {
 		if(isReadonly()) return null;
-		Object meta = getMeta(key,Null.NULL);
-		if(meta!=Null.NULL) return null;
+		Object meta = getMeta(key,NullSupportHelper.NULL());
+		if(meta!=NullSupportHelper.NULL()) return null;
 		return ct.content.setEL(key, value);
 	}
 

@@ -4,6 +4,7 @@
 package railo.runtime.functions.other;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.query.ValueList;
 import railo.runtime.op.Caster;
@@ -30,7 +31,7 @@ public final class QuotedValueList extends ValueList {
 		
 		for(int i=1;i<=size;i++) {
 			if(i>1)sb.append(delimiter);
-			sb.append("'"+Caster.toString(column.get(i))+"'");
+			sb.append("'"+Caster.toString(column.get(i,""))+"'");
 		}
 		return sb.toString();
 	}

@@ -213,22 +213,43 @@ Error Output --->
 					</td>
 				</tr>
 				
+				
+				
+				<!--- Local Mode --->
 				<tr>
 					<th scope="row">#stText.Scopes.LocalMode#</th>
 					<td>
+						<div class="comment">#stText.scopes.localmodeDesc#</div>
 						<cfif hasAccess>
-						#scope.localMode#
-							<select name="LocalMode" class="medium">
-								<option value="always" <cfif scope.LocalMode EQ "always">selected</cfif>>#stText.Scopes.LocalModeAlways#</option>
-								<option value="update" <cfif scope.LocalMode EQ "update">selected</cfif>>#stText.Scopes.LocalModeUpdate#</option>
-							</select>
+							<ul class="radiolist">
+								<li>
+									<!--- modern --->
+									<label>
+										<input class="radio" type="radio" name="LocalMode" value="modern"<cfif scope.LocalMode EQ "modern"> checked="checked"</cfif>>
+										<b>#stText.Scopes.LocalModeModern#</b>
+									</label>
+									<div class="comment">#stText.scopes.localmodeModernDesc#</div>
+								</li>
+								<li>
+									<!--- classic --->
+									<label>
+										<input class="radio" type="radio" name="LocalMode" value="classic"<cfif scope.LocalMode EQ "classic"> checked="checked"</cfif>>
+										<b>#stText.Scopes.LocalModeClassic#</b>
+									</label>
+									<div class="comment">#stText.scopes.localmodeClassicDesc#</div>
+								</li>
+							</ul>
 						<cfelse>
-							<b>#scope.localMode#</b>
-							<!---<input type="hidden"  name="LocalMode" value="#scope.localMode#">--->
+							<input type="hidden" name="localMode" value="#scope.LocalMode#">
+							<b>#stText.Scopes["LocalMode"& scope.LocalMode]#</b><br />
+							<div class="comment">#stText.Scopes["LocalMode"& scope.LocalMode&"desc"]#</div>
 						</cfif>
-						<div class="comment">#stText.Scopes.LocalModeDesc#</div>
 					</td>
 				</tr>
+				
+				
+				
+				
 				<tr>
 					<th scope="row">#stText.Scopes.SessionTimeout#</th>
 					<td>

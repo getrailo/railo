@@ -5,6 +5,8 @@ import java.util.Iterator;
 import railo.commons.util.mod.HashMapPro;
 import railo.commons.util.mod.MapPro;
 import railo.runtime.component.Member;
+import railo.runtime.config.Constants;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.engine.ThreadLocalPageContext;
@@ -12,7 +14,6 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -100,8 +101,8 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 
 	@Override
 	public Object get(Key key) throws PageException {
-		Object o = get(key,Null.NULL);
-		if(o!=Null.NULL) return o;
+		Object o = get(key,NullSupportHelper.NULL());
+		if(o!=NullSupportHelper.NULL()) return o;
         throw new ExpressionException("Component ["+component.getCallName()+"] has no accessible Member with name ["+key+"]");
 	}
 	
@@ -112,12 +113,12 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 		}
 		if(key.equalsIgnoreCase(KeyConstants._this)) return component;
 		
-		return shadow.g(key,defaultValue); // NULL Support
-		/* NULL old behavior
+		if(NullSupportHelper.full())return shadow.g(key,defaultValue); 
+		
 		Object o=shadow.get(key);
 		if(o!=null) return o;
 		return defaultValue;
-		*/
+		
 	}
 
 	@Override
@@ -156,11 +157,11 @@ public class ComponentScopeShadow extends StructSupport implements ComponentScop
 	public Object remove(Collection.Key key) throws PageException {
 		if(key.equalsIgnoreCase(KeyConstants._this) || key.equalsIgnoreCase(KeyConstants._super))
 			throw new ExpressionException("key ["+key.getString()+"] is part of the component and can't be removed");
-		return shadow.r(key); // NULL Support
-		/* Null old behavior
+		if(NullSupportHelper.full())return shadow.r(key);
+		
 		Object o=shadow.remove(key);
 		if(o!=null) return o;
-		throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exist");*/
+		throw new ExpressionException("can't remove key ["+key.getString()+"] from struct, key doesn't exist");
 	}
 
 

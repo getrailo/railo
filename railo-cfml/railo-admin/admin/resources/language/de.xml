@@ -98,10 +98,11 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="menu.server.label">Einstellungen</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regionales</data>
-	<data key="menu.server.compiler">Compiler</data>
+	<data key="menu.server.compiler">Language/Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
-	<data key="menu.server.application">Applikation</data>
+	<data key="menu.server.request">Request</data>
+	<data key="menu.server.language">Sprache</data>
 	<data key="menu.server.output">Ausgabe</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Dienste</data>
@@ -349,7 +350,7 @@ und Optimierungen innerhalb ihrer Version einspielen.</data>
 	<data key="application.listenermode">Mode</data>
 	<data key="application.listenermode_root">Root (Wurzelverzeichnis)</data>
 	<data key="application.requesttimeoutdescription">Legt die Zeit fest, wie lange Railo auf die Beendigung eines Requests warten soll. Das heisst, dass die Ausführung des Requests beim Überschreiten dieser Zeit abgebrochen wird. Diese Verhaltensweise kann von dem Tag CFSetting übersteuert werden.</data>
-	<data key="application.server">Definert Applikationseinstellungen, die als Standardwert für alle Webs gelten.</data>
+	<data key="request.description">Einstellungen welche die Ausführung eines Request beeinflussen.</data>
 	<data key="application.scriptprotectdescription">Durch die Konfiguration von Script-Protect schützen Sie ihr System vor &apos;Cross-Site Scripting&apos;</data>
 	<data key="application.listenertypedescription_mixed">Gemischtes Handling. Railo sucht sowohl nach der Datei &apos;Application.cfm/onRequestEnd.cfm&apos; wie auch nach der Datei &apos;Application.cfc&apos;</data>
 	<data key="application.scriptprotectall">Script-Protect überprüft alle Scopes ob die Daten von ausserhalb kommen (cgi, cookie, form, url)</data>
@@ -628,15 +629,20 @@ When checked, any requested files will be inspected only once for potential upda
 	<data key="scopes.cascadingdescription">Abhängig von dieser Einstellung durchsucht Railo gewisse Scopes, um eine im CFML-Code aufgerufene Variable zu finden. Dieses passiert jedoch nur, wenn die Variable ohne vorangestellten Scope aufgerufen wird. (Beispiel: #myVar# anstelle von #variables.myVar#)&lt;br&gt;- strict: durchsucht nur den Variables Scope&lt;br&gt;- small:	durchsucht die Scopes: Variables, Cgi, Url und Form&lt;br&gt;- standard (CFML Standard):	durchsucht die Scopes: Variables, Cgi, Url, Form und Cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions erlauben es Railo Sessions über einen J2EE Server-Cluster zu verteilen. Wenn Sie diese Einstellung ändern verlieren Sie die aktuelle Session und müssen sich erneut einloggen.</data>
 	<data key="scopes.web">Hier können Sie festlegen, wie Railo Scopes abarbeitet.</data>
-	<data key="scopes.localmodealways">Always</data>
-	<data key="scopes.timeoutsecondsvalue">Der Wert Sekunden für </data>
+	
+	<data key="scopes.localmodeClassic">Classic</data>
+	<data key="scopes.localmodeModern">Modern (CFML standard)</data>
+	
+	<data key="scopes.localmodedesc">Definiert wie der Lokal Scope innerhalb einer UDF von einer Variable ohne Scope angesprochen wird.</data>
+
+	<data key="scopes.localmodeModernDesc">der Lokal Scope wird immer verwendet</data>
+	<data key="scopes.localmodeClassicDesc">er Lokal Scope wird nur verwendet, wenn der entsprechende Key darin bereits existiert</data>
+
+<data key="scopes.timeoutsecondsvalue">Der Wert Sekunden für </data>
 	<data key="scopes.sessionmanagementdescription">Standardmässig kann Session Management eingeschaltet werden. Diese Verhaltensweise kann von dem Tag CFApplication übersteuert werden.</data>
 	<data key="scopes.clientcookiesdescription">Client Cookies ein oder ausschalten. Diese Verhaltensweise kann von dem Tag CFApplication übersteuert werden.</data>
 	<data key="scopes.sessiontimeout">Session Timeout</data>
-	<data key="scopes.localmodeupdate">Update (CFML Standard)</data>
-	<data key="scopes.localmodedesc">Definiert wie der Lokal Scope innerhalb einer UDF von einer Variable ohne Scope angesprochen wird.&lt;br&gt;
-- always: der Lokal Scope wird immer verwendet&lt;br&gt;
-- update (CFML Standard): der Lokal Scope wird nur verwendet, wenn der entsprechende Key darin bereits existiert.</data>
+	
 	<data key="scopes.mergeurlform">Url und Form kombinieren</data>
 	<data key="scopes.cascading">Cascading</data>
 	<data key="scopes.cascadetoresultset">Resultsets durchsuchen</data>

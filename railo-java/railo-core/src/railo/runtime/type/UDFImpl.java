@@ -22,6 +22,8 @@ import railo.runtime.PageSource;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.component.MemberSupport;
 import railo.runtime.config.ConfigImpl;
+import railo.runtime.config.Constants;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpRow;
@@ -127,7 +129,7 @@ public class UDFImpl extends MemberSupport implements UDF,Sizeable,Externalizabl
 					if(funcArgs[i].isRequired()) {
 						throw new ExpressionException("The parameter "+funcArgs[i].getName()+" to function "+getFunctionName()+" is required but was not passed in.");
 					}
-					// NULL Support newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
+					if(!NullSupportHelper.full()) newArgs.setEL(funcArgs[i].getName(),Argument.NULL);
 				}
 				else {
 					newArgs.setEL(funcArgs[i].getName(),castTo(funcArgs[i],d,i+1));

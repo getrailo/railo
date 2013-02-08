@@ -36,6 +36,7 @@ import railo.runtime.component.Property;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigWeb;
 import railo.runtime.config.ConfigWebImpl;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.debug.DebugEntryTemplate;
 import railo.runtime.dump.DumpData;
@@ -60,7 +61,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
-import railo.runtime.type.Null;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -1723,7 +1723,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     }
 
     public boolean contains(PageContext pc,String name) {
-       	return get(getAccess(pc),name,Null.NULL)!=Null.NULL;
+       	return get(getAccess(pc),name,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
     }
 
 	/**
@@ -1732,7 +1732,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	 * @return
 	 */
 	public boolean contains(PageContext pc,Key key) {
-	   	return get(getAccess(pc),key,Null.NULL)!=Null.NULL;
+	   	return get(getAccess(pc),key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
 	}
 	
 	@Override
@@ -1741,11 +1741,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	}
     
     public boolean contains(int access,String name) {
-    	return get(access,name,Null.NULL)!=Null.NULL;
+    	return get(access,name,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
    }
     
     public boolean contains(int access,Key name) {
-    	return get(access,name,Null.NULL)!=Null.NULL;
+    	return get(access,name,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
     }
 
     @Override

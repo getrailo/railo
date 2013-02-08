@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
@@ -64,14 +65,14 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
      * @throws PageException
      */
     public Object touch(int row) throws PageException {
-        Object o= query.getAt(columnName,row,Null.NULL);
-        if(o!=Null.NULL) return o;
+        Object o= query.getAt(columnName,row,NullSupportHelper.NULL());
+        if(o!=NullSupportHelper.NULL()) return o;
         return query.setAt(columnName,row,new StructImpl());
     }
     
     public Object touchEL(int row) {
-        Object o= query.getAt(columnName,row,Null.NULL);
-        if(o!=Null.NULL) return o;
+        Object o= query.getAt(columnName,row,NullSupportHelper.NULL());
+        if(o!=NullSupportHelper.NULL()) return o;
         return query.setAtEL(columnName,row,new StructImpl());
     }
 
@@ -199,12 +200,12 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 
     @Override
     public boolean containsKey(String key) {
-        return get(key,Null.NULL)!=Null.NULL;
+        return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
     }
 
 	@Override
 	public boolean containsKey(Collection.Key key) {
-		return get(key,Null.NULL)!=Null.NULL;
+		return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
 	}
 
     @Override
@@ -219,8 +220,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
 
 	@Override
 	public String castToString(String defaultValue) {
-		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL)return defaultValue;
+		Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL())return defaultValue;
 		return Caster.toString(value,defaultValue);
 	}
 
@@ -231,8 +232,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     
     @Override
     public Boolean castToBoolean(Boolean defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL)return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL())return defaultValue;
 		return Caster.toBoolean(value,defaultValue);
     }
 
@@ -243,8 +244,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     
     @Override
     public double castToDoubleValue(double defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL)return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL())return defaultValue;
 		return Caster.toDoubleValue(value,defaultValue);
     }
 
@@ -255,8 +256,8 @@ public final class QueryColumnRef implements QueryColumn,Sizeable {
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),Null.NULL);
-		if(value==Null.NULL)return defaultValue;
+    	Object value = get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),NullSupportHelper.NULL());
+		if(value==NullSupportHelper.NULL())return defaultValue;
 		return DateCaster.toDateAdvanced(value,true,null,defaultValue);
     }
 

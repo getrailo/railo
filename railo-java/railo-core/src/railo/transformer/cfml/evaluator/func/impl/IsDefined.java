@@ -8,7 +8,7 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.util.ArrayUtil;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.type.CollectionKey;
-import railo.transformer.bytecode.expression.type.LiteralStringArray;
+import railo.transformer.bytecode.expression.type.CollectionKeyArray;
 import railo.transformer.bytecode.expression.var.Argument;
 import railo.transformer.bytecode.expression.var.BIF;
 import railo.transformer.bytecode.literal.LitDouble;
@@ -45,8 +45,9 @@ public class IsDefined implements FunctionEvaluator{
 					bif.addArgument(arg);	
 				}
 				else {
-					LiteralStringArray expr = new LiteralStringArray(arr);
-					arg=new Argument(expr,String[].class.getName());
+					CollectionKeyArray expr=new CollectionKeyArray(arr);
+					//LiteralStringArray expr = new LiteralStringArray(arr);
+					arg=new Argument(expr,Collection.Key[].class.getName());
 					bif.addArgument(arg);
 				}
 				

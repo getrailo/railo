@@ -1,6 +1,7 @@
 package railo.runtime.util;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Duplicator;
@@ -77,9 +78,7 @@ public final class QueryStackImpl implements QueryStack {
 		// get data from queries
 		for(int i=start;i<queries.length;i++) {
 			rtn=((Objects)queries[i]).get(pc,key,Null.NULL);
-			if(rtn!=Null.NULL) {
-				return rtn;
-			}
+			if(rtn!=Null.NULL) return rtn;
 		}
 		return defaultValue;
 	}

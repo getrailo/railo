@@ -27,8 +27,8 @@ public final class OpElvis extends ExpressionBase {
 	
 
     private static final Type IS_DEFINED=Type.getType(IsDefined.class);
-	public static final Method CALL = new Method(
-    		"call",
+	public static final Method INVOKE = new Method(
+    		"invoke",
     		Types.BOOLEAN_VALUE,
     		new Type[]{Types.PAGE_CONTEXT,Types.DOUBLE_VALUE,Types.STRING_ARRAY,Types.BOOLEAN_VALUE});
 	
@@ -79,8 +79,8 @@ public final class OpElvis extends ExpressionBase {
         
 		//ASMConstants.NULL(adapter);
 		
-        // call IsDefined.call
-    	adapter.invokeStatic(IS_DEFINED, CALL);
+        // call IsDefined.invoke
+    	adapter.invokeStatic(IS_DEFINED, INVOKE);
 		ExpressionUtil.visitLine(bc, left.getEnd());
     	
     	

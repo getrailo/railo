@@ -3,6 +3,7 @@ package railo.runtime.type.scope;
 import java.util.Iterator;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpTable;
@@ -10,7 +11,6 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
-import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 
 public class Closure extends ScopeSupport implements Variables {
@@ -92,10 +92,10 @@ public class Closure extends ScopeSupport implements Variables {
 
 	@Override
 	public Object get(Key key) throws PageException {
-		Object value = local.get(key,Null.NULL);
-		if(value!=Null.NULL) return value;
-		value=arg.get(key,Null.NULL);
-		if(value!=Null.NULL) {
+		Object value = local.get(key,NullSupportHelper.NULL());
+		if(value!=NullSupportHelper.NULL()) return value;
+		value=arg.get(key,NullSupportHelper.NULL());
+		if(value!=NullSupportHelper.NULL()) {
 			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
 			return value;
 		}
@@ -107,15 +107,15 @@ public class Closure extends ScopeSupport implements Variables {
 
 	@Override
 	public Object get(Key key, Object defaultValue) {
-		Object value = local.get(key,Null.NULL);
-		if(value!=Null.NULL) return value;
-		value=arg.get(key,Null.NULL);
-		if(value!=Null.NULL) {
+		Object value = local.get(key,NullSupportHelper.NULL());
+		if(value!=NullSupportHelper.NULL()) return value;
+		value=arg.get(key,NullSupportHelper.NULL());
+		if(value!=NullSupportHelper.NULL()) {
 			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
 			return value;
 		}
-		value= var.get(key,Null.NULL);
-		if(value!=Null.NULL){
+		value= var.get(key,NullSupportHelper.NULL());
+		if(value!=NullSupportHelper.NULL()){
 			if(debug) UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),var.getTypeAsString(), key);
 			return value;
 		}
