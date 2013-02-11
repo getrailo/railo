@@ -159,10 +159,10 @@
 
 			<style type="text/css">
 		
-				##-railo-err 			{ margin-top: 3em; padding: 1em; border: 1px solid ##CCC; border-radius: 5px; background-color: ##FFF; color: ##222; }
+				##-railo-err 			{ margin: 2.5em 1em 0 1em; padding: 1em; border: 1px solid ##CCC; border-radius: 5px; background-color: ##FFF; color: ##222; }
 				##-railo-err legend 	{ padding: 0 1em; background-color: ##FFF; color: ##222; }
 
-				##-railo-err, ##-railo-err td	{ font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif; font-size: 9pt; }
+				##-railo-err, ##-railo-err td	{ font-family: Helvetica, Arial, sans-serif; font-size: 9pt; line-height: 1.35; }
 				##-railo-err.large, ##-railo-err.large td	{ font-size: 10pt; }
 				##-railo-err.small, ##-railo-err.small td	{ font-size: 8.5pt; }
 
