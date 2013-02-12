@@ -212,7 +212,7 @@ public abstract class UDFGSProperty extends UDFImpl {
 			if(!Double.isNaN(min) && l<((int)min))
 				throw new ExpressionException("string ["+str+"] is to short ["+l+"], the string must be at least ["+min+"] characters");
 			if(!Double.isNaN(max) && l>((int)max))
-				throw new ExpressionException("string ["+str+"] is to long ["+l+"], the string can have a maximal length of ["+max+"] characters");
+				throw new ExpressionException("string ["+str+"] is to long ["+l+"], the string can have a maximum length of ["+max+"] characters");
 		}
 		else if(validate.equals("regex")){
 			String pattern=Caster.toString(validateParams.get(KeyConstants._pattern,null),null);

@@ -13,7 +13,7 @@
 <cfset stText.debug.exeTimeQuery="Query">
 <cfset stText.debug.exeTimeTotal="Total">
 <cfset stText.debug.exeTimeApp="App">
-<cfset stText.debug.maxLogs="Maximal Logged Requests">
+<cfset stText.debug.maxLogs="Maximum Logged Requests">
 <cfset stText.debug.minExeTime="Minimal Execution Time (ms)">
 <cfset stText.debug.minExeTimeDesc="Minimal Execution Time that Railo outputs the debugger information of a request.">
 <cfset stText.debug.pathRestriction="Path Restriction">

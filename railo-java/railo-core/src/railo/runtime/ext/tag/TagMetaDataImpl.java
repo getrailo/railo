@@ -22,7 +22,7 @@ public class TagMetaDataImpl implements TagMetaData {
 	 * Constructor of the class
 	 * @param attrType TagMetaData.ATTRIBUTE_TYPE_FIX,TagMetaData.ATTRIBUTE_TYPE_DYNAMIC,TagMetaData.ATTRIBUTE_TYPE_MIXED
 	 * @param attrMin minimal count of attributes needed for tag
-	 * @param attrMax maximal count of attributes or -1 for infinity attributes
+	 * @param attrMax maximum count of attributes or -1 for infinity attributes
 	 * @param bodyContent TagMetaData.BODY_CONTENT_EMPTY,TagMetaData.BODY_CONTENT_FREE,TagMetaData.BODY_CONTENT_MUST
 	 * @param isBodyRE is the body of the tag parsed like inside a cfoutput
 	 * @param description A description of the tag.
