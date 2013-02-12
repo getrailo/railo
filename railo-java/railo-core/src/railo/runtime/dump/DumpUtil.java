@@ -45,7 +45,7 @@ public class DumpUtil {
 	
 	public static DumpData toDumpData(Object o,PageContext pageContext, int maxlevel, DumpProperties props) {
 		if(maxlevel<=0) {
-			return new SimpleDumpData("maximal dump level reached");
+			return new SimpleDumpData("maximum dump level reached");
 		}
 		// null
 		if(o == null) {

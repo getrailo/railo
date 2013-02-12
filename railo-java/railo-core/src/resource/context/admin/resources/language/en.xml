@@ -849,7 +849,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.dbconnlimit">Connection limit (max)</data>
 	<data key="settings.dbconntimeoutdesc">Define a time in minutes for how long a connection is kept alive before it will be closed</data>
 	<data key="settings.dbportdesc">The port to connect the database</data>
-	<data key="settings.dbconnlimitdesc">Restricts the maximal connections at time</data>
+	<data key="settings.dbconnlimitdesc">Restricts the number of maximum connections at one time</data>
 	<data key="settings.listdatasourcesdescserver">Datasources created here are available for ALL web contexts to use. The settings for these datasources can only be modified in this Server Administrator area.</data>
 	<data key="settings.dballowed">Allowed operations</data>
 	<data key="Settings.dbStorage">Storage</data>

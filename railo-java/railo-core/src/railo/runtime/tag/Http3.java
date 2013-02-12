@@ -87,7 +87,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 	
 
     /**
-     * Maximal count of redirects (5)
+     * maximum redirect count (5)
      */
     public static final short MAX_REDIRECT=15;
     
