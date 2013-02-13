@@ -176,7 +176,7 @@
 				
 				##-railo-err .section-title	{ margin-top: 1.25em; font-size: 1.25em; font-weight: normal; color:##007bb7; }
 				##-railo-err .section-title:first-child	{ margin-top: auto; }
-				##-railo-err .label		{ white-space: nowrap; vertical-align: top; text-align: right; }
+				##-railo-err .label		{ white-space: nowrap; vertical-align: top; text-align: right; padding-right: 1em; }
 
 				##-railo-err .collapsed	{ display: none; }
 
