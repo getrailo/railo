@@ -597,7 +597,7 @@ public final class XMLCaster {
 	 */
 	public static DumpData toDumpData(Node node, PageContext pageContext, int maxlevel, DumpProperties props) {
 		if(maxlevel<=0) {
-			return new SimpleDumpData("maxumum dump level reached");
+			return new SimpleDumpData("maximum dump level reached");
 		}
 		maxlevel--;
 		// Document
