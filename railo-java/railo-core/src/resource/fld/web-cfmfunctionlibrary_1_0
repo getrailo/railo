@@ -1714,13 +1714,13 @@ you can use tag cfadmin instead. we will add support for this function in a futu
         <argument>
             <name>properties</name>
             <alias>propsSruct,props</alias>
-            <type>struct</type>
+            <type>any</type>
             <required>no</required>
             <description>a structure specifying the cache properties</description>
         </argument>
         <argument>
             <name>throwOnError</name>
-            <type>boolean</type>
+            <type>any</type>
             <required>no</required>
             <description>specifies whether the function should throw an exception if a cache connection with that name already exists (default is true)</description>
         </argument>

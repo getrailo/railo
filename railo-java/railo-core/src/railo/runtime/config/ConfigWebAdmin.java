@@ -264,7 +264,6 @@ public final class ConfigWebAdmin {
 
 	/**
      * load XML Document from XML File
-     * @param config
      * @param xmlFile XML File to read
      * @return returns the Document
      * @throws SAXException
@@ -398,7 +397,7 @@ public final class ConfigWebAdmin {
     
     /**
      * sets the charset for the mail
-     * @param timeout
+     * @param charset
      * @throws SecurityException
      */
     public void setMailDefaultCharset(String charset) throws PageException {
@@ -1670,8 +1669,11 @@ public final class ConfigWebAdmin {
   	    	if(n!=null && n.equalsIgnoreCase(name)) {
   	    		Map<String, CacheConnection> conns = config.getCacheConnections();
   	    		CacheConnection cc= conns.get(n.toLowerCase());
-  	    		if(cc!=null)Util.removeEL(config instanceof ConfigWeb?(ConfigWeb)config:null,cc);
-  	    	  parent.removeChild(children[i]);
+
+                if ( cc != null )
+                    Util.removeEL( config instanceof ConfigWeb ? (ConfigWeb) config : null, cc );
+
+                parent.removeChild(children[i]);
   			}
   	    }
       	
@@ -2252,7 +2254,7 @@ public final class ConfigWebAdmin {
     
     /**
      * update the Component Data Member default access type
-     * @param access
+     * @param strAccess
      * @throws SecurityException
      * @throws ExpressionException 
      */
@@ -2276,7 +2278,7 @@ public final class ConfigWebAdmin {
     
     /**
      * update the Component Data Member default access type
-     * @param accessType
+     * @param triggerDataMember
      * @throws SecurityException
      */
     public void updateTriggerDataMember(Boolean triggerDataMember) throws SecurityException {
@@ -2564,7 +2566,7 @@ public final class ConfigWebAdmin {
      * @param id
      * @param setting
      * @param file
-     * @param file_access 
+     * @param fileAccess
      * @param directJavaAccess
      * @param mail
      * @param datasource

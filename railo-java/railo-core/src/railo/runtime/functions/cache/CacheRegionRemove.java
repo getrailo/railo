@@ -13,7 +13,20 @@ import railo.runtime.op.Caster;
  */
 public class CacheRegionRemove implements Function {
 
-    public static void call( PageContext pc, String cacheName, String webAdminPassword ) throws PageException {
+
+    public static String call( PageContext pc, String cacheName, String webAdminPassword ) throws PageException {
+
+        return _call( pc, cacheName, webAdminPassword );
+    }
+
+
+    public static String call( PageContext pc, String cacheName ) throws PageException {
+
+        return _call( pc, cacheName, null );
+    }
+
+
+    static String _call( PageContext pc, String cacheName, String webAdminPassword ) throws PageException {
 
         webAdminPassword = Util.getPassword( pc, webAdminPassword );
 
@@ -23,16 +36,13 @@ public class CacheRegionRemove implements Function {
 
             adminConfig.removeCacheConnection( cacheName );
 
+            adminConfig.store();
+
         } catch ( Exception e ) {
 
             throw Caster.toPageException( e );
         }
+
+        return null;
     }
-
-
-    public static void call( PageContext pc, String cacheName ) throws PageException {
-
-        call( pc, cacheName, null );
-    }
-
 }
