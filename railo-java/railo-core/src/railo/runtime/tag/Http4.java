@@ -95,7 +95,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	public static final String MULTIPART_FORM_DATA = "multipart/form-data";
 
     /**
-     * Maximal count of redirects (5)
+     * Maximum redirect count (5)
      */
     public static final short MAX_REDIRECT=15;
     

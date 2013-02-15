@@ -5,10 +5,10 @@
 		
 		,field("Initial connections","initial_connections","1",false,"how many initial connetions are set (initial setting ""1"")","text")
 		,field("Minimal spare connections","min_spare_connections","1",false,"minimal amount of connections (initial setting ""1"")","text")
-		,field("Maximal spare connections","max_spare_connections","32",false,"maximal amount of connections (initial setting ""32"")","text")
+		,field("Maximum spare connections","max_spare_connections","32",false,"maximum amount of connections (initial setting ""32"")","text")
 		
-		,field("Maximal idle time","max_idle_time","600",false,"maximal idle time for available sockets (initial setting ""10 minutes"")","time")
-		,field("Maximal busy time","max_busy_time","30",false,"maximal busy time for available sockets (initial setting ""30 seconds"")","time")
+		,field("Maximum idle time","max_idle_time","600",false,"maximum idle time for available sockets (initial setting ""10 minutes"")","time")
+		,field("Maximum busy time","max_busy_time","30",false,"maximum busy time for available sockets (initial setting ""30 seconds"")","time")
 		,field("thread maintenance","maint_thread_sleep","5",false,"maintenance thread sleep time (initial setting ""5 seconds"")","time")
 		,field("Socket timeout","socket_timeout","30",false,"default timeout of socket reads (initial setting ""30 seconds"")","time")
 		,field("Socket connection timeout","socket_connect_to","3",false,"timeout for socket connections (initial setting ""3 seconds"")","time")

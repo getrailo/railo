@@ -1387,7 +1387,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
 				if(!Decision.isCastableTo(type,value,true,true,maxLength)) {
 					if(maxLength>-1 && ("email".equalsIgnoreCase(type) || "url".equalsIgnoreCase(type) || "string".equalsIgnoreCase(type))) {
 						StringBuilder msg=new StringBuilder(CasterException.createMessage(value, type));
-						msg.append(" with a maximal length of "+maxLength+" characters");
+						msg.append(" with a maximum length of "+maxLength+" characters");
 						throw new CasterException(msg.toString());	
 					}
 					throw new CasterException(value,type);	
