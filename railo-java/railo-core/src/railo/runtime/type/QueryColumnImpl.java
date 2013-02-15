@@ -253,18 +253,23 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     	Object o=data[row-1];
 	    return o==null?"":o;
     }
-
-    // TODO make sure nobody is using this method, then rewrite functionality
-    @Override
-	public Object get(int row, Object defaultValue) {
+    
+    public Object get(int row, Object defaultValue) {
 		if(row<1 || row>size) return defaultValue;
 	    
-		if(NullSupportHelper.full()) return data[row-1];
+		// null is valid
+		if(NullSupportHelper.full() || defaultValue==null) return data[row-1];
 	    
+		// null is not valid, so the default value is returned instead
 		Object o=data[row-1];
-	    return o==null?"":o;
+		return o==null?defaultValue:o;
 	}
-	
+
+    // FUTURE this method should replace the method above, but it needs adjustment with all callers
+	/*public Object get2(int row, Object defaultValue) {
+		if(row<1 || row>size) return defaultValue;
+	    return data[row-1];
+	}*/
 
 	@Override
 	public Object set(String key, Object value) throws PageException {
