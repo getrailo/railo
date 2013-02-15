@@ -1137,6 +1137,18 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	//return undefinedScope().get(LOCAL);
     }
     
+    public Object thisGet() throws PageException { 
+    	return thisTouch();
+    }
+
+    public Object thisTouch() throws PageException {
+    	// inside a component
+    	if(undefined.variablesScope() instanceof ComponentScope){
+    		return ((ComponentScope)undefined.variablesScope()).getComponent();
+    	}
+    	return undefinedScope().get(KeyConstants._THIS);
+    }
+    
 	
     /**
      * @param local sets the current local scope
