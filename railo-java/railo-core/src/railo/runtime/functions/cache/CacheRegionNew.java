@@ -17,10 +17,10 @@ import railo.runtime.type.StructImpl;
  */
 public class CacheRegionNew implements Function {
 
-    private final static String cacheClassName = "railo.runtime.cache.eh.EHCacheLite";    // TODO: this is the only supported type?
+    private final static String cacheClassName = "railo.runtime.cache.eh.EHCacheLite";
 
 
-    public static String call( PageContext pc, String cacheName, Object arg2, Object arg3, String arg4 ) throws PageException {
+    public static String call( PageContext pc, String cacheName, Object arg2, Object arg3, String arg4 ) throws PageException {     // used Object for args 2 & 3 to match fld
 
         return _call( pc, cacheName, (Struct)arg2, (Boolean)arg3, arg4 );
     }
@@ -52,7 +52,7 @@ public class CacheRegionNew implements Function {
 
     public static String call( PageContext pc, String cacheName ) throws PageException {
 
-        return _call(pc, cacheName, new StructImpl(), true, null);
+        return _call(pc, cacheName, new StructImpl(), true, null);      // name
     }
 
 
