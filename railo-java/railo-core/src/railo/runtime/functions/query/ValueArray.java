@@ -20,7 +20,7 @@ public class ValueArray implements Function {
 		Array arr=new ArrayImpl();
 	    int size=column.size();
 		for(int i=1;i<=size;i++) {
-			arr.append(Caster.toString(column.get(i,"")));
+			arr.append(Caster.toString(column.get(i,null)));
 		}
 		return arr;	
 	}
