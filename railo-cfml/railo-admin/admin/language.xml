@@ -1417,7 +1417,7 @@
 		<custom key="settings.dbclobdesc">Enable long text retrieval (&lt;abbr title=&quot;character large object&quot;&gt;CLOB&lt;/abbr&gt;)</custom>
 		<custom key="settings.dbconnlimit">Connection limit (max)</custom>
 	
-		<custom key="settings.dbconnlimitdesc">Restricts the maximal connections at time</custom>
+		<custom key="settings.dbconnlimitdesc">Restricts the maximum number of connections at one time</custom>
 		<custom key="settings.dbconnlimitinf">- inf -</custom>
 		<custom key="settings.dbconntimeout">Connection timeout (in minutes)</custom>
 		<custom key="settings.dbconntimeoutdesc">Define a time in minutes for how long a connection is kept alive before it will be closed</custom>

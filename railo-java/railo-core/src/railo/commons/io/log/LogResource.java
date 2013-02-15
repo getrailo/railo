@@ -15,7 +15,7 @@ public class LogResource implements Log {
 
 
 	/**
-     * maximal count of files (history of files) 
+     * maximum number of files (history of files) 
      */
     public static final int MAX_FILES=10;
 
@@ -168,7 +168,7 @@ public class LogResource implements Log {
     }
     
     /**
-     * maximal file size of for a log file
+     * maximum file size of for a log file
      */
     public static final long MAX_FILE_SIZE=1024*1024;
     /**

@@ -12445,12 +12445,12 @@ dWord: creates a value of 0 (zero)</description>
 			Example single rule:
 			#{interval:createTimeSpan(0,0,0,5),tries:5}#
 
-			in this case Railo replay the thread for maximal 5 times, when the execution fails, Railo waits for 5 seconds before doing the next try.
+			in this case Railo replay the thread for a maximum of 5 times, when the execution fails, Railo waits for 5 seconds before doing the next try.
 
 			Example multiple rules:
 			#[{interval:createTimeSpan(0,0,0,5),tries:5},{interval:createTimeSpan(0,0,0,10),tries:5}]#
 
-			in this case Railo replay the thread for maximal 10 times, when the execution fails, 5 times every 5 seconds, then 5 times every 10 seconds.
+			in this case Railo replay the thread for maximum of 10 times, when the execution fails, 5 times every 5 seconds, then 5 times every 10 seconds.
 			</description>
 		</attribute>
 		<attribute>
@@ -13703,7 +13703,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>videoBitrateMax</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>maximal video bitrate of variable bitrate, default same as input or part of defined quality (example: 10kbps, 10mbps, 10bps)</description>
+			<description>maximum video bitrate of variable bitrate, default same as input or part of defined quality (example: 10kbps, 10mbps, 10bps)</description>
 		</attribute>
 		<attribute>
 			<type>string</type>
@@ -13746,7 +13746,7 @@ dWord: creates a value of 0 (zero)</description>
 			<name>max</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>maximal length of destination video, you can defines max frame (10f) or max time (1145ms,3.123s)</description>
+			<description>maximum length of destination video, you can defines max frame (10f) or max time (1145ms,3.123s)</description>
 		</attribute>
 		<attribute>
 			<type>string</type>

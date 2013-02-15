@@ -375,7 +375,7 @@ All elements in the array must contain values that can be automatically converte
 			<type>number</type>
 			<required>No</required>
 			<default>20</default>
-			<description>maximal numbers of threads executed, ignored when argument "parallel" is set to false</description>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -804,7 +804,7 @@ Remember CFML arrays start at 1 not 0.</description>
 			<name>length</name>
 			<type>number</type>
 			<required>No</required>
-		<description>maximal elements to slice from offset</description>
+		<description>maximum elements to slice from offset</description>
     </argument>
 		<return>
 			<type>array</type>
@@ -14763,7 +14763,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 			<required>No</required>
 			<default>20</default>
-			<description>maximal numbers of threads executed, ignored when argument "parallel" is set to false</description>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
 		</argument>
 		<return>
 			<type>void</type>
@@ -14800,7 +14800,7 @@ You can find a list of all available timezones in the Railo administrator (Setti
 			<type>number</type>
 			<required>No</required>
 			<default>20</default>
-			<description>maximal numbers of threads executed, ignored when argument "parallel" is set to false</description>
+			<description>maximum number of threads executed, ignored when argument "parallel" is set to false</description>
 		</argument>
 		<return>
 			<type>void</type>

@@ -53,8 +53,8 @@ public interface TagMetaData {
 	 */
 	public int getAttributeMin();
 	/**
-	 * maximal count of attributes needed for tag
-	 * @return maximal count of attributes or -1 for infinity attributes
+	 * maximum count of attributes needed for tag
+	 * @return maximum count of attributes or -1 for infinity attributes
 	 */
 	public int getAttributeMax();
 	
