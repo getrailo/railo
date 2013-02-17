@@ -324,7 +324,7 @@ public final class DebuggerImpl implements DebuggerPro {
                 qryPage.setAt(KeyConstants._app,row,_toString(de.getExeTime()-de.getQueryTime()));
                 qryPage.setAt(KeyConstants._load,row,_toString(de.getFileLoadTime()));
 		        qryPage.setAt(KeyConstants._query,row,_toString(de.getQueryTime()));
-                qryPage.setAt(KeyConstants._total,row,_toString(de.getFileLoadTime()+de.getExeTime()));
+                qryPage.setAt(KeyConstants._total,row,_toString( de.getFileLoadTime() + de.getExeTime() + de.getQueryTime() ));
 		        qryPage.setAt(KeyConstants._src,row,de.getSrc());    
 			}
 		}
