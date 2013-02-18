@@ -164,7 +164,7 @@ Error Output --->
 						return name == "railo-instrumentation.jar" or name == "railo-inst.jar";
 					}#";
 				if(res.recordcount > 0){
-					sub=listTrim(replace(res.directory,root,''),'/\');
+					sub=ListCompact(replace(res.directory,root,''),'/\');
 					return sub&server.separator.file&res.name;
 				}
 				else return valueWhenNotExist;
