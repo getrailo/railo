@@ -4,7 +4,6 @@
 package railo.runtime.functions.other;
 
 import railo.runtime.PageContext;
-import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.query.ValueList;
 import railo.runtime.op.Caster;

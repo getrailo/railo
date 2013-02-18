@@ -41,7 +41,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
-import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.CFTypes;

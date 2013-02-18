@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Arrays;
-import java.util.List;
 
 import railo.commons.io.SystemUtil;
 import railo.runtime.exp.PageException;

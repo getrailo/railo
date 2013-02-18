@@ -28,10 +28,10 @@ import railo.runtime.sql.exp.value.ValueNumber;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.QueryUtil;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.QueryUtil;
 
 /**
  * 

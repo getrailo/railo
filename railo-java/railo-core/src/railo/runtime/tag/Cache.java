@@ -35,8 +35,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
-import railo.runtime.writer.CFMLWriter;
-import railo.runtime.writer.CFMLWriterImpl;
 
 /**
 * Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses

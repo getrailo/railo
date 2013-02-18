@@ -22,7 +22,6 @@ import railo.runtime.PageSource;
 import railo.runtime.cache.ram.RamCache;
 import railo.runtime.component.MemberSupport;
 import railo.runtime.config.ConfigImpl;
-import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.dump.DumpData;
 import railo.runtime.dump.DumpProperties;

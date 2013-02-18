@@ -22,11 +22,11 @@ import railo.runtime.sql.old.ZQuery;
 import railo.runtime.sql.old.ZSelectItem;
 import railo.runtime.sql.old.ZqlParser;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.util.QueryUtil;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
+import railo.runtime.type.util.QueryUtil;
 
 /**
  * 

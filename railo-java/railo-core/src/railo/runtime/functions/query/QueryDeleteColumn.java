@@ -1,7 +1,6 @@
 package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
-import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;

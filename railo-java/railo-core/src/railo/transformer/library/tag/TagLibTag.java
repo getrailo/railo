@@ -18,7 +18,6 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.transformer.bytecode.Position;
 import railo.transformer.bytecode.cast.CastOther;
-import railo.transformer.bytecode.cast.Cast;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.literal.LitBoolean;
 import railo.transformer.bytecode.literal.LitDouble;
