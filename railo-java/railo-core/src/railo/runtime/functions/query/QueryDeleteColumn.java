@@ -1,11 +1,13 @@
 package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.util.QueryUtil;
 
 public final class QueryDeleteColumn {
 
@@ -19,7 +21,7 @@ public final class QueryDeleteColumn {
         clone.resize(len);
         
         for(int i=1;i<=len;i++) {
-            clone.setE(i,column.get(i));
+            clone.setE(i,QueryUtil.getValue(column,i));
         }
         return clone;
     }

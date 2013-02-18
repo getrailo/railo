@@ -1,5 +1,6 @@
 package railo.runtime.tag;
 
+import railo.print;
 import railo.runtime.PageContext;
 import railo.runtime.PageContextImpl;
 import railo.runtime.config.ConfigWebImpl;
@@ -214,9 +215,9 @@ public final class Lock extends BodyTagTryCatchFinallyImpl {
 	    cflock.set("errortext","");
 	    pageContext.variablesScope().set("cflock",cflock);
         start=System.nanoTime();
-		try {
+        try {
+		    ((PageContextImpl)pageContext).setActiveLock(new ActiveLock(type,name,timeoutInMillis)); // this has to be first, otherwise LockTimeoutException has nothing to release
 		    data = manager.lock(type,name,timeoutInMillis,pageContext.getId());
-		    ((PageContextImpl)pageContext).setActiveLock(new ActiveLock(type,name,timeoutInMillis));
 		} 
 		catch (LockTimeoutException e) {
 		    _release(pageContext,System.nanoTime()-start);

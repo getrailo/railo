@@ -22,6 +22,7 @@ import railo.runtime.sql.old.ZQuery;
 import railo.runtime.sql.old.ZSelectItem;
 import railo.runtime.sql.old.ZqlParser;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.QueryUtil;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
@@ -168,7 +169,7 @@ public final class Executer {
             int i;
             outer:for(int row=rtn.getRecordcount();row>1;row--) {
                 for(i=0;i<columns.length;i++) {
-                    if(!Operator.equals(columns[i].get(row),columns[i].get(row-1),true))
+                    if(!Operator.equals(QueryUtil.getValue(columns[i],row),QueryUtil.getValue(columns[i],row-1),true))
                         continue outer;
                 }
                 rtn.removeRow(row);

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.DeprecatedException;
 
 /**
  * implementation of the query column
@@ -43,7 +44,7 @@ public final class DebugQueryColumn extends QueryColumnImpl implements QueryColu
 
 
 	@Override
-    public Object get(int row){
+    public Object get(int row) throws DeprecatedException{
     	used=true;
     	return super.get(row);
     }

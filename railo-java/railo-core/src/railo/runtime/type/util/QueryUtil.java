@@ -18,6 +18,7 @@ import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.runtime.PageContext;
+import railo.runtime.config.NullSupportHelper;
 import railo.runtime.db.DataSource;
 import railo.runtime.db.DatasourceConnection;
 import railo.runtime.db.SQL;
@@ -31,16 +32,20 @@ import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
+import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.functions.arrays.ArrayFind;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryColumnImpl;
+import railo.runtime.type.QueryColumnPro;
+import railo.runtime.type.QueryImpl;
 import railo.runtime.type.query.SimpleQuery;
 
 public class QueryUtil {
@@ -256,5 +261,38 @@ public class QueryUtil {
 		if(Ref.class==type) return rs.getRef(columnLabel);
 		
 		throw new SQLFeatureNotSupportedException("type ["+type.getName()+"] is not supported");
+	}
+
+	/**
+	 * return the value at the given position (row), returns the default empty value ("" or null) for wrong row or null values.
+	 * this method only exist for backward compatibility and should not be used for new functinality
+	 * @param column
+	 * @param row
+	 * @return
+	 * @deprecated use instead QueryColumn.get(int,Object)
+	 */
+	public static Object getValue(QueryColumn column, int row) {//print.ds();
+		if(NullSupportHelper.full()) return column.get(row, null);
+		Object v = column.get(row, "");
+		return v==null?"":v;
+	}
+
+	public static QueryColumnImpl duplicate2QueryColumnImpl(QueryImpl targetQuery,QueryColumn col, boolean deepCopy) {
+		if(col instanceof QueryColumnImpl)
+    		return ((QueryColumnImpl)col).cloneColumnImpl(deepCopy);
+    	
+		// fill array for column
+		Array content=new ArrayImpl();
+		int len=col.size();
+		for(int i=1;i<=len;i++){
+			content.setEL(i, col.get(i,null));
+		}
+		
+		// create and return column
+		try {
+			return new QueryColumnImpl(targetQuery,col.getKey(),content,col.getType());
+		} catch (PageException e) {
+			throw new PageRuntimeException(e);
+		}
 	}
 }

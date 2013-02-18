@@ -28,7 +28,7 @@ public final class QuerySetColumn implements Function {
 			Array content=new ArrayImpl();
 			int len=qc.size();
 			for(int i=1;i<=len;i++){
-				content.setE(i, qc.get(i));
+				content.setE(i, qc.get(i,null));
 			}
 			query.addColumn(trg, content, qc.getType());
 		}

@@ -3,6 +3,7 @@ package railo.runtime.sql.exp;
 import railo.runtime.exp.PageException;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
+import railo.runtime.type.util.QueryUtil;
 
 
 public class ColumnExpression extends ExpressionSupport implements Column {
@@ -68,7 +69,7 @@ public class ColumnExpression extends ExpressionSupport implements Column {
 	
 	public Object getValue(Query qr, int row) throws PageException {
 		if(col==null)col = qr.getColumn(getColumn());
-		return col.get(row);
+		return QueryUtil.getValue(col,row);
 	}
 	
 	public Object getValue(Query qr, int row, Object defaultValue) {

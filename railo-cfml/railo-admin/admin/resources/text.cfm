@@ -18,7 +18,7 @@
 	<cfset stText=application.stText[session.railo_admin_lang]>
 	<!--- now read the actual file when not english--->
     <cfif session.railo_admin_lang NEQ "en">
-        <cffile action="READ" file="language/#session.railo_admin_lang#.xml" variable="sXML">
+        <cffile action="READ" file="language/#session.railo_admin_lang#.xml" variable="sXML" charset="UTF-8">
         <cfset application.stText[session.railo_admin_lang] = GetFromXMLNode(XMLParse(sXML).XMLRoot.XMLChildren,stText)>
 	</cfif>
     <cftry>
