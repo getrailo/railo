@@ -11,4 +11,12 @@ public final class UCFirst implements Function {
     public static String call(PageContext pc , String string) {
         return StringUtil.ucFirst(string);
     }
+
+    public static String call( PageContext pc, String string, boolean doAll ) {
+
+        if ( !doAll )
+            return call( pc, string );
+
+        return StringUtil.capitalize( string, null );
+    }
 }
