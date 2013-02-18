@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import railo.commons.io.SystemUtil;
 import railo.runtime.exp.PageException;
@@ -31,6 +33,43 @@ public final class StringUtil {
 			return str.substring(0,1).toUpperCase()+str.substring(1);
 		}
 	}
+
+
+    public static String capitalize( String input, List<Character> delims ) {
+
+        if ( input == null || input.isEmpty() )
+            return input;
+
+        if ( delims == null || delims.isEmpty() )
+            delims = Arrays.asList( new Character[]{ '.', '-', '(', ')' } );
+
+        StringBuilder sb = new StringBuilder( input.length() );
+
+        boolean isLastDelim = true;
+        boolean isLastSpace = true;
+
+        for ( int i=0; i<input.length(); i++ ) {
+
+            char c = input.charAt( i );
+
+            if ( Character.isWhitespace(c) ) {
+
+                if ( !isLastSpace )
+                    sb.append( ' ' );
+
+                isLastSpace = true;
+            } else {
+
+                sb.append( ( isLastSpace || isLastDelim ) ? Character.toUpperCase( c ) : c );
+
+                isLastDelim = delims.contains( c );
+                isLastSpace = false;
+            }
+        }
+
+        return sb.toString();
+    }
+
 	
 	/**
 	 * do first Letter Upper case
@@ -871,7 +910,7 @@ public final class StringUtil {
 
 	/**
 	 * trim given value, return defaultvalue when input is null
-	 * @param string
+	 * @param str
 	 * @param defaultValue
 	 * @return trimmed string or defaultValue
 	 */
@@ -968,7 +1007,7 @@ public final class StringUtil {
 	/**
 	 * this method works different from the regular substring method, the regular substring method takes startIndex and endIndex as second and third argument,
 	 * this method takes offset and length
-	 * @param string
+	 * @param str
 	 * @param off
 	 * @param len
 	 * @return
