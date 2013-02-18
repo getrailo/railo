@@ -11,6 +11,7 @@ import railo.commons.io.SystemUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.util.ArrayUtil;
 
 
 
@@ -35,20 +36,18 @@ public final class StringUtil {
 	}
 
 
-    public static String capitalize( String input, List<Character> delims ) {
+    public static String capitalize( String input, char[] delims ) {
 
-        if ( input == null || input.isEmpty() )
-            return input;
+        if (isEmpty(input)) return input;
 
-        if ( delims == null || delims.isEmpty() )
-            delims = Arrays.asList( new Character[]{ '.', '-', '(', ')' } );
+        if (ArrayUtil.isEmpty(delims))
+            delims = new char[]{ '.', '-', '(', ')' };
 
         StringBuilder sb = new StringBuilder( input.length() );
 
-        boolean isLastDelim = true;
-        boolean isLastSpace = true;
-
-        for ( int i=0; i<input.length(); i++ ) {
+        boolean isLastDelim = true,isLastSpace = true;
+        int len=input.length();
+        for (int i=0; i<len; i++) {
 
             char c = input.charAt( i );
 
@@ -58,11 +57,12 @@ public final class StringUtil {
                     sb.append( ' ' );
 
                 isLastSpace = true;
-            } else {
+            } 
+            else {
 
                 sb.append( ( isLastSpace || isLastDelim ) ? Character.toUpperCase( c ) : c );
 
-                isLastDelim = delims.contains( c );
+                isLastDelim = _contains(delims, c );
                 isLastSpace = false;
             }
         }
@@ -71,6 +71,14 @@ public final class StringUtil {
     }
 
 	
+	private static boolean _contains(char[] chars, char c) {
+		for ( int i=0; i<chars.length; i++ ) {
+			if(chars[i]==c) return true;
+		}
+		return false;
+	}
+
+
 	/**
 	 * do first Letter Upper case
 	 * @param str String to operate
