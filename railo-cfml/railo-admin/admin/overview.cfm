@@ -177,26 +177,20 @@ Error Output --->
 		realpath=getRealPath2RailoInstJar("ne","");
 		</cfscript>
 		
-		
-		
-		
 		<div class="warning nofocus">
-			There is no Java Agent defined in this enviroment. 
-			The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
-			There are 2 ways to provide the Java Agent functionality:
-			<ol>
-				<li>at the JVM argument "-javaagent" that point to the railo-inst.jar <cfif realpath == "ne"> (you have to add the railo-inst.jar with help of the Railo Server Administrator update page)</cfif><br>
-					<cfif stringlen(realpath) and realpath != "ne">
-						in your case this is:
-						<i>-javaagent:#realpath#</i>
-					</cfif>
-					
-					
-				</li>
-				<li>at the tools.jar to the classpath, tools.jar is part of the JDK (Java Development Kit)</li>
-			</ol>
-			
-		</div>
+            There is no Java Agent defined in this enviroment.
+            The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
+            There are two ways to setup the Java Agent:
+            <ol>
+                <li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar<br>
+                    <cfif realpath == "ne"> (you can download it by clicking the Update JARs button on the <a href="server.cfm?action=services.update">Railo Server Administrator Update page</a>)
+                    <cfelseif stringlen(realpath)>
+                        in this environment that would be: <i>-javaagent:#realpath#</i>
+                    </cfif>                
+                </li>
+                <li>Add the tools.jar library to the classpath.  tools.jar is part of the JDK (Java Development Kit)</li>
+            </ol>
+        </div>
 	</cfif>
 	
 	<table>
