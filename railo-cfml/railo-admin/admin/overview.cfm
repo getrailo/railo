@@ -183,7 +183,8 @@ Error Output --->
 		<div class="warning nofocus">
 			There is no Java Agent defined in this enviroment. 
 			The Java Agent is needed to improve memory (PermGen Space) consumption for templates.
-			There are 2 ways to provide the Java Agent functionality:
+			To enable the Java Agent follow this instructions:
+			<!---There are 2 ways to provide the Java Agent functionality:--->
 			<ol>
 				<li>at the JVM argument "-javaagent" that point to the railo-inst.jar <cfif realpath == "ne"> (you have to add the railo-inst.jar with help of the Railo Server Administrator update page)</cfif><br>
 					<cfif stringlen(realpath) and realpath != "ne">
@@ -193,7 +194,7 @@ Error Output --->
 					
 					
 				</li>
-				<li>at the tools.jar to the classpath, tools.jar is part of the JDK (Java Development Kit)</li>
+				<!--- <li>at the tools.jar to the classpath, tools.jar is part of the JDK (Java Development Kit)</li>--->
 			</ol>
 			
 		</div>
