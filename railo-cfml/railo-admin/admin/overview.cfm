@@ -184,7 +184,7 @@ Error Output --->
 			<!---There are 2 ways to provide the Java Agent functionality:--->
 			<ol>
 				<li>Add the "-javaagent" JVM argument and set it to point to the railo-inst.jar<br>
-                    <cfif stringlen(realpath) and realpath == "ne"> (you can download it by clicking the Update JARs button on the <a href="server.cfm?action=services.update">Railo Server Administrator Update page</a>)
+                    <cfif realpath == "ne"> (you can download it by clicking the Update JARs button on the <a href="server.cfm?action=services.update">Railo Server Administrator Update page</a>)
                     <cfelseif stringlen(realpath)>
                         in this environment that would be: <i>-javaagent:#realpath#</i>
                     </cfif>                
