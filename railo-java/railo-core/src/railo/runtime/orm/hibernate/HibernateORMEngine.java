@@ -388,7 +388,7 @@ public class HibernateORMEngine implements ORMEngine {
 		Object o=appContext.getORMDataSource();
 		DataSource ds;
 		if(o instanceof DataSource) ds=(DataSource) o;
-		else ds=((PageContextImpl)pc).getDataSource(Caster.toString(""));
+		else ds=((PageContextImpl)pc).getDataSource(Caster.toString(o));
 		if(ds instanceof DataSourcePro)
 			return hash=((DataSourcePro)ds).id()+":"+appContext.getORMConfiguration().hash();
 		

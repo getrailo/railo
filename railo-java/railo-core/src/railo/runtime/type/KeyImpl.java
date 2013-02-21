@@ -166,12 +166,9 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 
 	@Override
 	public boolean equals(Object other) {//call++;
+		if(this==other) return true;
 		if(other instanceof KeyImpl)	{
-			/*if(intern && ((KeyImpl)other).intern) {//eq++;
-				return lcKey==(((KeyImpl)other).lcKey);
-			}*/
 			return lcKey.equals((((KeyImpl)other).lcKey));
-			
 		}
 		if(other instanceof String)	{
 			return key.equalsIgnoreCase((String)other);
@@ -185,6 +182,7 @@ public class KeyImpl implements Collection.Key,Castable,Comparable,Sizeable,Exte
 
 	@Override
 	public boolean equalsIgnoreCase(Key other) {
+		if(this==other) return true;
 		if(other instanceof KeyImpl)	{
 			return lcKey.equals((((KeyImpl)other).lcKey));
 		}

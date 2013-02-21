@@ -119,7 +119,7 @@ public final class OpenAMFCaster implements AMFCaster {
         for(int iRow=1;iRow<=rowCount;iRow++) {
             rows.add(row=new ArrayList());
             for(iCol=0;iCol<columns.length;iCol++) {
-                row.add(toAMFObject(columns[iCol].get(iRow)));
+                row.add(toAMFObject(columns[iCol].get(iRow,null)));
             }
         }
         

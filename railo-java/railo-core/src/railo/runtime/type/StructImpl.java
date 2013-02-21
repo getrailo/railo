@@ -11,7 +11,6 @@ import railo.commons.util.mod.MapPro;
 import railo.commons.util.mod.MapProWrapper;
 import railo.commons.util.mod.SyncMap;
 import railo.commons.util.mod.WeakHashMapPro;
-import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;

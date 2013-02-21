@@ -17,6 +17,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Duplicator;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -168,8 +169,8 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		
 		// get data from queries
 		if(allowImplicidQueryCall && !qryStack.isEmpty()) {
-			rtn=qryStack.getDataFromACollection(pc,key,NullSupportHelper.NULL());
-			if(rtn!=NullSupportHelper.NULL()) {
+			rtn=qryStack.getDataFromACollection(pc,key,Null.NULL);
+			if(rtn!=Null.NULL) {
 				if(debug) debugCascadedAccess(pc,"query", key);
 				return rtn;
 		    }

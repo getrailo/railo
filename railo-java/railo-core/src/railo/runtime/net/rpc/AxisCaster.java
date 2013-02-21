@@ -335,7 +335,7 @@ public final class AxisCaster {
         int row;
         for(row=1;row<=recordcount;row++) {
             for(int i=0;i<columns.length;i++) {
-            	data[row-1][i]=_toAxisType(tm,null,null,columns[i].get(row),targetClass,done);
+            	data[row-1][i]=_toAxisType(tm,null,null,columns[i].get(row,null),targetClass,done);
             }
         }
     	
@@ -685,7 +685,7 @@ public final class AxisCaster {
             for(int i=0;i<strColumns.length;i++) {
                 col=q.getColumn(strColumns[i]);
                 for(row=1;row<=recorcount;row++) {
-                    col.set(row,toRailoType(pc,col.get(row)));
+                    col.set(row,toRailoType(pc,col.get(row,null)));
                 }
             }
             return q;

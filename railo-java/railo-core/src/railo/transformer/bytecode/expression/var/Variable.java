@@ -120,6 +120,13 @@ public class Variable extends ExpressionBase implements Invoker {
 	private static final Method COLUMNLIST = new Method("columnlist",
 			Types.OBJECT,
 			new Type[]{Types.PAGE_CONTEXT,Types.OBJECT});
+
+	private static final Method THIS_GET = new Method("thisGet",
+			Types.OBJECT,
+			new Type[]{});
+	private static final Method THIS_TOUCH = new Method("thisTouch",
+			Types.OBJECT,
+			new Type[]{});
     
     
 	int scope=Scope.SCOPE_UNDEFINED;
@@ -174,17 +181,32 @@ public class Variable extends ExpressionBase implements Invoker {
 		int count=countFM+countDM;
 		
 		// count 0
-        if(count==0) 						return _writeOutEmpty(bc);
+        if(count==0) return _writeOutEmpty(bc);
        
     	boolean doOnlyScope=scope==Scope.SCOPE_LOCAL;
     	
-    	Type rtn=Types.OBJECT;
+    	
     	//boolean last;
     	for(int i=doOnlyScope?0:1;i<count;i++) {
 			adapter.loadArg(0);
     	}
     	
-		rtn=_writeOutFirst(bc, (members.get(0)),mode,count==1,doOnlyScope);
+    	Type rtn=null;
+    	// this.
+    	if(scope==Scope.SCOPE_UNDEFINED && members.get(0) instanceof DataMember) {
+    		DataMember dm=(DataMember) members.get(0);
+    		ExprString name = dm.getName();
+    		if(ASMUtil.isDotKey(name)){
+    			LitString ls = (LitString)name;
+				if(ls.getString().equalsIgnoreCase("THIS")){
+					adapter.loadArg(0);
+					adapter.checkCast(Types.PAGE_CONTEXT_IMPL);
+		            adapter.invokeVirtual(Types.PAGE_CONTEXT_IMPL,count==1?THIS_GET:THIS_TOUCH);
+					rtn= Types.OBJECT;
+				}
+    		}
+    	}
+    	if(rtn==null)rtn=_writeOutFirst(bc, (members.get(0)),mode,count==1,doOnlyScope);
 		
 		// pc.get(
 		for(int i=doOnlyScope?0:1;i<count;i++) {
@@ -194,7 +216,6 @@ public class Variable extends ExpressionBase implements Invoker {
 			// Data Member
 			if(member instanceof DataMember)	{
 				ExprString name = ((DataMember)member).getName();
-				
 				if(last && ASMUtil.isDotKey(name)){
 					LitString ls = (LitString)name;
 					if(ls.getString().equalsIgnoreCase("RECORDCOUNT")){

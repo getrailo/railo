@@ -519,7 +519,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 						int size=column.size();
 						for(int row=1;row<=size;row++) {
 							if(row>1)sb.append(',');
-							sb.append(Caster.toString(column.get(row)));
+							sb.append(Caster.toString(column.get(row,null)));
 						}
 						if(sb.length()>0){
 							sct.setEL(columnNames[c], sb.toString());

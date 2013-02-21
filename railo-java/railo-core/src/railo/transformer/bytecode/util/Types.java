@@ -19,6 +19,7 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.InterfacePage;
 import railo.runtime.Page;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.PageSource;
 import railo.runtime.component.ImportDefintion;
 import railo.runtime.component.ImportDefintionImpl;
@@ -137,7 +138,7 @@ public final class Types {
     public static final Type OBJECT_ARRAY=Type.getType(Object[].class);
 
     public static final Type PAGE_CONTEXT=Type.getType(PageContext.class);
-    //public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
+    public static final Type PAGE_CONTEXT_IMPL=Type.getType(PageContextImpl.class);
 
 
     public final static Type QUERY=Type.getType(railo.runtime.type.Query.class);

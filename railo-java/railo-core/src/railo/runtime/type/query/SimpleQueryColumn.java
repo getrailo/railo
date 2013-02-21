@@ -368,6 +368,7 @@ public class SimpleQueryColumn implements QueryColumn {
 		}
 	}
 
+	@Override
 	public synchronized Object get(int row, Object defaultValue) {
 		Object sv = getStoredValue(row);
 		if(sv!=SimpleQuery.DEFAULT_VALUE) return sv;

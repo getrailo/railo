@@ -35,7 +35,6 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
-import railo.runtime.writer.CFMLWriterImpl;
 
 /**
 * Speeds up page rendering when dynamic content does not have to be retrieved each time a user accesses
@@ -355,7 +354,7 @@ public final class Cache extends BodyTagImpl {
         //MetaData.getInstance(getDirectory()).add(ci.getName(), ci.getRaw());
         
         PageContextImpl pci = (PageContextImpl)pageContext;
-        ((CFMLWriterImpl)pci.getRootOut()).doCache(ci);
+        pci.getRootOut().doCache(ci);
         	
     }
 

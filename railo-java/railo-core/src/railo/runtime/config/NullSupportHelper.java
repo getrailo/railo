@@ -14,4 +14,8 @@ public class NullSupportHelper {
 	public static Object NULL() {
 		return fullNullSupport?NULL:null;
 	}
+	
+	public static Object empty() {
+		return fullNullSupport?null:"";
+	}
 }

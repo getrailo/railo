@@ -2747,7 +2747,7 @@ public final class Caster {
                 int i;
                 for(int row=trg.getRecordcount();row>0;row--) {
                     for(i=0;i<columnsTrg.length;i++) {
-                        columnsTrg[i].set(row,columnsSrc[i].get(row));
+                        columnsTrg[i].set(row,columnsSrc[i].get(row,null));
                     }
                 }
                 return trg;

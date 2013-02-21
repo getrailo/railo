@@ -47,7 +47,7 @@ public class InstrumentationFactory {
 					detach(vmClass,vmObj);
 				} 
 				catch (Throwable t) {
-					t.printStackTrace();
+					//t.printStackTrace();
 					return null;
 				}
 				inst=getInstrumentation(agent);

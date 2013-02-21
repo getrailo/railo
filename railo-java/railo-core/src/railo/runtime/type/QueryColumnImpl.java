@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-
 import railo.commons.lang.SizeOf;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
@@ -15,6 +14,7 @@ import railo.runtime.dump.DumpProperties;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.DatabaseException;
+import railo.runtime.exp.DeprecatedException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.PageRuntimeException;
@@ -31,6 +31,7 @@ import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.QueryUtil;
 import railo.runtime.util.ArrayIterator;
 
 /**
@@ -175,7 +176,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    	if(child!=NullSupportHelper.NULL()) return child;
             throw new DatabaseException("key ["+key+"] not found",null,null,null);
         }
-	    return get(row);
+	    return QueryUtil.getValue(this,row);
 	}
 
     private Object getChildElement(PageContext pc,Key key, Object defaultValue) {// pc maybe null
@@ -243,28 +244,22 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 	    return get(KeyImpl.init(key),defaultValue);
 	}
 
-	// TODO make sure nobody is using this method, then rewrite functionality
-    @Override
-    public Object get(int row) {
-    	if(row<1 || row>size) return NullSupportHelper.full()?null:"";//throw new DatabaseException("row ["+row+"] is invalid",null,null,null);
-    	
-    	if(NullSupportHelper.full()) return data[row-1];
-	    
-    	Object o=data[row-1];
-	    return o==null?"":o;
+	@Override
+    public Object get(int row) throws DeprecatedException {
+		throw new DeprecatedException("this method is no longer supported, use instead get(int,Object)");
+		//return QueryUtil.getValue(this,row);
     }
-
-    // TODO make sure nobody is using this method, then rewrite functionality
-    @Override
-	public Object get(int row, Object defaultValue) {
-		if(row<1 || row>size) return defaultValue;
-	    
-		if(NullSupportHelper.full()) return data[row-1];
-	    
-		Object o=data[row-1];
-	    return o==null?"":o;
+    
+    public Object get(int row, Object defaultValue) {
+    	if(row<1 || row>size) return defaultValue;
+		return data[row-1];
 	}
-	
+
+    // FUTURE this method should replace the method above, but it needs adjustment with all callers
+	/*public Object get2(int row, Object defaultValue) {
+		if(row<1 || row>size) return defaultValue;
+	    return data[row-1];
+	}*/
 
 	@Override
 	public Object set(String key, Object value) throws PageException {
@@ -364,7 +359,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {
-		return DumpUtil.toDumpData(get(query.getCurrentrow(pageContext.getId())), pageContext,maxlevel,dp);
+		return DumpUtil.toDumpData(QueryUtil.getValue(this,query.getCurrentrow(pageContext.getId())), pageContext,maxlevel,dp);
 	}	
 	
     private synchronized void growTo(int row) {
@@ -408,7 +403,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
     @Override
     public Object get(PageContext pc) {
-        return get(query.getCurrentrow(pc.getId()));
+        return QueryUtil.getValue(this,query.getCurrentrow(pc.getId()));
     }
     
     @Override
@@ -442,7 +437,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
     @Override
     public String castToString() throws PageException {
-        return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
+        return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null));
     }
 
 	@Override
@@ -454,7 +449,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
     @Override
     public boolean castToBooleanValue() throws PageException {
-        return Caster.toBooleanValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
+        return Caster.toBooleanValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null));
     }
     
     @Override
@@ -466,7 +461,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
     @Override
     public double castToDoubleValue() throws PageException {
-        return Caster.toDoubleValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
+        return Caster.toDoubleValue(get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null));
     }
     
     @Override
@@ -478,7 +473,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
     @Override
     public DateTime castToDateTime() throws PageException {
-        return DateCaster.toDateAdvanced(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())),null);
+        return DateCaster.toDateAdvanced(get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null),null);
     }
     
     @Override
@@ -518,7 +513,11 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
         return cloneColumn(query,deepCopy);
     }
     
-    public synchronized QueryColumnPro cloneColumn(QueryImpl query, boolean deepCopy) {
+    public synchronized QueryColumnPro cloneColumn(Query query, boolean deepCopy) {
+        return cloneColumnImpl(deepCopy);
+    }
+    
+    public synchronized QueryColumnImpl cloneColumnImpl(boolean deepCopy) {
         QueryColumnImpl clone=new QueryColumnImpl();
         populate(this, clone, deepCopy);
         return clone;
@@ -548,7 +547,7 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
     @Override
     public String toString() {
         try {
-            return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId())));
+            return Caster.toString(get(query.getCurrentrow(ThreadLocalPageContext.get().getId()),null));
         } catch (PageException e) {
             return super.toString();
         }
@@ -608,13 +607,13 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 				return mi.invoke(this);
 			} catch (Throwable t) {
 				try {
-					return pc.getFunction(get(query.getCurrentrow(pc.getId())), methodName, arguments);
+					return pc.getFunction(QueryUtil.getValue(this,query.getCurrentrow(pc.getId())), methodName, arguments);
 				} catch (PageException pe) {
 					throw Caster.toPageException(t);
 				}
 			}
 		}
-		return pc.getFunction(get(query.getCurrentrow(pc.getId())), methodName, arguments);
+		return pc.getFunction(QueryUtil.getValue(this,query.getCurrentrow(pc.getId())), methodName, arguments);
 	}
 
 	@Override
@@ -744,6 +743,10 @@ public class QueryColumnImpl implements QueryColumnPro,Sizeable,Objects {
 
 	@Override
 	public QueryColumnPro toDebugColumn() {
+		return _toDebugColumn();
+	}
+	
+	public DebugQueryColumn _toDebugColumn() {
 		return new DebugQueryColumn(data,key,query,size,type,typeChecked);
 	}
 	

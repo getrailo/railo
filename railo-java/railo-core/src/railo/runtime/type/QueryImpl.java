@@ -41,7 +41,6 @@ import railo.commons.lang.StringUtil;
 import railo.commons.sql.SQLUtil;
 import railo.loader.engine.CFMLEngineFactory;
 import railo.runtime.PageContext;
-import railo.runtime.config.Constants;
 import railo.runtime.config.NullSupportHelper;
 import railo.runtime.converter.ScriptConverter;
 import railo.runtime.db.CFTypes;
@@ -109,7 +108,7 @@ public class QueryImpl implements Query,Objects {
 	
 	
 	//private static int count=0;
-	private QueryColumnPro[] columns;
+	private QueryColumnImpl[] columns;
 	private Collection.Key[] columnNames;
 	private SQL sql;
 	private ArrayInt arrCurrentRow=new ArrayInt();
@@ -265,7 +264,7 @@ public class QueryImpl implements Query,Objects {
 
 		if(columncount==0) {
 			if(columnNames==null) columnNames=new Collection.Key[0];
-			if(columns==null) columns=new QueryColumnPro[0];
+			if(columns==null) columns=new QueryColumnImpl[0];
 		}
 	}
 	
@@ -372,7 +371,7 @@ public class QueryImpl implements Query,Objects {
 
 		columncount=count;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnPro[columncount];
+		columns=new QueryColumnImpl[columncount];
 		Cast[] casts = new Cast[columncount];
 		
 	// get all used ints
@@ -460,7 +459,7 @@ public class QueryImpl implements Query,Objects {
         columncount=strColumns.length;
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnPro[columncount];
+		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
@@ -478,7 +477,7 @@ public class QueryImpl implements Query,Objects {
         columncount=columnKeys.length;
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnPro[columncount];
+		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columnKeys.length;i++) {
 			columnNames[i]=columnKeys[i];
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
@@ -500,7 +499,7 @@ public class QueryImpl implements Query,Objects {
 		if(strTypes.length!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnPro[columncount];
+		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<strColumns.length;i++) {
 			columnNames[i]=KeyImpl.init(strColumns[i].trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
@@ -521,7 +520,7 @@ public class QueryImpl implements Query,Objects {
         columncount=columnNames.length;
 		if(strTypes.length!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
-		columns=new QueryColumnPro[columncount];
+		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columnNames.length;i++) {
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(strTypes[i]),recordcount);
 		}
@@ -540,7 +539,7 @@ public class QueryImpl implements Query,Objects {
         columncount=arrColumns.size();
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnPro[columncount];
+		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columncount;i++) {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],Types.OTHER,recordcount);
@@ -562,7 +561,7 @@ public class QueryImpl implements Query,Objects {
 		if(arrTypes.size()!=columncount) throw new DatabaseException("columns and types has not the same count",null,null,null);
 		recordcount=rowNumber;
 		columnNames=new Collection.Key[columncount];
-		columns=new QueryColumnPro[columncount];
+		columns=new QueryColumnImpl[columncount];
 		for(int i=0;i<columncount;i++) {
 			columnNames[i]=KeyImpl.init(arrColumns.get(i+1,"").toString().trim());
 			columns[i]=new QueryColumnImpl(this,columnNames[i],SQLCaster.toIntType(Caster.toString(arrTypes.get(i+1,""))),recordcount);
@@ -630,7 +629,7 @@ public class QueryImpl implements Query,Objects {
         if(columnNames.length!=arrColumns.length)
 			throw new DatabaseException("invalid parameter for query, not the same count from names and columns","names:"+columnNames.length+";columns:"+arrColumns.length,null,null,null);
 		int len=0;
-		columns=new QueryColumnPro[arrColumns.length];
+		columns=new QueryColumnImpl[arrColumns.length];
 		if(arrColumns.length>0) {
 		// test columns
 			len=arrColumns[0].size();
@@ -776,7 +775,9 @@ public class QueryImpl implements Query,Objects {
 	public Object getAt(Collection.Key key, int row) throws PageException {
 		int index=getIndexFromKey(key);
 		if(index!=-1) {
-			return columns[index].get(row);
+			if(NullSupportHelper.full()) return columns[index].get(row, null);
+			Object v = columns[index].get(row, null);
+			return v==null?"":v;
 		}
         if(key.getString().length()>0) {
         	char c=key.lowerCharAt(0);
@@ -846,7 +847,7 @@ public class QueryImpl implements Query,Objects {
             int current=0;
             QueryColumn removed=null;
             Collection.Key[] newColumnNames=new Collection.Key[columnNames.length-1];
-            QueryColumnPro[] newColumns=new QueryColumnPro[columns.length-1];
+            QueryColumnImpl[] newColumns=new QueryColumnImpl[columns.length-1];
             for(int i=0;i<columns.length;i++) {
                 if(i==index) {
                     removed=columns[i];
@@ -1042,9 +1043,9 @@ public class QueryImpl implements Query,Objects {
 		for(int i=0;i<columns.length;i++) {
 			column=columns[i];
 			int len=column.size();
-			QueryColumnPro newCol=new QueryColumnImpl(this,columnNames[i],columns[i].getType(),len);
+			QueryColumnImpl newCol=new QueryColumnImpl(this,columnNames[i],columns[i].getType(),len);
 			for(int y=1;y<=len;y++) {
-				newCol.set(y,column.get(arr[y-1].getOldPosition()+1));
+				newCol.set(y,column.get(arr[y-1].getOldPosition()+1,null));
 			}
 			columns[i]=newCol;
 		}
@@ -1089,7 +1090,7 @@ public class QueryImpl implements Query,Objects {
 	 		if(content.size()>getRecordcount()) addRow(content.size()-getRecordcount());
 	 		else content.setEL(getRecordcount(),"");
 	 	}
-	 	QueryColumnPro[] newColumns=new QueryColumnPro[columns.length+1];
+	 	QueryColumnImpl[] newColumns=new QueryColumnImpl[columns.length+1];
 	 	Collection.Key[] newColumnNames=new Collection.Key[columns.length+1];
 	 	boolean logUsage=false;
 	 	for(int i=0;i<columns.length;i++) {
@@ -1139,10 +1140,10 @@ public class QueryImpl implements Query,Objects {
         try{
 	        if(columnNames!=null){
 		        newResult.columnNames=new Collection.Key[columnNames.length];
-		        newResult.columns=new QueryColumnPro[columnNames.length];
+		        newResult.columns=new QueryColumnImpl[columnNames.length];
 		        for(int i=0;i<columnNames.length;i++) {
 		        	newResult.columnNames[i]=columnNames[i];
-		        	newResult.columns[i]=columns[i].cloneColumn(newResult,deepCopy);
+		        	newResult.columns[i]=columns[i].cloneColumnImpl(deepCopy);
 		        }
 	        }
 	        newResult.sql=sql;
@@ -1448,7 +1449,7 @@ public class QueryImpl implements Query,Objects {
     	// target < source
     	if(trg.length<src.length){
     		this.columnNames=new Collection.Key[trg.length];
-    		QueryColumnPro[] tmp=new QueryColumnPro[trg.length];
+    		QueryColumnImpl[] tmp=new QueryColumnImpl[trg.length];
     		for(int i=0;i<trg.length;i++){
     			this.columnNames[i]=trg[i];
     			tmp[i]=this.columns[i];
@@ -2891,7 +2892,7 @@ public class QueryImpl implements Query,Objects {
 
 	public synchronized void enableShowQueryUsage() {
 		if(columns!=null)for(int i=0;i<columns.length;i++){
-			columns[i]=columns[i].toDebugColumn();
+			columns[i]=columns[i]._toDebugColumn();
 		}
 	}
 
@@ -2904,13 +2905,12 @@ public class QueryImpl implements Query,Objects {
         QueryImpl newResult=new QueryImpl();
         ThreadLocalDuplication.set(qry, newResult);
         try{
-	        
-    	    newResult.columnNames=qry.getColumnNames();
-	        newResult.columns=new QueryColumnPro[newResult.columnNames.length];
-	        QueryColumnPro col;
+	        newResult.columnNames=qry.getColumnNames();
+	        newResult.columns=new QueryColumnImpl[newResult.columnNames.length];
+	        QueryColumn col;
 	        for(int i=0;i<newResult.columnNames.length;i++) {
-	        	col = (QueryColumnPro) qry.getColumn(newResult.columnNames[i],null);
-	        	newResult.columns[i]=col.cloneColumn(newResult,deepCopy);
+	        	col =  qry.getColumn(newResult.columnNames[i],null);
+	        	newResult.columns[i]=QueryUtil.duplicate2QueryColumnImpl(newResult,col,deepCopy);
 	        }
 	        
 		        

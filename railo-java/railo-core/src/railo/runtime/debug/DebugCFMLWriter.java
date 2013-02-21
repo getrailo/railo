@@ -8,6 +8,7 @@ import java.util.List;
 
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
+import railo.runtime.cache.legacy.CacheItem;
 import railo.runtime.op.Caster;
 import railo.runtime.writer.CFMLWriter;
 
@@ -282,6 +283,16 @@ public class DebugCFMLWriter extends CFMLWriter implements DebugOutputLog {
 	@Override
 	public void setAllowCompression(boolean allowCompression) {
 		writer.setAllowCompression(allowCompression);
+	}
+
+	@Override
+	public void doCache(CacheItem ci) {
+		writer.doCache(ci);
+	}
+
+	@Override
+	public CacheItem getCacheItem() {
+		return writer.getCacheItem();
 	}
 
 }

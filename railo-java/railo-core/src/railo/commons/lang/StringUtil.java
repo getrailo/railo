@@ -9,6 +9,7 @@ import railo.commons.io.SystemUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection;
+import railo.runtime.type.util.ArrayUtil;
 
 
 
@@ -31,7 +32,51 @@ public final class StringUtil {
 			return str.substring(0,1).toUpperCase()+str.substring(1);
 		}
 	}
+
+
+    public static String capitalize( String input, char[] delims ) {
+
+        if (isEmpty(input)) return input;
+
+        if (ArrayUtil.isEmpty(delims))
+            delims = new char[]{ '.', '-', '(', ')' };
+
+        StringBuilder sb = new StringBuilder( input.length() );
+
+        boolean isLastDelim = true,isLastSpace = true;
+        int len=input.length();
+        for (int i=0; i<len; i++) {
+
+            char c = input.charAt( i );
+
+            if ( Character.isWhitespace(c) ) {
+
+                if ( !isLastSpace )
+                    sb.append( ' ' );
+
+                isLastSpace = true;
+            } 
+            else {
+
+                sb.append( ( isLastSpace || isLastDelim ) ? Character.toUpperCase( c ) : c );
+
+                isLastDelim = _contains(delims, c );
+                isLastSpace = false;
+            }
+        }
+
+        return sb.toString();
+    }
+
 	
+	private static boolean _contains(char[] chars, char c) {
+		for ( int i=0; i<chars.length; i++ ) {
+			if(chars[i]==c) return true;
+		}
+		return false;
+	}
+
+
 	/**
 	 * do first Letter Upper case
 	 * @param str String to operate
@@ -871,7 +916,7 @@ public final class StringUtil {
 
 	/**
 	 * trim given value, return defaultvalue when input is null
-	 * @param string
+	 * @param str
 	 * @param defaultValue
 	 * @return trimmed string or defaultValue
 	 */
@@ -968,7 +1013,7 @@ public final class StringUtil {
 	/**
 	 * this method works different from the regular substring method, the regular substring method takes startIndex and endIndex as second and third argument,
 	 * this method takes offset and length
-	 * @param string
+	 * @param str
 	 * @param off
 	 * @param len
 	 * @return

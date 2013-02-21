@@ -4,7 +4,6 @@
 package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
-import railo.runtime.config.NullSupportHelper;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
@@ -20,7 +19,7 @@ public class ValueArray implements Function {
 		Array arr=new ArrayImpl();
 	    int size=column.size();
 		for(int i=1;i<=size;i++) {
-			arr.append(Caster.toString(column.get(i,"")));
+			arr.append(Caster.toString(column.get(i,null)));
 		}
 		return arr;	
 	}

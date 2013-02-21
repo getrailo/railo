@@ -224,7 +224,7 @@ public class JavaProxy {
             for(int i=0;i<strColumns.length;i++) {
                 col=q.getColumn(strColumns[i]);
                 for(row=1;row<=recorcount;row++) {
-                    col.set(row,toCFML(col.get(row)));
+                    col.set(row,toCFML(col.get(row,null)));
                 }
             }
             return q;
