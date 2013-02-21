@@ -227,6 +227,21 @@ public class DumpUtil {
 				}
 				return setId(id,table);
 			}
+		
+			// Set
+			if(o instanceof Set) {
+				Set set=(Set) o;
+				Iterator it = set.iterator();
+				
+				DumpTable table = new DumpTable("array","#ff9900","#ffcc00","#000000");
+				table.setTitle("Set ("+set.getClass().getName()+")");
+				
+				while(it.hasNext()) {
+					table.appendRow(1,toDumpData(it.next(),pageContext,maxlevel,props));
+				}
+				return setId(id,table);
+			}
+			
 			// Resultset
 			if(o instanceof ResultSet) {
 				try {
