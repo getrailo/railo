@@ -698,7 +698,7 @@ public final class UndefinedImpl extends StructSupport implements Undefined {
 		if(obj instanceof UDF) {
 			return ((UDF)obj).call(pc,args,false);
 		}
-		throw new ExpressionException("No matching function ["+methodName+"] found:"+obj.getClass().getName());
+		throw new ExpressionException("No matching function ["+methodName+"] found");
 	}
 
     @Override
