@@ -15669,14 +15669,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>writeOutput</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description>Appends text to the page-output stream.
-        This function writes to the page-output stream regardless of
+		<description>Writes the given string to the main response buffer regardless of
         conditions established by the cfsetting tag.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description>A string or a variable that contains one</description>
+		<description>A string to write to the buffer.</description>
     </argument>
 		<return>
 			<type>boolean</type>
@@ -15686,12 +15685,13 @@ You can find a list of all available timezones in the Railo administrator (Setti
 	<function>
 		<name>echo</name>
 		<class>railo.runtime.functions.other.WriteOutput</class>
-		<description>Writes the given string out to the main response buffer. see also function writeOutput.</description>
+		<description>Writes the given string to the main response buffer regardless of
+        conditions established by the cfsetting tag. see also function writeOutput.</description>
 		<argument>
 			<name>string</name>
 			<type>string</type>
 			<required>Yes</required>
-		<description></description>
+		<description>A string to write to the buffer.</description>
     </argument>
 		<return>
 			<type>boolean</type>
