@@ -1,5 +1,6 @@
 package railo.runtime.tag;
 
+import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.Mapping;
@@ -284,7 +285,7 @@ public final class Application extends TagImpl {
 	}
 	
 	public void setMappings(Struct mappings) throws PageException	{
-	    this.mappings=AppListenerUtil.toMappings(pageContext.getConfig(), mappings);
+	    this.mappings=AppListenerUtil.toMappings(pageContext.getConfig(), mappings,getSource());
 		//getAppContext().setMappings(AppListenerUtil.toMappings(pageContext, mappings));
 	}
 	
@@ -335,7 +336,7 @@ public final class Application extends TagImpl {
         ApplicationContext ac;
         boolean initORM;
         if(action==ACTION_CREATE){
-        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource()));
+        	ac=new ClassicApplicationContext(pageContext.getConfig(),name,false,getSource());
         	initORM=set(ac);
         	pageContext.setApplicationContext(ac);
         }
@@ -347,6 +348,10 @@ public final class Application extends TagImpl {
         if(initORM) ORMUtil.resetEngine(pageContext,false);
         
         return SKIP_BODY; 
+	}
+
+	private Resource getSource() throws PageException {
+		return ResourceUtil.getResource(pageContext,pageContext.getCurrentPageSource());
 	}
 
 	private boolean set(ApplicationContext ac) throws PageException {
