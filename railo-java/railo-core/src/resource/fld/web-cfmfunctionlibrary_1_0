@@ -6357,7 +6357,7 @@ Default list delimiter: comma character.</description>
 		</argument>
 		<argument>
 			<name>numIterations</name>
-			<type>any</type>
+			<type>number</type>
 			<required>No</required>
 			<description>number of iterations; default is 1.</description>
 		</argument>

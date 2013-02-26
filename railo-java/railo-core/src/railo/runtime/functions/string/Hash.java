@@ -40,8 +40,8 @@ public final class Hash implements Function {
 		return invoke( pc.getConfig(), input, algorithm, encoding, 1 );
 	}
     
-    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding, Object numIterations) throws PageException {
-		return invoke( pc.getConfig(), input, algorithm, encoding, Caster.toInteger( numIterations, 1 ) );
+    public synchronized static String call(PageContext pc , Object input, String algorithm, String encoding, double numIterations) throws PageException {
+		return invoke( pc.getConfig(), input, algorithm, encoding, (int)numIterations );
 	}
 
     /*/	this method signature was called from ConfigWebAdmin.createUUID(), comment this comment to enable
