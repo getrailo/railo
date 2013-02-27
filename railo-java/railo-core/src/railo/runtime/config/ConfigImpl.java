@@ -1361,22 +1361,52 @@ public abstract class ConfigImpl implements Config {
 	private String getKey(TagLib tl) {
 		return tl.getNameSpaceAndSeparator().toLowerCase();
 	}
+	
+	protected void setFldFile(Resource fileFld) throws FunctionLibException {
+		// merge all together (backward compatibility)
+        if(flds.length>1)for(int i=1;i<flds.length;i++) {
+        	overwrite(flds[0], flds[i]);
+        }
+        flds=new FunctionLib[]{flds[0]};
+        
+		
+		if(fileFld==null) return;
+        this.fldFile=fileFld;
 
-	/**
-     * set the optional directory of the function library deskriptors
-     * @param fileFld directory of the function libray deskriptors
-     * @throws FunctionLibException
-     */
-    protected void setFldFile(Resource fileFld) throws FunctionLibException {
+        
+        // overwrite with addional functions
+        FunctionLib fl;
+        if(fileFld.isDirectory()) {
+            Resource[] files=fileFld.listResources(new ExtensionResourceFilter("fld"));
+            for(int i=0;i<files.length;i++) {
+                try {
+                	fl = FunctionLibFactory.loadFromFile(files[i]);
+                	overwrite(flds[0],fl);
+                	
+                }
+                catch(FunctionLibException fle) {
+                    SystemOut.printDate(out,"can't load fld "+files[i]);
+                    fle.printStackTrace(getErrWriter());
+                }   
+            }
+        }
+        else {
+        	fl = FunctionLibFactory.loadFromFile(fileFld);
+        	overwrite(flds[0],fl);
+        }
+    }
+
+	/*
+    protected void setFldFileOld(Resource fileFld) throws FunctionLibException {
     	if(fileFld==null) return;
         this.fldFile=fileFld;
 
-        Map<String,FunctionLib> set=new HashMap<String,FunctionLib>();
+        Map<String,FunctionLib> map=new LinkedHashMap<String,FunctionLib>();
         String key;
         // First fill existing to set
         for(int i=0;i<flds.length;i++) {
         	key=getKey(flds[i]);
-        	set.put(key,flds[i]);
+        	map.put(key,flds[i]);
         }
         
         // now overwrite with new data
@@ -1387,11 +1417,12 @@ public abstract class ConfigImpl implements Config {
                 try {
                 	fl = FunctionLibFactory.loadFromFile(files[i]);
                 	key=getKey(fl);
-                	
-                	if(!set.containsKey(key))
-                		set.put(key,fl);
+                	// for the moment we only need one fld, so it is always overwrite, when you remove this make sure you get no conflicts with duplicates
+                	if(map.containsKey(key)) 
+                		overwrite(map.get(key),fl);
                 	else 
-                		overwrite(set.get(key),fl);
+                		map.put(key,fl);
+                		
                 	
                 }
                 catch(FunctionLibException fle) {
@@ -1404,21 +1435,21 @@ public abstract class ConfigImpl implements Config {
         	fl = FunctionLibFactory.loadFromFile(fileFld);
         	key=getKey(fl);
 
-        	if(!set.containsKey(key))
-        		set.put(key,fl);
+        	// for the moment we only need one fld, so it is always overwrite, when you remove this make sure you get no conflicts with duplicates
+        	if(map.containsKey(key))
+        		overwrite(map.get(key),fl);
         	else 
-        		overwrite(set.get(key),fl);
+        		map.put(key,fl);
         }
         
         // now fill back to array
-        flds=new FunctionLib[set.size()];
+        flds=new FunctionLib[map.size()];
         int index=0;
-        Iterator<FunctionLib> it = set.values().iterator();
+        Iterator<FunctionLib> it = map.values().iterator();
         while(it.hasNext()) {
         	flds[index++]= it.next();
         }
-        
-    }
+    }*/
     
 
     
