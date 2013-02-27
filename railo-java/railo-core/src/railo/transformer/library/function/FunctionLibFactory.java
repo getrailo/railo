@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.xml.sax.Attributes;
@@ -14,7 +16,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import railo.commons.collections.HashTable;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.filter.ExtensionResourceFilter;
@@ -44,7 +45,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	public final static String DEFAULT_SAX_PARSER="org.apache.xerces.parsers.SAXParser";
 	
 	
-	private static Map hashLib=new HashTable();
+	private static Map<String,FunctionLib> hashLib=new HashMap<String,FunctionLib>();
 	private static FunctionLib systemFLD;
 	private FunctionLib lib=new FunctionLib();
 	private FunctionLibFunction function;
@@ -313,7 +314,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	 */
 	public static FunctionLib[] loadFromDirectory(Resource dir,String saxParser) throws FunctionLibException	{
 		if(!dir.isDirectory())return new FunctionLib[0];
-		ArrayList arr=new ArrayList();
+		ArrayList<FunctionLib> arr=new ArrayList<FunctionLib>();
 		
 		Resource[] files=dir.listResources(new ExtensionResourceFilter("fld"));
 		for(int i=0;i<files.length;i++)	{
@@ -321,7 +322,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 				arr.add(FunctionLibFactory.loadFromFile(files[i],saxParser));				
 		}
 	
-		return (FunctionLib[]) arr.toArray(new FunctionLib[arr.size()]);
+		return arr.toArray(new FunctionLib[arr.size()]);
 	}
 	/**
 	 * Lädt eine einzelne FunctionLib.
@@ -342,7 +343,7 @@ public final class FunctionLibFactory extends DefaultHandler {
 	 */
 	public static FunctionLib loadFromFile(Resource res,String saxParser) throws FunctionLibException	{
 		// Read in XML
-		FunctionLib lib=(FunctionLib) FunctionLibFactory.hashLib.get(ResourceUtil.getCanonicalPathEL(res));//getHashLib(file.getAbsolutePath());
+		FunctionLib lib=FunctionLibFactory.hashLib.get(ResourceUtil.getCanonicalPathEL(res));//getHashLib(file.getAbsolutePath());
 		if(lib==null)	{
 			lib=new FunctionLibFactory(saxParser,res).getLib();
 			FunctionLibFactory.hashLib.put(ResourceUtil.getCanonicalPathEL(res),lib);
@@ -412,10 +413,10 @@ public final class FunctionLibFactory extends DefaultHandler {
 	 * @param newFL
 	 */
 	private static void copyFunctions(FunctionLib extFL, FunctionLib newFL) {
-		Iterator it = extFL.getFunctions().entrySet().iterator();
+		Iterator<Entry<String, FunctionLibFunction>> it = extFL.getFunctions().entrySet().iterator();
 		FunctionLibFunction flf;
 		while(it.hasNext()){
-			flf= (FunctionLibFunction) ((Map.Entry)it.next()).getValue(); // TODO function must be duplicated because it gets a new FunctionLib assigned
+			flf= it.next().getValue(); // TODO function must be duplicated because it gets a new FunctionLib assigned
 			newFL.setFunction(flf);
 		}
 	}
