@@ -540,7 +540,7 @@ public final class XMLUtil {
 				NamedNodeMap attr = node.getAttributes();
 				
 				if(attr==null)throw undefined(k,node);
-				return new XMLAttributes(node.getOwnerDocument(),attr,caseSensitive);
+				return new XMLAttributes(node,caseSensitive);
 			}
 		// Text	
 			else if(k.equals(XMLTEXT)) {

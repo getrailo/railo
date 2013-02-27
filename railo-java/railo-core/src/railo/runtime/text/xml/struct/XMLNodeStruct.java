@@ -228,7 +228,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 	 * @see org.w3c.dom.Node#getAttributes()
 	 */
 	public NamedNodeMap getAttributes() {
-		return new XMLAttributes(node.getAttributes(),caseSensitive);
+		return new XMLAttributes(node,caseSensitive);
 	}
 	
 	/**

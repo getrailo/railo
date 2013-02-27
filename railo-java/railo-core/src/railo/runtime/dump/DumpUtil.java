@@ -19,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
 import org.apache.xerces.dom.AttributeMap;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -294,10 +295,18 @@ public class DumpUtil {
 				return setId(id,table);
 				
 			}
-		// AttributeMap
-		if(o instanceof AttributeMap) {
-			return setId(id,new XMLAttributes((AttributeMap)o,false).toDumpData(pageContext, maxlevel,props));			
-		}
+			// AttributeMap
+			if(o instanceof NamedNodeMap) {
+				NamedNodeMap attr = (NamedNodeMap)o;
+				int len = attr.getLength();
+				DumpTable dt = new DumpTable("array","#ff9900","#ffcc00","#000000");
+				dt.setTitle("NamedNodeMap ("+Caster.toClassName(o)+")");
+				
+				for(int i=0;i<len;i++) {
+					dt.appendRow(1,new SimpleDumpData(i),toDumpData(attr.item(i),pageContext,maxlevel,props));
+				}
+				return setId(id,dt);			
+			}
 			// HttpSession
 			if(o instanceof HttpSession) {
 			    HttpSession hs = (HttpSession)o;
