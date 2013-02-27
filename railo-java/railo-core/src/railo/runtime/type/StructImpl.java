@@ -207,7 +207,7 @@ public class StructImpl extends StructSupport {
 	 * @see railo.runtime.type.Iteratorable#iterator()
 	 */
 	public Iterator<Object> valueIterator() {
-		return values().iterator();
+		return map.values().iterator();
 	}
 
     /**
