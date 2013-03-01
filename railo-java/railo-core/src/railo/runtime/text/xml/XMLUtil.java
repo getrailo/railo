@@ -317,7 +317,7 @@ public final class XMLUtil {
 		Document doc=(node instanceof Document)?(Document)node:node.getOwnerDocument();
 		// Comment
 			if(k.equals(XMLCOMMENT)) {
-				removeChilds(XMLCaster.toRawNode(node),Node.COMMENT_NODE,false);
+				removeChildren(XMLCaster.toRawNode(node),Node.COMMENT_NODE,false);
 				node.appendChild(XMLCaster.toRawNode(XMLCaster.toComment(doc,value)));
 			}
 		// NS URI
@@ -372,18 +372,18 @@ public final class XMLUtil {
 			}
 		// Text	
 			else if(k.equals(XMLTEXT)) {
-				removeChilds(XMLCaster.toRawNode(node),Node.TEXT_NODE,false);
+				removeChildCharacterData(XMLCaster.toRawNode(node),false);
 				node.appendChild(XMLCaster.toRawNode(XMLCaster.toText(doc,value)));
 			}
 		// CData	
 			else if(k.equals(XMLCDATA)) {
-				removeChilds(XMLCaster.toRawNode(node),Node.CDATA_SECTION_NODE,false);
+				removeChildCharacterData(XMLCaster.toRawNode(node),false);
 				node.appendChild(XMLCaster.toRawNode(XMLCaster.toCDATASection(doc,value)));
 			}
 		// Children	
 			else if(k.equals(XMLCHILDREN) || k.equals(XMLNODES)) {
 				Node[] nodes=XMLCaster.toNodeArray(doc,value);
-				removeChilds(XMLCaster.toRawNode(node),Node.ELEMENT_NODE,false);
+				removeChildren(XMLCaster.toRawNode(node),Node.ELEMENT_NODE,false);
 				for(int i=0;i<nodes.length;i++) {
 					if(nodes[i]==node) throw new XMLException("can't assign a XML Node to himself");
 					if(nodes[i]!=null)node.appendChild(XMLCaster.toRawNode(nodes[i]));
@@ -540,7 +540,7 @@ public final class XMLUtil {
 				NamedNodeMap attr = node.getAttributes();
 				
 				if(attr==null)throw undefined(k,node);
-				return new XMLAttributes(node.getOwnerDocument(),attr,caseSensitive);
+				return new XMLAttributes(node,caseSensitive);
 			}
 		// Text	
 			else if(k.equals(XMLTEXT)) {
@@ -809,19 +809,38 @@ public final class XMLUtil {
 	
 	
 	/**
-	 * removes all comments from a node
+	 * removes child elements from a specific type
 	 * @param node node to remove elements from
 	 * @param type Type Definition to remove (Constant value from class Node)
 	 * @param deep remove also in sub nodes
 	 */
-	private synchronized static void removeChilds(Node node, short type, boolean deep) {
+	private synchronized static void removeChildren(Node node, short type, boolean deep) {
 		NodeList list = node.getChildNodes();
 		
 		for(int i=list.getLength();i>=0;i--) {
 			Node n=list.item(i);
 			if(n ==null )continue;
-			else if(n.getNodeType()==type)node.removeChild(XMLCaster.toRawNode(n));
-			else if(deep)removeChilds(n,type,deep);
+			
+			if(n.getNodeType()==type)node.removeChild(XMLCaster.toRawNode(n));
+			else if(deep)removeChildren(n,type,deep);
+		}
+	}
+	
+	/**
+	 * remove children from type CharacterData from a node, this includes Text,Comment and CDataSection nodes
+	 * @param node
+	 * @param type
+	 * @param deep
+	 */
+	private synchronized static void removeChildCharacterData(Node node, boolean deep) {
+		NodeList list = node.getChildNodes();
+		
+		for(int i=list.getLength();i>=0;i--) {
+			Node n=list.item(i);
+			if(n ==null )continue;
+			
+			if(n instanceof CharacterData)node.removeChild(XMLCaster.toRawNode(n));
+			else if(deep)removeChildCharacterData(n,deep);
 		}
 	}
 

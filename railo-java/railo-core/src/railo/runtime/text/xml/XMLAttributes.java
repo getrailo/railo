@@ -38,30 +38,19 @@ import railo.runtime.type.util.StructSupport;
 public final class XMLAttributes extends StructSupport implements Struct,NamedNodeMap {
 	
 
-	private NamedNodeMap nodeMap;
-	private Document owner;
-	private boolean caseSensitive;
+	private final NamedNodeMap nodeMap;
+	private final Document owner;
+	private final Node parent;
+	private final boolean caseSensitive;
 
-	/**
-	 * constructor of the class
-	 * @param owner
-	 * @param nodeMap
-	 */
-	public XMLAttributes(Document owner,NamedNodeMap nodeMap,boolean caseSensitive) {
-		this.owner=owner;
-		this.nodeMap=nodeMap;
-		this.caseSensitive=caseSensitive;
-	}
 	/**
 	 * constructor of the class (readonly)
 	 * @param nodeMap
 	 */
-	public XMLAttributes(NamedNodeMap nodeMap,boolean caseSensitive) {
-		this.nodeMap=nodeMap;
-		try {
-			owner=this.nodeMap.item(0).getOwnerDocument();
-		}
-		catch(Exception e) {}
+	public XMLAttributes(Node parent, boolean caseSensitive) {
+		this.owner=parent.getOwnerDocument();
+		this.parent=parent;
+		this.nodeMap=parent.getAttributes();
 		this.caseSensitive=caseSensitive;
 	}
 
@@ -284,20 +273,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 
 	@Override
 	public Collection duplicate(boolean deepCopy) {
-		XMLAttributes sct=new XMLAttributes(owner,nodeMap,caseSensitive);
-		ThreadLocalDuplication.set(this, sct);
-		try{
-			Collection.Key[] keys=keys();
-			Collection.Key k;
-			for(int i=0;i<keys.length;i++) {
-				k=keys[i];
-				sct.setEL(k,Duplicator.duplicate(get(k,null),deepCopy));
-			}
-		}
-		finally {
-			// ThreadLocalDuplication.remove(this); removed "remove" to catch sisters and brothers
-		}
-		return sct;
+		return new XMLAttributes(parent.cloneNode(deepCopy),caseSensitive);
 	}
 	
 	

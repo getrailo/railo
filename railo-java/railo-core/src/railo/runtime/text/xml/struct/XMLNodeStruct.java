@@ -178,7 +178,7 @@ public class XMLNodeStruct extends StructSupport implements XMLStruct {
 	
 	@Override
 	public NamedNodeMap getAttributes() {
-		return new XMLAttributes(node.getAttributes(),caseSensitive);
+		return new XMLAttributes(node,caseSensitive);
 	}
 	
 	@Override

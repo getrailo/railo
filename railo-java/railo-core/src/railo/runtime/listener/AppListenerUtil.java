@@ -253,15 +253,15 @@ public final class AppListenerUtil {
 		
 	}
 
-	public static Mapping[] toMappings(ConfigWeb cw,Object o,Mapping[] defaultValue) {
+	public static Mapping[] toMappings(ConfigWeb cw,Object o,Mapping[] defaultValue, Resource source) { 
 		try {
-			return toMappings(cw, o);
+			return toMappings(cw, o,source);
 		} catch (Throwable t) {
 			return defaultValue;
 		}
 	}
 
-	public static Mapping[] toMappings(ConfigWeb cw,Object o) throws PageException {
+	public static Mapping[] toMappings(ConfigWeb cw,Object o, Resource source) throws PageException {
 		Struct sct = Caster.toStruct(o);
 		Iterator<Entry<Key, Object>> it = sct.entryIterator();
 		Entry<Key, Object> e;
@@ -271,13 +271,19 @@ public final class AppListenerUtil {
 		while(it.hasNext()) {
 			e = it.next();
 			virtual=translateMappingVirtual(e.getKey().getString());
-			physical=Caster.toString(e.getValue());
+			physical=translateMappingPhysical(Caster.toString(e.getValue()),source);
 			mappings.add(config.getApplicationMapping(virtual,physical));
 			
 		}
 		return mappings.toArray(new Mapping[mappings.size()]);
 	}
 	
+
+	private static String translateMappingPhysical(String path, Resource source) {
+		source=source.getParentResource().getRealResource(path);
+		if(source.exists()) return source.getAbsolutePath();
+		return path;
+	}
 
 	private static String translateMappingVirtual(String virtual) {
 		virtual=virtual.replace('\\', '/');
@@ -402,7 +408,7 @@ public final class AppListenerUtil {
 
 	public static void setORMConfiguration(PageContext pc, ApplicationContext ac,Struct sct) throws PageException {
 		if(sct==null)sct=new StructImpl();
-		Resource res=ResourceUtil.getResource(pc, pc.getCurrentTemplatePageSource()).getParentResource();
+		Resource res=pc.getCurrentTemplatePageSource().getResourceTranslated(pc).getParentResource();
 		ConfigImpl config=(ConfigImpl) pc.getConfig();
 		ac.setORMConfiguration(ORMConfigurationImpl.load(config,ac,sct,res,config.getORMConfig()));
 		

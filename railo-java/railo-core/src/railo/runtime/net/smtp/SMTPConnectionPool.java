@@ -1,5 +1,6 @@
 package railo.runtime.net.smtp;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,8 +20,7 @@ public class SMTPConnectionPool {
 	private static Map<String,Stack<SessionAndTransport>> sessions=new HashMap<String, Stack<SessionAndTransport>>();
 	
 
-	public static SessionAndTransport getSessionAndTransport(Properties props, Authenticator auth) throws MessagingException{
-		String key=""+props.hashCode();
+	public static SessionAndTransport getSessionAndTransport(Properties props, String key, Authenticator auth) throws MessagingException{
 		
 	   // Session
 		SessionAndTransport sat=null;
@@ -37,13 +37,36 @@ public class SMTPConnectionPool {
 		
 		return new SessionAndTransport(key, props, auth);
 	}
-	
+
 
 	public static void releaseSessionAndTransport(SessionAndTransport sat) {
 
 		getSATStack(sat.key).add(sat.touch());
 	}
 	
+	public static String listSessions() {
+		Iterator<Entry<String, Stack<SessionAndTransport>>> it = sessions.entrySet().iterator();
+		Entry<String, Stack<SessionAndTransport>> entry;
+		Stack<SessionAndTransport> stack;
+		StringBuilder sb=new StringBuilder();
+		while(it.hasNext()){
+			entry = it.next();
+			sb.append(entry.getKey()).append('\n');
+			stack = entry.getValue();
+			if(stack.isEmpty()) continue;
+			listSessions(sb,stack);
+		}
+		return sb.toString();
+	}
+	
+	private static void listSessions(StringBuilder sb, Stack<SessionAndTransport> stack) {
+		Iterator<SessionAndTransport> it = stack.iterator();
+		while(it.hasNext()){
+			SessionAndTransport sat = it.next();
+			sb.append("- "+sat.key+":"+new Date(sat.lastAccess)).append('\n');
+		}
+	}
+
 
 	public static void closeSessions() {
 		Iterator<Entry<String, Stack<SessionAndTransport>>> it = sessions.entrySet().iterator();

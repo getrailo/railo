@@ -179,7 +179,7 @@ public class StructImpl extends StructSupport {
 	
 	@Override
 	public Iterator<Object> valueIterator() {
-		return values().iterator();
+		return map.values().iterator();
 	}
 
     @Override

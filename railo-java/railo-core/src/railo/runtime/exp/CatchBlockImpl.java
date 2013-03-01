@@ -25,6 +25,7 @@ import railo.runtime.type.StructImpl;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
+import railo.runtime.type.it.ValueIterator;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
 import railo.runtime.type.util.StructUtil;
@@ -327,10 +328,14 @@ public class CatchBlockImpl extends StructImpl implements CatchBlock,Castable,Ob
 	}
 
 	@Override
-	public java.util.Collection values() {
-		throw new RuntimeException("not supported");
+	public Iterator<Object> valueIterator() {
+		return new ValueIterator(this, keys());
 	}
 
+	@Override
+	public java.util.Collection values() {
+		return StructUtil.values(this);
+	}
 
 	@Override
 	public DumpData toDumpData(PageContext pageContext, int maxlevel, DumpProperties dp) {

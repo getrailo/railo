@@ -1567,7 +1567,7 @@ public abstract class AbstrCFMLExprTransformer {
 	* @throws TemplateException 
 	*/
 	private FunctionMember getFunctionMember(Data data,
-			ExprString name,
+			final ExprString name,
 		boolean checkLibrary)
 		throws TemplateException {
 
@@ -1575,13 +1575,12 @@ public abstract class AbstrCFMLExprTransformer {
 		checkLibrary=checkLibrary && data.fld!=null;
 		FunctionLibFunction flf = null;
 		if (checkLibrary) {
+			if(!(name instanceof Literal))
+				throw new TemplateException(data.cfml,"syntax error"); // should never happen!
+			
 			for (int i = 0; i < data.fld.length; i++) {
-				if(!(name instanceof Literal))
-					throw new TemplateException(data.cfml,"syntax error"); // should never happen!
-				
 				flf = data.fld[i].getFunction(((Literal)name).getString());
-				if (flf != null)
-					break;
+				if (flf != null)break;
 			}
 			if (flf == null) {
 				checkLibrary = false;

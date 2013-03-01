@@ -5,6 +5,7 @@ package railo.runtime.functions.system;
 
 import java.io.IOException;
 
+import railo.commons.io.SystemUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
@@ -38,8 +39,25 @@ public final class ExpandPath implements Function {
 	        			return toReturnValue(realPath,reses[i]);
 	        		}
 	        	}
+	        	
+	        	// no expand needed
+	        	if(!SystemUtil.isWindows() && !reses[0].exists()) {
+	        		res=pc.getConfig().getResource(realPath);
+	                if(res.exists()) {
+	                	return toReturnValue(realPath,res);
+	                }
+	        	}
 	        	return toReturnValue(realPath,reses[0]);
         	}
+        	
+        	// no expand needed
+        	else if(!SystemUtil.isWindows()) {
+        		res=pc.getConfig().getResource(realPath);
+                if(res.exists()) {
+                	return toReturnValue(realPath,res);
+                }
+        	}
+        	
         }
         realPath=ConfigWebUtil.replacePlaceholder(realPath, config);
         res=pc.getConfig().getResource(realPath);
