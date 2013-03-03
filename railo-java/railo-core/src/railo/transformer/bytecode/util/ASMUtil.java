@@ -276,7 +276,7 @@ public final class ASMUtil {
 	 * falls ein solches existiert, andernfalls wird null zurueckgegeben.
 	 * @param el Startelement, von wo aus gesucht werden soll.
 	 * @param fullName Name des gesuchten Tags.
-	 * @return  Übergeornetes Element oder null.
+	 * @return  ï¿½bergeornetes Element oder null.
 	 */
 	public static Tag getAncestorTag(Tag tag, String fullName) {
 		Statement parent=tag;
@@ -1107,13 +1107,13 @@ public final class ASMUtil {
 	public static void visitLabel(GeneratorAdapter ga, Label label) {
 		if(label!=null) ga.visitLabel(label);
 	}
-	
+
 	public static String getClassName(Resource res) throws IOException{
 		byte[] src=IOUtil.toBytes(res);
 		ClassReader cr = new ClassReader(src);
 		return cr.getClassName();
 	}
-	
+
 	public static String getClassName(byte[] barr){
 		return new ClassReader(barr).getClassName();
 	}

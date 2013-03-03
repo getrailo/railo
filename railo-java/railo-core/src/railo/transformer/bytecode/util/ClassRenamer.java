@@ -1,5 +1,6 @@
 package railo.transformer.bytecode.util;
 
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -81,7 +82,7 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 	private String _fix(String str) {
 		if (!doNothing && !StringUtil.isEmpty(str)) {
 			if (str.indexOf(oldName) != -1) {
-				str = StringUtil.replace(str, oldName, newName);
+				str = StringUtil.replace(str, oldName, newName,false);
 			}
 		}
 		return str;

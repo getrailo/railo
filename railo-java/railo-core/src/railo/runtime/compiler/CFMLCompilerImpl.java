@@ -75,6 +75,7 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        		
 	        		barr=Page.setSourceLastModified(barr,source.getPhyscalFile().lastModified());
 	        		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
+	        		
 	        	}
 	        	finally {
 	        		IOUtil.closeEL(is);
