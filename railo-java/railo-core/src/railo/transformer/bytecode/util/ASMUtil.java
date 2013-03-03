@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -15,6 +16,8 @@ import org.objectweb.asm.commons.Method;
 
 import railo.aprint;
 import railo.commons.digest.MD5;
+import railo.commons.io.IOUtil;
+import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.runtime.component.Property;
 import railo.runtime.exp.PageException;
@@ -1105,4 +1108,13 @@ public final class ASMUtil {
 		if(label!=null) ga.visitLabel(label);
 	}
 	
+	public static String getClassName(Resource res) throws IOException{
+		byte[] src=IOUtil.toBytes(res);
+		ClassReader cr = new ClassReader(src);
+		return cr.getClassName();
+	}
+	
+	public static String getClassName(byte[] barr){
+		return new ClassReader(barr).getClassName();
+	}
 }
