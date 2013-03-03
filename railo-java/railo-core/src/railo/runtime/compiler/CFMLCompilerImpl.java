@@ -12,6 +12,8 @@ import railo.runtime.exp.TemplateException;
 import railo.transformer.bytecode.BytecodeException;
 import railo.transformer.bytecode.Page;
 import railo.transformer.bytecode.Position;
+import railo.transformer.bytecode.util.ASMUtil;
+import railo.transformer.bytecode.util.ClassRenamer;
 import railo.transformer.cfml.tag.CFMLTransformer;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.tag.TagLib;
@@ -60,8 +62,22 @@ public final class CFMLCompilerImpl implements CFMLCompiler {
 	        	InputStream is=null;
 	        	try{
 	        		barr=IOUtil.toBytes(is=ace.getInputStream());
+	        		
+	        		String srcName = ASMUtil.getClassName(barr);
+	        		// source is cfm and target cfc
+	        		if(srcName.endsWith("_cfm$cf") && className.endsWith("_cfc$cf"))
+	        				throw new TemplateException("source file ["+source.getDisplayPath()+"] contains the bytecode for a regular cfm template not for a component");
+	        		// source is cfc and target cfm
+	        		if(srcName.endsWith("_cfc$cf") && className.endsWith("_cfm$cf"))
+	        				throw new TemplateException("source file ["+source.getDisplayPath()+"] contains a component not a regular cfm template");
+	        		
+	        		// rename class name when needed
+	        		if(!srcName.equals(className))barr=ClassRenamer.rename(barr, className);
+	        		
+	        		
 	        		barr=Page.setSourceLastModified(barr,source.getPhyscalFile().lastModified());
 	        		IOUtil.copy(new ByteArrayInputStream(barr), classFile,true);
+	        		
 	        	}
 	        	finally {
 	        		IOUtil.closeEL(is);
