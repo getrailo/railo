@@ -12,6 +12,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
+import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.List;
 import railo.runtime.type.Query;
@@ -43,7 +44,7 @@ public final class QueryNew implements Function {
 		return populate(pc, qry, data);	
 	}
 	
-	private static Query populate(PageContext pc, Query qry,Object data) throws PageException {
+	public static Query populate(PageContext pc, Query qry,Object data) throws PageException {
 		if(Decision.isArray(data))
 			return _populate(pc,qry,Caster.toArray(data));
 		else if(Decision.isStruct(data))
@@ -53,14 +54,25 @@ public final class QueryNew implements Function {
 	}
 	
 	private static Query _populate(PageContext pc, Query qry,Struct data) throws PageException {
-		//Key[] keys = data.keys();
+		
+		
+		
 		Iterator<Entry<Key, Object>> it = data.entryIterator();
 		Entry<Key, Object> e;
+		Object v;
+		Array arr;
 		while(it.hasNext()){
 			e = it.next();
-			if(qry.getColumn(e.getKey(),null)!=null) 
-				 populateColumn(qry,e.getKey(),Caster.toArray(e.getValue()));
+			if(qry.getColumn(e.getKey(),null)!=null) {
+				v=e.getValue();
+				arr = Caster.toArray(v,null);
+				if(arr==null) arr=new ArrayImpl(new Object[]{v});
+				populateColumn(qry,e.getKey(),arr);
+			}
 		}
+		
+		
+		
 		return qry; 
 	}
 	
@@ -74,20 +86,43 @@ public final class QueryNew implements Function {
 		}
 	}
 	private static Query _populate(PageContext pc, Query qry,Array data) throws PageException {
+		/*
+		 * 3 types of structures are supported
+		 * array - ["Urs","Weber"]
+		 * array of struct - [{firstname="Urs",lastname="Weber"},{firstname="Peter",lastname="Mueller"}]
+		 * array of array - [["Urs","Weber"],["Peter","Mueller"]]
+		 */
+		
+		// check if the array only contains simple values or mixed
 		Iterator<?> it = data.valueIterator();
 		Object o;
+		boolean hasSimpleValues=false;
 		while(it.hasNext()){
 			o=it.next();
+			if(!Decision.isStruct(o) && !Decision.isArray(o)) hasSimpleValues=true;
+		}
+		
+		
+		if(hasSimpleValues) {
 			qry.addRow();
-			if(Decision.isStruct(o))populateRow(qry,Caster.toStruct(o));
-			else if(Decision.isArray(o))populateRow(qry,Caster.toArray(o));
-			else
-				throw new FunctionException(pc, "QueryNew", 3, "data", "the date must be defined as array of structs , array of arrays or struct of arrays");
+			populateRow(qry, data);
+		}
+		else {
+			it = data.valueIterator();
+			while(it.hasNext()){
+				o=it.next();
+				qry.addRow();
+				if(Decision.isStruct(o))populateRow(qry,Caster.toStruct(o));
+				else if(Decision.isArray(o))populateRow(qry,Caster.toArray(o));
+				else {
+					populateRow(qry,new ArrayImpl(new Object[]{o}));
+				}
+			}
 		}
 		return qry;
 	}
 	
-	public static void populateRow(Query qry, Struct data) throws PageException {
+	private static void populateRow(Query qry, Struct data) throws PageException {
 		Key[] columns = QueryUtil.getColumnNames(qry);
 		int row=qry.getRecordcount();
 		Object value;
@@ -97,7 +132,7 @@ public final class QueryNew implements Function {
 		}
 		
 	}
-	protected static void populateRow(Query qry, Array data) throws PageException {
+	private static void populateRow(Query qry, Array data) throws PageException {
 		Iterator<?> it = data.valueIterator();
 		Key[] columns = QueryUtil.getColumnNames(qry);
 		int row=qry.getRecordcount();
