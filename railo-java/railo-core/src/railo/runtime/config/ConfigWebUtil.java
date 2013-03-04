@@ -202,7 +202,7 @@ public final class ConfigWebUtil {
     	
     	strDir=replacePlaceholder(strDir,config);
         if(strDir!=null && strDir.trim().length()>0) {
-        	Resource res=_getExistingFile(config.getResource(ResourceUtil.merge(sc.getRealPath("/"),strDir)),type);
+        	Resource res=sc==null?null:_getExistingFile(config.getResource(ResourceUtil.merge(sc.getRealPath("/"),strDir)),type);
             if(res!=null) return res;
             
             res=_getExistingFile(config.getResource(strDir),type);

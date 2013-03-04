@@ -21,7 +21,10 @@ public final class QueryAddRow implements Function {
 		else if(Decision.isNumeric(numberOrData)) {
 			query.addRow(Caster.toIntValue(numberOrData));
 		}
-		else if(Decision.isStruct(numberOrData)) {
+		else {
+			QueryNew.populate(pc, query, numberOrData);
+		}
+		/*else if(Decision.isStruct(numberOrData)) {
 			query.addRow();
 			QueryNew.populateRow(query, Caster.toStruct(numberOrData));
 		}
@@ -31,7 +34,7 @@ public final class QueryAddRow implements Function {
 		}
 		else
 			throw new FunctionException(pc, "QueryAddRow", 2, "data", "you must define a array, a struct or a number");
-		
+		*/
 		
 		return query.getRecordcount();
 	}

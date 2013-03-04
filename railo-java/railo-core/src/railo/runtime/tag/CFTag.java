@@ -68,7 +68,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
 
 	private static final Collection.Key ATTRIBUTE_TYPE = KeyImpl.intern("attributetype");
 	private static final Collection.Key RT_EXPR_VALUE = KeyImpl.intern("rtexprvalue");
-	private static final Collection.Key PARSE_BODY = KeyImpl.intern("parsebody");
 	private static final String MARKER = "2w12801";
 	
     /**
@@ -456,10 +455,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     		// hint
     		String hint=Caster.toString(meta.get(KeyConstants._hint,null),null);
     		if(!StringUtil.isEmpty(hint))tag.setDescription(hint);
-    		
-    		// parseBody
-    		boolean rtexprvalue=Caster.toBooleanValue(meta.get(PARSE_BODY,Boolean.FALSE),false);
-    		tag.setParseBody(rtexprvalue);
     	}
     	
     // ATTRIBUTES
