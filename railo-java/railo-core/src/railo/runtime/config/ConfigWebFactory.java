@@ -124,6 +124,7 @@ import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.SpoolerEngineImpl;
+import railo.runtime.tag.TagUtil;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.KeyImpl;
 import railo.runtime.type.List;
@@ -386,7 +387,10 @@ public final class ConfigWebFactory {
     	}
     	catch(Throwable t){}
 
-    	//doNew(config.getConfigDir(), false);
+    	if(config instanceof ConfigWebImpl)
+    		TagUtil.addTagMetaData((ConfigWebImpl) config);
+    	
+    	
     	
     	ThreadLocalConfig.release();
     }

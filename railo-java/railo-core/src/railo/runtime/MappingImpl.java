@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.collections.map.ReferenceMap;
 
 import railo.commons.io.FileUtil;
@@ -111,14 +113,16 @@ public final class MappingImpl implements Mapping {
         this.lcVirtual=this.virtual.toLowerCase();
         this.lcVirtualWithSlash=lcVirtual.endsWith("/")?this.lcVirtual:this.lcVirtual+'/';
 
-        if(!(config instanceof ConfigWebImpl)) return;
-        ConfigWebImpl cw=(ConfigWebImpl) config;
+        //if(!(config instanceof ConfigWebImpl)) return;
+        //ConfigWebImpl cw=(ConfigWebImpl) config;
+        ServletContext cs = (config instanceof ConfigWebImpl)?((ConfigWebImpl)config).getServletContext():null;
+        
         
         // Physical
-        physical=ConfigWebUtil.getExistingResource(cw.getServletContext(),strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,
+        physical=ConfigWebUtil.getExistingResource(cs,strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,
                 config);
         // Archive
-        archive=ConfigWebUtil.getExistingResource(cw.getServletContext(),strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
+        archive=ConfigWebUtil.getExistingResource(cs,strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
                 config);
         if(archive!=null) {
             try {
@@ -273,17 +277,20 @@ public final class MappingImpl implements Mapping {
 
     @Override
     public void check() {
-        if(config instanceof ConfigServer) return;
-        ConfigWebImpl cw=(ConfigWebImpl) config;
+        //if(config instanceof ConfigServer) return;
+        //ConfigWebImpl cw=(ConfigWebImpl) config;
+        ServletContext cs = (config instanceof ConfigWebImpl)?((ConfigWebImpl)config).getServletContext():null;
+        
+        
         // Physical
         if(getPhysical()==null && strPhysical!=null && strPhysical.length()>0) {
-            physical=ConfigWebUtil.getExistingResource(cw.getServletContext(),strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,config);
+            physical=ConfigWebUtil.getExistingResource(cs,strPhysical,null,config.getConfigDir(),FileUtil.TYPE_DIR,config);
             
         }
         // Archive
         if(getArchive()==null && strArchive!=null && strArchive.length()>0) {
             try {
-                archive=ConfigWebUtil.getExistingResource(cw.getServletContext(),strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
+                archive=ConfigWebUtil.getExistingResource(cs,strArchive,null,config.getConfigDir(),FileUtil.TYPE_FILE,
                         config);
                 if(archive!=null) {
                     try {

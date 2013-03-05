@@ -440,9 +440,6 @@ public class CFTag extends BodyTagTryCatchFinallyImpl implements DynamicAttribut
     	TagLibTag tag=new TagLibTag(null);
     // TAG
 
-    	boolean parseBody=Caster.toBooleanValue(meta.get(PARSE_BODY,Boolean.FALSE),false);
-    	tag.setParseBody(parseBody);
-    	
     	// type    	
     	String type=Caster.toString(meta.get(ATTRIBUTE_TYPE,"dynamic"),"dynamic");
     	
