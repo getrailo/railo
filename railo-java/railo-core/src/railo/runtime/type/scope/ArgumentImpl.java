@@ -83,10 +83,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
-		/*if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
-			return defaultValue;
-		}*/
-		return get(key, defaultValue);
+		return super.get(key,defaultValue);
 	}
 	
 
@@ -107,9 +104,13 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		Object o=super.get(key,null);
 		if(o!=null)return o;
 		
+		char c = key.charAt(0);
+    	if(!Character.isDigit(c) && c!='+') return defaultValue; // it make sense to have this step between
+    	
+		
+		
 		o=get(Caster.toIntValue(key.getString(),-1),null);
 		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
 		return defaultValue;
 	}
 
@@ -122,12 +123,15 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		Object o=super.get(key,null);
 		if(o!=null)return o;
 
-		o=get(Caster.toIntValue(key.getString(),-1),null);
-		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
-		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
-				railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
-				+"]");
+		char c = key.charAt(0);
+    	if(Character.isDigit(c) || c=='+') {
+    		o=get(Caster.toIntValue(key.getString(),-1),null);
+    		if(o!=null)return o;
+    	}
+    	
+    	throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+			railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+			+"]");
 		
 	}
 

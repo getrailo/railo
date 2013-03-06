@@ -405,7 +405,7 @@ public final class Caster {
     public static double toDoubleValue(Object o) throws PageException {
         if(o instanceof Number) return ((Number)o).doubleValue();
         else if(o instanceof Boolean) return ((Boolean)o).booleanValue()?1:0;
-        else if(o instanceof String) return toDoubleValue(o.toString());
+        else if(o instanceof String) return toDoubleValue(o.toString(),true);
         //else if(o instanceof Clob) return toDoubleValue(toString(o));
         else if(o instanceof Castable) return ((Castable)o).castToDoubleValue();
         else if(o == null) return 0;//toDoubleValue("");
@@ -425,6 +425,9 @@ public final class Caster {
      * @throws CasterException 
      */
     public static double toDoubleValue(String str) throws CasterException { 
+    	return toDoubleValue(str,true);
+    }
+    public static double toDoubleValue(String str, boolean alsoFromDate) throws CasterException { 
         if(str==null) return 0;//throw new CasterException("can't cast empty string to a number value");
         str=str.trim();
         double rtn_=0;
@@ -453,13 +456,15 @@ public final class Caster {
             if(curr<'0') {
                 if(curr=='.') { 
                     if(hasDot) {
+                    	if(!alsoFromDate) throw new CasterException("cannot cast ["+str+"] string to a number value");  
                     	return toDoubleValueViaDate(str);
                     }
                     hasDot=true; 
                 } 
                 else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return toDoubleValueViaDate(str);
+                    if(!alsoFromDate) throw new CasterException("cannot cast ["+str+"] string to a number value");  
+                	return toDoubleValueViaDate(str);
                     //throw new CasterException("can't cast ["+str+"] string to a number value"); 
                 }
             }
@@ -469,13 +474,15 @@ public final class Caster {
                 		return Double.parseDouble(str);
                 	}
                 	catch( NumberFormatException e){
-                		return toDoubleValueViaDate(str);
+                		if(!alsoFromDate) throw new CasterException("cannot cast ["+str+"] string to a number value");  
+                    	return toDoubleValueViaDate(str);
                 		//throw new CasterException("can't cast ["+str+"] string to a number value"); 
                 	} 
                 }
                 //else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return toDoubleValueViaDate(str);
+                    if(!alsoFromDate) throw new CasterException("cannot cast ["+str+"] string to a number value");  
+                	return toDoubleValueViaDate(str);
                     //throw new CasterException("can't cast ["+str+"] string to a number value"); 
                 //}
             }
@@ -509,13 +516,13 @@ public final class Caster {
     }
     
     private static double toDoubleValueViaDate(String str) throws CasterException {
-		DateTime date = DateCaster.toDateSimple(str, false, null, null);// not advanced here, neo also only support simple
+		DateTime date = DateCaster.toDateSimple(str, false,false, null, null);// not advanced here, neo also only support simple
 		if(date==null)throw new CasterException("can't cast ["+str+"] string to a number value");
     	return date.castToDoubleValue(0);
 	}
     
     private static double toDoubleValueViaDate(String str,double defaultValue) {
-		DateTime date = DateCaster.toDateSimple(str, false, null, null);// not advanced here, neo also only support simple
+    	DateTime date = DateCaster.toDateSimple(str, false,false, null, null);// not advanced here, neo also only support simple
 		if(date==null)return defaultValue;
     	return date.castToDoubleValue(0);
 	}
@@ -547,6 +554,9 @@ public final class Caster {
      * @return casted double value
      */ 
     public static double toDoubleValue(String str,double defaultValue) { 
+    	return toDoubleValue(str, true,defaultValue);
+    }
+    public static double toDoubleValue(String str,boolean alsoFromDate,double defaultValue) { 
         if(str==null) return defaultValue; 
         str=str.trim();
 
@@ -579,12 +589,16 @@ public final class Caster {
             
             if(curr<'0') {
                 if(curr=='.') { 
-                	if(hasDot) return toDoubleValueViaDate(str,defaultValue);
+                	if(hasDot) {
+                		if(!alsoFromDate) return defaultValue;  
+                    	return toDoubleValueViaDate(str,defaultValue);
+                	}
                     hasDot=true; 
                 } 
                 else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return toDoubleValueViaDate(str,defaultValue);
+                    if(!alsoFromDate) return defaultValue;  
+                	return toDoubleValueViaDate(str,defaultValue);
                 }
             }
             else if(curr>'9') {
@@ -593,12 +607,14 @@ public final class Caster {
                 		return Double.parseDouble(str);
                 	}
                 	catch( NumberFormatException e){
-                		return toDoubleValueViaDate(str,defaultValue);
+                		if(!alsoFromDate) return defaultValue;  
+                    	return toDoubleValueViaDate(str,defaultValue);
                 	} 
                 }
                 //else {
                     if(pos==0 && Decision.isBoolean(str)) return toBooleanValue(str,false)?1.0D:0.0D;
-                    return toDoubleValueViaDate(str,defaultValue);
+                    if(!alsoFromDate) return defaultValue;  
+                	return toDoubleValueViaDate(str,defaultValue);
                 //}
             }
             else if(!hasDot) {
@@ -628,6 +644,7 @@ public final class Caster {
         
         
     }
+    
     private static int toDigit(char c) {
         return c-48;
     } 
@@ -720,7 +737,7 @@ public final class Caster {
      * @throws ExpressionException
      */
     public static int toIntValue(String str) throws ExpressionException {
-        return (int)toDoubleValue(str);
+        return (int)toDoubleValue(str,false);
     }
 
     /**
@@ -730,7 +747,7 @@ public final class Caster {
      * @return casted double value
      */
     public static int toIntValue(String str, int defaultValue) { 
-        return (int)toDoubleValue(str,defaultValue);
+        return (int)toDoubleValue(str,false,defaultValue);
     }
     
     /**
