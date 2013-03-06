@@ -111,6 +111,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		
 		o=get(Caster.toIntValue(key.getString(),-1),null);
 		if(o!=null)return o;
+		if(super.containsKey(key)) return null;// that is only for compatibility to neo
 		return defaultValue;
 	}
 
@@ -128,7 +129,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
     		o=get(Caster.toIntValue(key.getString(),-1),null);
     		if(o!=null)return o;
     	//}
-    	
+    	if(super.containsKey(key)) return null;// that is only for compatibility to neo
     	throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
 			railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
 			+"]");
