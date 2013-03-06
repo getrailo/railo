@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import railo.commons.io.res.Resource;
-import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefBoolean;
 import railo.runtime.Mapping;

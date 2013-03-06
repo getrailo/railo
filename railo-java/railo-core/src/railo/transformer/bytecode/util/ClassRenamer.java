@@ -1,19 +1,11 @@
 package railo.transformer.bytecode.util;
 
-import java.io.IOException;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import railo.print;
-import railo.commons.io.IOUtil;
-import railo.commons.io.res.Resource;
-import railo.commons.io.res.ResourceProvider;
-import railo.commons.io.res.ResourcesImpl;
-import railo.commons.lang.ClassException;
 import railo.commons.lang.StringUtil;
 import railo.runtime.type.List;
 

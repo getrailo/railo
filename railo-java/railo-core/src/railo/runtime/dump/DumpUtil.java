@@ -18,7 +18,6 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
-import org.apache.xerces.dom.AttributeMap;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,7 +31,6 @@ import railo.runtime.converter.WDDXConverter;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.text.xml.XMLAttributes;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
