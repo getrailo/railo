@@ -104,8 +104,8 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		Object o=super.get(key,null);
 		if(o!=null)return o;
 		
-		char c = key.charAt(0);
-    	if(!Character.isDigit(c) && c!='+') return defaultValue; // it make sense to have this step between
+		//char c = key.charAt(0);
+    	//if(!Character.isDigit(c) && c!='+') return defaultValue; // it make sense to have this step between
     	
 		
 		
@@ -123,11 +123,11 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		Object o=super.get(key,null);
 		if(o!=null)return o;
 
-		char c = key.charAt(0);
-    	if(Character.isDigit(c) || c=='+') {
+		//char c = key.charAt(0);
+    	//if(Character.isDigit(c) || c=='+') {
     		o=get(Caster.toIntValue(key.getString(),-1),null);
     		if(o!=null)return o;
-    	}
+    	//}
     	
     	throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
 			railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
