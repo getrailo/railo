@@ -164,7 +164,9 @@ public final class CFMLWriterWSPref extends CFMLWriterImpl implements WhiteSpace
 				return;
 			if ( sb.length() > 0 ) {
 				printBuffer();													// buffer should never contain WS so flush it
-				super.print( c == CHAR_NL ? CHAR_NL : ( doChangeWsToSpace ? CHAR_SPACE : c ) );
+                lastChar = c == CHAR_NL ? CHAR_NL : ( doChangeWsToSpace ? CHAR_SPACE : c );
+				super.print( lastChar );
+                return;
 			}
 		}
 
