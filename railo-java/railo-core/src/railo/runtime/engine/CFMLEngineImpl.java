@@ -153,7 +153,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      */
     public void addServletConfig(ServletConfig config) throws ServletException {
     	servletConfigs.add(config);
-    	String real=config.getServletContext().getRealPath("/");
+    	String real=ReqRspUtil.getRootPath(config.getServletContext());
         if(!initContextes.containsKey(real)) {             
         	CFMLFactory jspFactory = loadJSPFactory(getConfigServerImpl(),config,initContextes.size());
             initContextes.put(real,jspFactory);
@@ -225,7 +225,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
         
         
         ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
-        Resource root = frp.getResource(sc.getRealPath("/"));
+        Resource root = frp.getResource(ReqRspUtil.getRootPath(sc));
         Resource configDir=ResourceUtil.createResource(root.getRealResource(strConfig), FileUtil.LEVEL_PARENT_FILE,FileUtil.TYPE_DIR);
         
         if(configDir==null) {
@@ -246,7 +246,7 @@ public final class CFMLEngineImpl implements CFMLEngine {
      */
     
     public CFMLFactory getCFMLFactory(ServletContext srvContext, ServletConfig srvConfig,HttpServletRequest req) throws ServletException {
-    	String real=srvContext.getRealPath("/");
+    	String real=ReqRspUtil.getRootPath(srvContext);
         ConfigServerImpl cs = getConfigServerImpl();
     	
         

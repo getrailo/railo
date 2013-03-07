@@ -986,7 +986,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      * @see railo.runtime.PageContext#getRootTemplateDirectory()
      */
     public Resource getRootTemplateDirectory() {
-		return config.getResource(servlet.getServletContext().getRealPath("/"));
+		return config.getResource(ReqRspUtil.getRootPath(servlet.getServletContext()));
 	}
 
     /**

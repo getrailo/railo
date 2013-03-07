@@ -94,6 +94,7 @@ import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.Monitor;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.net.http.CertificateInstaller;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.mail.SMTPException;
 import railo.runtime.net.mail.SMTPVerifier;
 import railo.runtime.net.mail.Server;
@@ -1032,7 +1033,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
                 int row=i+1;
                 CFMLFactoryImpl factory = factories[i];
                 
-                qry.setAtEL(KeyConstants._path,row,factory.getConfigWebImpl().getServletContext().getRealPath("/"));
+                qry.setAtEL(KeyConstants._path,row,ReqRspUtil.getRootPath(factory.getConfigWebImpl().getServletContext()));
                 
                 qry.setAtEL(CONFIG_FILE,row,factory.getConfigWebImpl().getConfigFile().getAbsolutePath());
                 if(factory.getURL()!=null)qry.setAtEL(KeyConstants._url,row,factory.getURL().toExternalForm());
@@ -2333,7 +2334,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
             qry.setAt("TagContext",row,PageExceptionImpl.getTagContext(pc.getConfig(), st));
             
             qry.setAt("label",row,factory.getLabel());
-            qry.setAt("RootPath",row,((ConfigWebImpl)configWeb).getServletContext().getRealPath("/"));
+            qry.setAt("RootPath",row,ReqRspUtil.getRootPath(((ConfigWebImpl)configWeb).getServletContext()));
             qry.setAt("ConfigFile",row,configWeb.getConfigFile().getAbsolutePath());
             if(factory.getURL()!=null)qry.setAt("url",row,factory.getURL().toExternalForm());
             
