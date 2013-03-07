@@ -600,6 +600,7 @@ public final class ResourceUtil {
 	}
 	
 	public static String prettifyPath(String path) {
+		if(path==null) return null;
 		path=path.replace('\\','/');
 		return StringUtil.replace(path, "//", "/", false);
 		// TODO /aaa/../bbb/
