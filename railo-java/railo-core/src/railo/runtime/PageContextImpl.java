@@ -987,7 +987,6 @@ public final class PageContextImpl extends PageContext implements Sizeable {
      */
     public Resource getRootTemplateDirectory() {
 		return config.getResource(servlet.getServletContext().getRealPath("/"));
-		//new File(servlet.getServletContext().getRealPath("/"));
 	}
 
     /**

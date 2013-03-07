@@ -2005,7 +2005,7 @@ public abstract class ConfigImpl implements Config {
     
     
     public String getSecurityKey() {
-    	return securityKey;//getServletContext().getRealPath("/");
+    	return securityKey;
     }
 
     /**
