@@ -429,13 +429,20 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
     /**
      * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
-     */
-    public boolean containsKey(Collection.Key key) {
+     * /
+    public boolean containsKeyX(Collection.Key key) {
     	if(super.containsKey(key)) return true;
     	char c = key.charAt(0);
     	if(!Character.isDigit(c) && c!='+') return false; // it make sense to have this step between
     	
     	return containsKey(Caster.toIntValue(key.getString(),-1));
+    }*/
+    
+	/**
+     * @see railo.runtime.type.StructImpl#containsKey(railo.runtime.type.Collection.Key)
+     */
+    public boolean containsKey(Collection.Key key) {
+    	return get(key,null)!=null && super.containsKey(key);
     }
 
     /**
@@ -444,8 +451,6 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
     public boolean containsKey(int key) {
     	return key>0 && key<=size();
     }
-    
-
 
 	/**
 	 * @see railo.runtime.type.Array#toList()
