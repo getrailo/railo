@@ -250,7 +250,7 @@ public final class DateString {
 	public int readMonthString() {
 		char c;
 		int start=pos;
-		StringBuffer sb=new StringBuffer();
+		StringBuilder sb=new StringBuilder();
         while(isValidIndex() && isMonthChar(c=str.charAt(pos))) {
             pos++;
             sb.append(Character.toLowerCase(c));

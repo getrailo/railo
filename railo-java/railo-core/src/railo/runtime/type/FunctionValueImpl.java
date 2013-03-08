@@ -127,12 +127,12 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
     
 	@Override
 	public DateTime castToDateTime() throws PageException {
-		return DateCaster.toDateSimple(value,null);
+		return DateCaster.toDateSimple(value,true,true,null);
 	}
     
     @Override
     public DateTime castToDateTime(DateTime defaultValue) {
-        return DateCaster.toDateSimple(value,true,null,defaultValue);
+        return DateCaster.toDateSimple(value,true,true,null,defaultValue);
     }
 
 	@Override

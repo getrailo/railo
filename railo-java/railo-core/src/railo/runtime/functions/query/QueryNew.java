@@ -1,6 +1,9 @@
 package railo.runtime.functions.query;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import railo.commons.lang.StringUtil;
@@ -54,31 +57,26 @@ public final class QueryNew implements Function {
 	}
 	
 	private static Query _populate(PageContext pc, Query qry,Struct data) throws PageException {
-		
-		
-		
 		Iterator<Entry<Key, Object>> it = data.entryIterator();
 		Entry<Key, Object> e;
 		Object v;
 		Array arr;
+		int rows = qry.getRecordcount();
 		while(it.hasNext()){
 			e = it.next();
 			if(qry.getColumn(e.getKey(),null)!=null) {
 				v=e.getValue();
 				arr = Caster.toArray(v,null);
 				if(arr==null) arr=new ArrayImpl(new Object[]{v});
-				populateColumn(qry,e.getKey(),arr);
+				populateColumn(qry,e.getKey(),arr,rows);
 			}
 		}
-		
-		
-		
 		return qry; 
 	}
 	
-	private static void populateColumn(Query qry, Key column, Array data) throws PageException {
+	private static void populateColumn(Query qry, Key column, Array data,int rows) throws PageException {
 		Iterator<?> it = data.valueIterator();
-		int row=0;
+		int row=rows;
 		while(it.hasNext()){
 			row++;
 			if(row>qry.getRecordcount()) qry.addRow();

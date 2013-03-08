@@ -78,16 +78,13 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
-		/*if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
-			return defaultValue;
-		}*/
-		return get(key, defaultValue);
+		return super.get(key,defaultValue);
 	}
 	
 
 	@Override
 	public boolean containsFunctionArgumentKey(Key key) {
-		return containsKey(key);//sfunctionArgumentNames!=null && functionArgumentNames.contains(key);
+		return super.containsKey(key);//functionArgumentNames!=null && functionArgumentNames.contains(key);
 	}
 	
 	
@@ -104,6 +101,9 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		}
 		Object o=super.get(key,null);
 		if(o!=null)return o;
+
+		//char c = key.charAt(0);
+    	//if(!Character.isDigit(c) && c!='+') return defaultValue; // it make sense to have this step between
 
 		o=get(Caster.toIntValue(key.getString(),-1),null);
 		if(o!=null)return o;
@@ -129,18 +129,30 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		Object o=super.get(key,null);
 		if(o!=null)return o;
 
+
 		o=get(Caster.toIntValue(key.getString(),-1),null);
 		if(o!=null)return o;
 		if(super.containsKey(key)) return null;// that is only for compatibility to neo
 		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope");
 
+/*
+		//char c = key.charAt(0);
+    	//if(Character.isDigit(c) || c=='+') {
+    		o=get(Caster.toIntValue(key.getString(),-1),null);
+    		if(o!=null)return o;
+    	//}
+    	if(super.containsKey(key)) return null;// that is only for compatibility to neo
+    	throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+			railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+			+"]");
+*/
 	}
 	
 	
 
 	@Override
 	public Object get(int intKey, Object defaultValue) {
-		Iterator it = valueIterator();//keyIterator();//getMap().keySet().iterator();
+		Iterator<Object> it = valueIterator(); //keyIterator();//getMap().keySet().iterator();
 		int count=0;
 		Object o;
 		while(it.hasNext()) {
@@ -397,13 +409,15 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
     public boolean containsKey(Collection.Key key) {
     	return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL() && super.containsKey(key);
     }
+    /*
+    public boolean containsKey(Collection.Key key) {
+    	return get(key,null)!=null && super.containsKey(key);
+    }*/
 
     @Override
     public boolean containsKey(int key) {
-        return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
+    	return key>0 && key<=size();
     }
-    
-
 
 	@Override
 	public List toList() {

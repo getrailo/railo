@@ -108,6 +108,7 @@ import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.IntervallMonitorWrap;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.monitor.RequestMonitorWrap;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
@@ -184,7 +185,7 @@ public final class ConfigWebFactory {
     			"WEB CONTEXT ("+label+")\n"+
     			"-------------------------------------------------------------------\n"+
     			"- config:"+configDir+"\n"+
-    			"- webroot:"+servletConfig.getServletContext().getRealPath("/")+"\n"+
+    			"- webroot:"+ReqRspUtil.getRootPath(servletConfig.getServletContext())+"\n"+
     			"- hash:"+hash+"\n"+
     			"- label:"+label+"\n"+
     			"===================================================================\n"
