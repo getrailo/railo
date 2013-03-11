@@ -322,7 +322,6 @@ public final class ConfigWebFactory {
      */
     public static void load(ConfigServerImpl cs, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
-    	
     	ThreadLocalConfig.register(config);
     	// fix
     	if(ConfigWebAdmin.fixS3(doc) || ConfigWebAdmin.fixPSQ(doc)) {
@@ -332,6 +331,7 @@ public final class ConfigWebFactory {
 			} catch (SAXException e) {}
     	}
     	
+    	config.setLastModified();
 
     	loadRailoConfig(cs,config,doc);
     	int mode = config.getMode();
@@ -2441,7 +2441,15 @@ public final class ConfigWebFactory {
 		else if (configServer!=null) {
 		    config.setMode(configServer.getMode());
 		}
-		
+
+		// check config file for changes
+		String cFc=railoConfiguration.getAttribute("check-for-changes");
+		if(!StringUtil.isEmpty(cFc,true)) {
+			config.setCheckForChangesInConfigFile(Caster.toBooleanValue(cFc.trim(),false));
+		}
+		else if (configServer!=null) {
+		    config.setCheckForChangesInConfigFile(configServer.checkForChangesInConfigFile());
+		}
     }
     
     

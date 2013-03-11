@@ -19,6 +19,7 @@ import railo.runtime.PageSourcePool;
 import railo.runtime.config.ConfigImpl;
 import railo.runtime.config.ConfigServer;
 import railo.runtime.config.ConfigWeb;
+import railo.runtime.config.ConfigWebAdmin;
 import railo.runtime.lock.LockManagerImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool;
 import railo.runtime.op.Caster;
@@ -85,7 +86,9 @@ public final class Controler extends Thread {
             catch (Throwable t) {
 				t.printStackTrace();
 			}
-            
+            if(doMinute) {
+				try{ConfigWebAdmin.checkForChangesInConfigFile(configServer);}catch(Throwable t){}
+            }
             if(doHour) {
             	try{configServer.checkPermGenSpace(true);}catch(Throwable t){}
             }
@@ -155,6 +158,8 @@ public final class Controler extends Thread {
 					// clean LockManager
 					if(cfmlFactory.getUsedPageContextLength()==0)try{((LockManagerImpl)config.getLockManager()).clean();}catch(Throwable t){}
 					
+					try{ConfigWebAdmin.checkForChangesInConfigFile(config);}catch(Throwable t){}
+	            	
 				}
 				// every hour
 				if(doHour) {
@@ -210,8 +215,7 @@ public final class Controler extends Thread {
 			}
 		} catch (Throwable t) {}
 	}
-	
-	
+
 	private void checkCacheFileSize(ConfigWeb config) {
 		checkSize(config,config.getCacheDir(),config.getCacheDirSize(),new ExtensionResourceFilter(".cache"));
 	}

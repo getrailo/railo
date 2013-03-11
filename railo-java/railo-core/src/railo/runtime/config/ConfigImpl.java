@@ -389,6 +389,8 @@ public abstract class ConfigImpl implements Config {
 	private railo.runtime.rest.Mapping[] restMappings;
 	
 	protected int writerType=CFML_WRITER_REFULAR;
+	private long configFileLastModified;
+	private boolean checkForChangesInConfigFile;
 	
 	
 	
@@ -496,6 +498,17 @@ public abstract class ConfigImpl implements Config {
 		}
 		return rst;
 	}
+	
+	public long lastModified() {
+        return configFileLastModified;
+    }
+	
+	protected void setLastModified() {
+		this.configFileLastModified=configFile.lastModified();
+    }
+	
+
+    
 
 	@Override
     public short getScopeCascadingType() {
@@ -3421,6 +3434,13 @@ public abstract class ConfigImpl implements Config {
 		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
 			list.add(mappings[i]);
 		}
+	}
+
+	protected void setCheckForChangesInConfigFile(boolean checkForChangesInConfigFile) {
+		this.checkForChangesInConfigFile=checkForChangesInConfigFile;
+	}
+	public boolean checkForChangesInConfigFile() {
+		return checkForChangesInConfigFile;
 	}
 	
 }

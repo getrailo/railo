@@ -32,6 +32,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.IPRange;
 import railo.commons.net.URLEncoder;
@@ -234,6 +235,26 @@ public final class ConfigWebAdmin {
     	setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
     	store(config);
     }
+    
+    public static void checkForChangesInConfigFile(Config config) {
+    	ConfigImpl ci=(ConfigImpl) config;
+		if(!ci.checkForChangesInConfigFile()) return;
+		
+		Resource file = config.getConfigFile();
+		long diff=file.lastModified()-ci.lastModified();
+		if(diff<10 && diff>-10) return; 
+		// reload
+		try {
+			ConfigWebAdmin admin = ConfigWebAdmin.newInstance(ci, null);
+			admin.reload(ci, false);
+			SystemOut.printDate(ci.getOutWriter(), "reloaded the configuration ["+file+"] automaticly");
+		} 
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
+    
+    
 
     private void addResourceProvider(String scheme,String clazz,String arguments) throws SecurityException {
     	checkWriteAccess();
@@ -298,12 +319,18 @@ public final class ConfigWebAdmin {
     }
     
     private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    	reload(config, true);
+    }
+    
+
+    private synchronized void reload(ConfigImpl config, boolean storeInMemoryData) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	renameOldstyleCFX();
     	
-    	checkWriteAccess();
+    	if(storeInMemoryData)checkWriteAccess();
+    	
         createAbort();
         if(config instanceof ConfigServerImpl) {
-        	XMLCaster.writeTo(doc,config.getConfigFile());
+        	if(storeInMemoryData)XMLCaster.writeTo(doc,config.getConfigFile());
             
             ConfigServerImpl cs=(ConfigServerImpl) config;
             ConfigServerFactory.reloadInstance(cs);
@@ -313,13 +340,14 @@ public final class ConfigWebAdmin {
             }
         }
         else {
-            XMLCaster.writeTo(doc,config.getConfigFile());
+        	if(storeInMemoryData)XMLCaster.writeTo(doc,config.getConfigFile());
             //SystemUtil.sleep(10);
             ConfigServerImpl cs=((ConfigWebImpl)config).getConfigServerImpl();
             
             ConfigWebFactory.reloadInstance(cs,(ConfigWebImpl)config,false);
         }
     }
+    
     
     
 
