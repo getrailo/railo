@@ -198,6 +198,7 @@ public class TagUtil {
     	catch(Throwable t){
     		return;
     	}
+    	PageContext orgPC = ThreadLocalPageContext.get();
     	ThreadLocalPageContext.register(pc);
         try{
     		TagLibTagAttr attrFileName,attrIsWeb;
@@ -229,7 +230,7 @@ public class TagUtil {
     		//t.printStackTrace();
     	}
     	finally{
-    		ThreadLocalPageContext.release();
+    		ThreadLocalPageContext.register(orgPC);
     	}
 	}
 
