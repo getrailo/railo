@@ -10,7 +10,7 @@ import railo.runtime.tag.FileTag;
 public class FileMove {
 
 	public static String call(PageContext pc, Object oSrc, Object oDst) throws PageException {
-		Resource src = Caster.toResource(oSrc,false);
+		Resource src = Caster.toResource(pc,oSrc,false);
 		if(!src.exists()) 
 			throw new FunctionException(pc,"FileMove",1,"source",
 					"source file ["+src+"] does not exist");

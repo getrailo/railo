@@ -4038,11 +4038,8 @@ public final class Caster {
         catch (ConverterException e) {}
         return defaultValue;
     }
-
-	public static Resource toResource(Object src) throws ExpressionException {
-		return toResource(src, true);
-	}
-	public static Resource toResource(Object src, boolean existing) throws ExpressionException {
+	
+	public static Resource toResourceX(Object src, boolean existing) throws ExpressionException {
 		return toResource(ThreadLocalPageContext.get(), src, existing);
 	}
 

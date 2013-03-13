@@ -1343,7 +1343,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		try {
 			if(obj instanceof String || obj instanceof Resource || obj instanceof File) {
 				try {
-					Resource res = Caster.toResource(obj);
+					Resource res = Caster.toResource(pc,obj,true);
 					pc.getConfig().getSecurityManager().checkFileLocation(res);
 					return new Image(res,format);
 				} 

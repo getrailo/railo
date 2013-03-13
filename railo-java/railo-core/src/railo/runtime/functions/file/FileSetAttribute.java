@@ -11,7 +11,7 @@ import railo.runtime.op.Caster;
 public class FileSetAttribute {
 
 	public static String call(PageContext pc, Object oSrc, String attr) throws PageException {
-		Resource src = Caster.toResource(oSrc,false);
+		Resource src = Caster.toResource(pc,oSrc,false);
 		pc.getConfig().getSecurityManager().checkFileLocation(src);
 		attr=attr.trim().toLowerCase();
 		try {

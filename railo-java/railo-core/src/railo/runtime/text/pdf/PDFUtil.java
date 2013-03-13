@@ -18,6 +18,7 @@ import org.pdfbox.util.PDFText2HTML;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
@@ -276,7 +277,7 @@ public class PDFUtil {
 		else parent.put("Kids", children);
 	}
 
-	public static PdfReader toPdfReader(Object value, String password) throws IOException, PageException {
+	public static PdfReader toPdfReader(PageContext pc,Object value, String password) throws IOException, PageException {
 		if(value instanceof PdfReader) return (PdfReader) value;
 		if(value instanceof PDFDocument) return ((PDFDocument) value).getPdfReader();
 		if(Decision.isBinary(value)){
@@ -288,7 +289,7 @@ public class PDFUtil {
 			return new PdfReader(IOUtil.toBytes((Resource)value));
 		}
 		if(value instanceof String) {
-			if(password!=null)return new PdfReader(IOUtil.toBytes(Caster.toResource(value)),password.getBytes());
+			if(password!=null)return new PdfReader(IOUtil.toBytes(Caster.toResource(pc,value,true)),password.getBytes());
 			return new PdfReader(IOUtil.toBytes((Resource)value));
 		}
 		throw new CasterException(value,PdfReader.class);
