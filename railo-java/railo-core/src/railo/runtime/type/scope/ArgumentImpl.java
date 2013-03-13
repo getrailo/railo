@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
@@ -101,7 +102,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 			return defaultValue;
 		}*/
 		
-		Object o=super.get(key,Null.NULL);
+		Object o=super.g(key,Null.NULL);
 		if(o!=Null.NULL)return o;
 
 		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
@@ -125,7 +126,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		}*/
 		
 		// null is supported as returned value with argument scope
-		Object o=super.get(key,Null.NULL);
+		Object o=super.g(key,Null.NULL);
 		if(o!=Null.NULL)return o;
 
 		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
@@ -397,7 +398,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
     public boolean containsKey(Collection.Key key) {
     	if(NullSupportHelper.full()) return super.containsKey(key);
     	
-		return super.get(key,Null.NULL)!=Null.NULL && super.containsKey(key);
+		return super.g(key,null)!=null;
     	// return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL() && super.containsKey(key);
     }
     /*
