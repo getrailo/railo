@@ -243,7 +243,7 @@ public final class AppListenerUtil {
 					Caster.toBooleanValue(data.get(BLOB,null),false), 
 					Caster.toBooleanValue(data.get(CLOB,null),false), 
 					DataSource.ALLOW_ALL, 
-					Caster.toStruct(data.get(KeyConstants._custom,null),false), 
+					Caster.toStruct(data.get(KeyConstants._custom,null),null,false), 
 					Caster.toBooleanValue(data.get(READ_ONLY,null),false), 
 					true, 
 					Caster.toBooleanValue(data.get(STORAGE,null),false), 
