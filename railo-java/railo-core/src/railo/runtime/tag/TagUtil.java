@@ -189,6 +189,8 @@ public class TagUtil {
      * @param config
      */
     public static void addTagMetaData(ConfigWebImpl cw) {
+    	if(true) return;
+    	
     	PageContextImpl pc=null;
     	try{
     		pc = ThreadUtil.createPageContext(cw, DevNullOutputStream.DEV_NULL_OUTPUT_STREAM, 
@@ -230,6 +232,7 @@ public class TagUtil {
     		//t.printStackTrace();
     	}
     	finally{
+    		pc.release();
     		ThreadLocalPageContext.register(orgPC);
     	}
 	}
