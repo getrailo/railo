@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -4134,7 +4135,7 @@ public final class Caster {
 		throw new CasterException(obj,byte[].class);
 	}
 
-	public static InputStream toBinaryStream(Object obj) throws PageException {
+	public static InputStream toInputStream(Object obj) throws PageException {
 		try {
 			if(obj instanceof InputStream)return (InputStream)obj;
 			if(obj instanceof byte[]) return new ByteArrayInputStream((byte[]) obj);
@@ -4149,7 +4150,12 @@ public final class Caster {
 		catch(SQLException ioe) {
 			throw toPageException(ioe);
 		}
-		throw new CasterException(obj,byte[].class);
+		throw new CasterException(obj,InputStream.class);
+	}
+
+	public static OutputStream toOutputStream(Object obj) throws PageException {
+		if(obj instanceof OutputStream)return (OutputStream)obj;
+		throw new CasterException(obj,OutputStream.class);
 	}
 
 	public static Object castTo(PageContext pc, Class trgClass, Object obj) throws PageException {

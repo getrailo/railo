@@ -1847,7 +1847,7 @@ public class QueryImpl implements Query,Objects {
 		Object obj = getObject(columnIndex);
 		if(obj==null)return null;
 		try {
-			return Caster.toBinaryStream(obj);
+			return Caster.toInputStream(obj);
 		} catch (Exception e) {
 			throw new SQLException(e.getMessage());
 		}
@@ -1858,7 +1858,7 @@ public class QueryImpl implements Query,Objects {
 		Object obj = getObject(columnName);
 		if(obj==null)return null;
 		try {
-			return Caster.toBinaryStream(obj);
+			return Caster.toInputStream(obj);
 		} catch (Exception e) {
 			throw new SQLException(e.getMessage());
 		}
