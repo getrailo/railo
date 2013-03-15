@@ -25,7 +25,9 @@
 
 package railo.commons.util.mod;
 
+import java.io.Externalizable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -33,13 +35,25 @@ import java.util.Set;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 
-public abstract class AbstractMapPro<K,V> implements MapPro<K,V> {
+public abstract class AbstractMapPro<K,V> implements MapPro<K,V>,Externalizable {
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically
      * implicit.)
      */
     protected AbstractMapPro() {
     }
+    
+    // TODO better implementation
+    @Override
+    public void writeExternal(java.io.ObjectOutput out) throws java.io.IOException {
+        out.writeObject(new HashMap(this));
+    }
+    @Override
+    public void readExternal(java.io.ObjectInput in) throws java.io.IOException, ClassNotFoundException {
+        this.putAll((Map)in.readObject());
+    }
+    
+    
 
     // Query Operations
 
