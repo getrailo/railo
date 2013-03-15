@@ -125,6 +125,12 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
 		return loadPage(ThreadLocalPageContext.get(), defaultValue);
 	}
 	
+
+	public Page loadPage(PageContext pc, boolean forceReload) throws PageException {
+		if(forceReload) page=null;
+		return loadPage(pc);
+	}
+	
 	public Page loadPage(PageContext pc) throws PageException {
 		Page page=this.page;
 		if(mapping.isPhysicalFirst()) {
@@ -183,17 +189,10 @@ public final class PageSourceImpl implements SourceFile, PageSource, Sizeable {
     	
     	ConfigWeb config=pc.getConfig();
     	PageContextImpl pci=(PageContextImpl) pc;
-    	//if(pc.isPageAlreadyUsed(page)) return page;
-    	
-    	if((mapping.isTrusted() || 
-    			pci.isTrusted(page)) 
-        		&& isLoad(LOAD_PHYSICAL)) return page;
-				//&& isLoad(LOAD_PHYSICAL) && !recompileAlways) return page;
-        
+    	if((mapping.isTrusted() || pci.isTrusted(page)) && isLoad(LOAD_PHYSICAL)) return page;
     	Resource srcFile = getPhyscalFile();
     	
         long srcLastModified = srcFile.lastModified();
-        
         if(srcLastModified==0L) return null;
     	
 		// Page exists    
