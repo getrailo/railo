@@ -356,8 +356,8 @@ public abstract class PageExceptionImpl extends PageException {
 			struct.set(KeyConstants._Type,"cfml");
 			struct.set(KeyConstants._column,new Double(column));
 			if(content!=null){
-				struct.set("codePrintHTML",getCodePrint(content,line,true));
-				struct.set("codePrintPlain",getCodePrint(content,line,false));
+				struct.set(CODE_PRINT_HTML,getCodePrint(content,line,true));
+				struct.set(CODE_PRINT_PLAIN,getCodePrint(content,line,false));
 			}
 			tagContext.append(struct);
 		} 
