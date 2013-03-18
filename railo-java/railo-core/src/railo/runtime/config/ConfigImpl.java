@@ -2166,6 +2166,17 @@ public abstract class ConfigImpl implements Config {
 			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
 	}
 
+	protected void setDefaultResourceProvider(Class defaultProviderClass, Map arguments) throws ClassException {
+		Object o=ClassUtil.loadInstance(defaultProviderClass);
+		if(o instanceof ResourceProvider) {
+			ResourceProvider rp=(ResourceProvider) o;
+			rp.init(null,arguments);
+			setDefaultResourceProvider(rp);
+		}
+		else 
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
+	}
+
 	/**
 	 * @param defaultResourceProvider the defaultResourceProvider to set
 	 */
@@ -2187,6 +2198,17 @@ public abstract class ConfigImpl implements Config {
 		Object o=null;
 		
 		o=ClassUtil.loadInstance(strProviderClass);
+		
+		if(o instanceof ResourceProvider) {
+			ResourceProvider rp=(ResourceProvider) o;
+			rp.init(strProviderScheme,arguments);
+			addResourceProvider(rp);
+		}
+		else 
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
+	}
+	protected void addResourceProvider(String strProviderScheme, Class providerClass, Map arguments) throws ClassException {
+		Object o=ClassUtil.loadInstance(providerClass);
 		
 		if(o instanceof ResourceProvider) {
 			ResourceProvider rp=(ResourceProvider) o;

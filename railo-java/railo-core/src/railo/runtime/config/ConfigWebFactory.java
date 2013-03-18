@@ -42,6 +42,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.type.cfml.CFMLResourceProvider;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
@@ -408,17 +409,29 @@ public final class ConfigWebFactory {
         if(defaultProviders!=null && defaultProviders.length>0) {
         	Element defaultProvider=defaultProviders[defaultProviders.length-1];
         	String strDefaultProviderClass=defaultProvider.getAttribute("class");
+        	String strDefaultProviderComponent=defaultProvider.getAttribute("component");
+        	
+        	// class
         	if(!StringUtil.isEmpty(strDefaultProviderClass)) {
 	        	strDefaultProviderClass=strDefaultProviderClass.trim();
 	        	config.setDefaultResourceProvider(strDefaultProviderClass,toArguments(defaultProvider.getAttribute("arguments"),true));
 	        }
+        	
+        	// component
+        	else if(!StringUtil.isEmpty(strDefaultProviderComponent)) {
+        		strDefaultProviderComponent=strDefaultProviderComponent.trim();
+        		Map<String, String> args = toArguments(defaultProvider.getAttribute("arguments"),true);
+        		args.put("component", strDefaultProviderComponent);
+	        	config.setDefaultResourceProvider(CFMLResourceProvider.class.getName(),args);
+        	}
         }
         
 		// Resource Provider
         if(hasCS)config.setResourceProviders(configServer.getResourceProviders());
         if(providers!=null && providers.length>0) {
-        	
+
         	String strProviderClass;
+        	String strProviderCFC;
         	String strProviderScheme;
         	String httpClass=null;
         	Map httpArgs=null;
@@ -426,12 +439,14 @@ public final class ConfigWebFactory {
         	String s3Class="railo.commons.io.res.type.s3.S3ResourceProvider";
         	for(int i=0;i<providers.length;i++) {        	
         		strProviderClass=providers[i].getAttribute("class");
+        		strProviderCFC=providers[i].getAttribute("component");
         		
         		// ignore S3 extension
         		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equals(strProviderClass))
         			strProviderClass=S3ResourceProvider.class.getName();
         		
         		strProviderScheme=providers[i].getAttribute("scheme");
+        		// class
         		if(!StringUtil.isEmpty(strProviderClass) && !StringUtil.isEmpty(strProviderScheme)) {
         			strProviderClass=strProviderClass.trim();
             		strProviderScheme=strProviderScheme.trim().toLowerCase();
@@ -446,6 +461,15 @@ public final class ConfigWebFactory {
     	        		hasHTTPs=true;
     	        	else if(strProviderScheme.equalsIgnoreCase("s3"))
     	        		hasS3=true;
+        		}
+        		
+        		// cfc
+        		else if(!StringUtil.isEmpty(strProviderCFC) && !StringUtil.isEmpty(strProviderScheme)) {
+        			strProviderCFC=strProviderCFC.trim();
+            		strProviderScheme=strProviderScheme.trim().toLowerCase();
+            		Map<String, String> args = toArguments(providers[i].getAttribute("arguments"),true);
+            		args.put("component", strProviderCFC);
+            		config.addResourceProvider(strProviderScheme,CFMLResourceProvider.class,args);
         		}
             }
         	
@@ -521,15 +545,21 @@ public final class ConfigWebFactory {
     
 
 
-	private static Map<String,String> toArguments(String attributes, boolean decode) {
-		Map<String,String> map=new HashTable();
+	static Map<String,String> toArguments(String attributes, boolean decode) {
+		Map<String,String> map=new HashMap<String, String>();
 		if(attributes==null) return map;
 		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
+		
 		int index;
+		String str;
 		for(int i=0;i<arr.length;i++) {
-			index=arr[i].indexOf(':');
-			if(index==-1)map.put(arr[i].trim(), "");
-			else map.put(dec(arr[i].substring(0,index).trim(),decode), dec(arr[i].substring(index+1).trim(),decode));
+			str=arr[i].trim();
+			if(StringUtil.isEmpty(str)) continue;
+			index=str.indexOf(':');
+			if(index==-1)map.put(str, "");
+			else {
+				map.put(dec(str.substring(0,index).trim(),decode), dec(str.substring(index+1).trim(),decode));
+			}
 		}
 		return map;
 	}
