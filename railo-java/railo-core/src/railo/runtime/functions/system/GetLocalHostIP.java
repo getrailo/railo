@@ -3,7 +3,11 @@
  */
 package railo.runtime.functions.system;
 
-import java.net.*;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -15,7 +19,6 @@ import railo.runtime.type.ArrayImpl;
 
 
 public final class GetLocalHostIP implements Function {
-
 	public static Object call(PageContext pc)  {
 		try {
             if(InetAddress.getLocalHost() instanceof Inet6Address) return "::1";
