@@ -3,7 +3,7 @@ package railo.runtime.type;
 import railo.runtime.type.util.ListUtil;
 
 /**
- * BACKCOMP this class only exists for backward compatibility to code genrated for .ra files, DO NOT USE
+ * @deprecated BACKCOMP this class only exists for backward compatibility to code genrated for .ra files, DO NOT USE
  */
 public class List {
 
