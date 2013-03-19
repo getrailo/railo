@@ -5528,8 +5528,15 @@ The returned number of unallocated bytes is a hint, but not a guarantee, that it
 		<name>GetLocalHostIP</name>
 		<class>railo.runtime.functions.system.GetLocalHostIP</class>
 		<description>Returns the localhost IP address, which is 127.0.0.1 for IPv4 and ::1 for IPv6 addresses.</description>
+        <argument>
+			<name>all</name>
+			<type>boolean</type>
+			<required>false</required>
+			<default>false</default>
+			<description>if true then an Array is returned with all of the local IP addresses of the machine that runs the Railo instance.</description>
+		</argument>
 		<return>
-			<type>string</type>
+			<type>any</type>
 		</return>
 	</function>
 	
