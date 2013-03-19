@@ -31,6 +31,8 @@ import railo.runtime.type.dt.TimeImpl;
  */
 public final class DateCaster {
 
+	private static final Object NULL = new Object();
+
 	//private static short MODE_DAY_STR=1;
 	//private static short MODE_MONTH_STR=2;
 	//private static short MODE_NONE=4;
@@ -114,7 +116,7 @@ public final class DateCaster {
 		str=str.trim();
 		if(StringUtil.isEmpty(str)) return defaultValue;
 		timeZone=ThreadLocalPageContext.getTimeZone(timeZone);
-		DateTime dt=toDateSimple(str,alsoNumbers,timeZone,defaultValue);
+		DateTime dt=toDateSimple(str,alsoNumbers,true,timeZone,defaultValue);
 		if(dt==null) {	
 	    	DateFormat[] formats = FormatUtil.getCFMLFormats(timeZone, true);
 		    synchronized(formats){
@@ -241,7 +243,7 @@ public final class DateCaster {
 	            //}catch (ParseException e) {}
 	        }
         //}
-        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false, tz, defaultValue);
+        if(useCommomDateParserAsWell)return DateCaster.toDateSimple(str, false,true, tz, defaultValue);
         return defaultValue;
     }
     
@@ -306,14 +308,14 @@ public final class DateCaster {
 	 * @return coverted Date Time Object
 	 * @throws PageException
 	 */
-	public static DateTime toDateSimple(Object o, TimeZone timeZone) throws PageException {
+	public static DateTime toDateSimple(Object o, boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone) throws PageException {
 		if(o instanceof DateTime) 		return (DateTime)o;
 		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
 		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime();
-		else if(o instanceof String) 	return toDateSimple(o.toString(),true, timeZone);
+		else if(o instanceof String) 	return toDateSimple(o.toString(),alsoNumbers,alsoMonthString, timeZone);
 		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
 		else if(o instanceof Calendar) 		return new DateTimeImpl((Calendar)o);
-		else if(o instanceof ObjectWrap) return toDateSimple(((ObjectWrap)o).getEmbededObject(),timeZone);
+		else if(o instanceof ObjectWrap) return toDateSimple(((ObjectWrap)o).getEmbededObject(),alsoNumbers,alsoMonthString,timeZone);
 		else if(o instanceof Calendar){
 			return new DateTimeImpl((Calendar)o);
 		}
@@ -324,6 +326,24 @@ public final class DateCaster {
 		throw new ExpressionException("can't cast ["+Caster.toTypeName(o)+"] to date value");
 	}
 	
+	public static DateTime toDateSimple(Object o, boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
+		if(o instanceof DateTime) 		return (DateTime)o;
+		else if(o instanceof Date) 		return new DateTimeImpl((Date)o);
+		else if(o instanceof Castable) 	return ((Castable)o).castToDateTime(defaultValue);
+		else if(o instanceof String) 	return toDateSimple(o.toString(),alsoNumbers,alsoMonthString, timeZone,defaultValue);
+		else if(o instanceof Number) 		return util.toDateTime(((Number)o).doubleValue());
+		else if(o instanceof Calendar) 		return new DateTimeImpl((Calendar)o);
+		else if(o instanceof ObjectWrap) {
+			Object eo = ((ObjectWrap)o).getEmbededObject(NULL);
+			if(eo==NULL) return defaultValue;
+			return toDateSimple(eo,alsoNumbers,alsoMonthString,timeZone,defaultValue);
+		}
+		else if(o instanceof Calendar){
+			return new DateTimeImpl((Calendar)o);
+		}
+		return defaultValue;
+	}
+	
 	/**
 	 * converts a Object to a DateTime Object, returns null if invalid string
 	 * @param str String to Convert
@@ -332,7 +352,7 @@ public final class DateCaster {
 	 * @throws PageException
 	 */
 	public static DateTime toDateSimple(String str, TimeZone timeZone) throws PageException {
-		 DateTime dt=toDateSimple(str,true, timeZone,null);
+		 DateTime dt=toDateSimple(str,true,true, timeZone,null);
 		 if(dt==null)
 			 throw new ExpressionException("can't cast ["+str+"] to date value");
 		 return dt;
@@ -361,18 +381,6 @@ public final class DateCaster {
 		}
 		throw new ExpressionException("can't cast ["+Caster.toClassName(o)+"] to time value");
 	}
-
-    /**
-     * converts a Object to a DateTime Object, returns null if invalid string
-     * @param o Object to Convert
-     * @param alsoNumbers
-     * @param timeZone
-     * @param defaultValue 
-     * @return coverted Date Time Object
-     */
-	 public static DateTime toDateSimple(Object o,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
-		 return _toDateAdvanced(o, alsoNumbers, timeZone, defaultValue, false);
-	 }
 	 
 	 public static DateTime toDateAdvanced(Object o,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
         return _toDateAdvanced(o, alsoNumbers, timeZone, defaultValue, true);
@@ -386,7 +394,7 @@ public final class DateCaster {
         }
         else if(o instanceof String)    {
         	if(advanced)return toDateAdvanced(o.toString(),alsoNumbers, timeZone,defaultValue);
-        	return toDateSimple(o.toString(),alsoNumbers, timeZone,defaultValue);
+        	return toDateSimple(o.toString(),alsoNumbers,true, timeZone,defaultValue);
         }
         else if(alsoNumbers && o instanceof Number)     return util.toDateTime(((Number)o).doubleValue());
         else if(o instanceof ObjectWrap) {
@@ -402,14 +410,14 @@ public final class DateCaster {
 
     /**
      * converts a Object to a DateTime Object, returns null if invalid string
-     * @param o Object to Convert
+     * @param str Stringt to Convert
      * @param alsoNumbers
      * @param timeZone
      * @return coverted Date Time Object
      * @throws PageException  
      */
-    public static DateTime toDateSimple(Object o,boolean alsoNumbers, TimeZone timeZone) throws PageException {
-        DateTime dt = toDateSimple(o,alsoNumbers,timeZone,null);
+    public static DateTime toDateSimple(String str,boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone) throws PageException {
+        DateTime dt = toDateSimple(str,alsoNumbers,alsoMonthString,timeZone,null);
         if(dt==null) throw new ExpressionException("can't cast value to a Date Object");
         return dt;
     }
@@ -554,15 +562,17 @@ public final class DateCaster {
 	 * converts a String to a DateTime Object, returns null if invalid string
 	 * @param str String to convert
 	 * @param alsoNumbers
+	 * @param alsoMonthString allow that the month is a english name
 	 * @param timeZone
 	 * @param defaultValue 
 	 * @return Date Time Object
 	 */	
-	private static DateTime parseDateTime(String str,DateString ds,boolean alsoNumbers,TimeZone timeZone, DateTime defaultValue) {
+	private static DateTime parseDateTime(String str,DateString ds,boolean alsoNumbers,boolean alsoMonthString,TimeZone timeZone, DateTime defaultValue) {
 		int month=0;
 		int first=ds.readDigits();
 		// first
 		if(first==-1) {
+			if(!alsoMonthString) return defaultValue;
 			first=ds.readMonthString();
 			if(first==-1)return defaultValue;
 			month=1;
@@ -583,6 +593,7 @@ public final class DateCaster {
 		// second
 		int second=ds.readDigits();
 		if(second==-1){
+			if(!alsoMonthString) return defaultValue;
 			second=ds.readMonthString();
 			if(second==-1)return defaultValue;
 			month=2;
@@ -765,18 +776,24 @@ public final class DateCaster {
 		return new int[]{util.toYear(first), second, third};
 	}
 	
-	
-	public static DateTime toDateSimple(String str,boolean alsoNumbers, TimeZone timeZone, DateTime defaultValue) {
+	/**
+	 * converts the given string to a date following simple and fast parsing rules (no international formats)
+	 * @param str
+	 * @param alsoNumbers
+	 * @param alsoMonthString allow that the month is defined as english word (jan,janauary ...)
+	 * @param timeZone
+	 * @param defaultValue
+	 * @return
+	 */
+	public static DateTime toDateSimple(String str,boolean alsoNumbers,boolean alsoMonthString, TimeZone timeZone, DateTime defaultValue) {
 		str=StringUtil.trim(str,"");
-		
-		
 		DateString ds=new DateString(str);
 		
 	// Timestamp
 		if(ds.isCurrent('{') && ds.isLast('}')) {
 			return _toDateSimpleTS(ds,timeZone,defaultValue);
 		}
-		DateTime res = parseDateTime(str,ds,alsoNumbers,timeZone,defaultValue);
+		DateTime res = parseDateTime(str,ds,alsoNumbers,alsoMonthString,timeZone,defaultValue);
 		if(alsoNumbers && res==defaultValue && Decision.isNumeric(str)) {
 	        double dbl = Caster.toDoubleValue(str,Double.NaN);
 	        if(Decision.isValid(dbl))return util.toDateTime(dbl);

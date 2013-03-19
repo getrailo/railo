@@ -48,7 +48,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -58,6 +57,7 @@ import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructUtil;
 
 /**
@@ -183,7 +183,7 @@ public abstract class ComponentPage extends Page  {
             // Include MUST
             Array path = pc.getTemplatePath();
             //if(path.size()>1 ) {
-            if(path.size()>1 && !(path.size()==3 && List.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(railo.runtime.config.Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
+            if(path.size()>1 && !(path.size()==3 && ListUtil.last(path.getE(2).toString(),"/\\",true).equalsIgnoreCase(railo.runtime.config.Constants.APP_CFC)) ) {// MUSTMUST bad impl -> check with and without application.cfc
             	
             	ComponentWrap c = ComponentWrap.toComponentWrap(Component.ACCESS_PRIVATE,ComponentUtil.toComponentAccess(component));
             	Key[] keys = c.keys();

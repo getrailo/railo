@@ -71,11 +71,11 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.URLResolver;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
@@ -408,7 +408,7 @@ public final class Http4 extends BodyTagImpl implements Http {
 	 * @throws PageException
 	**/
 	public void setColumns(String columns) throws PageException	{
-		this.columns=List.toStringArray(List.listToArrayRemoveEmpty(columns,","));
+		this.columns=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(columns,","));
 	}
 
 	/** set the value port

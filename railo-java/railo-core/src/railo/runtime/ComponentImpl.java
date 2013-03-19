@@ -60,7 +60,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
@@ -82,6 +81,7 @@ import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.PropertyFactory;
 import railo.runtime.type.util.StructSupport;
 import railo.runtime.type.util.StructUtil;
@@ -992,7 +992,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
 	protected String getCallPath() {
 		if(StringUtil.isEmpty(top.properties.callPath)) return getName();
 		try {
-            return "("+List.arrayToList(List.listToArrayTrim(top.properties.callPath.replace('/','.').replace('\\','.'),"."),".")+")";
+            return "("+ListUtil.arrayToList(ListUtil.listToArrayTrim(top.properties.callPath.replace('/','.').replace('\\','.'),"."),".")+")";
         } catch (PageException e) {
             return top.properties.callPath;
         }
@@ -1029,11 +1029,11 @@ public final class ComponentImpl extends StructSupport implements Externalizable
     @Override
     public String getName() {
 	    if(top.properties.callPath==null) return "";
-	    return List.last(top.properties.callPath,"./",true);
+	    return ListUtil.last(top.properties.callPath,"./",true);
 	}
     public String _getName() { // MUST nicht so toll
 	    if(properties.callPath==null) return "";
-	    return List.last(properties.callPath,"./",true);
+	    return ListUtil.last(properties.callPath,"./",true);
 	}
     public PageSource _getPageSource() {
     	return pageSource;
@@ -1365,7 +1365,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         // implements
         InterfaceCollection ic = comp.interfaceCollection;
         if(ic!=null){
-        	Set<String> set = List.listToSet(comp.properties.implement, ",",true);
+        	Set<String> set = ListUtil.listToSet(comp.properties.implement, ",",true);
             InterfaceImpl[] interfaces = comp.interfaceCollection.getInterfaces();
             if(!ArrayUtil.isEmpty(interfaces)){
 	            Struct imp=new StructImpl();

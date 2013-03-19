@@ -24,12 +24,12 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.listener.ApplicationContextPro;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Form;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Inserts records in data sources.
@@ -227,7 +227,7 @@ public final class Insert extends TagImpl {
     private SQL createSQL(Struct meta) throws PageException {
         String[] fields=null; 
         Form form = pageContext.formScope();
-        if(formfields!=null) fields=List.toStringArray(List.listToArrayRemoveEmpty(formfields,','));
+        if(formfields!=null) fields=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(formfields,','));
         else fields=CollectionUtil.keysAsString(pageContext.formScope());
         
         StringBuffer names=new StringBuffer();

@@ -11,8 +11,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.exp.SecurityException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 
 public class CacheSetProperties {
@@ -54,7 +54,7 @@ public class CacheSetProperties {
 		
 		ArrayList<CacheConnection> list=new ArrayList<CacheConnection>();
 		String name;
-		String[] names=List.listToStringArray(cacheName, ',');
+		String[] names=ListUtil.listToStringArray(cacheName, ',');
 		for(int i=0;i<names.length;i++){
 			name=names[i].trim().toLowerCase();
 			if(name.equalsIgnoreCase("template"))

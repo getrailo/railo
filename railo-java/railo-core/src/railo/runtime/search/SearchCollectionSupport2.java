@@ -22,13 +22,13 @@ import railo.runtime.exp.DatabaseException;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a single Collection
@@ -236,7 +236,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
             
         	QueryColumn keyColumn=qv.getColumn(key);
             
-            String[] strBodies=List.toStringArrayTrim(List.listToArrayRemoveEmpty(body,','));
+            String[] strBodies=ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty(body,','));
             QueryColumn[] bodyColumns=new QueryColumn[strBodies.length];
             for(int i=0;i<bodyColumns.length;i++) {
                 bodyColumns[i]=qv.getColumn(strBodies[i]);
@@ -752,7 +752,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
         	if(index==null)continue;
 	        try {
 		        
-                query.setAt("categories",row,List.arrayToList(index.getCategories(),""));
+                query.setAt("categories",row,ListUtil.arrayToList(index.getCategories(),""));
                 query.setAt("categoryTree",row,index.getCategoryTree());
                 
                 query.setAt("custom1",row,index.getCustom1());
@@ -760,7 +760,7 @@ public abstract class SearchCollectionSupport2 implements SearchCollectionPlus {
                 query.setAt("custom3",row,index.getCustom3());
                 query.setAt("custom4",row,index.getCustom4());
                 
-                query.setAt("extensions",row,List.arrayToList(index.getExtensions(),","));
+                query.setAt("extensions",row,ListUtil.arrayToList(index.getExtensions(),","));
                 query.setAt("key",row,index.getKey());
                 query.setAt("language",row,index.getLanguage());
                 query.setAt("query",row,index.getQuery());

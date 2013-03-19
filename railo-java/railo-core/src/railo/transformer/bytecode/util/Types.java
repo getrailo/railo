@@ -39,7 +39,6 @@ import railo.runtime.type.Closure;
 import railo.runtime.type.Collection;
 import railo.runtime.type.FunctionValue;
 import railo.runtime.type.Iteratorable;
-import railo.runtime.type.List;
 import railo.runtime.type.UDF;
 import railo.runtime.type.UDFImpl;
 import railo.runtime.type.UDFProperties;
@@ -50,6 +49,7 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.scope.Variables;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.NumberRange;
 import railo.runtime.writer.BodyContentUtil;
 import railo.transformer.bytecode.BytecodeException;
@@ -173,7 +173,7 @@ public final class Types {
 	
 	public static final Type VOID = Type.VOID_TYPE;
 	
-	public static final Type LIST = Type.getType(List.class);
+	public static final Type LIST_UTIL = Type.getType(ListUtil.class);
 	public static final Type VARIABLE_INTERPRETER = Type.getType(VariableInterpreter.class);
 	public static final Type VARIABLE_REFERENCE = Type.getType(VariableReference.class);
 	public static final Type JSP_WRITER = Type.getType(JspWriter.class);

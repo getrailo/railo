@@ -7,8 +7,8 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 
 public class FeedDeclaration {
 
@@ -186,7 +186,7 @@ public class FeedDeclaration {
 		this.declaration=declaration;
 		
 		if(!StringUtil.isEmpty(entryLevel)) {
-			Array array = List.listToArray(entryLevel, '.');
+			Array array = ListUtil.listToArray(entryLevel, '.');
 			this.entryLevel=new Collection.Key[array.size()];
 	        for(int i=0;i<this.entryLevel.length;i++) {
 	        	this.entryLevel[i]=KeyImpl.toKey(array.get(i+1,null),null);

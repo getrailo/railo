@@ -42,6 +42,7 @@ import railo.commons.io.log.LogAndSource;
 import railo.commons.io.log.LogUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.type.cfml.CFMLResourceProvider;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceClassLoaderFactory;
@@ -108,6 +109,7 @@ import railo.runtime.monitor.IntervallMonitor;
 import railo.runtime.monitor.IntervallMonitorWrap;
 import railo.runtime.monitor.RequestMonitor;
 import railo.runtime.monitor.RequestMonitorWrap;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.net.mail.Server;
 import railo.runtime.net.mail.ServerImpl;
 import railo.runtime.net.proxy.ProxyData;
@@ -124,9 +126,9 @@ import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.security.SecurityManagerImpl;
 import railo.runtime.spooler.SpoolerEngineImpl;
+import railo.runtime.tag.TagUtil;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Cluster;
@@ -134,6 +136,7 @@ import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.video.VideoExecuter;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
@@ -183,7 +186,7 @@ public final class ConfigWebFactory {
     			"WEB CONTEXT ("+label+")\n"+
     			"-------------------------------------------------------------------\n"+
     			"- config:"+configDir+"\n"+
-    			"- webroot:"+servletConfig.getServletContext().getRealPath("/")+"\n"+
+    			"- webroot:"+ReqRspUtil.getRootPath(servletConfig.getServletContext())+"\n"+
     			"- hash:"+hash+"\n"+
     			"- label:"+label+"\n"+
     			"===================================================================\n"
@@ -320,7 +323,6 @@ public final class ConfigWebFactory {
      */
     public static void load(ConfigServerImpl cs, ConfigImpl config, Document doc, boolean isReload, boolean doNew) 
     	throws ClassException, PageException, IOException, TagLibException, FunctionLibException {
-    	
     	ThreadLocalConfig.register(config);
     	// fix
     	if(ConfigWebAdmin.fixS3(doc) || ConfigWebAdmin.fixPSQ(doc)) {
@@ -330,6 +332,7 @@ public final class ConfigWebFactory {
 			} catch (SAXException e) {}
     	}
     	
+    	config.setLastModified();
 
     	loadRailoConfig(cs,config,doc);
     	int mode = config.getMode();
@@ -386,7 +389,10 @@ public final class ConfigWebFactory {
     	}
     	catch(Throwable t){}
 
-    	//doNew(config.getConfigDir(), false);
+    	if(config instanceof ConfigWebImpl)
+    		TagUtil.addTagMetaData((ConfigWebImpl) config);
+    	
+    	
     	
     	ThreadLocalConfig.release();
     }
@@ -403,17 +409,29 @@ public final class ConfigWebFactory {
         if(defaultProviders!=null && defaultProviders.length>0) {
         	Element defaultProvider=defaultProviders[defaultProviders.length-1];
         	String strDefaultProviderClass=defaultProvider.getAttribute("class");
+        	String strDefaultProviderComponent=defaultProvider.getAttribute("component");
+        	
+        	// class
         	if(!StringUtil.isEmpty(strDefaultProviderClass)) {
 	        	strDefaultProviderClass=strDefaultProviderClass.trim();
 	        	config.setDefaultResourceProvider(strDefaultProviderClass,toArguments(defaultProvider.getAttribute("arguments"),true));
 	        }
+        	
+        	// component
+        	else if(!StringUtil.isEmpty(strDefaultProviderComponent)) {
+        		strDefaultProviderComponent=strDefaultProviderComponent.trim();
+        		Map<String, String> args = toArguments(defaultProvider.getAttribute("arguments"),true);
+        		args.put("component", strDefaultProviderComponent);
+	        	config.setDefaultResourceProvider(CFMLResourceProvider.class.getName(),args);
+        	}
         }
         
 		// Resource Provider
         if(hasCS)config.setResourceProviders(configServer.getResourceProviders());
         if(providers!=null && providers.length>0) {
-        	
+
         	String strProviderClass;
+        	String strProviderCFC;
         	String strProviderScheme;
         	String httpClass=null;
         	Map httpArgs=null;
@@ -421,12 +439,14 @@ public final class ConfigWebFactory {
         	String s3Class="railo.commons.io.res.type.s3.S3ResourceProvider";
         	for(int i=0;i<providers.length;i++) {        	
         		strProviderClass=providers[i].getAttribute("class");
+        		strProviderCFC=providers[i].getAttribute("component");
         		
         		// ignore S3 extension
         		if("railo.extension.io.resource.type.s3.S3ResourceProvider".equals(strProviderClass))
         			strProviderClass=S3ResourceProvider.class.getName();
         		
         		strProviderScheme=providers[i].getAttribute("scheme");
+        		// class
         		if(!StringUtil.isEmpty(strProviderClass) && !StringUtil.isEmpty(strProviderScheme)) {
         			strProviderClass=strProviderClass.trim();
             		strProviderScheme=strProviderScheme.trim().toLowerCase();
@@ -441,6 +461,15 @@ public final class ConfigWebFactory {
     	        		hasHTTPs=true;
     	        	else if(strProviderScheme.equalsIgnoreCase("s3"))
     	        		hasS3=true;
+        		}
+        		
+        		// cfc
+        		else if(!StringUtil.isEmpty(strProviderCFC) && !StringUtil.isEmpty(strProviderScheme)) {
+        			strProviderCFC=strProviderCFC.trim();
+            		strProviderScheme=strProviderScheme.trim().toLowerCase();
+            		Map<String, String> args = toArguments(providers[i].getAttribute("arguments"),true);
+            		args.put("component", strProviderCFC);
+            		config.addResourceProvider(strProviderScheme,CFMLResourceProvider.class,args);
         		}
             }
         	
@@ -516,15 +545,21 @@ public final class ConfigWebFactory {
     
 
 
-	private static Map<String,String> toArguments(String attributes, boolean decode) {
-		Map<String,String> map=new HashTable();
+	static Map<String,String> toArguments(String attributes, boolean decode) {
+		Map<String,String> map=new HashMap<String, String>();
 		if(attributes==null) return map;
-		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
+		String[] arr=ListUtil.toStringArray(ListUtil.listToArray(attributes, ';'),null);
+		
 		int index;
+		String str;
 		for(int i=0;i<arr.length;i++) {
-			index=arr[i].indexOf(':');
-			if(index==-1)map.put(arr[i].trim(), "");
-			else map.put(dec(arr[i].substring(0,index).trim(),decode), dec(arr[i].substring(index+1).trim(),decode));
+			str=arr[i].trim();
+			if(StringUtil.isEmpty(str)) continue;
+			index=str.indexOf(':');
+			if(index==-1)map.put(str, "");
+			else {
+				map.put(dec(str.substring(0,index).trim(),decode), dec(str.substring(index+1).trim(),decode));
+			}
 		}
 		return map;
 	}
@@ -2221,11 +2256,11 @@ public final class ConfigWebFactory {
 		
         Struct sct=new StructImpl();
         try {
-            String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(str,'&'));
+            String[] arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(str,'&'));
             
             String[] item;
             for(int i=0;i<arr.length;i++) {
-                item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
+                item = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(arr[i],'='));
                 if(item.length==2) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
                 else if(item.length==1) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),"");
             }   
@@ -2318,8 +2353,8 @@ public final class ConfigWebFactory {
 	        String strExtensions=customTag.getAttribute("extensions");
 	        if(hasAccess && !StringUtil.isEmpty(strExtensions)) {
 	        	try {
-					String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(strExtensions, ","));
-					config.setCustomTagExtensions(List.trimItems(arr));
+					String[] arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(strExtensions, ","));
+					config.setCustomTagExtensions(ListUtil.trimItems(arr));
 				} 
 	        	catch (PageException e) {}
 	        }
@@ -2436,7 +2471,15 @@ public final class ConfigWebFactory {
 		else if (configServer!=null) {
 		    config.setMode(configServer.getMode());
 		}
-		
+
+		// check config file for changes
+		String cFc=railoConfiguration.getAttribute("check-for-changes");
+		if(!StringUtil.isEmpty(cFc,true)) {
+			config.setCheckForChangesInConfigFile(Caster.toBooleanValue(cFc.trim(),false));
+		}
+		else if (configServer!=null) {
+		    config.setCheckForChangesInConfigFile(configServer.checkForChangesInConfigFile());
+		}
     }
     
     

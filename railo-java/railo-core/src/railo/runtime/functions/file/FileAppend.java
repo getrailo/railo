@@ -20,7 +20,7 @@ public class FileAppend {
 			charset=pc.getConfig().getResourceCharset();
 		
 		try {
-			Resource res = Caster.toResource(path,false);
+			Resource res = Caster.toResource(pc,path,false);
 			pc.getConfig().getSecurityManager().checkFileLocation(res);
 			fsw=new FileStreamWrapperWrite(res,charset,true,false);
 			fsw.write(data);	

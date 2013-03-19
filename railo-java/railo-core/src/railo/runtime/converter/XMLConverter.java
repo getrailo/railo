@@ -629,7 +629,7 @@ public final class XMLConverter extends ConverterSupport {
 		try {
 			// create Query Object
 			Query query=new QueryImpl(
-					railo.runtime.type.List.listToArray(
+					railo.runtime.type.util.ListUtil.listToArray(
 							recordset.getAttribute("fieldNames"),','
 					)
 				,Caster.toIntValue(recordset.getAttribute("rowCount")),"query"

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
@@ -132,7 +132,7 @@ public final class MailPart implements Serializable {
 		
 		StringBuffer rtn=new StringBuffer();
 		String ls=System.getProperty("line.separator");
-		Array arr = List.listToArray(str,ls);
+		Array arr = ListUtil.listToArray(str,ls);
 		int len=arr.size();
 		
 		for(int i=1;i<=len;i++) {

@@ -835,6 +835,7 @@ public class KeyConstants {
 	public static final Key _alter = KeyImpl._const("alter");
 	public static final Key _database = KeyImpl._const("database");
 	public static final Key _exception = KeyImpl._const("exception");
+	public static final Key _parsebody = KeyImpl._const("parsebody");
 	
 	private static HashSet<String> _____keys;
 	

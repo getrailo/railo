@@ -24,7 +24,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -32,6 +31,7 @@ import railo.runtime.type.scope.Scope;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public class GetApplicationSettings {
 	public static Struct call(PageContext pc) {
@@ -127,7 +127,7 @@ public class GetApplicationSettings {
 		jsSct.put("loadCFMLClassPath",js.loadCFMLClassPath());
 		jsSct.put("reloadOnChange",js.reloadOnChange());
 		jsSct.put("watchInterval",new Double(js.watchInterval()));
-		jsSct.put("watchExtensions",List.arrayToList(js.watchedExtensions(),","));
+		jsSct.put("watchExtensions",ListUtil.arrayToList(js.watchedExtensions(),","));
 		Resource[] reses = js.getResources();
 		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<reses.length;i++){

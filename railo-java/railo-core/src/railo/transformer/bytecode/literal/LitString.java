@@ -34,6 +34,10 @@ public class LitString extends ExpressionBase implements Literal,ExprString {
 		return new LitString(str,null,null);
 	}
 
+	public static LitString toLitString(String str) {
+		return new LitString(str,null,null);
+	}
+
     /**
      * constructor of the class
      * @param str

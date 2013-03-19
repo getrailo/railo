@@ -17,12 +17,12 @@ import railo.runtime.dump.DumpTable;
 import railo.runtime.dump.DumpUtil;
 import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructUtil;
 
 public final class DumpStruct implements Function {
@@ -58,8 +58,8 @@ public final class DumpStruct implements Function {
 		if(show!=null && "all".equalsIgnoreCase(show.trim()))show=null;
 		if(hide!=null && "all".equalsIgnoreCase(hide.trim()))hide=null;
 		
-		Set setShow=(show!=null)?List.listToSet(show.toLowerCase(),",",true):null;
-		Set setHide=(hide!=null)?List.listToSet(hide.toLowerCase(),",",true):null;
+		Set setShow=(show!=null)?ListUtil.listToSet(show.toLowerCase(),",",true):null;
+		Set setHide=(hide!=null)?ListUtil.listToSet(hide.toLowerCase(),",",true):null;
 		
 		DumpProperties properties=new DumpProperties((int)maxLevel,setShow,setHide,(int)keys,metainfo,showUDFs);
 		DumpData dd = DumpUtil.toDumpData(object, pc,(int)maxLevel,properties);

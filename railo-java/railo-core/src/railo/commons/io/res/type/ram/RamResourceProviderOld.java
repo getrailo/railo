@@ -11,8 +11,8 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.SizeOf;
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Resource Provider for ram resource
@@ -72,7 +72,7 @@ public final class RamResourceProviderOld implements ResourceProvider,Sizeable {
 	 * @return core or null
 	 */
 	RamResourceCore getCore(String path) {
-		String[] names = List.listToStringArray(path,'/');
+		String[] names = ListUtil.listToStringArray(path,'/');
 		
 		
 		RamResourceCore rrc=root;
@@ -91,7 +91,7 @@ public final class RamResourceProviderOld implements ResourceProvider,Sizeable {
 	 * @throws IOException
 	 */
 	RamResourceCore createCore(String path, int type) throws IOException {
-		String[] names = List.listToStringArray(path,'/');
+		String[] names = ListUtil.listToStringArray(path,'/');
 		RamResourceCore rrc=root;
 		for(int i=0;i<names.length-1;i++) {
 			rrc=rrc.getChild(names[i],caseSensitive);

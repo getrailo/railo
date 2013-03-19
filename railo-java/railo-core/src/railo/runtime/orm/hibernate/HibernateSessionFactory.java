@@ -273,7 +273,7 @@ public class HibernateSessionFactory {
 			} catch (Throwable t) {}
 			
 			
-			ext=HibernateORMEngine.id(railo.runtime.type.List.last(ext, '.').trim());
+			ext=HibernateORMEngine.id(railo.runtime.type.util.ListUtil.last(ext, '.').trim());
 			if(!done.contains(ext)) {
 				v = cfcs.get(ext);
 				if(v!=null)createMappings(engine,cfcs, ext, v, done, mappings);
@@ -351,7 +351,7 @@ public class HibernateSessionFactory {
 					//Page p = ps.loadPage(pc.getConfig());
 					String name=res.getName();
 					name=name.substring(0,name.length()-4);
-					Page p = ComponentLoader.loadPage(pc, ps);
+					Page p = ComponentLoader.loadPage(pc, ps,true);
 					if(!(p instanceof InterfacePage)){
 						ComponentAccess cfc = ComponentLoader.loadComponent(pc, p, ps, name, true,true);
 						if(cfc.isPersistent()){

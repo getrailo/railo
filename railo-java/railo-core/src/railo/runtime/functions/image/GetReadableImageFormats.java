@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import railo.runtime.PageContext;
 import railo.runtime.img.ImageUtil;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public class GetReadableImageFormats {
 
@@ -21,6 +21,6 @@ public class GetReadableImageFormats {
 		}
 		formats=(String[]) set.toArray(new String[set.size()]);
 		Arrays.sort(formats);
-		return List.arrayToList(formats, ",").toUpperCase();
+		return ListUtil.arrayToList(formats, ",").toUpperCase();
 	}
 }

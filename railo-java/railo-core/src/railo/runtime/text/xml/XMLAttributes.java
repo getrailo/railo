@@ -19,17 +19,15 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.XMLException;
 import railo.runtime.op.Caster;
-import railo.runtime.op.Duplicator;
-import railo.runtime.op.ThreadLocalDuplication;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.it.EntryIterator;
 import railo.runtime.type.it.KeyIterator;
 import railo.runtime.type.it.StringIterator;
 import railo.runtime.type.it.ValueIterator;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructSupport;
 
 /**
@@ -147,7 +145,7 @@ public final class XMLAttributes extends StructSupport implements Struct,NamedNo
 			if(key.equalsIgnoreCase(keys[i]))
 				return nodeMap.getNamedItem(keys[i].getString()).getNodeValue();
 		}
-		throw new ExpressionException("No Attribute "+key.getString()+" defined for tag","attributes are ["+List.arrayToList(keys,", ")+"]");
+		throw new ExpressionException("No Attribute "+key.getString()+" defined for tag","attributes are ["+ListUtil.arrayToList(keys,", ")+"]");
 	}
 
 	@Override

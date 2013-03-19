@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 import railo.commons.lang.StringUtil;
 import railo.runtime.db.DataSource;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.CollectionUtil;
+import railo.runtime.type.util.ListUtil;
 
 public class Dialect {
 	private static Struct dialects=new StructImpl();
@@ -99,7 +99,7 @@ public class Dialect {
 			value=(String) entry.getValue();
 
 			dialects2.setEL(KeyImpl.init(value), value);
-			dialects2.setEL(KeyImpl.init(List.last(value, ".")), value);
+			dialects2.setEL(KeyImpl.init(ListUtil.last(value, ".")), value);
 		}
 		
     }

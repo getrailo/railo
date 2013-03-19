@@ -1,6 +1,5 @@
 package railo.transformer.bytecode.util;
 
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -8,7 +7,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public class ClassRenamer extends ClassVisitor implements Opcodes {
 
@@ -18,7 +17,7 @@ public class ClassRenamer extends ClassVisitor implements Opcodes {
 
 	ClassRenamer(ClassVisitor cv, String newName) {
 		super(ASM4, cv);
-		newName=List.trim(newName, "\\/");
+		newName=ListUtil.trim(newName, "\\/");
 		this.newName = newName;
 	}
 

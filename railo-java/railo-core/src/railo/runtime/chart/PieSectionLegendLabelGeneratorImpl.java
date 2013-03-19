@@ -10,7 +10,7 @@ import org.jfree.data.general.PieDataset;
 import railo.commons.lang.StringList;
 import railo.commons.lang.font.FontUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public class PieSectionLegendLabelGeneratorImpl implements
 		PieSectionLabelGenerator {
@@ -32,7 +32,7 @@ public class PieSectionLegendLabelGeneratorImpl implements
 	public String generateSectionLabel(PieDataset pd, Comparable c) {
 		String value=Caster.toString(pd.getKey(pd.getIndex(c)),"");
 		
-		StringList list = List.toList(value, '\n');
+		StringList list = ListUtil.toList(value, '\n');
 		StringBuffer sb=new StringBuffer();
 		String line;
 		int lineLen;
@@ -63,7 +63,7 @@ public class PieSectionLegendLabelGeneratorImpl implements
 			rest.append(item);
 		}
 		
-		StringList words = List.toWordList(rest.toString());
+		StringList words = ListUtil.toWordList(rest.toString());
 		StringBuffer line=new StringBuffer();
 		
 		while(words.hasNext()) {

@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public abstract class Path {
 	/**
@@ -17,7 +17,7 @@ public abstract class Path {
 	public abstract boolean match(Struct variables,String path);
 
 	public static Path[] init(String path) {
-		Array arr = List.listToArrayRemoveEmpty(path,'/');
+		Array arr = ListUtil.listToArrayRemoveEmpty(path,'/');
 		Path[] rtn=new Path[arr.size()];
 		Iterator it = arr.valueIterator();
 		int index=-1;

@@ -22,6 +22,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
 import railo.commons.lang.types.RefInteger;
 import railo.commons.lang.types.RefIntegerImpl;
+import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.NativeException;
@@ -346,7 +347,7 @@ public final class Reflector {
 		else if(trgClass==Query.class) return Caster.toQuery(src);
 		else if(trgClass==Map.class) return Caster.toMap(src);
 		else if(trgClass==Struct.class) return Caster.toStruct(src);
-		else if(trgClass==Resource.class) return Caster.toResource(src,false);
+		else if(trgClass==Resource.class) return Caster.toResource(ThreadLocalPageContext.get(),src,false);
 		// this 2 method are used to support conversion that match neo src types
 		else if(trgClass==Hashtable.class) return Caster.toHashtable(src);
 		else if(trgClass==Vector.class) return Caster.toVetor(src);

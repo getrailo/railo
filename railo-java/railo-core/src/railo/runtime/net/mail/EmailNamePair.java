@@ -14,8 +14,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
@@ -175,7 +175,7 @@ public final class EmailNamePair {
 	 */
 	private static EmailNamePair[] _factoryMailList(String strEmails) throws MailException {
 		if(StringUtil.isEmpty(strEmails,true)) return new EmailNamePair[0];
-		Array raw = List.listWithQuotesToArray(strEmails,",;","\"");
+		Array raw = ListUtil.listWithQuotesToArray(strEmails,",;","\"");
 		
 		Iterator<Object> it = raw.valueIterator();
 		ArrayList<EmailNamePair> pairs=new ArrayList<EmailNamePair>();

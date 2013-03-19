@@ -2,8 +2,8 @@ package railo.runtime.functions.query;
 
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Implements the CFML Function querynew
@@ -13,6 +13,6 @@ public final class QueryColumnList implements Function {
         return call(pc,qry,",");
     }
     public static String call(PageContext pc , Query qry, String delimiter) {
-        return List.arrayToList(qry.getColumns(),delimiter);
+        return ListUtil.arrayToList(qry.getColumns(),delimiter);
     }
 }

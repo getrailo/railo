@@ -29,11 +29,11 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.writer.CFMLWriter;
 
 /**
@@ -356,8 +356,8 @@ public abstract class PageExceptionImpl extends PageException {
 			struct.set(KeyConstants._Type,"cfml");
 			struct.set(KeyConstants._column,new Double(column));
 			if(content!=null){
-				struct.set("codePrintHTML",getCodePrint(content,line,true));
-				struct.set("codePrintPlain",getCodePrint(content,line,false));
+				struct.set(CODE_PRINT_HTML,getCodePrint(content,line,true));
+				struct.set(CODE_PRINT_PLAIN,getCodePrint(content,line,false));
 			}
 			tagContext.append(struct);
 		} 
@@ -432,8 +432,8 @@ public abstract class PageExceptionImpl extends PageException {
 				
 				// Code
 				String strCode=((Struct)tagContext.get(1,null)).get("codePrintPlain","").toString();
-				String[] arrCode = List.listToStringArray(strCode, '\n');
-				arrCode=List.trim(arrCode);
+				String[] arrCode = ListUtil.listToStringArray(strCode, '\n');
+				arrCode=ListUtil.trim(arrCode);
 				DumpTable code=new DumpTable("#ff9900","#FFCC00","#000000");
 				
 				for(int i=0;i<arrCode.length;i++) {
@@ -448,8 +448,8 @@ public abstract class PageExceptionImpl extends PageException {
 		
 		// Java Stacktrace
 		String strST=getStackTraceAsString();
-		String[] arrST = List.listToStringArray(strST, '\n');
-		arrST=List.trim(arrST);
+		String[] arrST = ListUtil.listToStringArray(strST, '\n');
+		arrST=ListUtil.trim(arrST);
 		DumpTable st=new DumpTable("#ff9900","#FFCC00","#000000");
 		
 		for(int i=0;i<arrST.length;i++) {

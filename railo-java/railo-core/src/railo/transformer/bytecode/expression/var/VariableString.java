@@ -47,7 +47,7 @@ public final class VariableString extends ExpressionBase implements ExprString {
 		
 
 	public static String variableToString(Variable var, boolean rawIfPossible) throws BytecodeException {
-		return railo.runtime.type.List.arrayToList(variableToStringArray(var,rawIfPossible),".");
+		return railo.runtime.type.util.ListUtil.arrayToList(variableToStringArray(var,rawIfPossible),".");
 	}
 	public static String[] variableToStringArray(Variable var, boolean rawIfPossible) throws BytecodeException {
 		List members = var.getMembers();

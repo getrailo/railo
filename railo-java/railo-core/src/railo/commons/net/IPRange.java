@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import railo.commons.lang.StringUtil;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public class IPRange implements Serializable {
 	
@@ -129,12 +129,12 @@ public class IPRange implements Serializable {
 		add(new Range(toShortArray(toInetAddress(ip1)),toShortArray(toInetAddress(ip2))));
 	}
 	public static IPRange getInstance(String raw) throws IOException {
-		return getInstance(List.listToStringArray(raw, ','));
+		return getInstance(ListUtil.listToStringArray(raw, ','));
 	}
 
 	public static IPRange getInstance(String[] raw) throws IOException {
 		IPRange range=new IPRange();
-		String[] arr = List.trimItems(List.trim(raw));
+		String[] arr = ListUtil.trimItems(ListUtil.trim(raw));
 		String str;
 		int index;
 		for(int i=0;i<arr.length;i++){

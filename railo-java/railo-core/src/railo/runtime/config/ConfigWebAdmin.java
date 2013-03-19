@@ -32,6 +32,7 @@ import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.SystemOut;
 import railo.commons.net.HTTPUtil;
 import railo.commons.net.IPRange;
 import railo.commons.net.URLEncoder;
@@ -76,7 +77,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -87,6 +87,7 @@ import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.video.VideoExecuter;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLibException;
@@ -234,6 +235,26 @@ public final class ConfigWebAdmin {
     	setVersion(Caster.toDoubleValue(Info.getVersionAsString().substring(0,3),1.0D));
     	store(config);
     }
+    
+    public static void checkForChangesInConfigFile(Config config) {
+    	ConfigImpl ci=(ConfigImpl) config;
+		if(!ci.checkForChangesInConfigFile()) return;
+		
+		Resource file = config.getConfigFile();
+		long diff=file.lastModified()-ci.lastModified();
+		if(diff<10 && diff>-10) return; 
+		// reload
+		try {
+			ConfigWebAdmin admin = ConfigWebAdmin.newInstance(ci, null);
+			admin.reload(ci, false);
+			SystemOut.printDate(ci.getOutWriter(), "reloaded the configuration ["+file+"] automaticly");
+		} 
+		catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
+    
+    
 
     private void addResourceProvider(String scheme,String clazz,String arguments) throws SecurityException {
     	checkWriteAccess();
@@ -298,12 +319,18 @@ public final class ConfigWebAdmin {
     }
     
     private synchronized void store(ConfigImpl config) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
+    	reload(config, true);
+    }
+    
+
+    private synchronized void reload(ConfigImpl config, boolean storeInMemoryData) throws PageException, SAXException, ClassException, IOException, TagLibException, FunctionLibException  {
     	renameOldstyleCFX();
     	
-    	checkWriteAccess();
+    	if(storeInMemoryData)checkWriteAccess();
+    	
         createAbort();
         if(config instanceof ConfigServerImpl) {
-        	XMLCaster.writeTo(doc,config.getConfigFile());
+        	if(storeInMemoryData)XMLCaster.writeTo(doc,config.getConfigFile());
             
             ConfigServerImpl cs=(ConfigServerImpl) config;
             ConfigServerFactory.reloadInstance(cs);
@@ -313,13 +340,14 @@ public final class ConfigWebAdmin {
             }
         }
         else {
-            XMLCaster.writeTo(doc,config.getConfigFile());
+        	if(storeInMemoryData)XMLCaster.writeTo(doc,config.getConfigFile());
             //SystemUtil.sleep(10);
             ConfigServerImpl cs=((ConfigWebImpl)config).getConfigServerImpl();
             
             ConfigWebFactory.reloadInstance(cs,(ConfigWebImpl)config,false);
         }
     }
+    
     
     
 
@@ -1605,7 +1633,7 @@ public final class ConfigWebAdmin {
   			if(providers[i].getClass().getName().equals(clazz)){
   				if(providers[i].isAttributesSupported())support.append("attributes");
   	            if(providers[i].isModeSupported())support.append("mode");
-  	            qry.setAt("support",row,List.arrayToList(support, ","));
+  	            qry.setAt("support",row,ListUtil.arrayToList(support, ","));
   	            qry.setAt("scheme",row,providers[i].getScheme());
   	            qry.setAt("caseSensitive",row,Caster.toBoolean(providers[i].isCaseSensitive()));
   	            qry.setAt("default",row,def);
@@ -3037,14 +3065,14 @@ public final class ConfigWebAdmin {
 			throw new SecurityException("no access to update custom tag setting");
 		
 		// check
-		Array arr = List.listToArrayRemoveEmpty(extensions, ',');
-		List.trimItems(arr);
+		Array arr = ListUtil.listToArrayRemoveEmpty(extensions, ',');
+		ListUtil.trimItems(arr);
 		//throw new ApplicationException("you must define at least one extension");
 		
 		
 		// update charset
 		Element element = _getRootElement("custom-tag");
-		element.setAttribute("extensions",List.arrayToList(arr, ","));
+		element.setAttribute("extensions",ListUtil.arrayToList(arr, ","));
 	}
 
 
@@ -3594,7 +3622,7 @@ public final class ConfigWebAdmin {
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		boolean changed=false;
 		if(lib.isDirectory()){
-			String[] names = List.listToStringArray(strNames, ',');
+			String[] names = ListUtil.listToStringArray(strNames, ',');
 			for(int n=0;n<names.length;n++){
 				Resource[] children = lib.listResources(new MyResourceNameFilter(names[n].trim()));
 				for(int i=0;i<children.length;i++){

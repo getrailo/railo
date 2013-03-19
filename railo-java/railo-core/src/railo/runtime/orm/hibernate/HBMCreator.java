@@ -27,13 +27,13 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 public class HBMCreator {
 	
@@ -98,7 +98,7 @@ public class HBMCreator {
 			// MZ: Reinitiate the property collection
 			propColl = splitJoins(engine,cfc,joins, _props);
 
-			String ext = List.last(extend,'.').trim();
+			String ext = ListUtil.last(extend,'.').trim();
 			try {
 				Component base = engine.getEntityByCFCName(ext, false);
 				ext = HibernateCaster.getEntityName(base);
@@ -301,7 +301,7 @@ public class HBMCreator {
         	
         	
         	String fieldType = Caster.toString(props[y].getDynamicAttributes().get(FIELD_TYPE,null),null);
-			if("id".equalsIgnoreCase(fieldType) || List.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
+			if("id".equalsIgnoreCase(fieldType) || ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"id",',')!=-1)
 				ids.add(props[y]);
 		}
         
@@ -321,7 +321,7 @@ public class HBMCreator {
         // still no id field defined
         if(ids.size()==0 && props.length>0) {
         	String owner = props[0].getOwnerName();
-			if(!StringUtil.isEmpty(owner)) owner=List.last(owner, '.').trim();
+			if(!StringUtil.isEmpty(owner)) owner=ListUtil.last(owner, '.').trim();
         	
         	String fieldType;
         	if(!StringUtil.isEmpty(owner)){
@@ -671,7 +671,7 @@ public class HBMCreator {
 			prop=props[y];
 			meta = prop.getDynamicAttributes();
 			fieldType = toString(engine,cfc,prop,meta,"fieldType");
-			if(List.listFindNoCaseIgnoreEmpty(fieldType,"many-to-one",',')==-1)continue;
+			if(ListUtil.listFindNoCaseIgnoreEmpty(fieldType,"many-to-one",',')==-1)continue;
 			
 			Element key = doc.createElement("key-many-to-one");
 			cid.appendChild(key);
@@ -1654,7 +1654,7 @@ public class HBMCreator {
 	private static void setColumn(HibernateORMEngine engine,Document doc, Element el, String columnValue) throws PageException {
 		if(StringUtil.isEmpty(columnValue,true)) return;
 		
-		String[] arr = List.toStringArray(List.listToArray(columnValue, ','));
+		String[] arr = ListUtil.toStringArray(ListUtil.listToArray(columnValue, ','));
 		if(arr.length==1){
 			el.setAttribute("column", formatColumn(engine,arr[0]));
 		}
@@ -1889,7 +1889,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	private static ORMException invalidValue(HibernateORMEngine engine,Component cfc,Property prop, String attrName, String invalid, String valid) {
 		String owner = prop.getOwnerName();
 		if(StringUtil.isEmpty(owner))return new HibernateException(engine,cfc,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"], valid values are ["+valid+"]");
-		return new HibernateException(engine,cfc,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"] of Component ["+List.last(owner,'.')+"], valid values are ["+valid+"]");
+		return new HibernateException(engine,cfc,"invalid value ["+invalid+"] for attribute ["+attrName+"] of property ["+prop.getName()+"] of Component ["+ListUtil.last(owner,'.')+"], valid values are ["+valid+"]");
 	}
 
 
@@ -1979,7 +1979,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
         	return null;
         	
 		paramsStr = paramsStr.substring(1, paramsStr.length() - 1);
-		String items[] = List.listToStringArray(paramsStr, ','); 
+		String items[] = ListUtil.listToStringArray(paramsStr, ','); 
 		
 		Struct params=new StructImpl();
 		String arr$[] = items;
@@ -2035,7 +2035,7 @@ inversejoincolumn="Column name or comma-separated list of primary key columns"
 	
 	private static String _getCFCName(Property prop) {
 		String owner = prop.getOwnerName();
-		return List.last(owner,'.');
+		return ListUtil.last(owner,'.');
 	}
 	
 	

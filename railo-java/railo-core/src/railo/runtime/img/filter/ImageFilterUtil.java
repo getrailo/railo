@@ -14,9 +14,9 @@ import railo.runtime.img.Image;
 import railo.runtime.img.filter.LightFilter.Material;
 import railo.runtime.img.math.Function2D;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.Type;
 
 public class ImageFilterUtil {
@@ -89,7 +89,7 @@ public class ImageFilterUtil {
 			return new Point(Caster.toIntValue(sct.get("x")),Caster.toIntValue(sct.get("y")));
 		}
 		
-		String[] arr = List.listToStringArray(str, ',');
+		String[] arr = ListUtil.listToStringArray(str, ',');
 		if(arr.length==2) {
 			return new Point(Caster.toIntValue(arr[0]),Caster.toIntValue(arr[1]));
 		}
@@ -114,7 +114,7 @@ public class ImageFilterUtil {
 		}
 		String str = Caster.toString(value,null);
 		if(str!=null){
-			String[] arr = List.listToStringArray(str, ',');
+			String[] arr = ListUtil.listToStringArray(str, ',');
 			if(arr.length==2) {
 				Material material = new LightFilter.Material();
 				material.setDiffuseColor(toColorRGB(arr[0], argName+"[1]"));

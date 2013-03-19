@@ -54,11 +54,11 @@ import railo.runtime.search.lucene2.highlight.Highlight;
 import railo.runtime.search.lucene2.net.WebCrawler;
 import railo.runtime.search.lucene2.query.Literal;
 import railo.runtime.search.lucene2.query.Op;
-import railo.runtime.type.List;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -564,7 +564,7 @@ public final class LuceneSearchCollection extends SearchCollectionSupport {
 		            
 		            if(si==null)continue;
 		            ct=si.getCategoryTree();
-		            c=List.arrayToList(si.getCategories(), ",");
+		            c=ListUtil.arrayToList(si.getCategories(), ",");
 		            
 		            // check category tree
 		            if(!matchCategoryTree(ct,categoryTree))continue;

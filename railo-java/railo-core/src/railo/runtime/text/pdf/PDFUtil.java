@@ -18,6 +18,7 @@ import org.pdfbox.util.PDFText2HTML;
 import railo.commons.io.IOUtil;
 import railo.commons.io.res.Resource;
 import railo.commons.lang.StringUtil;
+import railo.runtime.PageContext;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.CasterException;
 import railo.runtime.exp.PageException;
@@ -65,7 +66,7 @@ public class PDFUtil {
 		int permissions=0;
     	strPermissions=strPermissions.trim();
 		
-    	String[] arr = railo.runtime.type.List.toStringArray(railo.runtime.type.List.listToArrayRemoveEmpty(strPermissions, ','));
+    	String[] arr = railo.runtime.type.util.ListUtil.toStringArray(railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(strPermissions, ','));
 		for(int i=0;i<arr.length;i++) {
 			permissions=add(permissions,toPermission(arr[i]));
 		}
@@ -199,7 +200,7 @@ public class PDFUtil {
 	private static boolean removeBookmarks(Map bookmark, Set pages, boolean removePages) {
 		List kids=(List) bookmark.get("Kids");
 		if(kids!=null)removeBookmarks(kids,pages,removePages);
-		Integer page=Caster.toInteger(railo.runtime.type.List.first((String) bookmark.get("Page")," ",true),Constants.INTEGER_MINUS_ONE);
+		Integer page=Caster.toInteger(railo.runtime.type.util.ListUtil.first((String) bookmark.get("Page")," ",true),Constants.INTEGER_MINUS_ONE);
 		return removePages==(pages!=null && pages.contains(page));
 	}
 
@@ -211,7 +212,7 @@ public class PDFUtil {
 	}
 	public static void parsePageDefinition(Set<Integer> pages, String strPages) throws PageException {
 		if(StringUtil.isEmpty(strPages)) return;
-		String[] arr = railo.runtime.type.List.toStringArrayTrim(railo.runtime.type.List.listToArrayRemoveEmpty(strPages, ','));
+		String[] arr = railo.runtime.type.util.ListUtil.toStringArrayTrim(railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(strPages, ','));
 		int index,from,to;
 		for(int i=0;i<arr.length;i++){
 			index=arr[i].indexOf('-');
@@ -276,7 +277,7 @@ public class PDFUtil {
 		else parent.put("Kids", children);
 	}
 
-	public static PdfReader toPdfReader(Object value, String password) throws IOException, PageException {
+	public static PdfReader toPdfReader(PageContext pc,Object value, String password) throws IOException, PageException {
 		if(value instanceof PdfReader) return (PdfReader) value;
 		if(value instanceof PDFDocument) return ((PDFDocument) value).getPdfReader();
 		if(Decision.isBinary(value)){
@@ -288,7 +289,7 @@ public class PDFUtil {
 			return new PdfReader(IOUtil.toBytes((Resource)value));
 		}
 		if(value instanceof String) {
-			if(password!=null)return new PdfReader(IOUtil.toBytes(Caster.toResource(value)),password.getBytes());
+			if(password!=null)return new PdfReader(IOUtil.toBytes(Caster.toResource(pc,value,true)),password.getBytes());
 			return new PdfReader(IOUtil.toBytes((Resource)value));
 		}
 		throw new CasterException(value,PdfReader.class);

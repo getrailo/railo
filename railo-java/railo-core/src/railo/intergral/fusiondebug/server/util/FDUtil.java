@@ -151,7 +151,7 @@ public class FDUtil {
 	 */
 	public static String toClassName(String str) {
 		StringBuffer javaName=new StringBuffer();
-		String[] arr=railo.runtime.type.List.listToStringArray(str, '/');
+		String[] arr=railo.runtime.type.util.ListUtil.listToStringArray(str, '/');
 		
 		for(int i=0;i<arr.length;i++) {
 			if(i==(arr.length-1)) arr[i]=replaceLast(arr[i],'.','$');

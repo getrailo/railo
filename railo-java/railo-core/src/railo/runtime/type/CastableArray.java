@@ -11,6 +11,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ListUtil;
 
 public final class CastableArray extends ArrayImpl {
 	
@@ -113,7 +114,7 @@ public final class CastableArray extends ArrayImpl {
 
 	private Object getValue() throws PageException {
 		if(value!=null)return value;
-		return List.arrayToList(this, ",");
+		return ListUtil.arrayToList(this, ",");
 	}
 
 	@Override

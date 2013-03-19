@@ -10,7 +10,7 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -39,7 +39,7 @@ public final class CacheGetProperties implements Function {
 			}
 			else{
 				String name;
-				String[] names=List.listToStringArray(cacheName, ',');
+				String[] names=ListUtil.listToStringArray(cacheName, ',');
 				for(int i=0;i<names.length;i++){
 					name=names[i].trim();
 					if(name.equalsIgnoreCase("template"))

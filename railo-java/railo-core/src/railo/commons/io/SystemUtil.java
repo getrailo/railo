@@ -33,16 +33,17 @@ import railo.runtime.config.Config;
 import railo.runtime.exp.ApplicationException;
 import railo.runtime.exp.DatabaseException;
 import railo.runtime.functions.other.CreateUniqueId;
+import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 import com.jezhumble.javasysmon.CpuTimes;
 import com.jezhumble.javasysmon.JavaSysMon;
@@ -198,7 +199,7 @@ public final class SystemUtil {
         String pathes=System.getProperty("java.library.path");
         ResourceProvider fr = ResourcesImpl.getFileResourceProvider();
         if(pathes!=null) {
-            String[] arr=List.toStringArrayEL(List.listToArray(pathes,File.pathSeparatorChar));
+            String[] arr=ListUtil.toStringArrayEL(ListUtil.listToArray(pathes,File.pathSeparatorChar));
             for(int i=0;i<arr.length;i++) {    
                 if(arr[i].toLowerCase().indexOf("windows\\system")!=-1) {
                     Resource file = fr.getResource(arr[i]);
@@ -356,7 +357,7 @@ public final class SystemUtil {
     // pathes from system properties
         String strPathes=System.getProperty("java.class.path");
         if(strPathes!=null) {
-            Array arr=List.listToArrayRemoveEmpty(strPathes,pathSeperator);
+            Array arr=ListUtil.listToArrayRemoveEmpty(strPathes,pathSeperator);
             int len=arr.size();
             for(int i=1;i<=len;i++) {
                 Resource file=frp.getResource(Caster.toString(arr.get(i,""),"").trim());
@@ -489,9 +490,9 @@ public final class SystemUtil {
 	            
 	            // Web Root
 	            if(path.startsWith("{web-root")) {
-	                if(path.startsWith("}",9)) 					path=frp.getResource(sc.getRealPath("/")).getRealResource(path.substring(10)).toString();
-	                else if(path.startsWith("-dir}",9)) 		path=frp.getResource(sc.getRealPath("/")).getRealResource(path.substring(14)).toString();
-	                else if(path.startsWith("-directory}",9)) 	path=frp.getResource(sc.getRealPath("/")).getRealResource(path.substring(20)).toString();
+	                if(path.startsWith("}",9)) 					path=frp.getResource(ReqRspUtil.getRootPath(sc)).getRealResource(path.substring(10)).toString();
+	                else if(path.startsWith("-dir}",9)) 		path=frp.getResource(ReqRspUtil.getRootPath(sc)).getRealResource(path.substring(14)).toString();
+	                else if(path.startsWith("-directory}",9)) 	path=frp.getResource(ReqRspUtil.getRootPath(sc)).getRealResource(path.substring(20)).toString();
 	
 	            }
 	            else path=SystemUtil.parsePlaceHolder(path);
@@ -508,7 +509,7 @@ public final class SystemUtil {
 	public static String hash(ServletContext sc) {
     	String id=null;
 		try {
-			id=MD5.getDigestAsString(sc.getRealPath("/"));
+			id=MD5.getDigestAsString(ReqRspUtil.getRootPath(sc));
 		} 
 		catch (IOException e) {}
 		return id;

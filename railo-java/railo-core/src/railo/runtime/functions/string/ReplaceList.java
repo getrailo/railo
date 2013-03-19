@@ -10,7 +10,7 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ReplaceList implements Function {
 	
@@ -30,8 +30,8 @@ public final class ReplaceList implements Function {
 		if(delimiter_list1==null) delimiter_list1=",";
 		if(delimiter_list2==null) delimiter_list2=",";
 
-		Array arr1=List.listToArray(list1, delimiter_list1);
-		Array arr2=List.listToArray(list2, delimiter_list2);
+		Array arr1=ListUtil.listToArray(list1, delimiter_list1);
+		Array arr2=ListUtil.listToArray(list2, delimiter_list2);
 
 		Iterator<Object> it1 = arr1.valueIterator();
 		Iterator<Object> it2 = arr2.valueIterator();

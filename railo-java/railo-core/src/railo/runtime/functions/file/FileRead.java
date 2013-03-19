@@ -14,7 +14,7 @@ import railo.runtime.op.Decision;
 public class FileRead {
 
 	public static Object call(PageContext pc, Object path) throws PageException {
-		return _call(pc,Caster.toResource(path),pc.getConfig().getResourceCharset());
+		return _call(pc,Caster.toResource(pc,path,true),pc.getConfig().getResourceCharset());
 	}
 	
 	public static Object call(PageContext pc, Object obj, Object charsetOrSize) throws PageException {
@@ -23,7 +23,7 @@ public class FileRead {
 		if(obj instanceof FileStreamWrapper) {
 			return _call((FileStreamWrapper)obj,Caster.toIntValue(charsetOrSize));
 		}
-		Resource res = Caster.toResource(obj);
+		Resource res = Caster.toResource(pc,obj,true);
 		String charset=Caster.toString(charsetOrSize);
 		if(Decision.isInteger(charset)){
 			charset=pc.getConfig().getResourceCharset();

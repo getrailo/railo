@@ -2,7 +2,7 @@ package railo.deployer.filter;
 
 import railo.commons.io.res.Resource;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Die Klasse CFMLFilter implementiert das Interface Filter, 
@@ -28,7 +28,7 @@ public final class CFMLFilter implements Filter {
 	public boolean isValid(Resource file) {
 		String[] arr;
 		try {
-			arr = List.toStringArray(List.listToArray(file.getName(), '.'));
+			arr = ListUtil.toStringArray(ListUtil.listToArray(file.getName(), '.'));
 		} 
 		catch (PageException e) {
 			return false;

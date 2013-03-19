@@ -46,7 +46,6 @@ import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.FunctionArgument;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -300,8 +299,8 @@ public final class ComponentUtil {
     		path=path.substring(root.length());
 
     	path=path.replace('\\', '/').toLowerCase();
-    	path=List.trim(path, "/");
-    	String[] arr = List.listToStringArray(path, '/');
+    	path=ListUtil.trim(path, "/");
+    	String[] arr = ListUtil.listToStringArray(path, '/');
     	
     	StringBuffer rtn=new StringBuffer();
     	for(int i=0;i<arr.length;i++) {
@@ -569,7 +568,7 @@ public final class ComponentUtil {
 			
 			return new ExpressionException(
 					"component ["+c.getCallName()+"] has no "+strAccess+" function with name ["+key+"]",
-					"accessible functions are ["+List.arrayToList(other,",")+"]");
+					"accessible functions are ["+ListUtil.arrayToList(other,",")+"]");
 		}
 		return new ExpressionException("member ["+key+"] of component ["+c.getCallName()+"] is not a function", "Member is of type ["+Caster.toTypeName(member)+"]");
 	}

@@ -125,7 +125,7 @@ public class Closure extends ScopeSupport implements Variables {
 	@Override
 	public Object set(Key key, Object value) throws PageException {
 		if(und.getLocalAlways() || local.containsKey(key))     return local.set(key,value);
-	    if(arg.containsFunctionArgumentKey(key))  {
+	    if(arg.containsKey(key))  {
 	    	if(debug)UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
 	    	return arg.set(key,value);
 	    }
@@ -136,7 +136,7 @@ public class Closure extends ScopeSupport implements Variables {
 	@Override
 	public Object setEL(Key key, Object value) {
 	    if(und.getLocalAlways() || local.containsKey(key))     return local.setEL(key,value);
-        if(arg.containsFunctionArgumentKey(key))  {
+        if(arg.containsKey(key))  {
         	if(debug)UndefinedImpl.debugCascadedAccess(ThreadLocalPageContext.get(),arg.getTypeAsString(), key);
         	return arg.setEL(key,value);
         }

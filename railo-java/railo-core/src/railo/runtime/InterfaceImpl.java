@@ -100,7 +100,7 @@ public class InterfaceImpl implements Interface {
 
     private static void loadImplements(PageContext pc, String lstExtend,List interfaces, Map interfaceUdfs) throws PageException {
     	
-    	Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(lstExtend, ',');
+    	Array arr = railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(lstExtend, ',');
     	Iterator<Object> it = arr.valueIterator();
     	InterfaceImpl ic;
     	String extend;
@@ -162,7 +162,7 @@ public class InterfaceImpl implements Interface {
 
 	private String _getName() { // MUST nicht so toll
 	    if(callPath==null) return "";
-	    return railo.runtime.type.List.last(callPath,"./",true);
+	    return railo.runtime.type.util.ListUtil.last(callPath,"./",true);
 	}
     
     public void registerUDF(String key, UDF udf) {
@@ -241,7 +241,7 @@ public class InterfaceImpl implements Interface {
         if(!StringUtil.isEmpty(icfc.dspName,true))sct.set(KeyConstants._displayname,icfc.dspName);
         init(pc,icfc);
         if(!ArrayUtil.isEmpty(icfc.superInterfaces)){
-            Set<String> _set = railo.runtime.type.List.listToSet(icfc.extend,',',true);
+            Set<String> _set = railo.runtime.type.util.ListUtil.listToSet(icfc.extend,',',true);
             Struct ex=new StructImpl();
         	sct.set(KeyConstants._extends,ex);
         	for(int i=0;i<icfc.superInterfaces.length;i++){

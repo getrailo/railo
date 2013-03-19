@@ -22,7 +22,7 @@ import railo.loader.util.Util;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class S3Resource extends ResourceSupport {
 
@@ -68,7 +68,7 @@ public final class S3Resource extends ResourceSupport {
 		}
 		else {
 			path=ResourceUtil.translatePath(path, true, false);
-			String[] arr = toStringArray( List.listToArrayRemoveEmpty(path,"/"));
+			String[] arr = toStringArray( ListUtil.listToArrayRemoveEmpty(path,"/"));
 			bucketName=arr[0];
 			for(int i=1;i<arr.length;i++) {
 				if(Util.isEmpty(objectName))objectName=arr[i];

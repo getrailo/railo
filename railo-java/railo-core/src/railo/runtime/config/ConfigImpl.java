@@ -389,6 +389,8 @@ public abstract class ConfigImpl implements Config {
 	private railo.runtime.rest.Mapping[] restMappings;
 	
 	protected int writerType=CFML_WRITER_REFULAR;
+	private long configFileLastModified;
+	private boolean checkForChangesInConfigFile;
 	
 	
 	
@@ -496,6 +498,17 @@ public abstract class ConfigImpl implements Config {
 		}
 		return rst;
 	}
+	
+	public long lastModified() {
+        return configFileLastModified;
+    }
+	
+	protected void setLastModified() {
+		this.configFileLastModified=configFile.lastModified();
+    }
+	
+
+    
 
 	@Override
     public short getScopeCascadingType() {
@@ -1930,7 +1943,7 @@ public abstract class ConfigImpl implements Config {
     
     
     public String getSecurityKey() {
-    	return securityKey;//getServletContext().getRealPath("/");
+    	return securityKey;
     }
 
     @Override
@@ -2153,6 +2166,17 @@ public abstract class ConfigImpl implements Config {
 			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
 	}
 
+	protected void setDefaultResourceProvider(Class defaultProviderClass, Map arguments) throws ClassException {
+		Object o=ClassUtil.loadInstance(defaultProviderClass);
+		if(o instanceof ResourceProvider) {
+			ResourceProvider rp=(ResourceProvider) o;
+			rp.init(null,arguments);
+			setDefaultResourceProvider(rp);
+		}
+		else 
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
+	}
+
 	/**
 	 * @param defaultResourceProvider the defaultResourceProvider to set
 	 */
@@ -2174,6 +2198,17 @@ public abstract class ConfigImpl implements Config {
 		Object o=null;
 		
 		o=ClassUtil.loadInstance(strProviderClass);
+		
+		if(o instanceof ResourceProvider) {
+			ResourceProvider rp=(ResourceProvider) o;
+			rp.init(strProviderScheme,arguments);
+			addResourceProvider(rp);
+		}
+		else 
+			throw new ClassException("object ["+Caster.toClassName(o)+"] must implement the interface "+ResourceProvider.class.getName());
+	}
+	protected void addResourceProvider(String strProviderScheme, Class providerClass, Map arguments) throws ClassException {
+		Object o=ClassUtil.loadInstance(providerClass);
 		
 		if(o instanceof ResourceProvider) {
 			ResourceProvider rp=(ResourceProvider) o;
@@ -3421,6 +3456,13 @@ public abstract class ConfigImpl implements Config {
 		if(!ArrayUtil.isEmpty(mappings))for(int i=0;i<mappings.length;i++)	{
 			list.add(mappings[i]);
 		}
+	}
+
+	protected void setCheckForChangesInConfigFile(boolean checkForChangesInConfigFile) {
+		this.checkForChangesInConfigFile=checkForChangesInConfigFile;
+	}
+	public boolean checkForChangesInConfigFile() {
+		return checkForChangesInConfigFile;
 	}
 	
 }

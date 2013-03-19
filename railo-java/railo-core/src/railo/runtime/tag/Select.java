@@ -14,10 +14,10 @@ import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.type.Collection.Key;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -289,7 +289,7 @@ public final class Select extends BodyTagImpl {
      * @param selected The selected to set.
      */
     public void setSelected(String selected) {
-    	this.selected = List.trimItems(List.listToStringArray(selected,','));
+    	this.selected = ListUtil.trimItems(ListUtil.listToStringArray(selected,','));
     }
     /**
      * @param value The value to set.

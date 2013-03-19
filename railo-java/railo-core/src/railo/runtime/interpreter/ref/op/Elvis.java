@@ -22,7 +22,7 @@ public class Elvis  extends RefSupport implements Ref{
     @Override
 	public Object getValue(PageContext pc) throws PageException {
     	String[] arr = LFunctionValue.toStringArray(pc, left);
-    	return IsDefined.invoke(pc, arr,false)?left.getValue(pc):right.getValue(pc);
+    	return railo.runtime.op.Elvis.operate(pc, arr)?left.getValue(pc):right.getValue(pc);
     }
 
     @Override

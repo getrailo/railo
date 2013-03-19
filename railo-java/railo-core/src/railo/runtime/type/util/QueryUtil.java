@@ -40,7 +40,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryColumnImpl;
@@ -95,7 +94,7 @@ public class QueryUtil {
 	 * @throws PageException 
 	 */
 	public static void checkSQLRestriction(DatasourceConnection dc, SQL sql) throws PageException {
-        Array sqlparts = List.listToArrayRemoveEmpty(
+        Array sqlparts = ListUtil.listToArrayRemoveEmpty(
         		SQLUtil.removeLiterals(sql.getSQLString())
         		," \t"+System.getProperty("line.separator"));
         

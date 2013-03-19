@@ -10,9 +10,10 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
-import railo.runtime.functions.decision.IsDefined;
+import railo.runtime.op.Elvis;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
+import railo.transformer.bytecode.Literal;
 import railo.transformer.bytecode.expression.Expression;
 import railo.transformer.bytecode.expression.ExpressionBase;
 import railo.transformer.bytecode.expression.var.DataMember;
@@ -26,11 +27,16 @@ public final class OpElvis extends ExpressionBase {
 
 	
 
-    private static final Type IS_DEFINED=Type.getType(IsDefined.class);
-	public static final Method INVOKE = new Method(
-    		"invoke",
+    private static final Type ELVIS=Type.getType(Elvis.class);
+    public static final Method INVOKE_STR = new Method(
+    		"operate",
     		Types.BOOLEAN_VALUE,
-    		new Type[]{Types.PAGE_CONTEXT,Types.DOUBLE_VALUE,Types.STRING_ARRAY,Types.BOOLEAN_VALUE});
+    		new Type[]{Types.PAGE_CONTEXT,Types.DOUBLE_VALUE,Types.STRING_ARRAY});
+	
+    public static final Method INVOKE_KEY = new Method(
+    		"operate",
+    		Types.BOOLEAN_VALUE,
+    		new Type[]{Types.PAGE_CONTEXT,Types.DOUBLE_VALUE,Types.COLLECTION_KEY_ARRAY});
 	
 	private Variable left;
     private Expression right;
@@ -64,23 +70,43 @@ public final class OpElvis extends ExpressionBase {
 		adapter.push((double)left.getScope());
 		//varNames
 		
+		// all literal string?
+		boolean allLiteral=true;
+		for(int i=0;i<arr.length;i++){
+			if(!(arr[i].getName() instanceof Literal)) allLiteral=false;
+		}
+		
 		ArrayVisitor av=new ArrayVisitor();
-        av.visitBegin(adapter,Types.STRING,arr.length);
-        for(int i=0;i<arr.length;i++){
-			av.visitBeginItem(adapter, i);
-				arr[i].getName().writeOut(bc, MODE_REF); 
-			av.visitEndItem(adapter);
-        }
+		if(!allLiteral) {
+			// String Array
+	        av.visitBegin(adapter,Types.STRING,arr.length);
+	        for(int i=0;i<arr.length;i++){
+				av.visitBeginItem(adapter, i);
+					arr[i].getName().writeOut(bc, MODE_REF); 
+				av.visitEndItem(adapter);
+	        }
+		}
+		else {
+			// Collection.Key Array
+	        av.visitBegin(adapter,Types.COLLECTION_KEY,arr.length);
+	        for(int i=0;i<arr.length;i++){
+				av.visitBeginItem(adapter, i);
+					Variable.registerKey(bc, arr[i].getName());
+				av.visitEndItem(adapter);
+	        }
+		}
+        av.visitEnd();
+		
         
         // allowNull
-        adapter.push(false);
+        //adapter.push(false);
 		
-        av.visitEnd();
+        
         
 		//ASMConstants.NULL(adapter);
 		
         // call IsDefined.invoke
-    	adapter.invokeStatic(IS_DEFINED, INVOKE);
+    	adapter.invokeStatic(ELVIS, allLiteral?INVOKE_KEY:INVOKE_STR);
 		ExpressionUtil.visitLine(bc, left.getEnd());
     	
     	

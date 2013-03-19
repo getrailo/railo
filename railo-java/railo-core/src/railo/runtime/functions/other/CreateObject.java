@@ -26,8 +26,8 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.rpc.client.RPCClient;
 import railo.runtime.op.Caster;
 import railo.runtime.security.SecurityManager;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public final class CreateObject implements Function {
 	public static Object call(PageContext pc , String cfcName) throws PageException {
@@ -111,7 +111,7 @@ public final class CreateObject implements Function {
         	//Resource[] reses=null;
         	if(!StringUtil.isEmpty(pathes, true)) {
         		if(StringUtil.isEmpty(delimiter))delimiter=",";
-        		String[] arrPathes = List.trimItems(List.toStringArray(List.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
+        		String[] arrPathes = ListUtil.trimItems(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(pathes.trim(),delimiter)));
         		
         		for(int i=0;i<arrPathes.length;i++) {
         			resources.add(ResourceUtil.toResourceExisting(pc,arrPathes[i]));

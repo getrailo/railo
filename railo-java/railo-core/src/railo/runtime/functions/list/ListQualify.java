@@ -5,7 +5,7 @@ import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Implements the CFML Function listqualify
@@ -37,7 +37,7 @@ public final class ListQualify implements Function {
 		if(list.length()==0) return "";
 		if(psq)list=StringUtil.replace(list, "'", "''", false);
 		
-	   	Array arr=includeEmptyFields?List.listToArray(list,delimiter):List.listToArrayRemoveEmpty(list,delimiter);
+	   	Array arr=includeEmptyFields?ListUtil.listToArray(list,delimiter):ListUtil.listToArrayRemoveEmpty(list,delimiter);
 		
 		boolean isQChar=qualifier.length()==1;
 		boolean isDChar=delimiter.length()==1;

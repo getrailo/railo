@@ -6,13 +6,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import railo.runtime.PageContext;
 import railo.runtime.rest.path.Path;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public class RestUtil {
 	
 	public static String[] splitPath(String path) {
-		return List.listToStringArray(path, '/');
+		return ListUtil.listToStringArray(path, '/');
 	}
 	
 	

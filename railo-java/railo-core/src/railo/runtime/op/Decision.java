@@ -359,12 +359,15 @@ public final class Decision {
     }
 
 	public static boolean isDateSimple(Object value,boolean alsoNumbers) {
+		return isDateSimple(value, alsoNumbers, false);
+	}
+	public static boolean isDateSimple(Object value,boolean alsoNumbers, boolean alsoMonthString) {
 		
         //return DateCaster.toDateEL(value)!=null;
 		if(value instanceof DateTime) 		return true;
 		else if(value instanceof Date) 		return true;
 		// wrong timezone but this isent importend because date will not be importend
-		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers,TimeZone.getDefault(),null)!=null;
+		else if(value instanceof String) 	return DateCaster.toDateSimple(value.toString(),alsoNumbers,alsoMonthString,TimeZone.getDefault(),null)!=null;
 		else if(value instanceof ObjectWrap) {
         	return isDateSimple(((ObjectWrap)value).getEmbededObject(null),alsoNumbers);
         }
@@ -419,7 +422,7 @@ public final class Decision {
 		if(StringUtil.isEmpty(str)) return false;
 		
 		for(int i=0;i<DATE_DEL.length;i++) {
-			Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(str,DATE_DEL[i]);
+			Array arr = railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(str,DATE_DEL[i]);
 			if(arr.size()!=3) continue;
 
 			int month=Caster.toIntValue(	arr.get(isEuro?2:1,Constants.INTEGER_0),Integer.MIN_VALUE);

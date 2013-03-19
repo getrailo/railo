@@ -18,9 +18,9 @@ import railo.runtime.functions.system.ContractPath;
 import railo.runtime.img.ImageUtil;
 import railo.runtime.img.MarpleCaptcha;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 // GetWriteableImageFormats
 // GetReadableImageFormats
@@ -177,7 +177,7 @@ public final class Image extends TagImpl {
 	 * @throws PageException 
 	 */
 	public void setFonts(String fontList) throws PageException {
-		fonts=ArrayUtil.trim(List.toStringArray(List.listToArray(fontList, ',')));
+		fonts=ArrayUtil.trim(ListUtil.toStringArray(ListUtil.listToArray(fontList, ',')));
 	}
 
 	
@@ -394,7 +394,7 @@ public final class Image extends TagImpl {
 			// create path
 			String cp = pageContext.getHttpServletRequest().getContextPath();
 			if(StringUtil.isEmpty(cp)) cp="";
-			return cp+"/railo-context/graph.cfm?img="+name+"&type="+(List.last(ImageUtil.getMimeTypeFromFormat(format),'/').trim());
+			return cp+"/railo-context/graph.cfm?img="+name+"&type="+(ListUtil.last(ImageUtil.getMimeTypeFromFormat(format),'/').trim());
 		}
 		return ContractPath.call(pageContext, destination.getAbsolutePath());
 	}

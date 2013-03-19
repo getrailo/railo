@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 
 
@@ -258,7 +258,7 @@ public final class SearchIndex {
     @Override
     public String toString() {
         return "railo.runtime.search.SearchIndex(id:"+id+";title:"+title+";key:"+key+";type:"+toStringTypeEL(type)+
-        ";language:"+language+";urlpath:"+urlpath+";query:"+query+";categoryTree:"+categoryTree+";categories:"+List.arrayToList(categories,",")+";custom1:"+custom1+";custom2:"+custom2+";custom3:"+custom3+";custom4:"+custom4+";)";
+        ";language:"+language+";urlpath:"+urlpath+";query:"+query+";categoryTree:"+categoryTree+";categories:"+ListUtil.arrayToList(categories,",")+";custom1:"+custom1+";custom2:"+custom2+";custom3:"+custom3+";custom4:"+custom4+";)";
     }
 
     /**

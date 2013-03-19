@@ -415,7 +415,7 @@ public final class RPCClient implements Objects, Iteratorable{
 	            if(els!=null) {
 	            	clazz=mapComplex(config, call, tm, t);
 	            }
-	        	name=railo.runtime.type.List.last(el.getQName().getLocalPart(), '>');
+	        	name=railo.runtime.type.util.ListUtil.last(el.getQName().getLocalPart(), '>');
 	        	
 	        	if(clazz==null)clazz=tm.getClassForQName(t.getQName());
 	        	if(clazz==null)clazz=Object.class;
@@ -498,7 +498,7 @@ public final class RPCClient implements Objects, Iteratorable{
 		StringBuffer sb=new StringBuffer();
 		String[] arr=null;
 		try {
-			arr = railo.runtime.type.List.toStringArray(railo.runtime.type.List.listToArray(raw, "./&="));
+			arr = railo.runtime.type.util.ListUtil.toStringArray(railo.runtime.type.util.ListUtil.listToArray(raw, "./&="));
 		} catch (PageException e) {}
 		String el;
 		for(int i=0;i<arr.length;i++){
@@ -535,7 +535,7 @@ public final class RPCClient implements Objects, Iteratorable{
             }
             if(!found) {
                 if(names.length>1)
-                    return "missing argument with name ["+name+"], needed argument are ["+railo.runtime.type.List.arrayToList(names,", ")+"]";
+                    return "missing argument with name ["+name+"], needed argument are ["+railo.runtime.type.util.ListUtil.arrayToList(names,", ")+"]";
                 return "missing argument with name ["+name+"]";
             }
         }

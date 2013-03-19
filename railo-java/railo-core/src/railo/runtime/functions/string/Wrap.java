@@ -10,7 +10,7 @@ import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class Wrap implements Function {
 	public static String call(PageContext pc , String string, double limit) throws ExpressionException {
@@ -37,7 +37,7 @@ public final class Wrap implements Function {
 		
 		StringBuffer rtn=new StringBuffer();
 		String ls=SystemUtil.getOSSpecificLineSeparator();
-		Array arr = List.listToArray(str,ls);
+		Array arr = ListUtil.listToArray(str,ls);
 		int len=arr.size();
 		
 		for(int i=1;i<=len;i++) {

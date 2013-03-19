@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import railo.print;
 import railo.commons.lang.CFTypes;
 import railo.runtime.PageContext;
 import railo.runtime.config.NullSupportHelper;
@@ -24,6 +25,7 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
+import railo.runtime.type.Null;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -78,36 +80,33 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 	}
 
 	public Object getFunctionArgument(Collection.Key key, Object defaultValue) {
-		/*if((functionArgumentNames==null || !functionArgumentNames.contains(key))){
-			return defaultValue;
-		}*/
-		return get(key, defaultValue);
+		return super.get(key,defaultValue);
 	}
 	
 
 	@Override
 	public boolean containsFunctionArgumentKey(Key key) {
-		return containsKey(key);//sfunctionArgumentNames!=null && functionArgumentNames.contains(key);
+		return super.containsKey(key);//functionArgumentNames!=null && functionArgumentNames.contains(key);
 	}
 	
 	
 	
 	@Override
 	public Object get(Collection.Key key, Object defaultValue) {
-		if(NullSupportHelper.full()) {
+		/*if(NullSupportHelper.full()) {
 			Object o=super.get(key,NullSupportHelper.NULL());
 			if(o!=NullSupportHelper.NULL())return o;
 			
 			o=get(Caster.toIntValue(key.getString(),-1),NullSupportHelper.NULL());
 			if(o!=NullSupportHelper.NULL())return o;
 			return defaultValue;
-		}
-		Object o=super.get(key,null);
-		if(o!=null)return o;
+		}*/
+		
+		Object o=super.g(key,Null.NULL);
+		if(o!=Null.NULL)return o;
 
-		o=get(Caster.toIntValue(key.getString(),-1),null);
-		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
+		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
+		if(o!=Null.NULL)return o;
 		return defaultValue;
 	}
 	
@@ -115,7 +114,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
 	@Override
 	public Object get(Collection.Key key) throws ExpressionException {
-		if(NullSupportHelper.full()) {
+		/*if(NullSupportHelper.full()) {
 			Object o=super.get(key,NullSupportHelper.NULL());
 			if(o!=NullSupportHelper.NULL())return o;
 	
@@ -124,23 +123,25 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 			throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
 					railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
 					+"]");
-		}
+		}*/
 		
-		Object o=super.get(key,null);
-		if(o!=null)return o;
+		// null is supported as returned value with argument scope
+		Object o=super.g(key,Null.NULL);
+		if(o!=Null.NULL)return o;
 
-		o=get(Caster.toIntValue(key.getString(),-1),null);
-		if(o!=null)return o;
-		if(super.containsKey(key)) return null;// that is only for compatibility to neo
-		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope");
-
+		o=get(Caster.toIntValue(key.getString(),-1),Null.NULL);
+		if(o!=Null.NULL)return o;
+		
+		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
+				railo.runtime.type.util.ListUtil.arrayToList(CollectionUtil.keys(this),", ")
+				+"]");
 	}
 	
 	
 
 	@Override
 	public Object get(int intKey, Object defaultValue) {
-		Iterator it = valueIterator();//keyIterator();//getMap().keySet().iterator();
+		Iterator<Object> it = valueIterator(); //keyIterator();//getMap().keySet().iterator();
 		int count=0;
 		Object o;
 		while(it.hasNext()) {
@@ -395,15 +396,20 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 
     @Override
     public boolean containsKey(Collection.Key key) {
-    	return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL() && super.containsKey(key);
+    	if(NullSupportHelper.full()) return super.containsKey(key);
+    	
+		return super.g(key,null)!=null;
+    	// return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL() && super.containsKey(key);
     }
+    /*
+    public boolean containsKey(Collection.Key key) {
+    	return get(key,null)!=null && super.containsKey(key);
+    }*/
 
     @Override
     public boolean containsKey(int key) {
-        return get(key,NullSupportHelper.NULL())!=NullSupportHelper.NULL();
+    	return key>0 && key<=size();
     }
-    
-
 
 	@Override
 	public List toList() {
