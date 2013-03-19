@@ -1,12 +1,32 @@
 package railo.commons.net;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
 import railo.runtime.type.util.ListUtil;
 
 public class IPUtil {
+
+    private static boolean doCacheLocalIPs;     // TODO: we can remove this and just check if ( cachedLocalIPs == null ) instead
+    private static List<String> cachedLocalIPs = null;
+
+    static {
+
+        long tc = System.currentTimeMillis();
+
+        List<String> localIPs = getLocalIPs( true );
+
+        doCacheLocalIPs = System.currentTimeMillis() > tc;
+
+        if ( doCacheLocalIPs )
+            cachedLocalIPs = localIPs;
+    }
 
 
     public static boolean isIPv4(String ip)	{
@@ -49,15 +69,62 @@ public class IPUtil {
     public static boolean isIPv6(InetAddress addr)	{
 		return !isIPv4(addr);
     }
+
+
+    public static List<String> getLocalIPs( boolean refresh ) {
+
+        if ( doCacheLocalIPs && !refresh ) {
+
+            return new ArrayList<String>( cachedLocalIPs );
+        }
+
+        List<String> result = new ArrayList();
+
+        try {
+
+            Enumeration<NetworkInterface> eNics = NetworkInterface.getNetworkInterfaces();
+
+            while ( eNics.hasMoreElements() ) {
+
+                NetworkInterface nic = eNics.nextElement();
+
+                if ( nic.isUp() ) {
+
+                    Enumeration<InetAddress> eAddr = nic.getInetAddresses();
+
+                    while ( eAddr.hasMoreElements() ) {
+
+                        InetAddress inaddr = eAddr.nextElement();
+
+                        String addr = inaddr.toString();
+
+                        if ( addr.startsWith( "/" ) )
+                            addr = addr.substring( 1 );
+
+                        if ( addr.indexOf( '%' ) > -1 )
+                            addr = addr.substring( 0, addr.indexOf( '%' ) );    // internal zone in some IPv6; http://en.wikipedia.org/wiki/IPv6_Addresses#Link-local%5Faddresses%5Fand%5Fzone%5Findices
+
+                        result.add( addr );
+                    }
+                }
+            }
+        }
+        catch ( SocketException e ) { }     // TODO: do we want to add defaults like 127.0.0.1 and 0:0:0:0:0:0:0:1 ?
+
+        if ( doCacheLocalIPs )
+            cachedLocalIPs = result;
+
+        return result;
+    }
     
-    /*public static void main(String[] args) throws UnknownHostException {
+    /*
+    public static void main(String[] args) {
     	long start=System.currentTimeMillis();
-    	print.o(isIPv4(InetAddress.getByName("localhost")));
-    	print.o(isIPv4(InetAddress.getByName("0.0.0.0")));
-    	print.o(isIPv4(InetAddress.getByName("127.0.0.1")));
-    	print.o(isIPv4(InetAddress.getByName("255.255.255.255")));
-		print.o(isIPv6(InetAddress.getByName("0:0:0:0:0:0:0:1%0")));
-		print.o(System.currentTimeMillis()-start);
-	}*/
+
+        for ( int i=0; i<100; i++ )
+            getLocalIPs( false );
+
+		print.o(System.currentTimeMillis() - start);
+	}//*/
 
 }
