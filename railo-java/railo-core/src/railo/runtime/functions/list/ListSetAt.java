@@ -8,7 +8,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ListSetAt implements Function {
 
@@ -30,7 +30,7 @@ public final class ListSetAt implements Function {
 		int pos=((int) posNumber);
 		//int[] removedInfo=new int[2];
 		
-		Array arr = List.listToArray(list,delimiter);
+		Array arr = ListUtil.listToArray(list,delimiter);
 		int len=arr.size();
 		
 		// invalid index

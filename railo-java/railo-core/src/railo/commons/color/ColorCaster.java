@@ -6,7 +6,7 @@ import railo.commons.lang.NumberUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ColorCaster {
 
@@ -247,7 +247,7 @@ public final class ColorCaster {
 		// rgb(255,0,0)
 		if(strColor.startsWith("rgb(") && strColor.endsWith(")")) {
 			String strColor2 = strColor.substring(4,strColor.length()-1).trim();
-			String[] arr = List.listToStringArray(strColor2,',');
+			String[] arr = ListUtil.listToStringArray(strColor2,',');
 			if(arr.length==3) {
 				int i1 = Caster.toIntValue(arr[0]);
 				int i2 = Caster.toIntValue(arr[1]);
@@ -293,7 +293,7 @@ public final class ColorCaster {
 		}
 		
 		// 255,0,0
-		String[] arr = List.listToStringArray(strColor, ',');
+		String[] arr = ListUtil.listToStringArray(strColor, ',');
 		if(arr.length==3){
 			int i1 = Caster.toIntValue(arr[0],-1);
 			int i2 = Caster.toIntValue(arr[1],-1);

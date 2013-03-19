@@ -77,7 +77,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -88,6 +87,7 @@ import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.ScopeContext;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.ComponentUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.video.VideoExecuter;
 import railo.runtime.video.VideoExecuterNotSupported;
 import railo.transformer.library.function.FunctionLibException;
@@ -1633,7 +1633,7 @@ public final class ConfigWebAdmin {
   			if(providers[i].getClass().getName().equals(clazz)){
   				if(providers[i].isAttributesSupported())support.append("attributes");
   	            if(providers[i].isModeSupported())support.append("mode");
-  	            qry.setAt("support",row,List.arrayToList(support, ","));
+  	            qry.setAt("support",row,ListUtil.arrayToList(support, ","));
   	            qry.setAt("scheme",row,providers[i].getScheme());
   	            qry.setAt("caseSensitive",row,Caster.toBoolean(providers[i].isCaseSensitive()));
   	            qry.setAt("default",row,def);
@@ -3065,14 +3065,14 @@ public final class ConfigWebAdmin {
 			throw new SecurityException("no access to update custom tag setting");
 		
 		// check
-		Array arr = List.listToArrayRemoveEmpty(extensions, ',');
-		List.trimItems(arr);
+		Array arr = ListUtil.listToArrayRemoveEmpty(extensions, ',');
+		ListUtil.trimItems(arr);
 		//throw new ApplicationException("you must define at least one extension");
 		
 		
 		// update charset
 		Element element = _getRootElement("custom-tag");
-		element.setAttribute("extensions",List.arrayToList(arr, ","));
+		element.setAttribute("extensions",ListUtil.arrayToList(arr, ","));
 	}
 
 
@@ -3622,7 +3622,7 @@ public final class ConfigWebAdmin {
 		Resource lib = config.getConfigDir().getRealResource("lib");
 		boolean changed=false;
 		if(lib.isDirectory()){
-			String[] names = List.listToStringArray(strNames, ',');
+			String[] names = ListUtil.listToStringArray(strNames, ',');
 			for(int n=0;n<names.length;n++){
 				Resource[] children = lib.listResources(new MyResourceNameFilter(names[n].trim()));
 				for(int i=0;i<children.length;i++){

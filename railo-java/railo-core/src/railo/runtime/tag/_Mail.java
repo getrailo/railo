@@ -6,8 +6,8 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.tag.TagImpl;
 import railo.runtime.net.mail.MailClient;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Retrieves and deletes e-mail messages from a POP mail server.
@@ -96,7 +96,7 @@ public abstract class _Mail extends TagImpl {
      * @throws PageException 
      */
     public void setMessagenumber(String messageNumber) throws PageException {
-        this.messageNumber = ArrayUtil.trim(List.toStringArray(List.listToArrayRemoveEmpty(messageNumber,',')));
+        this.messageNumber = ArrayUtil.trim(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(messageNumber,',')));
         if(this.messageNumber.length==0)this.messageNumber=null;
     }
 
@@ -105,7 +105,7 @@ public abstract class _Mail extends TagImpl {
      * @throws PageException 
      */
     public void setUid(String uid) throws PageException {
-        this.uid = ArrayUtil.trim(List.toStringArray(List.listToArrayRemoveEmpty(uid,',')));
+        this.uid = ArrayUtil.trim(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(uid,',')));
         if(this.uid.length==0)this.uid=null;
     }
 

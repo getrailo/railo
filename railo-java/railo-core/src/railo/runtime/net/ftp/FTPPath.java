@@ -9,7 +9,7 @@ import railo.runtime.dump.SimpleDumpData;
 import railo.runtime.exp.PageException;
 import railo.runtime.functions.arrays.ArrayMerge;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a ftp path
@@ -29,7 +29,7 @@ public final class FTPPath implements Dumpable{
         realpath=realpath.replace('\\','/');
         //if(realpath.startsWith("./")) realpath=realpath.substring(2);
         //if(realpath.startsWith(".")) realpath=realpath.substring(1);
-        Array realpathArr=List.listToArrayTrim(realpath,'/');
+        Array realpathArr=ListUtil.listToArrayTrim(realpath,'/');
 
         // realpath is absolute
         if(realpath.startsWith("/")) {
@@ -38,7 +38,7 @@ public final class FTPPath implements Dumpable{
         }
         if(current==null)current="";
         else current=current.replace('\\','/');
-        Array parentArr=List.listToArrayTrim(current,'/');
+        Array parentArr=ListUtil.listToArrayTrim(current,'/');
         
         // Single Dot .
         if(realpathArr.size()>0&&realpathArr.get(1,"").equals(".")) {
@@ -63,7 +63,7 @@ public final class FTPPath implements Dumpable{
         if(arr.size()>0) {
 	        this.name=(String)arr.get(arr.size(),"");
 	        arr.removeEL(arr.size());
-	        this.path='/'+List.arrayToList(arr,"/")+'/';
+	        this.path='/'+ListUtil.arrayToList(arr,"/")+'/';
         }
         else {
             this.path="/";

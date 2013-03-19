@@ -24,7 +24,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
@@ -32,6 +31,7 @@ import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a single Collection
@@ -240,7 +240,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
             
         	QueryColumn keyColumn=qv.getColumn(key);
             
-            String[] strBodies=List.toStringArrayTrim(List.listToArrayRemoveEmpty(body,','));
+            String[] strBodies=ListUtil.toStringArrayTrim(ListUtil.listToArrayRemoveEmpty(body,','));
             QueryColumn[] bodyColumns=new QueryColumn[strBodies.length];
             for(int i=0;i<bodyColumns.length;i++) {
                 bodyColumns[i]=qv.getColumn(strBodies[i]);
@@ -814,7 +814,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
         	if(index==null)continue;
 	        try {
 		        
-                query.setAt("categories",row,List.arrayToList(index.getCategories(),""));
+                query.setAt("categories",row,ListUtil.arrayToList(index.getCategories(),""));
                 query.setAt("categoryTree",row,index.getCategoryTree());
                 
                 query.setAt(KeyConstants._custom1,row,index.getCustom1());
@@ -822,7 +822,7 @@ public abstract class SearchCollectionSupport implements SearchCollectionPlus {
                 query.setAt(KeyConstants._custom3,row,index.getCustom3());
                 query.setAt(KeyConstants._custom4,row,index.getCustom4());
                 
-                query.setAt(KeyConstants._extensions,row,List.arrayToList(index.getExtensions(),","));
+                query.setAt(KeyConstants._extensions,row,ListUtil.arrayToList(index.getExtensions(),","));
                 query.setAt(KeyConstants._key,row,index.getKey());
                 query.setAt(KeyConstants._language,row,index.getLanguage());
                 query.setAt(KeyConstants._query,row,index.getQuery());

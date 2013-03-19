@@ -16,7 +16,7 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageException;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 public final class HTMLParser extends Parser {
@@ -124,11 +124,11 @@ public final class HTMLParser extends Parser {
                 String v;
                 if(value!=null) {
                     try {
-                        String[] arr=List.toStringArray(List.listToArrayRemoveEmpty(value,';'));
+                        String[] arr=ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(value,';'));
                         for(int i=0;i<arr.length;i++) {
                             el=arr[i];
-                            n=List.first(el,"=",true).trim();
-                            v=List.last(el,"=",true).trim();
+                            n=ListUtil.first(el,"=",true).trim();
+                            v=ListUtil.last(el,"=",true).trim();
                             if(n.equalsIgnoreCase("charset")) {
                                 charset=v;
                                 hasChanged=true;

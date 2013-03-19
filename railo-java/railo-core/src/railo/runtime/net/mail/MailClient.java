@@ -40,12 +40,12 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public abstract class MailClient {
 	
@@ -390,14 +390,14 @@ public abstract class MailClient {
 	
 				if(attachments.size() > 0) {
 					try {
-						query.setAtEL(ATTACHMENTS, row, List.arrayToList(attachments, "\t"));
+						query.setAtEL(ATTACHMENTS, row, ListUtil.arrayToList(attachments, "\t"));
 					}
 					catch(PageException pageexception) {
 					}
 				}
 				if(attachmentFiles.size() > 0) {
 					try {
-						query.setAtEL(ATTACHMENT_FILES, row, List.arrayToList(attachmentFiles, "\t"));
+						query.setAtEL(ATTACHMENT_FILES, row, ListUtil.arrayToList(attachmentFiles, "\t"));
 					}
 					catch(PageException pageexception1) {
 					}
@@ -529,10 +529,10 @@ public abstract class MailClient {
     
     
 	private static String getCharsetFromContentType(String contentType) {
-		Array arr=List.listToArrayRemoveEmpty(contentType,"; ");
+		Array arr=ListUtil.listToArrayRemoveEmpty(contentType,"; ");
 		
 		for(int i=1;i<=arr.size();i++) {
-			Array inner = List.listToArray((String)arr.get(i,null),"= ");
+			Array inner = ListUtil.listToArray((String)arr.get(i,null),"= ");
 			if(inner.size()==2 && ((String)inner.get(1,"")).trim().equalsIgnoreCase("charset")) {
 				String charset = (String) inner.get(2,"");
 				charset=charset.trim();
@@ -584,7 +584,7 @@ public abstract class MailClient {
      */
 	private String toList(String ids[]) {
 		if(ids == null)	return "";
-		return List.arrayToList(ids, ",");
+		return ListUtil.arrayToList(ids, ",");
 	}
 
 	/**

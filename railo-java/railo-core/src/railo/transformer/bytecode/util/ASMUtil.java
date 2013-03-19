@@ -535,7 +535,7 @@ public final class ASMUtil {
     public static byte[] createPojo(String className, ASMProperty[] properties,Class parent,Class[] interfaces, String srcName) throws PageException {
     	className=className.replace('.', '/');
     	className=className.replace('\\', '/');
-    	className=railo.runtime.type.List.trim(className, "/");
+    	className=railo.runtime.type.util.ListUtil.trim(className, "/");
     	String[] inter=null;
     	if(interfaces!=null){
     		inter=new String[interfaces.length];

@@ -12,6 +12,7 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Operator;
 import railo.runtime.op.date.DateCaster;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * represent a named function value for a functions
@@ -71,7 +72,7 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	@Override
 	public String getNameAsString() {
 		if(name==null){
-			return List.arrayToList(names, ".");
+			return ListUtil.arrayToList(names, ".");
 		}
 		return name.getString();
 	}
@@ -79,7 +80,7 @@ public final class FunctionValueImpl implements FunctionValue,Dumpable {
 	@Override
 	public Collection.Key getNameAsKey() {
 		if(name==null){
-			return KeyImpl.init(List.arrayToList(names, "."));
+			return KeyImpl.init(ListUtil.arrayToList(names, "."));
 		}
 		return name;
 	}

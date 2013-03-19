@@ -422,7 +422,7 @@ public final class Decision {
 		if(StringUtil.isEmpty(str)) return false;
 		
 		for(int i=0;i<DATE_DEL.length;i++) {
-			Array arr = railo.runtime.type.List.listToArrayRemoveEmpty(str,DATE_DEL[i]);
+			Array arr = railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(str,DATE_DEL[i]);
 			if(arr.size()!=3) continue;
 
 			int month=Caster.toIntValue(	arr.get(isEuro?2:1,Constants.INTEGER_0),Integer.MIN_VALUE);

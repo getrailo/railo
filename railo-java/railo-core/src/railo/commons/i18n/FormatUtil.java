@@ -152,7 +152,7 @@ public class FormatUtil {
 			if(file.isFile()) {
 				try {
 					String content=IOUtil.toString(file, null);
-					String[] arr = railo.runtime.type.List.listToStringArray(content, '\n');
+					String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(content, '\n');
 					String line;
 					SimpleDateFormat sdf;
 					for(int i=0;i<arr.length;i++){

@@ -80,6 +80,7 @@ import railo.runtime.type.sql.ClobImpl;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.MemberUtil;
 import railo.runtime.type.util.QueryUtil;
 
@@ -590,7 +591,7 @@ public class QueryImpl implements Query,Objects {
 			//	throw new DatabaseException("invalid column name ["+columnNames[i]+"] for query", "column names must start with a letter and can be followed by letters numbers and underscores [_]. RegExp:[a-zA-Z][a-zA-Z0-9_]*",null,null,null);
 			
 			if(testMap.contains(columnNames[i].getLowerString()))
-				throw new DatabaseException("invalid parameter for query, ambiguous column name "+columnNames[i],"columnNames: "+List.arrayToListTrim( _toStringKeys(columnNames),","),null,null,null);
+				throw new DatabaseException("invalid parameter for query, ambiguous column name "+columnNames[i],"columnNames: "+ListUtil.arrayToListTrim( _toStringKeys(columnNames),","),null,null,null);
 			testMap.add(columnNames[i].getLowerString());
 		}
 	}

@@ -8,7 +8,7 @@ import railo.runtime.exp.ExpressionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.exp.TagNotSupported;
 import railo.runtime.ext.tag.TagImpl;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Used with cfgrid in a cfform, you use cfgridcolumn to specify column data in a cfgrid control. Font and alignment 
@@ -281,9 +281,9 @@ public final class GridColumn extends TagImpl {
 	public int doStartTag() throws PageException	{
 		
 		if(!StringUtil.isEmpty(values))
-			column.setValues(List.toStringArray(List.listToArrayRemoveEmpty(values, valuesdelimiter)));
+			column.setValues(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(values, valuesdelimiter)));
 		if(!StringUtil.isEmpty(valuesdisplay))
-			column.setValuesDisplay(List.toStringArray(List.listToArrayRemoveEmpty(valuesdisplay, valuesdelimiter)));
+			column.setValuesDisplay(ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(valuesdisplay, valuesdelimiter)));
 
 		// provide to parent
 		Tag parent=this;

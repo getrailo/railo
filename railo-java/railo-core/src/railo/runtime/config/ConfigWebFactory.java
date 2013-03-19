@@ -129,7 +129,6 @@ import railo.runtime.spooler.SpoolerEngineImpl;
 import railo.runtime.tag.TagUtil;
 import railo.runtime.text.xml.XMLCaster;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Cluster;
@@ -137,6 +136,7 @@ import railo.runtime.type.scope.ClusterRemote;
 import railo.runtime.type.scope.Undefined;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.video.VideoExecuter;
 import railo.transformer.library.function.FunctionLib;
 import railo.transformer.library.function.FunctionLibException;
@@ -548,7 +548,7 @@ public final class ConfigWebFactory {
 	static Map<String,String> toArguments(String attributes, boolean decode) {
 		Map<String,String> map=new HashMap<String, String>();
 		if(attributes==null) return map;
-		String[] arr=List.toStringArray(List.listToArray(attributes, ';'),null);
+		String[] arr=ListUtil.toStringArray(ListUtil.listToArray(attributes, ';'),null);
 		
 		int index;
 		String str;
@@ -2256,11 +2256,11 @@ public final class ConfigWebFactory {
 		
         Struct sct=new StructImpl();
         try {
-            String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(str,'&'));
+            String[] arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(str,'&'));
             
             String[] item;
             for(int i=0;i<arr.length;i++) {
-                item = List.toStringArray(List.listToArrayRemoveEmpty(arr[i],'='));
+                item = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(arr[i],'='));
                 if(item.length==2) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),URLDecoder.decode(item[1],true));
                 else if(item.length==1) sct.setEL(KeyImpl.init(URLDecoder.decode(item[0],true).trim()),"");
             }   
@@ -2353,8 +2353,8 @@ public final class ConfigWebFactory {
 	        String strExtensions=customTag.getAttribute("extensions");
 	        if(hasAccess && !StringUtil.isEmpty(strExtensions)) {
 	        	try {
-					String[] arr = List.toStringArray(List.listToArrayRemoveEmpty(strExtensions, ","));
-					config.setCustomTagExtensions(List.trimItems(arr));
+					String[] arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(strExtensions, ","));
+					config.setCustomTagExtensions(ListUtil.trimItems(arr));
 				} 
 	        	catch (PageException e) {}
 	        }

@@ -20,8 +20,8 @@ import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 public class ComponentListPackage implements Function {
 	
@@ -71,7 +71,7 @@ public class ComponentListPackage implements Function {
 			if(ps!=null){
 				Mapping mapping = ps.getMapping();
 				String _path=ps.getRealpath();
-				_path=List.trim(_path,"\\/");
+				_path=ListUtil.trim(_path,"\\/");
 				String[] list = _listMapping(pc,mapping,_path);
 				if(!ArrayUtil.isEmpty(list)) return list;
 			}
@@ -87,7 +87,7 @@ public class ComponentListPackage implements Function {
 			for(int i=0;i<mappings.length;i++){
 				mapping=mappings[i];
 				if(StringUtil.startsWithIgnoreCase(virtual, mapping.getVirtual()))  {
-					_path=List.trim(virtual.substring(mapping.getVirtual().length()),"\\/").trim(); 
+					_path=ListUtil.trim(virtual.substring(mapping.getVirtual().length()),"\\/").trim(); 
 					_path=StringUtil.replace(_path, "/", File.pathSeparator, false);
 					list = _listMapping(pc,mapping,_path);
 					if(!ArrayUtil.isEmpty(list)) return list;
@@ -164,7 +164,7 @@ public class ComponentListPackage implements Function {
 					// TODO do the following 4 lines with help of ASM this way is ugly but working for the moment
 					c=IOUtil.toString(children[i],null);
 					c=c.substring(0,c.indexOf("<clinit>"));
-					c = List.last(c, "/\\",true).trim();
+					c = ListUtil.last(c, "/\\",true).trim();
 					if(StringUtil.endsWithIgnoreCase(c, ".cfc")) list.add(c);
 				}
 				if(list.size()>0) return list.toArray(new String[list.size()]);

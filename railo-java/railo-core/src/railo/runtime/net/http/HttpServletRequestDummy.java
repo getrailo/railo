@@ -141,7 +141,7 @@ public final class HttpServletRequestDummy implements HttpServletRequest,Seriali
 	
 	private Pair[] translateQS(String qs) {
         if(qs==null) return new Pair[0];
-        Array arr=railo.runtime.type.List.listToArrayRemoveEmpty(qs,"&");
+        Array arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(qs,"&");
         Pair[] parameters=new Pair[arr.size()];
         //Array item;
         int index;

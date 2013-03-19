@@ -308,7 +308,7 @@ public final class WDDXConverter extends ConverterSupport {
 	private String _serializeQuery(Query query, Set<Object> done) throws ConverterException {
 		
 		Collection.Key[] keys = CollectionUtil.keys(query);
-		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.List.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
+		StringBuffer sb=new StringBuffer(goIn()+"<recordset rowCount="+_+query.getRecordcount()+_+" fieldNames="+_+railo.runtime.type.util.ListUtil.arrayToList(keys,",")+_+" type="+_+"coldfusion.sql.QueryTable"+_+">");
 		
 	
 		deep++;
@@ -635,7 +635,7 @@ public final class WDDXConverter extends ConverterSupport {
 		try {
 			// create Query Object
 			Query query=new QueryImpl(
-					railo.runtime.type.List.listToArray(
+					railo.runtime.type.util.ListUtil.listToArray(
 							recordset.getAttribute("fieldNames"),','
 					)
 				,Caster.toIntValue(recordset.getAttribute("rowCount")),"query"

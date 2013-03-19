@@ -7,7 +7,7 @@ import railo.runtime.PageContext;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ListGetAt implements Function {
 	
@@ -23,7 +23,7 @@ public final class ListGetAt implements Function {
 	
 	public static String call(PageContext pc , String list, double posNumber, String delimiter, boolean includeEmptyFields) throws PageException {
 		int pos=(int) posNumber;
-		String rtn = List.getAt(list,delimiter,pos-1,!includeEmptyFields);
+		String rtn = ListUtil.getAt(list,delimiter,pos-1,!includeEmptyFields);
 		if(rtn==null) throw new FunctionException(pc,"listGetAt",2,"posNumber","invalid string list index ["+pos+"]");
 		return rtn;
 	}

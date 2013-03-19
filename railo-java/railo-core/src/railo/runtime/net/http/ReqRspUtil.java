@@ -114,10 +114,10 @@ public final class ReqRspUtil {
 			String str = req.getHeader("Cookie");
 			if(str!=null) {
 				try{
-					String[] arr = railo.runtime.type.List.listToStringArray(str, ';'),tmp;
+					String[] arr = railo.runtime.type.util.ListUtil.listToStringArray(str, ';'),tmp;
 					java.util.List<Cookie> list=new ArrayList<Cookie>();
 					for(int i=0;i<arr.length;i++){
-						tmp=railo.runtime.type.List.listToStringArray(arr[i], '=');
+						tmp=railo.runtime.type.util.ListUtil.listToStringArray(arr[i], '=');
 						if(tmp.length>0) {
 							list.add(new Cookie(dec(tmp[0],charset,false), tmp.length>1?dec(tmp[1],charset,false):""));
 						}

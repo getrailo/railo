@@ -33,7 +33,7 @@ import railo.runtime.exp.PageServletException;
 import railo.runtime.net.http.HTTPServletRequestWrap;
 import railo.runtime.net.http.HttpServletResponseWrap;
 import railo.runtime.net.http.ReqRspUtil;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * 
@@ -178,7 +178,7 @@ public final class HTTPUtil {
         	
         	StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toListTrim(path, '/');
+        	StringList list = ListUtil.toListTrim(path, '/');
         	String str;
         	
         	while(list.hasNext()){
@@ -237,7 +237,7 @@ public final class HTTPUtil {
     	if(!StringUtil.isEmpty(query)) {
     		StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toList(query, '&');
+        	StringList list = ListUtil.toList(query, '&');
         	String str;
         	int index;
         	char del=startDelimiter;
@@ -292,7 +292,7 @@ public final class HTTPUtil {
         	
         	StringBuilder res=new StringBuilder();
         	
-        	StringList list = List.toListTrim(path, '/');
+        	StringList list = ListUtil.toListTrim(path, '/');
         	String str;
         	
         	while(list.hasNext()){
@@ -629,7 +629,7 @@ public final class HTTPUtil {
         // query
         if(!StringUtil.isEmpty(query)){
         	
-        	StringList list = List.toList(query, '&');
+        	StringList list = ListUtil.toList(query, '&');
         	String str;
         	int index;
         	char del='?';
@@ -694,7 +694,7 @@ public final class HTTPUtil {
 	public static Map<String, String> parseParameterList(String _str, boolean decode,String charset) {
 		//return railo.commons.net.HTTPUtil.toURI(strUrl,port);
 		Map<String,String> data=new HashMap<String, String>();
-		StringList list = List.toList(_str, '&');
+		StringList list = ListUtil.toList(_str, '&');
     	String str;
     	int index;
     	while(list.hasNext()){
@@ -738,7 +738,7 @@ public final class HTTPUtil {
 	
 
 	public static String[] splitTypeAndSubType(String mimetype) {
-		String[] types=List.listToStringArray(mimetype, '/');
+		String[] types=ListUtil.listToStringArray(mimetype, '/');
 		String[] rtn=new String[2];
     	
     	if(types.length>0){

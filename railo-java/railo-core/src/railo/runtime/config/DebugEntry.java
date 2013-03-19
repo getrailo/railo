@@ -7,8 +7,8 @@ import java.util.Set;
 
 import railo.commons.digest.MD5;
 import railo.commons.net.IPRange;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
+import railo.runtime.type.util.ListUtil;
 
 public class DebugEntry {
 
@@ -103,14 +103,14 @@ public class DebugEntry {
 	}
 	
 	public static String organizeIPRange(String ipRange) {
-		String[] arr = List.trim(List.trimItems(List.listToStringArray(ipRange, ',')));
+		String[] arr = ListUtil.trim(ListUtil.trimItems(ListUtil.listToStringArray(ipRange, ',')));
 		Set<String> set=new HashSet<String>();
 		for(int i=0;i<arr.length;i++){
 			set.add(arr[i]);
 		}
 		arr=set.toArray(new String[set.size()]);
 		Arrays.sort(arr);
-		return List.arrayToList(arr, ",");
+		return ListUtil.arrayToList(arr, ",");
 	}
 	
 

@@ -23,11 +23,11 @@ import railo.runtime.net.ftp.FTPPool;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTimeImpl;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * 
@@ -650,7 +650,7 @@ public final class Ftp extends TagImpl {
         else if(transferMode==FTPConstant.TRANSFER_MODE_ASCCI) return FTP.ASCII_FILE_TYPE;
         else {
             String ext=ResourceUtil.getExtension(file,null);
-            if(ext==null || List.listContainsNoCase(ASCIIExtensionList,ext,";")==-1)
+            if(ext==null || ListUtil.listContainsNoCase(ASCIIExtensionList,ext,";")==-1)
                 return FTP.BINARY_FILE_TYPE;
             	return FTP.ASCII_FILE_TYPE;
         }

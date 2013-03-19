@@ -26,10 +26,10 @@ import railo.runtime.type.Array;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.scope.Threads;
+import railo.runtime.type.util.ListUtil;
 
 // MUST change behavor of mltiple headers now is a array, it das so?
 
@@ -302,7 +302,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
     	if(lcName==null) {
     		names=mpc.getThreadScopeNames();
     	}
-    	else names=List.listToStringArray(lcName, ',');
+    	else names=ListUtil.listToStringArray(lcName, ',');
     	
     	ChildThread ct;
     	Threads ts;
@@ -311,7 +311,7 @@ public final class ThreadTag extends BodyTagImpl implements DynamicAttributes {
     		//PageContextImpl mpc=(PageContextImpl)getMainPageContext(pc);
     		ts = mpc.getThreadScope(names[i]);
     		if(ts==null)
-    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"], only the following threads existing ["+List.arrayToList(mpc.getThreadScopeNames(),", ")+"]");
+    			throw new ApplicationException("there is no thread running with the name ["+names[i]+"], only the following threads existing ["+ListUtil.arrayToList(mpc.getThreadScopeNames(),", ")+"]");
     		ct=ts.getChildThread();
     		
     		if(ct.isAlive()) {

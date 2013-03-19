@@ -273,7 +273,7 @@ public class HibernateSessionFactory {
 			} catch (Throwable t) {}
 			
 			
-			ext=HibernateORMEngine.id(railo.runtime.type.List.last(ext, '.').trim());
+			ext=HibernateORMEngine.id(railo.runtime.type.util.ListUtil.last(ext, '.').trim());
 			if(!done.contains(ext)) {
 				v = cfcs.get(ext);
 				if(v!=null)createMappings(engine,cfcs, ext, v, done, mappings);

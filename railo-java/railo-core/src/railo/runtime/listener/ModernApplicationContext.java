@@ -943,7 +943,7 @@ public class ModernApplicationContext extends ApplicationContextSupport {
 						}
 					}
 					else {
-						arr=railo.runtime.type.List.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
+						arr=railo.runtime.type.util.ListUtil.listToArrayRemoveEmpty(Caster.toString(obj,""), ',');
 					}
 					Iterator<Object> it = arr.valueIterator();
 					String ext;

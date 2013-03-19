@@ -10,8 +10,8 @@ import railo.commons.lang.StringUtil;
 import railo.runtime.exp.PageRuntimeException;
 import railo.runtime.op.Caster;
 import railo.runtime.op.date.DateCaster;
-import railo.runtime.type.List;
 import railo.runtime.type.dt.DateTime;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Info to this Version
@@ -62,7 +62,7 @@ public final class Info {
     		state=toIntState((String) verIni.get("state"));
     		level=(String) verIni.get("level");
     		version=(String) verIni.get("number");
-    		String[] aVersion = List.toStringArray(List.listToArrayRemoveEmpty(version,'.'));
+    		String[] aVersion = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(version,'.'));
 
     	    major=Caster.toIntValue(aVersion[0]);
     	    minor=Caster.toIntValue(aVersion[1]);

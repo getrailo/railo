@@ -6,8 +6,8 @@ import java.util.Map;
 
 import railo.commons.lang.StringUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
 import railo.runtime.type.UDF;
+import railo.runtime.type.util.ListUtil;
 
 public class MimeType {
 	
@@ -163,9 +163,9 @@ public class MimeType {
 		strMimeType=strMimeType.trim();
 		if("*".equals(strMimeType)) return ALL;
 		
-		String[] arr = List.listToStringArray(strMimeType, ';');
+		String[] arr = ListUtil.listToStringArray(strMimeType, ';');
 		
-		String[] arrCT = List.listToStringArray(arr[0].trim(), '/');
+		String[] arrCT = ListUtil.listToStringArray(arr[0].trim(), '/');
 		
 		String type=arrCT[0].trim();
 		if("*".equals(type)) type=null;
@@ -183,7 +183,7 @@ public class MimeType {
 		String[] _arr;
 		for(int i=1;i<arr.length;i++){
 			entry=arr[i].trim();
-			_arr = List.listToStringArray(entry, '=');
+			_arr = ListUtil.listToStringArray(entry, '=');
 			if(arr.length<2) continue;
 			properties.put(_arr[0].trim().toLowerCase(), _arr[1].trim());
 			//if(_arr[0].equals("q")) quality=Caster.toDoubleValue(_arr[1],1);
@@ -195,7 +195,7 @@ public class MimeType {
 
 	public static MimeType[] getInstances(String strMimeTypes, char delimiter) {
 		if(StringUtil.isEmpty(strMimeTypes,true)) return new MimeType[0];
-		String[] arr = List.trimItems(List.listToStringArray(strMimeTypes, delimiter));
+		String[] arr = ListUtil.trimItems(ListUtil.listToStringArray(strMimeTypes, delimiter));
 		MimeType[] mtes=new MimeType[arr.length];
 		for(int i=0;i<arr.length;i++){
 			mtes[i]=getInstance(arr[i]);

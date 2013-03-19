@@ -17,10 +17,10 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.CastableStruct;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Sizeable;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructUtil;
 
 
@@ -85,7 +85,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 	}
 		
 	protected ExpressionException invalidKey(String key) {
-		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+List.arrayToList(keys(), ",")+")");
+		return new ExpressionException("variable ["+key+"] doesn't exist in "+StringUtil.ucFirst(name)+" Scope (keys:"+ListUtil.arrayToList(keys(), ",")+")");
 	}
 
     /**
@@ -102,7 +102,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
 	}
 	protected static URLItem[] setFrom___(String tp,char delimiter) {
         if(tp==null) return new URLItem[0];
-        Array arr=List.listToArrayRemoveEmpty(tp,delimiter);
+        Array arr=ListUtil.listToArrayRemoveEmpty(tp,delimiter);
         URLItem[] pairs=new URLItem[arr.size()];
         
         //Array item;
@@ -162,7 +162,7 @@ public abstract class ScopeSupport extends StructImpl implements Scope,Sizeable 
             }
             // MUST valueStruct
             if(name.indexOf('.')!=-1) {
-                StringList list=List.listToStringListRemoveEmpty(name,'.');
+                StringList list=ListUtil.listToStringListRemoveEmpty(name,'.');
                 Struct parent=this;
                 while(list.hasNextNext()) {
                     parent=_fill(parent,list.next(),new CastableStruct(),false,scriptProteced,sameAsArray);

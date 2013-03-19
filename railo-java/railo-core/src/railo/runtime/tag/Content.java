@@ -23,7 +23,7 @@ import railo.runtime.exp.TemplateException;
 import railo.runtime.ext.tag.BodyTagImpl;
 import railo.runtime.net.http.ReqRspUtil;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Defines the MIME type returned by the current page. Optionally, lets you specify the name of a file
@@ -283,7 +283,7 @@ public final class Content extends BodyTagImpl {
 		if(range.indexOf("bytes=")==0) range=range.substring(6);
 		String[] arr=null;
 		try {
-			arr = List.toStringArray(List.listToArrayRemoveEmpty(range, ','));
+			arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(range, ','));
 		} catch (PageException e) {
 			failRange(name,range);
 			return null;

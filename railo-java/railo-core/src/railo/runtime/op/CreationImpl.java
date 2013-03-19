@@ -45,7 +45,6 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Query;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -60,6 +59,7 @@ import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.scope.ClusterEntry;
 import railo.runtime.type.scope.ClusterEntryImpl;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.util.Creation;
 
 /**
@@ -88,9 +88,9 @@ public final class CreationImpl implements Creation,Serializable {
 
 	@Override
 	public Array createArray(String list, String delimiter,boolean removeEmptyItem, boolean trim) {
-		if(removeEmptyItem)return List.listToArrayRemoveEmpty(list, delimiter);
-		if(trim)return List.listToArrayTrim(list, delimiter);
-		return List.listToArray(list, delimiter);
+		if(removeEmptyItem)return ListUtil.listToArrayRemoveEmpty(list, delimiter);
+		if(trim)return ListUtil.listToArrayTrim(list, delimiter);
+		return ListUtil.listToArray(list, delimiter);
 	}
 	
     @Override

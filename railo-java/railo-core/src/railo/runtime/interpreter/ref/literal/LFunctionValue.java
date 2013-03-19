@@ -67,7 +67,7 @@ public final class LFunctionValue extends RefSupport implements Ref {
         
         // TODO no idea if this is ever used
         if(name instanceof Set){
-        	return new FunctionValueImpl(railo.runtime.type.List.arrayToList(toStringArray(pc,(Set)name),"."),refValue==null?objValue:refValue.getValue(pc));
+        	return new FunctionValueImpl(railo.runtime.type.util.ListUtil.arrayToList(toStringArray(pc,(Set)name),"."),refValue==null?objValue:refValue.getValue(pc));
         }
         throw new ExpressionException("invalid syntax in named argument");
         //return new FunctionValueImpl(key,value.getValue());

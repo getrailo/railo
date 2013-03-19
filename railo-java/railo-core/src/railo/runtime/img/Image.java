@@ -93,12 +93,12 @@ import railo.runtime.text.xml.XMLUtil;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
-import railo.runtime.type.List;
 import railo.runtime.type.ObjectWrap;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateTime;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.runtime.type.util.StructSupport;
 
 public class Image extends StructSupport implements Cloneable,Struct {
@@ -304,7 +304,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
 		if (cm instanceof ComponentColorModel)		sct.setEL("colormodel_type", "ComponentColorModel");
 		else if (cm instanceof IndexColorModel)		sct.setEL("colormodel_type", "IndexColorModel");
 		else if (cm instanceof PackedColorModel)	sct.setEL("colormodel_type", "PackedColorModel");
-		else sct.setEL("colormodel_type", List.last(cm.getClass().getName(), '.'));
+		else sct.setEL("colormodel_type", ListUtil.last(cm.getClass().getName(), '.'));
 
 		
 		getMetaData(sctInfo);
@@ -926,7 +926,7 @@ public class Image extends StructSupport implements Cloneable,Struct {
     	if (iter.hasNext()) {
     		writer = iter.next();
     	}
-    	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+List.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
+    	if (writer == null) throw new IOException("no writer for format ["+format+"] available, available writer formats are ["+ListUtil.arrayToList(ImageUtil.getWriterFormatNames(), ",")+"]");
     	
     	
 		ImageWriteParam iwp=null;

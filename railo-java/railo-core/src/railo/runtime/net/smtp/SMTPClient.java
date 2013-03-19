@@ -61,8 +61,8 @@ import railo.runtime.net.proxy.ProxyDataImpl;
 import railo.runtime.net.smtp.SMTPConnectionPool.SessionAndTransport;
 import railo.runtime.op.Caster;
 import railo.runtime.spooler.mail.MailSpoolerTask;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 
 import com.sun.mail.smtp.SMTPMessage;
 
@@ -200,7 +200,7 @@ public final class SMTPClient implements Serializable  {
 	}
 	
 	public void setHost(String host) throws PageException {
-		if(!StringUtil.isEmpty(host,true))this.host = List.toStringArray(List.listToArrayRemoveEmpty(host, ','));
+		if(!StringUtil.isEmpty(host,true))this.host = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(host, ','));
 	} 
 
 	/**

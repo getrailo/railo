@@ -33,9 +33,9 @@ import railo.runtime.listener.ApplicationContext;
 import railo.runtime.net.http.ServletInputStreamDummy;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 
 /**
@@ -117,7 +117,7 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 
     void setFieldNames() {
     	if(size()>0) {
-    		setEL(KeyConstants._fieldnames,List.arrayToList(keys(), ","));
+    		setEL(KeyConstants._fieldnames,ListUtil.arrayToList(keys(), ","));
         }
     }
 
@@ -311,10 +311,10 @@ public final class FormImpl extends ScopeSupport implements Form,ScriptProtected
 		
 		// form . x
 		try {
-			Array array = List.listToArray(lcKey, '.');
+			Array array = ListUtil.listToArray(lcKey, '.');
 			if(array.size()>1 && array.getE(1).toString().trim().equals("form")) {
 				array.removeE(1);
-				lcKey=List.arrayToList(array, ".").trim();
+				lcKey=ListUtil.arrayToList(array, ".").trim();
 				item = (Item) fileItems.get(lcKey);
 				if(item!=null)return item;
 			}

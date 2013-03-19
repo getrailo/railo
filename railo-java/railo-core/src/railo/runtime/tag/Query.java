@@ -34,7 +34,6 @@ import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.QueryColumn;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
@@ -44,6 +43,7 @@ import railo.runtime.type.dt.DateTimeImpl;
 import railo.runtime.type.dt.TimeSpan;
 import railo.runtime.type.query.SimpleQuery;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 
 
@@ -496,7 +496,7 @@ public final class Query extends BodyTagTryCatchFinallyImpl {
 			
 			Struct sct=new StructImpl();
 			sct.setEL(KeyConstants._cached, Caster.toBoolean(query.isCached()));
-			if(!query.isEmpty())sct.setEL(KeyConstants._COLUMNLIST, List.arrayToList(query.getColumnNamesAsString(),","));
+			if(!query.isEmpty())sct.setEL(KeyConstants._COLUMNLIST, ListUtil.arrayToList(query.getColumnNamesAsString(),","));
 			int rc=query.getRecordcount();
 			if(rc==0)rc=query.getUpdateCount();
 			sct.setEL(KeyConstants._RECORDCOUNT, Caster.toDouble(rc));

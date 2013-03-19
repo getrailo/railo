@@ -133,7 +133,7 @@ public final class ArgumentImpl extends ScopeSupport implements Argument {
 		if(o!=Null.NULL)return o;
 		
 		throw new ExpressionException("key ["+key.getString()+"] doesn't exist in argument scope. existing keys are ["+
-				railo.runtime.type.List.arrayToList(CollectionUtil.keys(this),", ")
+				railo.runtime.type.util.ListUtil.arrayToList(CollectionUtil.keys(this),", ")
 				+"]");
 	}
 	

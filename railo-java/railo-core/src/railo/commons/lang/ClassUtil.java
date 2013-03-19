@@ -20,7 +20,7 @@ import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.Array;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 
 public final class ClassUtil {
@@ -314,7 +314,7 @@ public final class ClassUtil {
 	// pathes from system properties
 		String strPathes=System.getProperty("java.class.path");
 		if(strPathes!=null) {
-			Array arr=List.listToArrayRemoveEmpty(strPathes,pathSeperator);
+			Array arr=ListUtil.listToArrayRemoveEmpty(strPathes,pathSeperator);
 			int len=arr.size();
 			for(int i=1;i<=len;i++) {
 				File file=FileUtil.toFile(Caster.toString(arr.get(i,""),"").trim());

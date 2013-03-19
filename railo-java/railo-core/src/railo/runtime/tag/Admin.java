@@ -1105,7 +1105,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
         Resource srcDir = ResourceUtil.toResourceExisting(pageContext, "zip://"+src.getAbsolutePath());
         String name=ResourceUtil.getName(src.getName());
         if(!PluginFilter.doAccept(srcDir))
-        	throw new ApplicationException("plugin ["+strSrc+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.List.arrayToList(srcDir.list(), ", ")+"]");
+        	throw new ApplicationException("plugin ["+strSrc+"] is invalid, missing one of the following files [Action.cfc,language.xml] in root, existing files are ["+railo.runtime.type.util.ListUtil.arrayToList(srcDir.list(), ", ")+"]");
         
         Resource dir = getPluginDirectory();
         Resource trgDir = dir.getRealResource(name);
@@ -2931,7 +2931,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	
     	// cfclocation
     	String strCfclocation=getString("admin",action,"cfclocation");
-    	Array arrCfclocation = railo.runtime.type.List.listToArray(strCfclocation, ",\n");
+    	Array arrCfclocation = railo.runtime.type.util.ListUtil.listToArray(strCfclocation, ",\n");
     	Iterator it = arrCfclocation.valueIterator();
     	String path;
     	while(it.hasNext()){
@@ -3020,7 +3020,7 @@ public final class Admin extends TagImpl implements DynamicAttributes {
     	Query qry=new QueryImpl(
 				new String[]{"name","level","path","virtualpath","class","maxFile","maxFileSize"},
 				new String[]{"varchar","varchar","varchar","varchar","varchar","varchar","varchar"},
-				0,railo.runtime.type.List.last("logs", '.'));
+				0,railo.runtime.type.util.ListUtil.last("logs", '.'));
         int row=0;
         
         doGetLogSettings(qry,"application",config.getApplicationLogger(),++row);

@@ -5,7 +5,7 @@ package railo.runtime.functions.list;
 
 import railo.runtime.PageContext;
 import railo.runtime.ext.function.Function;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public final class ListIndexExists implements Function {
    
@@ -18,7 +18,7 @@ public final class ListIndexExists implements Function {
         return call(pc,list,index,delimiter,false);
     }
     public static boolean call(PageContext pc , String list, double index, String delimiter,boolean includeEmptyFields) {
-        if(includeEmptyFields)return List.listToArray(list,delimiter).get((int)index,null)!=null;
-    	return List.listToArrayRemoveEmpty(list,delimiter).get((int)index,null)!=null;
+        if(includeEmptyFields)return ListUtil.listToArray(list,delimiter).get((int)index,null)!=null;
+    	return ListUtil.listToArrayRemoveEmpty(list,delimiter).get((int)index,null)!=null;
     }
 }

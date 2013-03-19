@@ -13,11 +13,11 @@ import railo.runtime.type.ArrayImpl;
 import railo.runtime.type.Collection;
 import railo.runtime.type.Collection.Key;
 import railo.runtime.type.KeyImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.QueryImpl;
 import railo.runtime.type.Struct;
 import railo.runtime.type.util.CollectionUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
  * Decodes Binary Data that are encoded as String
@@ -177,7 +177,7 @@ public final class DeserializeJSON implements Function {
 	private static Key[] toColumnlist(Object obj) throws PageException {
 		String list = Caster.toString(obj,null);
 		if(StringUtil.isEmpty(list)) return null;
-		return toColumns(List.trimItems(List.listToArrayRemoveEmpty(list, ',')));
+		return toColumns(ListUtil.trimItems(ListUtil.listToArrayRemoveEmpty(list, ',')));
 	}
 	
 	

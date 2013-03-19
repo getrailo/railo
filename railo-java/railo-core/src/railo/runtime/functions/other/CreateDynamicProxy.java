@@ -10,7 +10,7 @@ import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.util.JavaProxyFactory;
 
 public class CreateDynamicProxy implements Function {
@@ -45,7 +45,7 @@ public class CreateDynamicProxy implements Function {
 		}
 		else {
 			String list = Caster.toString(oInterfaces);
-			arr=List.listToStringArray(list, ',');
+			arr=ListUtil.listToStringArray(list, ',');
 		}
 		//strInterfaces=List.trimItems(strInterfaces);
 		

@@ -29,7 +29,6 @@ import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
 import railo.runtime.type.Array;
 import railo.runtime.type.ArrayImpl;
-import railo.runtime.type.List;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.dt.DateImpl;
@@ -38,6 +37,7 @@ import railo.runtime.type.scope.Form;
 import railo.runtime.type.scope.FormItem;
 import railo.runtime.type.util.ArrayUtil;
 import railo.runtime.type.util.KeyConstants;
+import railo.runtime.type.util.ListUtil;
 
 /**
 * Handles all interactions with files. The attributes you use with cffile depend on the value of the action attribute. 
@@ -950,13 +950,13 @@ public final class FileTag extends BodyTagImpl {
 		
 		MimeType mt = MimeType.getInstance(contentType),sub;
 		
-		Array whishedTypes=List.listToArrayRemoveEmpty(accept,',');
+		Array whishedTypes=ListUtil.listToArrayRemoveEmpty(accept,',');
 		int len=whishedTypes.size();
 		for(int i=1;i<=len;i++) {
 			String whishedType=Caster.toString(whishedTypes.getE(i)).trim().toLowerCase();
 			if(whishedType.equals("*")) return;
 			// check mimetype
-			if(List.len(whishedType, "/", true)==2){
+			if(ListUtil.len(whishedType, "/", true)==2){
 				sub=MimeType.getInstance(whishedType);
 				if(mt.match(sub)) return;
 			}
@@ -1026,7 +1026,7 @@ public final class FileTag extends BodyTagImpl {
 		String name=file.getName();
 		String[] arr;
 		try {
-			arr = List.toStringArray(List.listToArrayRemoveEmpty(name, '.'));
+			arr = ListUtil.toStringArray(ListUtil.listToArrayRemoveEmpty(name, '.'));
 		} catch (PageException e) {
 			arr=null;
 		}

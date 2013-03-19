@@ -7,7 +7,7 @@ import java.util.TimeZone;
 import railo.commons.lang.StringUtil;
 import railo.runtime.exp.ExpressionException;
 import railo.runtime.op.Caster;
-import railo.runtime.type.List;
+import railo.runtime.type.util.ListUtil;
 
 public class TimeZoneUtil {
 
@@ -118,7 +118,7 @@ public class TimeZoneUtil {
 	}
 
 	private static String getSupportedTimeZonesAsString() {
-		return List.arrayToList(TimeZone.getAvailableIDs(),", ");
+		return ListUtil.arrayToList(TimeZone.getAvailableIDs(),", ");
 	}
 	
 	/**

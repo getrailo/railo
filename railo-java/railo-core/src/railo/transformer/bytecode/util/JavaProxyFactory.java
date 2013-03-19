@@ -436,7 +436,7 @@ public class JavaProxyFactory {
 			}
 			Arrays.sort(arr);
 			
-			sb.append(railo.runtime.type.List.arrayToList(arr, ";"));
+			sb.append(railo.runtime.type.util.ListUtil.arrayToList(arr, ";"));
 		}
 		
 		String key = KeyGenerator.createVariable(sb.toString());
