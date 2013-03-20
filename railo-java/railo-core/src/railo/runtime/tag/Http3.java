@@ -668,9 +668,11 @@ public final class Http3 extends BodyTagImpl implements Http {
 	        //boolean responseProvideCharset=false;
 	        if(!StringUtil.isEmpty(mimetype)){
 		        if(isText) {
-		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype);
-		        	if(types[0]!=null)cfhttp.set(MIME_TYPE,types[0]);
-		        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
+		        	String[] types=HTTPUtil.splitMimeTypeAndCharset(mimetype,null);
+		        	if(types!=null) {
+			        	if(types[0]!=null)cfhttp.set(MIME_TYPE,types[0]);
+			        	if(types[1]!=null)cfhttp.set(CHARSET,types[1]);
+		        	}
 	                
 		        }
 		        else cfhttp.set(MIME_TYPE,mimetype);
@@ -1359,7 +1361,7 @@ public final class Http3 extends BodyTagImpl implements Http {
 		try {
 			// text
 			if(HTTPUtil.isTextMimeType(contentType)) {
-				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType);
+				String[] tmp = HTTPUtil.splitMimeTypeAndCharset(contentType,null);
 				//String mimetype=tmp[0];
 				String charset=tmp[1];
 				

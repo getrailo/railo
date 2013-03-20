@@ -719,8 +719,8 @@ public final class HTTPUtil {
 	}
 	
 
-	public static ContentType toContentType(String str) {
-		if( StringUtil.isEmpty(str)) return null;
+	public static ContentType toContentType(String str, ContentType defaultValue) {
+		if( StringUtil.isEmpty(str,true)) return defaultValue;
 		String[] types=str.split(";");
 		ContentType ct=null;
 		if(types.length>0){
@@ -736,8 +736,8 @@ public final class HTTPUtil {
     	return ct;
 	}
 	
-	public static String[] splitMimeTypeAndCharset(String mimetype) {
-		if( StringUtil.isEmpty(mimetype)) return null;
+	public static String[] splitMimeTypeAndCharset(String mimetype, String[] defaultValue) {
+		if( StringUtil.isEmpty(mimetype,true)) return defaultValue;
 		String[] types=mimetype.split(";");
 		String[] rtn=new String[2];
     	
