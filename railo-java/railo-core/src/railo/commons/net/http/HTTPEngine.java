@@ -77,8 +77,8 @@ public class HTTPEngine {
 	}
     
 	public static HTTPResponse put(URL url, String username, String password, int timeout, int maxRedirect,
-        String charset, String useragent,ProxyData proxy, Header[] headers, Object body) throws IOException {
-		if(use4) return HTTPEngine4Impl.put(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers,body);     
+		String mimetype,String charset, String useragent,ProxyData proxy, Header[] headers, Object body) throws IOException {
+		if(use4) return HTTPEngine4Impl.put(url, username, password, timeout, maxRedirect, mimetype,charset, useragent, proxy, headers,body);     
 		return HTTPEngine3Impl.put(url, username, password, timeout, maxRedirect, charset, useragent, proxy, headers,body);     
 	}
     
