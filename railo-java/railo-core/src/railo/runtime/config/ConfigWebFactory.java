@@ -45,10 +45,10 @@ import railo.commons.io.res.Resource;
 import railo.commons.io.res.ResourcesImpl;
 import railo.commons.io.res.type.s3.S3ResourceProvider;
 import railo.commons.io.res.util.ResourceClassLoader;
-import railo.commons.io.res.util.ResourceClassLoaderFactory;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ByteSizeParser;
 import railo.commons.lang.ClassException;
+import railo.commons.lang.ClassLoaderHelper;
 import railo.commons.lang.ClassUtil;
 import railo.commons.lang.Md5;
 import railo.commons.lang.StringUtil;
@@ -158,9 +158,9 @@ public final class ConfigWebFactory {
      * @throws FunctionLibException
      */
 
-    public static ConfigWebImpl newInstance(CFMLFactoryImpl factory,ConfigServerImpl configServer, Resource configDir, ServletConfig servletConfig) throws SAXException, 
+    public static ConfigWebImpl newInstance(CFMLFactoryImpl factory,ConfigServerImpl configServer, Resource configDir, boolean isConfigDirACustomSetting, ServletConfig servletConfig) throws SAXException, 
     ClassException, PageException, IOException, TagLibException, FunctionLibException {
-    	
+    	// DO NOT REMOVE!!!!
     	try{
     	new LabelBlockImpl("aa");
     	}
@@ -180,7 +180,7 @@ public final class ConfigWebFactory {
     			"===================================================================\n"+
     			"WEB CONTEXT ("+label+")\n"+
     			"-------------------------------------------------------------------\n"+
-    			"- config:"+configDir+"\n"+
+    			"- config:"+configDir+(isConfigDirACustomSetting?" (custom setting)":"")+"\n"+
     			"- webroot:"+ReqRspUtil.getRootPath(servletConfig.getServletContext())+"\n"+
     			"- hash:"+hash+"\n"+
     			"- label:"+label+"\n"+
@@ -614,53 +614,42 @@ public final class ConfigWebFactory {
     }
     
     private static void loadLib(ConfigServerImpl configServer, ConfigImpl config) throws IOException {
+    	// get lib and classes resources
     	Resource lib = config.getConfigDir().getRealResource("lib");
     	lib.mkdir();
     	Resource classes = config.getConfigDir().getRealResource("classes");
     	classes.mkdir();
     	Resource[] libs = lib.listResources();
-
-    	ResourceClassLoaderFactory classLoaderFactory;
-		if(configServer==null){
-    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
-    	}
-    	else {
-    		classLoaderFactory=new ResourceClassLoaderFactory(configServer.getClassLoader());
-    	}
-    	config.setClassLoaderFactory(classLoaderFactory);
     	
-    	
-    	//ClassLoader pcl = null;
+    	// merge resources
     	if(libs.length>0 || !ResourceUtil.isEmptyDirectory(classes)){
-    		Resource[] trgs =new Resource[libs.length+1];
+    		Resource[] tmp =new Resource[libs.length+1];
     		for(int i=0;i<libs.length;i++){
-    			trgs[i]=libs[i];
+    			tmp[i]=libs[i];
     		}
-    		trgs[libs.length]=classes;
-    		
-    		ResourceClassLoader cl = (ResourceClassLoader) config.getClassLoader();
-    		
-    		// are files removed
-    		if(cl==null){
-    			classLoaderFactory.addResources(trgs);
-    		}
-    		else {
-    			Resource[] srcs = cl.getResources();
-    			if(equal(srcs,trgs))return;	
-
-    			Resource[] removed = getNewResources(trgs,srcs);
-	    		if(removed.length>0){
-	    			classLoaderFactory.addResources(trgs);
-	    		}
-	    		else{
-	    			cl.addResources(getNewResources(srcs,trgs));
-	    		}
-    		}
-    		
+    		tmp[libs.length]=classes;
+    		libs=tmp;
     	}
     	else{
-    		classLoaderFactory.addResources(new Resource[0]);
+    		libs=new Resource[0];
     	}
+    	
+    	// get resources from server config and merge
+    	if(configServer!=null) {
+    		ResourceClassLoader rcl = configServer.getResourceClassLoader();
+    		libs=merge(libs,rcl.getResources());
+    	}
+    	
+    	
+    	// get parent classloader
+    	//ClassLoader parent;
+		//if(configServer==null) parent=new ClassLoaderHelper().getClass().getClassLoader();// this classloader holds all loader and core classes
+    	//else parent = configServer.getResourceClassLoader(); // Resource classloader from server config
+    	
+		// set classloader
+    	ClassLoader parent=new ClassLoaderHelper().getClass().getClassLoader();// this classloader holds all loader and core classes
+		config.setResourceClassLoader(new ResourceClassLoader(libs,parent));
+		
     }
     
 
@@ -690,6 +679,23 @@ public final class ConfigWebFactory {
 		}
 		return list.toArray(new Resource[list.size()]);
 	}
+    
+    private static Resource[] merge(Resource[] srcs, Resource[] trgs) {
+    	java.util.List<Resource> list=new ArrayList<Resource>();
+
+    	if(srcs!=null){
+    		for(int i=0;i<srcs.length;i++){
+    			list.add(srcs[i]);
+    		}
+    	}
+    	if(trgs!=null){
+    		for(int i=0;i<trgs.length;i++){
+    			if(!list.contains(trgs[i]))list.add(trgs[i]);
+    		}
+    	}
+    	return list.toArray(new Resource[list.size()]);
+	}
+    
 
 
 	/**
@@ -2926,7 +2932,6 @@ public final class ConfigWebFactory {
     
     private static void loadSystem(ConfigServerImpl configServer, ConfigImpl config, Document doc) {
         boolean hasAccess=ConfigWebUtil.hasAccess(config,SecurityManager.TYPE_SETTING);
-        
         Element sys=hasAccess?getChildByName(doc.getDocumentElement(),"system"):null;
         
         boolean hasCS=configServer!=null;
@@ -2966,7 +2971,7 @@ public final class ConfigWebFactory {
         		try {
         			strRes=ConfigWebUtil.translateOldPath(strRes);
         			Resource res=ConfigWebUtil.getFile(config, config.getConfigDir(),strRes, ResourceUtil.TYPE_FILE);
-        	        if(res!=null)return new PrintWriter(res.getOutputStream(),true);
+        			if(res!=null)return new PrintWriter(res.getOutputStream(),true);
 				} 
         		catch (Throwable t) {
 					t.printStackTrace();

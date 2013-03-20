@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import railo.commons.io.res.Resource;
+import railo.commons.io.res.util.ResourceClassLoader;
 import railo.runtime.MappingImpl;
 import railo.runtime.PageSourceImpl;
 import railo.runtime.type.util.StructUtil;
@@ -16,12 +17,12 @@ import railo.runtime.type.util.StructUtil;
  */
 public final class PCLCollection {
     
-    private Resource directory;
-    private ClassLoader pcl;
+    private final Resource directory;
+    private final ClassLoader resourceCL;
 
-	private int maxBlockSize;
-	private MappingImpl mapping;
-	private LinkedList<PCLBlock> cfcs=new LinkedList<PCLBlock>();
+	private final int maxBlockSize;
+	private final MappingImpl mapping;
+	private final LinkedList<PCLBlock> cfcs=new LinkedList<PCLBlock>();
 	private LinkedList<PCLBlock> cfms=new LinkedList<PCLBlock>();
 	private PCLBlock cfc;
 	private PCLBlock cfm;
@@ -33,7 +34,7 @@ public final class PCLCollection {
      * @param parent
      * @throws IOException
      */
-    public PCLCollection(MappingImpl mapping,Resource directory, ClassLoader parent, int maxBlockSize) throws IOException {
+    public PCLCollection(MappingImpl mapping,Resource directory, ClassLoader resourceCL, int maxBlockSize) throws IOException {
     	// check directory
     	if(!directory.exists())
             directory.mkdirs();
@@ -45,10 +46,11 @@ public final class PCLCollection {
         
     	this.directory=directory;
     	this.mapping=mapping;
-        this.pcl=parent;
-        cfc=new PCLBlock(directory, parent);
+        //this.pcl=systemCL;
+        this.resourceCL=resourceCL;
+        cfc=new PCLBlock(directory, resourceCL);
         cfcs.add(cfc);
-        cfm=new PCLBlock(directory, parent);
+        cfm=new PCLBlock(directory, resourceCL);
         cfms.add(cfm);
         this.maxBlockSize=100;//maxBlockSize;
     }
@@ -58,11 +60,11 @@ public final class PCLCollection {
     	if((isCFC?cfc.count():cfm.count())>=maxBlockSize) {
     		synchronized (isCFC?cfcs:cfms) {
     			if(isCFC) {
-    				cfc=new PCLBlock(directory, pcl);
+    				cfc=new PCLBlock(directory, resourceCL);
     				cfcs.add(cfc);
     			}
     			else {
-    				cfm=new PCLBlock(directory, pcl);
+    				cfm=new PCLBlock(directory, resourceCL);
     				cfms.add(cfm);
     			}
 			}
@@ -76,30 +78,17 @@ public final class PCLCollection {
     	// if class is already loaded flush the classloader and do new classloader
     	PCLBlock cl = index.get(name);
     	if(cl!=null) {
-    		// if can upate class
-    		/*if(InstrumentationUtil.isSupported()){
-    			try{
-    				Class<?> old = cl.loadClass(name);
-            		InstrumentationUtil.redefineClass(old, barr);
-            		return old;
-    			}
-    			catch(Throwable t){
-    				t.printStackTrace();
-    			}
-    		}*/
-    		
     		// flash classloader when update is not possible
     		mapping.clearPages(cl);
     		StructUtil.removeValue(index,cl);
     		if(isCFC){
             	cfcs.remove(cl);
-    			if(cl==cfc) cfc=new PCLBlock(directory, pcl);
+    			if(cl==cfc) cfc=new PCLBlock(directory, resourceCL);
     		}
     		else {
             	cfms.remove(cl);
-    			if(cl==cfm) cfm=new PCLBlock(directory, pcl);
+    			if(cl==cfm) cfm=new PCLBlock(directory, resourceCL);
     		}
-    		
     	}
     	
     	// load class from byte array

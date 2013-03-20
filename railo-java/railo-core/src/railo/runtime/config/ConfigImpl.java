@@ -30,7 +30,7 @@ import railo.commons.io.res.filter.ExtensionResourceFilter;
 import railo.commons.io.res.type.compress.Compress;
 import railo.commons.io.res.type.compress.CompressResource;
 import railo.commons.io.res.type.compress.CompressResourceProvider;
-import railo.commons.io.res.util.ResourceClassLoaderFactory;
+import railo.commons.io.res.util.ResourceClassLoader;
 import railo.commons.io.res.util.ResourceUtil;
 import railo.commons.lang.ClassException;
 import railo.commons.lang.ClassUtil;
@@ -366,7 +366,8 @@ public abstract class ConfigImpl implements Config {
 	private Map<String, ORMEngine> ormengines=new HashMap<String, ORMEngine>();
 	private Class<ORMEngine> ormEngineClass;
 	private ORMConfiguration ormConfig;
-	private ResourceClassLoaderFactory classLoaderFactory;
+	//private ResourceClassLoaderFactory classLoaderFactory;
+	private ResourceClassLoader resourceCL;
 	
 	private ImportDefintion componentDefaultImport=new ImportDefintionImpl("org.railo.cfml","*");
 	private boolean componentLocalSearch=true;
@@ -638,18 +639,18 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getClassLoader()
      */
     public ClassLoader getClassLoader() {
-    	if(classLoaderFactory==null)
-    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
-    	return classLoaderFactory.getResourceClassLoader();   
+    	return getResourceClassLoader();   
+    }
+    public ResourceClassLoader getResourceClassLoader() {
+    	if(resourceCL==null) throw new RuntimeException("no RCL defined yet!");
+    	return resourceCL;   
     }
 
     /**
      * @see railo.runtime.config.Config#getClassLoader(railo.commons.io.res.Resource[])
      */
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
-    	if(classLoaderFactory==null)
-    		classLoaderFactory=ResourceClassLoaderFactory.defaultClassLoader();
-    	return classLoaderFactory.getResourceClassLoader(reses);   
+    	return getResourceClassLoader().getCustomResourceClassLoader(reses);   
     }
     
 	/* *
@@ -659,14 +660,18 @@ public abstract class ConfigImpl implements Config {
 		return classLoaderFactory;
 	} */
 
-	/**
+	/* *
 	 * @param classLoaderFactory the classLoaderFactory to set
-	 */
-	protected void setClassLoaderFactory(ResourceClassLoaderFactory classLoaderFactory) {
+	/
+    protected void setClassLoaderFactory(ResourceClassLoaderFactory classLoaderFactory) {
 		if(this.classLoaderFactory!=null){
 			classLoaderFactory.reset();
 		}
 		this.classLoaderFactory = classLoaderFactory;
+	} */
+    
+    protected void setResourceClassLoader(ResourceClassLoader resourceCL) {
+    	this.resourceCL=resourceCL;
 	}
 
     /**
