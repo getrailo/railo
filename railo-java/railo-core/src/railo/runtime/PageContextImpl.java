@@ -1896,7 +1896,7 @@ public final class PageContextImpl extends PageContext implements Sizeable {
     	
     	// charset
     	try{
-    	String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType())[1];
+    		String charset=HTTPUtil.splitMimeTypeAndCharset(req.getContentType(),new String[]{"",""})[1];
     	if(StringUtil.isEmpty(charset))charset=ThreadLocalPageContext.getConfig().getWebCharset();
 	    	java.net.URL reqURL = new java.net.URL(req.getRequestURL().toString());
 	    	String path=ReqRspUtil.decode(reqURL.getPath(),charset,true);

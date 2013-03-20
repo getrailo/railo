@@ -162,7 +162,6 @@ public final class CFMLEngineImpl implements CFMLEngine {
     	if(configServer==null) {
             try {
             	ResourceProvider frp = ResourcesImpl.getFileResourceProvider();
-            	
             	Resource context = frp.getResource(factory.getResourceRoot().getAbsolutePath()).getRealResource("context");
             	//CFMLEngineFactory.registerInstance(this);// patch, not really good but it works
                 configServer=ConfigServerFactory.newInstance(
@@ -180,11 +179,12 @@ public final class CFMLEngineImpl implements CFMLEngine {
     private  CFMLFactoryImpl loadJSPFactory(ConfigServerImpl configServer, ServletConfig sg, int countExistingContextes) throws ServletException {
     	try {
             // Load Config
-            Resource configDir=getConfigDirectory(sg,configServer,countExistingContextes);
+    		RefBoolean isCustomSetting=new RefBooleanImpl();
+            Resource configDir=getConfigDirectory(sg,configServer,countExistingContextes,isCustomSetting);
             
             QueryCacheSupport queryCache=QueryCacheSupport.getInstance();
             CFMLFactoryImpl factory=new CFMLFactoryImpl(this,queryCache);
-            ConfigWebImpl config=ConfigWebFactory.newInstance(factory,configServer,configDir,sg);
+            ConfigWebImpl config=ConfigWebFactory.newInstance(factory,configServer,configDir,isCustomSetting.toBooleanValue(),sg);
             factory.setConfig(config);
             return factory;
         }
@@ -203,14 +203,22 @@ public final class CFMLEngineImpl implements CFMLEngine {
      * @param countExistingContextes 
      * @return return path to directory
      */
-    private Resource getConfigDirectory(ServletConfig sg, ConfigServerImpl configServer, int countExistingContextes) throws PageServletException {
-        ServletContext sc=sg.getServletContext();
+    private Resource getConfigDirectory(ServletConfig sg, ConfigServerImpl configServer, int countExistingContextes, RefBoolean isCustomSetting) throws PageServletException {
+    	isCustomSetting.setValue(true);
+    	ServletContext sc=sg.getServletContext();
         String strConfig=sg.getInitParameter("configuration");
         if(strConfig==null)strConfig=sg.getInitParameter("railo-web-directory");
-        if(strConfig==null)strConfig="{web-root-directory}/WEB-INF/railo/";
-        else if("/WEB-INF/railo/".equals(strConfig))strConfig="{web-root-directory}/WEB-INF/railo/";
+        if(strConfig==null) {
+        	isCustomSetting.setValue(false);
+        	strConfig="{web-root-directory}/WEB-INF/railo/";
+        }
+        // only for backward compatibility
+        else if(strConfig.startsWith("/WEB-INF/railo/"))strConfig="{web-root-directory}"+strConfig;
+        
         
         strConfig=Util.removeQuotes(strConfig,true);
+        
+        
         
         // static path is not allowed
         if(countExistingContextes>1 && strConfig!=null && strConfig.indexOf('{')==-1){

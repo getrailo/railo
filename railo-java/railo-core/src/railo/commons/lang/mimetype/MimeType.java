@@ -160,8 +160,9 @@ public class MimeType {
 	 * @return
 	 */
 	public static MimeType getInstance(String strMimeType){
+		if(strMimeType==null) return ALL;
 		strMimeType=strMimeType.trim();
-		if("*".equals(strMimeType)) return ALL;
+		if("*".equals(strMimeType) || strMimeType.length()==0) return ALL;
 		
 		String[] arr = ListUtil.listToStringArray(strMimeType, ';');
 		

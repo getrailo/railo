@@ -145,7 +145,7 @@ public final class MappingImpl implements Mapping {
     public synchronized PCLCollection touchPCLCollection() throws IOException {
     	
     	if(pclCollection==null){
-    		pclCollection=new PCLCollection(this,getClassRootDirectory(),getClass().getClassLoader(),classLoaderMaxElements);
+    		pclCollection=new PCLCollection(this,getClassRootDirectory(),getConfig().getClassLoader(),classLoaderMaxElements);
 		}
     	getConfig().checkPermGenSpace(true);
     	return pclCollection;
