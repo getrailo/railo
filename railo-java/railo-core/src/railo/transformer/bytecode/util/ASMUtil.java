@@ -25,6 +25,7 @@ import railo.runtime.net.rpc.AxisCaster;
 import railo.runtime.op.Caster;
 import railo.runtime.type.dt.TimeSpanImpl;
 import railo.runtime.type.util.ArrayUtil;
+import railo.runtime.type.util.ListUtil;
 import railo.transformer.bytecode.Body;
 import railo.transformer.bytecode.BytecodeContext;
 import railo.transformer.bytecode.BytecodeException;
@@ -535,7 +536,7 @@ public final class ASMUtil {
     public static byte[] createPojo(String className, ASMProperty[] properties,Class parent,Class[] interfaces, String srcName) throws PageException {
     	className=className.replace('.', '/');
     	className=className.replace('\\', '/');
-    	className=railo.runtime.type.util.ListUtil.trim(className, "/");
+    	className=ListUtil.trim(className, "/");
     	String[] inter=null;
     	if(interfaces!=null){
     		inter=new String[interfaces.length];
