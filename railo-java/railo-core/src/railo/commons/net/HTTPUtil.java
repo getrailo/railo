@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import railo.commons.io.IOUtil;
 import railo.commons.lang.StringList;
 import railo.commons.lang.StringUtil;
+import railo.commons.lang.mimetype.ContentType;
 import railo.commons.lang.mimetype.MimeType;
 import railo.commons.net.http.HTTPEngine;
 import railo.commons.net.http.HTTPResponse;
@@ -717,9 +718,26 @@ public final class HTTPUtil {
 		return str;
 	}
 	
+
+	public static ContentType toContentType(String str, ContentType defaultValue) {
+		if( StringUtil.isEmpty(str,true)) return defaultValue;
+		String[] types=str.split(";");
+		ContentType ct=null;
+		if(types.length>0){
+    		ct=new ContentType(types[0]);
+    		if(types.length>1) {
+	            String tmp=types[types.length-1].trim();
+	            int index=tmp.indexOf("charset=");
+	            if(index!=-1) {
+	            	ct.setCharset(StringUtil.removeQuotes(tmp.substring(index+8),true));
+	            }
+	        }
+    	}
+    	return ct;
+	}
 	
-	
-	public static String[] splitMimeTypeAndCharset(String mimetype) {
+	public static String[] splitMimeTypeAndCharset(String mimetype, String[] defaultValue) {
+		if( StringUtil.isEmpty(mimetype,true)) return defaultValue;
 		String[] types=mimetype.split(";");
 		String[] rtn=new String[2];
     	

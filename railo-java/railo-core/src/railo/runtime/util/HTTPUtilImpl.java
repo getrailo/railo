@@ -80,7 +80,15 @@ public class HTTPUtilImpl implements HTTPUtil {
 			int timeout, String charset, String useragent, String proxyserver,
 			int proxyport, String proxyuser, String proxypassword,
 			Header[] headers, Object body) throws IOException {
-		return HTTPEngine.put(url, username, password, timeout,HTTPEngine.MAX_REDIRECT, charset, useragent, ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword), headers, body);
+		return put(url, username, proxypassword, timeout, null, charset, useragent, proxyserver, proxyport, proxyuser, proxypassword, headers, body);
+	}
+	
+	// FUTURE add to interface
+	public HTTPResponse put(URL url, String username, String password,
+			int timeout, String mimetype, String charset, String useragent, String proxyserver,
+			int proxyport, String proxyuser, String proxypassword,
+			Header[] headers, Object body) throws IOException {
+		return HTTPEngine.put(url, username, password, timeout,HTTPEngine.MAX_REDIRECT, mimetype, charset, useragent, ProxyDataImpl.getInstance(proxyserver, proxyport, proxyuser, proxypassword), headers, body);
 	}
 
 	/**

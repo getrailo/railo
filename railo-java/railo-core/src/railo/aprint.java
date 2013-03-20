@@ -1,6 +1,8 @@
 package railo;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +23,11 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import railo.commons.io.IOUtil;
+import railo.commons.io.SystemUtil;
+import railo.commons.io.res.Resource;
+import railo.commons.io.res.ResourcesImpl;
+import railo.commons.io.res.type.file.FileResource;
+import railo.commons.io.res.util.ResourceUtil;
 import railo.runtime.exp.PageException;
 import railo.runtime.op.Caster;
 import railo.runtime.type.QueryImpl;
@@ -161,8 +168,36 @@ public class aprint {
 	public static void err(Object o) {
 		_(System.err, o);
 	}
-	
 
+	public static void writeTemp(String name,Object o, boolean addStackTrace) {
+		//write(SystemUtil.getTempDirectory().getRealResource(name+".log"), o);
+		write(SystemUtil.getHomeDirectory().getRealResource(name+".log"), o,addStackTrace);
+	}
+	public static void writeHome(String name,Object o, boolean addStackTrace) {
+		write(SystemUtil.getHomeDirectory().getRealResource(name+".log"), o,addStackTrace);
+	}
+	public static void writeCustom(String path,Object o, boolean addStackTrace) {
+		write(ResourcesImpl.getFileResourceProvider().getResource(path), o,addStackTrace);
+	}
+
+	public static void write(Resource res,Object o, boolean addStackTrace) {
+		OutputStream os=null;
+		PrintStream ps=null;
+		try{
+			ResourceUtil.touch(res);
+			os = res.getOutputStream(true);
+			ps = new PrintStream(os);
+			_(ps, o);
+			if(addStackTrace) new Exception("Stack trace").printStackTrace(ps);
+		}
+		catch(IOException ioe){
+			ioe.printStackTrace();
+		}
+		finally{
+			IOUtil.closeEL(ps);
+			IOUtil.closeEL(os);
+		}
+	}
 	public static void o(Object o) {
 		_(System.out, o);
 	}
