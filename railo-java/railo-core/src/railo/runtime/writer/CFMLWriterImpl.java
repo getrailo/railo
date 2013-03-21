@@ -107,21 +107,21 @@ public class CFMLWriterImpl extends CFMLWriter {
             if(this.headData==null)this.headData=headData;
             else this.headData+=headData;
         }
-        else throw new IOException("page already flushed");
+        else throw new IOException("Page already flushed");
     }
     
     public void writeHTMLHead(String headData) throws IOException {
         if(!flushed) {
             this.headData=headData;
         }
-        else throw new IOException("page already flushed");
+        else throw new IOException("Page already flushed");
     }
     
     /** 
      * @see railo.runtime.writer.CFMLWriter#getHTMLHead()
      */
     public String getHTMLHead() throws IOException {
-    	if(flushed) throw new IOException("page already flushed");
+    	if(flushed) throw new IOException("Page already flushed");
         return headData==null?"":headData;
     }
     
@@ -129,7 +129,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @see railo.runtime.writer.CFMLWriter#resetHTMLHead()
      */
     public void resetHTMLHead() throws IOException {
-    	if(flushed) throw new IOException("page already flushed");
+    	if(flushed) throw new IOException("Page already flushed");
         headData=null;
     }
     
@@ -154,7 +154,7 @@ public class CFMLWriterImpl extends CFMLWriter {
      * @see javax.servlet.jsp.JspWriter#clear() 
      */ 
     public void clear() throws IOException { 
-        if (flushed)  throw new IOException("respone buffer is already flushed");
+        if (flushed)  throw new IOException("Response buffer is already flushed");
         clearBuffer();
     } 
 
