@@ -75,6 +75,7 @@ import railo.runtime.extension.ExtensionProvider;
 import railo.runtime.extension.ExtensionProviderImpl;
 import railo.runtime.listener.ApplicationContext;
 import railo.runtime.listener.ApplicationListener;
+import railo.runtime.listener.JavaSettingsImpl;
 import railo.runtime.net.amf.AMFCaster;
 import railo.runtime.net.amf.ClassicAMFCaster;
 import railo.runtime.net.amf.ModernAMFCaster;
@@ -2475,10 +2476,8 @@ public abstract class ConfigImpl implements Config {
 	protected void setClientScopeDirSize(long clientScopeDirSize) {
 		this.clientScopeDirSize = clientScopeDirSize;
 	}
-	/**
-	 *
-	 * @see railo.runtime.config.Config#getRPCClassLoader()
-	 */
+	
+	@Override
 	public ClassLoader getRPCClassLoader(boolean reload) throws IOException {
 		
 		if(rpcClassLoader!=null && !reload) return rpcClassLoader;
@@ -2486,10 +2485,10 @@ public abstract class ConfigImpl implements Config {
 		Resource dir = getDeployDirectory().getRealResource("RPC");
 		if(!dir.exists())dir.createDirectory(true);
 		//rpcClassLoader = new PhysicalClassLoader(dir,getFactory().getServlet().getClass().getClassLoader());
-		rpcClassLoader = new PhysicalClassLoader(dir,getClass().getClassLoader());
+		rpcClassLoader = new PhysicalClassLoader(dir,getClassLoader());
 		return rpcClassLoader;
 	}
-
+	
 	public void resetRPCClassLoader() {
 		rpcClassLoader=null;
 	}
