@@ -5,6 +5,7 @@ import java.io.IOException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
@@ -46,7 +47,7 @@ public class CreateDynamicProxy implements Function {
 		strInterfaces=List.trimItems(strInterfaces);
 		
 		
-		ClassLoader cl = pc.getConfig().getClassLoader();
+		ClassLoader cl = ((PageContextImpl)pc).getClassLoader();
 		Class[] interfaces=new Class[strInterfaces.length];
 		for(int i=0;i<strInterfaces.length;i++){
 			interfaces[i]=ClassUtil.loadClass(cl, strInterfaces[i]);

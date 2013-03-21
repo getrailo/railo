@@ -685,7 +685,7 @@ public final class ResourceUtil {
     	try {
             return res.getCanonicalResource();
         } catch (IOException e) {
-            return res;
+            return res.getAbsoluteResource();
         }
     }
     
@@ -1339,6 +1339,22 @@ public final class ResourceUtil {
 			names[i]=resources[i].getName();
 		}
 		return names;
+	}
+    
+    public static Resource[] merge(Resource[] srcs, Resource[] trgs) {
+    	java.util.List<Resource> list=new ArrayList<Resource>();
+
+    	if(srcs!=null){
+    		for(int i=0;i<srcs.length;i++){
+    			list.add(srcs[i]);
+    		}
+    	}
+    	if(trgs!=null){
+    		for(int i=0;i<trgs.length;i++){
+    			if(!list.contains(trgs[i]))list.add(trgs[i]);
+    		}
+    	}
+    	return list.toArray(new Resource[list.size()]);
 	}
 
 }

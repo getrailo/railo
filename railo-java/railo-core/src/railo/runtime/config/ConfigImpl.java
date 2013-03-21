@@ -93,6 +93,7 @@ import railo.runtime.search.SearchEngine;
 import railo.runtime.security.SecurityManager;
 import railo.runtime.spooler.SpoolerEngine;
 import railo.runtime.tag.Admin;
+import railo.runtime.tag.util.DeprecatedUtil;
 import railo.runtime.type.Struct;
 import railo.runtime.type.StructImpl;
 import railo.runtime.type.UDF;
@@ -650,7 +651,12 @@ public abstract class ConfigImpl implements Config {
      * @see railo.runtime.config.Config#getClassLoader(railo.commons.io.res.Resource[])
      */
     public ClassLoader getClassLoader(Resource[] reses) throws IOException {
-    	return getResourceClassLoader().getCustomResourceClassLoader(reses);   
+    	// FUTURE @deprected use instead PageContext.getClassLoader(Resource[] reses);
+    	//PageContextImpl pci=(PageContextImpl) ThreadLocalPageContext.get();
+    	//if(pci==null) 
+    		throw new RuntimeException("this method is no longer suported");
+    	//return pci.getClassLoader(reses);
+    	////return getResourceClassLoader().getCustomResourceClassLoader(reses);   
     }
     
 	/* *

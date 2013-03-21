@@ -92,8 +92,22 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 			}
 		}
 	}
+	
 
 	public ResourceClassLoader getCustomResourceClassLoader(Resource[] resources) throws IOException{
+		if(ArrayUtil.isEmpty(resources)) return this;
+		String key = hash(resources);
+		ResourceClassLoader rcl=customCLs==null?null:customCLs.get(key);
+		if(rcl!=null) return rcl; 
+		
+		resources=ResourceUtil.merge(this.getResources(), resources);
+		rcl=new ResourceClassLoader(resources,getParent());
+		if(customCLs==null)customCLs=new ReferenceMap();
+		customCLs.put(key, rcl);
+		return rcl;
+	}
+
+	public ResourceClassLoader getCustomResourceClassLoader2(Resource[] resources) throws IOException{
 		if(ArrayUtil.isEmpty(resources)) return this;
 		String key = hash(resources);
 		ResourceClassLoader rcl=customCLs==null?null:customCLs.get(key);
@@ -104,11 +118,12 @@ public final class ResourceClassLoader extends URLClassLoader implements Closeab
 		customCLs.put(key, rcl);
 		return rcl;
 	}
+	
 	private String hash(Resource[] resources) {
 		Arrays.sort(resources);
 		StringBuilder sb=new StringBuilder();
 		for(int i=0;i<resources.length;i++){
-			sb.append(resources[i].getAbsolutePath());
+			sb.append(ResourceUtil.getCanonicalPathEL(resources[i]));
 			sb.append(';');
 		}
 		return MD5.getDigestAsString(sb.toString(),null);

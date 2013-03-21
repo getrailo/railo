@@ -637,7 +637,7 @@ public final class ConfigWebFactory {
     	// get resources from server config and merge
     	if(configServer!=null) {
     		ResourceClassLoader rcl = configServer.getResourceClassLoader();
-    		libs=merge(libs,rcl.getResources());
+    		libs=ResourceUtil.merge(libs,rcl.getResources());
     	}
     	
     	
@@ -678,22 +678,6 @@ public final class ConfigWebFactory {
 			list.add(trg);
 		}
 		return list.toArray(new Resource[list.size()]);
-	}
-    
-    private static Resource[] merge(Resource[] srcs, Resource[] trgs) {
-    	java.util.List<Resource> list=new ArrayList<Resource>();
-
-    	if(srcs!=null){
-    		for(int i=0;i<srcs.length;i++){
-    			list.add(srcs[i]);
-    		}
-    	}
-    	if(trgs!=null){
-    		for(int i=0;i<trgs.length;i++){
-    			if(!list.contains(trgs[i]))list.add(trgs[i]);
-    		}
-    	}
-    	return list.toArray(new Resource[list.size()]);
 	}
     
 
