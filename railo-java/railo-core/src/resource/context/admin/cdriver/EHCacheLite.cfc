@@ -12,7 +12,7 @@
 		//group("Disk","Hard disk specific settings"),
 		field("Disk persistent","diskpersistent","true",true,"for caches that overflow to disk, whether the disk store persists between restarts of the Engine.","checkbox","true"),
 		field("Overflow to disk","overflowtodisk","true",true,"for caches that overflow to disk, the disk cache persist between CacheManager instances","checkbox","true"),
-		field("Maximum elements on disk","maxelementsondisk","10000000",true,"Sets the maximum number elements on disk. 0 means unlimited","text")
+		field("Maximum elements on disk","maxelementsondisk","10000000",true,"Sets the maximum number of elements on Disk. 0 means unlimited","text")
 		
 		
 		

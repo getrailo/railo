@@ -163,10 +163,12 @@
 	<data key="menu.server.label">Settings</data>
 	<data key="menu.server.cache">Performance/Caching</data>
 	<data key="menu.server.regional">Regional</data>
-	<data key="menu.server.compiler">Compiler</data>
+	<data key="overview.langPerf">Performance/Language</data>
+	<data key="menu.server.compiler">Language/Compiler</data>
 	<data key="menu.server.charset">Charset</data>
 	<data key="menu.server.scope">Scope</data>
-	<data key="menu.server.application">Application</data>
+	<data key="menu.server.request">Request</data>
+	<data key="menu.server.language">Language</data>
 	<data key="menu.server.output">Output</data>
 	<data key="menu.server.error">Error</data>
 	<data key="menu.services.label">Services</data>
@@ -364,8 +366,10 @@
 	<data key="application.listenermode">Mode</data>
 	<data key="application.listenermode_root">Root</data>
 	<data key="application.requesttimeoutdescription">Sets the amount of time Railo will wait for a request to finish before a request timeout will be raised. This means that the execution of the request will be stopped. This behaviour can be overridden by the tag cfsetting.</data>
-	<data key="application.server">Defines application settings that represent the default values for all web contextes</data>
-	<data key="application.scriptprotectdescription">The configuration of Script protect, secures your system from &quot;cross-site scripting&quot;</data>
+	<data key="request.description">Settings that affect the execution of a request.</data>
+		
+
+<data key="application.scriptprotectdescription">The configuration of Script protect, secures your system from &quot;cross-site scripting&quot;</data>
 	<data key="application.scriptprotect">Script-protect</data>
 	<data key="application.scriptprotectall">Script-protect checks in all scopes for external data (cgi,cookie,form,url)</data>
 	<data key="application.listenertypedescription_mixed">Mixed handling. Railo looks for a file &quot;Application.cfm/OnRequestEnd.cfm&quot; as well as for the file &quot;Application.cfc&quot;</data>
@@ -587,13 +591,21 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="scopes.cascadingdescription">Depending on this setting Railo scans certain scopes to find a variable called from the CFML source. This will only happen, when the variable is called without a scope. (Example: #myVar# instead of #variables.myVar#)&lt;br/&gt;- strict: scans only the variables scope&lt;br/&gt;- small: scans the scopes variables,cgi,url,form&lt;br/&gt;- standard (CFML Standard): scans the scopes variables,cgi,url,form,cookie</data>
 	<data key="scopes.sessiontypedescription">J2EE Sessions allow to make sessions over a cluster. when you change this setting you will lose your current session and you must make a new login</data>
 	<data key="scopes.web">Here you can define the settings for how Railo handles scopes.</data>
-	<data key="scopes.localmodealways">always</data>
+	<data key="scopes.localmodeClassic">Classic</data>
 	<data key="scopes.timeoutsecondsvalue">Value seconds for </data>
 	<data key="scopes.sessionmanagementdescription">By default session management can be enabled. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.clientcookiesdescription">Enable or disable client cookies. This behaviour can be overridden by the tag cfapplication.</data>
 	<data key="scopes.sessiontimeout">Session timeout</data>
-	<data key="scopes.localmodeupdate">update (CFML standard)</data>
-	<data key="scopes.localmodedesc">Defines how the local scope of a function is invoked when a variable with no scope definition is used.&lt;br&gt;- always: the local scope is always invoked&lt;br&gt;- update (CFML standard): the local scope is only invoked when the key already exists in it</data>
+	
+	<data key="scopes.localmodeClassic">Classic (CFML Default)</data>
+	<data key="scopes.localmodeModern">Modern</data>
+	
+	<data key="scopes.localmodedesc">Defines how the local scope of a function is invoked when a variable with no scope definition is used.</data>
+
+	<data key="scopes.localmodeModernDesc">the local scope is always invoked</data>
+	<data key="scopes.localmodeClassicDesc">the local scope is only invoked when the key already exists in it</data>
+
+
 	<data key="scopes.mergeurlform">Merge URL and form</data>
 	<data key="scopes.cascading">Cascading</data>
 	<data key="scopes.cascadetoresultset">Search resultsets</data>
@@ -615,22 +627,33 @@ you can see the log result at the end of every request, if a debug template is d
 	<data key="scopes.applicationtimeout">Application timeout</data>
 	
 
+	<data key="compiler.nullSupport">Null Support</data>
+	<data key="compiler.nullSupportOnlyServer">This setting is only possible in the Railo Server Administrator.</data>
+	<data key="compiler.nullSupportDesc">Definiert wie Railo null unterstützt.</data>
+	<data key="compiler.nullSupportFull">Complete Support</data>
+	<data key="compiler.nullSupportFullDesc">Railo has a complete support for null, including "null" literal. Find more details in the Railo Wiki.</data>
+	<data key="compiler.nullSupportPartial">Partial Support (CFML Default)</data>
+	<data key="compiler.nullSupportPartialDesc">Railo has only a partial null support.</data>
+	
 	
 	<data key="setting.compiler">Railo compiler settings, this affects how the Railo Compiler parses the source code. Changing this settings flushes all existing class files and triggers a recompilation.</data>
-<data key="setting.dotNotation">Dot notation</data>
-<data key="setting.dotNotationDesc">Convert all struct keys defined with "dot notation" to upper case (CFML Default) 
-or keep them in original case (according to the "bracket notation").
-Example:
-Convert to upper case:
-sct.dotNotation --> keyname: "DOTNOTATION"
-sct[""bracketNotation""] --> keyname: "bracketNotation"
+	<data key="setting.dotNotation">Dot notation</data>
 
-Keep original case:
+
+	<data key="setting.dotNotationUpperCaseDesc">Convert all struct keys defined with "dot notation" to upper case.
+Example:
+sct.dotNotation --> keyname: "DOTNOTATION"
+sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
+
+<data key="setting.dotNotationOriginalCaseDesc">Keep all struct keys defined with "dot notation" in original case (according to the "bracket notation").
+Example:
 sct.dotNotation --> keyname: "dotNotation"
 sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
-<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
-<data key="setting.dotNotationOriginalCase">Keep original case</data>
-	<data key="setting.supressWSBeforeArg">Supress white space before cfargument</data>
+
+	<data key="setting.dotNotationUpperCase">Convert to upper case (CFML Default)</data>
+	<data key="setting.dotNotationOriginalCase">Keep original case</data>
+	
+<data key="setting.supressWSBeforeArg">Supress white space before cfargument</data>
 	<data key="setting.supressWSBeforeArgDesc">if set, Railo supress whitespace defined between the "cffunction" starting tag  and the last "cfargument" tag.
 	This setting is ignored when there is a different output between this tags as white space.</data>
 	<data key="setting.templatecache">Template Cache</data>
@@ -849,7 +872,7 @@ sct[""bracketNotation""] --> keyname: "bracketNotation"</data>
 	<data key="settings.dbconnlimit">Connection limit (max)</data>
 	<data key="settings.dbconntimeoutdesc">Define a time in minutes for how long a connection is kept alive before it will be closed</data>
 	<data key="settings.dbportdesc">The port to connect the database</data>
-	<data key="settings.dbconnlimitdesc">Restricts the number of maximum connections at one time</data>
+	<data key="settings.dbconnlimitdesc">Restricts the maximum number of simultaneous connections at one time</data>
 	<data key="settings.listdatasourcesdescserver">Datasources created here are available for ALL web contexts to use. The settings for these datasources can only be modified in this Server Administrator area.</data>
 	<data key="settings.dballowed">Allowed operations</data>
 	<data key="Settings.dbStorage">Storage</data>
