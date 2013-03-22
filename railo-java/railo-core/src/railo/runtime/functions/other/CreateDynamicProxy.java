@@ -5,12 +5,13 @@ import java.io.IOException;
 import railo.commons.lang.ClassUtil;
 import railo.runtime.Component;
 import railo.runtime.PageContext;
+import railo.runtime.PageContextImpl;
 import railo.runtime.exp.FunctionException;
 import railo.runtime.exp.PageException;
 import railo.runtime.ext.function.Function;
 import railo.runtime.op.Caster;
 import railo.runtime.op.Decision;
-import railo.runtime.type.util.ListUtil;
+import railo.runtime.type.List;
 import railo.transformer.bytecode.util.JavaProxyFactory;
 
 public class CreateDynamicProxy implements Function {
@@ -35,31 +36,25 @@ public class CreateDynamicProxy implements Function {
 			cfc=pc.loadComponent(Caster.toString(oCFC));
 		
 		// interfaces
-		//String[] strInterfaces;
-		Object[] arr;
+		String[] strInterfaces;
 		if(Decision.isArray(oInterfaces)) {
-			arr=Caster.toNativeArray(oInterfaces);
-		}
-		else if(oInterfaces instanceof Class){
-			arr=new Object[]{oInterfaces};
+			strInterfaces=ListUtil.toStringArray(Caster.toArray(oInterfaces));
 		}
 		else {
 			String list = Caster.toString(oInterfaces);
-			arr=ListUtil.listToStringArray(list, ',');
+			strInterfaces=List.listToStringArray(list, ',');
 		}
-		//strInterfaces=List.trimItems(strInterfaces);
+		strInterfaces=List.trimItems(strInterfaces);
 		
 		
-		ClassLoader cl = pc.getConfig().getClassLoader();
-		Class[] interfaces=new Class[arr.length];
-		for(int i=0;i<arr.length;i++){
-			if(arr[i] instanceof Class) interfaces[i]=(Class) arr[i];
-			else interfaces[i]=ClassUtil.loadClass(cl, Caster.toString(arr[i]).trim());
-			
-			if(!interfaces[i].isInterface()) throw new FunctionException(pc, "CreateDynamicProxy", 2, "interfaces", "definition ["+interfaces[i].getName()+"] is a class and not a interface");
+		ClassLoader cl = ((PageContextImpl)pc).getClassLoader();
+		Class[] interfaces=new Class[strInterfaces.length];
+		for(int i=0;i<strInterfaces.length;i++){
+			interfaces[i]=ClassUtil.loadClass(cl, strInterfaces[i]);
+			if(!interfaces[i].isInterface()) throw new FunctionException(pc, "CreateDynamicProxy", 2, "interfaces", "definition ["+strInterfaces[i]+"] is a class and not a interface");
 		}
 		
-		return JavaProxyFactory.createProxy(pc.getConfig(),cfc, null,interfaces);
+		return JavaProxyFactory.createProxy(pc,cfc, null,interfaces);
 	}
 	    
 }

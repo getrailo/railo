@@ -33,7 +33,7 @@ public final class DateFormat implements Function {
 		DateTime datetime = DateCaster.toDateAdvanced(object,tz,null);
 			//Caster.toDate(object,true,tz,null);
 		if(datetime==null) {
-		    if(StringUtil.isEmpty(object,true)) return "";
+			if(StringUtil.isEmpty(object,true)) return "";
 		    throw new CasterException(object,"datetime");
 		    //if(!Decision.isSimpleValue(object))
 		    //    throw new ExpressionException("can't convert object of type "+Type.getName(object)+" to a datetime value");
