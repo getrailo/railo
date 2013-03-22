@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import railo.commons.date.TimeZoneUtil;
+import railo.commons.lang.StringUtil;
 import railo.runtime.PageContext;
 import railo.runtime.engine.ThreadLocalPageContext;
 import railo.runtime.exp.ExpressionException;
@@ -45,7 +46,7 @@ public final class TimeFormat implements Function {
 		Locale locale=Locale.US;//:pc.getConfig().getLocale();
 		DateTime datetime = Caster.toDate(object,true,tz,null);
 		if(datetime==null) {
-		    if(object.toString().trim().length()==0) return "";
+			if(StringUtil.isEmpty(object,true)) return "";
 		    throw new ExpressionException("can't convert value "+object+" to a datetime value");
 		}
 		
