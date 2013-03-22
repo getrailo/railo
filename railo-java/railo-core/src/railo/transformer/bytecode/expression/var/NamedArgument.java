@@ -46,10 +46,12 @@ public final class NamedArgument extends Argument {
     	
     
     private Expression name;
+	private boolean varKeyUpperCase;
 
-	public NamedArgument(Expression name, Expression value, String type) {
+	public NamedArgument(Expression name, Expression value, String type, boolean varKeyUpperCase) {
 		super(value,type);
 		this.name=name;
+		this.varKeyUpperCase=varKeyUpperCase;
 	}
 
 	/**
@@ -69,14 +71,15 @@ public final class NamedArgument extends Argument {
 	            av.visitBegin(adapter,Types.STRING,arr.length);
 	            for(int y=0;y<arr.length;y++){
 	    			av.visitBeginItem(adapter, y);
-	    				adapter.push(arr[y]);
+	    				adapter.push(varKeyUpperCase?arr[y].toUpperCase():arr[y]);
 	    			av.visitEndItem(bc.getAdapter());
 	            }
 	            av.visitEnd();
 			}
 			else {
 				//VariableString.toExprString(name).writeOut(bc, MODE_REF);
-				name=LitString.toExprString(VariableString.variableToString((Variable) name,true));
+				String str = VariableString.variableToString((Variable) name,true);
+				name=LitString.toExprString(varKeyUpperCase?str.toUpperCase():str);
 				type=Variable.registerKey(bc, VariableString.toExprString(name))?KEY:STRING;
 			}
 		}
