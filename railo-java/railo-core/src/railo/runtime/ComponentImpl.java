@@ -1397,6 +1397,7 @@ public final class ComponentImpl extends StructSupport implements Externalizable
         if(!StringUtil.isEmpty(displayname))sct.set(KeyConstants._displayname,displayname);
         
         sct.set(KeyConstants._persistent,comp.properties.persistent);
+        sct.set(KeyConstants._hashCode,comp.hashCode());
         sct.set(KeyConstants._accessors,comp.properties.accessors);
         sct.set(KeyConstants._synchronized,comp.properties._synchronized);
         if(comp.properties.output!=null)
